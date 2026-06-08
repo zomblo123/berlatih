@@ -71,10 +71,14 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .sec-sub{font-size:12px;color:var(--text3);font-weight:500;margin-left:8px;}
 
 /* ── TABS ── */
-.tabs-wrap{display:flex;gap:8px;overflow-x:auto;margin-bottom:20px;padding-bottom:8px;scroll-behavior:smooth;}
+.tabs-row{display:flex;align-items:center;gap:8px;margin-bottom:20px;}
+.tab-arrow{width:34px;height:34px;flex:0 0 auto;border:none;border-radius:12px;background:var(--surface2);color:var(--text2);font-size:20px;cursor:pointer;transition:all 0.2s;}
+.tab-arrow:hover{background:var(--surface3);}
+.tab-arrow:disabled{opacity:0.4;cursor:not-allowed;}
+.tabs-wrap{display:flex;gap:8px;overflow-x:auto;margin:0;padding:0 8px 8px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;touch-action:pan-x;min-width:0;}
 .tabs-wrap::-webkit-scrollbar{height:2px;}
 .tabs-wrap::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:2px;}
-.tab-btn{white-space:nowrap;padding:8px 16px;background:var(--surface2);border:none;border-radius:12px;color:var(--text3);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:all 0.2s;}
+.tab-btn{flex:0 0 auto;scroll-snap-align:start;white-space:nowrap;padding:8px 16px;background:var(--surface2);border:none;border-radius:12px;color:var(--text3);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:all 0.2s;}
 .tab-btn:hover{background:var(--surface3);color:var(--text2);}
 .tab-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;box-shadow:var(--shadow);}
 
@@ -125,15 +129,19 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
   </div>
 
   <!-- ── TABS ── -->
-  <div class="tabs-wrap" id="tabsContainer">
-    <button class="tab-btn active" onclick="switchCategory(1)">💻 Coding</button>
-    <button class="tab-btn" onclick="switchCategory(2)">🇬🇧 English</button>
-    <button class="tab-btn" onclick="switchCategory(8)">✨ Adventure</button>
-    <button class="tab-btn" onclick="switchCategory(3)">🌍 Sains</button>
-    <button class="tab-btn" onclick="switchCategory(4)">🖥️ Hardware</button>
-    <button class="tab-btn" onclick="switchCategory(5)">🌊 Digital</button>
-    <button class="tab-btn" onclick="switchCategory(6)">🤖 AI</button>
-    <button class="tab-btn" onclick="switchCategory(7)">🦴 Evolusi</button>
+  <div class="tabs-row">
+    <button class="tab-arrow" id="tabPrev" aria-label="Scroll left">‹</button>
+    <div class="tabs-wrap" id="tabsContainer">
+      <button class="tab-btn active" onclick="switchCategory(1)">💻 Coding</button>
+      <button class="tab-btn" onclick="switchCategory(2)">🇬🇧 English</button>
+      <button class="tab-btn" onclick="switchCategory(8)">✨ Adventure</button>
+      <button class="tab-btn" onclick="switchCategory(3)">🌍 Sains</button>
+      <button class="tab-btn" onclick="switchCategory(4)">🖥️ Hardware</button>
+      <button class="tab-btn" onclick="switchCategory(5)">🌊 Digital</button>
+      <button class="tab-btn" onclick="switchCategory(6)">🤖 AI</button>
+      <button class="tab-btn" onclick="switchCategory(7)">🦴 Evolusi</button>
+    </div>
+    <button class="tab-arrow" id="tabNext" aria-label="Scroll right">›</button>
   </div>
 
   <!-- ── CATEGORY 1: CODING ── -->
@@ -554,6 +562,70 @@ function switchCategory(n) {
     const tabIndex = categoryMap[n];
     if (tabs[tabIndex]) tabs[tabIndex].classList.add('active');
 }
+
+// Drag-scroll for tabs
+(function enableTabDragScroll() {
+    const tabs = document.getElementById('tabsContainer');
+    const prevBtn = document.getElementById('tabPrev');
+    const nextBtn = document.getElementById('tabNext');
+    if (!tabs) return;
+
+    let isDragging = false;
+    let startX = 0;
+    let scrollStart = 0;
+
+    const updateArrows = () => {
+        if (!prevBtn || !nextBtn) return;
+        prevBtn.disabled = tabs.scrollLeft <= 0;
+        nextBtn.disabled = tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 1;
+    };
+
+    tabs.addEventListener('pointerdown', (event) => {
+        isDragging = true;
+        tabs.setPointerCapture(event.pointerId);
+        startX = event.clientX;
+        scrollStart = tabs.scrollLeft;
+        tabs.style.cursor = 'grabbing';
+    });
+
+    tabs.addEventListener('pointermove', (event) => {
+        if (!isDragging) return;
+        const deltaX = event.clientX - startX;
+        tabs.scrollLeft = scrollStart - deltaX;
+        updateArrows();
+    });
+
+    const endDrag = () => {
+        isDragging = false;
+        tabs.style.cursor = 'grab';
+    };
+
+    tabs.addEventListener('pointerup', endDrag);
+    tabs.addEventListener('pointercancel', endDrag);
+    tabs.addEventListener('pointerleave', endDrag);
+
+    tabs.addEventListener('scroll', updateArrows);
+    tabs.addEventListener('wheel', (event) => {
+        if (Math.abs(event.deltaX) < Math.abs(event.deltaY)) {
+            event.preventDefault();
+            tabs.scrollLeft += event.deltaY;
+        }
+    }, { passive: false });
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            tabs.scrollBy({ left: -220, behavior: 'smooth' });
+        });
+    }
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            tabs.scrollBy({ left: 220, behavior: 'smooth' });
+        });
+    }
+
+    tabs.style.cursor = 'grab';
+    updateArrows();
+})();
 
 // Initial Load
 renderBooks('codingGrid', codingBooks);
