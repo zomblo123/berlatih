@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petualangan Aslan di Negeri AI – Hari 29</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --biru:      #1E88E5;
+      --biru-tua:  #0D47A1;
+      --biru-muda: #64B5F6;
+      --ungu:      #7C4DFF;
+      --ungu-tua:  #4527A0;
+      --ungu-mid:  #9C27B0;
+      --cyan:      #00BCD4;
+      --cyan-tua:  #006064;
+      --kuning:    #FFD600;
+      --hijau:     #00E676;
+      --hijau-mid: #00C853;
+      --oranye:    #FF6D00;
+      --bg:        #0A0E2E;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #0A0E2E;
+      background-image:
+        radial-gradient(ellipse at 15% 20%, #1a1060 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 75%, #0d3060 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 50%, #0a1a45 0%, transparent 60%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .font-kartun { font-family: 'Fredoka One', cursive; }
+
+    /* ===== STARS BG ===== */
+    .stars-bg {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle linear infinite;
+    }
+    @keyframes twinkle {
+      0%,100% { opacity: 0.2; transform: scale(1); }
+      50%      { opacity: 1;   transform: scale(1.4); }
+    }
+    .nebula {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+      animation: nebulaPulse 8s ease-in-out infinite;
+    }
+    @keyframes nebulaPulse {
+      0%,100% { opacity: 0.12; transform: scale(1); }
+      50%      { opacity: 0.22; transform: scale(1.08); }
+    }
+
+    /* ===== TOP BACK LINK ===== */
+    .top-back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'Fredoka One', cursive; font-size: 1rem;
+      color: #fff;
+      background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 999px;
+      padding: 6px 18px;
+      text-decoration: none;
+      backdrop-filter: blur(8px);
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 0 12px rgba(124,77,255,0.3);
+    }
+    .top-back-link:hover { background: rgba(255,255,255,0.25); transform: translateX(-4px); }
+
+    /* ===== HEADER ===== */
+    .header-bar {
+      background: linear-gradient(135deg, #120836 0%, #1a0a5e 25%, #0D47A1 60%, #0097A7 100%);
+      position: relative; overflow: hidden;
+      border: 1px solid rgba(124,77,255,0.3);
+    }
+    .header-bar::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        repeating-linear-gradient(45deg, transparent 0px, transparent 28px,
+          rgba(124,77,255,0.06) 28px, rgba(124,77,255,0.06) 56px);
+    }
+    /* Hologram scan line */
+    .header-bar::after {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0,188,212,0.08), transparent);
+      animation: scanLine 4s linear infinite;
+    }
+    @keyframes scanLine {
+      0%   { left: -100%; }
+      100% { left: 200%; }
+    }
+
+    .badge-hari {
+      background: var(--kuning);
+      color: #0D47A1;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem; padding: 4px 16px;
+      border-radius: 999px; display: inline-block;
+      box-shadow: 0 4px 0 #F9A825, 0 0 14px rgba(255,214,0,0.5);
+      animation: bounceIn 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes bounceIn {
+      0%  { transform: scale(0.3); opacity: 0; }
+      60% { transform: scale(1.12); }
+      100%{ transform: scale(1); opacity: 1; }
+    }
+    .aslan-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2rem, 6vw, 4rem);
+      color: #fff;
+      text-shadow: 0 0 20px rgba(100,181,246,0.8), 0 4px 0 #0D47A1;
+      letter-spacing: 1px;
+      animation: slideDown 0.7s ease both 0.2s;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-40px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+    .subtitle-header { font-size: clamp(0.9rem,2.5vw,1.15rem); color: #90CAF9; }
+
+    .progress-track {
+      height: 10px; background: rgba(255,255,255,0.2);
+      border-radius: 999px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FFD600, #00E676);
+      border-radius: 999px; width: 96.67%;
+      transition: width 1.4s ease;
+      box-shadow: 0 0 8px rgba(0,230,118,0.6);
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      border-radius: 28px;
+      position: relative; overflow: hidden;
+    }
+    .card-glass {
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .card-white {
+      background: #fff;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+    .card-blue-glow {
+      background: rgba(13,71,161,0.85);
+      border: 2px solid rgba(100,181,246,0.4);
+      box-shadow: 0 0 24px rgba(30,136,229,0.3);
+    }
+    .card-purple-glow {
+      background: rgba(69,39,160,0.85);
+      border: 2px solid rgba(179,136,255,0.4);
+      box-shadow: 0 0 24px rgba(124,77,255,0.3);
+    }
+    .card-cyan-glow {
+      background: rgba(0,96,100,0.85);
+      border: 2px solid rgba(77,182,172,0.5);
+      box-shadow: 0 0 24px rgba(0,188,212,0.3);
+    }
+    .card-yellow-glow {
+      background: rgba(255,111,0,0.15);
+      border: 2px solid rgba(255,214,0,0.4);
+      box-shadow: 0 0 20px rgba(255,214,0,0.2);
+    }
+
+    .card-white::before, .card-blue-glow::before,
+    .card-purple-glow::before, .card-cyan-glow::before,
+    .card-yellow-glow::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 4px;
+    }
+    .card-white.accent-blue::before   { background: linear-gradient(90deg,#1E88E5,#00BCD4); }
+    .card-white.accent-purple::before { background: linear-gradient(90deg,#7C4DFF,#E040FB); }
+    .card-white.accent-cyan::before   { background: linear-gradient(90deg,#00BCD4,#00E676); }
+    .card-white.accent-yellow::before { background: linear-gradient(90deg,#FFD600,#FF6D00); }
+    .card-white.accent-green::before  { background: linear-gradient(90deg,#00E676,#1DE9B6); }
+
+    /* ===== HOLO BORDER ===== */
+    .holo-border {
+      position: relative;
+      border-radius: 24px;
+      padding: 3px;
+      background: linear-gradient(135deg, #7C4DFF, #00BCD4, #FFD600, #00E676, #7C4DFF);
+      background-size: 300% 300%;
+      animation: holoBorder 4s ease infinite;
+    }
+    .holo-border-inner {
+      background: #0A0E2E;
+      border-radius: 22px;
+      overflow: hidden;
+    }
+    @keyframes holoBorder {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ===== FLOATING ELEMENTS ===== */
+    .float-slow { animation: floatSlow 4s ease-in-out infinite; }
+    .float-mid  { animation: floatSlow 3s ease-in-out infinite 0.5s; }
+    .float-fast { animation: floatSlow 2.5s ease-in-out infinite 1s; }
+    @keyframes floatSlow {
+      0%,100% { transform: translateY(0) rotate(-2deg); }
+      50%      { transform: translateY(-12px) rotate(2deg); }
+    }
+
+    /* ===== SPARKLE / GLOW ===== */
+    .sparkle { display: inline-block; animation: sparkle 1.5s ease-in-out infinite; }
+    @keyframes sparkle {
+      0%,100% { transform: scale(1) rotate(0); filter: brightness(1); }
+      50%      { transform: scale(1.25) rotate(12deg); filter: brightness(1.3); }
+    }
+    .glow-text {
+      text-shadow: 0 0 12px currentColor, 0 0 24px currentColor;
+    }
+    .pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+    @keyframes pulseGlow {
+      0%,100% { box-shadow: 0 0 10px rgba(0,188,212,0.4); }
+      50%      { box-shadow: 0 0 24px rgba(0,188,212,0.8), 0 0 40px rgba(0,188,212,0.3); }
+    }
+
+    /* ===== KOMIK PANELS ===== */
+    .komik-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (min-width: 640px) { .komik-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .panel {
+      border-radius: 18px;
+      border: 3px solid #7C4DFF;
+      overflow: hidden;
+      background: #fff;
+      position: relative; cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+      box-shadow: 0 6px 0 #4527A0, 0 0 12px rgba(124,77,255,0.3);
+    }
+    .panel:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 12px 0 #4527A0, 0 0 20px rgba(124,77,255,0.5); }
+    .panel:nth-child(2) { border-color:#00BCD4; box-shadow:0 6px 0 #006064, 0 0 12px rgba(0,188,212,0.3); }
+    .panel:nth-child(2):hover { box-shadow:0 12px 0 #006064, 0 0 20px rgba(0,188,212,0.5); }
+    .panel:nth-child(3) { border-color:#00E676; box-shadow:0 6px 0 #00701A, 0 0 12px rgba(0,230,118,0.3); }
+    .panel:nth-child(3):hover { box-shadow:0 12px 0 #00701A, 0 0 20px rgba(0,230,118,0.5); }
+    .panel:nth-child(4) { border-color:#FFD600; box-shadow:0 6px 0 #E65100, 0 0 12px rgba(255,214,0,0.3); }
+    .panel:nth-child(4):hover { box-shadow:0 12px 0 #E65100, 0 0 20px rgba(255,214,0,0.5); }
+
+    .panel-img-bg { width:100%; height:155px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+    .panel-num {
+      position:absolute; top:8px; left:8px;
+      width:28px; height:28px; background:#7C4DFF; color:#fff;
+      font-family:'Fredoka One',cursive; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.9rem; box-shadow:0 2px 0 #4527A0; z-index:2;
+    }
+    .panel:nth-child(2) .panel-num { background:#00BCD4; box-shadow:0 2px 0 #006064; }
+    .panel:nth-child(3) .panel-num { background:#00C853; box-shadow:0 2px 0 #00701A; }
+    .panel:nth-child(4) .panel-num { background:#FFD600; color:#0D47A1; box-shadow:0 2px 0 #E65100; }
+
+    .panel-dialog {
+      position:absolute; top:8px; right:8px;
+      background:#fff; border:2px solid #7C4DFF;
+      border-radius:12px 12px 12px 2px;
+      font-size:0.67rem; font-weight:800;
+      padding:3px 7px; max-width:68%;
+      color:#4527A0; box-shadow:2px 2px 0 rgba(0,0,0,0.1); z-index:2;
+    }
+    .panel:nth-child(2) .panel-dialog { border-color:#00BCD4; color:#006064; }
+    .panel:nth-child(3) .panel-dialog { border-color:#00C853; color:#1B5E20; }
+    .panel:nth-child(4) .panel-dialog { border-color:#FFD600; color:#E65100; }
+
+    .panel-text {
+      padding:10px 12px; font-size:0.78rem; font-weight:700;
+      color:#37474F; text-align:center; min-height:50px;
+      display:flex; align-items:center; justify-content:center;
+    }
+
+    /* ===== FAKTA GRID ===== */
+    .fakta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    @media (min-width: 480px) { .fakta-grid { grid-template-columns: repeat(3, 1fr); } }
+    .fakta-card {
+      border-radius: 18px; padding: 16px 12px; text-align: center;
+      cursor: pointer; transition: transform 0.25s;
+    }
+    .fakta-card:hover { transform: translateY(-5px) scale(1.03); }
+    .fakta-emoji {
+      font-size: 2.4rem; display: block; margin-bottom: 8px;
+      animation: faktaBounce 2.5s ease-in-out infinite;
+    }
+    @keyframes faktaBounce {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50%      { transform: translateY(-8px) rotate(3deg); }
+    }
+    .fakta-card:nth-child(2) .fakta-emoji { animation-delay:0.4s; }
+    .fakta-card:nth-child(3) .fakta-emoji { animation-delay:0.8s; }
+    .fakta-card:nth-child(4) .fakta-emoji { animation-delay:1.2s; }
+    .fakta-card:nth-child(5) .fakta-emoji { animation-delay:1.6s; }
+    .fakta-card:nth-child(6) .fakta-emoji { animation-delay:2.0s; }
+
+    /* ===== TIMELINE ===== */
+    .timeline-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.15);
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-dot {
+      min-width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+      box-shadow: 0 0 12px rgba(255,255,255,0.3);
+    }
+
+    /* ===== QUIZ ===== */
+    .quiz-option {
+      border: 2px solid rgba(124,77,255,0.5);
+      border-radius: 16px; padding: 13px 18px; cursor: pointer;
+      font-size: 0.95rem; font-weight: 700; color: #fff;
+      background: rgba(255,255,255,0.07);
+      backdrop-filter: blur(4px);
+      transition: all 0.2s;
+      display: flex; align-items: center; gap: 12px;
+      text-align: left; width: 100%;
+    }
+    .quiz-option:hover { border-color: #7C4DFF; background: rgba(124,77,255,0.2); transform: translateX(6px); }
+    .quiz-option.correct { border-color:#00E676; background:rgba(0,230,118,0.15); color:#00E676; animation: correctPop 0.4s ease; }
+    .quiz-option.wrong   { border-color:#FF5252; background:rgba(255,82,82,0.15);  color:#FF5252; animation: shake 0.4s ease; }
+    @keyframes correctPop { 0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)} }
+    @keyframes shake { 0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)} }
+
+    .quiz-result {
+      display: none; border-radius: 14px; padding: 14px 18px;
+      font-size: 1rem; font-weight: 800; text-align: center;
+      animation: fadeUp 0.4s ease;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)} }
+
+    /* ===== DREAM CAREER CARDS ===== */
+    .dream-card {
+      border-radius: 20px; padding: 18px 14px; text-align: center;
+      cursor: pointer; transition: transform 0.25s, box-shadow 0.25s;
+      border: 2px solid transparent;
+    }
+    .dream-card:hover { transform: translateY(-6px); }
+
+    /* ===== REVEAL ===== */
+    .reveal { opacity:0; transform:translateY(32px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity:1; transform:none; }
+
+    /* ===== HOLOGRAM EFFECT ===== */
+    .holo-text {
+      background: linear-gradient(90deg, #00BCD4, #7C4DFF, #00E676, #FFD600, #00BCD4);
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: holoShift 3s linear infinite;
+    }
+    @keyframes holoShift {
+      0%  { background-position: 0% center; }
+      100%{ background-position: 300% center; }
+    }
+
+    /* ===== GRID CAREER ===== */
+    .career-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+    @media (min-width: 480px) { .career-grid { grid-template-columns: repeat(3,1fr); } }
+
+    /* ===== INTERACTIVE DREAM INPUT ===== */
+    .dream-input {
+      background: rgba(255,255,255,0.08);
+      border: 2px solid rgba(124,77,255,0.5);
+      border-radius: 16px; padding: 14px 18px;
+      font-size: 1rem; font-weight: 700; color: #fff;
+      font-family: 'Nunito', sans-serif;
+      width: 100%; resize: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .dream-input::placeholder { color: rgba(255,255,255,0.35); }
+    .dream-input:focus { border-color: #7C4DFF; box-shadow: 0 0 16px rgba(124,77,255,0.4); }
+
+    .dream-btn {
+      background: linear-gradient(135deg, #7C4DFF, #00BCD4);
+      color: #fff; font-family: 'Fredoka One', cursive;
+      font-size: 1.1rem; border: none; border-radius: 16px;
+      padding: 14px 28px; cursor: pointer; width: 100%;
+      box-shadow: 0 5px 0 #4527A0, 0 0 20px rgba(124,77,255,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .dream-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 0 #4527A0, 0 0 28px rgba(124,77,255,0.6); }
+    .dream-btn:active { transform: translateY(1px); }
+
+    .dream-response {
+      display: none;
+      border-radius: 18px; padding: 20px;
+      background: linear-gradient(135deg, rgba(124,77,255,0.2), rgba(0,188,212,0.2));
+      border: 2px solid rgba(124,77,255,0.4);
+      color: #fff; font-size: 1rem; font-weight: 700; line-height: 1.8;
+      animation: fadeUp 0.5s ease;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Stars -->
+<div class="stars-bg" id="starsBg"></div>
+<!-- Nebula blobs -->
+<div class="nebula" style="width:400px;height:400px;top:-100px;left:-100px;background:radial-gradient(circle,#7C4DFF,transparent);animation-delay:0s;"></div>
+<div class="nebula" style="width:350px;height:350px;bottom:100px;right:-80px;background:radial-gradient(circle,#00BCD4,transparent);animation-delay:3s;"></div>
+<div class="nebula" style="width:300px;height:300px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#1a0a6e,transparent);animation-delay:1.5s;"></div>
+
+<!-- ===== MAIN ===== -->
+<div class="relative z-10 max-w-3xl mx-auto px-4 pb-16">
+
+  <!-- ===== HEADER ===== -->
+  <header class="header-bar rounded-b-3xl pt-5 pb-8 px-5 mb-6 relative">
+    <!-- Back -->
+    <div class="mb-4">
+      <a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+    </div>
+    <!-- Floating emojis -->
+    <span style="position:absolute;top:18px;right:55px;font-size:1.8rem;opacity:0.45;" class="float-slow">🚀</span>
+    <span style="position:absolute;top:12px;right:110px;font-size:1.4rem;opacity:0.4;" class="float-mid">⭐</span>
+    <span style="position:absolute;top:30px;right:30px;font-size:1.2rem;opacity:0.35;" class="float-fast">🌟</span>
+    <!-- Badge + Title -->
+    <div class="text-center">
+      <div class="badge-hari mb-3">🚀 HARI 29 dari 30</div>
+      <h1 class="aslan-name leading-tight mb-2">
+        Masa Depan AI<br>Saat Aslan Besar!
+      </h1>
+      <p class="subtitle-header font-bold">Petualangan Aslan di Negeri AI – 30 Hari Menjadi Pintar AI ✨</p>
+      <!-- Progress -->
+      <div class="mt-5 max-w-xs mx-auto">
+        <div class="flex justify-between text-xs font-bold mb-1" style="color:rgba(255,255,255,0.6);">
+          <span>Kemajuan Aslan</span><span>29/30 🏆</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill"></div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== ILUSTRASI UTAMA ===== -->
+  <div class="holo-border mb-6 reveal">
+    <div class="holo-border-inner">
+      <svg viewBox="0 0 700 420" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block;">
+        <defs>
+          <!-- Sky gradient - deep space to city dawn -->
+          <linearGradient id="sky29" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"  style="stop-color:#0A0A30"/>
+            <stop offset="40%" style="stop-color:#0D1B6E"/>
+            <stop offset="80%" style="stop-color:#1A3A8F"/>
+            <stop offset="100%" style="stop-color:#1A5F8F"/>
+          </linearGradient>
+          <!-- Ground gradient -->
+          <linearGradient id="ground29" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"  style="stop-color:#0D2A4A"/>
+            <stop offset="100%" style="stop-color:#081828"/>
+          </linearGradient>
+          <!-- Building gradients -->
+          <linearGradient id="bldg1" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"  style="stop-color:#1a1060"/>
+            <stop offset="100%" style="stop-color:#0D0830"/>
+          </linearGradient>
+          <linearGradient id="bldg2" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"  style="stop-color:#0a3060"/>
+            <stop offset="100%" style="stop-color:#051530"/>
+          </linearGradient>
+          <!-- Glow filters -->
+          <filter id="glowBlue">
+            <feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glowCyan">
+            <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glowYellow">
+            <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glowSoft">
+            <feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <!-- Robot body gradient -->
+          <linearGradient id="roboBody" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"  style="stop-color:#E3F2FD"/>
+            <stop offset="100%" style="stop-color:#90CAF9"/>
+          </linearGradient>
+          <radialGradient id="roboGlow" cx="50%" cy="30%" r="60%">
+            <stop offset="0%" style="stop-color:#64B5F6;stop-opacity:0.6"/>
+            <stop offset="100%" style="stop-color:transparent"/>
+          </radialGradient>
+        </defs>
+
+        <!-- ===== BACKGROUND SKY ===== -->
+        <rect width="700" height="420" fill="url(#sky29)"/>
+
+        <!-- Stars -->
+        <circle cx="50"  cy="30"  r="1.5" fill="#fff" opacity="0.9"/>
+        <circle cx="120" cy="20"  r="1"   fill="#fff" opacity="0.7"/>
+        <circle cx="200" cy="45"  r="2"   fill="#fff" opacity="0.8"/>
+        <circle cx="320" cy="15"  r="1.5" fill="#fff" opacity="0.9"/>
+        <circle cx="420" cy="35"  r="1"   fill="#FFD600" opacity="0.8"/>
+        <circle cx="520" cy="22"  r="1.5" fill="#fff" opacity="0.7"/>
+        <circle cx="600" cy="40"  r="2"   fill="#00BCD4" opacity="0.7"/>
+        <circle cx="660" cy="18"  r="1"   fill="#fff" opacity="0.9"/>
+        <circle cx="80"  cy="65"  r="1"   fill="#fff" opacity="0.5"/>
+        <circle cx="450" cy="60"  r="1.5" fill="#fff" opacity="0.6"/>
+        <circle cx="580" cy="70"  r="1"   fill="#E040FB" opacity="0.7"/>
+
+        <!-- Moon -->
+        <circle cx="620" cy="55" r="28" fill="#E8EAF6" filter="url(#glowBlue)"/>
+        <circle cx="628" cy="48" r="20" fill="#C5CAE9"/>
+        <!-- Moon craters -->
+        <circle cx="615" cy="58" r="5" fill="#9FA8DA" opacity="0.4"/>
+        <circle cx="626" cy="65" r="3" fill="#9FA8DA" opacity="0.3"/>
+
+        <!-- Ground -->
+        <rect x="0" y="320" width="700" height="100" fill="url(#ground29)"/>
+        <!-- Road glowing lines -->
+        <rect x="0" y="338" width="700" height="3" fill="#00BCD4" opacity="0.3"/>
+        <rect x="0" y="365" width="700" height="2" fill="#7C4DFF" opacity="0.2"/>
+        <!-- Road lane dashes -->
+        <rect x="80"  y="350" width="40" height="3" rx="2" fill="#FFD600" opacity="0.5"/>
+        <rect x="170" y="350" width="40" height="3" rx="2" fill="#FFD600" opacity="0.5"/>
+        <rect x="260" y="350" width="40" height="3" rx="2" fill="#FFD600" opacity="0.5"/>
+        <rect x="350" y="350" width="40" height="3" rx="2" fill="#FFD600" opacity="0.5"/>
+        <rect x="440" y="350" width="40" height="3" rx="2" fill="#FFD600" opacity="0.5"/>
+        <rect x="530" y="350" width="40" height="3" rx="2" fill="#FFD600" opacity="0.5"/>
+        <rect x="620" y="350" width="40" height="3" rx="2" fill="#FFD600" opacity="0.5"/>
+
+        <!-- ===== BUILDINGS (background) ===== -->
+        <!-- Far left building -->
+        <rect x="0"   y="200" width="70" height="125" rx="4" fill="url(#bldg1)"/>
+        <rect x="15"  y="170" width="40" height="35"  rx="3" fill="url(#bldg1)"/>
+        <!-- Windows left bldg -->
+        <rect x="8"  y="215" width="12" height="10" rx="2" fill="#00BCD4" opacity="0.6"/>
+        <rect x="28" y="215" width="12" height="10" rx="2" fill="#00BCD4" opacity="0.4"/>
+        <rect x="48" y="215" width="12" height="10" rx="2" fill="#7C4DFF" opacity="0.5"/>
+        <rect x="8"  y="240" width="12" height="10" rx="2" fill="#FFD600" opacity="0.6"/>
+        <rect x="28" y="240" width="12" height="10" rx="2" fill="#00E676" opacity="0.4"/>
+        <rect x="48" y="240" width="12" height="10" rx="2" fill="#00BCD4" opacity="0.7"/>
+        <rect x="8"  y="265" width="12" height="10" rx="2" fill="#7C4DFF" opacity="0.5"/>
+        <rect x="28" y="265" width="12" height="10" rx="2" fill="#FFD600" opacity="0.5"/>
+        <rect x="48" y="265" width="12" height="10" rx="2" fill="#00BCD4" opacity="0.4"/>
+        <!-- Antenna glow -->
+        <line x1="35" y1="170" x2="35" y2="145" stroke="#00BCD4" stroke-width="2" opacity="0.8"/>
+        <circle cx="35" cy="143" r="4" fill="#00E676" filter="url(#glowBlue)" opacity="0.9"/>
+
+        <!-- Tall center-left building -->
+        <rect x="80" y="130" width="90" height="195" rx="5" fill="url(#bldg2)"/>
+        <rect x="95" y="100" width="60" height="35"  rx="4" fill="url(#bldg2)"/>
+        <!-- Windows -->
+        <rect x="90"  y="145" width="16" height="12" rx="2" fill="#00BCD4" opacity="0.7"/>
+        <rect x="116" y="145" width="16" height="12" rx="2" fill="#E040FB" opacity="0.6"/>
+        <rect x="142" y="145" width="16" height="12" rx="2" fill="#00BCD4" opacity="0.5"/>
+        <rect x="90"  y="170" width="16" height="12" rx="2" fill="#FFD600" opacity="0.6"/>
+        <rect x="116" y="170" width="16" height="12" rx="2" fill="#00BCD4" opacity="0.7"/>
+        <rect x="142" y="170" width="16" height="12" rx="2" fill="#00E676" opacity="0.5"/>
+        <rect x="90"  y="195" width="16" height="12" rx="2" fill="#7C4DFF" opacity="0.6"/>
+        <rect x="116" y="195" width="16" height="12" rx="2" fill="#FFD600" opacity="0.5"/>
+        <rect x="142" y="195" width="16" height="12" rx="2" fill="#00BCD4" opacity="0.7"/>
+        <rect x="90"  y="220" width="16" height="12" rx="2" fill="#00E676" opacity="0.6"/>
+        <rect x="116" y="220" width="16" height="12" rx="2" fill="#E040FB" opacity="0.5"/>
+        <rect x="142" y="220" width="16" height="12" rx="2" fill="#FFD600" opacity="0.6"/>
+        <rect x="90"  y="245" width="16" height="12" rx="2" fill="#00BCD4" opacity="0.5"/>
+        <rect x="116" y="245" width="16" height="12" rx="2" fill="#7C4DFF" opacity="0.7"/>
+        <rect x="142" y="245" width="16" height="12" rx="2" fill="#00E676" opacity="0.5"/>
+        <!-- Hologram projection from top -->
+        <line x1="125" y1="100" x2="125" y2="70"  stroke="#00BCD4" stroke-width="2" opacity="0.7"/>
+        <circle cx="125" cy="66" r="6" fill="#00BCD4" filter="url(#glowCyan)" opacity="0.9"/>
+        <ellipse cx="125" cy="66" rx="14" ry="6" fill="none" stroke="#00BCD4" stroke-width="1" opacity="0.5"/>
+
+        <!-- Far right building -->
+        <rect x="620" y="185" width="80" height="140" rx="5" fill="url(#bldg1)"/>
+        <rect x="630" y="155" width="60" height="35"  rx="4" fill="url(#bldg1)"/>
+        <rect x="630" y="200" width="14" height="10" rx="2" fill="#7C4DFF" opacity="0.7"/>
+        <rect x="653" y="200" width="14" height="10" rx="2" fill="#00BCD4" opacity="0.6"/>
+        <rect x="676" y="200" width="14" height="10" rx="2" fill="#FFD600" opacity="0.5"/>
+        <rect x="630" y="222" width="14" height="10" rx="2" fill="#00E676" opacity="0.6"/>
+        <rect x="653" y="222" width="14" height="10" rx="2" fill="#E040FB" opacity="0.5"/>
+        <rect x="676" y="222" width="14" height="10" rx="2" fill="#00BCD4" opacity="0.7"/>
+        <rect x="630" y="244" width="14" height="10" rx="2" fill="#FFD600" opacity="0.6"/>
+        <rect x="653" y="244" width="14" height="10" rx="2" fill="#7C4DFF" opacity="0.5"/>
+        <rect x="676" y="244" width="14" height="10" rx="2" fill="#00E676" opacity="0.6"/>
+        <line x1="660" y1="155" x2="660" y2="128" stroke="#E040FB" stroke-width="2" opacity="0.8"/>
+        <circle cx="660" cy="124" r="5" fill="#E040FB" filter="url(#glowBlue)" opacity="0.9"/>
+
+        <!-- ===== FLYING CARS ===== -->
+        <!-- Flying car 1 (left) -->
+        <g transform="translate(180, 115)">
+          <ellipse cx="35" cy="18" rx="42" ry="14" fill="#1565C0" stroke="#42A5F5" stroke-width="1.5"/>
+          <ellipse cx="35" cy="14" rx="28" ry="9"  fill="#0D47A1"/>
+          <!-- Windows -->
+          <ellipse cx="25" cy="11" rx="8" ry="6" fill="#00BCD4" opacity="0.8"/>
+          <ellipse cx="45" cy="11" rx="8" ry="6" fill="#00BCD4" opacity="0.8"/>
+          <!-- Thrusters glow -->
+          <ellipse cx="10"  cy="22" rx="5" ry="3" fill="#00E676" filter="url(#glowBlue)" opacity="0.9"/>
+          <ellipse cx="62"  cy="22" rx="5" ry="3" fill="#00E676" filter="url(#glowBlue)" opacity="0.9"/>
+          <!-- Light trail -->
+          <line x1="-15" y1="22" x2="5" y2="22" stroke="#00BCD4" stroke-width="3" opacity="0.5" stroke-linecap="round"/>
+        </g>
+
+        <!-- Flying car 2 (right, smaller, farther) -->
+        <g transform="translate(490, 85) scale(0.7)">
+          <ellipse cx="35" cy="18" rx="42" ry="14" fill="#4A148C" stroke="#CE93D8" stroke-width="1.5"/>
+          <ellipse cx="35" cy="14" rx="28" ry="9"  fill="#311B92"/>
+          <ellipse cx="25" cy="11" rx="8" ry="6" fill="#E040FB" opacity="0.8"/>
+          <ellipse cx="45" cy="11" rx="8" ry="6" fill="#E040FB" opacity="0.8"/>
+          <ellipse cx="10" cy="22" rx="5" ry="3" fill="#FFD600" filter="url(#glowYellow)" opacity="0.9"/>
+          <ellipse cx="62" cy="22" rx="5" ry="3" fill="#FFD600" filter="url(#glowYellow)" opacity="0.9"/>
+          <line x1="75" y1="22" x2="90" y2="22" stroke="#E040FB" stroke-width="3" opacity="0.5" stroke-linecap="round"/>
+        </g>
+
+        <!-- ===== HOLOGRAM DISPLAY (center sky) ===== -->
+        <g opacity="0.75">
+          <!-- Holo screen -->
+          <rect x="298" y="50" width="104" height="65" rx="8" fill="none" stroke="#00BCD4" stroke-width="1.5" opacity="0.8"/>
+          <rect x="301" y="53" width="98"  height="59" rx="6" fill="#00BCD4" opacity="0.06"/>
+          <!-- Holo content -->
+          <text x="350" y="75" font-size="11" font-family="Fredoka One,cursive" fill="#00E676" text-anchor="middle" opacity="0.9">AI MASA DEPAN</text>
+          <line x1="306" y1="81" x2="394" y2="81" stroke="#00BCD4" stroke-width="1" opacity="0.5"/>
+          <text x="350" y="92"  font-size="8" font-family="monospace" fill="#64B5F6" text-anchor="middle" opacity="0.8">EDUCATION  ✓</text>
+          <text x="350" y="103" font-size="8" font-family="monospace" fill="#64B5F6" text-anchor="middle" opacity="0.8">HEALTH     ✓</text>
+          <text x="350" y="114" font-size="8" font-family="monospace" fill="#64B5F6" text-anchor="middle" opacity="0.8">SCIENCE    ✓</text>
+          <!-- Corner brackets -->
+          <path d="M298,50 L298,60 M298,50 L310,50" stroke="#00E676" stroke-width="2" fill="none"/>
+          <path d="M402,50 L402,60 M402,50 L390,50" stroke="#00E676" stroke-width="2" fill="none"/>
+          <path d="M298,115 L298,105 M298,115 L310,115" stroke="#00E676" stroke-width="2" fill="none"/>
+          <path d="M402,115 L402,105 M402,115 L390,115" stroke="#00E676" stroke-width="2" fill="none"/>
+          <!-- Beam down -->
+          <path d="M340,115 L310,165 M360,115 L390,165" stroke="#00BCD4" stroke-width="1" opacity="0.3"/>
+        </g>
+
+        <!-- ===== AI DOCTOR ROBOT (left midground) ===== -->
+        <g transform="translate(185, 220)">
+          <!-- Body -->
+          <rect x="12" y="38" width="46" height="48" rx="12" fill="#E8EAF6" stroke="#7C4DFF" stroke-width="2"/>
+          <!-- Red cross on chest -->
+          <rect x="32" y="48" width="6" height="18" rx="3" fill="#E53935"/>
+          <rect x="26" y="54" width="18" height="6" rx="3" fill="#E53935"/>
+          <!-- Head -->
+          <rect x="16" y="10" width="38" height="32" rx="10" fill="#F5F5F5" stroke="#7C4DFF" stroke-width="2"/>
+          <!-- Eyes (green medical) -->
+          <circle cx="27" cy="24" r="6" fill="#00E676"/>
+          <circle cx="43" cy="24" r="6" fill="#00E676"/>
+          <circle cx="27" cy="24" r="3" fill="#1B5E20"/>
+          <circle cx="43" cy="24" r="3" fill="#1B5E20"/>
+          <!-- Medical smile -->
+          <path d="M 23 34 Q 35 40 47 34" stroke="#7C4DFF" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- Antenna -->
+          <line x1="35" y1="10" x2="35" y2="-2" stroke="#7C4DFF" stroke-width="2"/>
+          <circle cx="35" cy="-6" r="5" fill="#E040FB" filter="url(#glowBlue)"/>
+          <!-- Ears -->
+          <rect x="5" y="18" width="12" height="8" rx="4" fill="#C5CAE9"/>
+          <rect x="53" y="18" width="12" height="8" rx="4" fill="#C5CAE9"/>
+          <!-- Arms -->
+          <line x1="12" y1="52" x2="-8" y2="40"  stroke="#7C4DFF" stroke-width="5" stroke-linecap="round"/>
+          <line x1="58" y1="52" x2="78" y2="40"   stroke="#7C4DFF" stroke-width="5" stroke-linecap="round"/>
+          <!-- Medical bag in hand -->
+          <rect x="-22" y="34" width="18" height="14" rx="4" fill="#1565C0"/>
+          <rect x="-18" y="37" width="4" height="8" rx="2" fill="#fff"/>
+          <rect x="-21" y="40" width="10" height="4" rx="2" fill="#fff"/>
+          <!-- Legs -->
+          <rect x="18" y="84" width="14" height="22" rx="7" fill="#9FA8DA"/>
+          <rect x="38" y="84" width="14" height="22" rx="7" fill="#9FA8DA"/>
+          <!-- Label -->
+          <rect x="-5" y="112" width="80" height="18" rx="9" fill="#7C4DFF"/>
+          <text x="35" y="124" font-size="9" font-family="Fredoka One,cursive" fill="#fff" text-anchor="middle">🏥 DOKTER AI</text>
+        </g>
+
+        <!-- ===== AI TEACHER ROBOT (right midground) ===== -->
+        <g transform="translate(450, 215)">
+          <!-- Body -->
+          <rect x="12" y="38" width="50" height="50" rx="12" fill="#FFF8E1" stroke="#FFD600" stroke-width="2"/>
+          <!-- Book on chest -->
+          <rect x="20" y="48" width="34" height="28" rx="4" fill="#1565C0"/>
+          <line x1="37" y1="48" x2="37" y2="76" stroke="#fff" stroke-width="1.5" opacity="0.7"/>
+          <line x1="22" y1="58" x2="35" y2="58" stroke="#fff" stroke-width="1" opacity="0.5"/>
+          <line x1="22" y1="64" x2="35" y2="64" stroke="#fff" stroke-width="1" opacity="0.5"/>
+          <!-- Head -->
+          <rect x="16" y="8" width="42" height="34" rx="10" fill="#FFFDE7" stroke="#FFD600" stroke-width="2"/>
+          <!-- Eyes (starry) -->
+          <text x="22" y="24" font-size="12">⭐</text>
+          <text x="38" y="24" font-size="12">⭐</text>
+          <!-- Smile -->
+          <path d="M 22 34 Q 37 43 52 34" stroke="#FF6D00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- Antenna -->
+          <line x1="37" y1="8" x2="37" y2="-4" stroke="#FFD600" stroke-width="2"/>
+          <circle cx="37" cy="-8" r="5" fill="#FFD600" filter="url(#glowYellow)"/>
+          <!-- Mortarboard cap -->
+          <rect x="14" y="2" width="46" height="8" rx="4" fill="#1565C0"/>
+          <rect x="26" y="-4" width="22" height="8" rx="3" fill="#0D47A1"/>
+          <line x1="58" y1="2" x2="65" y2="12" stroke="#FFD600" stroke-width="2"/>
+          <text x="63" y="16" font-size="8">🎓</text>
+          <!-- Ears -->
+          <rect x="5" y="18" width="12" height="8" rx="4" fill="#FFF9C4"/>
+          <rect x="57" y="18" width="12" height="8" rx="4" fill="#FFF9C4"/>
+          <!-- Arms -->
+          <line x1="12" y1="55" x2="-10" y2="42" stroke="#FFD600" stroke-width="5" stroke-linecap="round"/>
+          <line x1="62" y1="55" x2="84"  y2="42" stroke="#FFD600" stroke-width="5" stroke-linecap="round"/>
+          <!-- Pointer stick -->
+          <line x1="-10" y1="42" x2="-24" y2="28" stroke="#5D4037" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="-26" cy="26" r="3" fill="#FF6D00"/>
+          <!-- Legs -->
+          <rect x="19" y="86" width="14" height="22" rx="7" fill="#FFF176"/>
+          <rect x="41" y="86" width="14" height="22" rx="7" fill="#FFF176"/>
+          <!-- Label -->
+          <rect x="-3" y="113" width="80" height="18" rx="9" fill="#FFD600"/>
+          <text x="37" y="125" font-size="9" font-family="Fredoka One,cursive" fill="#0D47A1" text-anchor="middle">🎓 GURU AI</text>
+        </g>
+
+        <!-- ===== ASLAN (center hero, slightly older) ===== -->
+        <!-- Shadow -->
+        <ellipse cx="350" cy="325" rx="45" ry="10" fill="#000" opacity="0.3"/>
+        <!-- Body — explorer jacket blue -->
+        <rect x="312" y="245" width="76" height="70" rx="16" fill="#1565C0"/>
+        <!-- Jacket details -->
+        <rect x="320" y="253" width="28" height="54" rx="10" fill="#1976D2"/>
+        <rect x="356" y="253" width="28" height="54" rx="10" fill="#1976D2"/>
+        <!-- Zipper -->
+        <line x1="350" y1="253" x2="350" y2="313" stroke="#FFD600" stroke-width="2.5" stroke-dasharray="4 3" opacity="0.8"/>
+        <!-- Head -->
+        <circle cx="350" cy="222" r="32" fill="#FFCC80"/>
+        <!-- Hair slightly styled (older) -->
+        <path d="M 320 210 Q 330 190 350 187 Q 370 190 380 210" fill="#4E342E"/>
+        <rect x="318" y="205" width="64" height="10" rx="5" fill="#4E342E"/>
+        <!-- Eyes (confident, bright) -->
+        <circle cx="339" cy="217" r="6" fill="#37474F"/>
+        <circle cx="361" cy="217" r="6" fill="#37474F"/>
+        <circle cx="340" cy="215" r="2.5" fill="#fff"/>
+        <circle cx="362" cy="215" r="2.5" fill="#fff"/>
+        <!-- Star glimmer in eyes -->
+        <circle cx="342" cy="214" r="1" fill="#FFD600"/>
+        <circle cx="364" cy="214" r="1" fill="#FFD600"/>
+        <!-- Nose -->
+        <ellipse cx="350" cy="226" rx="3" ry="2" fill="#FFAB40" opacity="0.5"/>
+        <!-- Big confident smile -->
+        <path d="M 337 232 Q 350 244 363 232" stroke="#E65100" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <!-- Cheeks -->
+        <circle cx="333" cy="228" r="7" fill="#FF8A65" opacity="0.5"/>
+        <circle cx="367" cy="228" r="7" fill="#FF8A65" opacity="0.5"/>
+        <!-- Arms stretched out wide (excitement) -->
+        <line x1="312" y1="262" x2="272" y2="240" stroke="#FFCC80" stroke-width="10" stroke-linecap="round"/>
+        <line x1="388" y1="262" x2="428" y2="240" stroke="#FFCC80" stroke-width="10" stroke-linecap="round"/>
+        <!-- Hands -->
+        <circle cx="268" cy="238" r="10" fill="#FFCC80"/>
+        <circle cx="432" cy="238" r="10" fill="#FFCC80"/>
+        <!-- Legs -->
+        <rect x="325" y="313" width="20" height="28" rx="10" fill="#0D47A1"/>
+        <rect x="355" y="313" width="20" height="28" rx="10" fill="#0D47A1"/>
+        <!-- Shoes -->
+        <ellipse cx="335" cy="342" rx="14" ry="7" fill="#212121"/>
+        <ellipse cx="365" cy="342" rx="14" ry="7" fill="#212121"/>
+        <!-- Cape / jetpack glow -->
+        <path d="M 316 248 Q 290 285 310 318 Q 350 330 390 318 Q 410 285 384 248" fill="#7C4DFF" opacity="0.25"/>
+        <!-- Jetpack -->
+        <rect x="332" y="253" width="36" height="22" rx="8" fill="#37474F"/>
+        <circle cx="342" cy="264" r="6" fill="#00E676" filter="url(#glowBlue)" opacity="0.9"/>
+        <circle cx="358" cy="264" r="6" fill="#00E676" filter="url(#glowBlue)" opacity="0.9"/>
+
+        <!-- ===== ROBO (beside Aslan, right) ===== -->
+        <g transform="translate(396, 248)">
+          <rect x="8" y="36" width="44" height="44" rx="12" fill="url(#roboBody)" stroke="#42A5F5" stroke-width="2.5"/>
+          <rect url="url(#roboGlow)" x="8" y="36" width="44" height="44" rx="12" fill="url(#roboGlow)"/>
+          <rect x="12" y="6"  width="36" height="34" rx="9"  fill="#E3F2FD" stroke="#42A5F5" stroke-width="2.5"/>
+          <!-- Glowing eyes -->
+          <circle cx="22" cy="22" r="7" fill="#1E88E5"/>
+          <circle cx="38" cy="22" r="7" fill="#1E88E5"/>
+          <circle cx="22" cy="22" r="4" fill="#E3F2FD"/>
+          <circle cx="38" cy="22" r="4" fill="#E3F2FD"/>
+          <circle cx="22" cy="22" r="2" fill="#00BCD4" filter="url(#glowCyan)"/>
+          <circle cx="38" cy="22" r="2" fill="#00BCD4" filter="url(#glowCyan)"/>
+          <path d="M 18 34 Q 30 42 42 34" stroke="#1E88E5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <line x1="30" y1="6" x2="30" y2="-6" stroke="#42A5F5" stroke-width="2.5"/>
+          <circle cx="30" cy="-10" r="5" fill="#00E676" filter="url(#glowBlue)"/>
+          <rect x="1"  y="16" width="12" height="8" rx="4" fill="#90CAF9"/>
+          <rect x="47" y="16" width="12" height="8" rx="4" fill="#90CAF9"/>
+          <line x1="8"  y1="52" x2="-8" y2="40" stroke="#42A5F5" stroke-width="4" stroke-linecap="round"/>
+          <line x1="52" y1="52" x2="68" y2="40" stroke="#42A5F5" stroke-width="4" stroke-linecap="round"/>
+          <!-- Wave gesture -->
+          <text x="64" y="36" font-size="16">👋</text>
+          <rect x="14" y="78" width="12" height="18" rx="6" fill="#90CAF9"/>
+          <rect x="34" y="78" width="12" height="18" rx="6" fill="#90CAF9"/>
+        </g>
+
+        <!-- ===== SPEECH BUBBLE (Aslan) ===== -->
+        <g>
+          <rect x="220" y="145" width="130" height="55" rx="16" fill="#fff" opacity="0.95"/>
+          <polygon points="310,200 325,218 295,200" fill="#fff" opacity="0.95"/>
+          <text x="285" y="168" font-size="11" font-family="Fredoka One,cursive" fill="#0D47A1" text-anchor="middle">Aku mau bikin</text>
+          <text x="285" y="182" font-size="11" font-family="Fredoka One,cursive" fill="#7C4DFF" text-anchor="middle">AI yang baik! 🌟</text>
+          <text x="285" y="193" font-size="9"  font-family="Fredoka One,cursive" fill="#00BCD4" text-anchor="middle">untuk semua!</text>
+        </g>
+
+        <!-- ===== ROBO SPEECH ===== -->
+        <g>
+          <rect x="455" y="155" width="120" height="52" rx="14" fill="#E3F2FD" opacity="0.95" stroke="#42A5F5" stroke-width="1.5"/>
+          <polygon points="468,207 455,222 485,207" fill="#E3F2FD" opacity="0.95"/>
+          <text x="515" y="175" font-size="10" font-family="Fredoka One,cursive" fill="#0D47A1" text-anchor="middle">Kamu pasti bisa,</text>
+          <text x="515" y="188" font-size="10" font-family="Fredoka One,cursive" fill="#1E88E5" text-anchor="middle">Aslan! 🤖💙</text>
+          <text x="515" y="200" font-size="9"  font-family="Fredoka One,cursive" fill="#00897B" text-anchor="middle">Belajar terus!</text>
+        </g>
+
+        <!-- ===== LABEL ===== -->
+        <rect x="200" y="390" width="300" height="22" rx="11" fill="rgba(0,0,0,0.5)"/>
+        <text x="350" y="405" font-size="11" font-family="Fredoka One,cursive" fill="#64B5F6" text-anchor="middle">🏙️ Kota Masa Depan • Tahun 2040 🚀</text>
+
+        <!-- Particle effects -->
+        <circle cx="160" cy="180" r="3" fill="#00E676" filter="url(#glowBlue)" opacity="0.7">
+          <animate attributeName="opacity" values="0.7;0.1;0.7" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="540" cy="170" r="3" fill="#E040FB" filter="url(#glowBlue)" opacity="0.7">
+          <animate attributeName="opacity" values="0.1;0.7;0.1" dur="2.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="350" cy="135" r="2" fill="#FFD600" filter="url(#glowYellow)" opacity="0.8">
+          <animate attributeName="opacity" values="0.8;0.2;0.8" dur="1.8s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
+  </div>
+
+  <p class="text-center text-sm font-bold mb-6" style="color:#90CAF9;">
+    🌟 <em>Aslan yang sudah lebih besar, berdiri bersama Robo di Kota Masa Depan yang penuh teknologi AI yang menakjubkan!</em>
+  </p>
+
+  <!-- ===== PENJELASAN ===== -->
+  <div class="card card-white accent-blue p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="text-4xl float-slow">🌏</div>
+      <h2 class="font-kartun text-2xl" style="color:#0D47A1;">Cerita Aslan & Robo</h2>
+    </div>
+    <div style="font-size:clamp(1rem,2.4vw,1.15rem);line-height:1.9;color:#37474F;font-weight:600;" class="space-y-4">
+      <p>
+        "Robo," kata Aslan sambil menatap langit malam berbintang, 
+        <span style="background:linear-gradient(120deg,#E3F2FD,#BBDEFB);padding:2px 8px;border-radius:8px;color:#0D47A1;font-weight:800;">"seperti apa ya dunia waktu aku sudah besar nanti?"</span>
+      </p>
+      <p>
+        Robo tersenyum dan matanya menyala biru terang. Saat Aslan besar nanti, <strong>AI akan ada di mana-mana!</strong> Ada <strong>robot teman sekolah</strong> 🤖 yang membantu belajar, <strong>dokter AI</strong> 🏥 yang mendeteksi penyakit super cepat, dan <strong>mobil terbang</strong> 🚗✈️ yang bisa nyetir sendiri!
+      </p>
+      <p>
+        <strong>Guru AI</strong> 🎓 akan mengajar sesuai kemampuan tiap anak. <strong>Ilmuwan AI</strong> 🔬 akan menemukan obat penyakit yang belum ada obatnya. Bahkan AI akan membantu <strong>menjaga bumi</strong> 🌍 agar tidak rusak!
+      </p>
+      <p>
+        Dan yang paling keren: <span style="background:linear-gradient(120deg,#FFF176,#FFD600);padding:2px 8px;border-radius:8px;color:#1B5E20;font-weight:800;">Aslan bisa menjadi bagian dari semua itu!</span> Dengan belajar AI sekarang, Aslan bisa ikut <strong>membuat AI yang baik</strong> untuk semua orang di dunia! 🌟
+      </p>
+    </div>
+  </div>
+
+  <!-- ===== ANALOGI ===== -->
+  <div class="card card-white accent-purple p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="text-4xl sparkle">🎮</div>
+      <h2 class="font-kartun text-2xl" style="color:#4527A0;">Analogi Seru Robo!</h2>
+    </div>
+    <div style="background:linear-gradient(135deg,#EDE7F6,#E8EAF6);border-radius:20px;padding:20px;border:3px dashed #B39DDB;">
+      <p style="font-size:1.1rem;font-weight:700;color:#4527A0;line-height:1.9;">
+        🤖 Robo bilang: <em>"Masa depan AI seperti <strong>hidup di dalam game petualangan favorit kamu</strong>! 🎮"</em>
+      </p>
+      <p style="font-size:1rem;font-weight:600;color:#37474F;margin-top:8px;line-height:1.8;">
+        Bayangkan kamu bisa punya <strong style="color:#7C4DFF;">teman robot</strong> yang selalu menemani seperti karakter game, 
+        bisa terbang ke sekolah dengan <strong style="color:#0D47A1;">mobil terbang</strong> seperti level baru,
+        dan dokter AI bisa <strong style="color:#00897B;">menyembuhkan penyakit</strong> secepat kamu makan power-up!
+      </p>
+      <div style="background:#fff;border-radius:14px;padding:14px 16px;margin-top:14px;border:2px solid #7C4DFF;">
+        <p style="font-size:1rem;font-weight:800;color:#4527A0;text-align:center;">
+          🌟 Bedanya — ini bukan game! <strong style="color:#1B5E20;">Ini dunia nyata yang sedang dibangun sekarang,</strong> dan <strong style="color:#0D47A1;">kamu bisa ikut membangunnya!</strong> 🌟
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TIMELINE MASA DEPAN ===== -->
+  <div class="card card-blue-glow p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="text-4xl sparkle">⏰</div>
+      <h2 class="font-kartun text-2xl" style="color:#90CAF9;">Perjalanan Waktu AI!</h2>
+    </div>
+    <div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:linear-gradient(135deg,#1E88E5,#00BCD4);color:#fff;font-size:0.8rem;font-weight:800;">2025</div>
+        <div>
+          <p style="color:#FFD600;font-family:'Fredoka One',cursive;font-size:0.85rem;margin-bottom:2px;">SEKARANG ⭐ (Aslan 9 tahun)</p>
+          <p style="color:#BBDEFB;font-size:0.88rem;font-weight:700;line-height:1.6;">ChatGPT, AI gambar & suara, asisten pintar. Aslan mulai belajar AI! 🚀</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:linear-gradient(135deg,#7C4DFF,#E040FB);color:#fff;font-size:0.8rem;font-weight:800;">2030</div>
+        <div>
+          <p style="color:#CE93D8;font-family:'Fredoka One',cursive;font-size:0.85rem;margin-bottom:2px;">5 TAHUN LAGI (Aslan 14 tahun)</p>
+          <p style="color:#BBDEFB;font-size:0.88rem;font-weight:700;line-height:1.6;">Robot teman sekolah, guru AI personal, dokter AI di klinik, mobil otonom di jalan! 🤖🎓</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:linear-gradient(135deg,#00C853,#1DE9B6);color:#fff;font-size:0.8rem;font-weight:800;">2035</div>
+        <div>
+          <p style="color:#A5D6A7;font-family:'Fredoka One',cursive;font-size:0.85rem;margin-bottom:2px;">10 TAHUN LAGI (Aslan 19 tahun)</p>
+          <p style="color:#BBDEFB;font-size:0.88rem;font-weight:700;line-height:1.6;">AI temukan obat kanker, kota pintar, energi terbarukan dikelola AI, hologram meeting! 🏙️💊</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:linear-gradient(135deg,#FFD600,#FF6D00);color:#0D47A1;font-size:0.8rem;font-weight:800;">2040</div>
+        <div>
+          <p style="color:#FFE082;font-family:'Fredoka One',cursive;font-size:0.85rem;margin-bottom:2px;">15 TAHUN LAGI (Aslan 24 tahun — DEWASA! 🏆)</p>
+          <p style="color:#BBDEFB;font-size:0.88rem;font-weight:700;line-height:1.6;">AGI (AI sangat pintar), mobil terbang massal, AI jaga lingkungan bumi, Aslan mungkin sudah jadi AI Engineer! 🚀🌍</p>
+        </div>
+      </div>
+      <div class="timeline-item" style="border-bottom:none;">
+        <div class="timeline-dot" style="background:linear-gradient(135deg,#E040FB,#7C4DFF);color:#fff;font-size:0.8rem;font-weight:800;">2050</div>
+        <div>
+          <p style="color:#CE93D8;font-family:'Fredoka One',cursive;font-size:0.85rem;margin-bottom:2px;">25 TAHUN LAGI (Aslan 34 tahun — Ahli AI! 🌟)</p>
+          <p style="color:#BBDEFB;font-size:0.88rem;font-weight:700;line-height:1.6;">Dunia berubah total — AI membantu semua aspek kehidupan. Aslan mungkin ikut membuatnya! 🌈🤖</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== KOMIK STRIP ===== -->
+  <div class="card card-white accent-cyan p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="text-4xl">🎭</div>
+      <h2 class="font-kartun text-2xl" style="color:#006064;">Komik: Aslan di Masa Depan!</h2>
+    </div>
+    <div class="komik-grid">
+      <!-- Panel 1 -->
+      <div class="panel">
+        <div class="panel-num">1</div>
+        <div class="panel-dialog">"Sekolah bareng robot!"</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#E8EAF6,#C5CAE9);">
+          <svg viewBox="0 0 160 155" width="130">
+            <!-- Classroom future -->
+            <rect x="20" y="20" width="120" height="80" rx="8" fill="#1a1060"/>
+            <!-- Hologram board -->
+            <rect x="30" y="28" width="100" height="45" rx="5" fill="#0D0840"/>
+            <rect x="33" y="31" width="94"  height="39" rx="3" fill="#00BCD4" opacity="0.1"/>
+            <text x="80" y="48" font-size="9" font-family="Fredoka One,cursive" fill="#00E676" text-anchor="middle">AI SCHOOL 2040</text>
+            <line x1="36" y1="54" x2="124" y2="54" stroke="#00BCD4" stroke-width="1" opacity="0.4"/>
+            <text x="80" y="63" font-size="7" font-family="monospace" fill="#64B5F6" text-anchor="middle">MATH ✓  SCIENCE ✓</text>
+            <!-- Little Aslan -->
+            <circle cx="50" cy="115" r="12" fill="#FFCC80"/>
+            <ellipse cx="50" cy="106" rx="10" ry="4" fill="#4E342E"/>
+            <circle cx="46" cy="113" r="2.5" fill="#37474F"/>
+            <circle cx="54" cy="113" r="2.5" fill="#37474F"/>
+            <text x="44" y="125" font-size="7" font-weight="bold" fill="#FFD600">😊</text>
+            <!-- Robot classmate -->
+            <rect x="80" y="100" width="28" height="26" rx="7" fill="#E3F2FD" stroke="#42A5F5" stroke-width="1.5"/>
+            <rect x="84" y="88"  width="20" height="16" rx="5" fill="#F5F5F5" stroke="#42A5F5" stroke-width="1.5"/>
+            <circle cx="89" cy="94" r="3" fill="#1E88E5"/>
+            <circle cx="99" cy="94" r="3" fill="#1E88E5"/>
+            <!-- VR headsets floating -->
+            <text x="110" y="118" font-size="16">🥽</text>
+          </svg>
+        </div>
+        <div class="panel-text">Aslan belajar matematika dengan robot teman di kelas hologram masa depan! 🏫</div>
+      </div>
+
+      <!-- Panel 2 -->
+      <div class="panel">
+        <div class="panel-num">2</div>
+        <div class="panel-dialog">"Dokter AI menyembuhkan!"</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#E8F5E9,#B2DFDB);">
+          <svg viewBox="0 0 160 155" width="130">
+            <!-- Hospital room future -->
+            <rect x="0" y="0" width="160" height="155" fill="#E8F5E9"/>
+            <!-- Scan display -->
+            <rect x="90" y="15" width="62" height="50" rx="5" fill="#0D47A1"/>
+            <ellipse cx="121" cy="32" rx="18" ry="14" fill="none" stroke="#00E676" stroke-width="1.5"/>
+            <ellipse cx="121" cy="32" rx="10" ry="8"  fill="#00E676" opacity="0.15"/>
+            <circle cx="121" cy="32" r="3" fill="#00E676" opacity="0.7"/>
+            <line x1="103" y1="32" x2="139" y2="32" stroke="#00E676" stroke-width="0.8" opacity="0.5"/>
+            <line x1="121" y1="18" x2="121" y2="46" stroke="#00E676" stroke-width="0.8" opacity="0.5"/>
+            <text x="121" y="58" font-size="7" font-family="monospace" fill="#00E676" text-anchor="middle">HEALTHY ✓</text>
+            <!-- Doctor AI robot -->
+            <rect x="90" y="78" width="36" height="36" rx="9" fill="#F5F5F5" stroke="#7C4DFF" stroke-width="2"/>
+            <!-- Red cross -->
+            <rect x="105" y="85" width="5" height="14" rx="2" fill="#E53935"/>
+            <rect x="100" y="90" width="15" height="5" rx="2" fill="#E53935"/>
+            <rect x="93" y="68" width="30" height="14" rx="7" fill="#F5F5F5" stroke="#7C4DFF" stroke-width="1.5"/>
+            <circle cx="101" cy="73" r="3" fill="#00E676"/>
+            <circle cx="115" cy="73" r="3" fill="#00E676"/>
+            <!-- Patient (happy) -->
+            <circle cx="45" cy="100" r="18" fill="#FFCC80"/>
+            <ellipse cx="45" cy="85" rx="16" ry="6" fill="#4E342E"/>
+            <circle cx="39" cy="97" r="3" fill="#37474F"/>
+            <circle cx="51" cy="97" r="3" fill="#37474F"/>
+            <path d="M 38 107 Q 45 114 52 107" stroke="#E65100" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <text x="32" y="130" font-size="7" font-weight="bold" fill="#1B5E20" text-anchor="middle">Semua baik-baik</text>
+            <text x="32" y="140" font-size="7" font-weight="bold" fill="#1B5E20" text-anchor="middle">saja! 😊</text>
+            <!-- Sparkles -->
+            <text x="62" y="88" font-size="18">✨</text>
+          </svg>
+        </div>
+        <div class="panel-text">Dokter AI mendeteksi penyakit dalam hitungan detik dan langsung menyembuhkan! 💊</div>
+      </div>
+
+      <!-- Panel 3 -->
+      <div class="panel">
+        <div class="panel-num">3</div>
+        <div class="panel-dialog">"Aslan bikin AI sendiri!"</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);">
+          <svg viewBox="0 0 160 155" width="130">
+            <!-- Code screen -->
+            <rect x="10" y="15" width="95" height="70" rx="7" fill="#0A0E2E"/>
+            <rect x="14" y="19" width="87" height="62" rx="5" fill="#0D1B6E"/>
+            <!-- Code lines -->
+            <text x="18" y="33" font-size="7" font-family="monospace" fill="#00E676">def train_ai():</text>
+            <text x="24" y="43" font-size="7" font-family="monospace" fill="#64B5F6">  data = load()</text>
+            <text x="24" y="53" font-size="7" font-family="monospace" fill="#64B5F6">  model.fit()</text>
+            <text x="18" y="63" font-size="7" font-family="monospace" fill="#FFD600">  # by Aslan!</text>
+            <text x="18" y="73" font-size="7" font-family="monospace" fill="#00E676">return "smart_ai"</text>
+            <!-- Blinking cursor -->
+            <rect x="88" y="67" width="5" height="8" rx="1" fill="#fff" opacity="0.8"/>
+            <!-- Older Aslan at keyboard -->
+            <circle cx="130" cy="95" r="16" fill="#FFCC80"/>
+            <ellipse cx="130" cy="82" rx="14" ry="5" fill="#4E342E"/>
+            <circle cx="124" cy="92" r="3" fill="#37474F"/>
+            <circle cx="136" cy="92" r="3" fill="#37474F"/>
+            <text x="124" y="103" font-size="8">😎</text>
+            <!-- Body -->
+            <rect x="114" y="109" width="32" height="28" rx="8" fill="#1565C0"/>
+            <!-- Keyboard -->
+            <rect x="80" y="96" width="80" height="20" rx="5" fill="#37474F"/>
+            <rect x="83" y="99" width="74" height="14" rx="3" fill="#455A64"/>
+            <!-- Keys -->
+            <rect x="86" y="101" width="8" height="6" rx="1" fill="#607D8B"/>
+            <rect x="97" y="101" width="8" height="6" rx="1" fill="#607D8B"/>
+            <rect x="108" y="101" width="8" height="6" rx="1" fill="#607D8B"/>
+            <rect x="119" y="101" width="8" height="6" rx="1" fill="#00BCD4" opacity="0.8"/>
+            <rect x="130" y="101" width="8" height="6" rx="1" fill="#607D8B"/>
+            <rect x="141" y="101" width="8" height="6" rx="1" fill="#607D8B"/>
+            <!-- Mini robot output -->
+            <rect x="10" y="100" width="62" height="45" rx="8" fill="#E8EAF6" stroke="#7C4DFF" stroke-width="1.5"/>
+            <text x="41" y="115" font-size="9" font-family="Fredoka One,cursive" fill="#4527A0" text-anchor="middle">AI Aslan</text>
+            <text x="41" y="127" font-size="18" text-anchor="middle">🤖✨</text>
+            <text x="41" y="140" font-size="7" font-weight="bold" fill="#00897B" text-anchor="middle">AI baru lahir!</text>
+          </svg>
+        </div>
+        <div class="panel-text">Aslan yang sudah dewasa membuat AI-nya sendiri untuk membantu sesama! 💻🤖</div>
+      </div>
+
+      <!-- Panel 4 -->
+      <div class="panel">
+        <div class="panel-num">4</div>
+        <div class="panel-dialog">"Dunia menjadi lebih baik!"</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#FFF9C4,#FFF3E0);">
+          <svg viewBox="0 0 160 155" width="130">
+            <!-- Happy world -->
+            <circle cx="80" cy="65" r="45" fill="#1565C0" opacity="0.15"/>
+            <!-- Globe -->
+            <circle cx="80" cy="65" r="36" fill="#1565C0" opacity="0.7"/>
+            <!-- Land masses -->
+            <ellipse cx="72" cy="55" rx="18" ry="12" fill="#00C853" opacity="0.8"/>
+            <ellipse cx="95" cy="70" rx="12" ry="8"  fill="#00C853" opacity="0.7"/>
+            <ellipse cx="60" cy="75" rx="8"  ry="6"  fill="#00C853" opacity="0.6"/>
+            <!-- Globe lines -->
+            <ellipse cx="80" cy="65" rx="36" ry="15" fill="none" stroke="#fff" stroke-width="1" opacity="0.3"/>
+            <line x1="80" y1="29" x2="80" y2="101" stroke="#fff" stroke-width="1" opacity="0.3"/>
+            <!-- Smile on globe -->
+            <path d="M 62 72 Q 80 82 98 72" stroke="#FFD600" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <circle cx="68" cy="62" r="4" fill="#FFD600"/>
+            <circle cx="92" cy="62" r="4" fill="#FFD600"/>
+            <!-- Flying hearts/emojis around globe -->
+            <text x="20"  y="38" font-size="14">🌱</text>
+            <text x="120" y="38" font-size="14">☀️</text>
+            <text x="12"  y="85" font-size="14">❤️</text>
+            <text x="126" y="85" font-size="14">🕊️</text>
+            <!-- Star rays -->
+            <text x="65" y="120" font-size="9"  font-family="Fredoka One,cursive" fill="#0D47A1" text-anchor="middle">AI yang baik</text>
+            <text x="65" y="132" font-size="9"  font-family="Fredoka One,cursive" fill="#0D47A1" text-anchor="middle">untuk semua! 🌍</text>
+            <!-- Aslan tiny hero silhouette -->
+            <circle cx="130" cy="120" r="10" fill="#FFCC80"/>
+            <rect x="123" y="128" width="14" height="18" rx="6" fill="#1565C0"/>
+            <text x="125" y="150" font-size="9">🏆</text>
+          </svg>
+        </div>
+        <div class="panel-text">AI buatan Aslan membuat dunia lebih baik — semua orang bisa hidup lebih sehat & bahagia! 🌍🏆</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== KARIER MASA DEPAN ===== -->
+  <div class="card card-purple-glow p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="text-4xl sparkle">🚀</div>
+      <h2 class="font-kartun text-2xl" style="color:#CE93D8;">Pekerjaan Keren Masa Depan!</h2>
+    </div>
+    <p style="color:#E0E0E0;font-size:0.9rem;font-weight:700;margin-bottom:16px;">Profesi-profesi ini akan sangat dibutuhkan saat Aslan besar! ✨</p>
+    <div class="career-grid">
+      <div class="dream-card" style="background:rgba(30,136,229,0.2);border-color:#1E88E5;">
+        <div style="font-size:2.2rem;margin-bottom:8px;" class="float-slow">🤖</div>
+        <p style="font-family:'Fredoka One',cursive;color:#64B5F6;font-size:0.95rem;margin-bottom:4px;">AI Engineer</p>
+        <p style="color:#B0BEC5;font-size:0.75rem;font-weight:700;line-height:1.5;">Membuat & melatih otak AI yang canggih</p>
+      </div>
+      <div class="dream-card" style="background:rgba(124,77,255,0.2);border-color:#7C4DFF;">
+        <div style="font-size:2.2rem;margin-bottom:8px;" class="float-mid">🏥</div>
+        <p style="font-family:'Fredoka One',cursive;color:#B388FF;font-size:0.95rem;margin-bottom:4px;">AI Doctor</p>
+        <p style="color:#B0BEC5;font-size:0.75rem;font-weight:700;line-height:1.5;">Dokter yang bekerja sama dengan AI untuk menyembuhkan penyakit</p>
+      </div>
+      <div class="dream-card" style="background:rgba(0,200,83,0.15);border-color:#00C853;">
+        <div style="font-size:2.2rem;margin-bottom:8px;" class="float-fast">🌍</div>
+        <p style="font-family:'Fredoka One',cursive;color:#69F0AE;font-size:0.95rem;margin-bottom:4px;">AI Eco-Scientist</p>
+        <p style="color:#B0BEC5;font-size:0.75rem;font-weight:700;line-height:1.5;">Pakai AI untuk menjaga bumi tetap hijau & bersih</p>
+      </div>
+      <div class="dream-card" style="background:rgba(0,188,212,0.15);border-color:#00BCD4;">
+        <div style="font-size:2.2rem;margin-bottom:8px;" class="float-slow">🎓</div>
+        <p style="font-family:'Fredoka One',cursive;color:#80DEEA;font-size:0.95rem;margin-bottom:4px;">AI Teacher</p>
+        <p style="color:#B0BEC5;font-size:0.75rem;font-weight:700;line-height:1.5;">Merancang sistem guru AI untuk anak-anak di seluruh dunia</p>
+      </div>
+      <div class="dream-card" style="background:rgba(255,214,0,0.1);border-color:#FFD600;">
+        <div style="font-size:2.2rem;margin-bottom:8px;" class="float-mid">🎨</div>
+        <p style="font-family:'Fredoka One',cursive;color:#FFF176;font-size:0.95rem;margin-bottom:4px;">AI Artist</p>
+        <p style="color:#B0BEC5;font-size:0.75rem;font-weight:700;line-height:1.5;">Seniman yang menciptakan karya seni bersama AI</p>
+      </div>
+      <div class="dream-card" style="background:rgba(224,64,251,0.15);border-color:#E040FB;">
+        <div style="font-size:2.2rem;margin-bottom:8px;" class="float-fast">🛸</div>
+        <p style="font-family:'Fredoka One',cursive;color:#F48FB1;font-size:0.95rem;margin-bottom:4px;">AI Space Explorer</p>
+        <p style="color:#B0BEC5;font-size:0.75rem;font-weight:700;line-height:1.5;">Jelajahi luar angkasa bersama robot AI pintar!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FAKTA KEREN ===== -->
+  <div class="card card-cyan-glow p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="text-4xl sparkle">🌟</div>
+      <h2 class="font-kartun text-2xl" style="color:#80DEEA;">Fakta Masa Depan yang Keren!</h2>
+    </div>
+    <div class="fakta-grid">
+      <div class="fakta-card" style="background:rgba(30,136,229,0.15);border:2px solid rgba(100,181,246,0.4);box-shadow:0 4px 0 rgba(30,136,229,0.4);">
+        <span class="fakta-emoji">🚗</span>
+        <p style="font-size:0.8rem;font-weight:800;color:#BBDEFB;line-height:1.5;">Pada 2035, hampir semua mobil di kota besar diprediksi bisa nyetir sendiri dengan AI!</p>
+      </div>
+      <div class="fakta-card" style="background:rgba(0,188,212,0.15);border:2px solid rgba(77,182,172,0.4);box-shadow:0 4px 0 rgba(0,188,212,0.4);">
+        <span class="fakta-emoji">💊</span>
+        <p style="font-size:0.8rem;font-weight:800;color:#B2EBF2;line-height:1.5;">AI sudah membantu menemukan obat baru 100× lebih cepat dari cara konvensional!</p>
+      </div>
+      <div class="fakta-card" style="background:rgba(0,200,83,0.12);border:2px solid rgba(105,240,174,0.4);box-shadow:0 4px 0 rgba(0,200,83,0.4);">
+        <span class="fakta-emoji">🌿</span>
+        <p style="font-size:0.8rem;font-weight:800;color:#B9F6CA;line-height:1.5;">AI akan membantu mengurangi sampah dunia hingga 50% pada tahun 2040!</p>
+      </div>
+      <div class="fakta-card" style="background:rgba(124,77,255,0.15);border:2px solid rgba(179,136,255,0.4);box-shadow:0 4px 0 rgba(124,77,255,0.4);">
+        <span class="fakta-emoji">🧠</span>
+        <p style="font-size:0.8rem;font-weight:800;color:#D1C4E9;line-height:1.5;">Para ilmuwan memprediksi AGI (AI sangat pintar) mungkin muncul antara 2030–2045!</p>
+      </div>
+      <div class="fakta-card" style="background:rgba(255,214,0,0.1);border:2px solid rgba(255,214,0,0.3);box-shadow:0 4px 0 rgba(255,111,0,0.4);">
+        <span class="fakta-emoji">📚</span>
+        <p style="font-size:0.8rem;font-weight:800;color:#FFF9C4;line-height:1.5;">Guru AI personal bisa mengajar setiap anak sesuai kecepatan & cara belajarnya sendiri!</p>
+      </div>
+      <div class="fakta-card" style="background:rgba(224,64,251,0.12);border:2px solid rgba(244,143,177,0.4);box-shadow:0 4px 0 rgba(224,64,251,0.4);">
+        <span class="fakta-emoji">🚀</span>
+        <p style="font-size:0.8rem;font-weight:800;color:#F8BBD9;line-height:1.5;">AI akan bantu manusia hidup di Mars & eksplorasi galaksi jauh pada masa depan!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PERTANYAAN INTERAKTIF ===== -->
+  <div class="card card-glass p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-3">
+      <div class="text-4xl sparkle">🤔</div>
+      <h2 class="font-kartun text-2xl" style="color:#90CAF9;">Tantangan Aslan!</h2>
+    </div>
+    <p style="color:#B0BEC5;font-size:0.92rem;font-weight:700;margin-bottom:18px;">
+      Robo punya pertanyaan seru untuk Aslan! Kamu bisa jawab juga! 🤖
+    </p>
+
+    <!-- Q1 -->
+    <div class="mb-6" id="q1-wrap">
+      <div style="background:rgba(124,77,255,0.15);border:2px solid rgba(124,77,255,0.4);border-radius:16px;padding:14px 16px;margin-bottom:12px;">
+        <p style="color:#CE93D8;font-family:'Fredoka One',cursive;font-size:0.85rem;margin-bottom:3px;">❓ Pertanyaan 1</p>
+        <p style="color:#fff;font-size:1rem;font-weight:700;">Saat Aslan besar nanti, pekerjaan apa yang paling dibutuhkan berhubungan dengan AI?</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="q1-opts">
+        <button class="quiz-option" onclick="checkQ29('q1','a','b')">
+          <span style="background:rgba(124,77,255,0.3);color:#CE93D8;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">A</span>
+          Menghindari AI sepenuhnya supaya tidak tergantikan 🙈
+        </button>
+        <button class="quiz-option" onclick="checkQ29('q1','b','b')">
+          <span style="background:rgba(124,77,255,0.3);color:#CE93D8;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">B</span>
+          Profesi yang bisa bekerja sama & mengendalikan AI dengan bijak 🤝
+        </button>
+        <button class="quiz-option" onclick="checkQ29('q1','c','b')">
+          <span style="background:rgba(124,77,255,0.3);color:#CE93D8;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">C</span>
+          Menyerahkan semua pekerjaan kepada robot tanpa pengawasan 🤖
+        </button>
+        <button class="quiz-option" onclick="checkQ29('q1','d','b')">
+          <span style="background:rgba(124,77,255,0.3);color:#CE93D8;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">D</span>
+          Hanya pekerjaan yang tidak ada hubungannya dengan teknologi 📜
+        </button>
+      </div>
+      <div class="quiz-result" id="q1-res"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="mb-6" id="q2-wrap">
+      <div style="background:rgba(0,188,212,0.12);border:2px solid rgba(0,188,212,0.4);border-radius:16px;padding:14px 16px;margin-bottom:12px;">
+        <p style="color:#80DEEA;font-family:'Fredoka One',cursive;font-size:0.85rem;margin-bottom:3px;">❓ Pertanyaan 2</p>
+        <p style="color:#fff;font-size:1rem;font-weight:700;">Apa yang PALING PENTING yang bisa Aslan lakukan sekarang untuk masa depan AI?</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="q2-opts">
+        <button class="quiz-option" style="border-color:rgba(0,188,212,0.5);" onclick="checkQ29('q2','a','c')">
+          <span style="background:rgba(0,188,212,0.2);color:#80DEEA;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">A</span>
+          Bermain game sepanjang hari karena AI akan kerjakan segalanya 🎮
+        </button>
+        <button class="quiz-option" style="border-color:rgba(0,188,212,0.5);" onclick="checkQ29('q2','b','c')">
+          <span style="background:rgba(0,188,212,0.2);color:#80DEEA;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">B</span>
+          Takut dan tidak mau belajar tentang AI sama sekali 😨
+        </button>
+        <button class="quiz-option" style="border-color:rgba(0,188,212,0.5);" onclick="checkQ29('q2','c','c')">
+          <span style="background:rgba(0,188,212,0.2);color:#80DEEA;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">C</span>
+          Terus belajar dengan giat, penuh rasa ingin tahu, dan bermimpi besar! 🌟
+        </button>
+        <button class="quiz-option" style="border-color:rgba(0,188,212,0.5);" onclick="checkQ29('q2','d','c')">
+          <span style="background:rgba(0,188,212,0.2);color:#80DEEA;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">D</span>
+          Menunggu orang lain membuat semua AI dan tinggal pakai saja 💤
+        </button>
+      </div>
+      <div class="quiz-result" id="q2-res"></div>
+    </div>
+
+    <!-- Q3: Mimpi Aslan (open ended) -->
+    <div id="q3-dream">
+      <div style="background:linear-gradient(135deg,rgba(255,214,0,0.15),rgba(255,111,0,0.1));border:2px solid rgba(255,214,0,0.4);border-radius:16px;padding:16px;margin-bottom:14px;">
+        <p style="color:#FFF176;font-family:'Fredoka One',cursive;font-size:0.9rem;margin-bottom:4px;">💫 Pertanyaan Spesial</p>
+        <p style="color:#fff;font-size:1.05rem;font-weight:800;line-height:1.6;">
+          🌟 Kalau Aslan bisa membuat satu AI untuk dunia saat sudah besar nanti... <strong style="color:#FFD600;">AI apa yang mau kamu buat?</strong>
+        </p>
+        <p style="color:#FFE082;font-size:0.85rem;font-weight:600;margin-top:6px;">Contoh: AI yang bisa sembuhkan semua penyakit 💊, AI guru untuk anak yang tidak bisa sekolah 📚, AI yang jaga hutan 🌿...</p>
+      </div>
+      <textarea
+        class="dream-input mb-3"
+        id="dreamText"
+        rows="3"
+        placeholder="Tuliskan mimpi AI-mu di sini, Aslan! ✨ (Tidak ada jawaban salah — semua mimpi itu valid!)"
+      ></textarea>
+      <button class="dream-btn" onclick="submitDream()">
+        🚀 Kirim Mimpiku ke Robo!
+      </button>
+      <div class="dream-response mt-4" id="dreamResponse"></div>
+    </div>
+  </div>
+
+  <!-- ===== PENUTUP ===== -->
+  <div class="holo-border reveal">
+    <div class="holo-border-inner p-6">
+      <div class="text-center">
+        <div style="font-size:3.5rem;margin-bottom:10px;" class="sparkle">🏆</div>
+        <h2 class="font-kartun text-3xl mb-3 holo-text">Aslan, Masa Depan Ada di Tanganmu!</h2>
+        <div style="background:rgba(255,255,255,0.06);border-radius:20px;padding:18px;border:1px solid rgba(255,255,255,0.15);margin-bottom:16px;">
+          <p style="font-size:1rem;font-weight:800;color:#E0E0E0;line-height:1.9;">
+            🌟 Kamu sudah sampai di Hari 29 dari 30 — hampir finish!
+            Kamu sudah belajar begitu banyak tentang AI: sejarahnya, cara kerjanya, kebaikan, bahayanya, dan sekarang...
+            <strong style="color:#FFD600;">masa depannya!</strong>
+          </p>
+          <p style="font-size:1rem;font-weight:800;color:#E0E0E0;line-height:1.9;margin-top:8px;">
+            🚀 Para ilmuwan & engineer hebat yang membuat AI hari ini —
+            mereka juga dulunya anak kecil yang penasaran dan penuh mimpi, seperti kamu!
+            <strong style="color:#00E676;">Giliran Aslan sekarang!</strong> 💙
+          </p>
+        </div>
+        <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+          <span style="background:rgba(0,230,118,0.2);border:2px solid #00E676;border-radius:999px;padding:6px 14px;font-weight:800;color:#00E676;font-size:0.85rem;">🌍 Ubah Dunia</span>
+          <span style="background:rgba(100,181,246,0.2);border:2px solid #64B5F6;border-radius:999px;padding:6px 14px;font-weight:800;color:#64B5F6;font-size:0.85rem;">🤖 Buat AI Baik</span>
+          <span style="background:rgba(255,214,0,0.15);border:2px solid #FFD600;border-radius:999px;padding:6px 14px;font-weight:800;color:#FFD600;font-size:0.85rem;">✨ Mimpi Besar</span>
+        </div>
+        <p style="font-size:0.95rem;color:#78909C;font-weight:700;">
+          🎊 Besok: <strong style="color:#FFD600;">Hari 30 — Aslan Jadi Pahlawan AI! (Sertifikat & Tantangan)</strong> 🏅
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end main -->
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+  // Generate stars
+  const starsContainer = document.getElementById('starsBg');
+  for (let i = 0; i < 80; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 2.5 + 0.5;
+    star.style.cssText = `
+      width:${size}px; height:${size}px;
+      top:${Math.random()*100}%;
+      left:${Math.random()*100}%;
+      animation-duration:${Math.random()*3+2}s;
+      animation-delay:${Math.random()*4}s;
+    `;
+    starsContainer.appendChild(star);
+  }
+
+  // Quiz logic
+  function checkQ29(qId, chosen, correct) {
+    const opts = document.querySelectorAll(`#${qId}-opts button`);
+    const res  = document.getElementById(`${qId}-res`);
+    opts.forEach(b => { b.disabled = true; b.style.cursor = 'default'; });
+    opts.forEach((b, i) => {
+      const l = ['a','b','c','d'][i];
+      if (l === correct) { b.classList.add('correct'); }
+      else if (l === chosen && chosen !== correct) { b.classList.add('wrong'); }
+    });
+    res.style.display = 'block';
+    if (chosen === correct) {
+      res.style.background  = 'rgba(0,230,118,0.15)';
+      res.style.border      = '2px solid #00E676';
+      res.style.color       = '#00E676';
+      const msgs = [
+        '🎉 Luar biasa! Kamu benar! Aslan sudah siap untuk masa depan! 🚀',
+        '⭐ Betul sekali! Robo bangga banget sama kamu!',
+        '🏆 Jawaban tepat! Kamu benar-benar paham AI masa depan!'
+      ];
+      res.innerHTML = msgs[Math.floor(Math.random() * msgs.length)];
+    } else {
+      res.style.background  = 'rgba(255,82,82,0.12)';
+      res.style.border      = '2px solid #FF5252';
+      res.style.color       = '#FF5252';
+      const wrongs = [
+        '😅 Hampir! Baca lagi ya bagian penjelasan di atas!',
+        '🤔 Coba lagi! Ingat: masa depan AI butuh manusia yang bijak!',
+        '💪 Belum tepat! Yuk belajar lagi — kamu pasti bisa!'
+      ];
+      res.innerHTML = wrongs[Math.floor(Math.random() * wrongs.length)];
+    }
+  }
+
+  // Dream submission
+  const dreamResponses = [
+    (t) => `🤖✨ WOW, Aslan! Robo sangat terkesan! AI untuk "${t.substring(0,40)}..." — itu ide yang LUAR BIASA! Dunia pasti akan lebih baik dengan AI buatanmu! 🌟🚀`,
+    (t) => `🌟 Keren sekali, Aslan! Mimpimu untuk membuat "${t.substring(0,40)}..." menunjukkan kamu punya hati yang baik! Para ilmuwan besar juga dulunya punya mimpi seperti ini! 💙`,
+    (t) => `🏆 ROBO SUKA BANGET! "${t.substring(0,40)}..." — ini bukan sekedar mimpi, ini adalah MISI! Dengan terus belajar, kamu bisa mewujudkannya! ✨🌍`,
+    (t) => `💫 Wah, ide yang sangat inspiratif! "${t.substring(0,40)}..." akan membuat dunia menjadi tempat yang lebih indah. Robo percaya Aslan bisa melakukannya! 🚀❤️`
+  ];
+
+  function submitDream() {
+    const text = document.getElementById('dreamText').value.trim();
+    const res  = document.getElementById('dreamResponse');
+    if (!text) {
+      res.style.display = 'block';
+      res.style.background = 'rgba(255,82,82,0.12)';
+      res.style.border = '2px solid #FF5252';
+      res.style.color  = '#FF5252';
+      res.innerHTML = '😊 Tulis dulu mimpimu ya, Aslan! Tidak ada jawaban yang salah — semua mimpi itu indah!';
+      return;
+    }
+    res.style.display = 'block';
+    res.style.background = 'linear-gradient(135deg,rgba(124,77,255,0.2),rgba(0,188,212,0.2))';
+    res.style.border = '2px solid rgba(124,77,255,0.5)';
+    res.style.color  = '#fff';
+    const pick = dreamResponses[Math.floor(Math.random() * dreamResponses.length)];
+    res.innerHTML = pick(text);
+    document.querySelector('.dream-btn').innerHTML = '✅ Mimpi Terkirim ke Robo! 🎉';
+    document.querySelector('.dream-btn').style.background = 'linear-gradient(135deg,#00C853,#1DE9B6)';
+    document.querySelector('.dream-btn').disabled = true;
+  }
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 70);
+    });
+  }, { threshold: 0.1 });
+  revealEls.forEach(el => obs.observe(el));
+
+  // Progress bar on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.querySelector('.progress-fill').style.width = '96.67%';
+    }, 400);
+  });
+</script>
+
+</body>
+</html>

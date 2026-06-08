@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 21: Review Minggu 3 + Aktivitas Pasang Komponen</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #f97316;
+    --yellow: #fbbf24;
+    --teal:   #14b8a6;
+    --sky:    #38bdf8;
+    --purple: #7c3aed;
+    --pink:   #ec4899;
+    --green:  #22c55e;
+    --bg:     #fffbeb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 8%  18%, rgba(251,191,36,.18) 0%, transparent 42%),
+      radial-gradient(circle at 90% 65%, rgba(20,184,166,.12)  0%, transparent 40%),
+      radial-gradient(circle at 48% 92%, rgba(249,115,22,.10)  0%, transparent 38%);
+    min-height: 100vh; overflow-x: hidden;
+  }
+  h1,h2,h3 { font-family:'Fredoka One',cursive; }
+
+  /* ── Header ── */
+  .header-grad {
+    background: linear-gradient(135deg,#78350f 0%,#b45309 30%,#d97706 60%,#fbbf24 100%);
+    position:relative; overflow:hidden;
+  }
+  .header-grad::after {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background: repeating-linear-gradient(45deg,transparent,transparent 22px,rgba(255,255,255,.04) 22px,rgba(255,255,255,.04) 44px);
+  }
+
+  /* ── Bubble ── */
+  .bubble {
+    position:relative; background:white;
+    border-radius:22px; border:3px solid #d97706;
+    box-shadow:4px 4px 0 #d97706;
+  }
+  .bubble::before { content:''; position:absolute; bottom:-22px; left:30px; border:12px solid transparent; border-top-color:#d97706; }
+  .bubble::after  { content:''; position:absolute; bottom:-15px; left:33px; border:10px solid transparent; border-top-color:white; }
+
+  /* ── Bounce ── */
+  @keyframes bounceAslan { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  .aslan-bounce { animation:bounceAslan 2.2s ease-in-out infinite; }
+
+  /* ── Float ── */
+  @keyframes floatUp { 0%,100%{transform:translateY(0) rotate(-2deg);} 50%{transform:translateY(-8px) rotate(2deg);} }
+  .float { animation:floatUp 3s ease-in-out infinite; }
+
+  /* ── Review card ── */
+  .review-card {
+    cursor:pointer; transition:all .25s cubic-bezier(.34,1.56,.64,1);
+    transform-origin:center bottom;
+    user-select:none;
+  }
+  .review-card:hover { transform:scale(1.06) translateY(-5px); }
+  .review-card.active { transform:scale(1.04) translateY(-3px); }
+
+  /* ── Drag items ── */
+  .drag-item {
+    cursor:grab; transition:transform .15s, box-shadow .15s, opacity .15s;
+    user-select:none; touch-action:none;
+    border-radius:18px;
+  }
+  .drag-item:hover { transform:scale(1.08) translateY(-4px); }
+  .drag-item.dragging {
+    cursor:grabbing; opacity:.55; transform:scale(1.15);
+    box-shadow:0 16px 40px rgba(0,0,0,.25)!important;
+    z-index:999; pointer-events:none;
+  }
+  .drag-item.placed { opacity:.4; cursor:default; pointer-events:none; }
+
+  /* ── Drop zones ── */
+  .drop-zone {
+    transition:all .25s; border-radius:14px;
+    cursor:default; position:relative;
+  }
+  .drop-zone.drag-over {
+    transform:scale(1.06);
+    filter:drop-shadow(0 0 12px rgba(251,191,36,.9));
+  }
+  .drop-zone.filled { pointer-events:none; }
+
+  /* ── Ghost ── */
+  #ghostEl {
+    position:fixed; pointer-events:none; z-index:1000;
+    transform:translate(-50%,-50%) scale(1.18) rotate(6deg);
+    opacity:.9;
+    transition:none;
+  }
+
+  /* ── Confetti ── */
+  @keyframes confettiFly {
+    0%  {transform:translate(0,0) rotate(0deg);opacity:1;}
+    100%{transform:translate(var(--tx),var(--ty)) rotate(720deg);opacity:0;}
+  }
+  .confetti-piece {
+    position:fixed; width:11px; height:11px;
+    pointer-events:none; z-index:200;
+    animation:confettiFly 1.4s ease-out forwards;
+  }
+
+  /* ── Pulse glow ── */
+  @keyframes pulseGlow {
+    0%,100%{ box-shadow:0 0 0 0 rgba(251,191,36,0); }
+    50%    { box-shadow:0 0 0 10px rgba(251,191,36,.35); }
+  }
+  .pulse-glow { animation:pulseGlow 1.8s ease-in-out infinite; }
+
+  /* ── Pop in ── */
+  @keyframes popIn {
+    0%  {transform:scale(0) rotate(-15deg); opacity:0;}
+    70% {transform:scale(1.15) rotate(3deg); opacity:1;}
+    100%{transform:scale(1) rotate(0); opacity:1;}
+  }
+  .pop-in { animation:popIn .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+  /* ── Shimmer ── */
+  @keyframes shimmer {
+    0%  {background-position:-400px 0;}
+    100%{background-position:400px 0;}
+  }
+  .shimmer-bar {
+    background:linear-gradient(90deg,#fef3c7 25%,#fbbf24 50%,#fef3c7 75%);
+    background-size:400px 100%;
+    animation:shimmer 1.8s infinite;
+    border-radius:20px; height:6px;
+  }
+
+  /* ── Section title ── */
+  .sec-title { position:relative; display:inline-block; }
+  .sec-title::after {
+    content:''; position:absolute; bottom:-6px; left:0; right:0; height:5px;
+    border-radius:10px; background:linear-gradient(90deg,#f97316,#fbbf24,#14b8a6);
+  }
+
+  /* ── Day dot ── */
+  .day-dot { width:11px; height:11px; border-radius:50%; display:inline-block; }
+
+  /* ── Draw area ── */
+  .draw-area {
+    background:
+      repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(251,191,36,.18) 28px,rgba(251,191,36,.18) 30px),
+      repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(251,191,36,.1) 28px,rgba(251,191,36,.1) 30px);
+    border:3px dashed #fbbf24; border-radius:20px; min-height:200px;
+  }
+
+  /* ── Button styles ── */
+  .btn-orange {
+    background:linear-gradient(135deg,#c2410c,#ea580c);
+    color:white; border:none; border-radius:50px;
+    padding:.9rem 2.4rem; font-family:'Fredoka One',cursive;
+    font-size:1.15rem; cursor:pointer;
+    box-shadow:0 6px 0 #9a3412, 0 8px 20px rgba(234,88,12,.4);
+    transition:all .15s ease;
+  }
+  .btn-orange:hover  { transform:translateY(-3px); }
+  .btn-orange:active { transform:translateY(3px); box-shadow:0 3px 0 #9a3412; }
+  .btn-teal {
+    background:linear-gradient(135deg,#0f766e,#14b8a6);
+    color:white; border:none; border-radius:50px;
+    padding:.9rem 2.4rem; font-family:'Fredoka One',cursive;
+    font-size:1.15rem; cursor:pointer;
+    box-shadow:0 6px 0 #134e4a, 0 8px 20px rgba(20,184,166,.4);
+    transition:all .15s ease;
+  }
+  .btn-teal:hover  { transform:translateY(-3px); }
+  .btn-teal:active { transform:translateY(3px); box-shadow:0 3px 0 #134e4a; }
+  .btn-gray {
+    background:linear-gradient(135deg,#4b5563,#6b7280);
+    color:white; border:none; border-radius:50px;
+    padding:.7rem 1.8rem; font-family:'Fredoka One',cursive;
+    font-size:1rem; cursor:pointer;
+    box-shadow:0 4px 0 #374151;
+    transition:all .15s ease;
+  }
+  .btn-gray:hover  { transform:translateY(-2px); }
+  .btn-gray:active { transform:translateY(2px); box-shadow:0 2px 0 #374151; }
+
+  /* ── Score badge ── */
+  #scoreBadge {
+    transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  /* ── Aslan celebrate ── */
+  @keyframes celebrate { 0%,100%{transform:rotate(-5deg) scale(1);} 50%{transform:rotate(5deg) scale(1.1);} }
+  .celebrate { animation:celebrate .4s ease-in-out 4; }
+
+  /* ── Quiz btn ── */
+  .qbtn {
+    padding:.5rem .8rem; border-radius:14px; font-size:.83rem; font-weight:700;
+    border:2px solid #e2e8f0; background:white; color:#374151;
+    cursor:pointer; transition:all .2s; text-align:left;
+  }
+  .qbtn:hover:not(:disabled) { border-color:#f97316; background:#fff7ed; }
+  .qbtn:disabled { opacity:.7; cursor:not-allowed; }
+
+  @media(max-width:640px){
+    .review-grid { grid-template-columns:1fr 1fr !important; }
+    .drag-grid   { grid-template-columns:1fr 1fr !important; }
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ══════ HEADER ══════ -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <div style="position:absolute;top:10px;left:4%;font-size:2.4rem;opacity:.18;animation:bounceAslan 8s ease-in-out infinite;">🏆</div>
+  <div style="position:absolute;top:12px;right:6%;font-size:2rem;opacity:.2;animation:bounceAslan 11s ease-in-out infinite .4s;">🌟</div>
+  <div style="position:absolute;bottom:6px;left:30%;font-size:1.8rem;opacity:.15;animation:bounceAslan 10s ease-in-out infinite .9s;">🖥️</div>
+  <div style="position:absolute;bottom:8px;right:22%;font-size:1.6rem;opacity:.13;animation:bounceAslan 13s ease-in-out infinite 1.2s;">⚡</div>
+
+  <div class="max-w-3xl mx-auto relative z-10 text-center">
+    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-3 border border-white/30">
+      <span class="text-xl">🖥️</span>
+      <span style="font-family:'Fredoka One',cursive;font-size:.9rem;letter-spacing:.5px;">Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span class="text-xl">⚡</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl md:text-5xl mb-2 drop-shadow-lg" style="line-height:1.2;">
+      Hari 21: Review Minggu 3 +<br>Aktivitas Pasang Komponen! 🏆🔧
+    </h1>
+    <p class="text-yellow-100 text-base sm:text-lg font-semibold">Hore! Minggu 3 selesai! Yuk rangkum semuanya! 🎉</p>
+    <div class="flex items-center justify-center gap-1 mt-4 flex-wrap">
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white ring-2 ring-yellow-200"></div>
+      <span class="text-white/70 text-xs ml-2 font-semibold">Hari 21 dari 30</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════ MAIN ══════ -->
+<main class="max-w-3xl mx-auto px-4 py-8">
+
+  <!-- ── Intro ── -->
+  <section class="mb-10">
+    <div class="flex flex-col sm:flex-row items-end gap-6">
+      <!-- Aslan SVG: pose keren pegang komponen -->
+      <div class="flex-shrink-0 flex justify-center" style="min-width:130px;">
+        <div class="aslan-bounce">
+          <svg width="135" height="170" viewBox="0 0 140 175" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="70" cy="168" rx="30" ry="7" fill="rgba(0,0,0,.09)"/>
+            <!-- body – orange shirt with "WEEK 3" badge feel -->
+            <rect x="38" y="96" width="62" height="54" rx="15" fill="#ea580c"/>
+            <rect x="38" y="110" width="62" height="8" rx="3" fill="#fb923c" opacity=".6"/>
+            <!-- left arm holds GPU chip -->
+            <rect x="14" y="94" width="26" height="38" rx="13" fill="#ea580c" transform="rotate(8 14 94)"/>
+            <!-- GPU in left hand -->
+            <rect x="2" y="120" width="26" height="16" rx="4" fill="#7c3aed"/>
+            <rect x="5" y="123" width="20" height="6" rx="2" fill="#a78bfa" opacity=".7"/>
+            <rect x="5" y="131" width="4" height="5" rx="1" fill="#c4b5fd"/>
+            <rect x="11" y="131" width="4" height="5" rx="1" fill="#c4b5fd"/>
+            <rect x="17" y="131" width="4" height="5" rx="1" fill="#c4b5fd"/>
+            <!-- right arm raised thumbs up -->
+            <rect x="96" y="80" width="26" height="38" rx="13" fill="#ea580c" transform="rotate(-28 96 80)"/>
+            <!-- thumbs up fist -->
+            <ellipse cx="116" cy="70" rx="10" ry="9" fill="#f9a825"/>
+            <rect x="112" y="56" width="8" height="14" rx="4" fill="#f9a825"/>
+            <!-- legs -->
+            <rect x="42" y="141" width="20" height="24" rx="10" fill="#78350f"/>
+            <rect x="74" y="141" width="20" height="24" rx="10" fill="#78350f"/>
+            <ellipse cx="52" cy="163" rx="14" ry="7" fill="#92400e"/>
+            <ellipse cx="84" cy="163" rx="14" ry="7" fill="#92400e"/>
+            <!-- neck -->
+            <rect x="56" y="86" width="24" height="15" rx="7" fill="#f9a825"/>
+            <!-- head -->
+            <ellipse cx="68" cy="67" rx="34" ry="32" fill="#f9a825"/>
+            <!-- hair -->
+            <ellipse cx="70" cy="40" rx="32" ry="16" fill="#2d1b00" transform="rotate(-2 70 40)"/>
+            <ellipse cx="37" cy="53" rx="10" ry="13" fill="#2d1b00"/>
+            <ellipse cx="96" cy="49" rx="8" ry="11" fill="#2d1b00" transform="rotate(-8 96 49)"/>
+            <!-- eyes – excited star shape -->
+            <circle cx="54" cy="66" r="7.5" fill="white"/>
+            <circle cx="82" cy="66" r="7.5" fill="white"/>
+            <circle cx="55" cy="67" r="4.5" fill="#1d4ed8"/>
+            <circle cx="83" cy="67" r="4.5" fill="#1d4ed8"/>
+            <circle cx="57" cy="65" r="1.8" fill="white"/>
+            <circle cx="85" cy="65" r="1.8" fill="white"/>
+            <!-- big grin smile -->
+            <path d="M48 80 Q68 98 88 80" stroke="#2d1b00" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+            <path d="M52 83 Q68 93 84 83" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+            <!-- cheeks -->
+            <ellipse cx="42" cy="74" rx="8" ry="5.5" fill="#ffb347" opacity=".5"/>
+            <ellipse cx="94" cy="74" rx="8" ry="5.5" fill="#ffb347" opacity=".5"/>
+            <!-- speech stars -->
+            <text x="108" y="52" font-size="14">⭐</text>
+            <text x="0"   y="44" font-size="12">✨</text>
+            <text x="56"  y="28" font-size="11">🏆</text>
+          </svg>
+        </div>
+      </div>
+      <!-- Bubble -->
+      <div class="flex-1">
+        <div class="bubble p-5">
+          <p class="text-sm font-bold mb-1" style="color:#d97706;">Aslan berkata:</p>
+          <p class="text-gray-700 text-base sm:text-lg leading-relaxed font-semibold">
+            "Halo! Kita sudah selesai <strong style="color:#d97706;">Minggu 3</strong>! 🎉
+            Minggu ini kita belajar tentang bagian komputer yang bikin senang:
+            <strong style="color:#7c3aed;">gambar</strong>,
+            <strong style="color:#14b8a6;">suara</strong>, dan cara
+            <strong style="color:#ec4899;">berinteraksi</strong>.
+            Sekarang saatnya <strong style="color:#f97316;">review dan bermain pasang komponen</strong>! 🔧💪"
+          </p>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#c2410c,#ea580c);">🏆 Hari 21</span>
+            <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#d97706,#fbbf24);">⭐ Review Minggu 3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Review Cards ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#78350f;">📚 Ingat Lagi Pelajaran Kita!</h2>
+      <p class="text-gray-500 mt-3 text-sm">Klik setiap kartu untuk mengingat penjelasan singkatnya! 👆</p>
+    </div>
+
+    <div class="grid gap-3 review-grid" style="grid-template-columns:repeat(3,1fr);">
+      <!-- Day 15 -->
+      <div class="review-card bg-white rounded-2xl p-4 border-3 text-center shadow-sm" style="border:3px solid #7c3aed;" onclick="showReview(1)">
+        <div class="text-3xl mb-2">🎨</div>
+        <div class="text-xs font-black" style="color:#4c1d95; font-family:'Fredoka One',cursive;">Hari 15</div>
+        <div class="text-sm font-bold text-gray-700 mt-1">GPU</div>
+        <div class="text-xs text-gray-400 mt-1">Pelukis Gambar</div>
+        <div class="shimmer-bar mt-2" style="background:linear-gradient(90deg,#ede9fe 25%,#7c3aed 50%,#ede9fe 75%); background-size:400px 100%;"></div>
+      </div>
+      <!-- Day 16 -->
+      <div class="review-card bg-white rounded-2xl p-4 border-3 text-center shadow-sm" style="border:3px solid #0891b2;" onclick="showReview(2)">
+        <div class="text-3xl mb-2">🖥️</div>
+        <div class="text-xs font-black" style="color:#0e7490; font-family:'Fredoka One',cursive;">Hari 16</div>
+        <div class="text-sm font-bold text-gray-700 mt-1">Monitor</div>
+        <div class="text-xs text-gray-400 mt-1">Mata Besar Komputer</div>
+        <div class="shimmer-bar mt-2" style="background:linear-gradient(90deg,#e0f2fe 25%,#0891b2 50%,#e0f2fe 75%); background-size:400px 100%;"></div>
+      </div>
+      <!-- Day 17 -->
+      <div class="review-card bg-white rounded-2xl p-4 border-3 text-center shadow-sm" style="border:3px solid #16a34a;" onclick="showReview(3)">
+        <div class="text-3xl mb-2">⌨️</div>
+        <div class="text-xs font-black" style="color:#15803d; font-family:'Fredoka One',cursive;">Hari 17</div>
+        <div class="text-sm font-bold text-gray-700 mt-1">Keyboard &amp; Mouse</div>
+        <div class="text-xs text-gray-400 mt-1">Tangan Komputer</div>
+        <div class="shimmer-bar mt-2" style="background:linear-gradient(90deg,#dcfce7 25%,#16a34a 50%,#dcfce7 75%); background-size:400px 100%;"></div>
+      </div>
+      <!-- Day 18 -->
+      <div class="review-card bg-white rounded-2xl p-4 border-3 text-center shadow-sm" style="border:3px solid #d97706;" onclick="showReview(4)">
+        <div class="text-3xl mb-2">🔊</div>
+        <div class="text-xs font-black" style="color:#92400e; font-family:'Fredoka One',cursive;">Hari 18</div>
+        <div class="text-sm font-bold text-gray-700 mt-1">Speaker &amp; Mic</div>
+        <div class="text-xs text-gray-400 mt-1">Telinga &amp; Mulut</div>
+        <div class="shimmer-bar mt-2" style="background:linear-gradient(90deg,#fef3c7 25%,#d97706 50%,#fef3c7 75%); background-size:400px 100%;"></div>
+      </div>
+      <!-- Day 19 -->
+      <div class="review-card bg-white rounded-2xl p-4 border-3 text-center shadow-sm" style="border:3px solid #ec4899;" onclick="showReview(5)">
+        <div class="text-3xl mb-2">🔌</div>
+        <div class="text-xs font-black" style="color:#9d174d; font-family:'Fredoka One',cursive;">Hari 19</div>
+        <div class="text-sm font-bold text-gray-700 mt-1">USB &amp; Webcam</div>
+        <div class="text-xs text-gray-400 mt-1">Pintu Masuk Keluar</div>
+        <div class="shimmer-bar mt-2" style="background:linear-gradient(90deg,#fce7f3 25%,#ec4899 50%,#fce7f3 75%); background-size:400px 100%;"></div>
+      </div>
+      <!-- Day 20 -->
+      <div class="review-card bg-white rounded-2xl p-4 border-3 text-center shadow-sm" style="border:3px solid #14b8a6;" onclick="showReview(6)">
+        <div class="text-3xl mb-2">✨</div>
+        <div class="text-xs font-black" style="color:#0f766e; font-family:'Fredoka One',cursive;">Hari 20</div>
+        <div class="text-sm font-bold text-gray-700 mt-1">Gambar &amp; Suara</div>
+        <div class="text-xs text-gray-400 mt-1">Bagaimana Muncul</div>
+        <div class="shimmer-bar mt-2" style="background:linear-gradient(90deg,#ccfbf1 25%,#14b8a6 50%,#ccfbf1 75%); background-size:400px 100%;"></div>
+      </div>
+    </div>
+
+    <!-- Review popup -->
+    <div id="reviewPopup" class="hidden mt-4 rounded-2xl p-5 transition-all" style="background:linear-gradient(135deg,#fffbeb,#fef3c7); border:3px solid #fbbf24;">
+      <div class="flex items-start gap-3">
+        <span id="rpEmoji" class="text-4xl flex-shrink-0"></span>
+        <div>
+          <h3 id="rpTitle" class="text-lg font-black mb-1" style="font-family:'Fredoka One',cursive; color:#78350f;"></h3>
+          <p id="rpDesc" class="text-sm text-gray-700 font-semibold leading-relaxed"></p>
+          <p id="rpAslan" class="text-xs italic mt-2" style="color:#d97706;"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ DRAG & DROP GAME ══════ -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#78350f;">🔧 Pasang Komponen Kartun!</h2>
+      <p class="text-gray-500 mt-3 text-sm">Seret komponen ke tempat yang cocok di komputer! Pasang semuanya! 🖱️👆</p>
+    </div>
+
+    <!-- Score bar -->
+    <div class="flex items-center justify-between mb-4 bg-white rounded-2xl px-5 py-3 border-2 border-yellow-200 shadow-sm">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">⭐</span>
+        <span class="font-black text-gray-700" style="font-family:'Fredoka One',cursive;">Skor:</span>
+        <span id="scoreBadge" class="text-2xl font-black" style="font-family:'Fredoka One',cursive; color:#d97706;">0 / 8</span>
+      </div>
+      <button class="btn-gray" onclick="resetGame()" style="padding:.5rem 1.2rem; font-size:.9rem;">🔄 Reset</button>
+    </div>
+
+    <!-- Aslan praise message -->
+    <div id="aslanPraise" class="hidden mb-4 rounded-2xl p-4 text-center font-bold text-lg" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:2px solid #34d399; color:#065f46;">
+      <span id="praiseText"></span>
+    </div>
+
+    <!-- COMPUTER DROP TARGET AREA -->
+    <div id="computerArea" class="relative rounded-3xl mb-6 overflow-visible"
+         style="background:linear-gradient(135deg,#1c1917,#292524); border:4px solid #d97706; padding:16px; min-height:320px; box-shadow:0 12px 40px rgba(0,0,0,.3);">
+
+      <!-- Computer label -->
+      <div class="text-center mb-3">
+        <span style="font-family:'Fredoka One',cursive; color:#fbbf24; font-size:1rem;">🖥️ Komputer Aslan</span>
+      </div>
+
+      <!-- Drop zones grid -->
+      <div class="grid gap-3" style="grid-template-columns:repeat(4,1fr);">
+
+        <!-- Zone: GPU -->
+        <div id="zone-gpu" class="drop-zone" data-accept="gpu"
+             style="background:#1e1b4b; border:2.5px dashed #7c3aed; border-radius:14px; min-height:80px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:6px;">
+          <span style="font-size:1.4rem; opacity:.5;">🎨</span>
+          <span style="font-size:10px; color:#a78bfa; font-weight:900; text-align:center; line-height:1.2;">GPU</span>
+        </div>
+
+        <!-- Zone: Monitor -->
+        <div id="zone-monitor" class="drop-zone" data-accept="monitor"
+             style="background:#082f49; border:2.5px dashed #38bdf8; border-radius:14px; min-height:80px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:6px;">
+          <span style="font-size:1.4rem; opacity:.5;">🖥️</span>
+          <span style="font-size:10px; color:#7dd3fc; font-weight:900; text-align:center; line-height:1.2;">Monitor</span>
+        </div>
+
+        <!-- Zone: Keyboard -->
+        <div id="zone-keyboard" class="drop-zone" data-accept="keyboard"
+             style="background:#052e16; border:2.5px dashed #22c55e; border-radius:14px; min-height:80px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:6px;">
+          <span style="font-size:1.4rem; opacity:.5;">⌨️</span>
+          <span style="font-size:10px; color:#86efac; font-weight:900; text-align:center; line-height:1.2;">Keyboard</span>
+        </div>
+
+        <!-- Zone: Mouse -->
+        <div id="zone-mouse" class="drop-zone" data-accept="mouse"
+             style="background:#042f2e; border:2.5px dashed #14b8a6; border-radius:14px; min-height:80px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:6px;">
+          <span style="font-size:1.4rem; opacity:.5;">🖱️</span>
+          <span style="font-size:10px; color:#5eead4; font-weight:900; text-align:center; line-height:1.2;">Mouse</span>
+        </div>
+
+        <!-- Zone: Speaker -->
+        <div id="zone-speaker" class="drop-zone" data-accept="speaker"
+             style="background:#431407; border:2.5px dashed #f97316; border-radius:14px; min-height:80px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:6px;">
+          <span style="font-size:1.4rem; opacity:.5;">🔊</span>
+          <span style="font-size:10px; color:#fdba74; font-weight:900; text-align:center; line-height:1.2;">Speaker</span>
+        </div>
+
+        <!-- Zone: Microphone -->
+        <div id="zone-microphone" class="drop-zone" data-accept="microphone"
+             style="background:#450a0a; border:2.5px dashed #ef4444; border-radius:14px; min-height:80px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:6px;">
+          <span style="font-size:1.4rem; opacity:.5;">🎤</span>
+          <span style="font-size:10px; color:#fca5a5; font-weight:900; text-align:center; line-height:1.2;">Microphone</span>
+        </div>
+
+        <!-- Zone: Webcam -->
+        <div id="zone-webcam" class="drop-zone" data-accept="webcam"
+             style="background:#500724; border:2.5px dashed #ec4899; border-radius:14px; min-height:80px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:6px;">
+          <span style="font-size:1.4rem; opacity:.5;">📷</span>
+          <span style="font-size:10px; color:#f9a8d4; font-weight:900; text-align:center; line-height:1.2;">Webcam</span>
+        </div>
+
+        <!-- Zone: USB -->
+        <div id="zone-usb" class="drop-zone" data-accept="usb"
+             style="background:#1e1b4b; border:2.5px dashed #fbbf24; border-radius:14px; min-height:80px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:6px;">
+          <span style="font-size:1.4rem; opacity:.5;">🔌</span>
+          <span style="font-size:10px; color:#fde68a; font-weight:900; text-align:center; line-height:1.2;">Port USB</span>
+        </div>
+
+      </div>
+
+      <!-- Computer complete overlay -->
+      <div id="computerComplete" class="hidden absolute inset-0 flex flex-col items-center justify-center rounded-3xl" style="background:rgba(0,0,0,.7); backdrop-filter:blur(4px); z-index:50;">
+        <div class="text-5xl mb-3" style="animation:bounceAslan 1s ease-in-out infinite;">🏆</div>
+        <p style="font-family:'Fredoka One',cursive; color:#fbbf24; font-size:1.5rem; text-align:center;">Komputer Selesai!</p>
+        <p style="color:#fde68a; font-size:.9rem; text-align:center; margin-top:6px;">Kamu hebat banget! 🎉</p>
+      </div>
+    </div>
+
+    <!-- DRAG ITEMS -->
+    <div class="mb-3 text-center">
+      <p class="text-sm font-black text-gray-600">👇 Seret komponen ini ke tempat yang benar di atas!</p>
+    </div>
+    <div id="itemsBank" class="grid gap-3 drag-grid" style="grid-template-columns:repeat(4,1fr);">
+
+      <!-- GPU -->
+      <div id="drag-gpu" class="drag-item" data-type="gpu"
+           style="background:linear-gradient(135deg,#ede9fe,#ddd6fe); border:3px solid #7c3aed; padding:10px 6px; text-align:center; box-shadow:0 4px 0 #4c1d95;">
+        <div class="text-3xl mb-1">🎨</div>
+        <svg width="50" height="32" viewBox="0 0 50 32" fill="none" style="margin:0 auto 4px;">
+          <rect x="1" y="4" width="48" height="24" rx="5" fill="#4c1d95"/>
+          <rect x="4" y="7" width="42" height="14" rx="3" fill="#1e1b4b"/>
+          <circle cx="12" cy="14" r="4" fill="#a78bfa"/>
+          <circle cx="25" cy="14" r="4" fill="#7c3aed"/>
+          <circle cx="38" cy="14" r="4" fill="#a78bfa"/>
+          <rect x="3" y="24" width="8" height="8" rx="1" fill="#c4b5fd"/>
+          <rect x="13" y="24" width="8" height="8" rx="1" fill="#a78bfa"/>
+          <rect x="23" y="24" width="8" height="8" rx="1" fill="#c4b5fd"/>
+        </svg>
+        <div style="font-family:'Fredoka One',cursive; font-size:.75rem; color:#4c1d95;">GPU</div>
+        <div style="font-size:.6rem; color:#7c3aed; font-weight:700;">Pelukis Gambar</div>
+      </div>
+
+      <!-- Monitor -->
+      <div id="drag-monitor" class="drag-item" data-type="monitor"
+           style="background:linear-gradient(135deg,#e0f2fe,#bae6fd); border:3px solid #0891b2; padding:10px 6px; text-align:center; box-shadow:0 4px 0 #0e7490;">
+        <div class="text-3xl mb-1">🖥️</div>
+        <svg width="50" height="36" viewBox="0 0 50 36" fill="none" style="margin:0 auto 4px;">
+          <rect x="2" y="1" width="46" height="28" rx="5" fill="#0e7490"/>
+          <rect x="5" y="4" width="40" height="22" rx="3" fill="#082f49"/>
+          <rect x="8" y="7" width="34" height="16" rx="2" fill="#0c4a6e"/>
+          <text x="25" y="18" font-size="9" fill="#38bdf8" text-anchor="middle">😊</text>
+          <rect x="20" y="29" width="10" height="5" rx="2" fill="#0891b2"/>
+          <rect x="14" y="33" width="22" height="3" rx="1.5" fill="#0e7490"/>
+        </svg>
+        <div style="font-family:'Fredoka One',cursive; font-size:.75rem; color:#0e7490;">Monitor</div>
+        <div style="font-size:.6rem; color:#0891b2; font-weight:700;">Mata Komputer</div>
+      </div>
+
+      <!-- Keyboard -->
+      <div id="drag-keyboard" class="drag-item" data-type="keyboard"
+           style="background:linear-gradient(135deg,#dcfce7,#bbf7d0); border:3px solid #16a34a; padding:10px 6px; text-align:center; box-shadow:0 4px 0 #15803d;">
+        <div class="text-3xl mb-1">⌨️</div>
+        <svg width="50" height="28" viewBox="0 0 50 28" fill="none" style="margin:0 auto 4px;">
+          <rect x="1" y="3" width="48" height="22" rx="4" fill="#15803d"/>
+          <rect x="4" y="6" width="5" height="5" rx="1" fill="#86efac"/>
+          <rect x="11" y="6" width="5" height="5" rx="1" fill="#86efac"/>
+          <rect x="18" y="6" width="5" height="5" rx="1" fill="#86efac"/>
+          <rect x="25" y="6" width="5" height="5" rx="1" fill="#86efac"/>
+          <rect x="32" y="6" width="5" height="5" rx="1" fill="#86efac"/>
+          <rect x="39" y="6" width="8" height="5" rx="1" fill="#4ade80"/>
+          <rect x="4" y="14" width="5" height="5" rx="1" fill="#86efac"/>
+          <rect x="11" y="14" width="26" height="5" rx="1" fill="#4ade80"/>
+          <rect x="39" y="14" width="8" height="5" rx="1" fill="#86efac"/>
+        </svg>
+        <div style="font-family:'Fredoka One',cursive; font-size:.75rem; color:#15803d;">Keyboard</div>
+        <div style="font-size:.6rem; color:#16a34a; font-weight:700;">Tangan Ketik</div>
+      </div>
+
+      <!-- Mouse -->
+      <div id="drag-mouse" class="drag-item" data-type="mouse"
+           style="background:linear-gradient(135deg,#ccfbf1,#99f6e4); border:3px solid #14b8a6; padding:10px 6px; text-align:center; box-shadow:0 4px 0 #0f766e;">
+        <div class="text-3xl mb-1">🖱️</div>
+        <svg width="34" height="44" viewBox="0 0 34 44" fill="none" style="margin:0 auto 4px;">
+          <ellipse cx="17" cy="28" rx="14" ry="16" fill="#0f766e"/>
+          <ellipse cx="17" cy="18" rx="14" ry="12" fill="#0f766e"/>
+          <line x1="17" y1="6" x2="17" y2="30" stroke="#5eead4" stroke-width="1.5"/>
+          <ellipse cx="17" cy="12" rx="4" ry="5" fill="#14b8a6"/>
+          <circle cx="17" cy="11" r="2" fill="#99f6e4"/>
+        </svg>
+        <div style="font-family:'Fredoka One',cursive; font-size:.75rem; color:#0f766e;">Mouse</div>
+        <div style="font-size:.6rem; color:#14b8a6; font-weight:700;">Tangan Klik</div>
+      </div>
+
+      <!-- Speaker -->
+      <div id="drag-speaker" class="drag-item" data-type="speaker"
+           style="background:linear-gradient(135deg,#fff7ed,#fed7aa); border:3px solid #f97316; padding:10px 6px; text-align:center; box-shadow:0 4px 0 #c2410c;">
+        <div class="text-3xl mb-1">🔊</div>
+        <svg width="42" height="40" viewBox="0 0 42 40" fill="none" style="margin:0 auto 4px;">
+          <rect x="2" y="8" width="22" height="24" rx="5" fill="#c2410c"/>
+          <circle cx="13" cy="20" r="7" fill="#7c2d12"/>
+          <circle cx="13" cy="20" r="4" fill="#9a3412"/>
+          <circle cx="13" cy="20" r="1.5" fill="#fed7aa"/>
+          <path d="M26 13 Q34 20 26 27" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M29 9 Q40 20 29 31" stroke="#fdba74" stroke-width="2" stroke-linecap="round" fill="none"/>
+        </svg>
+        <div style="font-family:'Fredoka One',cursive; font-size:.75rem; color:#c2410c;">Speaker</div>
+        <div style="font-size:.6rem; color:#f97316; font-weight:700;">Mulut Suara</div>
+      </div>
+
+      <!-- Microphone -->
+      <div id="drag-microphone" class="drag-item" data-type="microphone"
+           style="background:linear-gradient(135deg,#fff1f2,#fecdd3); border:3px solid #ef4444; padding:10px 6px; text-align:center; box-shadow:0 4px 0 #b91c1c;">
+        <div class="text-3xl mb-1">🎤</div>
+        <svg width="32" height="44" viewBox="0 0 32 44" fill="none" style="margin:0 auto 4px;">
+          <rect x="9" y="1" width="14" height="22" rx="7" fill="#b91c1c"/>
+          <rect x="11" y="4" width="10" height="16" rx="5" fill="#dc2626"/>
+          <rect x="12" y="6" width="8" height="3" rx="1.5" fill="#fca5a5" opacity=".7"/>
+          <rect x="12" y="11" width="8" height="2" rx="1" fill="#fca5a5" opacity=".5"/>
+          <path d="M6 22 Q6 34 16 34 Q26 34 26 22" stroke="#b91c1c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <line x1="16" y1="34" x2="16" y2="42" stroke="#b91c1c" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="10" y1="42" x2="22" y2="42" stroke="#b91c1c" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <div style="font-family:'Fredoka One',cursive; font-size:.75rem; color:#b91c1c;">Microphone</div>
+        <div style="font-size:.6rem; color:#ef4444; font-weight:700;">Telinga Suara</div>
+      </div>
+
+      <!-- Webcam -->
+      <div id="drag-webcam" class="drag-item" data-type="webcam"
+           style="background:linear-gradient(135deg,#fce7f3,#fbcfe8); border:3px solid #ec4899; padding:10px 6px; text-align:center; box-shadow:0 4px 0 #9d174d;">
+        <div class="text-3xl mb-1">📷</div>
+        <svg width="42" height="34" viewBox="0 0 42 34" fill="none" style="margin:0 auto 4px;">
+          <rect x="2" y="6" width="30" height="22" rx="6" fill="#9d174d"/>
+          <circle cx="17" cy="17" r="7" fill="#500724"/>
+          <circle cx="17" cy="17" r="4.5" fill="#1d4ed8"/>
+          <circle cx="17" cy="17" r="2.5" fill="#1e3a8a"/>
+          <circle cx="15" cy="15" r="1" fill="white" opacity=".5"/>
+          <circle cx="33" cy="10" r="3" fill="#ef4444"/>
+          <text x="36" y="20" font-size="9">📡</text>
+        </svg>
+        <div style="font-family:'Fredoka One',cursive; font-size:.75rem; color:#9d174d;">Webcam</div>
+        <div style="font-size:.6rem; color:#ec4899; font-weight:700;">Mata Rekam</div>
+      </div>
+
+      <!-- USB -->
+      <div id="drag-usb" class="drag-item" data-type="usb"
+           style="background:linear-gradient(135deg,#fefce8,#fef08a); border:3px solid #fbbf24; padding:10px 6px; text-align:center; box-shadow:0 4px 0 #d97706;">
+        <div class="text-3xl mb-1">🔌</div>
+        <svg width="46" height="30" viewBox="0 0 46 30" fill="none" style="margin:0 auto 4px;">
+          <rect x="2" y="5" width="42" height="20" rx="5" fill="#92400e"/>
+          <rect x="2" y="5" width="42" height="20" rx="5" stroke="#fbbf24" stroke-width="1.5"/>
+          <rect x="7" y="9" width="32" height="12" rx="3" fill="#451a03"/>
+          <rect x="11" y="12" width="6" height="6" rx="1.5" fill="#fbbf24" opacity=".8"/>
+          <rect x="20" y="12" width="6" height="6" rx="1.5" fill="#fbbf24" opacity=".8"/>
+          <rect x="29" y="12" width="6" height="6" rx="1.5" fill="#fbbf24" opacity=".8"/>
+        </svg>
+        <div style="font-family:'Fredoka One',cursive; font-size:.75rem; color:#92400e;">Port USB</div>
+        <div style="font-size:.6rem; color:#d97706; font-weight:700;">Pintu Data</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Mini Quiz ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#78350f;">🧠 Tes Minggu 3 – 5 Soal Kilat!</h2>
+      <p class="text-gray-500 mt-3 text-sm">Jawab dengan cepat! Kamu pasti bisa! 😄</p>
+    </div>
+
+    <div class="space-y-4">
+      <div id="q1" class="bg-white rounded-2xl p-4 border-2 border-violet-200 shadow-sm">
+        <p class="font-black text-gray-800 mb-3 text-sm">❓ 1. Komponen apa yang tugasnya menggambar dan menampilkan grafis indah?</p>
+        <div class="flex flex-col gap-2">
+          <button class="qbtn" onclick="qa(1,'a',this)">A. 🎨 GPU (Graphics Processing Unit)</button>
+          <button class="qbtn" onclick="qa(1,'b',this)">B. 🔊 Speaker</button>
+          <button class="qbtn" onclick="qa(1,'c',this)">C. 🔌 Port USB</button>
+        </div>
+        <div id="q1r" class="hidden mt-2 text-sm font-bold rounded-xl px-3 py-2"></div>
+      </div>
+
+      <div id="q2" class="bg-white rounded-2xl p-4 border-2 border-sky-200 shadow-sm">
+        <p class="font-black text-gray-800 mb-3 text-sm">❓ 2. Monitor ibarat apa pada tubuh manusia?</p>
+        <div class="flex flex-col gap-2">
+          <button class="qbtn" onclick="qa(2,'b',this)">A. 👂 Telinga</button>
+          <button class="qbtn" onclick="qa(2,'a',this)">B. 👀 Mata</button>
+          <button class="qbtn" onclick="qa(2,'c',this)">C. 🤚 Tangan</button>
+        </div>
+        <div id="q2r" class="hidden mt-2 text-sm font-bold rounded-xl px-3 py-2"></div>
+      </div>
+
+      <div id="q3" class="bg-white rounded-2xl p-4 border-2 border-green-200 shadow-sm">
+        <p class="font-black text-gray-800 mb-3 text-sm">❓ 3. Alat apa yang kita gunakan untuk mengetik kata-kata di komputer?</p>
+        <div class="flex flex-col gap-2">
+          <button class="qbtn" onclick="qa(3,'c',this)">A. 🖱️ Mouse</button>
+          <button class="qbtn" onclick="qa(3,'b',this)">B. 🎤 Microphone</button>
+          <button class="qbtn" onclick="qa(3,'a',this)">C. ⌨️ Keyboard</button>
+        </div>
+        <div id="q3r" class="hidden mt-2 text-sm font-bold rounded-xl px-3 py-2"></div>
+      </div>
+
+      <div id="q4" class="bg-white rounded-2xl p-4 border-2 border-orange-200 shadow-sm">
+        <p class="font-black text-gray-800 mb-3 text-sm">❓ 4. Kalau kita mau video call dengan teman, komponen apa yang diperlukan?</p>
+        <div class="flex flex-col gap-2">
+          <button class="qbtn" onclick="qa(4,'a',this)">A. 📷 Webcam</button>
+          <button class="qbtn" onclick="qa(4,'b',this)">B. 🔌 Port USB saja</button>
+          <button class="qbtn" onclick="qa(4,'c',this)">C. 🎨 GPU saja</button>
+        </div>
+        <div id="q4r" class="hidden mt-2 text-sm font-bold rounded-xl px-3 py-2"></div>
+      </div>
+
+      <div id="q5" class="bg-white rounded-2xl p-4 border-2 border-pink-200 shadow-sm">
+        <p class="font-black text-gray-800 mb-3 text-sm">❓ 5. Port USB berfungsi seperti apa di dalam komputer?</p>
+        <div class="flex flex-col gap-2">
+          <button class="qbtn" onclick="qa(5,'c',this)">A. 🔊 Pengeras suara</button>
+          <button class="qbtn" onclick="qa(5,'b',this)">B. 💡 Lampu penerang</button>
+          <button class="qbtn" onclick="qa(5,'a',this)">C. 🚪 Pintu masuk keluar alat &amp; data</button>
+        </div>
+        <div id="q5r" class="hidden mt-2 text-sm font-bold rounded-xl px-3 py-2"></div>
+      </div>
+    </div>
+
+    <div id="qFinal" class="hidden mt-5 rounded-2xl p-5 text-center border-2" style="background:linear-gradient(135deg,#fffbeb,#fef3c7); border-color:#fbbf24;">
+      <div id="qfE" class="text-5xl mb-2"></div>
+      <div id="qfT" class="text-xl font-black" style="font-family:'Fredoka One',cursive;"></div>
+      <p id="qfS" class="text-sm text-gray-600 mt-1"></p>
+    </div>
+  </section>
+
+  <!-- ── Aktivitas Gambar ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#78350f;">✏️ Tugas Hari Ini!</h2>
+    </div>
+
+    <div class="rounded-3xl p-6 mb-5" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:3px solid #34d399;">
+      <div class="flex gap-3 items-start">
+        <span class="text-3xl flex-shrink-0">🎨</span>
+        <div>
+          <h3 class="text-lg font-black mb-2" style="font-family:'Fredoka One',cursive; color:#065f46;">Tugas Menggambar:</h3>
+          <p class="text-gray-700 text-base font-semibold leading-relaxed">
+            Pasang semua komponen dengan benar di komputer kartun di atas! Setelah itu,
+            <strong style="color:#059669;">gambarlah komputer impianmu yang sudah lengkap</strong>
+            di kotak bawah ini. Tambahkan semua komponen yang sudah kamu pelajari minggu ini! 💻🎨
+          </p>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <span class="text-xs bg-white rounded-full px-3 py-1 font-bold text-green-700 border border-green-300">💡 Gambar GPU-nya besar dan keren!</span>
+            <span class="text-xs bg-white rounded-full px-3 py-1 font-bold text-green-700 border border-green-300">💡 Jangan lupa webcam di atas monitor!</span>
+            <span class="text-xs bg-white rounded-full px-3 py-1 font-bold text-green-700 border border-green-300">💡 Speaker di kiri kanan layar!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawing area -->
+    <div class="draw-area p-4 flex flex-col items-center justify-center" style="min-height:220px;">
+      <div class="text-center opacity-40">
+        <div class="text-5xl mb-3">✏️</div>
+        <p class="text-yellow-600 font-bold text-sm">Area Menggambar</p>
+        <p class="text-yellow-500 text-xs mt-1">Cetak halaman ini dan gambar di sini! 🖨️</p>
+      </div>
+    </div>
+
+    <!-- Checklist -->
+    <div class="mt-5 space-y-2">
+      <p class="text-sm font-black text-gray-700 mb-3">✅ Checklist Minggu 3 – Centang kalau sudah!</p>
+      <div id="ac1" class="bg-white rounded-xl px-4 py-3 flex items-center gap-3 border-2 border-violet-200 cursor-pointer" onclick="actCk(1)">
+        <input type="checkbox" class="w-5 h-5 accent-violet-500 cursor-pointer"/>
+        <span class="text-sm font-bold text-gray-700">Aku tahu fungsi GPU – membuat gambar jadi indah 🎨</span>
+      </div>
+      <div id="ac2" class="bg-white rounded-xl px-4 py-3 flex items-center gap-3 border-2 border-sky-200 cursor-pointer" onclick="actCk(2)">
+        <input type="checkbox" class="w-5 h-5 accent-sky-500 cursor-pointer"/>
+        <span class="text-sm font-bold text-gray-700">Aku tahu Monitor adalah "mata" komputer 👀</span>
+      </div>
+      <div id="ac3" class="bg-white rounded-xl px-4 py-3 flex items-center gap-3 border-2 border-green-200 cursor-pointer" onclick="actCk(3)">
+        <input type="checkbox" class="w-5 h-5 accent-green-500 cursor-pointer"/>
+        <span class="text-sm font-bold text-gray-700">Aku tahu Keyboard & Mouse adalah "tangan" komputer ⌨️🖱️</span>
+      </div>
+      <div id="ac4" class="bg-white rounded-xl px-4 py-3 flex items-center gap-3 border-2 border-orange-200 cursor-pointer" onclick="actCk(4)">
+        <input type="checkbox" class="w-5 h-5 accent-orange-500 cursor-pointer"/>
+        <span class="text-sm font-bold text-gray-700">Aku tahu fungsi Speaker, Mic, Webcam, dan USB 🔊🎤📷🔌</span>
+      </div>
+      <div id="ac5" class="bg-white rounded-xl px-4 py-3 flex items-center gap-3 border-2 border-pink-200 cursor-pointer" onclick="actCk(5)">
+        <input type="checkbox" class="w-5 h-5 accent-pink-500 cursor-pointer"/>
+        <span class="text-sm font-bold text-gray-700">Aku berhasil memasang semua komponen di game tadi! 🔧🏆</span>
+      </div>
+    </div>
+
+    <div id="actAllDone" class="hidden mt-4 rounded-2xl p-4 text-center" style="background:linear-gradient(135deg,#fef9c3,#fef08a); border:2px solid #fbbf24;">
+      <div class="text-4xl mb-2">🏆</div>
+      <p class="font-black text-yellow-700 text-lg" style="font-family:'Fredoka One',cursive;">Minggu 3 Selesai Sempurna!</p>
+      <p class="text-yellow-600 text-sm mt-1">Aslan bangga sama kamu! Sampai Minggu 4! 🚀</p>
+    </div>
+  </section>
+
+  <!-- ── Penutup banner ── -->
+  <section class="mb-10 rounded-3xl p-6 text-center text-white" style="background:linear-gradient(135deg,#78350f,#b45309,#d97706);">
+    <div class="text-4xl mb-3">🌟</div>
+    <h3 class="text-xl font-black mb-3" style="font-family:'Fredoka One',cursive;">Ringkasan Minggu 3!</h3>
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
+      <div class="bg-white/15 rounded-xl p-2 text-xs font-bold">🎨 GPU – Pelukis gambar</div>
+      <div class="bg-white/15 rounded-xl p-2 text-xs font-bold">🖥️ Monitor – Mata komputer</div>
+      <div class="bg-white/15 rounded-xl p-2 text-xs font-bold">⌨️ Keyboard – Ketik kata</div>
+      <div class="bg-white/15 rounded-xl p-2 text-xs font-bold">🖱️ Mouse – Klik dan arahkan</div>
+      <div class="bg-white/15 rounded-xl p-2 text-xs font-bold">🔊 Speaker – Suara keluar</div>
+      <div class="bg-white/15 rounded-xl p-2 text-xs font-bold">🔌 USB – Pintu data</div>
+    </div>
+    <p class="text-yellow-100 text-sm font-semibold">Minggu depan kita masuk ke bagian yang lebih dalam! 🚀</p>
+  </section>
+
+</main>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="py-8 px-4 text-center" style="background:linear-gradient(135deg,#78350f,#92400e);">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex items-center justify-center gap-3 mb-3">
+      <span class="text-2xl">🖥️</span>
+      <span class="text-yellow-200 font-black text-sm" style="font-family:'Fredoka One',cursive;">Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span class="text-2xl">⚡</span>
+    </div>
+    <div class="inline-flex items-center gap-2 bg-white/10 rounded-full px-6 py-3 border border-white/20">
+      <span class="text-yellow-300 text-xl">⭐</span>
+      <span class="text-white font-black" style="font-family:'Fredoka One',cursive; font-size:1.1rem;">Hari 21 dari 30</span>
+      <span class="text-yellow-300 text-xl">⭐</span>
+    </div>
+    <p class="text-yellow-500 text-xs mt-3">Selamat belajar, Aslan! Minggu 3 selesai! 🎉</p>
+  </div>
+</footer>
+
+<!-- Ghost element for drag -->
+<div id="ghostEl" style="display:none; position:fixed; pointer-events:none; z-index:1000; transform:translate(-50%,-50%) scale(1.2) rotate(5deg); opacity:.85;"></div>
+
+<!-- ══════ JAVASCRIPT ══════ -->
+<script>
+/* ════════════════════════════════
+   REVIEW CARDS
+════════════════════════════════ */
+const reviewData = {
+  1: {
+    emoji:'🎨',
+    title:'Hari 15: GPU – Pelukis Gambar',
+    desc:'GPU (Graphics Processing Unit) adalah komponen yang bertugas menggambar semua gambar, animasi, dan video di komputer. Tanpa GPU, layar komputer hanya gelap gulita!',
+    aslan:'"Bayangin GPU kayak pelukis super cepat yang bisa gambar jutaan titik dalam 1 detik!" 🚀'
+  },
+  2: {
+    emoji:'🖥️',
+    title:'Hari 16: Monitor – Mata Besar Komputer',
+    desc:'Monitor adalah layar yang menampilkan semua gambar dari GPU. Monitor ibarat mata besar komputer — tanpanya kita tidak bisa melihat apa-apa dari komputer!',
+    aslan:'"Monitor itu kayak TV-nya komputer. Semua gambar dari GPU ditampilkan di sini!" 😄'
+  },
+  3: {
+    emoji:'⌨️',
+    title:'Hari 17: Keyboard & Mouse – Tangan Komputer',
+    desc:'Keyboard digunakan untuk mengetik kata-kata, angka, dan perintah. Mouse digunakan untuk menggerakkan kursor dan mengklik. Keduanya adalah "tangan" komputer!',
+    aslan:'"Keyboard = tangan kanan buat nulis, Mouse = tangan kiri buat nunjuk!" ✋🖱️'
+  },
+  4: {
+    emoji:'🔊',
+    title:'Hari 18: Speaker & Microphone – Telinga & Mulut',
+    desc:'Speaker mengeluarkan suara dari komputer (musik, video, notifikasi). Microphone merekam suara kita masuk ke komputer. Speaker = mulut, Microphone = telinga!',
+    aslan:'"Kalau mau nyanyi bareng komputer, pakai Speaker. Kalau mau ngobrol, pakai Mic!" 🎵🎤'
+  },
+  5: {
+    emoji:'🔌',
+    title:'Hari 19: Port USB & Webcam – Pintu Masuk Keluar',
+    desc:'Port USB adalah "pintu" untuk menghubungkan alat lain ke komputer seperti flashdisk, mouse, charger HP. Webcam adalah mata kamera yang bisa rekam wajah kita untuk video call!',
+    aslan:'"USB kayak pintu gerbang, Webcam kayak jendela yang bisa lihat kita!" 🚪📷'
+  },
+  6: {
+    emoji:'✨',
+    title:'Hari 20: Bagaimana Gambar dan Suara Muncul',
+    desc:'GPU memproses data menjadi gambar lalu dikirim ke Monitor. Sound Card memproses data suara lalu dikirim ke Speaker. Semuanya bekerja sama sangat cepat!',
+    aslan:'"Proses dari data sampai jadi gambar dan suara itu super cepat — lebih cepat dari kedipan mata!" ⚡'
+  }
+};
+
+let lastReview = null;
+function showReview(n) {
+  const popup = document.getElementById('reviewPopup');
+  const d = reviewData[n];
+  // If same card clicked again, close
+  if (lastReview === n && !popup.classList.contains('hidden')) {
+    popup.classList.add('hidden'); lastReview = null; return;
+  }
+  lastReview = n;
+  document.getElementById('rpEmoji').textContent = d.emoji;
+  document.getElementById('rpTitle').textContent = d.title;
+  document.getElementById('rpDesc').textContent = d.desc;
+  document.getElementById('rpAslan').textContent = d.aslan;
+  popup.classList.remove('hidden');
+  popup.classList.add('pop-in');
+  setTimeout(()=>popup.classList.remove('pop-in'), 500);
+  // Highlight active card
+  document.querySelectorAll('.review-card').forEach((c,i)=>{
+    c.classList.toggle('active', i===n-1);
+  });
+  popup.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+/* ════════════════════════════════
+   DRAG AND DROP GAME
+════════════════════════════════ */
+let score = 0;
+let dragging = null;
+let ghostEl = document.getElementById('ghostEl');
+let touchStartX, touchStartY;
+
+// Map of type → zone id
+const zoneMap = {
+  gpu:'zone-gpu', monitor:'zone-monitor', keyboard:'zone-keyboard',
+  mouse:'zone-mouse', speaker:'zone-speaker', microphone:'zone-microphone',
+  webcam:'zone-webcam', usb:'zone-usb'
+};
+
+const praises = [
+  '🎉 Wah, kamu hebat! GPU sudah masuk!',
+  '👏 Keren banget! Monitor terpasang!',
+  '✨ Mantap! Keyboard siap diketik!',
+  '🎊 Asyik! Mouse sudah bisa diklik!',
+  '🔥 Luar biasa! Speaker siap bunyi!',
+  '⭐ Hebat! Mic siap merekam suara!',
+  '🌟 Keren! Webcam siap video call!',
+  '🏆 Amazing! USB port terpasang!'
+];
+
+const placeMessages = {
+  gpu:'🎨 GPU terpasang! Siap melukis gambar indah!',
+  monitor:'🖥️ Monitor terpasang! Komputer punya mata!',
+  keyboard:'⌨️ Keyboard terpasang! Siap mengetik!',
+  mouse:'🖱️ Mouse terpasang! Siap klik sana-sini!',
+  speaker:'🔊 Speaker terpasang! Siap bunyi musik!',
+  microphone:'🎤 Mic terpasang! Siap rekam suara!',
+  webcam:'📷 Webcam terpasang! Siap video call!',
+  usb:'🔌 Port USB terpasang! Pintu data terbuka!'
+};
+
+function initDragDrop() {
+  // Desktop drag events
+  document.querySelectorAll('.drag-item').forEach(item => {
+    item.addEventListener('mousedown', onMouseDown);
+    item.addEventListener('touchstart', onTouchStart, {passive:false});
+  });
+  // Drop zones – desktop
+  document.querySelectorAll('.drop-zone').forEach(zone => {
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag-over'); tryDrop(zone); });
+  });
+}
+
+// ── Mouse ──
+function onMouseDown(e) {
+  if (e.button !== 0) return;
+  const item = e.currentTarget;
+  if (item.classList.contains('placed')) return;
+  e.preventDefault();
+  dragging = item;
+  startGhost(item, e.clientX, e.clientY);
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+}
+function onMouseMove(e) {
+  moveGhost(e.clientX, e.clientY);
+  highlightZone(e.clientX, e.clientY);
+}
+function onMouseUp(e) {
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
+  const zone = getZoneAt(e.clientX, e.clientY);
+  if (zone) tryDrop(zone);
+  ghostEl.style.display = 'none';
+  document.querySelectorAll('.drop-zone').forEach(z=>z.classList.remove('drag-over'));
+  dragging = null;
+}
+
+// ── Touch ──
+function onTouchStart(e) {
+  const item = e.currentTarget;
+  if (item.classList.contains('placed')) return;
+  e.preventDefault();
+  dragging = item;
+  const t = e.touches[0];
+  touchStartX = t.clientX; touchStartY = t.clientY;
+  startGhost(item, t.clientX, t.clientY);
+  document.addEventListener('touchmove', onTouchMove, {passive:false});
+  document.addEventListener('touchend', onTouchEnd);
+}
+function onTouchMove(e) {
+  e.preventDefault();
+  const t = e.touches[0];
+  moveGhost(t.clientX, t.clientY);
+  highlightZone(t.clientX, t.clientY);
+}
+function onTouchEnd(e) {
+  document.removeEventListener('touchmove', onTouchMove);
+  document.removeEventListener('touchend', onTouchEnd);
+  const t = e.changedTouches[0];
+  const zone = getZoneAt(t.clientX, t.clientY);
+  if (zone) tryDrop(zone);
+  ghostEl.style.display = 'none';
+  document.querySelectorAll('.drop-zone').forEach(z=>z.classList.remove('drag-over'));
+  dragging = null;
+}
+
+// ── Ghost helpers ──
+function startGhost(item, x, y) {
+  ghostEl.innerHTML = item.innerHTML;
+  ghostEl.style.cssText = `
+    display:block; position:fixed; pointer-events:none; z-index:1000;
+    width:${item.offsetWidth}px;
+    background:${item.style.background};
+    border:${item.style.border};
+    border-radius:18px;
+    padding:10px 6px;
+    text-align:center;
+    box-shadow:0 16px 40px rgba(0,0,0,.3);
+    transform:translate(-50%,-50%) scale(1.15) rotate(6deg);
+    opacity:.9;
+    left:${x}px; top:${y}px;
+    transition:none;
+  `;
+}
+function moveGhost(x, y) {
+  ghostEl.style.left = x + 'px';
+  ghostEl.style.top  = y + 'px';
+}
+function getZoneAt(x, y) {
+  let el = document.elementFromPoint(x, y);
+  while (el && el !== document.body) {
+    if (el.classList && el.classList.contains('drop-zone')) return el;
+    el = el.parentElement;
+  }
+  return null;
+}
+function highlightZone(x, y) {
+  document.querySelectorAll('.drop-zone').forEach(z => {
+    const r = z.getBoundingClientRect();
+    const inside = x>=r.left && x<=r.right && y>=r.top && y<=r.bottom;
+    z.classList.toggle('drag-over', inside && !z.classList.contains('filled'));
+  });
+}
+
+// ── Try drop ──
+function tryDrop(zone) {
+  if (!dragging) return;
+  const type = dragging.getAttribute('data-type');
+  const accept = zone.getAttribute('data-accept');
+  if (type !== accept) {
+    // Wrong zone – shake
+    zone.style.animation = 'none';
+    zone.style.transform = 'translateX(-6px)';
+    setTimeout(()=>{ zone.style.transform='translateX(6px)'; }, 80);
+    setTimeout(()=>{ zone.style.transform=''; }, 160);
+    return;
+  }
+  // Correct!
+  score++;
+  dragging.classList.add('placed');
+  zone.classList.add('filled');
+  zone.classList.remove('drag-over');
+
+  // Fill zone visually
+  const emoji = dragging.querySelector('div:nth-child(1)').textContent;
+  const label = dragging.querySelector('div:nth-child(3)')?.textContent || type;
+  zone.innerHTML = `
+    <div class="pop-in" style="text-align:center; padding:4px;">
+      <div style="font-size:1.6rem;">${emoji}</div>
+      <div style="font-size:9px; font-weight:900; color:white; margin-top:2px; font-family:'Fredoka One',cursive;">${label}</div>
+      <div style="font-size:10px; margin-top:2px;">✅</div>
+    </div>
+  `;
+  zone.style.background = zone.style.background.replace('dashed','solid');
+  zone.style.borderStyle = 'solid';
+  zone.style.opacity = '1';
+
+  // Update score
+  document.getElementById('scoreBadge').textContent = score + ' / 8';
+  document.getElementById('scoreBadge').classList.add('pop-in');
+  setTimeout(()=>document.getElementById('scoreBadge').classList.remove('pop-in'), 500);
+
+  // Show praise
+  const prMsg = placeMessages[type] || '✅ Terpasang!';
+  const praise = document.getElementById('aslanPraise');
+  const prTxt  = document.getElementById('praiseText');
+  praise.classList.remove('hidden');
+  prTxt.textContent = prMsg;
+  praise.classList.add('pop-in');
+  setTimeout(()=>praise.classList.remove('pop-in'), 500);
+
+  // Confetti
+  spawnConfetti(['#fbbf24','#f97316','#34d399','#7c3aed','#ec4899','#38bdf8'], 14);
+
+  // If all 8 placed
+  if (score >= 8) {
+    setTimeout(()=>{
+      document.getElementById('computerComplete').classList.remove('hidden');
+      document.getElementById('computerComplete').classList.add('pop-in');
+      document.getElementById('praiseText').textContent = '🏆 Semua komponen terpasang! Kamu JUARA! Komputernya sudah nyala semua! 🎉';
+      spawnConfetti(['#fbbf24','#f97316','#34d399','#7c3aed','#ec4899','#38bdf8'], 30);
+    }, 500);
+  }
+}
+
+function resetGame() {
+  score = 0;
+  dragging = null;
+  ghostEl.style.display = 'none';
+
+  // Reset all drag items
+  document.querySelectorAll('.drag-item').forEach(item => {
+    item.classList.remove('placed');
+    item.style.opacity = '1';
+    item.style.pointerEvents = '';
+    item.style.cursor = 'grab';
+  });
+
+  // Reset zones
+  const zoneContents = {
+    'zone-gpu':       {bg:'#1e1b4b', border:'#7c3aed', emoji:'🎨', label:'GPU'},
+    'zone-monitor':   {bg:'#082f49', border:'#38bdf8', emoji:'🖥️', label:'Monitor'},
+    'zone-keyboard':  {bg:'#052e16', border:'#22c55e', emoji:'⌨️', label:'Keyboard'},
+    'zone-mouse':     {bg:'#042f2e', border:'#14b8a6', emoji:'🖱️', label:'Mouse'},
+    'zone-speaker':   {bg:'#431407', border:'#f97316', emoji:'🔊', label:'Speaker'},
+    'zone-microphone':{bg:'#450a0a', border:'#ef4444', emoji:'🎤', label:'Microphone'},
+    'zone-webcam':    {bg:'#500724', border:'#ec4899', emoji:'📷', label:'Webcam'},
+    'zone-usb':       {bg:'#1e1b4b', border:'#fbbf24', emoji:'🔌', label:'Port USB'},
+  };
+
+  Object.entries(zoneContents).forEach(([id, c]) => {
+    const z = document.getElementById(id);
+    z.classList.remove('filled','drag-over');
+    z.style.background = c.bg;
+    z.style.borderStyle = 'dashed';
+    z.style.opacity = '1';
+    z.style.pointerEvents = '';
+    z.innerHTML = `
+      <span style="font-size:1.4rem; opacity:.5;">${c.emoji}</span>
+      <span style="font-size:10px; color:${c.border}; font-weight:900; text-align:center; line-height:1.2;">${c.label}</span>
+    `;
+    z.style.display = 'flex';
+    z.style.flexDirection = 'column';
+    z.style.alignItems = 'center';
+    z.style.justifyContent = 'center';
+    z.style.gap = '4px';
+    z.style.padding = '6px';
+  });
+
+  document.getElementById('scoreBadge').textContent = '0 / 8';
+  document.getElementById('aslanPraise').classList.add('hidden');
+  document.getElementById('computerComplete').classList.add('hidden');
+  document.getElementById('computerComplete').classList.remove('pop-in');
+}
+
+// Init drag on load
+document.addEventListener('DOMContentLoaded', initDragDrop);
+
+/* ════════════════════════════════
+   QUIZ
+════════════════════════════════ */
+let qDone={1:false,2:false,3:false,4:false,5:false}, qScore=0;
+function qa(n, correct, btn) {
+  if(qDone[n]) return;
+  qDone[n] = true;
+  btn.closest('#q'+n).querySelectorAll('.qbtn').forEach(b=>b.disabled=true);
+  const r = document.getElementById('q'+n+'r');
+  r.classList.remove('hidden');
+  if(correct==='a'){
+    qScore++;
+    btn.style.background='#dcfce7'; btn.style.borderColor='#16a34a';
+    r.textContent='✅ Betul! Kamu hebat! 🌟'; r.style.color='#16a34a'; r.style.background='#f0fdf4';
+    spawnConfetti(['#34d399','#fbbf24','#f97316']);
+  } else {
+    btn.style.background='#fee2e2'; btn.style.borderColor='#dc2626';
+    r.style.color='#dc2626'; r.style.background='#fff1f2';
+    const ans=[
+      'A – GPU (Graphics Processing Unit)! 🎨',
+      'B – Mata (Monitor)! 👀',
+      'C – Keyboard! ⌨️',
+      'A – Webcam! 📷',
+      'C – Pintu masuk keluar alat & data! 🚪'
+    ];
+    r.textContent='❌ Jawabannya '+ans[n-1];
+  }
+  if(Object.values(qDone).every(v=>v)){
+    setTimeout(()=>{
+      const f=document.getElementById('qFinal'); f.classList.remove('hidden');
+      const e=document.getElementById('qfE'), t=document.getElementById('qfT'), s=document.getElementById('qfS');
+      if(qScore===5){ e.textContent='🏆'; t.textContent='Sempurna! 5/5 – Master Minggu 3!'; t.style.color='#78350f'; s.textContent='Kamu sudah paham semua pelajaran Minggu 3! Luar biasa!'; spawnConfetti(['#fbbf24','#f97316','#34d399','#7c3aed'],24); }
+      else if(qScore>=3){ e.textContent='⭐'; t.textContent=`Bagus! ${qScore}/5 Benar!`; t.style.color='#b45309'; s.textContent='Hampir sempurna! Coba baca review di atas lagi ya!'; }
+      else { e.textContent='💪'; t.textContent=qScore+'/5 – Semangat!'; t.style.color='#d97706'; s.textContent='Klik kartu review di atas untuk baca ulang ya! Pasti bisa! 🔥'; }
+    }, 400);
+  }
+}
+
+/* ════════════════════════════════
+   ACTIVITY CHECKLIST
+════════════════════════════════ */
+let actCount = 0;
+function actCk(n) {
+  const el = document.getElementById('ac'+n);
+  const cb = el.querySelector('input');
+  cb.checked = !cb.checked;
+  const sp = el.querySelector('span');
+  if(cb.checked){ actCount++; sp.style.textDecoration='line-through'; sp.style.opacity='.5'; spawnConfetti(['#34d399','#fbbf24']); }
+  else { actCount--; sp.style.textDecoration=''; sp.style.opacity=''; }
+  if(actCount>=5){ document.getElementById('actAllDone').classList.remove('hidden'); spawnConfetti(['#fbbf24','#f97316','#34d399','#7c3aed','#ec4899'], 20); }
+  else { document.getElementById('actAllDone').classList.add('hidden'); }
+}
+
+/* ════════════════════════════════
+   CONFETTI
+════════════════════════════════ */
+function spawnConfetti(colors, count=12) {
+  for(let i=0; i<count; i++){
+    setTimeout(()=>{
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      const shapes = ['2px','50%','0'];
+      p.style.cssText = `
+        left:${15+Math.random()*70}%; top:${30+Math.random()*20}%;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        --tx:${(Math.random()-.5)*260}px;
+        --ty:${-60-Math.random()*220}px;
+        animation-delay:${Math.random()*.4}s;
+        position:fixed;
+        border-radius:${shapes[Math.floor(Math.random()*3)]};
+        width:${8+Math.random()*8}px;
+        height:${8+Math.random()*8}px;
+      `;
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(), 1600);
+    }, i*55);
+  }
+}
+</script>
+</body>
+</html>

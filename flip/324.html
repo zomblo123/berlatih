@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 24: Waktu Berlayar yang Seimbang | Kapten Cerdas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean-deep: #0a2a4a;
+    --ocean-mid: #1565c0;
+    --ocean-light: #42a5f5;
+    --ocean-pale: #bbdefb;
+    --sky-blue: #87ceeb;
+    --gold: #ffd700;
+    --gold-dark: #f59e0b;
+    --orange: #ff6b35;
+    --coral: #ff8a65;
+    --white: #ffffff;
+    --cream: #fffde7;
+    --green-fresh: #4caf50;
+    --green-light: #a5d6a7;
+    --red-warn: #ef5350;
+    --purple: #7c4dff;
+    --teal: #00bcd4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #0a2a4a 0%, #1565c0 40%, #0277bd 70%, #01579b 100%);
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Animated ocean background */
+  .ocean-bg {
+    position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none;
+  }
+  .wave {
+    position: absolute; bottom: 0; width: 200%; height: 120px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50% 50% 0 0;
+    animation: waveMove 8s ease-in-out infinite;
+  }
+  .wave:nth-child(2) { height: 80px; animation-duration: 12s; animation-delay: -3s; opacity: 0.5; }
+  .wave:nth-child(3) { height: 60px; animation-duration: 10s; animation-delay: -6s; opacity: 0.3; }
+  @keyframes waveMove {
+    0%,100% { transform: translateX(0) scaleY(1); }
+    50% { transform: translateX(-5%) scaleY(1.1); }
+  }
+  .bubble {
+    position: absolute; border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    animation: bubbleRise linear infinite;
+  }
+  @keyframes bubbleRise {
+    0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+  }
+
+  /* Back button */
+  .back-btn {
+    position: fixed; top: 16px; left: 16px; z-index: 1000;
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(12px);
+    color: white; border: 2px solid rgba(255,255,255,0.3);
+    padding: 10px 18px; border-radius: 50px;
+    text-decoration: none; font-family: 'Fredoka One', cursive;
+    font-size: 14px; display: flex; align-items: center; gap: 8px;
+    transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  .back-btn:hover {
+    background: rgba(255,255,255,0.25); transform: translateX(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+
+  /* Book container */
+  .book-container {
+    position: relative; z-index: 10;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; padding: 70px 16px 100px;
+  }
+
+  /* Progress bar */
+  .progress-bar-wrap {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    height: 5px; background: rgba(255,255,255,0.1);
+  }
+  .progress-bar-fill {
+    height: 100%; background: linear-gradient(90deg, var(--gold), var(--orange));
+    transition: width 0.5s ease; box-shadow: 0 0 10px var(--gold);
+  }
+
+  /* Page indicator */
+  .page-indicator {
+    position: fixed; top: 10px; right: 16px; z-index: 999;
+    color: rgba(255,255,255,0.8); font-family: 'Fredoka One'; font-size: 14px;
+    background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 20px;
+  }
+
+  /* Main card */
+  .page-card {
+    display: none;
+    max-width: 780px; width: 100%;
+    background: rgba(255,255,255,0.97);
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1);
+    overflow: hidden;
+    animation: pageIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .page-card.active { display: block; }
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Nav buttons */
+  .nav-buttons {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 16px; z-index: 999;
+  }
+  .nav-btn {
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(12px);
+    color: white; border: 2px solid rgba(255,255,255,0.3);
+    padding: 14px 30px; border-radius: 50px;
+    font-family: 'Fredoka One'; font-size: 16px;
+    cursor: pointer; transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  .nav-btn:hover {
+    background: rgba(255,255,255,0.25); transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+  .nav-btn.next {
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    border-color: transparent; color: var(--ocean-deep);
+  }
+  .nav-btn.next:hover { background: linear-gradient(135deg, #ffe44d, #ff8c5a); }
+
+  /* ===== PAGE STYLES ===== */
+
+  /* PAGE 1: Cover */
+  .cover-page {
+    background: linear-gradient(160deg, #0a1628 0%, #0d2d6e 40%, #1a4fa0 70%, #0a2a4a 100%);
+    padding: 0; min-height: 560px; position: relative; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .cover-stars { position: absolute; inset: 0; overflow: hidden; }
+  .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 2s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100%{opacity:0.3;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
+
+  .cover-ocean { position: absolute; bottom: 0; left: 0; right: 0; height: 140px; overflow: hidden; }
+  .cover-wave1 {
+    position: absolute; bottom: 0; width: 200%; height: 80px;
+    background: linear-gradient(180deg, rgba(66,165,245,0.3), rgba(21,101,192,0.6));
+    border-radius: 40% 40% 0 0; animation: waveMove 6s ease-in-out infinite;
+  }
+  .cover-wave2 {
+    position: absolute; bottom: 0; width: 200%; height: 50px;
+    background: linear-gradient(180deg, rgba(66,165,245,0.2), rgba(13,45,110,0.8));
+    border-radius: 50% 50% 0 0; animation: waveMove 9s ease-in-out infinite reverse;
+  }
+
+  .cover-sun {
+    width: 90px; height: 90px; border-radius: 50%;
+    background: radial-gradient(circle, #fff7a0, #ffd700 40%, #ff9800);
+    box-shadow: 0 0 40px #ffd700, 0 0 80px rgba(255,215,0,0.4);
+    position: absolute; top: 30px; right: 60px;
+    animation: sunPulse 4s ease-in-out infinite;
+  }
+  @keyframes sunPulse { 0%,100%{box-shadow:0 0 40px #ffd700,0 0 80px rgba(255,215,0,0.4)} 50%{box-shadow:0 0 60px #ffd700,0 0 120px rgba(255,215,0,0.6)} }
+  .sun-ray {
+    position: absolute; width: 4px; height: 20px;
+    background: rgba(255,215,0,0.6); border-radius: 2px;
+    transform-origin: 50% 55px; animation: rayRotate 8s linear infinite;
+  }
+  @keyframes rayRotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  .cover-ship-wrap {
+    position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
+    animation: shipFloat 4s ease-in-out infinite;
+  }
+  @keyframes shipFloat { 0%,100%{transform:translateX(-50%) translateY(0) rotate(-2deg)} 50%{transform:translateX(-50%) translateY(-12px) rotate(2deg)} }
+
+  .cover-content {
+    position: relative; z-index: 5; text-align: center; padding: 40px 30px 200px;
+  }
+  .day-badge {
+    display: inline-block; background: linear-gradient(135deg, var(--gold), var(--orange));
+    color: var(--ocean-deep); padding: 8px 24px; border-radius: 50px;
+    font-family: 'Fredoka One'; font-size: 18px;
+    box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+    margin-bottom: 20px; letter-spacing: 1px;
+  }
+  .cover-title {
+    font-family: 'Fredoka One'; font-size: clamp(28px, 5vw, 42px);
+    color: white; line-height: 1.2; margin-bottom: 10px;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .cover-subtitle {
+    font-family: 'Fredoka One'; font-size: clamp(20px, 3.5vw, 28px);
+    color: var(--gold); margin-bottom: 24px;
+    text-shadow: 0 2px 10px rgba(255,215,0,0.5);
+  }
+  .cover-captain-name {
+    background: rgba(255,255,255,0.12); border: 2px solid rgba(255,215,0,0.5);
+    border-radius: 20px; padding: 14px 30px; display: inline-block; margin-bottom: 8px;
+  }
+  .captain-label { color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 4px; }
+  .captain-name { font-family: 'Fredoka One'; font-size: 26px; color: var(--gold); }
+  .series-badge {
+    color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 12px;
+    font-style: italic;
+  }
+
+  /* SVG Illustrations */
+  .illus { width: 100%; max-width: 340px; margin: 0 auto; display: block; }
+
+  /* Generic page layout */
+  .page-inner { padding: 36px 36px 24px; }
+  .page-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+  }
+  .page-icon {
+    width: 60px; height: 60px; border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px; flex-shrink: 0;
+  }
+  .page-title-wrap h2 {
+    font-family: 'Fredoka One'; font-size: clamp(20px, 3.5vw, 26px);
+    color: var(--ocean-deep); line-height: 1.2;
+  }
+  .page-title-wrap p { color: #666; font-size: 14px; margin-top: 4px; }
+
+  .story-text {
+    font-size: 16px; line-height: 1.8; color: #2c3e50;
+    margin-bottom: 16px;
+  }
+  .story-text strong { color: var(--ocean-mid); }
+  .highlight-box {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-left: 5px solid var(--ocean-mid);
+    border-radius: 0 16px 16px 0; padding: 16px 20px; margin: 16px 0;
+    font-size: 15px; color: var(--ocean-deep); line-height: 1.7;
+  }
+  .highlight-box.gold {
+    background: linear-gradient(135deg, #fffde7, #fff9c4);
+    border-left-color: var(--gold-dark);
+  }
+  .highlight-box.green {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    border-left-color: var(--green-fresh);
+  }
+  .highlight-box.red {
+    background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+    border-left-color: var(--red-warn);
+  }
+
+  /* ---- Ship SVG ---- */
+  .ship-svg { animation: shipBob 3s ease-in-out infinite; }
+  @keyframes shipBob { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-8px) rotate(1deg)} }
+
+  /* PAGE 3 – Story: tired ship */
+  .energy-bar-wrap { margin: 20px 0; }
+  .energy-label { font-family:'Fredoka One'; font-size:15px; color:#555; margin-bottom:6px; }
+  .energy-bar {
+    height: 28px; background: #e0e0e0; border-radius: 14px; overflow: hidden;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .energy-fill {
+    height: 100%; border-radius: 14px; transition: width 1.5s ease;
+    display: flex; align-items: center; padding-left: 12px;
+    font-family: 'Fredoka One'; font-size: 14px; color: white;
+  }
+  .energy-fill.full { background: linear-gradient(90deg, #4caf50, #81c784); width: 90%; }
+  .energy-fill.low { background: linear-gradient(90deg, #ef5350, #ff8a65); width: 20%; }
+  .energy-fill.ok { background: linear-gradient(90deg, #ffd700, #ff9800); width: 60%; }
+
+  /* PAGE 4 – What is screen time */
+  .clock-anim-wrap {
+    width: 140px; height: 140px; border-radius: 50%;
+    background: white; border: 8px solid var(--ocean-mid);
+    box-shadow: 0 4px 20px rgba(21,101,192,0.3);
+    position: relative; margin: 20px auto;
+  }
+  .clock-hand {
+    position: absolute; bottom: 50%; left: 50%;
+    transform-origin: 50% 100%; border-radius: 4px;
+  }
+  .clock-hour { width:5px; height:38px; background:var(--ocean-deep); margin-left:-2.5px; animation: hourTick 6s linear infinite; }
+  .clock-min  { width:3px; height:50px; background:var(--ocean-mid); margin-left:-1.5px; animation: minTick 1s linear infinite; }
+  @keyframes hourTick { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  @keyframes minTick  { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .clock-center { position:absolute; width:14px;height:14px;border-radius:50%;background:var(--gold);top:50%;left:50%;transform:translate(-50%,-50%); }
+
+  /* PAGE 5 – Importance */
+  .balance-beam {
+    width: 100%; max-width: 420px; margin: 20px auto;
+    position: relative; height: 150px;
+  }
+  .beam-bar {
+    position: absolute; width: 80%; height: 8px; background: var(--ocean-mid);
+    top: 60px; left: 50%; transform: translateX(-50%);
+    border-radius: 4px;
+    transition: transform 0.8s ease;
+    transform-origin: 50% 50%;
+  }
+  .beam-pivot { position:absolute; top:68px; left:50%; transform:translateX(-50%); width:16px; height:40px; background:var(--ocean-deep); border-radius:4px; }
+  .beam-cup {
+    position: absolute; width: 80px; text-align: center;
+    top: 30px; font-size: 28px; transition: top 0.8s ease;
+  }
+  .beam-cup.left { left: 10%; }
+  .beam-cup.right { right: 10%; }
+  .cup-label { font-size:11px; font-family:'Fredoka One'; color:#555; margin-top:4px; }
+  .beam-base { position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:60px; height:10px; background:var(--ocean-mid); border-radius:5px; }
+  #balanceBtn {
+    display: block; margin: 0 auto; padding: 12px 28px;
+    background: linear-gradient(135deg, var(--ocean-mid), var(--ocean-light));
+    color: white; border: none; border-radius: 50px;
+    font-family: 'Fredoka One'; font-size: 16px; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(21,101,192,0.3); transition: all 0.3s;
+  }
+  #balanceBtn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(21,101,192,0.4); }
+
+  /* PAGE 6 – Dangers */
+  .danger-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .danger-card {
+    background: white; border-radius: 18px; padding: 16px; text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 2px solid transparent; transition: all 0.3s; cursor: default;
+  }
+  .danger-card:hover { transform: translateY(-4px); border-color: var(--coral); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+  .danger-card .emoji { font-size: 32px; margin-bottom: 8px; }
+  .danger-card h4 { font-family:'Fredoka One'; font-size:15px; color:var(--ocean-deep); margin-bottom:6px; }
+  .danger-card p { font-size:12px; color:#666; line-height:1.5; }
+
+  /* PAGE 7 – Schedule */
+  .schedule-table { width: 100%; border-collapse: collapse; margin: 16px 0; border-radius: 16px; overflow: hidden; }
+  .schedule-table th {
+    background: linear-gradient(135deg, var(--ocean-mid), var(--ocean-light));
+    color: white; font-family: 'Fredoka One'; font-size: 14px; padding: 12px 10px;
+  }
+  .schedule-table td { padding: 12px 10px; font-size: 14px; border-bottom: 1px solid #eee; }
+  .schedule-table tr:nth-child(even) td { background: #f8f9ff; }
+  .schedule-table tr:hover td { background: #e3f2fd; }
+  .tag-screen { background: #bbdefb; color: var(--ocean-deep); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+  .tag-darat { background: #c8e6c9; color: #2e7d32; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+
+  /* PAGE 8 – Signs to rest */
+  .sign-item {
+    display: flex; align-items: flex-start; gap: 14px; padding: 14px;
+    background: white; border-radius: 16px; margin-bottom: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.07); transition: all 0.3s;
+    cursor: pointer; border: 2px solid transparent;
+  }
+  .sign-item:hover { border-color: var(--ocean-light); transform: translateX(4px); }
+  .sign-emoji { font-size: 28px; flex-shrink: 0; width: 50px; text-align: center; }
+  .sign-text h4 { font-family: 'Fredoka One'; font-size: 15px; color: var(--ocean-deep); margin-bottom: 4px; }
+  .sign-text p { font-size: 13px; color: #666; line-height: 1.5; }
+
+  /* PAGE 9 – Interactive slider */
+  .slider-wrap { margin: 24px 0; }
+  .slider-label { font-family: 'Fredoka One'; font-size: 16px; color: var(--ocean-deep); margin-bottom: 12px; text-align: center; }
+  .time-slider {
+    width: 100%; -webkit-appearance: none; appearance: none;
+    height: 12px; border-radius: 6px; outline: none; cursor: pointer;
+    background: linear-gradient(90deg, var(--green-fresh) 0%, var(--gold) 50%, var(--red-warn) 100%);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .time-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 32px; height: 32px; border-radius: 50%;
+    background: white; border: 4px solid var(--ocean-mid);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s;
+  }
+  .time-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  .slider-status {
+    margin-top: 14px; padding: 14px 20px; border-radius: 16px; text-align: center;
+    font-family: 'Fredoka One'; font-size: 18px; transition: all 0.4s;
+  }
+  .sea-land-toggle { display: flex; gap: 12px; margin: 20px 0; }
+  .toggle-btn {
+    flex: 1; padding: 14px; border-radius: 16px; border: 3px solid transparent;
+    font-family: 'Fredoka One'; font-size: 15px; cursor: pointer; transition: all 0.3s;
+    text-align: center;
+  }
+  .toggle-btn.sea { background: #e3f2fd; color: var(--ocean-mid); border-color: var(--ocean-pale); }
+  .toggle-btn.land { background: #e8f5e9; color: #2e7d32; border-color: var(--green-light); }
+  .toggle-btn.selected.sea { background: linear-gradient(135deg, var(--ocean-mid), var(--ocean-light)); color: white; border-color: var(--ocean-mid); transform: scale(1.04); }
+  .toggle-btn.selected.land { background: linear-gradient(135deg, #4caf50, #81c784); color: white; border-color: #4caf50; transform: scale(1.04); }
+  .toggle-result {
+    padding: 16px; border-radius: 16px; text-align: center; min-height: 80px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; line-height: 1.6; color: var(--ocean-deep); transition: all 0.4s;
+  }
+
+  /* PAGE 10 – Lesson points */
+  .lesson-grid { display: grid; gap: 12px; margin-top: 16px; }
+  .lesson-card {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: white; border-radius: 18px; padding: 16px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.08); transition: all 0.3s;
+  }
+  .lesson-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+  .lesson-num {
+    width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fredoka One'; font-size: 20px; color: white;
+  }
+  .lesson-card h4 { font-family: 'Fredoka One'; font-size: 15px; color: var(--ocean-deep); margin-bottom: 5px; }
+  .lesson-card p { font-size: 13px; color: #666; line-height: 1.5; }
+
+  /* PAGE 11 – Challenge */
+  .challenge-container { background: linear-gradient(135deg, #fff9c4, #fffde7); border-radius: 24px; padding: 24px; margin: 16px 0; }
+  .challenge-title { font-family: 'Fredoka One'; font-size: 22px; color: var(--gold-dark); text-align: center; margin-bottom: 16px; }
+  .challenge-list { list-style: none; }
+  .challenge-list li {
+    display: flex; align-items: flex-start; gap: 12px; padding: 12px 0;
+    border-bottom: 1px dashed rgba(255,180,0,0.3); font-size: 14px; line-height: 1.6;
+  }
+  .challenge-list li:last-child { border-bottom: none; }
+  .challenge-list li::before { content: '⚓'; font-size: 20px; flex-shrink: 0; }
+  .rest-btn {
+    display: block; width: 100%; margin-top: 20px; padding: 18px;
+    background: linear-gradient(135deg, #4caf50, #81c784);
+    color: white; border: none; border-radius: 20px;
+    font-family: 'Fredoka One'; font-size: 18px; cursor: pointer;
+    box-shadow: 0 6px 20px rgba(76,175,80,0.35); transition: all 0.3s;
+  }
+  .rest-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(76,175,80,0.45); }
+  .rest-overlay {
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(0,0,0,0.7); align-items: center; justify-content: center;
+  }
+  .rest-overlay.show { display: flex; }
+  .rest-modal {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    border-radius: 28px; padding: 40px 36px; text-align: center;
+    max-width: 400px; width: 90%; animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative; overflow: hidden;
+  }
+  @keyframes modalIn { from{opacity:0;transform:scale(0.7)} to{opacity:1;transform:scale(1)} }
+  .rest-modal h2 { font-family: 'Fredoka One'; font-size: 28px; color: #2e7d32; margin-bottom: 12px; }
+  .rest-modal p { font-size: 16px; color: #388e3c; line-height: 1.7; margin-bottom: 20px; }
+  .rest-close {
+    padding: 12px 32px; background: #4caf50; color: white; border: none;
+    border-radius: 50px; font-family: 'Fredoka One'; font-size: 16px; cursor: pointer;
+  }
+  .confetti-piece {
+    position: absolute; width: 10px; height: 10px; border-radius: 2px;
+    animation: confettiFall 2s linear forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(300px) rotate(720deg); opacity: 0; }
+  }
+
+  /* PAGE 12 – Closing */
+  .closing-page {
+    background: linear-gradient(160deg, #0a1628 0%, #0d2d6e 50%, #1a4fa0 100%);
+    padding: 48px 36px; text-align: center; min-height: 520px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .closing-page h2 { font-family: 'Fredoka One'; font-size: 32px; color: var(--gold); margin-bottom: 16px; text-shadow: 0 4px 15px rgba(255,215,0,0.4); }
+  .closing-page p { font-size: 16px; color: rgba(255,255,255,0.85); line-height: 1.8; max-width: 500px; }
+  .closing-badge {
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    color: var(--ocean-deep); padding: 18px 32px; border-radius: 20px;
+    font-family: 'Fredoka One'; font-size: 18px; margin: 24px 0;
+    box-shadow: 0 6px 25px rgba(255,215,0,0.4);
+    animation: badgePulse 2s ease-in-out infinite;
+  }
+  @keyframes badgePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+  .next-preview {
+    background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 20px; padding: 16px 24px; margin-top: 20px;
+    color: rgba(255,255,255,0.8); font-size: 14px; max-width: 400px;
+  }
+  .next-preview strong { color: var(--gold); font-family: 'Fredoka One'; }
+
+  /* Page 2 styling */
+  .story-card {
+    background: linear-gradient(135deg, #f0f8ff, #e8f4ff);
+    border-radius: 20px; padding: 20px 22px; margin: 16px 0;
+    border-left: 5px solid var(--ocean-light);
+  }
+
+  /* Hourglass page */
+  .hourglass-wrap { display: flex; justify-content: center; margin: 20px 0; }
+  .hourglass {
+    width: 80px; height: 110px; position: relative; animation: hourglassSpin 4s ease-in-out infinite;
+  }
+  @keyframes hourglassSpin { 0%,40%{transform:rotate(0deg)} 50%,90%{transform:rotate(180deg)} 100%{transform:rotate(180deg)} }
+  .hg-top, .hg-bot {
+    width: 80px; height: 50px; position: absolute;
+    border-radius: 4px; overflow: hidden;
+  }
+  .hg-top { top: 0; background: rgba(21,101,192,0.15); border: 3px solid var(--ocean-mid); border-bottom: none; clip-path: polygon(0 0, 100% 0, 65% 100%, 35% 100%); }
+  .hg-bot { bottom: 0; background: rgba(66,165,245,0.3); border: 3px solid var(--ocean-mid); border-top: none; clip-path: polygon(35% 0, 65% 0, 100% 100%, 0 100%); }
+  .hg-mid { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 8px; height: 10px; background: var(--ocean-mid); border-radius: 2px; }
+  .hg-sand { position: absolute; bottom: 3px; left: 10%; width: 80%; height: 60%; background: linear-gradient(180deg, rgba(255,215,0,0.7), rgba(255,160,0,0.9)); border-radius: 0 0 2px 2px; animation: sandFill 4s ease-in-out infinite; }
+  @keyframes sandFill { 0%,100%{height:60%} 50%{height:10%} }
+
+  /* Rules page */
+  .rules-list { list-style: none; }
+  .rules-list li {
+    display: flex; gap: 14px; padding: 14px 16px; margin-bottom: 10px;
+    background: white; border-radius: 16px; box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    align-items: flex-start; transition: all 0.3s;
+  }
+  .rules-list li:hover { transform: translateX(6px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+  .rule-num {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--ocean-mid), var(--ocean-light));
+    color: white; font-family: 'Fredoka One'; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .rule-text { font-size: 14px; color: #2c3e50; line-height: 1.6; }
+  .rule-text strong { color: var(--ocean-mid); }
+
+  /* Tablet responsive */
+  @media (max-width: 600px) {
+    .page-inner { padding: 24px 20px 16px; }
+    .danger-grid { grid-template-columns: 1fr; }
+    .sea-land-toggle { flex-direction: column; }
+    .schedule-table { font-size: 12px; }
+    .schedule-table th, .schedule-table td { padding: 10px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Ocean background -->
+<div class="ocean-bg">
+  <div class="wave"></div>
+  <div class="wave"></div>
+  <div class="wave"></div>
+</div>
+
+<!-- Bubbles (generated by JS) -->
+<div id="bubbleContainer"></div>
+
+<!-- Progress bar -->
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+
+<!-- Page indicator -->
+<div class="page-indicator" id="pageIndicator">1 / 12</div>
+
+<!-- Back button -->
+<a href="../perpustakaan.html" class="back-btn">← Kembali ke Perpustakaan</a>
+
+<!-- Rest overlay -->
+<div class="rest-overlay" id="restOverlay">
+  <div class="rest-modal" id="restModal">
+    <div style="font-size:60px;margin-bottom:12px">🌅</div>
+    <h2>Waktunya Berlabuh!</h2>
+    <p>Kapten Cerdas tahu kapan harus istirahat.<br>Regangkan tubuhmu, minum air, dan nikmati dunia nyata! 🌿</p>
+    <button class="rest-close" onclick="closeRest()">Siap, Kapten! ⚓</button>
+  </div>
+</div>
+
+<!-- Book container -->
+<div class="book-container">
+
+  <!-- ===== PAGE 1: COVER ===== -->
+  <div class="page-card active" id="page-1">
+    <div class="cover-page">
+      <div class="cover-stars" id="starField"></div>
+      <div class="cover-sun">
+        <div class="sun-ray" style="transform:rotate(0deg) translateY(-65px)"></div>
+        <div class="sun-ray" style="transform:rotate(45deg) translateY(-65px)"></div>
+        <div class="sun-ray" style="transform:rotate(90deg) translateY(-65px)"></div>
+        <div class="sun-ray" style="transform:rotate(135deg) translateY(-65px)"></div>
+        <div class="sun-ray" style="transform:rotate(180deg) translateY(-65px)"></div>
+        <div class="sun-ray" style="transform:rotate(225deg) translateY(-65px)"></div>
+        <div class="sun-ray" style="transform:rotate(270deg) translateY(-65px)"></div>
+        <div class="sun-ray" style="transform:rotate(315deg) translateY(-65px)"></div>
+      </div>
+      <div class="cover-content">
+        <div class="day-badge">⚓ Hari 24 dari 30 ⚓</div>
+        <div class="cover-title">Waktu Berlayar yang Seimbang</div>
+        <div class="cover-subtitle">🕐 Screen Time 🕐</div>
+        <div class="cover-captain-name">
+          <div class="captain-label">🧢 Kapten Cerdas:</div>
+          <div class="captain-name">Aslan</div>
+        </div>
+        <div class="series-badge">Seri: Petualangan Kapten Cerdas di Lautan Digital</div>
+      </div>
+      <div class="cover-ship-wrap">
+        <!-- Ship SVG -->
+        <svg width="220" height="120" viewBox="0 0 220 120" class="ship-svg">
+          <!-- Water -->
+          <ellipse cx="110" cy="105" rx="100" ry="18" fill="rgba(66,165,245,0.25)"/>
+          <!-- Hull -->
+          <path d="M30 80 Q110 95 190 80 L185 100 Q110 115 35 100 Z" fill="#1565c0"/>
+          <path d="M35 100 Q110 113 185 100 L190 80 Q110 93 30 80 Z" fill="#0d47a1"/>
+          <!-- Deck -->
+          <rect x="55" y="60" width="110" height="22" rx="4" fill="#1976d2"/>
+          <!-- Mast -->
+          <rect x="108" y="10" width="5" height="54" fill="#8d6e63"/>
+          <!-- Sail -->
+          <path d="M113 14 L150 38 L113 58 Z" fill="white" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+          <path d="M108 14 L72 38 L108 58 Z" fill="#e3f2fd" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+          <!-- Flag -->
+          <path d="M113 10 L130 17 L113 24 Z" fill="#ffd700"/>
+          <!-- Windows -->
+          <circle cx="75" cy="72" r="7" fill="#bbdefb" stroke="#0d47a1" stroke-width="2"/>
+          <circle cx="110" cy="72" r="7" fill="#bbdefb" stroke="#0d47a1" stroke-width="2"/>
+          <circle cx="145" cy="72" r="7" fill="#bbdefb" stroke="#0d47a1" stroke-width="2"/>
+          <!-- Anchor icon on hull -->
+          <text x="103" y="93" font-size="12" fill="rgba(255,255,255,0.6)">⚓</text>
+          <!-- Wave under -->
+          <path d="M10 108 Q35 100 60 108 Q85 116 110 108 Q135 100 160 108 Q185 116 210 108" stroke="rgba(255,255,255,0.4)" stroke-width="3" fill="none"/>
+        </svg>
+      </div>
+      <div class="cover-ocean">
+        <div class="cover-wave1"></div>
+        <div class="cover-wave2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 2: INTRO ===== -->
+  <div class="page-card" id="page-2">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-icon" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb)">🌊</div>
+        <div class="page-title-wrap">
+          <h2>Petualangan Berlanjut!</h2>
+          <p>Minggu 4 – Menjadi Nahkoda yang Bijak</p>
+        </div>
+      </div>
+
+      <div class="story-card">
+        <p class="story-text">
+          Selama tiga minggu lebih, <strong>Kapten Aslan</strong> telah menjelajahi Lautan Digital dengan gagah berani. Ia telah belajar cara membedakan berlian dan sampah, melindungi diri dari monster tersembunyi, dan bahkan membantu teman-temannya di lautan.
+        </p>
+      </div>
+
+      <p class="story-text">Kemarin, di <strong>Hari 23</strong>, Aslan berhasil menyelamatkan teman baiknya, Nabil, dari badai gosip digital. Aslan mengulurkan tangan persahabatan lewat pesan yang hangat dan jujur. 💌</p>
+
+      <p class="story-text">Tapi hari ini... ada pelajaran yang <em>sangat penting</em> yang harus dipelajari Kapten Aslan. Pelajaran tentang <strong>seorang nahkoda yang terlalu cinta berlayar</strong> sehingga lupa memperhatikan kondisi kapalnya sendiri! 🚢</p>
+
+      <div class="highlight-box gold">
+        ⚓ <strong>Misi Hari Ini:</strong> Aslan akan belajar mengatur waktu berlayar di Lautan Digital agar kapalnya tetap kuat, sehat, dan siap petualangan baru!
+      </div>
+
+      <!-- Hourglass -->
+      <div class="hourglass-wrap">
+        <div class="hourglass">
+          <div class="hg-top"></div>
+          <div class="hg-mid"></div>
+          <div class="hg-bot"><div class="hg-sand"></div></div>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:13px;color:#888;font-style:italic">⏳ Waktu terus berjalan... bijaklah menggunakannya!</p>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 3: MAIN STORY ===== -->
+  <div class="page-card" id="page-3">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-icon" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0)">😴</div>
+        <div class="page-title-wrap">
+          <h2>Kapal Kapten Aslan Hampir Kehabisan Energi!</h2>
+          <p>Cerita Seru Hari Ini</p>
+        </div>
+      </div>
+
+      <p class="story-text">Pagi-pagi buta, Kapten Aslan sudah menyalakan layar ajaibnya. Video lucu di sana, video tutorial di sini, kuis seru di sana... <strong>Tanpa sadar, sudah 5 jam berlalu!</strong> 😱</p>
+
+      <!-- Energy bars -->
+      <div class="energy-bar-wrap">
+        <div class="energy-label">⚡ Energi Kapal Aslan (pagi hari):</div>
+        <div class="energy-bar"><div class="energy-fill full">100% — Penuh semangat! 🌟</div></div>
+      </div>
+      <div style="text-align:center;font-size:24px;margin:8px 0">↓ 5 jam berlayar tanpa henti ↓</div>
+      <div class="energy-bar-wrap">
+        <div class="energy-label">⚡ Energi Kapal Aslan (setelah 5 jam):</div>
+        <div class="energy-bar"><div class="energy-fill low">20% — Hampir habis! 😰</div></div>
+      </div>
+
+      <div class="highlight-box red" style="margin-top:16px">
+        😢 Mata Aslan mulai perih seperti terkena garam laut. Perutnya berbunyi karena lupa makan. Punggungnya pegal karena duduk membungkuk terlalu lama. Dan yang paling menyedihkan — di luar, teman-temannya sudah bermain sepak bola tanpa dia! ⚽
+      </div>
+
+      <p class="story-text">Tiba-tiba, <strong>Kompas Pintar</strong> di tangan Aslan bergetar dan bersuara:</p>
+
+      <div class="story-card" style="border-left-color:var(--gold);background:linear-gradient(135deg,#fffde7,#fff9c4)">
+        <p style="font-family:'Fredoka One';font-size:16px;color:#e65100;text-align:center">
+          🧭 "Kapten Aslan! Kapalmu membutuhkan berlabuh! Nahkoda yang bijak tahu kapan harus istirahat. Lautan Digital akan selalu ada, tapi waktu bermain dan istirahat tidak bisa digantikan!"
+        </p>
+      </div>
+
+      <p class="story-text" style="margin-top:16px">Aslan terkejut. Selama ini ia hanya fokus menjelajah lautan, tapi lupa bahwa <strong>kapal yang hebat membutuhkan perawatan</strong> yang rutin! 🔧</p>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 4: WHAT IS SCREEN TIME ===== -->
+  <div class="page-card" id="page-4">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-icon" style="background:linear-gradient(135deg,#e8eaf6,#c5cae9)">⏰</div>
+        <div class="page-title-wrap">
+          <h2>Apa Itu Waktu Berlayar?<br>(Screen Time)</h2>
+          <p>Mengenal waktu kita di Lautan Digital</p>
+        </div>
+      </div>
+
+      <div class="clock-anim-wrap">
+        <div class="clock-hand clock-hour" style="transform:rotate(90deg)"></div>
+        <div class="clock-hand clock-min"></div>
+        <div class="clock-center"></div>
+      </div>
+
+      <div class="highlight-box">
+        📱 <strong>Screen Time</strong> (Waktu Layar) adalah <em>total waktu yang kamu habiskan</em> di depan layar — entah itu HP, tablet, laptop, atau TV. Ini seperti lamanya kamu berlayar di Lautan Digital.
+      </div>
+
+      <p class="story-text">Bayangkan Lautan Digital seperti laut yang sesungguhnya. <strong>Berlayar itu menyenangkan dan bermanfaat</strong> — kamu bisa belajar hal baru, berkreasi, dan berkomunikasi. Tapi...</p>
+
+      <div class="danger-grid" style="grid-template-columns:1fr 1fr;margin-top:12px">
+        <div class="danger-card" style="border:2px solid #bbdefb">
+          <div class="emoji">⛵</div>
+          <h4>Berlayar Sebentar</h4>
+          <p>Menyegarkan, belajar banyak, kapal tetap kuat!</p>
+        </div>
+        <div class="danger-card" style="border:2px solid #ffcdd2">
+          <div class="emoji">🌊</div>
+          <h4>Berlayar Terlalu Lama</h4>
+          <p>Kapal kehabisan bahan bakar, awak lelah, berbahaya!</p>
+        </div>
+      </div>
+
+      <div class="highlight-box green" style="margin-top:14px">
+        🌟 <strong>Para ahli menyarankan:</strong> Anak seusiamu (10 tahun) sebaiknya berlayar <strong>maksimal 2 jam sehari</strong> untuk hiburan. Di luar itu, pastikan ada aktivitas lain yang tidak pakai layar!
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 5: WHY BALANCE MATTERS ===== -->
+  <div class="page-card" id="page-5">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-icon" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9)">⚖️</div>
+        <div class="page-title-wrap">
+          <h2>Mengapa Keseimbangan Sangat Penting?</h2>
+          <p>Rahasia Kapten Cerdas yang Kuat</p>
+        </div>
+      </div>
+
+      <p class="story-text">Seorang nahkoda yang bijak tidak menghabiskan <em>semua</em> waktunya di lautan. Ia juga perlu:</p>
+
+      <!-- Balance beam interactive -->
+      <div class="balance-beam" id="balanceBm">
+        <div class="beam-bar" id="beamBar" style="transform:translateX(-50%) rotate(0deg)"></div>
+        <div class="beam-pivot"></div>
+        <div class="beam-cup left" id="cupLeft">
+          <div style="font-size:32px">📱</div>
+          <div class="cup-label">Lautan Digital</div>
+        </div>
+        <div class="beam-cup right" id="cupRight">
+          <div style="font-size:32px">🌿</div>
+          <div class="cup-label">Dunia Nyata</div>
+        </div>
+        <div class="beam-base"></div>
+      </div>
+      <button id="balanceBtn" onclick="toggleBalance()">Lihat Keseimbangan! ⚖️</button>
+
+      <div class="highlight-box" style="margin-top:18px">
+        🏆 Kapten yang seimbang adalah yang bisa menikmati <strong>keduanya</strong>: petualangan di Lautan Digital <em>dan</em> keajaiban di dunia nyata. Keduanya sama pentingnya!
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
+        <div style="background:#e3f2fd;border-radius:16px;padding:14px;text-align:center">
+          <div style="font-size:24px">📱💻</div>
+          <div style="font-family:'Fredoka One';font-size:14px;color:var(--ocean-mid);margin-top:6px">Di Lautan Digital</div>
+          <div style="font-size:12px;color:#555;margin-top:4px;line-height:1.5">Belajar, berkreasi, berkomunikasi</div>
+        </div>
+        <div style="background:#e8f5e9;border-radius:16px;padding:14px;text-align:center">
+          <div style="font-size:24px">⚽🎨</div>
+          <div style="font-family:'Fredoka One';font-size:14px;color:#388e3c;margin-top:6px">Di Dunia Nyata</div>
+          <div style="font-size:12px;color:#555;margin-top:4px;line-height:1.5">Bermain, olahraga, bertemu teman</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 6: DANGERS ===== -->
+  <div class="page-card" id="page-6">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-icon" style="background:linear-gradient(135deg,#fce4ec,#ffcdd2)">⚠️</div>
+        <div class="page-title-wrap">
+          <h2>Bahaya Berlayar Terlalu Lama</h2>
+          <p>Yang terjadi kalau kapal kehabisan energi</p>
+        </div>
+      </div>
+
+      <p class="story-text">Saat Kapten Aslan terlalu lama di Lautan Digital tanpa istirahat, badai kesehatan pun datang! Ini yang dirasakan oleh kapalnya:</p>
+
+      <div class="danger-grid">
+        <div class="danger-card">
+          <div class="emoji">👁️</div>
+          <h4>Mata Lelah & Perih</h4>
+          <p>Mata menatap layar terlalu lama jadi kering, merah, dan susah fokus.</p>
+        </div>
+        <div class="danger-card">
+          <div class="emoji">🍔</div>
+          <h4>Lupa Makan & Minum</h4>
+          <p>Terlalu asyik berlayar sampai lupa makan dan tubuh jadi lemas.</p>
+        </div>
+        <div class="danger-card">
+          <div class="emoji">😴</div>
+          <h4>Kurang Tidur</h4>
+          <p>Layar malam hari mengganggu tidur, besoknya ngantuk dan sulit belajar.</p>
+        </div>
+        <div class="danger-card">
+          <div class="emoji">🦴</div>
+          <h4>Kurang Bergerak</h4>
+          <p>Duduk terlalu lama bikin punggung pegal dan badan tidak sehat.</p>
+        </div>
+        <div class="danger-card">
+          <div class="emoji">🧠</div>
+          <h4>Susah Konsentrasi</h4>
+          <p>Terlalu banyak informasi digital bikin otak susah fokus pada satu hal.</p>
+        </div>
+        <div class="danger-card">
+          <div class="emoji">😢</div>
+          <h4>Ketinggalan Teman</h4>
+          <p>Saat asyik di layar, teman-teman bermain tanpa kita di dunia nyata.</p>
+        </div>
+      </div>
+
+      <div class="highlight-box red">
+        🚨 <strong>Ingat:</strong> Lautan Digital bisa menghisap waktu tanpa kamu sadari. Itu sebabnya nahkoda yang cerdas selalu pasang alarm dan peta waktu berlayarnya!
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 7: SCHEDULE ===== -->
+  <div class="page-card" id="page-7">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-icon" style="background:linear-gradient(135deg,#fff9c4,#fff176)">📅</div>
+        <div class="page-title-wrap">
+          <h2>Jadwal Berlayar Kapten Aslan</h2>
+          <p>Peta waktu yang bijak untuk hari sekolah</p>
+        </div>
+      </div>
+
+      <p class="story-text">Kapten Cerdas membutuhkan <strong>Peta Waktu Berlayar</strong> — jadwal yang membagi waktu antara Lautan Digital dan dunia nyata. Lihat jadwal Aslan di bawah ini:</p>
+
+      <table class="schedule-table">
+        <tr>
+          <th>⏰ Waktu</th>
+          <th>🗺️ Aktivitas</th>
+          <th>📍 Di Mana</th>
+        </tr>
+        <tr>
+          <td>05.30 – 07.00</td>
+          <td>Bangun, shalat, sarapan, siap sekolah</td>
+          <td><span class="tag-darat">🌿 Darat</span></td>
+        </tr>
+        <tr>
+          <td>07.00 – 13.00</td>
+          <td>Sekolah & belajar</td>
+          <td><span class="tag-darat">🌿 Darat</span></td>
+        </tr>
+        <tr>
+          <td>13.00 – 14.00</td>
+          <td>Makan siang, istirahat, shalat</td>
+          <td><span class="tag-darat">🌿 Darat</span></td>
+        </tr>
+        <tr>
+          <td>14.00 – 15.00</td>
+          <td>Berlayar untuk belajar (YouTube belajar, dll)</td>
+          <td><span class="tag-screen">📱 Layar</span></td>
+        </tr>
+        <tr>
+          <td>15.00 – 16.30</td>
+          <td>Olahraga & bermain bersama teman</td>
+          <td><span class="tag-darat">🌿 Darat</span></td>
+        </tr>
+        <tr>
+          <td>16.30 – 17.30</td>
+          <td>Berlayar santai (game/video hiburan)</td>
+          <td><span class="tag-screen">📱 Layar</span></td>
+        </tr>
+        <tr>
+          <td>17.30 – 20.00</td>
+          <td>Mandi, makan malam, shalat, keluarga</td>
+          <td><span class="tag-darat">🌿 Darat</span></td>
+        </tr>
+        <tr>
+          <td>20.00 – 21.00</td>
+          <td>Belajar & membaca buku</td>
+          <td><span class="tag-darat">🌿 Darat</span></td>
+        </tr>
+        <tr>
+          <td>21.00 – 05.30</td>
+          <td>Tidur — kapal berlabuh untuk mengisi energi! 💤</td>
+          <td><span class="tag-darat">🌿 Darat</span></td>
+        </tr>
+      </table>
+
+      <div class="highlight-box green">
+        ✅ Total waktu layar: <strong>2 jam</strong> — pas dan sehat! Sisanya untuk dunia nyata yang seru. 🏆
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 8: SIGNS TO REST ===== -->
+  <div class="page-card" id="page-8">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-icon" style="background:linear-gradient(135deg,#e8eaf6,#c5cae9)">🚥</div>
+        <div class="page-title-wrap">
+          <h2>Tanda Sudah Waktunya Berlabuh</h2>
+          <p>Sinyal istirahat dari tubuh dan kapalmu</p>
+        </div>
+      </div>
+
+      <p class="story-text">Kapten Cerdas perlu mengenali <strong>sinyal lampu merah</strong> dari tubuhnya. Klik setiap kartu untuk mengetahui lebih lanjut!</p>
+
+      <div class="sign-item" onclick="toggleSign(this)">
+        <div class="sign-emoji">👁️</div>
+        <div class="sign-text">
+          <h4>Mata terasa perih atau buram</h4>
+          <p>Kalau matamu mulai terasa terbakar, berair, atau melihat jadi blur — itu tanda kapalmu butuh istirahat segera. Alihkan pandangan ke jendela selama 20 detik!</p>
+        </div>
+      </div>
+
+      <div class="sign-item" onclick="toggleSign(this)">
+        <div class="sign-emoji">🥱</div>
+        <div class="sign-text">
+          <h4>Menguap terus-terusan</h4>
+          <p>Mengantuk di depan layar berarti otakmu minta istirahat. Jangan dilawan — berbaring sebentar lebih baik daripada terus berlayar dalam keadaan mengantuk!</p>
+        </div>
+      </div>
+
+      <div class="sign-item" onclick="toggleSign(this)">
+        <div class="sign-emoji">🦴</div>
+        <div class="sign-text">
+          <h4>Leher dan punggung pegal</h4>
+          <p>Badan yang tegang dan pegal adalah tanda tubuhmu berteriak minta digerakkan. Berdiri, lakukan peregangan, dan jalan-jalan sebentar!</p>
+        </div>
+      </div>
+
+      <div class="sign-item" onclick="toggleSign(this)">
+        <div class="sign-emoji">😤</div>
+        <div class="sign-text">
+          <h4>Mudah marah atau kesal</h4>
+          <p>Kalau kamu mulai mudah frustrasi karena konten atau permainan, itu sinyal penting! Otak yang lelah membuat emosi jadi tidak stabil. Waktunya berlabuh!</p>
+        </div>
+      </div>
+
+      <div class="sign-item" onclick="toggleSign(this)">
+        <div class="sign-emoji">⏱️</div>
+        <div class="sign-text">
+          <h4>Alarm waktu berbunyi</h4>
+          <p>Kapten Cerdas selalu pasang alarm! Saat alarm berbunyi, itu adalah perintah nahkoda untuk berlabuh — tidak ada alasan "sebentar lagi"!</p>
+        </div>
+      </div>
+
+      <div class="highlight-box" style="margin-top:8px">
+        💡 Tips: Gunakan aturan <strong>20-20-20</strong>! Setiap 20 menit, lihat sesuatu sejauh 20 kaki (6 meter) selama 20 detik. Mata kapalmu akan berterima kasih!
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 9: INTERACTIVE SLIDER ===== -->
+  <div class="page-card" id="page-9">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-icon" style="background:linear-gradient(135deg,#e0f2f1,#b2dfdb)">🎮</div>
+        <div class="page-title-wrap">
+          <h2>Berapa Jam yang Tepat?</h2>
+          <p>Atur waktu berlayarmu sendiri!</p>
+        </div>
+      </div>
+
+      <p class="story-text">Coba atur slider di bawah ini untuk melihat berapa jam yang tepat untuk berlayar di Lautan Digital:</p>
+
+      <div class="slider-wrap">
+        <div class="slider-label">🕐 Waktu Berlayar: <span id="sliderVal" style="color:var(--ocean-mid)">2 jam</span></div>
+        <input type="range" class="time-slider" id="timeSlider" min="0" max="8" value="2" oninput="updateSlider(this.value)">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#888;margin-top:4px">
+          <span>0 jam</span><span>2 jam ✅</span><span>4 jam</span><span>6 jam</span><span>8 jam</span>
+        </div>
+        <div class="slider-status" id="sliderStatus">
+          <span>✅ Sempurna! 2 jam adalah waktu ideal untuk berlayar setiap hari!</span>
+        </div>
+      </div>
+
+      <p class="story-text" style="margin-top:20px">Sekarang, pilih mana yang lebih kamu suka hari ini:</p>
+
+      <div class="sea-land-toggle">
+        <button class="toggle-btn sea" onclick="pickActivity('sea', this)">
+          🌊 Berlayar di Lautan Digital<br>
+          <span style="font-size:12px;font-family:'Nunito';font-weight:600">(Belajar / Hiburan)</span>
+        </button>
+        <button class="toggle-btn land" onclick="pickActivity('land', this)">
+          🌿 Petualangan di Darat<br>
+          <span style="font-size:12px;font-family:'Nunito';font-weight:600">(Bermain / Olahraga)</span>
+        </button>
+      </div>
+
+      <div class="toggle-result" id="toggleResult" style="background:#f5f5f5;border-radius:16px">
+        Pilih aktivitasmu di atas! ⬆️
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 10: RULES ===== -->
+  <div class="page-card" id="page-10">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-icon" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2)">📜</div>
+        <div class="page-title-wrap">
+          <h2>Aturan Emas Waktu Berlayar</h2>
+          <p>Kode kehormatan Kapten Cerdas</p>
+        </div>
+      </div>
+
+      <ul class="rules-list">
+        <li>
+          <div class="rule-num">1</div>
+          <div class="rule-text"><strong>Maksimal 2 jam sehari</strong> untuk hiburan digital. Waktu belajar dengan layar bisa sedikit lebih, tapi selalu ada jeda istirahat!</div>
+        </li>
+        <li>
+          <div class="rule-num">2</div>
+          <div class="rule-text"><strong>Selesaikan kewajiban dulu</strong> — shalat, makan, PR, dan pekerjaan rumah — sebelum berlayar ke Lautan Digital.</div>
+        </li>
+        <li>
+          <div class="rule-num">3</div>
+          <div class="rule-text"><strong>Pasang alarm!</strong> Kapten Cerdas tidak bergantung pada ingatan — set timer sebelum mulai berlayar agar tidak lupa berhenti.</div>
+        </li>
+        <li>
+          <div class="rule-num">4</div>
+          <div class="rule-text"><strong>Tidak ada layar 1 jam sebelum tidur.</strong> Cahaya biru dari layar membuat otakmu tetap terjaga dan mengacaukan tidurmu.</div>
+        </li>
+        <li>
+          <div class="rule-num">5</div>
+          <div class="rule-text"><strong>Istirahat setiap 20-30 menit.</strong> Bangun, regangkan tubuh, minum air, dan biarkan matamu beristirahat sejenak.</div>
+        </li>
+        <li>
+          <div class="rule-num">6</div>
+          <div class="rule-text"><strong>Tidak ada kapal di meja makan.</strong> Waktu makan adalah waktu bersama keluarga — Lautan Digital bisa menunggu!</div>
+        </li>
+        <li>
+          <div class="rule-num">7</div>
+          <div class="rule-text"><strong>Pilih konten yang bermakna.</strong> Gunakan sebagian waktu layarmu untuk belajar, berkreasi, atau hal yang membuatmu bertumbuh.</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 11: CHALLENGE ===== -->
+  <div class="page-card" id="page-11">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-icon" style="background:linear-gradient(135deg,#fff9c4,#fff176)">🏆</div>
+        <div class="page-title-wrap">
+          <h2>Tantangan Kapten Aslan!</h2>
+          <p>Misi khusus hari ini untukmu</p>
+        </div>
+      </div>
+
+      <div class="challenge-container">
+        <div class="challenge-title">⚓ Misi Hari 24 ⚓</div>
+
+        <ul class="challenge-list">
+          <li>Buat jadwal waktu berlayarmu sendiri hari ini — tulis di buku atau di HP bersama orang tua!</li>
+          <li>Pasang alarm 2 jam sebelum mulai bermain HP atau tablet hari ini.</li>
+          <li>Setelah 30 menit berlayar, berdiri dan lakukan 10 lompatan di tempat untuk menyegarkan tubuhmu.</li>
+          <li>Ceritakan pada orang tuamu satu hal yang sudah kamu pelajari tentang Screen Time hari ini.</li>
+          <li>Pilih satu aktivitas "darat" yang ingin kamu lakukan hari ini — olahraga, membaca buku, atau bermain dengan teman!</li>
+        </ul>
+
+        <button class="rest-btn" onclick="showRest()">
+          🌅 Klik Ini Kalau Sudah Waktunya Istirahat!
+        </button>
+      </div>
+
+      <div class="highlight-box gold" style="margin-top:16px">
+        🧭 <strong>Ingat:</strong> Kapten Cerdas bukan yang paling lama berlayar, tapi yang paling <em>bijak</em> mengatur perjalanannya. Kamu bisa, Aslan! 💪
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 12: CLOSING ===== -->
+  <div class="page-card" id="page-12">
+    <div class="closing-page">
+      <div class="cover-stars" id="starField2"></div>
+
+      <!-- Final ship -->
+      <div style="margin-bottom:20px">
+        <svg width="180" height="100" viewBox="0 0 180 100" class="ship-svg">
+          <ellipse cx="90" cy="88" rx="80" ry="14" fill="rgba(66,165,245,0.2)"/>
+          <path d="M25 66 Q90 78 155 66 L150 84 Q90 96 30 84 Z" fill="#1565c0"/>
+          <path d="M30 84 Q90 94 150 84 L155 66 Q90 76 25 66 Z" fill="#0d47a1"/>
+          <rect x="45" y="50" width="90" height="18" rx="3" fill="#1976d2"/>
+          <rect x="88" y="8" width="4" height="44" fill="#8d6e63"/>
+          <path d="M92 12 L122 30 L92 46 Z" fill="white"/>
+          <path d="M88 12 L60 30 L88 46 Z" fill="#e3f2fd"/>
+          <path d="M92 8 L106 14 L92 20 Z" fill="#ffd700"/>
+          <circle cx="62" cy="60" r="6" fill="#bbdefb" stroke="#0d47a1" stroke-width="2"/>
+          <circle cx="90" cy="60" r="6" fill="#bbdefb" stroke="#0d47a1" stroke-width="2"/>
+          <circle cx="118" cy="60" r="6" fill="#bbdefb" stroke="#0d47a1" stroke-width="2"/>
+          <!-- Sun/star nearby -->
+          <circle cx="155" cy="20" r="16" fill="rgba(255,215,0,0.3)" stroke="rgba(255,215,0,0.6)" stroke-width="2"/>
+          <text x="148" y="25" font-size="16">⭐</text>
+        </svg>
+      </div>
+
+      <h2>Selamat, Kapten Aslan! 🎉</h2>
+
+      <p>Hari ini kamu telah mempelajari rahasia terpenting seorang nahkoda: <strong style="color:var(--gold)">mengetahui kapan harus berlayar dan kapan harus berlabuh</strong>. Waktu yang seimbang membuat kapalmu tetap kuat dan petualanganmu tetap menyenangkan!</p>
+
+      <div class="closing-badge">
+        ⏰ Kapten Waktu Bijak — Level 24 Terbuka! ⏰
+      </div>
+
+      <p style="font-size:14px">Ingatlah: Lautan Digital selalu menunggumu. Tapi kesehatanmu, temanmu, dan keluargamu jauh lebih berharga. Jadilah nahkoda yang bijak — seimbangkan waktu berlayarmu, Kapten Aslan! ⚓</p>
+
+      <div class="next-preview">
+        🔭 <strong>Hari 25:</strong> Harta Karun Kreatif — Aslan akan belajar cara <em>membuat konten yang bagus dan bermakna</em> di Lautan Digital! Siap berkreasi? 🎨
+      </div>
+    </div>
+  </div>
+
+</div><!-- end book-container -->
+
+<!-- Navigation -->
+<div class="nav-buttons">
+  <button class="nav-btn prev" id="prevBtn" onclick="changePage(-1)" disabled>◀ Sebelumnya</button>
+  <button class="nav-btn next" id="nextBtn" onclick="changePage(1)">Selanjutnya ▶</button>
+</div>
+
+<script>
+  const TOTAL_PAGES = 12;
+  let current = 1;
+  let balanceState = 0;
+
+  // Create bubbles
+  function createBubbles() {
+    const container = document.getElementById('bubbleContainer');
+    container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden';
+    for (let i = 0; i < 12; i++) {
+      const b = document.createElement('div');
+      const size = Math.random() * 20 + 6;
+      b.className = 'bubble';
+      b.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${Math.random()*10+8}s;animation-delay:${Math.random()*8}s`;
+      container.appendChild(b);
+    }
+  }
+
+  // Create stars
+  function createStars(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    for (let i = 0; i < 50; i++) {
+      const s = document.createElement('div');
+      const size = Math.random() * 3 + 1;
+      s.className = 'star';
+      s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*80}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${Math.random()*2+1}s`;
+      container.appendChild(s);
+    }
+  }
+
+  function updateProgress() {
+    const pct = (current / TOTAL_PAGES) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('pageIndicator').textContent = current + ' / ' + TOTAL_PAGES;
+    document.getElementById('prevBtn').disabled = current === 1;
+    document.getElementById('nextBtn').disabled = current === TOTAL_PAGES;
+    document.getElementById('nextBtn').textContent = current === TOTAL_PAGES ? 'Selesai ✓' : 'Selanjutnya ▶';
+  }
+
+  function changePage(dir) {
+    const oldPage = document.getElementById('page-' + current);
+    current = Math.max(1, Math.min(TOTAL_PAGES, current + dir));
+    const newPage = document.getElementById('page-' + current);
+    if (oldPage) oldPage.classList.remove('active');
+    if (newPage) {
+      newPage.classList.add('active');
+      newPage.style.animation = 'none';
+      requestAnimationFrame(() => { newPage.style.animation = 'pageIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)'; });
+    }
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Balance beam toggle
+  function toggleBalance() {
+    balanceState = (balanceState + 1) % 3;
+    const beam = document.getElementById('beamBar');
+    const left = document.getElementById('cupLeft');
+    const right = document.getElementById('cupRight');
+    const btn = document.getElementById('balanceBtn');
+    if (balanceState === 0) {
+      beam.style.transform = 'translateX(-50%) rotate(0deg)';
+      left.style.top = '30px'; right.style.top = '30px';
+      btn.textContent = 'Lihat Keseimbangan! ⚖️';
+      left.querySelector('.cup-label').style.color = '#555';
+      right.querySelector('.cup-label').style.color = '#555';
+    } else if (balanceState === 1) {
+      beam.style.transform = 'translateX(-50%) rotate(-20deg)';
+      left.style.top = '5px'; right.style.top = '55px';
+      btn.textContent = 'Terlalu Banyak Digital! Coba Seimbangkan ↩';
+      left.querySelector('.cup-label').style.color = 'var(--red-warn)';
+      right.querySelector('.cup-label').style.color = '#555';
+    } else {
+      beam.style.transform = 'translateX(-50%) rotate(0deg)';
+      left.style.top = '30px'; right.style.top = '30px';
+      btn.textContent = 'Seimbang! Begini yang Benar ✅';
+      left.querySelector('.cup-label').style.color = '#388e3c';
+      right.querySelector('.cup-label').style.color = '#388e3c';
+    }
+  }
+
+  // Slider
+  function updateSlider(val) {
+    val = parseInt(val);
+    document.getElementById('sliderVal').textContent = val + ' jam';
+    const status = document.getElementById('sliderStatus');
+    if (val <= 1) {
+      status.style.background = '#e8f5e9';
+      status.innerHTML = '😊 Sangat baik! Tapi pastikan kamu tetap belajar dari layar ya.';
+    } else if (val === 2) {
+      status.style.background = '#e8f5e9';
+      status.innerHTML = '✅ <strong>Sempurna!</strong> 2 jam adalah waktu ideal untuk berlayar setiap hari!';
+    } else if (val <= 4) {
+      status.style.background = '#fff9c4';
+      status.innerHTML = '⚠️ Agak terlalu lama! Pastikan ada banyak aktivitas darat di sisa waktu.';
+    } else if (val <= 6) {
+      status.style.background = '#fce4ec';
+      status.innerHTML = '🚨 Terlalu lama! Matamu dan tubuhmu butuh lebih banyak istirahat dari layar.';
+    } else {
+      status.style.background = '#ffcdd2';
+      status.innerHTML = '🆘 Bahaya! ' + val + ' jam di layar terlalu banyak — waktunya berlabuh segera!';
+    }
+  }
+
+  // Sea/Land toggle
+  function pickActivity(type, btn) {
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    const result = document.getElementById('toggleResult');
+    if (type === 'sea') {
+      result.style.background = '#e3f2fd';
+      result.innerHTML = '🌊 <strong>Seru!</strong> Pastikan kamu sudah pasang alarm untuk 2 jam ya, Kapten! Dan jangan lupa istirahat setiap 30 menit. Berlayar yang bijak! ⚓';
+    } else {
+      result.style.background = '#e8f5e9';
+      result.innerHTML = '🌿 <strong>Luar biasa!</strong> Petualangan di darat sama serunya! Olahraga, bermain dengan teman, atau membaca buku — semuanya membuat Kaptenmu semakin kuat dan sehat! 🏆';
+    }
+  }
+
+  // Sign toggle (expand/collapse)
+  function toggleSign(el) {
+    el.style.background = el.style.background === 'rgb(227, 242, 253)' ? 'white' : '#e3f2fd';
+    el.style.borderColor = el.style.borderColor === 'rgb(66, 165, 245)' ? 'transparent' : '#42a5f5';
+  }
+
+  // Rest modal
+  function showRest() {
+    const overlay = document.getElementById('restOverlay');
+    overlay.classList.add('show');
+    // Add confetti
+    const modal = document.getElementById('restModal');
+    const colors = ['#ffd700','#42a5f5','#4caf50','#ff6b35','#7c4dff','#ef5350'];
+    for (let i = 0; i < 20; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.cssText = `left:${Math.random()*100}%;top:0;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*0.8}s;animation-duration:${Math.random()*1+1.5}s;transform:rotate(${Math.random()*360}deg)`;
+      modal.appendChild(c);
+    }
+  }
+  function closeRest() {
+    document.getElementById('restOverlay').classList.remove('show');
+  }
+
+  // Init
+  createBubbles();
+  createStars('starField');
+  createStars('starField2');
+  updateProgress();
+  updateSlider(2);
+</script>
+</body>
+</html>s

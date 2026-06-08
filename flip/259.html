@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 29: Harta Karun Leluhur Kita – Kapten Cerdas Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;500;600;700&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #F5A623;
+    --gold-light: #FFD700;
+    --gold-dark: #C8860A;
+    --brown: #6B3A2A;
+    --brown-light: #A0614A;
+    --sky: #4A90D9;
+    --sky-light: #87CEEB;
+    --green: #4CAF50;
+    --green-dark: #2E7D32;
+    --purple: #7B2FBE;
+    --purple-light: #A855F7;
+    --cream: #FFF8E7;
+    --dark: #2C1A0E;
+    --sand: #F4E4C1;
+    --ruby: #E53E3E;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #1a0a00 0%, #2C1A0E 40%, #1a1a2e 100%);
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Floating particles */
+  .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: float-particle linear infinite;
+    opacity: 0;
+  }
+  @keyframes float-particle {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Back button */
+  .back-btn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 1000;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: var(--dark);
+    border: none;
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 20px rgba(245,166,35,0.5);
+    transition: all 0.3s;
+  }
+  .back-btn:hover { transform: scale(1.05) translateX(-3px); box-shadow: 0 6px 28px rgba(245,166,35,0.7); }
+
+  /* Book wrapper */
+  .book-wrapper {
+    position: relative;
+    z-index: 10;
+    width: min(780px, 96vw);
+    height: min(92vh, 700px);
+    perspective: 2000px;
+  }
+
+  /* Progress bar */
+  .progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    height: 5px;
+    background: rgba(255,255,255,0.1);
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold-light), var(--gold-dark));
+    background-size: 200%;
+    animation: shimmer-bar 2s linear infinite;
+    transition: width 0.5s ease;
+  }
+  @keyframes shimmer-bar { 0%{background-position:0%} 100%{background-position:200%} }
+
+  /* Page indicator */
+  .page-indicator {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    padding: 8px 20px;
+    border-radius: 50px;
+    border: 1px solid rgba(245,166,35,0.3);
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .dot.active { background: var(--gold); transform: scale(1.4); box-shadow: 0 0 10px var(--gold); }
+
+  /* Navigation */
+  .nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 999;
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    box-shadow: 0 4px 20px rgba(245,166,35,0.4);
+    color: var(--dark);
+    font-weight: bold;
+  }
+  #prev-btn { left: 10px; }
+  #next-btn { right: 10px; }
+  .nav-btn:hover { transform: translateY(-50%) scale(1.15); box-shadow: 0 6px 30px rgba(245,166,35,0.7); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; transform: translateY(-50%) scale(1); }
+
+  /* Slide system */
+  .slides-container { width: 100%; height: 100%; position: relative; }
+  .slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(100px) scale(0.95);
+    transition: all 0.6s cubic-bezier(0.4,0,0.2,1);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(245,166,35,0.2);
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0) scale(1);
+  }
+  .slide.exit-left {
+    opacity: 0;
+    transform: translateX(-100px) scale(0.95);
+  }
+  .slide-inner {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold) transparent;
+  }
+  .slide-inner::-webkit-scrollbar { width: 4px; }
+  .slide-inner::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+
+  /* ===== SLIDE 1: COVER ===== */
+  .slide-cover {
+    background: linear-gradient(160deg, #0d1b2a 0%, #1a0a00 50%, #2d1b00 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-stars { position: absolute; inset: 0; }
+  .star-cover {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 2s ease-in-out infinite;
+  }
+  @keyframes twinkle { 0%,100%{opacity:0.3;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
+
+  .cover-chest {
+    font-size: 100px;
+    animation: chest-float 3s ease-in-out infinite;
+    filter: drop-shadow(0 10px 30px rgba(245,166,35,0.8));
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  .cover-chest:hover { transform: scale(1.1) rotate(-5deg); }
+  @keyframes chest-float { 0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-15px) rotate(3deg)} }
+
+  .cover-sparkles { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+  .sparkle {
+    position: absolute;
+    font-size: 20px;
+    animation: sparkle-anim 2.5s ease-in-out infinite;
+  }
+  @keyframes sparkle-anim { 0%,100%{opacity:0;transform:scale(0) rotate(0deg)} 50%{opacity:1;transform:scale(1) rotate(180deg)} }
+
+  .series-badge {
+    background: linear-gradient(135deg, var(--purple), var(--purple-light));
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 12px;
+    padding: 6px 18px;
+    border-radius: 50px;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 2;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(123,47,190,0.5);
+  }
+
+  .cover-day {
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    color: var(--gold);
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 0 20px rgba(245,166,35,0.7);
+    margin-bottom: 4px;
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(26px, 5vw, 38px);
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), #FF8C00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    position: relative;
+    z-index: 2;
+    text-shadow: none;
+    padding: 0 20px;
+    margin-bottom: 8px;
+  }
+
+  .cover-subtitle {
+    font-size: 14px;
+    color: var(--sky-light);
+    position: relative;
+    z-index: 2;
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+
+  .cover-character {
+    font-size: 64px;
+    position: relative;
+    z-index: 2;
+    animation: hero-bounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
+  }
+  @keyframes hero-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+  .cover-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    color: white;
+    position: relative;
+    z-index: 2;
+    margin-top: 8px;
+  }
+  .cover-name span {
+    background: linear-gradient(90deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .start-btn {
+    margin-top: 20px;
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+    color: var(--dark);
+    border: none;
+    border-radius: 50px;
+    padding: 14px 36px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    cursor: pointer;
+    animation: pulse-btn 2s ease-in-out infinite;
+    box-shadow: 0 6px 30px rgba(245,166,35,0.6);
+    transition: all 0.3s;
+  }
+  .start-btn:hover { transform: scale(1.08); box-shadow: 0 10px 40px rgba(245,166,35,0.9); }
+  @keyframes pulse-btn { 0%,100%{box-shadow:0 6px 30px rgba(245,166,35,0.6)} 50%{box-shadow:0 6px 50px rgba(245,166,35,1)} }
+
+  /* ===== GENERAL SLIDE STYLES ===== */
+  .slide-content {
+    min-height: 100%;
+    padding: 48px 36px 80px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .slide-header {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .slide-emoji-big { font-size: 56px; margin-bottom: 8px; display: block; }
+
+  .slide-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(22px, 4vw, 30px);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .slide-subtitle {
+    font-size: 14px;
+    opacity: 0.8;
+    font-style: italic;
+  }
+
+  .story-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+
+  .highlight-box {
+    border-radius: 20px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ===== SLIDE 2: PENGANTAR ===== */
+  .slide-intro {
+    background: linear-gradient(160deg, #1a2a1a 0%, #0d1b0d 100%);
+  }
+  .intro-card {
+    background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 24px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .intro-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,215,0,0.05) 0%, transparent 70%);
+    animation: rotate-glow 8s linear infinite;
+  }
+  @keyframes rotate-glow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  /* ===== SLIDE 3: PETUALANGAN ===== */
+  .slide-adventure { background: linear-gradient(160deg, #0a0a1a 0%, #1a0a2a 100%); }
+
+  .adventure-scene {
+    background: linear-gradient(135deg, rgba(74,144,217,0.15), rgba(123,47,190,0.15));
+    border: 1px solid rgba(74,144,217,0.3);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 12px 0;
+    position: relative;
+  }
+
+  /* ===== TREASURE CARDS ===== */
+  .treasure-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 16px 0;
+  }
+
+  .treasure-card {
+    background: linear-gradient(135deg, rgba(245,166,35,0.1), rgba(200,134,10,0.05));
+    border: 2px solid rgba(245,166,35,0.3);
+    border-radius: 18px;
+    padding: 18px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+  }
+  .treasure-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,215,0,0.1));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .treasure-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    border-color: var(--gold);
+    box-shadow: 0 12px 40px rgba(245,166,35,0.3);
+  }
+  .treasure-card:hover::before { opacity: 1; }
+
+  .treasure-card.revealed {
+    border-color: var(--gold-light);
+    background: linear-gradient(135deg, rgba(245,166,35,0.2), rgba(255,215,0,0.1));
+    box-shadow: 0 0 30px rgba(255,215,0,0.3);
+  }
+
+  .treasure-icon { font-size: 36px; margin-bottom: 8px; display: block; }
+  .treasure-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .treasure-desc {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+    display: none;
+  }
+  .treasure-card.revealed .treasure-desc { display: block; }
+  .treasure-hint {
+    font-size: 10px;
+    color: var(--gold);
+    margin-top: 6px;
+    animation: pulse-text 1.5s ease-in-out infinite;
+  }
+  .treasure-card.revealed .treasure-hint { display: none; }
+  @keyframes pulse-text { 0%,100%{opacity:0.5} 50%{opacity:1} }
+
+  /* ===== TIMELINE ===== */
+  .timeline { padding: 10px 0; }
+  .timeline-item {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .timeline-item:hover { transform: translateX(6px); }
+  .timeline-dot {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .timeline-dot::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+  }
+  .timeline-item:last-child .timeline-dot::after { display: none; }
+  .timeline-item.lit .timeline-dot {
+    box-shadow: 0 0 20px currentColor;
+    border-color: currentColor;
+    animation: glow-dot 2s ease-in-out infinite;
+  }
+  @keyframes glow-dot { 0%,100%{box-shadow:0 0 10px currentColor} 50%{box-shadow:0 0 30px currentColor} }
+
+  .timeline-content { flex: 1; }
+  .timeline-period {
+    font-family: 'Fredoka One', cursive;
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 2px;
+  }
+  .timeline-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .timeline-text { font-size: 12px; line-height: 1.6; opacity: 0.85; }
+
+  /* ===== CHEST INTERACTIVE ===== */
+  .big-chest-container {
+    text-align: center;
+    padding: 20px;
+    cursor: pointer;
+    position: relative;
+  }
+  .big-chest {
+    font-size: 120px;
+    display: inline-block;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 10px 30px rgba(245,166,35,0.5));
+    position: relative;
+  }
+  .big-chest.opening {
+    animation: chest-open 0.6s ease forwards;
+  }
+  @keyframes chest-open {
+    0%{transform:scale(1) rotate(0deg)}
+    30%{transform:scale(1.2) rotate(-10deg)}
+    60%{transform:scale(1.3) rotate(5deg)}
+    100%{transform:scale(1.1) rotate(0deg)}
+  }
+  .chest-glow {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,215,0,0.3), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .big-chest-container.opened .chest-glow { opacity: 1; animation: glow-pulse 2s ease-in-out infinite; }
+  @keyframes glow-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+  .chest-items {
+    display: none;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+    animation: items-appear 0.5s ease;
+  }
+  .big-chest-container.opened .chest-items { display: grid; }
+  @keyframes items-appear { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+
+  .chest-item {
+    background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(245,166,35,0.05));
+    border: 1px solid rgba(255,215,0,0.4);
+    border-radius: 14px;
+    padding: 12px 8px;
+    font-size: 11px;
+    text-align: center;
+    color: white;
+    animation: item-bounce 0.5s ease;
+  }
+  .chest-item-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+  @keyframes item-bounce { from{transform:scale(0)} to{transform:scale(1)} }
+
+  /* ===== WHY SECTION ===== */
+  .why-grid { display: flex; flex-direction: column; gap: 12px; }
+  .why-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: rgba(255,255,255,0.05);
+    border-radius: 16px;
+    padding: 16px;
+    border-left: 4px solid var(--gold);
+    transition: all 0.3s;
+  }
+  .why-item:hover { transform: translateX(6px); background: rgba(255,255,255,0.08); }
+  .why-icon { font-size: 28px; flex-shrink: 0; }
+  .why-text h4 { font-family: 'Fredoka One', cursive; font-size: 15px; margin-bottom: 4px; color: var(--gold); }
+  .why-text p { font-size: 12px; line-height: 1.6; opacity: 0.85; }
+
+  /* ===== HOW TO SECTION ===== */
+  .how-steps { display: flex; flex-direction: column; gap: 16px; }
+  .how-step {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 16px 20px;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .how-step:hover { transform: scale(1.02); background: rgba(255,255,255,0.08); }
+  .step-number {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: var(--dark);
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(245,166,35,0.4);
+  }
+  .step-content h4 { font-family: 'Fredoka One', cursive; font-size: 15px; margin-bottom: 3px; }
+  .step-content p { font-size: 12px; opacity: 0.8; line-height: 1.5; }
+
+  /* ===== BRAIN SECTION ===== */
+  .brain-visual {
+    text-align: center;
+    padding: 20px;
+    position: relative;
+  }
+  .brain-emoji {
+    font-size: 80px;
+    display: inline-block;
+    animation: brain-pulse 2.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 30px rgba(168,85,247,0.7));
+  }
+  @keyframes brain-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+
+  .brain-rays {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .ray {
+    position: absolute;
+    font-size: 16px;
+    animation: orbit-ray linear infinite;
+  }
+  @keyframes orbit-ray { from{transform:rotate(var(--start)) translateX(80px)} to{transform:rotate(calc(var(--start) + 360deg)) translateX(80px)} }
+
+  .power-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 16px;
+  }
+  .power-tag {
+    background: linear-gradient(135deg, var(--purple), var(--purple-light));
+    color: white;
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 13px;
+    box-shadow: 0 4px 15px rgba(123,47,190,0.4);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .power-tag:hover { transform: scale(1.1); box-shadow: 0 6px 25px rgba(123,47,190,0.7); }
+
+  /* ===== LESSON SECTION ===== */
+  .lesson-cards { display: flex; flex-direction: column; gap: 12px; }
+  .lesson-card {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    border-radius: 16px;
+    padding: 16px;
+    transition: all 0.3s;
+  }
+  .lesson-icon { font-size: 30px; flex-shrink: 0; }
+  .lesson-text h4 { font-family: 'Fredoka One', cursive; font-size: 15px; margin-bottom: 4px; }
+  .lesson-text p { font-size: 12px; line-height: 1.6; opacity: 0.85; }
+
+  /* ===== CHALLENGE SECTION ===== */
+  .challenge-box {
+    background: linear-gradient(135deg, rgba(76,175,80,0.15), rgba(46,125,50,0.1));
+    border: 2px solid rgba(76,175,80,0.4);
+    border-radius: 24px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .challenge-list { list-style: none; margin: 16px 0; display: flex; flex-direction: column; gap: 12px; }
+  .challenge-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: rgba(255,255,255,0.05);
+    border-radius: 14px;
+    padding: 14px;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .challenge-item:hover { background: rgba(76,175,80,0.1); transform: translateX(4px); }
+  .challenge-check {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 2px solid var(--green);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .challenge-item.done .challenge-check {
+    background: var(--green);
+    animation: check-pop 0.3s ease;
+  }
+  @keyframes check-pop { 0%{transform:scale(0)} 70%{transform:scale(1.3)} 100%{transform:scale(1)} }
+  .challenge-item-text { font-size: 13px; line-height: 1.6; opacity: 0.9; }
+
+  /* ===== CLOSING ===== */
+  .slide-closing {
+    background: linear-gradient(160deg, #0d0a1a 0%, #1a0a00 50%, #0a1a0a 100%);
+  }
+  .closing-rays {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 30%, rgba(255,215,0,0.1) 0%, transparent 60%);
+  }
+  .medal-display {
+    text-align: center;
+    padding: 20px;
+  }
+  .medal {
+    font-size: 80px;
+    display: inline-block;
+    animation: medal-spin 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 30px rgba(255,215,0,0.8));
+  }
+  @keyframes medal-spin { 0%,100%{transform:rotateY(0deg)} 50%{transform:rotateY(180deg)} }
+
+  .motivasi-text {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(18px, 3vw, 24px);
+    text-align: center;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), #FF8C00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.4;
+    margin: 16px 0;
+    padding: 0 10px;
+  }
+
+  .teaser-card {
+    background: linear-gradient(135deg, rgba(74,144,217,0.15), rgba(123,47,190,0.15));
+    border: 2px solid rgba(74,144,217,0.4);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 16px;
+  }
+  .teaser-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    color: var(--sky-light);
+    margin-bottom: 8px;
+  }
+  .teaser-text { font-size: 13px; line-height: 1.6; opacity: 0.9; }
+
+  /* ===== SLIDE BACKGROUNDS ===== */
+  .bg-forest { background: linear-gradient(160deg, #071a07 0%, #0a2a0a 100%); }
+  .bg-sky { background: linear-gradient(160deg, #071422 0%, #0a1f36 100%); }
+  .bg-treasure { background: linear-gradient(160deg, #1a0e00 0%, #2a1800 100%); }
+  .bg-earth { background: linear-gradient(160deg, #1a0a00 0%, #2a1400 100%); }
+  .bg-purple { background: linear-gradient(160deg, #0d0a1a 0%, #1a0a2a 100%); }
+  .bg-green { background: linear-gradient(160deg, #071407 0%, #0a1f0a 100%); }
+  .bg-dark { background: linear-gradient(160deg, #0a0a0a 0%, #1a0a1a 100%); }
+
+  /* Color utils */
+  .text-gold { color: var(--gold); }
+  .text-white { color: white; }
+  .text-sky { color: var(--sky-light); }
+  .text-green { color: #81C784; }
+  .text-purple { color: var(--purple-light); }
+  .text-cream { color: var(--cream); }
+
+  .gold-box {
+    background: linear-gradient(135deg, rgba(245,166,35,0.12), rgba(200,134,10,0.06));
+    border: 1px solid rgba(245,166,35,0.3);
+  }
+  .sky-box {
+    background: linear-gradient(135deg, rgba(74,144,217,0.12), rgba(135,206,235,0.06));
+    border: 1px solid rgba(74,144,217,0.3);
+  }
+  .purple-box {
+    background: linear-gradient(135deg, rgba(123,47,190,0.15), rgba(168,85,247,0.08));
+    border: 1px solid rgba(123,47,190,0.3);
+  }
+  .green-box {
+    background: linear-gradient(135deg, rgba(76,175,80,0.12), rgba(46,125,50,0.06));
+    border: 1px solid rgba(76,175,80,0.3);
+  }
+
+  /* Gold shimmer text */
+  .shimmer-text {
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold-light), var(--gold-dark));
+    background-size: 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer-text 3s linear infinite;
+  }
+  @keyframes shimmer-text { 0%{background-position:0%} 100%{background-position:200%} }
+
+  /* Gold divider */
+  .gold-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 16px 0;
+    border-radius: 2px;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .slide-content { padding: 36px 20px 80px; }
+    .treasure-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .chest-items { grid-template-columns: repeat(2, 1fr); }
+    .nav-btn { width: 40px; height: 40px; font-size: 16px; }
+    #prev-btn { left: 4px; }
+    #next-btn { right: 4px; }
+    .cover-chest { font-size: 72px; }
+  }
+
+  /* Flying gold coins */
+  .coin {
+    position: fixed;
+    font-size: 24px;
+    pointer-events: none;
+    z-index: 2000;
+    animation: coin-fly 1.5s ease-out forwards;
+  }
+  @keyframes coin-fly {
+    0%{opacity:1;transform:translate(0,0) rotate(0deg) scale(1)}
+    100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(720deg) scale(0.2)}
+  }
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Back button -->
+<a href="../perpustakaan.html" class="back-btn">← Kembali ke Perpustakaan</a>
+
+<!-- Progress bar -->
+<div class="progress-container">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<!-- Navigation -->
+<button class="nav-btn" id="prev-btn" onclick="prevSlide()">◀</button>
+<button class="nav-btn" id="next-btn" onclick="nextSlide()">▶</button>
+
+<!-- Page dots -->
+<div class="page-indicator" id="pageDots"></div>
+
+<!-- Book -->
+<div class="book-wrapper">
+  <div class="slides-container" id="slidesContainer">
+
+    <!-- SLIDE 1: COVER -->
+    <div class="slide slide-cover active" id="slide-0">
+      <div class="cover-stars" id="coverStars"></div>
+      <div class="cover-sparkles" id="coverSparkles"></div>
+      <div class="series-badge">🗺️ Petualangan Kapten Cerdas: Jejak Manusia di Bumi</div>
+      <div class="cover-day">✦ Hari ke-29 dari 30 ✦</div>
+      <div class="cover-chest" onclick="animateCoverChest(this)">📦</div>
+      <div class="cover-title">Harta Karun yang Ditinggalkan Leluhur Kita</div>
+      <div class="cover-subtitle">"Warisan terbesar bukan emas... tapi ilmu dan cinta"</div>
+      <div class="cover-character">🧑‍✈️</div>
+      <div class="cover-name">Kapten <span>Aslan</span></div>
+      <button class="start-btn" onclick="nextSlide()">✨ Mulai Petualangan! ✨</button>
+    </div>
+
+    <!-- SLIDE 2: PENGANTAR -->
+    <div class="slide bg-forest" id="slide-1">
+      <div class="slide-inner">
+        <div class="slide-content">
+          <div class="slide-header">
+            <span class="slide-emoji-big">🌅</span>
+            <div class="slide-title text-gold">Selamat Datang, Kapten Aslan!</div>
+            <div class="slide-subtitle text-cream">Hari yang luar biasa menantimu...</div>
+          </div>
+          <div class="intro-card">
+            <div class="story-text text-cream">
+              Hari ini adalah hari yang sangat istimewa, Aslan. Kita hampir menyelesaikan 30 hari petualangan kita menjelajahi <strong class="text-gold">sejarah manusia dari awal mula!</strong>
+            </div>
+            <div class="story-text text-cream">
+              Bayangkan ini: kamu baru saja melakukan perjalanan waktu selama 4 miliar tahun. Dari bumi yang masih berapi-api, melewati zaman dinosaurus, bertemu manusia purba, menyaksikan penemuan api dan tulisan, hingga hadir di dunia digital yang kamu kenal sekarang.
+            </div>
+            <div class="story-text text-cream">
+              Dan hari ini, di hari ke-29 ini, <strong class="text-gold">Mesin Waktu Kapten Cerdas</strong> akan membawamu ke tempat paling ajaib... sebuah <em class="text-gold">gudang harta karun raksasa</em> yang berisi semua yang pernah ditinggalkan oleh seluruh leluhur kita!
+            </div>
+          </div>
+          <div class="gold-divider"></div>
+          <div class="highlight-box gold-box" style="border-radius:16px; text-align:center; padding:16px;">
+            <div style="font-size:28px; margin-bottom:8px;">🗝️</div>
+            <div class="text-gold" style="font-family:'Fredoka One',cursive; font-size:16px;">"Setiap manusia yang lahir ke dunia ini adalah pewaris harta karun terbesar sepanjang sejarah."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: PETUALANGAN CERITA -->
+    <div class="slide bg-sky" id="slide-2">
+      <div class="slide-inner">
+        <div class="slide-content">
+          <div class="slide-header">
+            <span class="slide-emoji-big">🚀</span>
+            <div class="slide-title text-sky">Mesin Waktu Berangkat!</div>
+            <div class="slide-subtitle text-cream">Terbang bersama Kapten Aslan...</div>
+          </div>
+          <div class="adventure-scene">
+            <div class="story-text text-cream">
+              <strong class="text-sky">BZZZZZT! WHOOOOSH!</strong>
+            </div>
+            <div class="story-text text-cream">
+              Mesin Waktu Kapten Aslan bergetar hebat. Cahaya biru dan emas berkelap-kelip di sekeliling. Lalu tiba-tiba... segalanya berhenti. Aslan membuka mata dan mendapati dirinya berdiri di depan sebuah <strong class="text-gold">gerbang raksasa yang terbuat dari emas murni.</strong>
+            </div>
+          </div>
+          <div class="story-text text-cream" style="margin-top:12px;">
+            Di atas gerbang itu tertulis dalam bahasa yang bisa dipahami semua manusia:
+          </div>
+          <div class="highlight-box gold-box" style="text-align:center; margin: 12px 0;">
+            <div style="font-family:'Fredoka One',cursive; font-size:22px;" class="shimmer-text">
+              🏛️ MUSEUM HARTA KARUN LELUHUR 🏛️
+            </div>
+            <div class="text-cream" style="font-size:13px; margin-top:6px; font-style:italic;">"Dibangun oleh 300.000 generasi manusia, untuk kamu"</div>
+          </div>
+          <div class="story-text text-cream">
+            Seorang wanita tua berbaju putih bersih dengan senyum hangat mendekati Aslan. Dia adalah <strong class="text-gold">Penjaga Museum Leluhur.</strong>
+          </div>
+          <div class="adventure-scene" style="border-color: rgba(255,215,0,0.3);">
+            <div class="story-text text-cream" style="margin-bottom:0;">
+              <em>"Selamat datang, Aslan. Kami sudah menunggumu. Kamu adalah generasi yang akan mewarisi semua harta karun ini. Mari, aku tunjukkan semuanya..."</em> 🌟
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: HARTA KARUN - KLIK PETI -->
+    <div class="slide bg-treasure" id="slide-3">
+      <div class="slide-inner">
+        <div class="slide-content">
+          <div class="slide-header">
+            <span class="slide-emoji-big">📦</span>
+            <div class="slide-title shimmer-text">Buka Peti Harta Karunnya!</div>
+            <div class="slide-subtitle text-cream">Klik peti untuk melihat apa isinya ✨</div>
+          </div>
+          <div class="big-chest-container" id="bigChestContainer" onclick="openBigChest()">
+            <div class="chest-glow"></div>
+            <div class="big-chest" id="bigChest">📦</div>
+            <div style="font-family:'Fredoka One',cursive; color:var(--gold); font-size:14px; margin-top:8px; animation:pulse-text 1.5s ease-in-out infinite;" id="chestPrompt">👆 Klik aku!</div>
+            <div class="chest-items" id="chestItems">
+              <div class="chest-item" style="animation-delay:0.1s"><span class="chest-item-icon">🔥</span>Penemuan Api</div>
+              <div class="chest-item" style="animation-delay:0.2s"><span class="chest-item-icon">⚙️</span>Roda Pertama</div>
+              <div class="chest-item" style="animation-delay:0.3s"><span class="chest-item-icon">✍️</span>Tulisan & Bahasa</div>
+              <div class="chest-item" style="animation-delay:0.4s"><span class="chest-item-icon">🌾</span>Pertanian</div>
+              <div class="chest-item" style="animation-delay:0.5s"><span class="chest-item-icon">🏛️</span>Ilmu Pengetahuan</div>
+              <div class="chest-item" style="animation-delay:0.6s"><span class="chest-item-icon">🎵</span>Seni & Musik</div>
+            </div>
+          </div>
+          <div class="story-text text-cream" style="text-align:center; font-size:13px; margin-top:12px;">
+            Leluhur kita meninggalkan <strong class="text-gold">ribuan harta karun</strong> untuk generasi berikutnya — yaitu kita! Setiap penemuan adalah hadiah cinta dari mereka.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: HARTA KARUN PENEMUAN -->
+    <div class="slide bg-earth" id="slide-4">
+      <div class="slide-inner">
+        <div class="slide-content">
+          <div class="slide-header">
+            <span class="slide-emoji-big">🔥</span>
+            <div class="slide-title text-gold">Harta Karun Penemuan Ajaib</div>
+            <div class="slide-subtitle text-cream">Klik kartu untuk membuka rahasianya!</div>
+          </div>
+          <div class="treasure-grid">
+            <div class="treasure-card" onclick="revealTreasure(this)">
+              <span class="treasure-icon">🔥</span>
+              <div class="treasure-name">Api</div>
+              <div class="treasure-desc">400.000 tahun lalu! Api mengubah segalanya — memasak makanan membuat otak manusia berkembang pesat. Tanpa api, tidak ada teknologi modern!</div>
+              <div class="treasure-hint">👆 Klik!</div>
+            </div>
+            <div class="treasure-card" onclick="revealTreasure(this)">
+              <span class="treasure-icon">⚙️</span>
+              <div class="treasure-name">Roda</div>
+              <div class="treasure-desc">5.500 tahun lalu di Mesopotamia! Roda adalah kunci perdagangan, transportasi, dan mesin-mesin modern. Tanpa roda, tidak ada mobil atau sepedamu!</div>
+              <div class="treasure-hint">👆 Klik!</div>
+            </div>
+            <div class="treasure-card" onclick="revealTreasure(this)">
+              <span class="treasure-icon">✍️</span>
+              <div class="treasure-name">Tulisan</div>
+              <div class="treasure-desc">5.000 tahun lalu di Sumeria! Tulisan memungkinkan manusia menyimpan pengetahuan dan meneruskan ilmu ke generasi berikutnya. Buku ini ada berkat tulisan!</div>
+              <div class="treasure-hint">👆 Klik!</div>
+            </div>
+            <div class="treasure-card" onclick="revealTreasure(this)">
+              <span class="treasure-icon">🌾</span>
+              <div class="treasure-name">Pertanian</div>
+              <div class="treasure-desc">12.000 tahun lalu! Pertanian mengubah manusia dari pengembara menjadi pembangun kota. Semua peradaban lahir dari benih pertama yang ditanam leluhur!</div>
+              <div class="treasure-hint">👆 Klik!</div>
+            </div>
+          </div>
+          <div class="highlight-box gold-box" style="margin-top:12px; border-radius:16px; padding:14px; text-align:center;">
+            <div class="text-gold" style="font-family:'Fredoka One',cursive; font-size:14px;">💡 Setiap penemuan ini adalah <em>hadiah cinta</em> dari leluhur yang memikirkan generasi berikutnya!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: HARTA KARUN ILMU & SENI -->
+    <div class="slide bg-purple" id="slide-5">
+      <div class="slide-inner">
+        <div class="slide-content">
+          <div class="slide-header">
+            <span class="slide-emoji-big">🎨</span>
+            <div class="slide-title text-purple">Harta Karun Ilmu & Seni</div>
+            <div class="slide-subtitle text-cream">Yang memperindah jiwa manusia</div>
+          </div>
+          <div class="treasure-grid">
+            <div class="treasure-card" onclick="revealTreasure(this)" style="border-color: rgba(168,85,247,0.3);">
+              <span class="treasure-icon">🔬</span>
+              <div class="treasure-name" style="color:var(--purple-light);">Ilmu Pengetahuan</div>
+              <div class="treasure-desc">Dari Archimedes, Newton, hingga Einstein — mereka mewariskan cara berpikir yang membuat manusia memahami alam semesta ini!</div>
+              <div class="treasure-hint" style="color:var(--purple-light);">👆 Klik!</div>
+            </div>
+            <div class="treasure-card" onclick="revealTreasure(this)" style="border-color: rgba(168,85,247,0.3);">
+              <span class="treasure-icon">🎵</span>
+              <div class="treasure-name" style="color:var(--purple-light);">Musik & Seni</div>
+              <div class="treasure-desc">40.000 tahun lalu manusia sudah melukis di gua! Musik dan seni adalah bahasa universal — cara manusia berbagi perasaan tanpa kata!</div>
+              <div class="treasure-hint" style="color:var(--purple-light);">👆 Klik!</div>
+            </div>
+            <div class="treasure-card" onclick="revealTreasure(this)" style="border-color: rgba(168,85,247,0.3);">
+              <span class="treasure-icon">🌍</span>
+              <div class="treasure-name" style="color:var(--purple-light);">Bahasa & Cerita</div>
+              <div class="treasure-desc">7.000 bahasa di dunia! Setiap bahasa adalah gudang kebijaksanaan. Cerita leluhur menyimpan pelajaran hidup yang tak ternilai harganya!</div>
+              <div class="treasure-hint" style="color:var(--purple-light);">👆 Klik!</div>
+            </div>
+            <div class="treasure-card" onclick="revealTreasure(this)" style="border-color: rgba(168,85,247,0.3);">
+              <span class="treasure-icon">🏛️</span>
+              <div class="treasure-name" style="color:var(--purple-light);">Filsafat & Nilai</div>
+              <div class="treasure-desc">Dari Socrates di Yunani hingga para bijaksana Asia — mereka mengajarkan cara hidup yang baik, adil, dan bermakna. Inilah kompas hidup manusia!</div>
+              <div class="treasure-hint" style="color:var(--purple-light);">👆 Klik!</div>
+            </div>
+          </div>
+          <div class="highlight-box purple-box" style="margin-top:12px; border-radius:16px; padding:14px; text-align:center;">
+            <div style="font-family:'Fredoka One',cursive; font-size:14px; color:var(--purple-light);">🎭 Seni dan ilmu adalah dua sayap yang membuat manusia bisa terbang lebih tinggi!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: TIMELINE HARTA KARUN -->
+    <div class="slide bg-dark" id="slide-6">
+      <div class="slide-inner">
+        <div class="slide-content">
+          <div class="slide-header">
+            <span class="slide-emoji-big">⏳</span>
+            <div class="slide-title shimmer-text">Garis Waktu Harta Karun</div>
+            <div class="slide-subtitle text-cream">Klik setiap peristiwa untuk menyalakannya!</div>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item" onclick="lightTimeline(this)" style="--c: #FF6B35;">
+              <div class="timeline-dot" style="background:rgba(255,107,53,0.2); color:#FF6B35; font-size:20px;">🔥</div>
+              <div class="timeline-content">
+                <div class="timeline-period" style="color:#FF6B35;">400.000 tahun lalu</div>
+                <div class="timeline-title" style="color:white;">Api Ditemukan</div>
+                <div class="timeline-text text-cream">Homo Erectus menjinakkan api untuk pertama kali. Revolusi terbesar dalam sejarah manusia dimulai dari sini.</div>
+              </div>
+            </div>
+            <div class="timeline-item" onclick="lightTimeline(this)" style="--c: #4CAF50;">
+              <div class="timeline-dot" style="background:rgba(76,175,80,0.2); color:#4CAF50; font-size:20px;">🌾</div>
+              <div class="timeline-content">
+                <div class="timeline-period" style="color:#4CAF50;">12.000 tahun lalu</div>
+                <div class="timeline-title" style="color:white;">Pertanian Dimulai</div>
+                <div class="timeline-text text-cream">Manusia berhenti mengembara dan mulai bercocok tanam. Peradaban pertama lahir dari lahan pertanian ini.</div>
+              </div>
+            </div>
+            <div class="timeline-item" onclick="lightTimeline(this)" style="--c: #F5A623;">
+              <div class="timeline-dot" style="background:rgba(245,166,35,0.2); color:#F5A623; font-size:20px;">✍️</div>
+              <div class="timeline-content">
+                <div class="timeline-period" style="color:#F5A623;">5.000 tahun lalu</div>
+                <div class="timeline-title" style="color:white;">Tulisan Pertama</div>
+                <div class="timeline-text text-cream">Orang Sumeria menggoreskan tanda di tanah liat. Ilmu pengetahuan kini bisa diturunkan ke generasi berikutnya!</div>
+              </div>
+            </div>
+            <div class="timeline-item" onclick="lightTimeline(this)" style="--c: #4A90D9;">
+              <div class="timeline-dot" style="background:rgba(74,144,217,0.2); color:#4A90D9; font-size:20px;">🔬</div>
+              <div class="timeline-content">
+                <div class="timeline-period" style="color:#4A90D9;">500 tahun lalu</div>
+                <div class="timeline-title" style="color:white;">Revolusi Ilmu</div>
+                <div class="timeline-text text-cream">Galileo, Newton, Copernicus — mereka membongkar rahasia alam semesta dan mengubah cara pandang manusia selamanya.</div>
+              </div>
+            </div>
+            <div class="timeline-item" onclick="lightTimeline(this)" style="--c: #A855F7;">
+              <div class="timeline-dot" style="background:rgba(168,85,247,0.2); color:#A855F7; font-size:20px;">💻</div>
+              <div class="timeline-content">
+                <div class="timeline-period" style="color:#A855F7;">75 tahun lalu — Sekarang</div>
+                <div class="timeline-title" style="color:white;">Era Digital</div>
+                <div class="timeline-text text-cream">Komputer dan internet menghubungkan semua harta karun leluhur dalam satu jaringan global yang bisa diakses siapa pun!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: MENGAPA MENGHARGAI -->
+    <div class="slide bg-forest" id="slide-7">
+      <div class="slide-inner">
+        <div class="slide-content">
+          <div class="slide-header">
+            <span class="slide-emoji-big">❤️</span>
+            <div class="slide-title text-green">Mengapa Kita Harus Menghargainya?</div>
+            <div class="slide-subtitle text-cream">Karena ada cinta di balik setiap penemuan...</div>
+          </div>
+          <div class="story-text text-cream">
+            Penjaga Museum berkata dengan mata berkaca-kaca kepada Aslan: <em class="text-gold">"Setiap harta karun di sini dibuat dengan cucuran keringat, kerja keras, bahkan pengorbanan nyawa. Mereka tidak tahu apakah usahanya akan berhasil — tapi mereka terus mencoba, demi generasi yang belum mereka kenal."</em>
+          </div>
+          <div class="why-grid">
+            <div class="why-item">
+              <div class="why-icon">🙏</div>
+              <div class="why-text">
+                <h4>Rasa Syukur yang Tulus</h4>
+                <p>Kita hidup lebih mudah dan nyaman karena susah payah leluhur kita. Tanpa mereka, kita masih tinggal di gua tanpa listrik dan buku!</p>
+              </div>
+            </div>
+            <div class="why-item">
+              <div class="why-icon">🔗</div>
+              <div class="why-text">
+                <h4>Kita Terhubung dengan Sejarah</h4>
+                <p>Kamu bukan hanya Aslan yang hidup hari ini — kamu adalah puncak dari jutaan tahun perjuangan manusia. Itu membuatmu sangat istimewa!</p>
+              </div>
+            </div>
+            <div class="why-item">
+              <div class="why-icon">🌱</div>
+              <div class="why-text">
+                <h4>Kita Punya Tanggung Jawab</h4>
+                <p>Harta karun ini bukan untuk disimpan — tapi untuk digunakan, dijaga, dan dikembangkan agar bisa diwariskan ke generasi berikutnya!</p>
+              </div>
+            </div>
+            <div class="why-item">
+              <div class="why-icon">✨</div>
+              <div class="why-text">
+                <h4>Kamu Adalah Bagian dari Cerita Besar</h4>
+                <p>Sejarah manusia belum selesai. Kamu, Aslan, akan menambahkan halaman baru yang belum pernah ditulis sebelumnya!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: CARA MENJAGA -->
+    <div class="slide bg-sky" id="slide-8">
+      <div class="slide-inner">
+        <div class="slide-content">
+          <div class="slide-header">
+            <span class="slide-emoji-big">🛡️</span>
+            <div class="slide-title text-sky">Bagaimana Menjaga Harta Karun Ini?</div>
+            <div class="slide-subtitle text-cream">Langkah-langkah seorang Kapten Cerdas</div>
+          </div>
+          <div class="how-steps">
+            <div class="how-step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h4 class="text-gold">📚 Terus Belajar & Membaca</h4>
+                <p class="text-cream">Setiap buku yang kamu baca adalah kamu mengunjungi gudang harta karun leluhur. Ilmu yang kamu serap adalah emas yang masuk ke dalam otakmu!</p>
+              </div>
+            </div>
+            <div class="how-step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h4 class="text-gold">🤝 Hormati Keberagaman Budaya</h4>
+                <p class="text-cream">7.000 bahasa dan ribuan budaya di dunia adalah kekayaan kita bersama. Menghormati perbedaan berarti menjaga keberagaman harta karun leluhur!</p>
+              </div>
+            </div>
+            <div class="how-step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h4 class="text-gold">💡 Gunakan Ilmu untuk Kebaikan</h4>
+                <p class="text-cream">Teknologi adalah alat — bukan tujuan. Gunakan pengetahuan yang kamu miliki untuk membantu orang lain dan membuat dunia lebih baik!</p>
+              </div>
+            </div>
+            <div class="how-step">
+              <div class="step-number">4</div>
+              <div class="step-content">
+                <h4 class="text-gold">🌱 Tambahkan Harta Karun Baru</h4>
+                <p class="text-cream">Kamu bukan hanya pewaris — kamu juga pencipta! Setiap ide, karya, dan penemuan barumu akan menjadi harta karun untuk generasi selanjutnya.</p>
+              </div>
+            </div>
+            <div class="how-step">
+              <div class="step-number">5</div>
+              <div class="step-content">
+                <h4 class="text-gold">🌍 Jaga Bumi Kita</h4>
+                <p class="text-cream">Bumi adalah harta karun terbesar. Tanpa bumi yang sehat, semua harta karun lainnya tidak berarti. Aslan harus menjadi pejuang lingkungan!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: OTAK & RASA PENASARAN -->
+    <div class="slide bg-purple" id="slide-9">
+      <div class="slide-inner">
+        <div class="slide-content">
+          <div class="slide-header">
+            <span class="slide-emoji-big">🧠</span>
+            <div class="slide-title text-purple">Harta Karun Terbesar: OTAKMU!</div>
+            <div class="slide-subtitle text-cream">Superkomputer yang kamu bawa ke mana-mana</div>
+          </div>
+          <div class="story-text text-cream">
+            Penjaga Museum membawa Aslan ke ruangan paling dalam. Di sana terdapat cermin raksasa. Aslan menatap bayangannya sendiri. <em class="text-gold">"Ini dia,"</em> kata Penjaga, <em class="text-gold">"harta karun terbesar dari semua leluhurmu!"</em>
+          </div>
+          <div class="brain-visual">
+            <div class="brain-rays">
+              <div class="ray" style="--start:0deg;">💡</div>
+              <div class="ray" style="--start:60deg; animation-duration:4s;">🔬</div>
+              <div class="ray" style="--start:120deg; animation-duration:5s;">🎨</div>
+              <div class="ray" style="--start:180deg; animation-duration:3.5s;">📚</div>
+              <div class="ray" style="--start:240deg; animation-duration:4.5s;">🌟</div>
+              <div class="ray" style="--start:300deg; animation-duration:6s;">❓</div>
+            </div>
+            <div class="brain-emoji">🧠</div>
+          </div>
+          <div class="highlight-box purple-box" style="border-radius:16px; padding:16px; margin-bottom:14px;">
+            <div class="story-text text-cream" style="margin-bottom:0;">
+              Otak manusia adalah <strong style="color:var(--purple-light);">harta karun yang diwarisi</strong> dari jutaan tahun evolusi. Setiap kali kamu merasa penasaran, bertanya, dan belajar — kamu sedang menggunakan hadiah terbaik yang pernah ada!
+            </div>
+          </div>
+          <div class="power-tags">
+            <div class="power-tag">🔍 Rasa Ingin Tahu</div>
+            <div class="power-tag">💭 Kemampuan Berpikir</div>
+            <div class="power-tag">❤️ Empati & Kasih</div>
+            <div class="power-tag">🎨 Kreativitas</div>
+            <div class="power-tag">🤝 Kerja Sama</div>
+            <div class="power-tag">💪 Semangat Juang</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: PELAJARAN HARI INI -->
+    <div class="slide bg-earth" id="slide-10">
+      <div class="slide-inner">
+        <div class="slide-content">
+          <div class="slide-header">
+            <span class="slide-emoji-big">📖</span>
+            <div class="slide-title shimmer-text">Pelajaran Hari Ini</div>
+            <div class="slide-subtitle text-cream">Yang dibawa pulang Kapten Aslan</div>
+          </div>
+          <div class="lesson-cards">
+            <div class="lesson-card gold-box" style="border-radius:16px;">
+              <div class="lesson-icon">🌟</div>
+              <div class="lesson-text">
+                <h4 class="text-gold">Kita Adalah Hasil Jutaan Tahun Usaha</h4>
+                <p class="text-cream">Setiap teknologi, bahasa, dan ilmu yang kita nikmati hari ini adalah hasil kerja keras ratusan ribu generasi sebelum kita. Kita tidak berdiri sendiri!</p>
+              </div>
+            </div>
+            <div class="lesson-card sky-box" style="border-radius:16px;">
+              <div class="lesson-icon">🔑</div>
+              <div class="lesson-text">
+                <h4 class="text-sky">Pengetahuan Adalah Harta Sejati</h4>
+                <p class="text-cream">Emas bisa habis, gedung bisa roboh — tapi ilmu yang ada di kepalamu tidak bisa dicuri siapa pun. Teruslah mengisi "peti harta" di otakmu!</p>
+              </div>
+            </div>
+            <div class="lesson-card purple-box" style="border-radius:16px;">
+              <div class="lesson-icon">🔗</div>
+              <div class="lesson-text">
+                <h4 class="text-purple">Kamu Adalah Mata Rantai Sejarah</h4>
+                <p class="text-cream">Kamu menerima harta karun dari leluhur, dan tugasmu adalah menjaga dan meneruskannya. Kamu bukan akhir cerita — tapi awal dari babak baru!</p>
+              </div>
+            </div>
+            <div class="lesson-card green-box" style="border-radius:16px;">
+              <div class="lesson-icon">💚</div>
+              <div class="lesson-text">
+                <h4 class="text-green">Rasa Syukur Membuat Kita Lebih Kuat</h4>
+                <p class="text-cream">Saat kamu bersyukur atas harta karun yang diwariskan, kamu akan lebih termotivasi untuk menggunakannya sebaik mungkin dan memberikan yang terbaik!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 12: TANTANGAN HARIAN -->
+    <div class="slide bg-green" id="slide-11">
+      <div class="slide-inner">
+        <div class="slide-content">
+          <div class="slide-header">
+            <span class="slide-emoji-big">🎯</span>
+            <div class="slide-title text-green">Tantangan Harian Kapten Aslan!</div>
+            <div class="slide-subtitle text-cream">Centang setiap tantangan yang kamu selesaikan ✅</div>
+          </div>
+          <div class="challenge-box">
+            <div class="story-text text-cream" style="font-size:14px; text-align:center; margin-bottom:0;">
+              🏆 Selesaikan tantangan ini hari ini dan kamu resmi menjadi <strong class="text-gold">Penjaga Harta Karun Leluhur!</strong>
+            </div>
+            <ul class="challenge-list">
+              <div class="challenge-item" onclick="toggleChallenge(this)">
+                <div class="challenge-check">☐</div>
+                <div class="challenge-item-text"><strong class="text-gold">Berterima kasih kepada seseorang</strong> yang telah mengajarimu sesuatu — guru, orang tua, atau kakak. Mereka adalah penjaga harta karun untukmu!</div>
+              </div>
+              <div class="challenge-item" onclick="toggleChallenge(this)">
+                <div class="challenge-check">☐</div>
+                <div class="challenge-item-text"><strong class="text-gold">Tulis 3 harta karun yang kamu syukuri</strong> — bisa bahasa yang kamu gunakan, buku yang kamu baca, atau teknologi yang kamu nikmati setiap hari.</div>
+              </div>
+              <div class="challenge-item" onclick="toggleChallenge(this)">
+                <div class="challenge-check">☐</div>
+                <div class="challenge-item-text"><strong class="text-gold">Ceritakan kepada teman atau adikmu</strong> satu hal yang paling mengejutkanmu tentang harta karun leluhur. Sebarkan harta karun itu!</div>
+              </div>
+              <div class="challenge-item" onclick="toggleChallenge(this)">
+                <div class="challenge-check">☐</div>
+                <div class="challenge-item-text"><strong class="text-gold">Buat satu karya kecil</strong> — gambar, cerita pendek, puisi, atau lagu. Itu adalah harta karun pertamamu untuk generasi berikutnya!</div>
+              </div>
+              <div class="challenge-item" onclick="toggleChallenge(this)">
+                <div class="challenge-check">☐</div>
+                <div class="challenge-item-text"><strong class="text-gold">Tanya satu pertanyaan yang belum kamu ketahui jawabannya.</strong> Rasa penasaran adalah bahan bakar terbesar dalam sejarah manusia!</div>
+              </div>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 13: PENUTUP -->
+    <div class="slide slide-closing" id="slide-12">
+      <div class="slide-inner">
+        <div class="slide-content" style="text-align:center; position:relative;">
+          <div class="closing-rays"></div>
+          <div class="medal-display">
+            <div class="medal">🏅</div>
+          </div>
+          <div class="slide-title shimmer-text" style="font-size:clamp(24px, 4vw, 32px);">Selamat, Kapten Aslan! 🎉</div>
+          <div class="gold-divider"></div>
+          <div class="story-text text-cream" style="font-size:14px; margin: 12px 0;">
+            Kamu telah menyelesaikan <strong class="text-gold">Hari ke-29</strong> dengan luar biasa! Hari ini kamu bukan hanya belajar tentang harta karun leluhur — kamu juga sadar bahwa <strong class="text-gold">KAMU adalah bagian dari harta karun itu sendiri.</strong>
+          </div>
+          <div class="motivasi-text">
+            "Leluhurmu berkorban agar kamu bisa tumbuh. Sekarang giliranmu untuk berkarya agar generasi berikutnya bisa bermimpi lebih tinggi."
+          </div>
+          <div style="font-size:40px; margin: 12px 0; animation: chest-float 3s ease-in-out infinite;">🌟</div>
+          <div class="teaser-card">
+            <div style="font-size:28px; margin-bottom:8px;">🚀</div>
+            <div class="teaser-title">✨ Besok: Hari Terakhir! ✨</div>
+            <div class="teaser-text text-cream">
+              <strong class="text-sky">Hari 30: Petualangan Manusia Berikutnya – Menuju Bintang!</strong><br><br>
+              Setelah menjelajahi 4 miliar tahun sejarah manusia — sekarang saatnya menatap ke depan! Bersama Kapten Aslan, kita akan merencanakan petualangan besar umat manusia ke masa depan. Siap?
+            </div>
+            <div style="margin-top:12px; font-family:'Fredoka One',cursive; font-size:18px; color:var(--gold); animation:pulse-text 1.5s ease-in-out infinite;">
+              🌠 Sampai jumpa besok, Kapten! 🌠
+            </div>
+          </div>
+          <div style="margin-top:20px; font-size:11px; opacity:0.5; color:white;">
+            Petualangan Kapten Cerdas: Jejak Manusia di Bumi · Hari 29 dari 30
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end slides-container -->
+</div><!-- end book-wrapper -->
+
+<script>
+  // ===== STATE =====
+  let currentSlide = 0;
+  const totalSlides = 13;
+  let isAnimating = false;
+
+  // ===== INIT =====
+  window.addEventListener('DOMContentLoaded', () => {
+    createParticles();
+    createCoverStars();
+    createCoverSparkles();
+    buildDots();
+    updateUI();
+  });
+
+  // ===== PARTICLES =====
+  function createParticles() {
+    const container = document.getElementById('particles');
+    const emojis = ['✨','⭐','🌟','💫','✦','·'];
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+      p.style.cssText = `
+        left: ${Math.random()*100}%;
+        font-size: ${8 + Math.random()*16}px;
+        animation-duration: ${8 + Math.random()*12}s;
+        animation-delay: ${Math.random()*10}s;
+      `;
+      container.appendChild(p);
+    }
+  }
+
+  function createCoverStars() {
+    const c = document.getElementById('coverStars');
+    for (let i = 0; i < 60; i++) {
+      const s = document.createElement('div');
+      s.className = 'star-cover';
+      const size = 1 + Math.random() * 3;
+      s.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%; top:${Math.random()*100}%;
+        animation-delay:${Math.random()*3}s;
+        animation-duration:${1.5+Math.random()*2}s;
+      `;
+      c.appendChild(s);
+    }
+  }
+
+  function createCoverSparkles() {
+    const c = document.getElementById('coverSparkles');
+    const sp = ['✨','⭐','💫','🌟','✦'];
+    const positions = [
+      [15,20],[80,15],[10,70],[85,65],[50,10],[25,85],[75,80],[5,45],[95,40],[45,90]
+    ];
+    positions.forEach(([x,y], i) => {
+      const el = document.createElement('div');
+      el.className = 'sparkle';
+      el.textContent = sp[i % sp.length];
+      el.style.cssText = `left:${x}%; top:${y}%; animation-delay:${i*0.3}s; animation-duration:${2+Math.random()}s;`;
+      c.appendChild(el);
+    });
+  }
+
+  // ===== DOTS =====
+  function buildDots() {
+    const c = document.getElementById('pageDots');
+    c.innerHTML = '';
+    for (let i = 0; i < totalSlides; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === currentSlide ? ' active' : '');
+      d.onclick = () => goToSlide(i);
+      c.appendChild(d);
+    }
+  }
+
+  // ===== NAVIGATION =====
+  function updateUI() {
+    // Progress
+    const pct = ((currentSlide + 1) / totalSlides) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    // Buttons
+    document.getElementById('prev-btn').disabled = currentSlide === 0;
+    document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+    // Dots
+    document.querySelectorAll('.dot').forEach((d,i) => {
+      d.classList.toggle('active', i === currentSlide);
+    });
+  }
+
+  function goToSlide(index) {
+    if (isAnimating || index === currentSlide) return;
+    isAnimating = true;
+    const slides = document.querySelectorAll('.slide');
+    const current = slides[currentSlide];
+    const next = slides[index];
+    const dir = index > currentSlide ? 1 : -1;
+
+    current.classList.remove('active');
+    current.classList.add(dir > 0 ? 'exit-left' : '');
+    current.style.transform = dir > 0 ? 'translateX(-100px) scale(0.95)' : 'translateX(100px) scale(0.95)';
+    current.style.opacity = '0';
+
+    next.style.transform = dir > 0 ? 'translateX(100px) scale(0.95)' : 'translateX(-100px) scale(0.95)';
+    next.style.opacity = '0';
+    next.classList.add('active');
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        next.style.transform = 'translateX(0) scale(1)';
+        next.style.opacity = '1';
+        current.style.transition = 'all 0.5s ease';
+        next.style.transition = 'all 0.6s cubic-bezier(0.4,0,0.2,1)';
+      });
+    });
+
+    setTimeout(() => {
+      current.classList.remove('exit-left');
+      current.style.transform = '';
+      current.style.opacity = '';
+      current.style.transition = '';
+      next.style.transition = '';
+      // reset slide scroll
+      const inner = next.querySelector('.slide-inner');
+      if (inner) inner.scrollTop = 0;
+      isAnimating = false;
+    }, 650);
+
+    currentSlide = index;
+    updateUI();
+  }
+
+  function nextSlide() { if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1); }
+  function prevSlide() { if (currentSlide > 0) goToSlide(currentSlide - 1); }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevSlide();
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) dx < 0 ? nextSlide() : prevSlide();
+  }, {passive:true});
+
+  // ===== INTERACTIVES =====
+  function animateCoverChest(el) {
+    el.style.transform = 'scale(1.3) rotate(10deg)';
+    el.textContent = '🎁';
+    setTimeout(() => {
+      el.style.transform = '';
+      el.textContent = '📦';
+    }, 600);
+    spawnCoins(el);
+  }
+
+  function openBigChest() {
+    const container = document.getElementById('bigChestContainer');
+    const chest = document.getElementById('bigChest');
+    const prompt = document.getElementById('chestPrompt');
+    if (container.classList.contains('opened')) return;
+    container.classList.add('opened');
+    chest.classList.add('opening');
+    chest.textContent = '🎁';
+    if (prompt) prompt.style.display = 'none';
+    spawnCoins(chest);
+  }
+
+  function revealTreasure(card) {
+    card.classList.toggle('revealed');
+    spawnCoins(card);
+  }
+
+  function lightTimeline(item) {
+    item.classList.toggle('lit');
+  }
+
+  function toggleChallenge(item) {
+    item.classList.toggle('done');
+    const check = item.querySelector('.challenge-check');
+    if (item.classList.contains('done')) {
+      check.textContent = '✅';
+      spawnCoins(check);
+    } else {
+      check.textContent = '☐';
+    }
+  }
+
+  function spawnCoins(origin) {
+    const rect = origin.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const emojis = ['✨','⭐','💫','🌟','🪙','💰'];
+    for (let i = 0; i < 8; i++) {
+      const coin = document.createElement('div');
+      coin.className = 'coin';
+      coin.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      const angle = (Math.PI * 2 / 8) * i;
+      const dist = 60 + Math.random() * 60;
+      const dx = Math.cos(angle) * dist + 'px';
+      const dy = (Math.sin(angle) * dist - 50) + 'px';
+      coin.style.cssText = `left:${cx}px; top:${cy}px; --dx:${dx}; --dy:${dy}; animation-delay:${i*0.05}s;`;
+      document.body.appendChild(coin);
+      setTimeout(() => coin.remove(), 2000);
+    }
+  }
+</script>
+</body>
+</html>

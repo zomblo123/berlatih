@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hari 13: AI yang Bisa Menggambar & Membuat Cerita – Petualangan Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   RESET & VARIABLES
+============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --purple:#8B5CF6;
+  --purple-lt:#C4B5FD;
+  --purple-dk:#5B21B6;
+  --pink:#EC4899;
+  --pink-lt:#F9A8D4;
+  --blue:#3B82F6;
+  --blue-lt:#93C5FD;
+  --teal:#14B8A6;
+  --yellow:#FBBF24;
+  --yellow-lt:#FDE68A;
+  --orange:#F97316;
+  --green:#22C55E;
+  --red:#EF4444;
+
+  --bg-start:#FFF0FB;
+  --bg-end:#EFF6FF;
+  --card-bg:#FFFFFF;
+  --text-dark:#1E1B4B;
+  --text-mid:#4B5563;
+  --text-soft:#9CA3AF;
+  --radius:24px;
+  --radius-xl:40px;
+  --shadow:0 8px 32px rgba(139,92,246,0.13);
+  --shadow-lg:0 20px 60px rgba(139,92,246,0.18);
+}
+
+html{scroll-behavior:smooth;}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:linear-gradient(160deg,var(--bg-start) 0%,#FFF0F8 30%,#EEF2FF 60%,var(--bg-end) 100%);
+  background-attachment:fixed;
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ============================================================
+   FLOATING PAINT BLOBS
+============================================================ */
+.blob{
+  position:fixed;border-radius:50%;
+  filter:blur(70px);
+  pointer-events:none;
+  animation:blobFloat ease-in-out infinite;
+  z-index:0;
+}
+@keyframes blobFloat{0%,100%{transform:scale(1) rotate(0deg);}50%{transform:scale(1.1) rotate(8deg);}}
+
+/* ============================================================
+   CONFETTI DOTS (static decorative)
+============================================================ */
+.confetti-wrap{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+}
+.confetti-dot{
+  position:absolute;border-radius:50%;
+  animation:confettiFall linear infinite;
+  opacity:.55;
+}
+@keyframes confettiFall{
+  0%{transform:translateY(-5vh) rotate(0deg);opacity:0;}
+  10%{opacity:.55;}
+  90%{opacity:.4;}
+  100%{transform:translateY(110vh) rotate(720deg);opacity:0;}
+}
+
+/* ============================================================
+   PAGE WRAP
+============================================================ */
+.page-wrap{
+  position:relative;z-index:1;
+  max-width:880px;margin:0 auto;
+  padding:0 18px 80px;
+}
+
+/* ============================================================
+   BACK LINK
+============================================================ */
+.top-back-link{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:700;
+  color:var(--purple-dk);
+  text-decoration:none;
+  background:#fff;
+  border:2.5px solid var(--purple-lt);
+  padding:10px 22px;border-radius:999px;
+  box-shadow:0 4px 14px rgba(139,92,246,.15),0 2px 0 var(--purple-lt);
+  transition:all .25s ease;
+  margin:20px 0 0;position:relative;z-index:10;
+}
+.top-back-link:hover{
+  background:var(--purple-lt);color:#fff;
+  border-color:var(--purple);
+  transform:translateY(-3px);
+  box-shadow:0 8px 24px rgba(139,92,246,.3),0 4px 0 var(--purple);
+}
+
+/* ============================================================
+   HEADER
+============================================================ */
+.header{
+  text-align:center;
+  padding:36px 20px 28px;
+  position:relative;overflow:hidden;
+}
+
+/* rainbow arch above title */
+.rainbow-arch{
+  position:absolute;top:0;left:50%;
+  transform:translateX(-50%);
+  width:320px;height:160px;
+  border:8px solid transparent;
+  border-top:none;
+  border-radius:0 0 200px 200px;
+  background:
+    linear-gradient(white,white) padding-box,
+    linear-gradient(90deg,#EF4444,#F97316,#FBBF24,#22C55E,#3B82F6,#8B5CF6,#EC4899) border-box;
+  opacity:.18;
+  pointer-events:none;
+}
+
+.day-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,#8B5CF6,#EC4899);
+  color:#fff;
+  font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:800;
+  padding:6px 22px;border-radius:999px;letter-spacing:1px;
+  box-shadow:0 4px 18px rgba(236,72,153,.35);
+  margin-bottom:18px;
+  animation:popIn .5s cubic-bezier(.36,.07,.19,.97) both;
+  position:relative;z-index:1;
+}
+@keyframes popIn{from{transform:scale(.3);opacity:0;}to{transform:scale(1);opacity:1;}}
+
+.main-title{
+  font-family:'Baloo 2',cursive;
+  font-size:clamp(1.6rem,5vw,2.7rem);
+  font-weight:900;line-height:1.2;
+  color:var(--text-dark);
+  margin-bottom:10px;
+  position:relative;z-index:1;
+  animation:slideUp .6s ease both .15s;
+}
+.title-rainbow{
+  background:linear-gradient(90deg,#8B5CF6,#EC4899,#F97316,#FBBF24,#22C55E,#3B82F6);
+  background-size:200%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:rainbowShift 4s linear infinite;
+}
+@keyframes rainbowShift{0%{background-position:0%;}100%{background-position:200%;}}
+
+.header-sub{
+  font-size:1rem;font-weight:700;
+  color:var(--text-soft);
+  position:relative;z-index:1;
+  animation:slideUp .6s ease both .25s;
+}
+@keyframes slideUp{from{transform:translateY(28px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+/* progress */
+.progress-wrap{
+  display:flex;align-items:center;gap:10px;
+  justify-content:center;margin-top:18px;
+  position:relative;z-index:1;
+  animation:slideUp .6s ease both .35s;
+}
+.progress-label{font-size:.8rem;font-weight:800;color:var(--purple);white-space:nowrap;}
+.progress-track{
+  flex:1;max-width:220px;height:10px;
+  background:#EDE9FE;border-radius:999px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;border-radius:999px;
+  background:linear-gradient(90deg,#8B5CF6,#EC4899,#F97316,#FBBF24);
+  background-size:200%;
+  width:43.3%;
+  animation:growFill 1.2s cubic-bezier(.25,.46,.45,.94) both .9s,rainbowShift 3s linear infinite;
+}
+@keyframes growFill{from{width:0}to{width:43.3%}}
+
+/* ============================================================
+   CARD BASE
+============================================================ */
+.card{
+  background:var(--card-bg);
+  border-radius:var(--radius-xl);
+  box-shadow:var(--shadow);
+  padding:32px;margin-bottom:24px;
+  position:relative;overflow:hidden;
+  border:1.5px solid rgba(255,255,255,.9);
+  transition:transform .3s ease,box-shadow .3s ease;
+}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  border-radius:var(--radius-xl) var(--radius-xl) 0 0;
+}
+.card-rainbow::before{background:linear-gradient(90deg,#8B5CF6,#EC4899,#F97316,#FBBF24,#22C55E,#3B82F6);}
+.card-purple::before{background:linear-gradient(90deg,#8B5CF6,#C4B5FD);}
+.card-pink::before{background:linear-gradient(90deg,#EC4899,#F9A8D4);}
+.card-yellow::before{background:linear-gradient(90deg,#FBBF24,#F97316);}
+.card-teal::before{background:linear-gradient(90deg,#14B8A6,#3B82F6);}
+.card-green::before{background:linear-gradient(90deg,#22C55E,#14B8A6);}
+
+.section-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;
+  padding:4px 14px;border-radius:999px;margin-bottom:14px;letter-spacing:.5px;
+}
+.tag-rainbow{background:linear-gradient(135deg,#F5F3FF,#FCE7F3);color:#7C3AED;border:1.5px solid #DDD6FE;}
+.tag-purple{background:#F5F3FF;color:#7C3AED;border:1.5px solid #DDD6FE;}
+.tag-pink{background:#FCE7F3;color:#BE185D;border:1.5px solid #FBCFE8;}
+.tag-yellow{background:#FFFBEB;color:#D97706;border:1.5px solid #FDE68A;}
+.tag-teal{background:#F0FDFA;color:#0F766E;border:1.5px solid #99F6E4;}
+.tag-green{background:#F0FDF4;color:#15803D;border:1.5px solid #BBF7D0;}
+
+.card-title{
+  font-family:'Baloo 2',cursive;
+  font-size:clamp(1.25rem,3.5vw,1.75rem);
+  font-weight:800;color:var(--text-dark);margin-bottom:14px;
+}
+
+/* ============================================================
+   ILLUSTRATION AREA
+============================================================ */
+.illus-card{
+  border-radius:var(--radius-xl);
+  padding:28px 20px;text-align:center;
+  margin-bottom:24px;
+  position:relative;overflow:hidden;
+  background:linear-gradient(145deg,#FAF5FF,#FDF2F8,#EFF6FF,#FFFBEB);
+  border:3px solid transparent;
+  background-clip:padding-box;
+  box-shadow:var(--shadow-lg),0 0 0 3px transparent;
+  animation:slideUp .6s ease both .1s;
+}
+.illus-border-wrap{
+  border-radius:var(--radius-xl);
+  padding:3px;
+  background:linear-gradient(135deg,#8B5CF6,#EC4899,#F97316,#FBBF24,#22C55E,#3B82F6,#8B5CF6);
+  background-size:300%;
+  animation:rainbowShift 4s linear infinite;
+  margin-bottom:24px;
+  box-shadow:var(--shadow-lg);
+}
+.illus-inner{
+  background:linear-gradient(145deg,#FAF5FF,#FDF2F8,#EFF6FF);
+  border-radius:calc(var(--radius-xl) - 3px);
+  padding:28px 20px;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.illus-inner::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 20% 30%,rgba(139,92,246,.08) 0%,transparent 40%),
+    radial-gradient(circle at 80% 70%,rgba(236,72,153,.07) 0%,transparent 40%),
+    radial-gradient(circle at 50% 50%,rgba(251,191,36,.05) 0%,transparent 50%);
+  pointer-events:none;
+}
+.scene-svg{
+  width:100%;max-width:700px;
+  display:block;margin:0 auto;
+  filter:drop-shadow(0 10px 30px rgba(139,92,246,.25));
+  position:relative;z-index:1;
+}
+.illus-caption{
+  font-size:.9rem;font-weight:700;color:var(--purple);
+  margin-top:14px;position:relative;z-index:1;
+  opacity:.8;
+}
+
+/* ============================================================
+   EXPLANATION
+============================================================ */
+.explain-text{
+  font-size:clamp(1rem,2.5vw,1.13rem);
+  line-height:2;font-weight:600;color:var(--text-mid);
+}
+.em-purple{color:var(--purple);font-weight:900;}
+.em-pink{color:var(--pink);font-weight:900;}
+.em-orange{color:var(--orange);font-weight:900;}
+.em-teal{color:var(--teal);font-weight:900;}
+
+/* ============================================================
+   ANALOGY
+============================================================ */
+.analogy-box{
+  background:linear-gradient(135deg,#FFF7ED,#FEF9C3);
+  border:2.5px solid #FDE68A;border-radius:22px;
+  padding:22px 24px;
+  display:flex;gap:16px;align-items:flex-start;
+  margin-top:20px;
+  box-shadow:0 4px 16px rgba(251,191,36,.15);
+}
+.analogy-icon{font-size:2.6rem;flex-shrink:0;animation:paletteWiggle 3s ease-in-out infinite;}
+@keyframes paletteWiggle{
+  0%,100%{transform:rotate(-8deg) scale(1);}
+  50%{transform:rotate(8deg) scale(1.12);}
+}
+.analogy-title{
+  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;
+  color:#92400E;margin-bottom:5px;
+}
+.analogy-body{
+  font-size:1rem;line-height:1.8;font-weight:700;color:#78350F;
+}
+
+/* ============================================================
+   AI TOOLS SHOWCASE
+============================================================ */
+.tools-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  margin-bottom:0;
+}
+@media(max-width:500px){.tools-grid{grid-template-columns:1fr;}}
+
+.tool-pill{
+  border-radius:20px;padding:18px 14px;text-align:center;
+  position:relative;overflow:hidden;cursor:pointer;
+  transition:transform .25s ease,box-shadow .25s ease;
+  border:2px solid transparent;
+}
+.tool-pill:hover{transform:translateY(-5px) scale(1.03);}
+.tool-pill:nth-child(1){background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border-color:#DDD6FE;}
+.tool-pill:nth-child(1):hover{box-shadow:0 12px 28px rgba(139,92,246,.3);}
+.tool-pill:nth-child(2){background:linear-gradient(135deg,#FCE7F3,#FDF2F8);border-color:#FBCFE8;}
+.tool-pill:nth-child(2):hover{box-shadow:0 12px 28px rgba(236,72,153,.3);}
+.tool-pill:nth-child(3){background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border-color:#FDE68A;}
+.tool-pill:nth-child(3):hover{box-shadow:0 12px 28px rgba(251,191,36,.3);}
+
+.tool-emoji{font-size:2.2rem;display:block;margin-bottom:8px;animation:toolBounce 2.5s ease-in-out infinite;}
+@keyframes toolBounce{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-8px) rotate(5deg);}}
+.tool-pill:nth-child(2) .tool-emoji{animation-delay:.4s;}
+.tool-pill:nth-child(3) .tool-emoji{animation-delay:.8s;}
+
+.tool-name{
+  font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;
+  margin-bottom:3px;
+}
+.tool-pill:nth-child(1) .tool-name{color:#7C3AED;}
+.tool-pill:nth-child(2) .tool-name{color:#BE185D;}
+.tool-pill:nth-child(3) .tool-name{color:#B45309;}
+.tool-sub{font-size:.72rem;font-weight:700;color:var(--text-soft);}
+
+/* ============================================================
+   COMIC STRIP
+============================================================ */
+.comic-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+}
+@media(min-width:560px){.comic-grid{grid-template-columns:repeat(4,1fr);}}
+
+.panel{
+  border-radius:20px;overflow:hidden;
+  position:relative;cursor:pointer;
+  transition:transform .25s ease,box-shadow .25s ease;
+  border:3px solid;
+}
+.panel:hover{transform:translateY(-7px) scale(1.04);}
+.panel:nth-child(1){border-color:#8B5CF6;box-shadow:0 6px 0 #7C3AED;}
+.panel:nth-child(2){border-color:#EC4899;box-shadow:0 6px 0 #BE185D;}
+.panel:nth-child(3){border-color:#F97316;box-shadow:0 6px 0 #C2410C;}
+.panel:nth-child(4){border-color:#22C55E;box-shadow:0 6px 0 #15803D;}
+.panel:nth-child(1):hover{box-shadow:0 12px 0 #7C3AED,0 14px 28px rgba(139,92,246,.35);}
+.panel:nth-child(2):hover{box-shadow:0 12px 0 #BE185D,0 14px 28px rgba(236,72,153,.35);}
+.panel:nth-child(3):hover{box-shadow:0 12px 0 #C2410C,0 14px 28px rgba(249,115,22,.35);}
+.panel:nth-child(4):hover{box-shadow:0 12px 0 #15803D,0 14px 28px rgba(34,197,94,.35);}
+
+.panel-art{
+  width:100%;height:148px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:3.2rem;position:relative;overflow:hidden;
+}
+.panel:nth-child(1) .panel-art{background:linear-gradient(135deg,#F5F3FF,#EDE9FE);}
+.panel:nth-child(2) .panel-art{background:linear-gradient(135deg,#FDF2F8,#FCE7F3);}
+.panel:nth-child(3) .panel-art{background:linear-gradient(135deg,#FFF7ED,#FFEDD5);}
+.panel:nth-child(4) .panel-art{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);}
+
+.panel-num{
+  position:absolute;top:8px;left:8px;
+  width:26px;height:26px;border-radius:50%;
+  font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;color:#fff;
+}
+.panel:nth-child(1) .panel-num{background:#8B5CF6;box-shadow:0 2px 8px rgba(139,92,246,.5);}
+.panel:nth-child(2) .panel-num{background:#EC4899;box-shadow:0 2px 8px rgba(236,72,153,.5);}
+.panel:nth-child(3) .panel-num{background:#F97316;box-shadow:0 2px 8px rgba(249,115,22,.5);}
+.panel:nth-child(4) .panel-num{background:#22C55E;box-shadow:0 2px 8px rgba(34,197,94,.5);}
+
+.panel-bubble{
+  position:absolute;top:8px;right:8px;
+  background:rgba(255,255,255,.92);
+  border-radius:10px 10px 10px 2px;
+  font-size:.62rem;font-weight:800;color:var(--text-dark);
+  padding:3px 7px;max-width:62%;line-height:1.3;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+.panel-caption{
+  background:#fff;padding:10px 12px;
+  font-size:.77rem;font-weight:700;color:var(--text-mid);
+  text-align:center;min-height:54px;
+  display:flex;align-items:center;justify-content:center;
+  line-height:1.35;
+}
+
+/* ============================================================
+   GALLERY (AI ART SHOWCASE)
+============================================================ */
+.gallery-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+}
+@media(max-width:480px){.gallery-grid{grid-template-columns:1fr 1fr;}}
+
+.gallery-item{
+  border-radius:18px;overflow:hidden;
+  position:relative;cursor:pointer;
+  transition:transform .3s ease,box-shadow .3s ease;
+  aspect-ratio:1;
+  border:2.5px solid rgba(255,255,255,.8);
+  box-shadow:0 4px 16px rgba(0,0,0,.08);
+}
+.gallery-item:hover{transform:scale(1.06) rotate(1deg);box-shadow:0 12px 32px rgba(139,92,246,.25);}
+
+.gallery-art{
+  width:100%;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:2.2rem;
+  padding:8px;gap:4px;
+  position:relative;overflow:hidden;
+}
+/* each gallery has unique gradient */
+.gallery-item:nth-child(1) .gallery-art{background:linear-gradient(135deg,#FAF5FF,#F3E8FF,#EDE9FE);}
+.gallery-item:nth-child(2) .gallery-art{background:linear-gradient(135deg,#FDF2F8,#FCE7F3,#FBCFE8);}
+.gallery-item:nth-child(3) .gallery-art{background:linear-gradient(135deg,#FFFBEB,#FEF3C7,#FDE68A);}
+.gallery-item:nth-child(4) .gallery-art{background:linear-gradient(135deg,#F0FDF4,#DCFCE7,#BBF7D0);}
+.gallery-item:nth-child(5) .gallery-art{background:linear-gradient(135deg,#EFF6FF,#DBEAFE,#BFDBFE);}
+.gallery-item:nth-child(6) .gallery-art{background:linear-gradient(135deg,#FFF7ED,#FFEDD5,#FED7AA);}
+
+.gallery-label{
+  font-size:.65rem;font-weight:800;
+  text-align:center;line-height:1.2;
+  padding:0 4px;
+}
+.gallery-item:nth-child(1) .gallery-label{color:#7C3AED;}
+.gallery-item:nth-child(2) .gallery-label{color:#BE185D;}
+.gallery-item:nth-child(3) .gallery-label{color:#B45309;}
+.gallery-item:nth-child(4) .gallery-label{color:#15803D;}
+.gallery-item:nth-child(5) .gallery-label{color:#1D4ED8;}
+.gallery-item:nth-child(6) .gallery-label{color:#C2410C;}
+
+.gallery-prompt-tag{
+  position:absolute;bottom:0;left:0;right:0;
+  background:rgba(0,0,0,.55);
+  color:#fff;font-size:.58rem;font-weight:700;
+  padding:4px 6px;text-align:center;
+  backdrop-filter:blur(4px);
+  transform:translateY(100%);
+  transition:transform .25s ease;
+  line-height:1.3;
+}
+.gallery-item:hover .gallery-prompt-tag{transform:translateY(0);}
+
+/* ============================================================
+   FACTS GRID
+============================================================ */
+.facts-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:460px){.facts-grid{grid-template-columns:1fr;}}
+
+.fact-box{
+  border-radius:20px;padding:20px;
+  position:relative;overflow:hidden;
+  cursor:default;
+  transition:transform .25s ease,box-shadow .25s ease;
+  border:2px solid;
+}
+.fact-box:hover{transform:translateY(-4px);}
+.fact-box:nth-child(1){background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border-color:#DDD6FE;}
+.fact-box:nth-child(1):hover{box-shadow:0 12px 24px rgba(139,92,246,.2);}
+.fact-box:nth-child(2){background:linear-gradient(135deg,#FDF2F8,#FCE7F3);border-color:#FBCFE8;}
+.fact-box:nth-child(2):hover{box-shadow:0 12px 24px rgba(236,72,153,.2);}
+.fact-box:nth-child(3){background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border-color:#FDE68A;}
+.fact-box:nth-child(3):hover{box-shadow:0 12px 24px rgba(251,191,36,.2);}
+.fact-box:nth-child(4){background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-color:#BBF7D0;}
+.fact-box:nth-child(4):hover{box-shadow:0 12px 24px rgba(34,197,94,.2);}
+
+.fact-emoji{font-size:2rem;display:block;margin-bottom:8px;animation:factFloat 2.8s ease-in-out infinite;}
+@keyframes factFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+.fact-box:nth-child(2) .fact-emoji{animation-delay:.35s;}
+.fact-box:nth-child(3) .fact-emoji{animation-delay:.7s;}
+.fact-box:nth-child(4) .fact-emoji{animation-delay:1.05s;}
+
+.fact-title{font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;margin-bottom:5px;}
+.fact-box:nth-child(1) .fact-title{color:#6D28D9;}
+.fact-box:nth-child(2) .fact-title{color:#BE185D;}
+.fact-box:nth-child(3) .fact-title{color:#B45309;}
+.fact-box:nth-child(4) .fact-title{color:#15803D;}
+.fact-body{font-size:.83rem;line-height:1.65;font-weight:600;color:var(--text-mid);}
+
+/* ============================================================
+   INTERACTIVE ZONE
+============================================================ */
+.quiz-prompt{
+  background:linear-gradient(135deg,#FAF5FF,#FDF2F8);
+  border:2.5px dashed #C4B5FD;
+  border-radius:24px;padding:28px 24px;
+  text-align:center;margin-bottom:20px;
+}
+.quiz-icon{font-size:3rem;display:block;margin:0 auto 10px;animation:paintSpin 5s ease-in-out infinite;}
+@keyframes paintSpin{0%,100%{transform:rotate(-10deg) scale(1);}50%{transform:rotate(10deg) scale(1.15);}}
+
+.quiz-label{font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;color:var(--purple);margin-bottom:8px;}
+.quiz-q{font-size:1.05rem;font-weight:700;color:var(--text-dark);margin-bottom:22px;line-height:1.6;}
+
+.qa-opts{display:flex;flex-direction:column;gap:10px;text-align:left;}
+.qa-btn{
+  display:flex;align-items:center;gap:12px;
+  background:#fff;border:2.5px solid #DDD6FE;
+  border-radius:14px;
+  padding:13px 18px;
+  font-family:'Nunito',sans-serif;
+  font-size:.93rem;font-weight:700;color:var(--text-dark);
+  cursor:pointer;transition:all .2s ease;width:100%;
+}
+.qa-btn:hover{border-color:var(--purple);background:#F5F3FF;transform:translateX(6px);}
+.qa-btn.correct{border-color:var(--green);background:#F0FDF4;color:#15803D;}
+.qa-btn.wrong{border-color:var(--red);background:#FEF2F2;color:#991B1B;}
+.opt-icon{font-size:1.3rem;flex-shrink:0;}
+.qa-result{
+  display:none;margin-top:14px;border-radius:14px;
+  padding:14px 18px;font-size:.95rem;font-weight:800;text-align:center;
+  animation:popIn .35s ease;
+}
+.qa-result.show{display:block;}
+.qa-result.right{background:#F0FDF4;color:#15803D;border:2px solid #BBF7D0;}
+.qa-result.wrong{background:#FEF2F2;color:#991B1B;border:2px solid #FECACA;}
+
+/* ============================================================
+   AI STORY GENERATOR (INTERACTIVE)
+============================================================ */
+.story-gen{
+  background:linear-gradient(135deg,#FAF5FF,#FDF2F8,#EFF6FF);
+  border:2px solid #DDD6FE;border-radius:24px;
+  padding:24px;position:relative;overflow:hidden;
+}
+.story-gen::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%238B5CF6' fill-opacity='0.04'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10S0 14.5 0 20s4.5 10 10 10 10-4.5 10-10zm10 0c0 5.5 4.5 10 10 10s10-4.5 10-10-4.5-10-10-10-10 4.5-10 10z'/%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none;
+}
+.story-gen-title{
+  font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;
+  color:var(--purple-dk);margin-bottom:6px;position:relative;z-index:1;
+}
+.story-gen-sub{font-size:.85rem;font-weight:700;color:var(--text-soft);margin-bottom:16px;position:relative;z-index:1;}
+
+.token-grid{
+  display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;
+  position:relative;z-index:1;
+}
+.token{
+  padding:7px 16px;border-radius:999px;
+  font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;
+  cursor:pointer;border:2px solid;
+  transition:all .2s ease;
+  user-select:none;
+}
+.token:hover{transform:translateY(-2px);}
+.token.active{transform:scale(1.05);}
+.token.type-who{background:#F5F3FF;color:#7C3AED;border-color:#C4B5FD;}
+.token.type-who.active{background:#7C3AED;color:#fff;border-color:#7C3AED;box-shadow:0 4px 12px rgba(139,92,246,.4);}
+.token.type-where{background:#FDF2F8;color:#BE185D;border-color:#F9A8D4;}
+.token.type-where.active{background:#EC4899;color:#fff;border-color:#EC4899;box-shadow:0 4px 12px rgba(236,72,153,.4);}
+.token.type-what{background:#FFFBEB;color:#B45309;border-color:#FDE68A;}
+.token.type-what.active{background:#F59E0B;color:#fff;border-color:#F59E0B;box-shadow:0 4px 12px rgba(251,191,36,.4);}
+
+.token-label{font-size:.72rem;font-weight:800;color:var(--text-soft);margin-bottom:6px;letter-spacing:.5px;}
+
+.story-output{
+  background:#fff;border:2px solid #EDE9FE;border-radius:16px;
+  padding:16px 18px;min-height:80px;
+  font-size:.92rem;font-weight:700;color:var(--text-mid);
+  line-height:1.75;
+  position:relative;z-index:1;
+  transition:all .3s ease;
+}
+.story-output .story-text{
+  animation:fadeInText .4s ease;
+}
+@keyframes fadeInText{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.gen-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;
+  color:#fff;
+  background:linear-gradient(135deg,#8B5CF6,#EC4899);
+  border:none;border-radius:999px;
+  padding:12px 28px;cursor:pointer;
+  box-shadow:0 5px 0 #7C3AED,0 8px 20px rgba(139,92,246,.35);
+  transition:all .2s ease;
+  margin-top:14px;
+  position:relative;z-index:1;
+}
+.gen-btn:hover{transform:translateY(-3px);box-shadow:0 8px 0 #7C3AED,0 14px 28px rgba(139,92,246,.45);}
+.gen-btn:active{transform:translateY(1px);box-shadow:0 2px 0 #7C3AED,0 4px 12px rgba(139,92,246,.3);}
+
+/* ============================================================
+   DIVIDER
+============================================================ */
+.fancy-div{
+  text-align:center;font-size:1.3rem;letter-spacing:8px;
+  color:var(--purple-lt);margin:8px 0;
+}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+.footer{
+  text-align:center;padding:24px 0 6px;
+  font-size:.75rem;font-weight:700;color:var(--text-soft);
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media(max-width:580px){
+  .card{padding:22px 16px;}
+  .story-gen{padding:18px 14px;}
+}
+
+/* ============================================================
+   SCROLL REVEAL
+============================================================ */
+.reveal{
+  opacity:0;transform:translateY(32px);
+  transition:opacity .6s ease,transform .6s ease;
+}
+.reveal.visible{opacity:1;transform:none;}
+</style>
+</head>
+<body>
+
+<!-- ===== BACKGROUND BLOBS ===== -->
+<div class="blob" style="width:440px;height:440px;background:#8B5CF6;opacity:.07;top:-80px;right:-100px;animation-duration:9s;"></div>
+<div class="blob" style="width:350px;height:350px;background:#EC4899;opacity:.06;top:40%;left:-80px;animation-duration:11s;animation-delay:2s;"></div>
+<div class="blob" style="width:300px;height:300px;background:#FBBF24;opacity:.06;bottom:20%;right:-60px;animation-duration:8s;animation-delay:4s;"></div>
+<div class="blob" style="width:280px;height:280px;background:#22C55E;opacity:.05;bottom:10%;left:10%;animation-duration:13s;animation-delay:1s;"></div>
+
+<!-- ===== CONFETTI DOTS ===== -->
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<div class="page-wrap">
+
+  <!-- ===== BACK LINK ===== -->
+  <a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header reveal">
+    <div class="rainbow-arch"></div>
+    <div class="day-badge">🎨 HARI 13 DARI 30 🎨</div>
+    <h1 class="main-title">
+      Hari 13: <span class="title-rainbow">AI yang Bisa Menggambar</span><br/>
+      dan Membuat Cerita! 🤩✨
+    </h1>
+    <p class="header-sub">Petualangan Aslan di Negeri AI 🌈</p>
+    <div class="progress-wrap">
+      <span class="progress-label">Progress:</span>
+      <div class="progress-track"><div class="progress-fill"></div></div>
+      <span class="progress-label">13/30</span>
+    </div>
+  </header>
+
+  <!-- ===== ILLUSTRATION ===== -->
+  <div class="reveal illus-border-wrap">
+    <div class="illus-inner">
+      <!--
+        🖼️ GANTI ILUSTRASI UTAMA
+        AI Image Prompt:
+        "A magical art studio floating in rainbow clouds. A cute 9-year-old Indonesian
+         explorer boy named Aslan and his small blue-white robot friend Robo stand
+         amazed, mouths open wide, looking at a giant magical canvas where colorful
+         AI art is being painted by itself with glowing paintbrushes. The canvas shows
+         a beautiful fantasy landscape with dragons and castles. Stars, paint splashes,
+         and rainbow swirls everywhere. Premium cartoon illustration, vibrant colors,
+         child-friendly, joyful atmosphere."
+      -->
+      <svg class="scene-svg" viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="canvasGlow" cx="50%" cy="50%" r="55%">
+            <stop offset="0%" stop-color="#C4B5FD" stop-opacity=".5"/>
+            <stop offset="100%" stop-color="#FDE68A" stop-opacity=".1"/>
+          </radialGradient>
+          <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#EFF6FF"/>
+            <stop offset="100%" stop-color="#FAF5FF"/>
+          </linearGradient>
+          <filter id="paintGlow">
+            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- bg -->
+        <rect width="720" height="340" fill="url(#skyGrad)"/>
+
+        <!-- floating paint splashes bg -->
+        <circle cx="80" cy="60" r="28" fill="#F9A8D4" opacity=".25"/>
+        <circle cx="640" cy="80" r="22" fill="#A5F3FC" opacity=".3"/>
+        <circle cx="680" cy="260" r="18" fill="#FDE68A" opacity=".3"/>
+        <circle cx="60" cy="280" r="24" fill="#BBF7D0" opacity=".25"/>
+
+        <!-- ===== GIANT CANVAS (center) ===== -->
+        <!-- easel legs -->
+        <line x1="235" y1="320" x2="280" y2="180" stroke="#92400E" stroke-width="5" stroke-linecap="round"/>
+        <line x1="485" y1="320" x2="440" y2="180" stroke="#92400E" stroke-width="5" stroke-linecap="round"/>
+        <line x1="260" y1="320" x2="460" y2="320" stroke="#92400E" stroke-width="4" stroke-linecap="round"/>
+
+        <!-- canvas frame -->
+        <rect x="225" y="40" width="270" height="200" rx="10" fill="#92400E"/>
+        <rect x="229" y="44" width="262" height="192" rx="8" fill="#fff"/>
+
+        <!-- canvas ART: AI-generated fantasy scene -->
+        <!-- sky in painting -->
+        <rect x="229" y="44" width="262" height="100" rx="8" fill="#DBEAFE"/>
+        <!-- ground -->
+        <rect x="229" y="144" width="262" height="92" rx="0" fill="#DCFCE7"/>
+        <rect x="229" y="226" width="262" height="10" rx="0" fill="#BBF7D0"/>
+        <!-- mountains -->
+        <polygon points="270,150 310,70 350,150" fill="#C4B5FD"/>
+        <polygon points="330,150 380,60 430,150" fill="#A78BFA"/>
+        <polygon points="390,150 420,90 460,150" fill="#DDD6FE"/>
+        <!-- castle -->
+        <rect x="330" y="100" width="60" height="60" fill="#EDE9FE"/>
+        <rect x="328" y="90" width="16" height="20" fill="#C4B5FD"/>
+        <rect x="356" y="88" width="16" height="22" fill="#C4B5FD"/>
+        <!-- dragon (simple) -->
+        <ellipse cx="440" cy="85" rx="22" ry="14" fill="#FCA5A5"/>
+        <polygon points="418,82 404,68 422,80" fill="#F87171"/>
+        <circle cx="448" cy="80" r="6" fill="#FCA5A5"/>
+        <circle cx="451" cy="78" r="2" fill="#1E1B4B"/>
+        <!-- rainbow in painting -->
+        <path d="M240,100 Q320,40 410,100" stroke="none" fill="none"/>
+        <path d="M242,108 Q318,44 408,108" stroke="#EF4444" stroke-width="3" fill="none" opacity=".6"/>
+        <path d="M242,113 Q318,50 408,113" stroke="#F97316" stroke-width="3" fill="none" opacity=".6"/>
+        <path d="M242,118 Q318,56 408,118" stroke="#FBBF24" stroke-width="3" fill="none" opacity=".6"/>
+        <path d="M242,123 Q318,62 408,123" stroke="#22C55E" stroke-width="3" fill="none" opacity=".6"/>
+        <path d="M242,128 Q318,68 408,128" stroke="#3B82F6" stroke-width="3" fill="none" opacity=".5"/>
+        <!-- canvas sparkle overlay -->
+        <text x="245" y="65" font-size="12" opacity=".8">✨</text>
+        <text x="455" y="58" font-size="10" opacity=".7">⭐</text>
+        <text x="250" y="225" font-size="10" opacity=".6">🌸</text>
+        <text x="450" y="215" font-size="10" opacity=".6">🌟</text>
+
+        <!-- canvas border decoration -->
+        <rect x="225" y="40" width="270" height="200" rx="10" fill="none" stroke="#FDE68A" stroke-width="3" opacity=".7"/>
+
+        <!-- MAGIC PAINTBRUSH floating above canvas -->
+        <g transform="translate(460,60) rotate(-35)">
+          <rect x="-4" y="-40" width="8" height="60" rx="4" fill="#92400E"/>
+          <ellipse cx="0" cy="-44" rx="7" ry="14" fill="#8B5CF6"/>
+          <!-- paint drip -->
+          <ellipse cx="0" cy="22" rx="5" ry="7" fill="#EC4899" opacity=".9"/>
+          <path d="M0,28 Q2,36 0,40" stroke="#EC4899" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <!-- glow -->
+          <circle cx="0" cy="-44" r="14" fill="#C4B5FD" opacity=".25"/>
+        </g>
+        <!-- sparkle trail from brush -->
+        <text x="470" y="42"  font-size="10" opacity=".7" filter="url(#paintGlow)">✨</text>
+        <text x="488" y="30"  font-size="8"  opacity=".6">💜</text>
+        <text x="450" y="28"  font-size="8"  opacity=".5">🎨</text>
+
+        <!-- 2nd brush (story writing) -->
+        <g transform="translate(215,120) rotate(25)">
+          <rect x="-3" y="-36" width="6" height="52" rx="3" fill="#B45309"/>
+          <ellipse cx="0" cy="-40" rx="5" ry="10" fill="#3B82F6"/>
+          <ellipse cx="0" cy="18" rx="4" ry="6" fill="#FBBF24" opacity=".9"/>
+        </g>
+        <text x="185" y="100" font-size="9" opacity=".6">📝</text>
+
+        <!-- ===== ASLAN (right side) ===== -->
+        <g transform="translate(595,110)">
+          <!-- body -->
+          <rect x="-22" y="58" width="44" height="70" rx="15" fill="#FF8A40"/>
+          <!-- explorer vest pockets -->
+          <rect x="-8" y="62" width="16" height="12" rx="5" fill="#D97706" opacity=".6"/>
+          <!-- legs -->
+          <rect x="-13" y="120" width="12" height="40" rx="6" fill="#3B82F6"/>
+          <rect x="1"   y="120" width="12" height="40" rx="6" fill="#3B82F6"/>
+          <!-- shoes -->
+          <ellipse cx="-7"  cy="162" rx="10" ry="6" fill="#1E1B4B"/>
+          <ellipse cx="7"   cy="162" rx="10" ry="6" fill="#1E1B4B"/>
+          <!-- head -->
+          <ellipse cx="0" cy="26" rx="27" ry="30" fill="#FFDCB4"/>
+          <!-- hair -->
+          <ellipse cx="0" cy="0" rx="27" ry="13" fill="#2D1800"/>
+          <!-- explorer hat -->
+          <rect x="-30" y="-10" width="60" height="9" rx="4" fill="#B45309"/>
+          <rect x="-16" y="-20" width="32" height="13" rx="6" fill="#FBBF24"/>
+          <!-- eyes (SUPER wide amazed) -->
+          <circle cx="-10" cy="22" r="9" fill="#fff"/>
+          <circle cx="10"  cy="22" r="9" fill="#fff"/>
+          <circle cx="-9"  cy="22" r="6" fill="#1E1B4B"/>
+          <circle cx="11"  cy="22" r="6" fill="#1E1B4B"/>
+          <circle cx="-7"  cy="20" r="2.5" fill="#fff"/>
+          <circle cx="13"  cy="20" r="2.5" fill="#fff"/>
+          <!-- open mouth amazed O -->
+          <ellipse cx="0" cy="40" rx="10" ry="9" fill="#C2401A"/>
+          <ellipse cx="0" cy="40" rx="7" ry="6" fill="#9A3412"/>
+          <!-- eyebrows raised high -->
+          <path d="M-18,11 Q-9,4 0,11"  stroke="#2D1800" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M0,11  Q9,4 18,11"   stroke="#2D1800" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- arms out in surprise -->
+          <rect x="22"  y="60" width="12" height="40" rx="6" fill="#FFDCB4" transform="rotate(30,22,60)"/>
+          <rect x="-34" y="60" width="12" height="40" rx="6" fill="#FFDCB4" transform="rotate(-30,-34,60)"/>
+          <!-- speech bubble -->
+          <rect x="-110" y="-14" width="120" height="32" rx="12" fill="#fff" opacity=".95" stroke="#DDD6FE" stroke-width="1.5"/>
+          <path d="M6,16 L18,26 L6,20" fill="#fff" stroke="#DDD6FE" stroke-width="1"/>
+          <text x="-52" y="1"  text-anchor="middle" fill="#8B5CF6" font-size="9"  font-family="Baloo 2,cursive" font-weight="800">WAAAH!! 🤯</text>
+          <text x="-52" y="13" text-anchor="middle" fill="#EC4899" font-size="8.5" font-family="Nunito,sans-serif" font-weight="700">AI bisa menggambar!</text>
+        </g>
+
+        <!-- ===== ROBO (left side, jumping) ===== -->
+        <g transform="translate(108,165)">
+          <!-- glow under -->
+          <ellipse cx="0" cy="72" rx="22" ry="7" fill="#8B5CF6" opacity=".2"/>
+          <!-- body -->
+          <rect x="-15" y="14" width="30" height="34" rx="9" fill="#A78BFA"/>
+          <!-- chest screen -->
+          <rect x="-9" y="18" width="18" height="14" rx="4" fill="#5B21B6" opacity=".7"/>
+          <!-- rainbow on screen -->
+          <path d="M-6,28 Q0,20 6,28" stroke="#EF4444" stroke-width="1.5" fill="none"/>
+          <path d="M-6,30 Q0,22 6,30" stroke="#FBBF24" stroke-width="1.5" fill="none"/>
+          <path d="M-6,32 Q0,24 6,32" stroke="#22C55E" stroke-width="1.5" fill="none"/>
+          <!-- head -->
+          <rect x="-13" y="-18" width="26" height="24" rx="8" fill="#C4B5FD"/>
+          <rect x="-17" y="-22" width="34" height="8" rx="4" fill="#8B5CF6" opacity=".45"/>
+          <!-- antenna -->
+          <rect x="-2" y="-30" width="4" height="10" rx="2" fill="#7C3AED"/>
+          <circle cx="0" cy="-32" r="5" fill="#EC4899" filter="url(#paintGlow)"/>
+          <!-- eyes: stars (excited) -->
+          <text x="-11" y="-3" font-size="9">🌟</text>
+          <text x="1"   y="-3" font-size="9">🌟</text>
+          <!-- arms raised -->
+          <rect x="-27" y="12" width="10" height="18" rx="5" fill="#A78BFA" transform="rotate(-30,-27,12)"/>
+          <rect x="17"  y="12" width="10" height="18" rx="5" fill="#A78BFA" transform="rotate(30,27,12)"/>
+          <!-- legs (jump pose) -->
+          <rect x="-9" y="44" width="8" height="18" rx="4" fill="#7C3AED" transform="rotate(-10,-9,44)"/>
+          <rect x="2"  y="44" width="8" height="18" rx="4" fill="#7C3AED" transform="rotate(10,10,44)"/>
+          <!-- speech bubble -->
+          <rect x="-8" y="-68" width="110" height="28" rx="10" fill="#fff" opacity=".95" stroke="#F9A8D4" stroke-width="1.5"/>
+          <path d="M12,-40 L8,-28 L18,-40" fill="#fff" stroke="#F9A8D4" stroke-width="1"/>
+          <text x="48" y="-56" text-anchor="middle" fill="#EC4899" font-size="9"  font-family="Baloo 2,cursive" font-weight="800">AMAZING!! 🎨</text>
+          <text x="48" y="-45" text-anchor="middle" fill="#8B5CF6" font-size="8"  font-family="Nunito,sans-serif" font-weight="700">Seni AI keren banget!</text>
+        </g>
+
+        <!-- floating elements -->
+        <text x="165" y="55"  font-size="18" opacity=".65">🎨</text>
+        <text x="555" y="260" font-size="16" opacity=".55">✏️</text>
+        <text x="620" y="40"  font-size="14" opacity=".6">🌈</text>
+        <text x="70"  y="100" font-size="12" opacity=".5">🖌️</text>
+        <text x="510" y="310" font-size="14" opacity=".5">📖</text>
+        <text x="150" y="310" font-size="13" opacity=".5">💫</text>
+      </svg>
+      <p class="illus-caption">🎨 AI ajaib menggambar naga dan kastil sendiri — Aslan dan Robo sampai tidak percaya! 🤩</p>
+    </div>
+  </div>
+
+  <!-- ===== EXPLANATION ===== -->
+  <div class="card card-rainbow reveal">
+    <span class="section-tag tag-rainbow">📖 Yuk Belajar!</span>
+    <h2 class="card-title">AI yang Bisa Berkreasi! 🎨✍️</h2>
+    <p class="explain-text">
+      Aslan, kamu tahu tidak? AI sekarang bukan hanya bisa menjawab pertanyaan —
+      AI juga bisa <span class="em-purple">menggambar gambar indah</span> dan
+      <span class="em-pink">menulis cerita seru</span>! 🤩
+      <br/><br/>
+      Ada AI khusus untuk menggambar seperti <span class="em-purple">DALL-E</span>,
+      <span class="em-pink">Midjourney</span>, dan <span class="em-orange">Stable Diffusion</span>.
+      Kamu tinggal ketik deskripsi seperti <em>"gambar naga biru terbang di atas awan pelangi"</em>,
+      dan dalam hitungan detik — gambarnya jadi! 🐉🌈⚡
+      <br/><br/>
+      Untuk membuat cerita, ada AI seperti <span class="em-teal">ChatGPT</span> yang bisa menulis
+      dongeng, puisi, bahkan skrip film hanya dari satu kalimat idemu! 📝🌟
+      Rahasianya? AI belajar dari jutaan gambar dan cerita yang sudah ada,
+      lalu berkreasi sendiri! 🧠✨
+    </p>
+
+    <div class="analogy-box">
+      <span class="analogy-icon">🪄</span>
+      <div>
+        <div class="analogy-title">🌈 Bayangkan begini, Aslan...</div>
+        <p class="analogy-body">
+          AI kreatif itu seperti <strong>seniman ajaib yang punya jutaan pensil warna dan jutaan buku cerita!</strong>
+          Kamu tinggal bilang <em>"Aku mau gambar istana di atas awan dengan peri bersayap emas"</em>,
+          dan — ABRAKADABRA! 🎩✨ — dalam sekejap, gambar itu sudah jadi!
+          Lebih cepat dari kamu bisa kedipkan mata! 😄
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== AI TOOLS SHOWCASE ===== -->
+  <div class="card card-purple reveal">
+    <span class="section-tag tag-purple">🛠️ Kenalan dengan AI Kreatif!</span>
+    <h2 class="card-title">Tiga AI Paling Keren di Dunia Seni! 🏆</h2>
+    <div class="tools-grid">
+      <div class="tool-pill">
+        <span class="tool-emoji">🖼️</span>
+        <div class="tool-name">DALL-E</div>
+        <div class="tool-sub">AI gambar dari OpenAI<br/>Bisa buat gambar dari kata-kata!</div>
+      </div>
+      <div class="tool-pill">
+        <span class="tool-emoji">🌌</span>
+        <div class="tool-name">Midjourney</div>
+        <div class="tool-sub">AI seni paling artistik<br/>Hasilnya seperti lukisan asli!</div>
+      </div>
+      <div class="tool-pill">
+        <span class="tool-emoji">📝</span>
+        <div class="tool-name">AI Penulis</div>
+        <div class="tool-sub">ChatGPT, Claude, dll<br/>Bisa buat cerita & puisi!</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fancy-div">✦ ✦ ✦</div>
+
+  <!-- ===== GALLERY ===== -->
+  <div class="card card-pink reveal">
+    <span class="section-tag tag-pink">🖼️ Galeri AI!</span>
+    <h2 class="card-title">Contoh Gambar yang Bisa Dibuat AI! 🌟</h2>
+    <p style="font-size:.88rem;font-weight:700;color:var(--text-soft);margin-bottom:14px;">
+      💡 Hover setiap kotak untuk melihat <em>"prompt"</em> (kata-kata) yang dipakai untuk membuat gambar ini!
+    </p>
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <div class="gallery-art" style="flex-direction:column;">
+          <div style="font-size:2.8rem;">🐉</div>
+          <div class="gallery-label">Naga di Langit</div>
+        </div>
+        <div class="gallery-prompt-tag">"Blue dragon flying above rainbow clouds, fantasy art"</div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-art" style="flex-direction:column;">
+          <div style="font-size:2.8rem;">🏰</div>
+          <div class="gallery-label">Kastil Ajaib</div>
+        </div>
+        <div class="gallery-prompt-tag">"Magical floating castle with waterfalls, cartoon style"</div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-art" style="flex-direction:column;">
+          <div style="font-size:2.8rem;">🦄</div>
+          <div class="gallery-label">Unicorn Galaksi</div>
+        </div>
+        <div class="gallery-prompt-tag">"Galaxy unicorn with starry mane in space, vibrant colors"</div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-art" style="flex-direction:column;">
+          <div style="font-size:2.8rem;">🌊</div>
+          <div class="gallery-label">Kota Bawah Laut</div>
+        </div>
+        <div class="gallery-prompt-tag">"Futuristic underwater city with glowing domes, detailed"</div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-art" style="flex-direction:column;">
+          <div style="font-size:2.8rem;">🚀</div>
+          <div class="gallery-label">Robot Luar Angkasa</div>
+        </div>
+        <div class="gallery-prompt-tag">"Cute robot astronaut exploring alien planet, cartoon"</div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-art" style="flex-direction:column;">
+          <div style="font-size:2.8rem;">🌺</div>
+          <div class="gallery-label">Hutan Sihir</div>
+        </div>
+        <div class="gallery-prompt-tag">"Enchanted forest with glowing flowers and fairies, dreamy"</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fancy-div">✦ ✦ ✦</div>
+
+  <!-- ===== COMIC STRIP ===== -->
+  <div class="card card-yellow reveal">
+    <span class="section-tag tag-yellow">🎭 Komik Aslan!</span>
+    <h2 class="card-title">Aslan Minta AI Menggambar & Bercerita! 🎬</h2>
+    <div class="comic-grid">
+
+      <div class="panel">
+        <div class="panel-num">1</div>
+        <!--
+          PANEL 1 – AI Image Prompt:
+          "Aslan sitting at computer with a big smile, typing words,
+           excited expression, colorful cartoon style"
+        -->
+        <div class="panel-art">🧒💡</div>
+        <div class="panel-bubble">"Aku minta AI bikin gambar!"</div>
+        <div class="panel-caption">Aslan dapat ide cemerlang — minta AI buat gambar naga! 💜</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-num">2</div>
+        <!--
+          PANEL 2 – AI Image Prompt:
+          "Screen showing typing animation, colorful loading sparkles,
+           magical art appearing on screen, cartoon style"
+        -->
+        <div class="panel-art">✨⏳</div>
+        <div class="panel-bubble">"Generating... 3, 2, 1! 🪄"</div>
+        <div class="panel-caption">AI langsung bekerja keras dalam hitungan detik! ⚡ Magic!</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-num">3</div>
+        <!--
+          PANEL 3 – AI Image Prompt:
+          "Beautiful AI-generated dragon art appearing on screen,
+           screen glowing with rainbow colors, cartoon style"
+        -->
+        <div class="panel-art">🐉🌈</div>
+        <div class="panel-bubble">"Naga pelanginya jadi!!! 😍"</div>
+        <div class="panel-caption">Gambar naga pelangi super indah langsung muncul! 🎨🌟</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-num">4</div>
+        <!--
+          PANEL 4 – AI Image Prompt:
+          "Aslan and Robo jumping with joy, stars and confetti everywhere,
+           celebrating AI art, colorful cartoon style"
+        -->
+        <div class="panel-art">🤩🎊</div>
+        <div class="panel-bubble">"AI adalah seniman TERHEBAT!!"</div>
+        <div class="panel-caption">Aslan & Robo melompat kegirangan! Ini luar biasa! 🥳💚</div>
+      </div>
+
+    </div>
+    <p style="text-align:center;font-size:.78rem;color:var(--text-soft);font-weight:600;margin-top:12px;">
+      💡 Klik setiap panel untuk lihat animasi seru!
+    </p>
+  </div>
+
+  <div class="fancy-div">✦ ✦ ✦</div>
+
+  <!-- ===== FACTS ===== -->
+  <div class="card card-teal reveal">
+    <span class="section-tag tag-teal">⚡ Fakta Keren!</span>
+    <h2 class="card-title">Fakta AI Kreatif yang Bikin Takjub! 🤯</h2>
+    <div class="facts-grid">
+      <div class="fact-box">
+        <span class="fact-emoji">⚡</span>
+        <div class="fact-title">Super Cepat!</div>
+        <p class="fact-body">AI bisa menghasilkan gambar indah hanya dalam 3–10 detik! Pelukis manusia butuh berjam-jam untuk gambar yang sama. 🎨🕐</p>
+      </div>
+      <div class="fact-box">
+        <span class="fact-emoji">🧠</span>
+        <div class="fact-title">Belajar dari Miliaran Gambar!</div>
+        <p class="fact-body">AI gambar dilatih menggunakan lebih dari 5 MILIAR gambar dari internet. Bayangkan, lebih dari foto semua orang di bumi! 😮</p>
+      </div>
+      <div class="fact-box">
+        <span class="fact-emoji">🌍</span>
+        <div class="fact-title">Semua Gaya Seni Bisa!</div>
+        <p class="fact-body">AI bisa menggambar gaya kartun, lukisan cat minyak, anime Jepang, atau foto realistis — semuanya dari satu alat! 🖌️</p>
+      </div>
+      <div class="fact-box">
+        <span class="fact-emoji">📖</span>
+        <div class="fact-title">Bisa Nulis Buku Sendiri!</div>
+        <p class="fact-body">AI sudah berhasil menulis novel pendek, puisi, hingga lirik lagu! Beberapa bahkan sudah diterbitkan dan dijual! 📚🎵</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== INTERACTIVE ZONE ===== -->
+  <div class="card card-rainbow reveal">
+    <span class="section-tag tag-rainbow">🎮 Zona Kreatif Aslan!</span>
+    <h2 class="card-title">Tantangan & Kreasi Seru! 🌈</h2>
+
+    <!-- QUIZ -->
+    <div class="quiz-prompt">
+      <span class="quiz-icon">🎨</span>
+      <div class="quiz-label">Pertanyaan Seru untuk Aslan!</div>
+      <p class="quiz-q">Apa yang perlu kamu ketikkan agar AI bisa membuat gambar yang kamu inginkan? 🤔</p>
+      <div class="qa-opts" id="qa-opts">
+        <button class="qa-btn" onclick="jawab(this,false)">
+          <span class="opt-icon">🤔</span>
+          <span>Kamu harus bisa melukis dulu baru AI mau membantu</span>
+        </button>
+        <button class="qa-btn" onclick="jawab(this,true)">
+          <span class="opt-icon">🤔</span>
+          <span>Cukup ketikkan deskripsi gambar yang kamu mau dalam kata-kata, lalu AI langsung membuatnya!</span>
+        </button>
+        <button class="qa-btn" onclick="jawab(this,false)">
+          <span class="opt-icon">🤔</span>
+          <span>Kamu harus menggambar sketsa dulu, baru AI bisa membantu mewarnainya</span>
+        </button>
+        <button class="qa-btn" onclick="jawab(this,false)">
+          <span class="opt-icon">🤔</span>
+          <span>AI hanya bisa menggambar gambar yang sudah pernah ada sebelumnya</span>
+        </button>
+      </div>
+      <div class="qa-result" id="qa-result"></div>
+    </div>
+
+    <!-- STORY GENERATOR -->
+    <div class="story-gen">
+      <div class="story-gen-title">🪄 Generator Cerita AI Ajaib!</div>
+      <div class="story-gen-sub">Pilih kata-kata di bawah, lalu biarkan AI membuat cerita untukmu! ✨</div>
+
+      <div class="token-label">🦸 SIAPA tokohnya?</div>
+      <div class="token-grid" id="token-who">
+        <button class="token type-who" onclick="selectToken(this,'who')">🧒 Aslan</button>
+        <button class="token type-who" onclick="selectToken(this,'who')">🤖 Robo</button>
+        <button class="token type-who" onclick="selectToken(this,'who')">🦁 Singa Ajaib</button>
+        <button class="token type-who" onclick="selectToken(this,'who')">🧙 Penyihir</button>
+      </div>
+
+      <div class="token-label" style="margin-top:10px;">📍 DI MANA tempatnya?</div>
+      <div class="token-grid" id="token-where">
+        <button class="token type-where" onclick="selectToken(this,'where')">🏰 Kastil Awan</button>
+        <button class="token type-where" onclick="selectToken(this,'where')">🌊 Bawah Laut</button>
+        <button class="token type-where" onclick="selectToken(this,'where')">🌌 Luar Angkasa</button>
+        <button class="token type-where" onclick="selectToken(this,'where')">🌴 Hutan Sihir</button>
+      </div>
+
+      <div class="token-label" style="margin-top:10px;">⚔️ APA yang terjadi?</div>
+      <div class="token-grid" id="token-what">
+        <button class="token type-what" onclick="selectToken(this,'what')">🐉 Bertemu naga</button>
+        <button class="token type-what" onclick="selectToken(this,'what')">💎 Menemukan harta</button>
+        <button class="token type-what" onclick="selectToken(this,'what')">🌟 Menemukan bintang</button>
+        <button class="token type-what" onclick="selectToken(this,'what')">🤝 Berteman dengan AI</button>
+      </div>
+
+      <div class="story-output" id="story-output">
+        <span style="color:var(--text-soft);font-style:italic;">
+          ✨ Pilih kata-kata di atas, lalu klik tombol untuk membuat cerita ajaibmu!
+        </span>
+      </div>
+
+      <button class="gen-btn" onclick="generateStory()">🪄 Buat Cerita Ajaib! ✨</button>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <div class="footer">
+    🌈 Petualangan Aslan di Negeri AI &bull; Hari 13 dari 30 &bull; AI yang Bisa Menggambar & Membuat Cerita 🎨
+  </div>
+
+</div><!-- /page-wrap -->
+
+<script>
+/* ====== CONFETTI DOTS ====== */
+(function(){
+  const colors=['#8B5CF6','#EC4899','#3B82F6','#FBBF24','#22C55E','#F97316','#14B8A6'];
+  const wrap=document.getElementById('confettiWrap');
+  for(let i=0;i<28;i++){
+    const d=document.createElement('div');
+    d.className='confetti-dot';
+    const sz=Math.random()*10+4;
+    const col=colors[Math.floor(Math.random()*colors.length)];
+    d.style.cssText=`
+      width:${sz}px;height:${sz}px;
+      background:${col};
+      left:${Math.random()*100}%;
+      top:-${Math.random()*10}%;
+      animation-duration:${Math.random()*14+8}s;
+      animation-delay:${Math.random()*12}s;
+      border-radius:${Math.random()>.4?'50%':'4px'};
+    `;
+    wrap.appendChild(d);
+  }
+})();
+
+/* ====== SCROLL REVEAL ====== */
+const revObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add('visible');
+  });
+},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
+
+/* ====== PANEL CLICK ====== */
+document.querySelectorAll('.panel').forEach(p=>{
+  p.addEventListener('click',()=>{
+    p.style.transform='scale(1.07) rotate(2deg)';
+    setTimeout(()=>p.style.transform='',320);
+  });
+});
+
+/* ====== QUIZ ====== */
+let answered=false;
+function jawab(btn,correct){
+  if(answered)return;answered=true;
+  const opts=document.getElementById('qa-opts');
+  const res=document.getElementById('qa-result');
+  Array.from(opts.querySelectorAll('.qa-btn')).forEach(b=>b.style.pointerEvents='none');
+  if(correct){
+    btn.classList.add('correct');
+    btn.querySelector('.opt-icon').textContent='✅';
+    res.className='qa-result show right';
+    res.innerHTML='🎉 BENAR BANGET, Aslan! Cukup ketik deskripsinya dan AI langsung berkreasi! Mudah banget kan? 🌈🏆';
+  } else {
+    btn.classList.add('wrong');
+    btn.querySelector('.opt-icon').textContent='❌';
+    res.className='qa-result show wrong';
+    res.innerHTML='😅 Belum tepat! Kamu tidak perlu bisa melukis — cukup tulis kata-kata, dan AI yang berkreasi! ✨📝';
+  }
+}
+
+/* ====== STORY GENERATOR ====== */
+const selected={who:null,where:null,what:null};
+
+const stories={
+  "Aslan|Kastil Awan|Bertemu naga":
+    "Suatu hari, <strong>Aslan</strong> terbang ke <strong>Kastil Awan</strong> yang mengapung di langit biru. Di sana, ia terkejut melihat <strong>seekor naga</strong> kecil berwarna pelangi! Ternyata naga itu kesepian dan ingin berteman. Aslan mengulurkan tangan, dan naga itu tersenyum lebar. Mereka pun bermain bersama di antara awan-awan putih hingga matahari tenggelam. 🐉☁️🌅",
+  "Aslan|Bawah Laut|Menemukan harta":
+    "<strong>Aslan</strong> menyelam ke <strong>lautan biru</strong> yang dalam dan ajaib. Dengan kacamata selam ajaibnya, ia melihat sesuatu berkilau di antara terumbu karang — sebuah <strong>peti harta karun</strong>! Di dalamnya bukan emas, melainkan buku-buku pengetahuan ajaib dari peradaban bawah laut. Aslan membaca semuanya dan menjadi anak paling pintar di dunia! 🌊💎📚",
+  "Aslan|Luar Angkasa|Menemukan bintang":
+    "<strong>Aslan</strong> melesat dengan roket mininya ke <strong>luar angkasa</strong> yang gelap berbintang. Tiba-tiba ia melihat sebuah <strong>bintang kecil</strong> yang redup dan hampir padam! Aslan mendekat dan berbisik penyemangat, dan ajaibnya bintang itu bersinar semakin terang! Langit malam pun menjadi lebih indah dari sebelumnya. ⭐🚀✨",
+  "Aslan|Hutan Sihir|Berteman dengan AI":
+    "Di kedalaman <strong>Hutan Sihir</strong> yang ajaib, <strong>Aslan</strong> menemukan pohon besar yang bisa berbicara — ternyata ia adalah <strong>AI Hutan</strong>! AI itu sudah menjaga hutan selama ratusan tahun. Mereka berdua akhirnya bertukar ilmu: Aslan mengajari AI tentang persahabatan, dan AI mengajari Aslan nama semua makhluk hutan. 🌳🤖💚",
+  "Robo|Kastil Awan|Bertemu naga":
+    "<strong>Robo</strong>, robot kecil berbiru-putih, mendaki tangga awan hingga sampai di <strong>Kastil Awan</strong> yang megah. Di halaman kastil, seekor <strong>naga api</strong> sedang menangis karena tidak ada yang mau bermain dengannya. Robo tidak takut — ia langsung mengajak naga itu bermain tic-tac-toe! Naga itu tertawa dan keduanya jadi sahabat selamanya. 🤖🐉❤️",
+  "Robo|Luar Angkasa|Menemukan bintang":
+    "<strong>Robo</strong> mengikuti sinyal misterius ke <strong>luar angkasa</strong>. Sinyal itu berasal dari <strong>bintang jatuh</strong> yang tersangkut di antara asteroid! Dengan lengan robotiknya, Robo membebaskan bintang itu. Sebagai ucapan terima kasih, bintang itu memberikan Robo kemampuan baru: bisa berbicara dalam 1000 bahasa galaksi! 🌟🤖🛸",
+  "Singa Ajaib|Hutan Sihir|Menemukan harta":
+    "Di jantung <strong>Hutan Sihir</strong>, <strong>Singa Ajaib</strong> mencium bau yang aneh. Ia menggali tanah di bawah pohon tertua dan menemukan <strong>kotak harta</strong> berisi benih-benih ajaib. Ketika ditanam, benih itu tumbuh menjadi pohon yang menghasilkan buah berbentuk bintang, dan siapapun yang memakannya bisa memahami bahasa semua binatang! 🦁🌳💫",
+  "Penyihir|Kastil Awan|Berteman dengan AI":
+    "Seorang <strong>Penyihir</strong> tua mendarat di <strong>Kastil Awan</strong> setelah perjalanan panjang. Di dalam kastil, ia menemukan sebuah cermin ajaib — ternyata cermin itu adalah <strong>AI super cerdas</strong>! Penyihir mengajari AI tentang mantra-mantra kuno, sementara AI membantu penyihir membuat tongkat ajaib yang lebih canggih dengan teknologi modern. Sihir dan AI akhirnya bersatu! 🧙✨🤖",
+};
+
+function selectToken(btn,type){
+  const group=document.querySelectorAll(`.type-${type}`);
+  group.forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selected[type]=btn.textContent.replace(/^[^\w\s]*\s*/,'').trim();
+  // get plain text without emoji prefix clutter – simpler:
+  selected[type]=btn.textContent.trim();
+}
+
+function generateStory(){
+  const out=document.getElementById('story-output');
+  if(!selected.who||!selected.where||!selected.what){
+    out.innerHTML='<span style="color:#EC4899;font-weight:800;">✋ Pilih dulu siapa, di mana, dan apa yang terjadi ya Aslan!</span>';
+    return;
+  }
+  // normalize keys by stripping emoji from selections
+  const stripEmoji=s=>s.replace(/[\u{1F300}-\u{1FFFF}\u{2600}-\u{27FF}]\s*/gu,'').trim();
+  const who=stripEmoji(selected.who);
+  const where=stripEmoji(selected.where);
+  const what=stripEmoji(selected.what);
+
+  const key=`${who}|${where}|${what}`;
+  const story=stories[key];
+
+  if(story){
+    out.innerHTML=`<div class="story-text">📖 <em>Cerita Ajaib AI untuk Aslan:</em><br/><br/>${story}<br/><br/><span style="color:var(--purple);font-weight:800;">✨ — Tamat — ✨</span></div>`;
+  } else {
+    // Generic fallback story
+    const whoClean=selected.who.replace(/[^\w\s]/gu,'').trim()||'Aslan';
+    const whereClean=selected.where.replace(/[^\w\s]/gu,'').trim()||'tempat ajaib';
+    const whatClean=selected.what.replace(/[^\w\s]/gu,'').trim()||'petualangan seru';
+    out.innerHTML=`<div class="story-text">📖 <em>Cerita Ajaib AI untuk Aslan:</em><br/><br/>
+      Pada suatu hari yang cerah, <strong>${selected.who}</strong> memulai perjalanan menuju
+      <strong>${selected.where}</strong> yang sangat indah. Di sana, ia mengalami
+      <strong>${selected.what}</strong> yang benar-benar tidak terlupakan!
+      Dengan keberanian dan kecerdasan, petualangan itu berakhir dengan bahagia.
+      Semua orang bertepuk tangan dan bersorak gembira! 🎊⭐<br/><br/>
+      <span style="color:var(--purple);font-weight:800;">✨ — Tamat — ✨</span>
+    </div>`;
+  }
+}
+</script>
+</body>
+</html>

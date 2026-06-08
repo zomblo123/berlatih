@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Aslan's English Adventure — Day 4: The Flying Bicycle</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #0b1437;
+    --deep:    #0f2057;
+    --blue:    #1a56db;
+    --sky:     #3b82f6;
+    --amber:   #f59e0b;
+    --gold:    #fbbf24;
+    --emerald: #10b981;
+    --coral:   #f97316;
+    --purple:  #8b5cf6;
+    --rose:    #f43f5e;
+    --teal:    #14b8a6;
+    --white:   #ffffff;
+    --glass:   rgba(255,255,255,0.06);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star {
+    position: absolute; border-radius: 50%; background: white;
+    animation: twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:.15;transform:scale(1);}50%{opacity:.9;transform:scale(1.4);} }
+  .shoot {
+    position: fixed; top: 15%; left: -10%;
+    width: 140px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    animation: shoot 8s linear infinite 3s; z-index: 0;
+  }
+  @keyframes shoot {
+    0%{left:-10%;top:15%;opacity:0;}5%{opacity:1;}40%{left:110%;top:35%;opacity:0;}100%{left:110%;top:35%;opacity:0;}
+  }
+  .wrapper { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 36px 20px 60px; }
+  .hero { text-align: center; margin-bottom: 44px; animation: fadeDown .8s ease both; }
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
+  .hero-badge {
+    display: inline-flex; gap: 8px;
+    background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.35);
+    color: var(--gold); padding: 7px 22px; border-radius: 100px;
+    font-size: .8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Baloo 2', cursive; font-size: clamp(2rem,6vw,3.2rem);
+    font-weight: 800; color: var(--white); line-height: 1.15; margin-bottom: 12px;
+  }
+  .hero h1 .accent { background: linear-gradient(135deg,var(--sky),var(--teal)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero-sub { color: rgba(255,255,255,.55); font-size: 1rem; max-width: 480px; margin: 0 auto 28px; line-height: 1.6; }
+  .hero-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .tag { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.7); padding:6px 16px; border-radius:100px; font-size:.78rem; font-weight:600; backdrop-filter:blur(8px); }
+  .progress-wrap { background:rgba(255,255,255,.07); border-radius:100px; height:8px; margin-bottom:40px; overflow:hidden; border:1px solid rgba(255,255,255,.08); }
+  .progress-bar { height:100%; background:linear-gradient(90deg,var(--sky),var(--teal)); border-radius:100px; width:0%; transition:width .6s ease; }
+  .progress-label { text-align:right; font-size:.75rem; color:rgba(255,255,255,.4); margin-top:6px; font-weight:600; }
+
+  .illustration-card {
+    background: linear-gradient(135deg,#0c1f6e 0%,#1a3a8f 50%,#0b2d6e 100%);
+    border-radius: 32px; padding: 32px 24px 24px; margin-bottom: 40px;
+    text-align: center; position: relative; overflow: hidden; animation: fadeUp .9s ease .1s both;
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+  .illus-svg { max-width: 280px; width: 100%; position: relative; z-index: 1; }
+  .illus-quote { color:rgba(255,255,255,.75); font-size:.95rem; font-weight:600; margin-top:16px; font-style:italic; }
+  .illus-quote strong { color:var(--gold); font-style:normal; }
+
+  /* ===== SPEED CONTROLS ===== */
+  .speed-controls {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 16px; animation: fadeUp .9s ease .15s both;
+  }
+  .speed-label { color: rgba(255,255,255,.5); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .speed-btn {
+    padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06); color: rgba(255,255,255,.6);
+    font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s;
+    backdrop-filter: blur(8px);
+  }
+  .speed-btn:hover { background: rgba(255,255,255,.12); color: white; }
+  .speed-btn.active {
+    background: linear-gradient(135deg, var(--sky), var(--blue));
+    color: white; border-color: transparent;
+    box-shadow: 0 4px 16px rgba(59,130,246,.4);
+  }
+
+  .master-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:40px; animation:fadeUp .9s ease .2s both; }
+  .btn-master { display:inline-flex; align-items:center; gap:10px; padding:13px 28px; border-radius:100px; border:none; cursor:pointer; font-weight:700; transition:transform .15s; }
+  .btn-master:active { transform:scale(.97); }
+  .btn-play-all { background:linear-gradient(135deg,var(--sky),var(--blue)); color:white; box-shadow:0 6px 24px rgba(26,86,219,.45); }
+  .btn-stop { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:rgba(255,255,255,.75); backdrop-filter:blur(8px); }
+
+  .chapter {
+    background: linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.09); border-radius: 28px;
+    margin-bottom: 24px; overflow: hidden; backdrop-filter: blur(12px);
+    transition: transform .2s; animation: fadeUp .7s ease both;
+  }
+  .chapter:hover { transform: translateY(-3px); }
+  .chapter:nth-child(1){animation-delay:.1s;}.chapter:nth-child(2){animation-delay:.2s;}
+  .chapter:nth-child(3){animation-delay:.3s;}.chapter:nth-child(4){animation-delay:.4s;}
+  .chapter:nth-child(5){animation-delay:.5s;}
+  .chapter-accent { height: 4px; }
+  .ch1 .chapter-accent{background:linear-gradient(90deg,var(--sky),var(--blue));}
+  .ch2 .chapter-accent{background:linear-gradient(90deg,var(--teal),#0d9488);}
+  .ch3 .chapter-accent{background:linear-gradient(90deg,var(--amber),var(--coral));}
+  .ch4 .chapter-accent{background:linear-gradient(90deg,var(--purple),#6d28d9);}
+  .ch5 .chapter-accent{background:linear-gradient(90deg,var(--rose),#e11d48);}
+  .chapter-inner { padding: 28px 28px 24px; }
+  .chapter-head { display:flex; align-items:center; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+  .chapter-num {
+    width:52px; height:52px; border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2',cursive; font-size:1.3rem; font-weight:800; color:white;
+  }
+  .ch1 .chapter-num{background:linear-gradient(135deg,var(--sky),var(--blue));}
+  .ch2 .chapter-num{background:linear-gradient(135deg,var(--teal),#0d9488);}
+  .ch3 .chapter-num{background:linear-gradient(135deg,var(--amber),var(--coral));}
+  .ch4 .chapter-num{background:linear-gradient(135deg,var(--purple),#6d28d9);}
+  .ch5 .chapter-num{background:linear-gradient(135deg,var(--rose),#e11d48);}
+  .chapter-meta { flex:1; min-width:0; }
+  .chapter-tag { font-size:.7rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.35); margin-bottom:4px; }
+  .chapter-title { font-family:'Baloo 2',cursive; font-size:1.05rem; font-weight:700; color:var(--white); line-height:1.3; }
+  .btn-listen {
+    flex-shrink:0; display:inline-flex; align-items:center; gap:8px;
+    padding:10px 20px; border-radius:100px; border:none; cursor:pointer;
+    font-size:.82rem; font-weight:700; transition:all .2s;
+  }
+  .ch1 .btn-listen{background:rgba(59,130,246,.18);color:#7db8ff;border:1px solid rgba(59,130,246,.3);}
+  .ch2 .btn-listen{background:rgba(20,184,166,.15);color:#5eead4;border:1px solid rgba(20,184,166,.3);}
+  .ch3 .btn-listen{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3);}
+  .ch4 .btn-listen{background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.3);}
+  .ch5 .btn-listen{background:rgba(244,63,94,.15);color:#fda4af;border:1px solid rgba(244,63,94,.3);}
+  .btn-listen:hover{filter:brightness(1.15);transform:scale(1.04);}
+  .btn-listen.playing .icon-play{display:none;}
+  .btn-listen.playing::before{content:'⏸';margin-right:4px;}
+  .wave-bars{display:none;align-items:center;gap:2px;height:16px;}
+  .btn-listen.playing .wave-bars{display:flex;}
+  .wave-bar{width:3px;border-radius:2px;background:currentColor;animation:wave var(--dur,.5s) infinite alternate;}
+  @keyframes wave{from{height:3px;}to{height:14px;}}
+
+  .chapter-text {
+    font-size: 1rem; line-height: 1.95; color: rgba(255,255,255,.85);
+    padding: 20px 22px; background: rgba(0,0,0,.22);
+    border-radius: 16px; border: 1px solid rgba(255,255,255,.05);
+    position: relative; word-spacing: 2px;
+  }
+  .chapter-text .read-marker {
+    position:absolute; top:12px; right:14px;
+    font-size:.75rem; font-weight:700; color:var(--emerald);
+    opacity:0; transition:opacity .4s;
+  }
+  .chapter.done .chapter-text .read-marker { opacity:1; }
+
+  /* clickable word spans */
+  .w {
+    display: inline;
+    border-radius: 5px;
+    padding: 1px 2px;
+    cursor: pointer;
+    transition: background 0.08s;
+    white-space: normal;
+  }
+  .w:hover { background: rgba(245,158,11,0.22); }
+  .hl { color: var(--gold); font-weight: 700; }
+
+  .vocab-box { margin-top:16px; padding:16px 20px; background:rgba(255,255,255,.04); border-radius:14px; border:1px solid rgba(255,255,255,.07); }
+  .vocab-title { font-size:.72rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:10px; }
+  .vocab-pills { display:flex; flex-wrap:wrap; gap:8px; }
+  .vocab-pill {
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
+    border-radius:100px; padding:5px 14px; font-size:.8rem; font-weight:600;
+    color:rgba(255,255,255,.65); cursor:pointer; transition:all .18s;
+  }
+  .vocab-pill:hover{background:rgba(255,255,255,.14);color:var(--white);transform:scale(1.06);}
+
+  .motivation-card {
+    background: linear-gradient(135deg,#0c2a5c 0%,#0f1f50 60%,#12274a 100%);
+    border: 1px solid rgba(245,158,11,.25); border-radius:28px;
+    padding:36px 32px; text-align:center; margin-top:40px;
+    position:relative; overflow:hidden; animation:fadeUp .7s ease .6s both;
+  }
+  .motivation-card .star-icon{font-size:2.8rem;margin-bottom:16px;display:block;animation:spin 6s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);}50%{transform:rotate(180deg);}to{transform:rotate(360deg);}}
+  .motivation-card h2{font-family:'Baloo 2',cursive;font-size:clamp(1.2rem,4vw,1.7rem);font-weight:800;color:var(--gold);margin-bottom:14px;}
+  .motivation-card p{color:rgba(255,255,255,.7);font-size:.97rem;line-height:1.7;max-width:520px;margin:0 auto;}
+  .challenge-box{margin-top:24px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.22);border-radius:16px;padding:18px 22px;}
+  .challenge-box p{font-size:.9rem;font-weight:600;color:rgba(255,255,255,.75);}
+  .challenge-box strong{color:var(--gold);}
+  .footer{text-align:center;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.3);font-size:.82rem;font-weight:600;}
+
+  /* Toast */
+  .word-toast {
+    position:fixed; bottom:28px; left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:rgba(0,0,0,.9); backdrop-filter:blur(12px);
+    color:#fbbf24; padding:12px 28px; border-radius:100px;
+    font-size:.9rem; font-weight:600;
+    box-shadow:0 8px 32px rgba(0,0,0,.35);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    z-index:9999; white-space:nowrap;
+    border:1px solid rgba(251,191,36,.3); font-family:monospace;
+  }
+  .word-toast.show{transform:translateX(-50%) translateY(0);}
+  .word-toast small{color:#ccc;font-size:0.7rem;margin-left:8px;}
+
+  @media(max-width:600px){
+    .chapter-inner{padding:20px 18px 18px;}
+    .btn-listen span{display:none;}
+    .chapter-num{width:44px;height:44px;font-size:1.1rem;}
+    .word-toast{white-space:normal;max-width:90vw;text-align:center;}
+    .speed-controls{gap:6px;}
+    .speed-btn{padding:7px 14px;font-size:.75rem;}
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<div class="stars" id="stars"></div>
+<div class="shoot"></div>
+
+<div class="wrapper">
+  <header class="hero">
+    <div class="hero-badge">📘 Day 4 – Late Beginner | ✨ Click ANY word for Indonesian meaning</div>
+    <h1>The Flying<br><span class="accent">Bicycle</span></h1>
+    <p class="hero-sub">A story about a boy who finds a magical old bicycle in a shed — and discovers that sometimes, the greatest adventures begin right in your own backyard. For <strong style="color:var(--gold)">Aslan</strong> (level: late beginner). 🚲✨</p>
+    <div class="hero-tags">
+      <span class="tag">⭐ Late Beginner</span>
+      <span class="tag">🎧 Listen & Learn</span>
+      <span class="tag">📚 5 Chapters</span>
+      <span class="tag">🏆 Vocabulary</span>
+      <span class="tag">🔍 Click words for meaning</span>
+    </div>
+  </header>
+
+  <div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-label" id="progressLabel">0 of 5 chapters read</div>
+  </div>
+
+  <!-- ILLUSTRATION CARD -->
+  <div class="illustration-card">
+    <svg class="illus-svg" viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg">
+      <!-- Night sky background -->
+      <rect x="0" y="0" width="300" height="190" fill="transparent"/>
+      <!-- Clouds -->
+      <ellipse cx="55" cy="130" rx="38" ry="16" fill="#1a3a8f" opacity=".55"/>
+      <ellipse cx="75" cy="124" rx="28" ry="14" fill="#1e45a5" opacity=".5"/>
+      <ellipse cx="230" cy="110" rx="42" ry="18" fill="#1a3a8f" opacity=".5"/>
+      <ellipse cx="248" cy="104" rx="30" ry="14" fill="#1e45a5" opacity=".45"/>
+      <!-- Moon -->
+      <circle cx="255" cy="38" r="18" fill="#fef3c7" opacity=".9"/>
+      <circle cx="261" cy="34" r="14" fill="#0a1a4a" opacity=".35"/>
+      <!-- Stars -->
+      <circle cx="30" cy="20" r="1.5" fill="white" opacity=".85"/>
+      <circle cx="60" cy="10" r="1" fill="white" opacity=".7"/>
+      <circle cx="100" cy="25" r="1.5" fill="white" opacity=".9"/>
+      <circle cx="140" cy="12" r="1" fill="white" opacity=".6"/>
+      <circle cx="175" cy="30" r="1.5" fill="white" opacity=".75"/>
+      <circle cx="210" cy="18" r="1" fill="white" opacity=".8"/>
+      <circle cx="45" cy="55" r="1" fill="white" opacity=".65"/>
+      <circle cx="290" cy="60" r="1.5" fill="white" opacity=".7"/>
+      <!-- Sparkles around bicycle -->
+      <text x="55" y="80" fill="#fbbf24" font-size="10" opacity=".9">✨</text>
+      <text x="215" y="75" fill="#fbbf24" font-size="9" opacity=".85">⭐</text>
+      <text x="145" y="45" fill="#fbbf24" font-size="8" opacity=".7">✨</text>
+      <!-- Bicycle frame (flying, tilted slightly) -->
+      <g transform="translate(150,118) rotate(-10)">
+        <!-- Rear wheel -->
+        <circle cx="-36" cy="18" r="22" fill="none" stroke="#60a5fa" stroke-width="3.5" opacity=".9"/>
+        <circle cx="-36" cy="18" r="5" fill="#60a5fa" opacity=".8"/>
+        <!-- Front wheel -->
+        <circle cx="36" cy="18" r="22" fill="none" stroke="#60a5fa" stroke-width="3.5" opacity=".9"/>
+        <circle cx="36" cy="18" r="5" fill="#60a5fa" opacity=".8"/>
+        <!-- Spokes rear -->
+        <line x1="-36" y1="-4" x2="-36" y2="40" stroke="#93c5fd" stroke-width="1.2" opacity=".6"/>
+        <line x1="-58" y1="18" x2="-14" y2="18" stroke="#93c5fd" stroke-width="1.2" opacity=".6"/>
+        <line x1="-52" y1="2" x2="-20" y2="34" stroke="#93c5fd" stroke-width="1.2" opacity=".5"/>
+        <line x1="-52" y1="34" x2="-20" y2="2" stroke="#93c5fd" stroke-width="1.2" opacity=".5"/>
+        <!-- Spokes front -->
+        <line x1="36" y1="-4" x2="36" y2="40" stroke="#93c5fd" stroke-width="1.2" opacity=".6"/>
+        <line x1="14" y1="18" x2="58" y2="18" stroke="#93c5fd" stroke-width="1.2" opacity=".6"/>
+        <line x1="20" y1="2" x2="52" y2="34" stroke="#93c5fd" stroke-width="1.2" opacity=".5"/>
+        <line x1="20" y1="34" x2="52" y2="2" stroke="#93c5fd" stroke-width="1.2" opacity=".5"/>
+        <!-- Frame -->
+        <line x1="-36" y1="18" x2="0" y2="-14" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+        <line x1="0" y1="-14" x2="36" y2="18" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+        <line x1="-36" y1="18" x2="0" y2="-3" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+        <line x1="0" y1="-3" x2="0" y2="-14" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Seat -->
+        <line x1="-8" y1="-3" x2="-8" y2="-16" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="-16" y1="-16" x2="0" y2="-16" stroke="#f97316" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- Handlebar -->
+        <line x1="32" y1="-4" x2="32" y2="-18" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="24" y1="-18" x2="40" y2="-18" stroke="#f97316" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- Rider (simple) -->
+        <!-- Body -->
+        <line x1="-8" y1="-16" x2="10" y2="-32" stroke="#a78bfa" stroke-width="3" stroke-linecap="round"/>
+        <!-- Head -->
+        <circle cx="10" cy="-38" r="7" fill="#fde68a" opacity=".95"/>
+        <!-- Arm -->
+        <line x1="10" y1="-32" x2="32" y2="-18" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Scarf / trail -->
+        <path d="M10,-38 Q-10,-52 -30,-42 Q-50,-32 -55,-20" fill="none" stroke="#f97316" stroke-width="2" opacity=".7" stroke-linecap="round"/>
+      </g>
+      <!-- Wind trail lines -->
+      <line x1="8" y1="145" x2="50" y2="145" stroke="rgba(255,255,255,0.15)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="5" y1="155" x2="35" y2="155" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <p class="illus-quote"><strong>Aslan</strong> pedaled into the night sky — the stars were his road, the wind his wings! 🚲🌙</p>
+  </div>
+
+  <!-- SPEED CONTROLS -->
+  <div class="speed-controls">
+    <span class="speed-label">🎚️ Speed:</span>
+    <button class="speed-btn" data-rate="0.65">🐢 Slow</button>
+    <button class="speed-btn active" data-rate="0.88">🚶 Normal</button>
+    <button class="speed-btn" data-rate="1.15">🚀 Fast</button>
+  </div>
+
+  <div class="master-controls">
+    <button class="btn-master btn-play-all" id="playAllBtn">🎧 <span>Listen to Whole Story</span></button>
+    <button class="btn-master btn-stop" id="stopBtn">⏹ <span>Stop Reading</span></button>
+  </div>
+
+  <div id="chapters">
+
+    <!-- CHAPTER 1 -->
+    <div class="chapter ch1" id="ch1">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">01</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter One</div>
+            <div class="chapter-title">🏚️ The Old Bicycle in the Shed</div>
+          </div>
+          <button class="btn-listen" data-ch="1">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.5s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text1">
+          <span class="read-marker">✅ Read!</span>
+          Aslan was ten years old and loved to <span class="hl">explore</span>. One rainy afternoon, he found a rusty old key in a kitchen drawer. It was long and silver with a small star on top. Aslan did not know which door it opened. He walked around the house until he found a small wooden <span class="hl">shed</span> at the back of the garden. He had never opened it before. The key fit perfectly. Inside the shed, covered in dust and cobwebs, was an old bicycle. It was painted dark blue with golden stars on the frame. The tires were flat and the handlebars were rusty. But when Aslan touched it, the bicycle began to glow with a warm, soft light. Aslan's heart jumped. "This is no ordinary bicycle," he whispered.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="explore">explore</span>
+            <span class="vocab-pill" data-word="shed">shed</span>
+            <span class="vocab-pill" data-word="rusty">rusty</span>
+            <span class="vocab-pill" data-word="cobwebs">cobwebs</span>
+            <span class="vocab-pill" data-word="glow">glow</span>
+            <span class="vocab-pill" data-word="ordinary">ordinary</span>
+            <span class="vocab-pill" data-word="perfectly">perfectly</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 2 -->
+    <div class="chapter ch2" id="ch2">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">02</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Two</div>
+            <div class="chapter-title">🚲 The First Flight</div>
+          </div>
+          <button class="btn-listen" data-ch="2">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text2">
+          <span class="read-marker">✅ Read!</span>
+          Aslan carefully wheeled the bicycle out of the shed. As soon as it touched the garden grass, all the rust disappeared. The tires became full and round. The frame shone like new. Aslan climbed onto the seat and held the handlebars. He started to pedal slowly. The bicycle moved forward — and then, suddenly, it rose into the air! Aslan gasped. He was flying! The garden below him grew smaller and smaller. The cold night wind blew through his hair. Aslan felt <span class="hl">terrified</span> for a moment, but then he laughed out loud. "I am flying!" he shouted. The bicycle climbed higher and higher into the dark sky. Below, the lights of his town twinkled like tiny golden dots. Aslan took a deep breath and smiled. He was not scared anymore. He was <span class="hl">free</span>.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="pedal">pedal</span>
+            <span class="vocab-pill" data-word="rose">rose</span>
+            <span class="vocab-pill" data-word="gasped">gasped</span>
+            <span class="vocab-pill" data-word="terrified">terrified</span>
+            <span class="vocab-pill" data-word="free">free</span>
+            <span class="vocab-pill" data-word="shone">shone</span>
+            <span class="vocab-pill" data-word="wheeled">wheeled</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 3 -->
+    <div class="chapter ch3" id="ch3">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">03</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Three</div>
+            <div class="chapter-title">☁️ Above the Clouds</div>
+          </div>
+          <button class="btn-listen" data-ch="3">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text3">
+          <span class="read-marker">✅ Read!</span>
+          Aslan pedaled higher until he flew into a thick, white cloud. Everything went soft and quiet. The cloud felt cool and wet on his face, like a gentle mist. Then he came out on the other side. What he saw took his breath away. Above the clouds, the sky was perfectly clear. The moon was huge and bright. Millions of stars surrounded him like friends. Aslan reached out his hand and touched a star. It was warm, like a small <span class="hl">candle</span>. A gentle voice came from the star: "You are welcome here, brave rider." Aslan felt proud and <span class="hl">peaceful</span>. He rode slowly along the top of the clouds as if they were a white road. An owl flew beside him and hooted softly. "Even owls fly up here," Aslan laughed. He never wanted to come down.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="mist">mist</span>
+            <span class="vocab-pill" data-word="candle">candle</span>
+            <span class="vocab-pill" data-word="peaceful">peaceful</span>
+            <span class="vocab-pill" data-word="surrounded">surrounded</span>
+            <span class="vocab-pill" data-word="gentle">gentle</span>
+            <span class="vocab-pill" data-word="hooted">hooted</span>
+            <span class="vocab-pill" data-word="brave">brave</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 4 -->
+    <div class="chapter ch4" id="ch4">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">04</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Four</div>
+            <div class="chapter-title">🌃 The City of Lights</div>
+          </div>
+          <button class="btn-listen" data-ch="4">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.15s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text4">
+          <span class="read-marker">✅ Read!</span>
+          Aslan steered the bicycle downward and flew over a great city. The streets were full of golden lights. Tall buildings reached up like shining towers. Cars moved like tiny beetles far below. Aslan could see parks, bridges, and a wide river that <span class="hl">reflected</span> the city lights like a mirror. A bridge lit up with rainbow colors as he flew over it. People on top of a tall building were looking at the stars through a telescope. One child saw Aslan and pointed. "A flying bicycle!" the child called out. The people below waved, and Aslan waved back. He felt like a superhero. He swooped down low over the river and then pulled up high again, laughing all the way. "I can go anywhere," he thought. "The whole world is open to me." The night felt full of <span class="hl">possibility</span>.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="steered">steered</span>
+            <span class="vocab-pill" data-word="reflected">reflected</span>
+            <span class="vocab-pill" data-word="possibility">possibility</span>
+            <span class="vocab-pill" data-word="telescope">telescope</span>
+            <span class="vocab-pill" data-word="swooped">swooped</span>
+            <span class="vocab-pill" data-word="bridges">bridges</span>
+            <span class="vocab-pill" data-word="beetles">beetles</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 5 -->
+    <div class="chapter ch5" id="ch5">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">05</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Five</div>
+            <div class="chapter-title">🌟 The Best Landing</div>
+          </div>
+          <button class="btn-listen" data-ch="5">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text5">
+          <span class="read-marker">✅ Read!</span>
+          After a long and wonderful flight, Aslan began to feel tired. The sky was turning from black to deep purple. Morning was coming. The bicycle turned on its own and pointed back toward home. Aslan understood. It was time to return. He guided the bicycle gently down through the clouds and back over his town. The streets were quiet and empty. Cats sat on fences. A baker was putting fresh bread in his window. The garden below looked warm and familiar. Aslan landed softly on the grass. The bicycle gave one last gentle glow, then became old and rusty again. Aslan pushed it back into the shed and locked the door. He went inside and sat by the window. Outside, the first birds of morning were singing. Aslan smiled quietly. He knew something now that not many people know: <span class="hl">courage</span> is not the absence of fear — it is choosing to fly anyway. And home? Home is always the best place to <span class="hl">land</span>.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="courage">courage</span>
+            <span class="vocab-pill" data-word="land">land</span>
+            <span class="vocab-pill" data-word="absence">absence</span>
+            <span class="vocab-pill" data-word="familiar">familiar</span>
+            <span class="vocab-pill" data-word="guided">guided</span>
+            <span class="vocab-pill" data-word="empty">empty</span>
+            <span class="vocab-pill" data-word="return">return</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end #chapters -->
+
+  <div class="motivation-card">
+    <span class="star-icon">🚲</span>
+    <h2>You are flying high, Aslan! 🦁✨</h2>
+    <p>Aslan learned that being brave does not mean having no fear — it means moving forward even when you are scared. Just like Aslan on his bicycle, every new English word you learn takes you higher. Keep pedaling, keep reading, keep flying! <strong style="color:var(--gold)">The sky is not the limit — it is just the beginning!</strong></p>
+    <div class="challenge-box"><p>💪 <strong>Today's Challenge:</strong> Close your eyes and imagine you have a flying bicycle. Where would you go? Tell someone in your family about your adventure using English words. You can do it! 🌟🚲</p></div>
+  </div>
+
+  <footer class="footer">Made with ❤️ for <span style="color:var(--amber)">Aslan</span> • Day 4 complete • Click any word for Indonesian meaning 🖱️</footer>
+</div>
+
+<div id="wordToast" class="word-toast">📖</div>
+
+<script>
+// ===== STARS BACKGROUND =====
+(function(){
+  const wrap = document.getElementById('stars');
+  for(let i=0;i<90;i++){
+    const s=document.createElement('div'); s.className='star';
+    const size=Math.random()*2.5+0.8;
+    s.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--delay:-${(Math.random()*5).toFixed(1)}s;`;
+    wrap.appendChild(s);
+  }
+})();
+
+// ===== DICTIONARY =====
+const dictionary = {
+  // Chapter 1
+  "aslan":"Aslan (nama tokoh utama)","was":"adalah (kata kerja masa lalu)","ten":"sepuluh","years":"tahun","old":"tua/berumur","loved":"sangat suka (masa lalu love)","to":"untuk","explore":"menjelajahi","one":"satu","rainy":"hujan/berujan","afternoon":"sore hari","found":"menemukan (masa lalu find)","rusty":"berkarat","key":"kunci","in":"di dalam","a":"sebuah","kitchen":"dapur","drawer":"laci","it":"itu","was":"adalah/ada","long":"panjang","silver":"perak/berwarna perak","with":"dengan","small":"kecil","star":"bintang","on":"di atas","top":"atas/puncak","did":"melakukan (masa lalu do)","not":"tidak","know":"mengetahui","which":"yang mana","door":"pintu","opened":"dibuka (masa lalu open)","he":"dia (laki-laki)","walked":"berjalan (masa lalu walk)","around":"sekitar","house":"rumah","until":"sampai","wooden":"berkayu/terbuat dari kayu","shed":"gudang/kandang kecil","at":"di","back":"belakang","of":"dari","garden":"kebun","had":"telah (masa lalu have)","never":"tidak pernah","before":"sebelumnya","fit":"cocok/pas","perfectly":"dengan sempurna","inside":"di dalam","covered":"tertutup","dust":"debu","cobwebs":"sarang laba-laba","bicycle":"sepeda","painted":"dicat","dark":"gelap","blue":"biru","golden":"keemasan","stars":"bintang-bintang","frame":"rangka/bingkai","tires":"ban-ban","flat":"kempes/datar","handlebars":"setang sepeda","when":"ketika","touched":"menyentuh (masa lalu touch)","began":"mulai (masa lalu begin)","glow":"bersinar/memancarkan cahaya","warm":"hangat","soft":"lembut","light":"cahaya","heart":"hati","jumped":"melompat (masa lalu jump)","this":"ini","no":"tidak ada","ordinary":"biasa","whispered":"berbisik (masa lalu whisper)",
+  // Chapter 2
+  "carefully":"dengan hati-hati","wheeled":"mendorong (sepeda)","out":"keluar","as":"saat/ketika","soon":"segera","touched":"menyentuh","grass":"rumput","rust":"karat","disappeared":"menghilang (masa lalu disappear)","became":"menjadi (masa lalu become)","full":"penuh","round":"bulat","shone":"bersinar (masa lalu shine)","like":"seperti","new":"baru","climbed":"memanjat/naik (masa lalu climb)","onto":"ke atas","seat":"tempat duduk","held":"memegang (masa lalu hold)","started":"mulai (masa lalu start)","pedal":"mengayuh/pedal","slowly":"perlahan-lahan","moved":"bergerak (masa lalu move)","forward":"ke depan","then":"kemudian","suddenly":"tiba-tiba","rose":"naik (masa lalu rise untuk fly)","into":"ke dalam","air":"udara","gasped":"terengah-engah/terkejut (masa lalu gasp)","flying":"terbang (sedang)","below":"di bawah","grew":"tumbuh/menjadi (masa lalu grow)","smaller":"lebih kecil","cold":"dingin","night":"malam","wind":"angin","blew":"bertiup (masa lalu blow)","through":"melalui","hair":"rambut","felt":"merasa (masa lalu feel)","terrified":"sangat ketakutan","moment":"saat/momen","laughed":"tertawa (masa lalu laugh)","loud":"keras","shouted":"berteriak (masa lalu shout)","higher":"lebih tinggi","sky":"langit","lights":"lampu-lampu/cahaya","town":"kota kecil","twinkled":"berkelap-kelip (masa lalu twinkle)","tiny":"sangat kecil","dots":"titik-titik","deep":"dalam","breath":"napas","smiled":"tersenyum (masa lalu smile)","scared":"takut","anymore":"lagi","free":"bebas",
+  // Chapter 3
+  "pedaled":"mengayuh (masa lalu pedal)","until":"sampai","flew":"terbang (masa lalu fly)","thick":"tebal","white":"putih","cloud":"awan","everything":"segalanya","went":"menjadi/pergi (masa lalu go)","quiet":"sunyi/tenang","cool":"sejuk","wet":"basah","face":"wajah","gentle":"lembut/pelan","mist":"kabut tipis","came":"datang (masa lalu come)","other":"lain/sisi lain","side":"sisi","what":"apa","saw":"melihat (masa lalu see)","took":"mengambil (masa lalu take)","away":"pergi","above":"di atas","clouds":"awan-awan","perfectly":"sempurna","clear":"jernih/jelas","moon":"bulan","huge":"sangat besar","bright":"cerah/terang","millions":"jutaan","surrounded":"mengelilingi (masa lalu surround)","him":"dia (objek, laki-laki)","friends":"teman-teman","reached":"mencapai/mengulurkan (masa lalu reach)","hand":"tangan","candle":"lilin","voice":"suara","star":"bintang","welcome":"selamat datang","here":"di sini","brave":"berani","rider":"pengendara","proud":"bangga","peaceful":"damai/tenteram","rode":"mengendarai (masa lalu ride)","along":"sepanjang","road":"jalan","owl":"burung hantu","beside":"di samping","hooted":"berbunyi hoot (masa lalu hoot)","even":"bahkan","never":"tidak pernah","wanted":"ingin (masa lalu want)","come":"datang","down":"ke bawah",
+  // Chapter 4
+  "steered":"mengarahkan (masa lalu steer)","downward":"ke bawah","over":"di atas","great":"besar/luar biasa","city":"kota","streets":"jalan-jalan","full":"penuh","tall":"tinggi","buildings":"gedung-gedung","shining":"bersinar","towers":"menara-menara","cars":"mobil-mobil","beetles":"kumbang-kumbang/serangga kecil","far":"jauh","parks":"taman-taman","bridges":"jembatan-jembatan","wide":"lebar","river":"sungai","reflected":"memantulkan (masa lalu reflect)","mirror":"cermin","bridge":"jembatan","lit":"menyala (masa lalu light)","rainbow":"pelangi","colors":"warna-warna","people":"orang-orang","telescope":"teleskop","child":"anak","pointed":"menunjuk (masa lalu point)","called":"memanggil (masa lalu call)","waved":"melambai (masa lalu wave)","back":"balik","superhero":"pahlawan super","swooped":"terjun/menukik (masa lalu swoop)","low":"rendah","pulled":"menarik (masa lalu pull)","up":"ke atas","high":"tinggi","thought":"berpikir (masa lalu think)","whole":"seluruh","world":"dunia","open":"terbuka","possibility":"kemungkinan/kesempatan","night":"malam","feel":"merasa",
+  // Chapter 5
+  "after":"setelah","wonderful":"luar biasa/menakjubkan","flight":"penerbangan","began":"mulai (masa lalu begin)","tired":"lelah","turning":"berubah (sedang)","purple":"ungu","morning":"pagi","coming":"datang (sedang)","turned":"berputar (masa lalu turn)","own":"sendiri","pointed":"menunjuk/mengarah","return":"kembali","understood":"mengerti (masa lalu understand)","time":"waktu","guided":"mengarahkan (masa lalu guide)","gently":"dengan lembut","through":"melalui","quiet":"sunyi","empty":"kosong","cats":"kucing-kucing","fences":"pagar-pagar","baker":"pembuat roti","putting":"meletakkan (sedang)","fresh":"segar","bread":"roti","window":"jendela","below":"di bawah","looked":"terlihat (masa lalu look)","familiar":"sudah dikenal/akrab","landed":"mendarat (masa lalu land)","softly":"dengan lembut","gave":"memberikan (masa lalu give)","last":"terakhir","became":"menjadi (masa lalu become)","pushed":"mendorong (masa lalu push)","locked":"mengunci (masa lalu lock)","went":"pergi (masa lalu go)","inside":"di dalam","sat":"duduk (masa lalu sit)","outside":"di luar","first":"pertama","birds":"burung-burung","singing":"bernyanyi (sedang)","knew":"mengetahui (masa lalu know)","something":"sesuatu","many":"banyak","courage":"keberanian","absence":"ketidakhadiran/tidak adanya","fear":"ketakutan","choosing":"memilih (sedang)","fly":"terbang","anyway":"bagaimanapun juga","home":"rumah","always":"selalu","best":"terbaik","place":"tempat","land":"mendarat","absence":"ketiadaan","familiar":"akrab/sudah dikenal",
+  // Extra common words
+  "the":"kata sandang (the)","and":"dan","of":"dari/tentang","in":"di","to":"ke/untuk","a":"sebuah/satu","is":"adalah","he":"dia","his":"miliknya","that":"bahwa/itu","for":"untuk","are":"adalah (jamak)","but":"tetapi","they":"mereka","all":"semua","an":"sebuah (sebelum huruf vokal)","been":"sudah ada/sudah terjadi","have":"mempunyai","or":"atau","from":"dari","be":"menjadi/ada","by":"oleh/dekat","at":"di/pada","this":"ini","which":"yang","their":"milik mereka","if":"jika","more":"lebih","also":"juga","into":"ke dalam","out":"keluar","about":"tentang","up":"ke atas","so":"jadi/sangat","some":"beberapa","could":"bisa (masa lalu can)","would":"akan (masa lalu will)","its":"miliknya (benda)","than":"daripada","now":"sekarang","very":"sangat","just":"hanya/baru saja","each":"masing-masing","may":"mungkin/boleh","like":"seperti/menyukai","two":"dua","these":"ini (jamak)","way":"cara/jalan","look":"melihat/terlihat","come":"datang","made":"membuat (masa lalu make)","where":"di mana","said":"berkata (masa lalu say)","any":"apa saja","most":"paling","my":"milikku","our":"milik kami","her":"miliknya (perempuan)","him":"dia (objek)","them":"mereka (objek)","we":"kami/kita","your":"milikmu","me":"saya/aku","she":"dia (perempuan)","do":"melakukan","did":"melakukan (masa lalu)","get":"mendapatkan","make":"membuat","know":"mengetahui","take":"mengambil","see":"melihat","think":"berpikir","go":"pergi","come":"datang","good":"baik/bagus","great":"hebat/besar","little":"kecil/sedikit","own":"sendiri","right":"benar/kanan","big":"besar","long":"panjang","after":"setelah","still":"masih","between":"di antara","never":"tidak pernah","last":"terakhir/terbaru","might":"mungkin","really":"sungguh/betul-betul","felt":"merasa","again":"lagi","those":"itu (jamak)","around":"sekitar","put":"meletakkan","every":"setiap","too":"juga/terlalu","well":"dengan baik/baik"
+};
+
+function showMeaning(word) {
+  let clean = word.toLowerCase().replace(/[.,!?;:()'"«»""''—–\-]/g,'');
+  let meaning = dictionary[clean];
+  if(!meaning){
+    if(clean.endsWith('s') && dictionary[clean.slice(0,-1)]) meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('es') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('ed') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('ing') && dictionary[clean.slice(0,-3)]) meaning=dictionary[clean.slice(0,-3)];
+    else if(clean.endsWith('ing') && dictionary[clean.slice(0,-4)]) meaning=dictionary[clean.slice(0,-4)];
+    else if(clean.endsWith('ly') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('er') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('ness') && dictionary[clean.slice(0,-4)]) meaning=dictionary[clean.slice(0,-4)];
+    else meaning="❓ arti belum tersedia, coba cek kamus";
+  }
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `📖 <strong>${clean}</strong> → ${meaning} <small>🇮🇩</small>`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>toast.classList.remove('show'), 2800);
+}
+
+// ===== WORD WRAPPING =====
+function wrapWords(div) {
+  if(div.dataset.wrapped) return;
+  div.dataset.wrapped = "1";
+
+  function processNode(node) {
+    if(node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      if(!text.trim()) return;
+      const frag = document.createDocumentFragment();
+      const parts = text.split(/(\s+)/);
+      parts.forEach(part => {
+        if(/^\s+$/.test(part)) {
+          frag.appendChild(document.createTextNode(part));
+        } else if(part.length > 0) {
+          const match = part.match(/^([^a-zA-Z0-9']*)([a-zA-Z0-9'][a-zA-Z0-9']*)([^a-zA-Z0-9']*)$/);
+          if(match) {
+            if(match[1]) frag.appendChild(document.createTextNode(match[1]));
+            const span = document.createElement('span');
+            span.className = 'w';
+            span.textContent = match[2];
+            span.addEventListener('click', (e)=>{ e.stopPropagation(); showMeaning(match[2]); });
+            frag.appendChild(span);
+            if(match[3]) frag.appendChild(document.createTextNode(match[3]));
+          } else {
+            frag.appendChild(document.createTextNode(part));
+          }
+        }
+      });
+      node.parentNode.replaceChild(frag, node);
+    } else if(node.nodeType === Node.ELEMENT_NODE) {
+      if(node.classList && (node.classList.contains('read-marker') || node.classList.contains('w'))) return;
+      if(node.tagName === 'SCRIPT' || node.tagName === 'STYLE') return;
+      Array.from(node.childNodes).forEach(child => processNode(child));
+    }
+  }
+
+  const marker = div.querySelector('.read-marker');
+  const markerEl = marker ? marker.cloneNode(true) : null;
+  if(marker) marker.remove();
+
+  processNode(div);
+
+  if(markerEl) div.insertAdjacentElement('afterbegin', markerEl);
+}
+
+function wrapAllChapters() {
+  document.querySelectorAll('.chapter-text').forEach(div => wrapWords(div));
+}
+
+// ===== SPEED CONTROL =====
+let speechRate = 0.88;
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    speechRate = parseFloat(btn.dataset.rate);
+    if(currentUtt) {
+      showSpeedChangeTip();
+    }
+  });
+});
+
+function showSpeedChangeTip() {
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `⚡ Speed changed! Press Stop then Listen again to apply.`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>toast.classList.remove('show'), 2500);
+}
+
+// ===== SPEECH =====
+let currentUtt = null;
+let isPlayingAll = false;
+let readChapters = new Set();
+
+const stories = {
+  1: "Aslan was ten years old and loved to explore. One rainy afternoon, he found a rusty old key in a kitchen drawer. It was long and silver with a small star on top. Aslan did not know which door it opened. He walked around the house until he found a small wooden shed at the back of the garden. He had never opened it before. The key fit perfectly. Inside the shed, covered in dust and cobwebs, was an old bicycle. It was painted dark blue with golden stars on the frame. The tires were flat and the handlebars were rusty. But when Aslan touched it, the bicycle began to glow with a warm, soft light. Aslan's heart jumped. This is no ordinary bicycle, he whispered.",
+  2: "Aslan carefully wheeled the bicycle out of the shed. As soon as it touched the garden grass, all the rust disappeared. The tires became full and round. The frame shone like new. Aslan climbed onto the seat and held the handlebars. He started to pedal slowly. The bicycle moved forward and then, suddenly, it rose into the air! Aslan gasped. He was flying! The garden below him grew smaller and smaller. The cold night wind blew through his hair. Aslan felt terrified for a moment, but then he laughed out loud. I am flying! he shouted. The bicycle climbed higher and higher into the dark sky. Below, the lights of his town twinkled like tiny golden dots. Aslan took a deep breath and smiled. He was not scared anymore. He was free.",
+  3: "Aslan pedaled higher until he flew into a thick, white cloud. Everything went soft and quiet. The cloud felt cool and wet on his face, like a gentle mist. Then he came out on the other side. What he saw took his breath away. Above the clouds, the sky was perfectly clear. The moon was huge and bright. Millions of stars surrounded him like friends. Aslan reached out his hand and touched a star. It was warm, like a small candle. A gentle voice came from the star: You are welcome here, brave rider. Aslan felt proud and peaceful. He rode slowly along the top of the clouds as if they were a white road. An owl flew beside him and hooted softly. Even owls fly up here, Aslan laughed. He never wanted to come down.",
+  4: "Aslan steered the bicycle downward and flew over a great city. The streets were full of golden lights. Tall buildings reached up like shining towers. Cars moved like tiny beetles far below. Aslan could see parks, bridges, and a wide river that reflected the city lights like a mirror. A bridge lit up with rainbow colors as he flew over it. People on top of a tall building were looking at the stars through a telescope. One child saw Aslan and pointed. A flying bicycle! the child called out. The people below waved, and Aslan waved back. He felt like a superhero. He swooped down low over the river and then pulled up high again, laughing all the way. I can go anywhere, he thought. The whole world is open to me. The night felt full of possibility.",
+  5: "After a long and wonderful flight, Aslan began to feel tired. The sky was turning from black to deep purple. Morning was coming. The bicycle turned on its own and pointed back toward home. Aslan understood. It was time to return. He guided the bicycle gently down through the clouds and back over his town. The streets were quiet and empty. Cats sat on fences. A baker was putting fresh bread in his window. The garden below looked warm and familiar. Aslan landed softly on the grass. The bicycle gave one last gentle glow, then became old and rusty again. Aslan pushed it back into the shed and locked the door. He went inside and sat by the window. Outside, the first birds of morning were singing. Aslan smiled quietly. He knew something now that not many people know: courage is not the absence of fear. It is choosing to fly anyway. And home? Home is always the best place to land."
+};
+
+function pickVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v=>v.lang==='en-US'&&(v.name.includes('Google')||v.name.includes('Samantha')||v.name.includes('Microsoft')))
+    || voices.find(v=>v.lang.startsWith('en'))
+    || null;
+}
+
+function stopAll() {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  currentUtt = null;
+  isPlayingAll = false;
+  document.querySelectorAll('.btn-listen.playing').forEach(b=>b.classList.remove('playing'));
+}
+
+function speak(chId, btn, onEnd) {
+  if(!window.speechSynthesis) return;
+  stopAll();
+  const text = stories[chId];
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'en-US';
+  utt.rate = speechRate;
+  utt.pitch = 1.05;
+  const v = pickVoice();
+  if(v) utt.voice = v;
+  if(btn) btn.classList.add('playing');
+
+  utt.onend = () => {
+    if(btn) btn.classList.remove('playing');
+    currentUtt = null;
+    if(onEnd) onEnd();
+  };
+  utt.onerror = () => {
+    if(btn) btn.classList.remove('playing');
+    currentUtt = null;
+  };
+  currentUtt = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+// ===== LISTEN BUTTONS =====
+document.querySelectorAll('.btn-listen').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ch = btn.getAttribute('data-ch');
+    if(btn.classList.contains('playing')) { stopAll(); return; }
+    isPlayingAll = false;
+    speak(ch, btn, () => {
+      if(!readChapters.has(ch)) {
+        readChapters.add(ch);
+        document.getElementById('ch'+ch).classList.add('done');
+        updateProgress();
+      }
+    });
+  });
+});
+
+// ===== PLAY ALL =====
+document.getElementById('playAllBtn').addEventListener('click', () => {
+  stopAll();
+  isPlayingAll = true;
+  let keys = ['1','2','3','4','5'];
+  let idx = 0;
+  function next() {
+    if(!isPlayingAll || idx >= keys.length) { isPlayingAll=false; return; }
+    const k = keys[idx];
+    const btn = document.querySelector(`[data-ch="${k}"]`);
+    document.getElementById('ch'+k).scrollIntoView({behavior:'smooth',block:'center'});
+    speak(k, btn, () => {
+      if(!readChapters.has(k)) {
+        readChapters.add(k);
+        document.getElementById('ch'+k).classList.add('done');
+        updateProgress();
+      }
+      idx++;
+      setTimeout(next, 700);
+    });
+  }
+  next();
+});
+
+document.getElementById('stopBtn').addEventListener('click', stopAll);
+
+// ===== PROGRESS =====
+function updateProgress() {
+  const pct = (readChapters.size/5)*100;
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = readChapters.size+' of 5 chapters read'+(readChapters.size===5?' — Amazing, Aslan! 🏆':'');
+}
+
+// ===== VOCAB PILLS =====
+document.querySelectorAll('.vocab-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const word = pill.getAttribute('data-word');
+    showMeaning(word);
+    if(window.speechSynthesis) {
+      const utt = new SpeechSynthesisUtterance(word);
+      utt.lang='en-US'; utt.rate=0.8;
+      const v=pickVoice(); if(v) utt.voice=v;
+      window.speechSynthesis.speak(utt);
+    }
+  });
+});
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', () => {
+  wrapAllChapters();
+  if(window.speechSynthesis) window.speechSynthesis.getVoices();
+  if(window.speechSynthesis) {
+    window.speechSynthesis.addEventListener('voiceschanged', () => {});
+  }
+});
+window.addEventListener('beforeunload', () => {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+});
+</script>
+</body>
+</html>

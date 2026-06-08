@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Aslan's English Adventure — Day 11: The Underwater Castle (Click any word for meaning)</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #020d1a;
+    --deep:    #041628;
+    --blue:    #1a56db;
+    --sky:     #3b82f6;
+    --amber:   #f59e0b;
+    --gold:    #fbbf24;
+    --emerald: #10b981;
+    --coral:   #f97316;
+    --purple:  #8b5cf6;
+    --rose:    #f43f5e;
+    --teal:    #0d9488;
+    --cyan:    #06b6d4;
+    --aqua:    #22d3ee;
+    --white:   #ffffff;
+    --glass:   rgba(255,255,255,0.06);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star {
+    position: absolute; border-radius: 50%; background: white;
+    animation: twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:.15;transform:scale(1);}50%{opacity:.9;transform:scale(1.4);} }
+  .shoot {
+    position: fixed; top: 15%; left: -10%;
+    width: 140px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--aqua), transparent);
+    animation: shoot 8s linear infinite 3s; z-index: 0;
+  }
+  @keyframes shoot {
+    0%{left:-10%;top:15%;opacity:0;}5%{opacity:1;}40%{left:110%;top:35%;opacity:0;}100%{left:110%;top:35%;opacity:0;}
+  }
+  .wrapper { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 36px 20px 60px; }
+  .hero { text-align: center; margin-bottom: 44px; animation: fadeDown .8s ease both; }
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
+  .hero-badge {
+    display: inline-flex; gap: 8px;
+    background: rgba(6,182,212,.15); border: 1px solid rgba(6,182,212,.35);
+    color: var(--aqua); padding: 7px 22px; border-radius: 100px;
+    font-size: .8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Baloo 2', cursive; font-size: clamp(2rem,6vw,3.2rem);
+    font-weight: 800; color: var(--white); line-height: 1.15; margin-bottom: 12px;
+  }
+  .hero h1 .accent {
+    background: linear-gradient(135deg,#22d3ee,#06b6d4,#0d9488);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .hero-sub { color: rgba(255,255,255,.55); font-size: 1rem; max-width: 480px; margin: 0 auto 28px; line-height: 1.6; }
+  .hero-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .tag { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.7); padding:6px 16px; border-radius:100px; font-size:.78rem; font-weight:600; backdrop-filter:blur(8px); }
+  .progress-wrap { background:rgba(255,255,255,.07); border-radius:100px; height:8px; margin-bottom:40px; overflow:hidden; border:1px solid rgba(255,255,255,.08); }
+  .progress-bar { height:100%; background:linear-gradient(90deg,#22d3ee,#0d9488,#06b6d4,#3b82f6); border-radius:100px; width:0%; transition:width .6s ease; }
+  .progress-label { text-align:right; font-size:.75rem; color:rgba(255,255,255,.4); margin-top:6px; font-weight:600; }
+
+  .illustration-card {
+    background: linear-gradient(135deg,#020d1a 0%,#041e38 50%,#031422 100%);
+    border-radius: 32px; padding: 32px 24px 24px; margin-bottom: 40px;
+    text-align: center; position: relative; overflow: hidden; animation: fadeUp .9s ease .1s both;
+    border: 1px solid rgba(6,182,212,.22);
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+  .illus-svg { max-width: 320px; width: 100%; position: relative; z-index: 1; }
+  .illus-quote { color:rgba(255,255,255,.75); font-size:.95rem; font-weight:600; margin-top:16px; font-style:italic; }
+  .illus-quote strong { color:var(--gold); font-style:normal; }
+
+  .speed-controls {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 16px; animation: fadeUp .9s ease .15s both;
+  }
+  .speed-label { color: rgba(255,255,255,.5); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .speed-btn {
+    padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06); color: rgba(255,255,255,.6);
+    font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s;
+    backdrop-filter: blur(8px); font-family: 'Nunito', sans-serif;
+  }
+  .speed-btn:hover { background: rgba(255,255,255,.12); color: white; }
+  .speed-btn.active {
+    background: linear-gradient(135deg,#06b6d4,#0d9488);
+    color: white; border-color: transparent;
+    box-shadow: 0 4px 16px rgba(6,182,212,.45);
+  }
+
+  .master-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:40px; animation:fadeUp .9s ease .2s both; }
+  .btn-master { display:inline-flex; align-items:center; gap:10px; padding:13px 28px; border-radius:100px; border:none; cursor:pointer; font-weight:700; transition:transform .15s; font-family:'Nunito',sans-serif; font-size:1rem; }
+  .btn-master:active { transform:scale(.97); }
+  .btn-play-all { background:linear-gradient(135deg,#06b6d4,#0d9488); color:white; box-shadow:0 6px 24px rgba(6,182,212,.5); }
+  .btn-stop { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:rgba(255,255,255,.75); backdrop-filter:blur(8px); }
+
+  .chapter {
+    background: linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.09); border-radius: 28px;
+    margin-bottom: 24px; overflow: hidden; backdrop-filter: blur(12px);
+    transition: transform .2s; animation: fadeUp .7s ease both;
+  }
+  .chapter:hover { transform: translateY(-3px); }
+  .chapter:nth-child(1){animation-delay:.1s;}.chapter:nth-child(2){animation-delay:.2s;}
+  .chapter:nth-child(3){animation-delay:.3s;}.chapter:nth-child(4){animation-delay:.4s;}
+  .chapter:nth-child(5){animation-delay:.5s;}
+
+  .chapter-accent { height: 4px; }
+  .ch1 .chapter-accent{background:linear-gradient(90deg,#22d3ee,#06b6d4);}
+  .ch2 .chapter-accent{background:linear-gradient(90deg,#3b82f6,#06b6d4);}
+  .ch3 .chapter-accent{background:linear-gradient(90deg,#10b981,#0d9488);}
+  .ch4 .chapter-accent{background:linear-gradient(90deg,#f97316,#fbbf24);}
+  .ch5 .chapter-accent{background:linear-gradient(90deg,#8b5cf6,#06b6d4,#10b981);}
+
+  .chapter-inner { padding: 28px 28px 24px; }
+  .chapter-head { display:flex; align-items:center; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+  .chapter-num {
+    width:52px; height:52px; border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2',cursive; font-size:1.3rem; font-weight:800; color:white; flex-shrink:0;
+  }
+  .ch1 .chapter-num{background:linear-gradient(135deg,#22d3ee,#0891b2);}
+  .ch2 .chapter-num{background:linear-gradient(135deg,#3b82f6,#06b6d4);}
+  .ch3 .chapter-num{background:linear-gradient(135deg,#10b981,#0d9488);}
+  .ch4 .chapter-num{background:linear-gradient(135deg,#f97316,#fbbf24);}
+  .ch5 .chapter-num{background:linear-gradient(135deg,#8b5cf6,#06b6d4);}
+
+  .chapter-meta { flex:1; min-width:0; }
+  .chapter-tag { font-size:.7rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.35); margin-bottom:4px; }
+  .chapter-title { font-family:'Baloo 2',cursive; font-size:1.05rem; font-weight:700; color:var(--white); line-height:1.3; }
+
+  .btn-listen {
+    flex-shrink:0; display:inline-flex; align-items:center; gap:8px;
+    padding:10px 20px; border-radius:100px; border:none; cursor:pointer;
+    font-size:.82rem; font-weight:700; transition:all .2s; font-family:'Nunito',sans-serif;
+  }
+  .ch1 .btn-listen{background:rgba(34,211,238,.15);color:#a5f3fc;border:1px solid rgba(34,211,238,.3);}
+  .ch2 .btn-listen{background:rgba(59,130,246,.18);color:#93c5fd;border:1px solid rgba(59,130,246,.3);}
+  .ch3 .btn-listen{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.3);}
+  .ch4 .btn-listen{background:rgba(249,115,22,.15);color:#fed7aa;border:1px solid rgba(249,115,22,.3);}
+  .ch5 .btn-listen{background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.3);}
+  .btn-listen:hover{filter:brightness(1.15);transform:scale(1.04);}
+  .btn-listen.playing .icon-play{display:none;}
+  .btn-listen.playing::before{content:'⏸';margin-right:4px;}
+  .wave-bars{display:none;align-items:center;gap:2px;height:16px;}
+  .btn-listen.playing .wave-bars{display:flex;}
+  .wave-bar{width:3px;border-radius:2px;background:currentColor;animation:wave var(--dur,.5s) infinite alternate;}
+  @keyframes wave{from{height:3px;}to{height:14px;}}
+
+  .chapter-text {
+    font-size: 1rem; line-height: 1.95; color: rgba(255,255,255,.85);
+    padding: 20px 22px; background: rgba(0,0,0,.22);
+    border-radius: 16px; border: 1px solid rgba(255,255,255,.05);
+    position: relative; word-spacing: 2px;
+  }
+  .chapter-text .read-marker {
+    position:absolute; top:12px; right:14px;
+    font-size:.75rem; font-weight:700; color:var(--cyan);
+    opacity:0; transition:opacity .4s;
+  }
+  .chapter.done .chapter-text .read-marker { opacity:1; }
+
+  .w {
+    display: inline; border-radius: 5px; padding: 1px 2px;
+    cursor: pointer; transition: background 0.08s; white-space: normal;
+  }
+  .w:hover { background: rgba(6,182,212,0.28); }
+  .hl { color: var(--gold); font-weight: 700; }
+
+  .vocab-box { margin-top:16px; padding:16px 20px; background:rgba(255,255,255,.04); border-radius:14px; border:1px solid rgba(255,255,255,.07); }
+  .vocab-title { font-size:.72rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:10px; }
+  .vocab-pills { display:flex; flex-wrap:wrap; gap:8px; }
+  .vocab-pill {
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
+    border-radius:100px; padding:5px 14px; font-size:.8rem; font-weight:600;
+    color:rgba(255,255,255,.65); cursor:pointer; transition:all .18s;
+  }
+  .vocab-pill:hover{background:rgba(255,255,255,.14);color:var(--white);transform:scale(1.06);}
+
+  .motivation-card {
+    background: linear-gradient(135deg,#020d1a 0%,#041e38 60%,#020f1c 100%);
+    border: 1px solid rgba(6,182,212,.28); border-radius:28px;
+    padding:36px 32px; text-align:center; margin-top:40px;
+    position:relative; overflow:hidden; animation:fadeUp .7s ease .6s both;
+  }
+  .motivation-card .star-icon{font-size:2.8rem;margin-bottom:16px;display:block;animation:spin 6s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);}50%{transform:rotate(180deg);}to{transform:rotate(360deg);}}
+  .motivation-card h2{font-family:'Baloo 2',cursive;font-size:clamp(1.2rem,4vw,1.7rem);font-weight:800;color:var(--gold);margin-bottom:14px;}
+  .motivation-card p{color:rgba(255,255,255,.7);font-size:.97rem;line-height:1.7;max-width:520px;margin:0 auto;}
+  .challenge-box{margin-top:24px;background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.25);border-radius:16px;padding:18px 22px;}
+  .challenge-box p{font-size:.9rem;font-weight:600;color:rgba(255,255,255,.75);}
+  .challenge-box strong{color:var(--gold);}
+
+  .footer{text-align:center;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.3);font-size:.82rem;font-weight:600;}
+
+  .word-toast {
+    position:fixed; bottom:28px; left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:rgba(0,0,0,.9); backdrop-filter:blur(12px);
+    color:#fbbf24; padding:12px 28px; border-radius:100px;
+    font-size:.9rem; font-weight:600; box-shadow:0 8px 32px rgba(0,0,0,.35);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    z-index:9999; white-space:nowrap;
+    border:1px solid rgba(6,182,212,.35); font-family:monospace;
+  }
+  .word-toast.show{transform:translateX(-50%) translateY(0);}
+  .word-toast small{color:#ccc;font-size:0.7rem;margin-left:8px;}
+
+  @media(max-width:600px){
+    .chapter-inner{padding:20px 18px 18px;}
+    .btn-listen span{display:none;}
+    .chapter-num{width:44px;height:44px;font-size:1.1rem;}
+    .word-toast{white-space:normal;max-width:90vw;text-align:center;}
+    .speed-controls{gap:6px;}
+    .speed-btn{padding:7px 14px;font-size:.75rem;}
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<div class="stars" id="stars"></div>
+<div class="shoot"></div>
+
+<div class="wrapper">
+  <header class="hero">
+    <div class="hero-badge">📘 Day 11 – Late Beginner | ✨ Click ANY word for Indonesian meaning</div>
+    <h1>The Underwater<br><span class="accent">Castle</span></h1>
+    <p class="hero-sub">A story about <strong style="color:var(--gold)">Aslan</strong> who discovers a magical castle deep beneath the sea — full of shining treasure, colourful fish, and the friendliest creatures in the whole ocean. 🐠🏰🌊</p>
+    <div class="hero-tags">
+      <span class="tag">⭐ Late Beginner</span>
+      <span class="tag">🎧 Listen &amp; Learn</span>
+      <span class="tag">📚 5 Chapters</span>
+      <span class="tag">🏆 Vocabulary</span>
+      <span class="tag">🔍 Click words for meaning</span>
+    </div>
+  </header>
+
+  <div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-label" id="progressLabel">0 of 5 chapters read</div>
+  </div>
+
+  <!-- ILLUSTRATION -->
+  <div class="illustration-card">
+    <svg class="illus-svg" viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="oceanGlow" cx="50%" cy="60%" r="55%">
+          <stop offset="0%" stop-color="#0c3a5c"/>
+          <stop offset="100%" stop-color="#020d1a"/>
+        </radialGradient>
+        <radialGradient id="castleLight" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#22d3ee" stop-opacity=".22"/>
+          <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="bubbleG" cx="50%" cy="30%" r="60%">
+          <stop offset="0%" stop-color="#a5f3fc" stop-opacity=".7"/>
+          <stop offset="100%" stop-color="#06b6d4" stop-opacity=".1"/>
+        </radialGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="softblur">
+          <feGaussianBlur stdDeviation="1.5"/>
+        </filter>
+        <linearGradient id="sandG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1a4a2e"/>
+          <stop offset="100%" stop-color="#0a2218"/>
+        </linearGradient>
+        <linearGradient id="castleBodyG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0e4d6e"/>
+          <stop offset="100%" stop-color="#093650"/>
+        </linearGradient>
+        <linearGradient id="towerG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0f5f85"/>
+          <stop offset="100%" stop-color="#0a3d55"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Ocean background -->
+      <rect width="320" height="220" fill="url(#oceanGlow)"/>
+
+      <!-- Distant light rays from above (sunlight filtering down) -->
+      <polygon points="80,0 100,0 160,220 140,220" fill="#22d3ee" opacity=".04"/>
+      <polygon points="140,0 165,0 200,220 175,220" fill="#22d3ee" opacity=".05"/>
+      <polygon points="200,0 225,0 240,220 215,220" fill="#22d3ee" opacity=".03"/>
+
+      <!-- Floating particles / plankton -->
+      <circle cx="30"  cy="50"  r="1.5" fill="#a5f3fc" opacity=".5"/>
+      <circle cx="58"  cy="30"  r="1"   fill="#a5f3fc" opacity=".4"/>
+      <circle cx="90"  cy="70"  r="1.5" fill="#67e8f9" opacity=".6"/>
+      <circle cx="135" cy="25"  r="1"   fill="#a5f3fc" opacity=".4"/>
+      <circle cx="175" cy="45"  r="1.5" fill="#a5f3fc" opacity=".5"/>
+      <circle cx="215" cy="20"  r="1"   fill="#67e8f9" opacity=".5"/>
+      <circle cx="255" cy="55"  r="1.5" fill="#a5f3fc" opacity=".4"/>
+      <circle cx="295" cy="35"  r="1"   fill="#a5f3fc" opacity=".6"/>
+      <circle cx="45"  cy="110" r="1.2" fill="#a5f3fc" opacity=".35"/>
+      <circle cx="275" cy="95"  r="1.2" fill="#a5f3fc" opacity=".4"/>
+      <circle cx="310" cy="130" r="1"   fill="#67e8f9" opacity=".3"/>
+
+      <!-- Sea floor -->
+      <path d="M0 178 Q40 168 80 176 Q120 184 160 174 Q200 164 250 174 Q280 180 320 170 L320 220 L0 220Z" fill="url(#sandG)"/>
+      <path d="M0 192 Q50 182 110 192 Q170 202 230 190 Q275 180 320 190 L320 220 L0 220Z" fill="#0a1f10"/>
+
+      <!-- Castle glow behind -->
+      <ellipse cx="160" cy="150" rx="80" ry="60" fill="url(#castleLight)" filter="url(#softblur)"/>
+
+      <!-- ===== UNDERWATER CASTLE ===== -->
+      <!-- Castle base / foundation -->
+      <rect x="100" y="158" width="120" height="18" rx="4" fill="#093650"/>
+      <!-- Main body -->
+      <rect x="110" y="108" width="100" height="52" rx="6" fill="url(#castleBodyG)"/>
+      <!-- Castle windows (glowing) -->
+      <rect x="122" y="118" width="14" height="16" rx="4" fill="#22d3ee" opacity=".7" filter="url(#glow)"/>
+      <rect x="153" y="118" width="14" height="16" rx="4" fill="#fbbf24" opacity=".65" filter="url(#glow)"/>
+      <rect x="184" y="118" width="14" height="16" rx="4" fill="#22d3ee" opacity=".7" filter="url(#glow)"/>
+      <!-- Castle door (arched) -->
+      <path d="M149 160 L149 140 Q160 132 171 140 L171 160Z" fill="#06b6d4" opacity=".5"/>
+      <path d="M151 160 L151 141 Q160 134 169 141 L169 160Z" fill="#0e7490" opacity=".6"/>
+      <!-- Castle battlements (top of main wall) -->
+      <rect x="110" y="103" width="10" height="8" rx="2" fill="#0e4d6e"/>
+      <rect x="125" y="103" width="10" height="8" rx="2" fill="#0e4d6e"/>
+      <rect x="140" y="103" width="10" height="8" rx="2" fill="#0e4d6e"/>
+      <rect x="155" y="103" width="10" height="8" rx="2" fill="#0e4d6e"/>
+      <rect x="170" y="103" width="10" height="8" rx="2" fill="#0e4d6e"/>
+      <rect x="185" y="103" width="10" height="8" rx="2" fill="#0e4d6e"/>
+      <rect x="200" y="103" width="10" height="8" rx="2" fill="#0e4d6e"/>
+      <!-- Left tower -->
+      <rect x="100" y="90" width="28" height="72" rx="4" fill="url(#towerG)"/>
+      <path d="M100 90 L114 72 L128 90Z" fill="#0f6e9a"/>
+      <!-- Left tower window -->
+      <ellipse cx="114" cy="112" rx="6" ry="8" fill="#22d3ee" opacity=".65" filter="url(#glow)"/>
+      <!-- Left tower battlements -->
+      <rect x="100" y="85" width="7"  height="6" rx="1" fill="#0e4d6e"/>
+      <rect x="111" y="85" width="7"  height="6" rx="1" fill="#0e4d6e"/>
+      <rect x="122" y="85" width="7"  height="6" rx="1" fill="#0e4d6e"/>
+      <!-- Right tower -->
+      <rect x="192" y="90" width="28" height="72" rx="4" fill="url(#towerG)"/>
+      <path d="M192 90 L206 72 L220 90Z" fill="#0f6e9a"/>
+      <!-- Right tower window -->
+      <ellipse cx="206" cy="112" rx="6" ry="8" fill="#fbbf24" opacity=".6" filter="url(#glow)"/>
+      <!-- Right tower battlements -->
+      <rect x="192" y="85" width="7"  height="6" rx="1" fill="#0e4d6e"/>
+      <rect x="203" y="85" width="7"  height="6" rx="1" fill="#0e4d6e"/>
+      <rect x="214" y="85" width="7"  height="6" rx="1" fill="#0e4d6e"/>
+      <!-- Centre spire -->
+      <rect x="153" y="80" width="14" height="30" rx="3" fill="#0f5f85"/>
+      <path d="M150 80 L160 60 L170 80Z" fill="#22d3ee" opacity=".85" filter="url(#glow)"/>
+      <!-- Flag on spire -->
+      <line x1="160" y1="60" x2="160" y2="50" stroke="#a5f3fc" stroke-width="1.2"/>
+      <polygon points="160,50 170,54 160,58" fill="#fbbf24" opacity=".9"/>
+
+      <!-- Coral decorations at base -->
+      <!-- Left coral -->
+      <path d="M72 178 Q68 160 65 155 Q62 150 65 148 Q68 150 70 158 Q72 165 74 172Z" fill="#f97316" opacity=".7"/>
+      <path d="M72 178 Q76 158 80 152 Q84 146 86 149 Q84 154 81 162 Q78 170 76 178Z" fill="#f43f5e" opacity=".6"/>
+      <path d="M62 178 Q60 168 58 162 Q56 156 60 155 Q63 158 64 166Z" fill="#f97316" opacity=".5"/>
+      <!-- Right coral -->
+      <path d="M248 178 Q244 160 241 155 Q238 150 241 148 Q244 150 246 158 Q248 165 250 172Z" fill="#ec4899" opacity=".65"/>
+      <path d="M248 178 Q252 158 256 152 Q260 146 262 149 Q260 154 257 162 Q254 170 252 178Z" fill="#8b5cf6" opacity=".6"/>
+      <path d="M258 178 Q260 168 262 162 Q264 156 260 155 Q257 158 256 166Z" fill="#ec4899" opacity=".5"/>
+      <!-- Seaweed left -->
+      <path d="M35 218 Q30 205 38 195 Q46 185 40 175 Q34 165 42 158" stroke="#10b981" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>
+      <path d="M42 218 Q48 205 40 193 Q32 181 38 170" stroke="#059669" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".6"/>
+      <!-- Seaweed right -->
+      <path d="M280 218 Q275 205 283 195 Q291 185 285 175 Q279 165 287 158" stroke="#10b981" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>
+      <path d="M287 218 Q293 205 285 193 Q277 181 283 170" stroke="#059669" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".6"/>
+
+      <!-- ===== FISH ===== -->
+      <!-- Fish 1 — orange, left -->
+      <ellipse cx="55" cy="140" rx="12" ry="7" fill="#f97316" opacity=".9"/>
+      <polygon points="43,140 34,133 34,147" fill="#ea580c" opacity=".9"/>
+      <circle cx="61" cy="138" r="2" fill="white"/>
+      <circle cx="61.5" cy="138" r="1" fill="#1e3a5f"/>
+      <line x1="48" y1="135" x2="48" y2="145" stroke="#ea580c" stroke-width="1" opacity=".5"/>
+      <!-- Fish 2 — blue, right -->
+      <ellipse cx="270" cy="120" rx="11" ry="6" fill="#3b82f6" opacity=".9"/>
+      <polygon points="281,120 290,114 290,126" fill="#2563eb" opacity=".9"/>
+      <circle cx="264" cy="118" r="1.8" fill="white"/>
+      <circle cx="264.5" cy="118" r="0.9" fill="#1e3a5f"/>
+      <line x1="277" y1="115" x2="277" y2="125" stroke="#2563eb" stroke-width="1" opacity=".5"/>
+      <!-- Fish 3 — yellow, top left -->
+      <ellipse cx="40" cy="85" rx="9" ry="5" fill="#fbbf24" opacity=".85"/>
+      <polygon points="31,85 23,80 23,90" fill="#f59e0b" opacity=".85"/>
+      <circle cx="45" cy="83" r="1.5" fill="white"/>
+      <circle cx="45.4" cy="83" r=".8" fill="#1e3a5f"/>
+      <!-- Fish 4 — pink, top right -->
+      <ellipse cx="285" cy="75" rx="9" ry="5" fill="#ec4899" opacity=".85"/>
+      <polygon points="294,75 302,70 302,80" fill="#db2777" opacity=".85"/>
+      <circle cx="280" cy="73" r="1.5" fill="white"/>
+      <circle cx="280.4" cy="73" r=".8" fill="#1e3a5f"/>
+
+      <!-- ===== ASLAN (with diving mask feel, arms out exploring) ===== -->
+      <!-- Aslan shadow -->
+      <ellipse cx="160" cy="176" rx="13" ry="4" fill="#000" opacity=".35"/>
+      <!-- Aslan body (blue wetsuit) -->
+      <rect x="151" y="144" width="18" height="30" rx="6" fill="#1e40af"/>
+      <!-- Aslan head -->
+      <circle cx="160" cy="138" r="11" fill="#fbbf24" opacity=".92"/>
+      <!-- Mask / goggles -->
+      <rect x="152" y="133" width="16" height="9" rx="4" fill="#0e7490" opacity=".7"/>
+      <rect x="153" y="134" width="6.5" height="6" rx="2.5" fill="#a5f3fc" opacity=".6"/>
+      <rect x="160.5" y="134" width="6.5" height="6" rx="2.5" fill="#a5f3fc" opacity=".6"/>
+      <!-- Hair above mask -->
+      <path d="M150 133 Q160 124 170 133" fill="#92400e" stroke="none"/>
+      <!-- Mouth (smile) -->
+      <path d="M155 147 Q160 151 165 147" stroke="#92400e" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <!-- Arms out wide in wonder -->
+      <line x1="151" y1="150" x2="138" y2="142" stroke="#1e40af" stroke-width="4.5" stroke-linecap="round"/>
+      <line x1="169" y1="150" x2="182" y2="142" stroke="#1e40af" stroke-width="4.5" stroke-linecap="round"/>
+      <!-- Legs / fins -->
+      <rect x="153" y="172" width="6" height="14" rx="3" fill="#1e3a5f"/>
+      <rect x="161" y="172" width="6" height="14" rx="3" fill="#1e3a5f"/>
+      <!-- Flippers -->
+      <ellipse cx="156" cy="186" rx="7" ry="3.5" fill="#0e7490"/>
+      <ellipse cx="164" cy="186" rx="7" ry="3.5" fill="#0e7490"/>
+
+      <!-- Bubbles rising from Aslan -->
+      <circle cx="168" cy="135" r="3.5" stroke="#a5f3fc" stroke-width="1.2" fill="none" opacity=".7"/>
+      <circle cx="172" cy="122" r="2.5" stroke="#a5f3fc" stroke-width="1.1" fill="none" opacity=".6"/>
+      <circle cx="169" cy="111" r="2"   stroke="#a5f3fc" stroke-width="1"   fill="none" opacity=".5"/>
+      <circle cx="173" cy="102" r="1.5" stroke="#a5f3fc" stroke-width="1"   fill="none" opacity=".4"/>
+      <!-- Extra bubbles ambient -->
+      <circle cx="90"  cy="155" r="3" stroke="#a5f3fc" stroke-width="1" fill="none" opacity=".45"/>
+      <circle cx="95"  cy="140" r="2" stroke="#a5f3fc" stroke-width="1" fill="none" opacity=".35"/>
+      <circle cx="230" cy="148" r="3" stroke="#67e8f9" stroke-width="1" fill="none" opacity=".4"/>
+      <circle cx="226" cy="133" r="2" stroke="#67e8f9" stroke-width="1" fill="none" opacity=".3"/>
+
+      <!-- Stars / sparkles near castle -->
+      <text x="125" y="96"  fill="#fbbf24" font-size="9"  opacity=".9">✨</text>
+      <text x="186" y="88"  fill="#22d3ee" font-size="9"  opacity=".8">⭐</text>
+      <text x="105" y="140" fill="#a5f3fc" font-size="8"  opacity=".7">✨</text>
+
+      <!-- Treasure chest hint at base right -->
+      <rect x="238" y="168" width="18" height="12" rx="3" fill="#92400e" opacity=".8"/>
+      <rect x="238" y="168" width="18" height="5"  rx="2" fill="#b45309" opacity=".9"/>
+      <rect x="244" y="169" width="6"  height="10" rx="1" fill="#fbbf24" opacity=".8"/>
+      <circle cx="247" cy="174" r="2" fill="#fbbf24" opacity=".9"/>
+    </svg>
+    <p class="illus-quote"><strong>Aslan</strong> swam through the glowing gate and stared in wonder. Deep beneath the waves stood <strong>the most beautiful castle</strong> he had ever seen. 🏰🌊✨</p>
+  </div>
+
+  <!-- SPEED CONTROLS -->
+  <div class="speed-controls">
+    <span class="speed-label">🎚️ Speed:</span>
+    <button class="speed-btn" data-rate="0.65">🐢 Slow</button>
+    <button class="speed-btn active" data-rate="0.88">🚶 Normal</button>
+    <button class="speed-btn" data-rate="1.15">🚀 Fast</button>
+  </div>
+
+  <div class="master-controls">
+    <button class="btn-master btn-play-all" id="playAllBtn">🎧 <span>Listen to Whole Story</span></button>
+    <button class="btn-master btn-stop" id="stopBtn">⏹ <span>Stop Reading</span></button>
+  </div>
+
+  <div id="chapters">
+
+    <!-- CHAPTER 1 -->
+    <div class="chapter ch1" id="ch1">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">01</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter One</div>
+            <div class="chapter-title">🐚 The Mysterious Seashell</div>
+          </div>
+          <button class="btn-listen" data-ch="1"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.5s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text1">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('One')">One</span> <span class="w" onclick="showMeaning('sunny')">sunny</span> <span class="w" onclick="showMeaning('morning')">morning</span>, <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('walking')">walking</span> <span class="w" onclick="showMeaning('alone')">alone</span> <span class="w" onclick="showMeaning('on')">on</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('beach')">beach</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('waves')">waves</span> <span class="w" onclick="showMeaning('were')">were</span> <span class="w" onclick="showMeaning('soft')">soft</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('sand')">sand</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('warm')">warm</span> <span class="w" onclick="showMeaning('under')">under</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('feet')">feet</span>. <span class="w" onclick="showMeaning('Suddenly')">Suddenly</span>, <span class="w" onclick="showMeaning('something')">something</span> <span class="w" onclick="showMeaning('caught')">caught</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('eye')">eye</span>. <span class="w" onclick="showMeaning('Half')">Half</span> <span class="w" onclick="showMeaning('buried')">buried</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('sand')">sand</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('huge')">huge</span> <span class="w" onclick="showMeaning('seashell')">seashell</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('unlike')">unlike</span> <span class="w" onclick="showMeaning('any')">any</span> <span class="w" onclick="showMeaning('shell')">shell</span> <span class="w" onclick="showMeaning('he')">he</span> <span class="w" onclick="showMeaning('had')">had</span> <span class="w" onclick="showMeaning('seen')">seen</span> <span class="w" onclick="showMeaning('before')">before</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('glowed')">glowed</span> <span class="w" onclick="showMeaning('with')">with</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('soft')">soft</span> <span class="w" onclick="showMeaning('blue')">blue</span> <span class="w" onclick="showMeaning('light')">light</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('picked')">picked</span> <span class="w" onclick="showMeaning('it')">it</span> <span class="w" onclick="showMeaning('up')">up</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('held')">held</span> <span class="w" onclick="showMeaning('it')">it</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('ear')">ear</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('heard')">heard</span> <span class="w" onclick="showMeaning('not')">not</span> <span class="w" onclick="showMeaning('just')">just</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('ocean')">ocean</span>, <span class="w" onclick="showMeaning('but')">but</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('gentle')">gentle</span> <span class="w" onclick="showMeaning('voice')">voice</span>. <span class="hl">"Aslan… follow the blue light. There is a world waiting for you beneath the waves."</span> <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('looked')">looked</span> <span class="w" onclick="showMeaning('at')">at</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('glowing')">glowing</span> <span class="w" onclick="showMeaning('shell')">shell</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('smiled')">smiled</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('not')">not</span> <span class="w" onclick="showMeaning('afraid')">afraid</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('ready')">ready</span>.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="seashell">seashell</span>
+            <span class="vocab-pill" data-word="buried">buried</span>
+            <span class="vocab-pill" data-word="glowed">glowed</span>
+            <span class="vocab-pill" data-word="waves">waves</span>
+            <span class="vocab-pill" data-word="beneath">beneath</span>
+            <span class="vocab-pill" data-word="gentle">gentle</span>
+            <span class="vocab-pill" data-word="beach">beach</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 2 -->
+    <div class="chapter ch2" id="ch2">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">02</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Two</div>
+            <div class="chapter-title">🌊 Diving into the Deep</div>
+          </div>
+          <button class="btn-listen" data-ch="2"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text2">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('stepped')">stepped</span> <span class="w" onclick="showMeaning('into')">into</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('ocean')">ocean</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('shell')">shell</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('hand')">hand</span> <span class="w" onclick="showMeaning('began')">began</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('pulse')">pulse</span> <span class="w" onclick="showMeaning('with')">with</span> <span class="w" onclick="showMeaning('light')">light</span>. <span class="w" onclick="showMeaning('As')">As</span> <span class="w" onclick="showMeaning('soon')">soon</span> <span class="w" onclick="showMeaning('as')">as</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('head')">head</span> <span class="w" onclick="showMeaning('went')">went</span> <span class="w" onclick="showMeaning('under')">under</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('water')">water</span>, <span class="w" onclick="showMeaning('something')">something</span> <span class="w" onclick="showMeaning('magical')">magical</span> <span class="w" onclick="showMeaning('happened')">happened</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('could')">could</span> <span class="w" onclick="showMeaning('breathe')">breathe</span>! <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('shell')">shell</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('protecting')">protecting</span> <span class="w" onclick="showMeaning('him')">him</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('swam')">swam</span> <span class="w" onclick="showMeaning('deeper')">deeper</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('deeper')">deeper</span>. <span class="w" onclick="showMeaning('All')">All</span> <span class="w" onclick="showMeaning('around')">around</span> <span class="w" onclick="showMeaning('him')">him</span>, <span class="w" onclick="showMeaning('colourful')">colourful</span> <span class="w" onclick="showMeaning('fish')">fish</span> <span class="w" onclick="showMeaning('darted')">darted</span> <span class="w" onclick="showMeaning('past')">past</span> <span class="w" onclick="showMeaning('like')">like</span> <span class="w" onclick="showMeaning('tiny')">tiny</span> <span class="w" onclick="showMeaning('rockets')">rockets</span>. <span class="w" onclick="showMeaning('Tall')">Tall</span> <span class="w" onclick="showMeaning('green')">green</span> <span class="w" onclick="showMeaning('seaweed')">seaweed</span> <span class="w" onclick="showMeaning('swayed')">swayed</span> <span class="w" onclick="showMeaning('gently')">gently</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('current')">current</span>. <span class="w" onclick="showMeaning('Thousands')">Thousands</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('tiny')">tiny</span> <span class="w" onclick="showMeaning('bubbles')">bubbles</span> <span class="w" onclick="showMeaning('floated')">floated</span> <span class="w" onclick="showMeaning('up')">up</span> <span class="w" onclick="showMeaning('toward')">toward</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('surface')">surface</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('water')">water</span> <span class="w" onclick="showMeaning('glowed')">glowed</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('shades')">shades</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('blue')">blue</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('green')">green</span>. <span class="hl">Then, far below, Aslan saw something breathtaking — the towers of an enormous, shimmering castle rising up from the ocean floor.</span>
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="breathe">breathe</span>
+            <span class="vocab-pill" data-word="protecting">protecting</span>
+            <span class="vocab-pill" data-word="darted">darted</span>
+            <span class="vocab-pill" data-word="seaweed">seaweed</span>
+            <span class="vocab-pill" data-word="current">current</span>
+            <span class="vocab-pill" data-word="surface">surface</span>
+            <span class="vocab-pill" data-word="breathtaking">breathtaking</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 3 -->
+    <div class="chapter ch3" id="ch3">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">03</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Three</div>
+            <div class="chapter-title">🪸 The Coral Castle</div>
+          </div>
+          <button class="btn-listen" data-ch="3"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text3">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('castle')">castle</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('enormous')">enormous</span>. <span class="w" onclick="showMeaning('Its')">Its</span> <span class="w" onclick="showMeaning('walls')">walls</span> <span class="w" onclick="showMeaning('were')">were</span> <span class="w" onclick="showMeaning('made')">made</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('white')">white</span> <span class="w" onclick="showMeaning('coral')">coral</span> <span class="w" onclick="showMeaning('that')">that</span> <span class="w" onclick="showMeaning('glowed')">glowed</span> <span class="w" onclick="showMeaning('like')">like</span> <span class="w" onclick="showMeaning('moonlight')">moonlight</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('tall')">tall</span> <span class="w" onclick="showMeaning('towers')">towers</span> <span class="w" onclick="showMeaning('were')">were</span> <span class="w" onclick="showMeaning('wrapped')">wrapped</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('pink')">pink</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('orange')">orange</span> <span class="w" onclick="showMeaning('coral')">coral</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('windows')">windows</span> <span class="w" onclick="showMeaning('shone')">shone</span> <span class="w" onclick="showMeaning('with')">with</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('warm')">warm</span> <span class="w" onclick="showMeaning('golden')">golden</span> <span class="w" onclick="showMeaning('light')">light</span>. <span class="w" onclick="showMeaning('Beautiful')">Beautiful</span> <span class="w" onclick="showMeaning('sea')">sea</span> <span class="w" onclick="showMeaning('flowers')">flowers</span> <span class="w" onclick="showMeaning('bloomed')">bloomed</span> <span class="w" onclick="showMeaning('all')">all</span> <span class="w" onclick="showMeaning('around')">around</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('gates')">gates</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('swam')">swam</span> <span class="w" onclick="showMeaning('slowly')">slowly</span> <span class="w" onclick="showMeaning('through')">through</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('great')">great</span> <span class="w" onclick="showMeaning('gate')">gate</span>. <span class="w" onclick="showMeaning('Inside')">Inside</span>, <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('hallways')">hallways</span> <span class="w" onclick="showMeaning('sparkled')">sparkled</span>. <span class="w" onclick="showMeaning('Every')">Every</span> <span class="w" onclick="showMeaning('wall')">wall</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('covered')">covered</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('pearls')">pearls</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('colourful')">colourful</span> <span class="w" onclick="showMeaning('gems')">gems</span>. <span class="w" onclick="showMeaning('Schools')">Schools</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('tiny')">tiny</span> <span class="w" onclick="showMeaning('silver')">silver</span> <span class="w" onclick="showMeaning('fish')">fish</span> <span class="w" onclick="showMeaning('swam')">swam</span> <span class="w" onclick="showMeaning('through')">through</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('corridors')">corridors</span> <span class="w" onclick="showMeaning('like')">like</span> <span class="w" onclick="showMeaning('living')">living</span> <span class="w" onclick="showMeaning('ribbons')">ribbons</span>. <span class="hl">Aslan turned slowly in a circle, looking at everything with wide eyes. "I have never seen anything so wonderful," he whispered.</span>
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="coral">coral</span>
+            <span class="vocab-pill" data-word="moonlight">moonlight</span>
+            <span class="vocab-pill" data-word="pearls">pearls</span>
+            <span class="vocab-pill" data-word="gems">gems</span>
+            <span class="vocab-pill" data-word="corridors">corridors</span>
+            <span class="vocab-pill" data-word="bloomed">bloomed</span>
+            <span class="vocab-pill" data-word="hallways">hallways</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 4 -->
+    <div class="chapter ch4" id="ch4">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">04</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Four</div>
+            <div class="chapter-title">🐙 The Friendly Sea Creatures</div>
+          </div>
+          <button class="btn-listen" data-ch="4"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.15s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text4">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('Deep')">Deep</span> <span class="w" onclick="showMeaning('inside')">inside</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('castle')">castle</span>, <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('found')">found</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('great')">great</span> <span class="w" onclick="showMeaning('hall')">hall</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('full')">full</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('sea')">sea</span> <span class="w" onclick="showMeaning('creatures')">creatures</span>. <span class="w" onclick="showMeaning('A')">A</span> <span class="w" onclick="showMeaning('large')">large</span> <span class="w" onclick="showMeaning('purple')">purple</span> <span class="w" onclick="showMeaning('octopus')">octopus</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('painting')">painting</span> <span class="w" onclick="showMeaning('pictures')">pictures</span> <span class="w" onclick="showMeaning('with')">with</span> <span class="w" onclick="showMeaning('its')">its</span> <span class="w" onclick="showMeaning('eight')">eight</span> <span class="w" onclick="showMeaning('arms')">arms</span>. <span class="w" onclick="showMeaning('A')">A</span> <span class="w" onclick="showMeaning('friendly')">friendly</span> <span class="w" onclick="showMeaning('green')">green</span> <span class="w" onclick="showMeaning('sea')">sea</span> <span class="w" onclick="showMeaning('turtle')">turtle</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('reading')">reading</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('book')">book</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('corner')">corner</span>. <span class="w" onclick="showMeaning('A')">A</span> <span class="w" onclick="showMeaning('tiny')">tiny</span> <span class="w" onclick="showMeaning('yellow')">yellow</span> <span class="w" onclick="showMeaning('seahorse')">seahorse</span> <span class="w" onclick="showMeaning('waved')">waved</span> <span class="w" onclick="showMeaning('at')">at</span> <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('happily')">happily</span>. <span class="w" onclick="showMeaning('None')">None</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('them')">them</span> <span class="w" onclick="showMeaning('were')">were</span> <span class="w" onclick="showMeaning('afraid')">afraid</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('him')">him</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('octopus')">octopus</span> <span class="w" onclick="showMeaning('smiled')">smiled</span> <span class="w" onclick="showMeaning('with')">with</span> <span class="w" onclick="showMeaning('all')">all</span> <span class="w" onclick="showMeaning('eight')">eight</span> <span class="w" onclick="showMeaning('arms')">arms</span> <span class="w" onclick="showMeaning('open')">open</span> <span class="w" onclick="showMeaning('wide')">wide</span>. <span class="hl">"Welcome, land child! We have been waiting for you. This castle belongs to every creature that is kind and brave. You are one of us now."</span> <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('felt')">felt</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('warm')">warm</span> <span class="w" onclick="showMeaning('feeling')">feeling</span> <span class="w" onclick="showMeaning('spread')">spread</span> <span class="w" onclick="showMeaning('through')">through</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('chest')">chest</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('had')">had</span> <span class="w" onclick="showMeaning('found')">found</span> <span class="w" onclick="showMeaning('new')">new</span> <span class="w" onclick="showMeaning('friends')">friends</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('most')">most</span> <span class="w" onclick="showMeaning('unexpected')">unexpected</span> <span class="w" onclick="showMeaning('place')">place</span>.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="octopus">octopus</span>
+            <span class="vocab-pill" data-word="turtle">turtle</span>
+            <span class="vocab-pill" data-word="seahorse">seahorse</span>
+            <span class="vocab-pill" data-word="painting">painting</span>
+            <span class="vocab-pill" data-word="unexpected">unexpected</span>
+            <span class="vocab-pill" data-word="welcome">welcome</span>
+            <span class="vocab-pill" data-word="chest">chest</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 5 -->
+    <div class="chapter ch5" id="ch5">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">05</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Five</div>
+            <div class="chapter-title">💎 The Treasure of Friendship</div>
+          </div>
+          <button class="btn-listen" data-ch="5"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text5">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('turtle')">turtle</span> <span class="w" onclick="showMeaning('set')">set</span> <span class="w" onclick="showMeaning('down')">down</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('book')">book</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('led')">led</span> <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('room')">room</span> <span class="w" onclick="showMeaning('deep')">deep</span> <span class="w" onclick="showMeaning('inside')">inside</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('castle')">castle</span>. <span class="w" onclick="showMeaning('In')">In</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('centre')">centre</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('room')">room</span> <span class="w" onclick="showMeaning('sat')">sat</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('large')">large</span> <span class="w" onclick="showMeaning('treasure')">treasure</span> <span class="w" onclick="showMeaning('chest')">chest</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('opened')">opened</span> <span class="w" onclick="showMeaning('it')">it</span> <span class="w" onclick="showMeaning('carefully')">carefully</span>. <span class="w" onclick="showMeaning('Inside')">Inside</span>, <span class="w" onclick="showMeaning('there')">there</span> <span class="w" onclick="showMeaning('were')">were</span> <span class="w" onclick="showMeaning('no')">no</span> <span class="w" onclick="showMeaning('coins')">coins</span> <span class="w" onclick="showMeaning('or')">or</span> <span class="w" onclick="showMeaning('jewels')">jewels</span>. <span class="w" onclick="showMeaning('Instead')">Instead</span>, <span class="w" onclick="showMeaning('it')">it</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('filled')">filled</span> <span class="w" onclick="showMeaning('with')">with</span> <span class="w" onclick="showMeaning('small')">small</span> <span class="w" onclick="showMeaning('glowing')">glowing</span> <span class="w" onclick="showMeaning('stones')">stones</span>. <span class="w" onclick="showMeaning('Each')">Each</span> <span class="w" onclick="showMeaning('stone')">stone</span> <span class="w" onclick="showMeaning('had')">had</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('name')">name</span> <span class="w" onclick="showMeaning('carved')">carved</span> <span class="w" onclick="showMeaning('into')">into</span> <span class="w" onclick="showMeaning('it')">it</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('turtle')">turtle</span> <span class="w" onclick="showMeaning('explained')">explained</span> <span class="w" onclick="showMeaning('gently')">gently</span>. <span class="hl">"Each stone is a friend. The more friends you have — in the ocean, on land, and everywhere — the richer you become."</span> <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('turtle')">turtle</span> <span class="w" onclick="showMeaning('placed')">placed</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('new')">new</span> <span class="w" onclick="showMeaning('glowing')">glowing</span> <span class="w" onclick="showMeaning('stone')">stone</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('Aslan')">Aslan</span>'s <span class="w" onclick="showMeaning('hand')">hand</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('warm')">warm</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('bright')">bright</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('looked')">looked</span> <span class="w" onclick="showMeaning('at')">at</span> <span class="w" onclick="showMeaning('it')">it</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('saw')">saw</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('own')">own</span> <span class="w" onclick="showMeaning('name')">name</span> <span class="w" onclick="showMeaning('carved')">carved</span> <span class="w" onclick="showMeaning('on')">on</span> <span class="w" onclick="showMeaning('it')">it</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('carried')">carried</span> <span class="w" onclick="showMeaning('that')">that</span> <span class="w" onclick="showMeaning('stone')">stone</span> <span class="w" onclick="showMeaning('home')">home</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('heart')">heart</span> <span class="w" onclick="showMeaning('forever')">forever</span>.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="treasure">treasure</span>
+            <span class="vocab-pill" data-word="coins">coins</span>
+            <span class="vocab-pill" data-word="jewels">jewels</span>
+            <span class="vocab-pill" data-word="carved">carved</span>
+            <span class="vocab-pill" data-word="richer">richer</span>
+            <span class="vocab-pill" data-word="explained">explained</span>
+            <span class="vocab-pill" data-word="forever">forever</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end #chapters -->
+
+  <div class="motivation-card">
+    <span class="star-icon">🐠</span>
+    <h2>Fantastic work, Aslan! You dove deep and came back richer! 🌊🏰</h2>
+    <p>Just like Aslan discovered that the greatest treasure in the ocean is friendship, you are building something precious with every English word you learn. <strong style="color:var(--gold)">Every new word is a glowing stone</strong> — a key that opens new friendships and new worlds all around the globe. Keep swimming deeper, brave explorer! 💎🌊</p>
+    <div class="challenge-box">
+      <p>🐚 <strong>Today's Challenge:</strong> Imagine YOU are diving into an ocean. What <strong>3 sea creatures</strong> would you like to meet? Write or say their names and one thing about each one in English. Remember: the bravest explorers always find the most wonderful things! 🌊⭐</p>
+    </div>
+  </div>
+
+  <footer class="footer">Made with ❤️ for <span style="color:var(--amber)">Aslan</span> • Day 11 complete • Click any word to see Indonesian meaning! 🖱️</footer>
+</div>
+
+<div id="wordToast" class="word-toast">📖</div>
+
+<script>
+// ===== STARS =====
+(function(){
+  const wrap = document.getElementById('stars');
+  for(let i=0;i<90;i++){
+    const s=document.createElement('div'); s.className='star';
+    const size=Math.random()*2.5+0.8;
+    s.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--delay:-${(Math.random()*5).toFixed(1)}s;`;
+    wrap.appendChild(s);
+  }
+})();
+
+// ===== DICTIONARY =====
+const dictionary = {
+  // Chapter 1
+  "one":"satu / suatu","sunny":"cerah / bersinar","morning":"pagi hari","aslan":"Aslan (nama tokoh utama)","was":"adalah / sedang (masa lalu)","walking":"berjalan (sedang)","alone":"sendiri / seorang diri","on":"di / pada","the":"itu / sang","beach":"pantai","waves":"ombak-ombak","were":"adalah (jamak masa lalu)","soft":"lembut","and":"dan","sand":"pasir","warm":"hangat","under":"di bawah","his":"miliknya (laki-laki)","feet":"kaki-kaki","suddenly":"tiba-tiba","something":"sesuatu","caught":"tertangkap / menarik (masa lalu catch)","eye":"mata","half":"setengah","buried":"terkubur","in":"di dalam / di","a":"sebuah / seorang","huge":"sangat besar","seashell":"cangkang kerang / kulit kerang","it":"itu","unlike":"tidak seperti / berbeda dari","any":"apapun","shell":"cangkang / kulit","he":"dia (laki-laki)","had":"telah (masa lalu have)","seen":"dilihat (past participle see)","before":"sebelumnya","glowed":"bercahaya (masa lalu glow)","with":"dengan","blue":"biru","light":"cahaya / ringan","picked":"mengambil (masa lalu pick)","up":"ke atas","held":"memegang (masa lalu hold)","to":"untuk / ke","ear":"telinga","heard":"mendengar (masa lalu hear)","not":"tidak","just":"hanya / baru saja","ocean":"samudra / lautan","but":"tetapi","gentle":"lembut / perlahan","voice":"suara","follow":"ikuti","beneath":"di bawah","waves":"ombak-ombak","world":"dunia","waiting":"menunggu (sedang)","looked":"melihat (masa lalu look)","at":"pada","glowing":"bercahaya (sedang)","smiled":"tersenyum (masa lalu smile)","afraid":"takut","ready":"siap",
+  // Chapter 2
+  "stepped":"melangkah (masa lalu step)","into":"ke dalam","began":"mulai (masa lalu begin)","pulse":"berdenyut / berkedip","as":"ketika / saat","soon":"segera","head":"kepala","went":"pergi / masuk (masa lalu go)","water":"air","magical":"ajaib","happened":"terjadi (masa lalu happen)","could":"bisa (masa lalu can)","breathe":"bernapas","protecting":"melindungi (sedang)","him":"dia (objek laki-laki)","swam":"berenang (masa lalu swim)","deeper":"lebih dalam","all":"semua","around":"sekitar","colourful":"berwarna-warni","fish":"ikan","darted":"melesat / berlari kencang (masa lalu dart)","past":"melewati","like":"seperti","tiny":"sangat kecil","rockets":"roket-roket","tall":"tinggi","green":"hijau","seaweed":"rumput laut / ganggang","swayed":"berayun (masa lalu sway)","gently":"dengan lembut","current":"arus","thousands":"ribuan","of":"dari","bubbles":"gelembung-gelembung","floated":"mengapung (masa lalu float)","toward":"menuju","surface":"permukaan","shades":"nuansa / gradasi warna","far":"jauh","below":"di bawah","breathtaking":"menakjubkan sekali / mengagumkan","towers":"menara-menara","enormous":"sangat besar","shimmering":"berkilauan","castle":"istana / kastil","rising":"naik / muncul (sedang)","floor":"dasar / lantai",
+  // Chapter 3
+  "its":"miliknya (benda)","walls":"dinding-dinding","made":"dibuat (masa lalu make)","white":"putih","coral":"karang laut","that":"yang","moonlight":"cahaya bulan","towers":"menara-menara","wrapped":"dibungkus (masa lalu wrap)","pink":"merah muda","orange":"oranye","windows":"jendela-jendela","shone":"bersinar (masa lalu shine)","golden":"keemasan","beautiful":"indah / cantik","sea":"laut","flowers":"bunga-bunga","bloomed":"mekar (masa lalu bloom)","gates":"gerbang-gerbang","gate":"gerbang","slowly":"perlahan-lahan","through":"melewati / melalui","great":"besar / agung","inside":"di dalam","hallways":"koridor / lorong-lorong","sparkled":"berkilau (masa lalu sparkle)","every":"setiap","wall":"dinding","covered":"ditutupi (masa lalu cover)","pearls":"mutiara-mutiara","gems":"permata-permata","schools":"gerombolan (ikan) / sekolah-sekolah","silver":"perak / berwarna perak","corridors":"lorong-lorong / koridor-koridor","living":"hidup (sedang)","ribbons":"pita-pita","turned":"berputar (masa lalu turn)","circle":"lingkaran","wide":"lebar","eyes":"mata-mata","wonderful":"menakjubkan","whispered":"berbisik (masa lalu whisper)",
+  // Chapter 4
+  "deep":"dalam / jauh","found":"menemukan (masa lalu find)","hall":"aula / ruang besar","full":"penuh","creatures":"makhluk-makhluk","large":"besar","purple":"ungu","octopus":"gurita","painting":"melukis (sedang) / lukisan","pictures":"gambar-gambar","eight":"delapan","arms":"lengan-lengan / tentakel","friendly":"ramah","turtle":"kura-kura laut / penyu","reading":"membaca (sedang)","book":"buku","corner":"sudut ruangan","yellow":"kuning","seahorse":"kuda laut","waved":"melambaikan tangan (masa lalu wave)","happily":"dengan senang / bahagia","none":"tidak ada satu pun","them":"mereka (objek)","open":"terbuka","wide":"lebar","welcome":"selamat datang / menyambut","land":"darat / daratan","child":"anak","belongs":"milik / termasuk","kind":"baik hati","brave":"berani","felt":"merasa (masa lalu feel)","feeling":"perasaan","spread":"menyebar","chest":"dada / peti","new":"baru","friends":"teman-teman","most":"paling","unexpected":"tidak terduga","place":"tempat",
+  // Chapter 5
+  "set":"meletakkan (masa lalu set)","down":"ke bawah","led":"memimpin / membawa (masa lalu lead)","room":"ruangan","centre":"pusat / tengah","sat":"duduk (masa lalu sit)","treasure":"harta karun","opened":"membuka (masa lalu open)","carefully":"dengan hati-hati","no":"tidak ada","coins":"koin-koin","or":"atau","jewels":"permata-permata / batu berharga","instead":"sebagai gantinya","filled":"dipenuhi (masa lalu fill)","small":"kecil","stones":"batu-batu","each":"masing-masing","stone":"batu","name":"nama","carved":"diukir (masa lalu carve)","explained":"menjelaskan (masa lalu explain)","richer":"lebih kaya","placed":"meletakkan (masa lalu place)","bright":"terang / cerah","saw":"melihat (masa lalu see)","own":"sendiri / milik sendiri","carried":"membawa (masa lalu carry)","home":"rumah / pulang","heart":"hati","forever":"selamanya / untuk selama-lamanya",
+  // Vocab pills extra
+  "beneath":"di bawah","glowed":"bercahaya","buried":"terkubur","breathtaking":"sangat menakjubkan","protecting":"melindungi","darted":"melesat cepat","current":"arus","surface":"permukaan","moonlight":"cahaya bulan","pearls":"mutiara","gems":"permata","corridors":"lorong-lorong","hallways":"koridor","bloomed":"mekar","octopus":"gurita","turtle":"penyu / kura-kura laut","seahorse":"kuda laut","painting":"melukis","unexpected":"tidak terduga","welcome":"selamat datang","chest":"dada / peti harta","treasure":"harta karun","coins":"koin-koin","jewels":"permata-permata","carved":"diukir","richer":"lebih kaya","explained":"menjelaskan","forever":"selamanya","seashell":"kulit kerang","waves":"ombak-ombak","gentle":"lembut","beach":"pantai","breathe":"bernapas","seaweed":"rumput laut","coral":"karang laut",
+  // Common function words & general vocabulary
+  "the":"itu / sang","a":"sebuah / seorang","an":"sebuah","is":"adalah","are":"adalah / sedang","be":"menjadi","do":"melakukan","can":"bisa","will":"akan","would":"akan (kondisional)","have":"mempunyai","has":"mempunyai (orang ketiga)","go":"pergi","come":"datang","get":"mendapat","give":"memberi","know":"mengetahui","think":"berpikir","feel":"merasa","say":"berkata","make":"membuat","see":"melihat","look":"melihat","run":"berlari","walk":"berjalan","find":"menemukan","tell":"memberitahu","ask":"bertanya","keep":"menjaga","let":"membiarkan","put":"meletakkan","seem":"tampak","turn":"berputar / berubah","begin":"mulai","show":"menunjukkan","hear":"mendengar","play":"bermain","move":"bergerak","live":"hidup","hold":"memegang","bring":"membawa","happen":"terjadi","write":"menulis","stand":"berdiri","lose":"kehilangan","meet":"bertemu","understand":"memahami","people":"orang-orang","time":"waktu","good":"baik / bagus","new":"baru","old":"tua / lama","great":"hebat","long":"panjang","big":"besar","high":"tinggi","different":"berbeda","small":"kecil","large":"besar","next":"berikutnya","real":"nyata","important":"penting","beautiful":"indah","amazing":"menakjubkan","together":"bersama","always":"selalu","never":"tidak pernah","here":"di sini","there":"di sana","home":"rumah","place":"tempat","day":"hari","night":"malam","year":"tahun","hand":"tangan","face":"wajah","he":"dia (laki-laki)","she":"dia (perempuan)","we":"kami / kita","you":"kamu","they":"mereka","this":"ini","that":"itu","up":"ke atas","down":"ke bawah","out":"keluar","in":"di dalam","on":"di / pada","over":"di atas / melewati","after":"setelah","before":"sebelum","between":"di antara","more":"lebih","very":"sangat","also":"juga","so":"jadi / sangat","just":"hanya / baru saja","where":"di mana","why":"kenapa","how":"bagaimana","all":"semua","some":"beberapa","no":"tidak ada","too":"juga / terlalu","well":"dengan baik","back":"kembali / belakang","still":"masih","own":"sendiri","same":"sama","each":"masing-masing","both":"keduanya","really":"sungguh-sungguh","most":"paling","every":"setiap","only":"hanya","never":"tidak pernah","always":"selalu","again":"lagi","also":"juga","too":"terlalu / juga","very":"sangat","its":"miliknya (benda)","our":"milik kami","their":"milik mereka","my":"milikku","your":"milikmu","him":"dia (objek)","her":"dia (objek perempuan)","them":"mereka (objek)","us":"kami (objek)","if":"jika","when":"ketika","while":"sementara","because":"karena","but":"tetapi","or":"atau","and":"dan","so":"jadi","yet":"namun","although":"walaupun","not":"tidak","no":"tidak","yes":"ya","book":"buku","friend":"teman","happy":"senang","brave":"berani","kind":"baik hati","bright":"terang","warm":"hangat","deep":"dalam","far":"jauh","full":"penuh","open":"terbuka"
+};
+
+function showMeaning(word) {
+  let clean = word.toLowerCase().replace(/[.,!?;:()'"«»""''—–\-]/g,'');
+  let meaning = dictionary[clean];
+  if(!meaning){
+    if(clean.endsWith('s')   && dictionary[clean.slice(0,-1)])  meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ed')  && dictionary[clean.slice(0,-2)])  meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('ed')  && dictionary[clean.slice(0,-1)])  meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ing') && dictionary[clean.slice(0,-3)])  meaning=dictionary[clean.slice(0,-3)];
+    else if(clean.endsWith('ing') && dictionary[clean.slice(0,-4)])  meaning=dictionary[clean.slice(0,-4)];
+    else if(clean.endsWith('ly')  && dictionary[clean.slice(0,-2)])  meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('er')  && dictionary[clean.slice(0,-2)])  meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('est') && dictionary[clean.slice(0,-3)])  meaning=dictionary[clean.slice(0,-3)];
+    else meaning="❓ arti belum tersedia, coba cek kamus";
+  }
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `📖 <strong>${clean}</strong> → ${meaning} <small>🇮🇩</small>`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>toast.classList.remove('show'), 2800);
+}
+
+// ===== SPEED =====
+let speechRate = 0.88;
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    speechRate = parseFloat(btn.dataset.rate);
+  });
+});
+
+// ===== STORY TEXT FOR TTS =====
+const stories = {
+  1: "One sunny morning, Aslan was walking alone on the beach. The waves were soft and the sand was warm under his feet. Suddenly, something caught his eye. Half buried in the sand was a huge seashell. It was unlike any shell he had seen before. It glowed with a soft blue light. Aslan picked it up and held it to his ear. He heard not just the ocean, but a gentle voice. Aslan, follow the blue light. There is a world waiting for you beneath the waves. Aslan looked at the glowing shell and smiled. He was not afraid. He was ready.",
+  2: "Aslan stepped into the ocean. The shell in his hand began to pulse with light. As soon as his head went under the water, something magical happened. He could breathe! The shell was protecting him. He swam deeper and deeper. All around him, colourful fish darted past like tiny rockets. Tall green seaweed swayed gently in the current. Thousands of tiny bubbles floated up toward the surface. The water glowed in shades of blue and green. Then, far below, Aslan saw something breathtaking — the towers of an enormous, shimmering castle rising up from the ocean floor.",
+  3: "The castle was enormous. Its walls were made of white coral that glowed like moonlight. The tall towers were wrapped in pink and orange coral. The windows shone with a warm golden light. Beautiful sea flowers bloomed all around the gates. Aslan swam slowly through the great gate. Inside, the hallways sparkled. Every wall was covered in pearls and colourful gems. Schools of tiny silver fish swam through the corridors like living ribbons. Aslan turned slowly in a circle, looking at everything with wide eyes. I have never seen anything so wonderful, he whispered.",
+  4: "Deep inside the castle, Aslan found a great hall. It was full of sea creatures. A large purple octopus was painting pictures with its eight arms. A friendly green sea turtle was reading a book in the corner. A tiny yellow seahorse waved at Aslan happily. None of them were afraid of him. The octopus smiled with all eight arms open wide. Welcome, land child! We have been waiting for you. This castle belongs to every creature that is kind and brave. You are one of us now. Aslan felt a warm feeling spread through his chest. He had found new friends in the most unexpected place.",
+  5: "The turtle set down his book and led Aslan to a room deep inside the castle. In the centre of the room sat a large treasure chest. Aslan opened it carefully. Inside, there were no coins or jewels. Instead, it was filled with small glowing stones. Each stone had a name carved into it. The turtle explained gently. Each stone is a friend. The more friends you have — in the ocean, on land, and everywhere — the richer you become. The turtle placed a new glowing stone in Aslan's hand. It was warm and bright. Aslan looked at it and saw his own name carved on it. He carried that stone home in his heart forever."
+};
+
+let currentUtt = null;
+let isPlayingAll = false;
+let readChapters = new Set();
+
+function pickVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v=>v.lang==='en-US'&&(v.name.includes('Google')||v.name.includes('Samantha')||v.name.includes('Microsoft')))
+    || voices.find(v=>v.lang.startsWith('en')) || null;
+}
+
+function stopAll() {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  currentUtt = null; isPlayingAll = false;
+  document.querySelectorAll('.btn-listen.playing').forEach(b=>b.classList.remove('playing'));
+}
+
+function speak(chId, btn, onEnd) {
+  if(!window.speechSynthesis) return;
+  stopAll();
+  const text = stories[chId];
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang='en-US'; utt.rate=speechRate; utt.pitch=1.05;
+  const v=pickVoice(); if(v) utt.voice=v;
+  if(btn) btn.classList.add('playing');
+  utt.onend  = ()=>{ if(btn) btn.classList.remove('playing'); currentUtt=null; if(onEnd) onEnd(); };
+  utt.onerror= ()=>{ if(btn) btn.classList.remove('playing'); currentUtt=null; };
+  currentUtt = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+// Listen buttons
+document.querySelectorAll('.btn-listen').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const ch=btn.getAttribute('data-ch');
+    if(btn.classList.contains('playing')){ stopAll(); return; }
+    isPlayingAll=false;
+    speak(ch, btn, ()=>{
+      if(!readChapters.has(ch)){
+        readChapters.add(ch);
+        document.getElementById('ch'+ch).classList.add('done');
+        updateProgress();
+      }
+    });
+  });
+});
+
+// Play All
+document.getElementById('playAllBtn').addEventListener('click',()=>{
+  stopAll(); isPlayingAll=true;
+  let keys=['1','2','3','4','5'], idx=0;
+  function next(){
+    if(!isPlayingAll||idx>=keys.length){ isPlayingAll=false; return; }
+    const k=keys[idx];
+    const btn=document.querySelector(`[data-ch="${k}"]`);
+    document.getElementById('ch'+k).scrollIntoView({behavior:'smooth',block:'center'});
+    speak(k, btn, ()=>{
+      if(!readChapters.has(k)){
+        readChapters.add(k);
+        document.getElementById('ch'+k).classList.add('done');
+        updateProgress();
+      }
+      idx++; setTimeout(next,700);
+    });
+  }
+  next();
+});
+
+document.getElementById('stopBtn').addEventListener('click', stopAll);
+
+function updateProgress(){
+  const pct=(readChapters.size/5)*100;
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressLabel').textContent=readChapters.size+' of 5 chapters read'+(readChapters.size===5?' — Fantastic! 🏆':'');
+}
+
+// Vocab pills
+document.querySelectorAll('.vocab-pill').forEach(pill=>{
+  pill.addEventListener('click',()=>{
+    const word=pill.getAttribute('data-word');
+    showMeaning(word);
+    if(window.speechSynthesis){
+      const utt=new SpeechSynthesisUtterance(word);
+      utt.lang='en-US'; utt.rate=0.8;
+      const v=pickVoice(); if(v) utt.voice=v;
+      window.speechSynthesis.speak(utt);
+    }
+  });
+});
+
+if(window.speechSynthesis) window.speechSynthesis.getVoices();
+window.addEventListener('beforeunload',()=>{ if(window.speechSynthesis) window.speechSynthesis.cancel(); });
+</script>
+</body>
+</html>

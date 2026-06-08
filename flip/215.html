@@ -1,0 +1,1598 @@
+<!-- BUKU DIGITAL ASLAN - Hari 15: Perjalanan ke Dunia Mikroskopis — Bakteri dan Virus -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perjalanan ke Dunia Mikroskopis — Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --micro-blue:   #1565c0;
+    --micro-blue2:  #0d47a1;
+    --micro-cyan:   #00b0ff;
+    --micro-neon:   #00e5ff;
+    --micro-purple: #6a1b9a;
+    --micro-purple2:#7b1fa2;
+    --micro-violet: #ab47bc;
+    --micro-green:  #00c853;
+    --micro-green2: #1b5e20;
+    --micro-teal:   #00695c;
+    --micro-red:    #c62828;
+    --micro-pink:   #e91e63;
+    --micro-amber:  #ff8f00;
+    --micro-gold:   #fdd835;
+    --dark-bg:      #04060f;
+    --mid-bg:       #060a18;
+    --surface-bg:   #0a1025;
+    --text-light:   #e3f2fd;
+    --shadow:       0 8px 32px rgba(0,0,0,0.45);
+    --radius:       24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #04060f;
+    color: #e3f2fd;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  body.light-mode {
+    background: #e8eaf6;
+    color: #04060f;
+  }
+
+  /* ─── FLOATING PARTICLES (microbes) ─── */
+  .micro-particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .mp {
+    position: absolute;
+    animation: mpFloat linear infinite;
+    opacity: 0;
+  }
+  @keyframes mpFloat {
+    0%   { opacity: 0; transform: translateY(0) rotate(0deg) scale(1); }
+    15%  { opacity: 0.6; }
+    85%  { opacity: 0.25; }
+    100% { opacity: 0; transform: translateY(-110vh) rotate(360deg) scale(1.2); }
+  }
+  body.light-mode .micro-particles { opacity: 0.3; }
+
+  /* ─── TOP NAV ─── */
+  .top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(4,6,15,0.93);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,229,255,0.15);
+  }
+  body.light-mode .top-nav {
+    background: rgba(232,234,246,0.96);
+    border-color: rgba(21,101,192,0.2);
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--micro-blue2), var(--micro-purple));
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 800;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(13,71,161,0.45);
+  }
+  .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,229,255,0.45); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .book-day-badge {
+    background: linear-gradient(135deg, var(--micro-blue2), var(--micro-purple2));
+    color: white;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  .mode-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,0.16); transform: rotate(20deg); }
+  body.light-mode .mode-btn { background: rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.1); color: #04060f; }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-wrap {
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    z-index: 99;
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--micro-blue), var(--micro-cyan), var(--micro-purple), var(--micro-green));
+    transition: width 0.35s ease;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 8px rgba(0,229,255,0.5);
+  }
+
+  /* ─── MAIN CONTAINER ─── */
+  .book-container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 20px 40px;
+  }
+
+  /* ─── PAGES ─── */
+  .page { display: none; animation: fadeUp 0.5s ease forwards; }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── COVER ─── */
+  .cover-page {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    position: relative;
+  }
+
+  /* ── MICRO SCENE ILLUSTRATION ── */
+  .cover-micro-wrap {
+    width: 240px;
+    height: 230px;
+    position: relative;
+    margin: 0 auto 32px;
+    animation: floatMicro 3.8s ease-in-out infinite;
+  }
+  @keyframes floatMicro {
+    0%,100% { transform: translateY(0) scale(1); }
+    50%     { transform: translateY(-12px) scale(1.02); }
+  }
+
+  /* Microscope CSS */
+  .css-microscope {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+  }
+  .mic-base {
+    width: 80px; height: 14px;
+    background: linear-gradient(180deg, #455a64, #263238);
+    border-radius: 8px;
+    margin: 0 auto;
+  }
+  .mic-arm {
+    width: 14px; height: 80px;
+    background: linear-gradient(90deg, #546e7a, #37474f);
+    border-radius: 6px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .mic-head {
+    width: 50px; height: 30px;
+    background: linear-gradient(135deg, #1565c0, #0d47a1);
+    border-radius: 12px;
+    position: absolute;
+    top: 10px; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 20px rgba(0,229,255,0.5);
+  }
+  .mic-eye {
+    width: 16px; height: 24px;
+    background: linear-gradient(180deg, #263238, #37474f);
+    border-radius: 8px 8px 4px 4px;
+    position: absolute;
+    top: -20px; left: 50%;
+    transform: translateX(-50%);
+  }
+  .mic-lens {
+    width: 20px; height: 28px;
+    background: linear-gradient(180deg, #455a64, #546e7a);
+    border-radius: 4px 4px 10px 10px;
+    position: absolute;
+    bottom: -24px; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 4px 12px rgba(0,229,255,0.6);
+  }
+  .mic-stage {
+    width: 60px; height: 8px;
+    background: linear-gradient(180deg, #607d8b, #455a64);
+    border-radius: 4px;
+    position: absolute;
+    top: 52px; left: 50%;
+    transform: translateX(-50%);
+  }
+  .mic-slide {
+    width: 44px; height: 6px;
+    background: linear-gradient(90deg, rgba(0,229,255,0.6), rgba(0,176,255,0.4));
+    border-radius: 3px;
+    position: absolute;
+    top: 56px; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px rgba(0,229,255,0.5);
+  }
+
+  /* Floating microbes around microscope */
+  .cover-microbe {
+    position: absolute;
+    border-radius: 50%;
+    animation: microbePulse 2s ease-in-out infinite;
+  }
+  @keyframes microbePulse {
+    0%,100% { transform: scale(1) rotate(0deg); opacity: 0.85; }
+    50%     { transform: scale(1.12) rotate(180deg); opacity: 1; }
+  }
+
+  /* Bacteria CSS shapes */
+  .bact-rod {
+    position: absolute;
+    border-radius: 50%;
+    box-shadow: 0 0 12px currentColor;
+  }
+  .bact-spiral {
+    position: absolute;
+    border: 3px solid currentColor;
+    border-radius: 50%;
+    box-shadow: 0 0 8px currentColor;
+  }
+
+  /* Terra micro explorer */
+  .cover-terra-micro {
+    position: absolute;
+    top: 16px; right: 18px;
+    animation: terraMicro 3s ease-in-out infinite;
+  }
+  @keyframes terraMicro {
+    0%,100% { transform: translateY(0) rotate(-5deg) scale(1); }
+    50%     { transform: translateY(-8px) rotate(5deg) scale(1.05); }
+  }
+  .ctm-body {
+    width: 32px; height: 22px;
+    background: linear-gradient(135deg, #1565c0, #0d47a1);
+    border-radius: 10px 10px 5px 5px;
+    position: relative;
+    box-shadow: 0 0 14px rgba(0,229,255,0.6);
+  }
+  .ctm-win {
+    width: 12px; height: 9px;
+    background: radial-gradient(circle, #e3f2fd, #00e5ff);
+    border-radius: 50%;
+    position: absolute;
+    top: 4px; left: 10px;
+  }
+  .ctm-shrink {
+    position: absolute;
+    bottom: -6px; left: 50%;
+    transform: translateX(-50%);
+    width: 8px; height: 8px;
+    background: linear-gradient(180deg, #00e5ff, transparent);
+    clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+    animation: shrinkBeam 0.5s ease-in-out infinite alternate;
+  }
+  @keyframes shrinkBeam {
+    from { opacity: 0.6; transform: translateX(-50%) scaleX(1); }
+    to   { opacity: 1; transform: translateX(-50%) scaleX(0.7); filter: brightness(1.5); }
+  }
+
+  /* Floating micro emojis */
+  .floating-micro {
+    position: absolute;
+    font-size: 22px;
+    animation: microFloat 4s ease-in-out infinite;
+  }
+  .floating-micro:nth-child(1) { top: 5%;  left: 5%;   animation-delay: 0s; }
+  .floating-micro:nth-child(2) { top: 8%;  right: 7%;  animation-delay: -1.5s; }
+  .floating-micro:nth-child(3) { bottom: 28%; left: 4%; animation-delay: -3s; }
+  .floating-micro:nth-child(4) { bottom: 22%; right: 5%; animation-delay: -2s; }
+  @keyframes microFloat {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50%     { transform: translateY(-10px) rotate(15deg); }
+  }
+
+  .cover-badge {
+    background: linear-gradient(135deg, var(--micro-blue2), var(--micro-purple2));
+    color: white;
+    padding: 6px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: inline-block;
+    box-shadow: 0 0 16px rgba(0,229,255,0.3);
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(26px, 5.5vw, 46px);
+    line-height: 1.2;
+    background: linear-gradient(135deg, #00e5ff, #ab47bc, #00c853, #00b0ff, #00e5ff);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease infinite;
+    margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+
+  .cover-subtitle { font-size: clamp(15px, 3vw, 20px); opacity: 0.75; margin-bottom: 24px; }
+
+  .cover-name-badge {
+    background: linear-gradient(135deg, rgba(0,229,255,0.08), rgba(171,71,188,0.08));
+    border: 2px solid rgba(0,229,255,0.22);
+    border-radius: 20px;
+    padding: 16px 32px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+  }
+  .cover-name-badge p { font-size: 14px; opacity: 0.7; margin-bottom: 4px; }
+  .cover-name-badge h2 { font-family: 'Fredoka One', cursive; font-size: clamp(22px,4vw,32px); color: var(--micro-neon); }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+  }
+  body.light-mode .card {
+    background: white;
+    border-color: rgba(21,101,192,0.14);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    color: #04060f;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent, linear-gradient(90deg, var(--micro-blue), var(--micro-cyan)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .card-micro   { --accent: linear-gradient(90deg, #0d47a1, #00b0ff, #00e5ff); }
+  .card-bact    { --accent: linear-gradient(90deg, #1b5e20, #00c853, #69f0ae); }
+  .card-virus   { --accent: linear-gradient(90deg, #6a1b9a, #ab47bc, #e040fb); }
+  .card-immune  { --accent: linear-gradient(90deg, #c62828, #e53935, #ff5252); }
+  .card-good    { --accent: linear-gradient(90deg, #00695c, #26a69a, #69f0ae); }
+  .card-facts   { --accent: linear-gradient(90deg, #0d47a1, #6a1b9a, #00c853); }
+
+  .card-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    display: block;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
+  }
+
+  .card h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(22px, 4vw, 30px);
+    margin-bottom: 8px;
+    color: var(--micro-neon);
+  }
+  body.light-mode .card h2 { color: var(--micro-blue2); }
+
+  .card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 20px 0 10px;
+    color: var(--micro-neon);
+  }
+  body.light-mode .card h3 { color: var(--micro-blue2); }
+
+  .card p {
+    font-size: clamp(15px, 2.5vw, 17px);
+    line-height: 1.85;
+    opacity: 0.9;
+    margin-bottom: 14px;
+  }
+
+  /* ─── ANALOGY BOX ─── */
+  .analogy-box {
+    background: linear-gradient(135deg, rgba(0,229,255,0.06), rgba(171,71,188,0.06));
+    border: 2px dashed rgba(0,229,255,0.25);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .analogy-box::before {
+    content: '💡 Analogi Keren!';
+    position: absolute;
+    top: -12px; left: 20px;
+    background: var(--dark-bg);
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--micro-neon);
+  }
+  body.light-mode .analogy-box { background: linear-gradient(135deg, rgba(0,229,255,0.05), rgba(171,71,188,0.05)); }
+  body.light-mode .analogy-box::before { background: white; }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header { text-align: center; margin-bottom: 32px; padding-top: 20px; }
+  .section-header .tag {
+    display: inline-block;
+    background: rgba(0,229,255,0.10);
+    border: 1px solid rgba(0,229,255,0.28);
+    color: var(--micro-neon);
+    padding: 4px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-header h1 { font-family: 'Fredoka One', cursive; font-size: clamp(24px,5vw,40px); line-height: 1.2; }
+
+  /* ─── SCENE BOX ─── */
+  .scene-box {
+    background: linear-gradient(135deg, rgba(4,6,15,0.95), rgba(13,71,161,0.12));
+    border: 1px solid rgba(0,229,255,0.13);
+    border-radius: 20px;
+    padding: 28px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .scene-box::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 85% 50%, rgba(171,71,188,0.05), transparent 60%);
+    pointer-events: none;
+  }
+  body.light-mode .scene-box {
+    background: linear-gradient(135deg, rgba(232,234,246,0.97), rgba(0,229,255,0.04));
+    border-color: rgba(21,101,192,0.16);
+  }
+  .scene-title {
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--micro-neon);
+    margin-bottom: 12px;
+    opacity: 0.85;
+  }
+  .scene-box p { font-size: clamp(15px,2.5vw,17px); line-height: 1.9; font-style: italic; opacity: 0.9; }
+
+  /* ─── MICROBE COMPARISON ─── */
+  .micro-compare {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .mc-row { }
+  .mc-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 5px;
+  }
+  .mc-bar-bg {
+    background: rgba(0,0,0,0.28);
+    border-radius: 8px;
+    height: 28px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .mc-bar {
+    height: 100%;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    font-size: 12px;
+    font-weight: 900;
+    color: white;
+    white-space: nowrap;
+  }
+
+  /* ─── MICROBE CARD GRID ─── */
+  .microbe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .microbe-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(0,229,255,0.15);
+    border-radius: 18px;
+    padding: 20px 16px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .microbe-card:hover { transform: translateY(-5px); box-shadow: 0 10px 28px rgba(0,229,255,0.12); }
+  body.light-mode .microbe-card { background: #e8eaf6; border-color: rgba(21,101,192,0.18); }
+  .microbe-card .mc-icon { font-size: 48px; display: block; margin-bottom: 10px; }
+  .microbe-card strong { display: block; font-size: 14px; font-weight: 900; margin-bottom: 4px; color: var(--micro-neon); }
+  body.light-mode .microbe-card strong { color: var(--micro-blue2); }
+  .microbe-card p { font-size: 13px; line-height: 1.6; opacity: 0.85; margin: 0; }
+  .mc-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .mc-badge-good { background: rgba(0,200,83,0.12); color: #00c853; border: 1px solid rgba(0,200,83,0.25); }
+  .mc-badge-bad  { background: rgba(198,40,40,0.12); color: #ff5252; border: 1px solid rgba(198,40,40,0.25); }
+  .mc-badge-neutral { background: rgba(0,229,255,0.10); color: var(--micro-neon); border: 1px solid rgba(0,229,255,0.22); }
+
+  /* ─── STEP LIST ─── */
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .sl-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(0,229,255,0.09);
+    transition: transform 0.2s;
+  }
+  .sl-item:hover { transform: translateX(4px); }
+  body.light-mode .sl-item { background: rgba(0,229,255,0.04); border-color: rgba(21,101,192,0.11); }
+  .sl-num {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--micro-blue2), var(--micro-purple2));
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 15px;
+    flex-shrink: 0; margin-top: 2px;
+    box-shadow: 0 0 10px rgba(0,229,255,0.3);
+  }
+  .sl-content strong { display: block; font-size: 16px; font-weight: 900; margin-bottom: 5px; }
+  .sl-content p { font-size: 14px; line-height: 1.65; opacity: 0.88; margin: 0; }
+
+  /* ─── TWO COL ─── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+
+  .mini-card {
+    border-radius: 18px;
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mini-card-cyan    { background: rgba(0,229,255,0.08);   border: 1px solid rgba(0,229,255,0.20); }
+  .mini-card-purple  { background: rgba(171,71,188,0.09);  border: 1px solid rgba(171,71,188,0.22); }
+  .mini-card-green   { background: rgba(0,200,83,0.08);    border: 1px solid rgba(0,200,83,0.20); }
+  .mini-card-red     { background: rgba(198,40,40,0.09);   border: 1px solid rgba(229,57,53,0.20); }
+  .mini-card-blue    { background: rgba(21,101,192,0.09);  border: 1px solid rgba(41,182,246,0.18); }
+  .mini-card-amber   { background: rgba(255,143,0,0.09);   border: 1px solid rgba(255,143,0,0.20); }
+  body.light-mode .mini-card-cyan   { background: rgba(0,229,255,0.05); }
+  body.light-mode .mini-card-purple { background: rgba(171,71,188,0.05); }
+  body.light-mode .mini-card-green  { background: rgba(0,200,83,0.05); }
+  body.light-mode .mini-card-red    { background: rgba(198,40,40,0.05); }
+  body.light-mode .mini-card-blue   { background: rgba(21,101,192,0.05); }
+  body.light-mode .mini-card-amber  { background: rgba(255,143,0,0.05); }
+
+  .mini-card .mini-icon { font-size: 36px; }
+  .mini-card strong { font-size: 15px; font-weight: 900; }
+  .mini-card p { font-size: 14px; line-height: 1.6; opacity: 0.85; margin: 0; }
+
+  /* ─── FACT GRID ─── */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .fact-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .fact-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,229,255,0.10); }
+  body.light-mode .fact-card { background: #e8eaf6; border-color: rgba(21,101,192,0.12); }
+  .fact-card .fact-emoji { font-size: 40px; margin-bottom: 10px; display: block; }
+  .fact-card .fact-number { font-family: 'Fredoka One', cursive; font-size: 20px; color: var(--micro-neon); display: block; margin-bottom: 4px; }
+  body.light-mode .fact-card .fact-number { color: var(--micro-blue2); }
+  .fact-card .fact-label { font-size: 13px; opacity: 0.72; font-weight: 700; }
+
+  /* ─── VIRUS ATTACK VISUAL ─── */
+  .virus-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+    justify-content: center;
+  }
+  .vs-node {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(171,71,188,0.22);
+    border-radius: 16px;
+    padding: 16px 14px;
+    text-align: center;
+    min-width: 110px;
+    flex: 1;
+    max-width: 150px;
+    transition: transform 0.2s;
+  }
+  .vs-node:hover { transform: translateY(-3px); }
+  body.light-mode .vs-node { background: #ede7f6; }
+  .vs-node .vn-icon { font-size: 36px; display: block; margin-bottom: 6px; }
+  .vs-node strong { display: block; font-size: 13px; font-weight: 900; color: var(--micro-violet); margin-bottom: 4px; }
+  body.light-mode .vs-node strong { color: var(--micro-purple); }
+  .vs-node p { font-size: 11px; line-height: 1.5; opacity: 0.75; margin: 0; }
+  .vs-arrow { font-size: 22px; color: var(--micro-violet); flex-shrink: 0; opacity: 0.7; }
+
+  /* ─── IMMUNE ARMY ─── */
+  .immune-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .immune-card {
+    background: rgba(198,40,40,0.07);
+    border: 1px solid rgba(229,57,53,0.18);
+    border-radius: 18px;
+    padding: 18px 16px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .immune-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(229,57,53,0.12); }
+  body.light-mode .immune-card { background: #ffebee; border-color: rgba(198,40,40,0.18); }
+  .immune-card .ic-icon { font-size: 44px; display: block; margin-bottom: 8px; }
+  .immune-card strong { display: block; font-size: 14px; font-weight: 900; margin-bottom: 4px; color: #ff5252; }
+  body.light-mode .immune-card strong { color: var(--micro-red); }
+  .immune-card p { font-size: 13px; line-height: 1.6; opacity: 0.85; margin: 0; }
+
+  /* ─── CHALLENGE ─── */
+  .challenge-card {
+    background: linear-gradient(135deg, rgba(4,6,15,0.92), rgba(13,71,161,0.10));
+    border: 2px solid rgba(0,229,255,0.18);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin: 20px 0;
+  }
+  body.light-mode .challenge-card {
+    background: linear-gradient(135deg, rgba(0,229,255,0.03), rgba(171,71,188,0.03));
+    border-color: rgba(21,101,192,0.18);
+  }
+
+  .challenge-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 24px;
+    color: var(--micro-neon);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  body.light-mode .challenge-title { color: var(--micro-blue2); }
+
+  .challenge-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .challenge-item:last-child { border-bottom: none; }
+  body.light-mode .challenge-item { border-color: rgba(0,0,0,0.05); }
+
+  .challenge-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--micro-blue2), var(--micro-purple2));
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 14px;
+    flex-shrink: 0; margin-top: 2px;
+    box-shadow: 0 0 10px rgba(0,229,255,0.28);
+  }
+  .challenge-item p { font-size: 15px; line-height: 1.7; opacity: 0.9; }
+
+  /* ─── NAV BUTTONS ─── */
+  .nav-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  body.light-mode .nav-btns { border-color: rgba(0,0,0,0.05); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover  { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-prev {
+    background: rgba(255,255,255,0.06);
+    color: inherit;
+    border: 1px solid rgba(255,255,255,0.11);
+  }
+  body.light-mode .btn-prev { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.09); color:#04060f; }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--micro-blue2), var(--micro-purple2));
+    color: white;
+    box-shadow: 0 4px 16px rgba(13,71,161,0.35);
+    flex: 1; justify-content: center;
+    max-width: 300px;
+  }
+  .btn-next:hover { box-shadow: 0 6px 24px rgba(0,229,255,0.45); }
+
+  .btn-done {
+    background: linear-gradient(135deg, var(--micro-blue2), var(--micro-purple2));
+    color: white;
+    box-shadow: 0 4px 16px rgba(13,71,161,0.4);
+    width: 100%; max-width: 400px;
+    margin: 0 auto;
+    justify-content: center;
+    font-size: 17px;
+    padding: 18px 32px;
+  }
+  .btn-done:hover { box-shadow: 0 6px 24px rgba(0,229,255,0.5); }
+
+  .page-indicator { font-size: 13px; opacity: 0.5; font-weight: 700; white-space: nowrap; }
+
+  /* ─── CLOSING ─── */
+  .closing-content { text-align: center; padding: 40px 20px; }
+  .trophy-big {
+    font-size: 100px;
+    display: block; margin: 0 auto 24px;
+    animation: bounceIn 0.8s cubic-bezier(0.36,0.07,0.19,0.97);
+    filter: drop-shadow(0 0 24px rgba(0,229,255,0.55));
+  }
+  @keyframes bounceIn {
+    0%  { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); }
+    100%{ transform: scale(1); opacity: 1; }
+  }
+  .quote-box {
+    background: linear-gradient(135deg, rgba(0,229,255,0.08), rgba(171,71,188,0.08));
+    border-left: 4px solid var(--micro-cyan);
+    border-radius: 0 16px 16px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+    text-align: left;
+  }
+  .quote-box p { font-size: 18px; font-style: italic; line-height: 1.8; }
+  .quote-box cite { font-size: 13px; opacity: 0.6; margin-top: 8px; display: block; font-style: normal; font-weight: 700; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .book-container { padding: 76px 16px 32px; }
+    .card { padding: 24px 20px; }
+    .nav-btns { flex-wrap: wrap; }
+    .btn-next { max-width: 100%; }
+    .fact-grid { grid-template-columns: 1fr 1fr; }
+    .microbe-grid { grid-template-columns: 1fr 1fr; }
+    .immune-grid { grid-template-columns: 1fr 1fr; }
+    .cover-micro-wrap { width: 200px; height: 200px; }
+    .virus-step { flex-direction: column; align-items: stretch; }
+    .vs-arrow { transform: rotate(90deg); margin: 0 auto; }
+  }
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .book-container { padding: 80px 32px 40px; }
+    .card p { font-size: 18px; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.25); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- MICRO PARTICLES -->
+<div class="micro-particles" id="microParticles"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+  <div class="nav-right">
+    <span class="book-day-badge">🔬 Hari ke-15</span>
+    <button class="mode-btn" id="modeBtn" title="Ganti Mode">☀️</button>
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<!-- ═══════════════ BOOK CONTAINER ═══════════════ -->
+<div class="book-container">
+
+  <!-- ── PAGE 1: COVER ── -->
+  <div class="page active" id="page-1">
+    <div class="cover-page">
+      <span class="floating-micro">🦠</span>
+      <span class="floating-micro">🔬</span>
+      <span class="floating-micro">💊</span>
+      <span class="floating-micro">🧬</span>
+
+      <!-- Microscope + Microbes illustration -->
+      <div class="cover-micro-wrap">
+
+        <!-- Floating microbes around scene -->
+        <div class="cover-microbe" style="width:18px;height:18px;background:#00e5ff;top:10px;left:28px;animation-delay:0s;box-shadow:0 0 14px #00e5ff;"></div>
+        <div class="cover-microbe" style="width:14px;height:14px;background:#ab47bc;top:30px;left:14px;animation-delay:-0.8s;box-shadow:0 0 10px #ab47bc;"></div>
+        <div class="cover-microbe" style="width:20px;height:20px;background:#00c853;top:50px;right:20px;animation-delay:-1.6s;box-shadow:0 0 14px #00c853;"></div>
+        <div class="cover-microbe" style="width:12px;height:12px;background:#ff5252;top:20px;right:45px;animation-delay:-2.4s;box-shadow:0 0 8px #ff5252;"></div>
+        <div class="cover-microbe" style="width:16px;height:24px;border-radius:40%;background:#fdd835;top:80px;left:8px;animation-delay:-1.2s;box-shadow:0 0 10px #fdd835;"></div>
+        <div class="bact-rod" style="width:28px;height:12px;background:#00b0ff;color:#00b0ff;top:95px;right:12px;border-radius:50%;box-shadow:0 0 10px #00b0ff;"></div>
+
+        <!-- Terra Explorer mini (shrinking) -->
+        <div class="cover-terra-micro">
+          <div class="ctm-body">
+            <div class="ctm-win"></div>
+            <div class="ctm-shrink"></div>
+          </div>
+        </div>
+
+        <!-- Microscope -->
+        <div class="css-microscope">
+          <div class="mic-arm">
+            <div class="mic-head">
+              <div class="mic-eye"></div>
+              <div class="mic-lens"></div>
+            </div>
+            <div class="mic-stage"></div>
+            <div class="mic-slide"></div>
+          </div>
+          <div class="mic-base"></div>
+        </div>
+
+        <!-- Glowing dots on slide -->
+        <div style="position:absolute;bottom:26px;left:50%;transform:translateX(-50%);display:flex;gap:5px;">
+          <div style="width:7px;height:7px;background:#00e5ff;border-radius:50%;box-shadow:0 0 8px #00e5ff;animation:microbePulse 1.5s ease-in-out infinite;"></div>
+          <div style="width:5px;height:5px;background:#ab47bc;border-radius:50%;box-shadow:0 0 6px #ab47bc;animation:microbePulse 2s ease-in-out infinite;animation-delay:-0.7s;"></div>
+          <div style="width:8px;height:8px;background:#00c853;border-radius:50%;box-shadow:0 0 10px #00c853;animation:microbePulse 1.8s ease-in-out infinite;animation-delay:-1.2s;"></div>
+        </div>
+      </div>
+
+      <div class="cover-badge">📚 Buku Sains Petualangan • Hari ke-15</div>
+      <h1 class="cover-title">Perjalanan ke Dunia<br>Mikroskopis!</h1>
+      <p class="cover-subtitle">🦠 Bakteri & Virus — Dunia Tak Kasat Mata yang Luar Biasa!</p>
+
+      <div class="cover-name-badge">
+        <p>Petualangan sains milik:</p>
+        <h2>🌟 Aslan 🌟</h2>
+        <p style="font-size:13px;margin-top:4px;">Penjelajah Dunia Mikro • Kelas 3 SD</p>
+      </div>
+
+      <div class="nav-btns" style="justify-content:center;border:none;padding-top:0;">
+        <button class="btn btn-next" onclick="goPage(2)" style="max-width:290px;font-size:17px;padding:16px 32px;">
+          🔬 Masuk ke Dunia Mikro!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE 2: PENGANTAR ── -->
+  <div class="page" id="page-2">
+    <div class="section-header">
+      <span class="tag">✉️ Hari Kelima Belas!</span>
+      <h1>Hei Aslan, Siap Mengecil<br>dan Masuk ke Dunia Mikro? 🔬</h1>
+    </div>
+
+    <div class="card card-micro">
+      <span class="card-icon">🔬</span>
+      <p>Hei, <strong>Aslan</strong>! Kemarin kamu bertemu hewan-hewan raksasa yang menakjubkan — dari paus biru yang lebih besar dari dinosaurus hingga komodo yang hanya ada di Indonesia. Kamu benar-benar penjelajah alam yang luar biasa!</p>
+      <p>Hari ini petualanganmu akan bergerak ke arah yang <strong>berlawanan total!</strong> Bukan ke yang besar, tapi ke yang paling kecil — makhluk yang tak bisa dilihat dengan mata biasa, tapi justru memiliki pengaruh terbesar di dunia! Kita akan menyusut ribuan kali hingga bisa masuk ke <strong>dunia mikroskopis</strong> dan bertemu langsung dengan bakteri dan virus. 🦠</p>
+      <p>Terra Explorer hari ini dilengkapi dengan <strong>teknologi nano-shrink</strong> — mesin penyusut ajaib yang bisa mengecilkan kapsul kita sampai ukuran bakteri! Siap memasuki dunia yang tak kasat mata tapi menakjubkan? 🚀</p>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Pesan Dari Terra Explorer</p>
+      <p>"Aslan! Terra Explorer mengaktifkan Nano-Shrink Engine! Bersiap... 3... 2... 1... SHRINK! Terra Explorer menyusut dari ukuran kapsul selam menjadi sepersejuta milimeter! Dunia di sekitar kita berubah drastis — sel-sel kulit yang tadinya tak terlihat kini tampak seperti batu bata raksasa! Air yang kita lewati terasa seperti lautan kental. Dan di depan kita... ada ribuan makhluk kecil melayang ke sana kemari. Beberapa bulat seperti bola, ada yang panjang seperti tongkat, ada yang bercabang seperti bintang. Selamat datang di dunia yang paling padat penduduknya di Bumi — dunia MIKROBA! 🦠"</p>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--micro-blue2),var(--micro-purple2));">
+      <h3>🗺️ Yang Akan Kita Pelajari Hari Ini</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(13,71,161,0.12);border-radius:14px;">
+          <span style="font-size:28px;">🔬</span>
+          <div><strong>Dunia yang Tak Terlihat</strong><p style="font-size:13px;margin:0;opacity:0.7;">Apa itu mikroskop dan mengapa dunia mikro penting?</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(0,200,83,0.10);border-radius:14px;">
+          <span style="font-size:28px;">🦠</span>
+          <div><strong>Bakteri: Teman dan Musuh</strong><p style="font-size:13px;margin:0;opacity:0.7;">Bentuk, ukuran, dan siapa saja bakteri yang baik dan jahat!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(171,71,188,0.10);border-radius:14px;">
+          <span style="font-size:28px;">😷</span>
+          <div><strong>Virus: Makhluk Misterius</strong><p style="font-size:13px;margin:0;opacity:0.7;">Bagaimana virus bekerja dan kenapa beda dari bakteri!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(198,40,40,0.10);border-radius:14px;">
+          <span style="font-size:28px;">🛡️</span>
+          <div><strong>Sistem Imun: Tentara Tubuhmu!</strong><p style="font-size:13px;margin:0;opacity:0.7;">Sel darah putih yang heroik melawan penyerbu!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(0,137,123,0.10);border-radius:14px;">
+          <span style="font-size:28px;">💊</span>
+          <div><strong>Fakta Keren Dunia Mikro</strong><p style="font-size:13px;margin:0;opacity:0.7;">Hal-hal mengejutkan yang bikin melongo!</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+      <span class="page-indicator">Halaman 2 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(3)">Dunia yang Tak Terlihat! 🔬 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 3: DUNIA MIKROSKOPIS ── -->
+  <div class="page" id="page-3">
+    <div class="section-header">
+      <span class="tag">🔬 Bab Satu</span>
+      <h1>Dunia yang Tak Terlihat:<br><span style="color:var(--micro-neon)">Lebih Ramai dari Kota Mana Pun!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Di Dalam Dunia Mikro!</p>
+      <p>"Aslan! Sungguh luar biasa di sini! Kalau kita berdiri di punggung tanganmu sendiri, kita akan melihat ribuan 'kota kecil' penuh kehidupan. Di satu sentimeter persegi kulitmu saja ada sekitar 10.000 bakteri yang hidup damai! Mereka bukan musuh — mereka adalah penghuni tetap yang sudah ada sejak kamu lahir. Terra Explorer mengaktifkan sensor identifikasi... ada E. coli yang baik di ususmu, ada Lactobacillus di yogurt yang kamu makan tadi, dan ada... tunggu, sensor mendeteksi sesuatu yang lebih kecil lagi. Bukan bakteri... ini VIRUS! Bentuknya seperti pesawat luar angkasa aneh dengan kaki-kaki runcing! 😱"</p>
+    </div>
+
+    <div class="card card-micro">
+      <span class="card-icon">🔭</span>
+      <h2>Mikroskop: Jendela ke Dunia Tersembunyi!</h2>
+      <p>Mata manusia hanya bisa melihat benda yang ukurannya minimal 0,1 mm. Bakteri berukuran sekitar 0,001 mm (1 mikrometer), sedangkan virus jauh lebih kecil lagi — sekitar 0,0001 mm (100 nanometer). Tanpa mikroskop, dunia ini sepenuhnya tidak terlihat!</p>
+
+      <div class="analogy-box">
+        <p>Bayangkan kamu mencoba melihat sebutir pasir yang ditaruh di atas lapangan sepak bola 🏟️ — kamu tidak akan bisa melihatnya dari sudut lapangan! Nah, bakteri terhadap manusia perbandingannya sama seperti sebutir pasir di lapangan sepak bola itu. Dan virus bahkan 10× lebih kecil lagi dari bakteri! Itulah kenapa kita butuh mikroskop canggih. 🔬</p>
+      </div>
+
+      <h3>📏 Perbandingan Ukuran Dunia Mikro</h3>
+      <div class="micro-compare">
+        <div class="mc-row">
+          <div class="mc-label"><span>👁️ Batas mata manusia</span><span style="color:#b0bec5;">0,1 mm (100 mikrometer)</span></div>
+          <div class="mc-bar-bg"><div class="mc-bar" style="width:100%;background:linear-gradient(90deg,#455a64,#607d8b);">Ini yang bisa kita lihat tanpa alat</div></div>
+        </div>
+        <div class="mc-row">
+          <div class="mc-label"><span>🦠 Sel darah merah manusia</span><span style="color:#ef9a9a;">8 mikrometer</span></div>
+          <div class="mc-bar-bg"><div class="mc-bar" style="width:72%;background:linear-gradient(90deg,#c62828,#e53935);">Butuh mikroskop cahaya</div></div>
+        </div>
+        <div class="mc-row">
+          <div class="mc-label"><span>🦠 Bakteri (rata-rata)</span><span style="color:#80cbc4;">1–10 mikrometer</span></div>
+          <div class="mc-bar-bg"><div class="mc-bar" style="width:50%;background:linear-gradient(90deg,#00695c,#00897b);">Butuh mikroskop cahaya kuat</div></div>
+        </div>
+        <div class="mc-row">
+          <div class="mc-label"><span>😷 Virus Influenza</span><span style="color:#ce93d8;">0,1 mikrometer</span></div>
+          <div class="mc-bar-bg"><div class="mc-bar" style="width:28%;background:linear-gradient(90deg,#6a1b9a,#ab47bc);">Butuh mikroskop elektron!</div></div>
+        </div>
+        <div class="mc-row">
+          <div class="mc-label"><span>🧬 Virus SARS-CoV-2</span><span style="color:#80deea;font-family:'Fredoka One',cursive;">0,12 mikrometer</span></div>
+          <div class="mc-bar-bg" style="border-color:rgba(0,229,255,0.2);"><div class="mc-bar" style="width:14%;background:linear-gradient(90deg,#0d47a1,#1565c0,#00b0ff);">10× lebih kecil dari bakteri!</div></div>
+        </div>
+      </div>
+
+      <h3>🌍 Berapa Banyak Mikroba di Bumi?</h3>
+      <div class="two-col">
+        <div class="mini-card mini-card-cyan">
+          <span class="mini-icon">🔢</span>
+          <strong>Sel Mikroba Lebih Banyak dari Sel Tubuhmu!</strong>
+          <p>Di dalam dan di atas tubuh manusia ada sekitar <strong>38 triliun bakteri</strong> — hampir sama dengan jumlah sel tubuhmu sendiri (30 triliun)! Kamu tidak pernah sendirian. 🤝</p>
+        </div>
+        <div class="mini-card mini-card-purple">
+          <span class="mini-icon">🌱</span>
+          <strong>Mikroba Ada di Mana-Mana!</strong>
+          <p>Dari puncak gunung Everest hingga dasar Palung Mariana. Dari kutub yang membeku hingga mata air panas bersuhu 120°C. Tidak ada tempat di Bumi yang bebas mikroba! 🌋</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+      <span class="page-indicator">Halaman 3 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(4)">Mengenal Bakteri! 🦠 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 4: BAKTERI ── -->
+  <div class="page" id="page-4">
+    <div class="section-header">
+      <span class="tag">🦠 Bab Dua</span>
+      <h1>Bakteri:<br><span style="color:var(--micro-neon)">Teman Setia yang Sering Disalahpahami!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Di Kebun Bakteri!</p>
+      <p>"Aslan! Terra Explorer mendarat di permukaan dalam ususmu — salah satu tempat terpadat di tubuh manusia! Di sini ada sekitar 100 triliun bakteri dari 500 spesies berbeda. Mereka hidup rukun, saling berbagi makanan, dan membantu tubuhmu mencerna makanan. Ini bukan penyerbu — ini adalah PENGHUNI TETAP yang sudah tinggal di sini sejak kamu masih bayi! Tapi sensor mendeteksi ada juga beberapa bakteri yang berbeda bentuk dan bergerak lebih agresif... Ini yang perlu kita waspadai. Ayo kita pelajari perbedaannya!"</p>
+    </div>
+
+    <div class="card card-bact">
+      <span class="card-icon">🦠</span>
+      <h2>Bakteri: Makhluk Hidup Tertua di Bumi!</h2>
+      <p>Bakteri adalah makhluk hidup <strong>bersel satu</strong> yang sudah ada di Bumi sejak 3,5 miliar tahun lalu — jauh sebelum dinosaurus, sebelum tumbuhan, bahkan sebelum hewan pertama muncul! Mereka adalah nenek moyang semua kehidupan di Bumi.</p>
+      <p>Tidak seperti sel tubuh kita yang punya inti sel (nukleus), bakteri adalah sel <strong>prokariotik</strong> — DNA-nya "melayang bebas" di dalam sel tanpa kantung pelindung. Tapi jangan anggap remeh — dalam kesederhanaannya, bakteri adalah makhluk paling sukses di planet ini!</p>
+
+      <h3>🔷 Tiga Bentuk Utama Bakteri</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin:16px 0;">
+        <div style="background:rgba(0,229,255,0.07);border:1px solid rgba(0,229,255,0.2);border-radius:16px;padding:20px;text-align:center;">
+          <div style="width:50px;height:50px;background:linear-gradient(135deg,#00b0ff,#0d47a1);border-radius:50%;margin:0 auto 12px;box-shadow:0 0 16px rgba(0,176,255,0.5);"></div>
+          <strong style="display:block;font-size:14px;font-weight:900;margin-bottom:6px;color:#00e5ff;">Coccus (Bulat)</strong>
+          <p style="font-size:13px;line-height:1.6;opacity:0.85;">Berbentuk bola. Contoh: Streptococcus (radang tenggorokan), Staphylococcus (infeksi kulit), Pneumococcus (pneumonia).</p>
+        </div>
+        <div style="background:rgba(0,200,83,0.08);border:1px solid rgba(0,200,83,0.2);border-radius:16px;padding:20px;text-align:center;">
+          <div style="width:60px;height:20px;background:linear-gradient(90deg,#00c853,#1b5e20);border-radius:50%;margin:0 auto 12px;box-shadow:0 0 14px rgba(0,200,83,0.5);"></div>
+          <strong style="display:block;font-size:14px;font-weight:900;margin-bottom:6px;color:#00c853;">Bacillus (Batang)</strong>
+          <p style="font-size:13px;line-height:1.6;opacity:0.85;">Berbentuk tongkat atau batang. Contoh: E. coli (usus), Lactobacillus (yogurt), Salmonella (keracunan makanan).</p>
+        </div>
+        <div style="background:rgba(171,71,188,0.08);border:1px solid rgba(171,71,188,0.2);border-radius:16px;padding:20px;text-align:center;">
+          <div style="width:54px;height:20px;border:3px solid #ab47bc;border-radius:50%;margin:0 auto 12px;box-shadow:0 0 14px rgba(171,71,188,0.5);"></div>
+          <strong style="display:block;font-size:14px;font-weight:900;margin-bottom:6px;color:#ab47bc;">Spirillum (Spiral)</strong>
+          <p style="font-size:13px;line-height:1.6;opacity:0.85;">Berbentuk spiral atau koma. Contoh: Vibrio cholerae (kolera), Helicobacter pylori (tukak lambung), Treponema (sifilis).</p>
+        </div>
+      </div>
+
+      <h3>😇 Bakteri Baik vs 😈 Bakteri Jahat</h3>
+      <div class="microbe-grid">
+        <div class="microbe-card">
+          <span class="mc-icon">🥛</span>
+          <strong>Lactobacillus</strong>
+          <p>Ada di yogurt, keju, dan tempe! Membantu pencernaan, memproduksi vitamin B12, dan melindungi usus dari bakteri jahat.</p>
+          <span class="mc-badge mc-badge-good">😇 Bakteri Baik</span>
+        </div>
+        <div class="microbe-card">
+          <span class="mc-icon">🌿</span>
+          <strong>Rhizobium</strong>
+          <p>Hidup di akar tanaman kacang-kacangan! Mengubah nitrogen dari udara menjadi pupuk alami. Petani terbaik di alam!</p>
+          <span class="mc-badge mc-badge-good">🌱 Pahlawan Pertanian</span>
+        </div>
+        <div class="microbe-card">
+          <span class="mc-icon">🫀</span>
+          <strong>Bifidobacterium</strong>
+          <p>Penghuni setia usus besar! Memperkuat sistem imun, mencegah diare, dan menjaga keseimbangan "ekosistem" ususmu.</p>
+          <span class="mc-badge mc-badge-good">💪 Penjaga Usus</span>
+        </div>
+        <div class="microbe-card">
+          <span class="mc-icon">🤒</span>
+          <strong>Streptococcus pyogenes</strong>
+          <p>Penyebab radang tenggorokan dan demam berdarah! Bisa menyebar lewat percikan air liur saat batuk atau bersin.</p>
+          <span class="mc-badge mc-badge-bad">😈 Bakteri Jahat</span>
+        </div>
+        <div class="microbe-card">
+          <span class="mc-icon">🤢</span>
+          <strong>Salmonella</strong>
+          <p>Penyebab keracunan makanan! Sering ada di telur dan daging mentah yang tidak dimasak sempurna. Gejalanya: mual, muntah, diare.</p>
+          <span class="mc-badge mc-badge-bad">🍳 Hati-Hati Makanan!</span>
+        </div>
+        <div class="microbe-card">
+          <span class="mc-icon">🫁</span>
+          <strong>Mycobacterium tuberculosis</strong>
+          <p>Penyebab TBC (tuberculosis)! Menyerang paru-paru dan menular lewat udara. Bisa dicegah dengan vaksin BCG yang diberikan saat bayi.</p>
+          <span class="mc-badge mc-badge-bad">🚨 Sangat Berbahaya</span>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Bayangkan tubuhmu adalah sebuah negara besar 🏙️. Kebanyakan penduduknya (bakteri baik) adalah warga baik yang bekerja membantu negaramu — membersihkan limbah, membuat makanan, menjaga keamanan. Tapi sesekali ada penyusup jahat yang masuk. Tugas sistem imunmu adalah mengenali dan mengusir penyusup itu, sementara membiarkan penduduk baik tetap bekerja! 🛡️</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+      <span class="page-indicator">Halaman 4 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(5)">Mengenal Virus! 😷 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 5: VIRUS ── -->
+  <div class="page" id="page-5">
+    <div class="section-header">
+      <span class="tag">😷 Bab Tiga</span>
+      <h1>Virus:<br><span style="color:var(--micro-violet)">Makhluk Paling Misterius di Bumi!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Bertemu Virus Flu!</p>
+      <p>"Aslan! Terra Explorer baru saja hampir ditabrak sesuatu yang aneh! Bentuknya seperti bola berduri — permukaannya penuh tonjolan runcing seperti mahkota, berwarna keabu-abuan dengan kilap metalik. Sensor mengidentifikasi: ini adalah virus Influenza — penyebab flu! Ukurannya 100 nanometer — 10× lebih kecil dari bakteri terkecil. Dan yang paling mengejutkan: virus ini bukan benar-benar 'hidup' dalam arti biasa! Ia tidak makan, tidak bernapas, tidak bergerak sendiri. Ia hanya satu paket instruksi genetik yang menunggu untuk 'membajak' sel hidup! 😱"</p>
+    </div>
+
+    <div class="card card-virus">
+      <span class="card-icon">🦠</span>
+      <h2>Virus: Bukan Hidup, Bukan Mati — Tapi Berbahaya!</h2>
+      <p>Virus adalah entitas paling aneh di alam. Para ilmuwan bahkan masih berdebat apakah virus bisa disebut "makhluk hidup" — karena virus <strong>tidak bisa melakukan fungsi kehidupan apapun sendirian</strong>. Virus tidak makan, tidak bernapas, tidak tumbuh, tidak bergerak sendiri.</p>
+      <p>Yang dimiliki virus hanyalah satu hal: <strong>informasi genetik (DNA atau RNA)</strong> yang terbungkus dalam lapisan protein bernama kapsid. Dan satu kemampuan yang mengerikan: <strong>membajak sel hidup</strong> untuk memperbanyak diri!</p>
+
+      <h3>⚡ Bagaimana Virus Flu Menyerang Tubuhmu?</h3>
+      <div class="virus-step">
+        <div class="vs-node">
+          <span class="vn-icon">😷</span>
+          <strong>1. Masuk</strong>
+          <p>Virus terhirup lewat hidung saat seseorang bersin. Ribuan virus melayang di udara!</p>
+        </div>
+        <div class="vs-arrow">→</div>
+        <div class="vs-node">
+          <span class="vn-icon">🔓</span>
+          <strong>2. Menempel</strong>
+          <p>Virus menempel ke sel hidung/tenggorokan menggunakan "kunci" protein di permukaannya.</p>
+        </div>
+        <div class="vs-arrow">→</div>
+        <div class="vs-node">
+          <span class="vn-icon">💉</span>
+          <strong>3. Menyuntik</strong>
+          <p>Virus menyuntikkan DNA/RNA-nya ke dalam sel. Sel menjadi "pabrik virus" yang dibajak!</p>
+        </div>
+        <div class="vs-arrow">→</div>
+        <div class="vs-node">
+          <span class="vn-icon">🏭</span>
+          <strong>4. Memperbanyak</strong>
+          <p>Sel yang dibajak membuat ribuan salinan virus baru menggunakan mesin selnya sendiri.</p>
+        </div>
+        <div class="vs-arrow">→</div>
+        <div class="vs-node">
+          <span class="vn-icon">💥</span>
+          <strong>5. Menyebar</strong>
+          <p>Sel meledak dan melepas ribuan virus baru yang menyerang sel-sel lain. Kamu mulai sakit!</p>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Bayangkan virus seperti email berisi virus komputer! 💻 Email itu sendiri tidak bisa berbuat apa-apa. Tapi begitu kamu membukanya (sel membiarkan virus masuk), program jahat di dalamnya mengambil alih komputermu dan membuat salinan dirinya sendiri sampai komputer macet total. Virus biologis bekerja persis seperti itu — tapi di dalam sel tubuhmu! 🖥️</p>
+      </div>
+
+      <h3>🦠 Perbedaan Kunci: Bakteri vs Virus</h3>
+      <div style="overflow-x:auto;margin:16px 0;">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <thead>
+            <tr style="background:rgba(0,229,255,0.1);border-bottom:2px solid rgba(0,229,255,0.2);">
+              <th style="padding:12px 14px;text-align:left;font-weight:900;color:var(--micro-neon);">Ciri</th>
+              <th style="padding:12px 14px;text-align:center;font-weight:900;color:#00c853;">🦠 Bakteri</th>
+              <th style="padding:12px 14px;text-align:center;font-weight:900;color:#ab47bc;">😷 Virus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td style="padding:10px 14px;font-weight:700;">Ukuran</td>
+              <td style="padding:10px 14px;text-align:center;opacity:0.85;">1–10 mikrometer</td>
+              <td style="padding:10px 14px;text-align:center;opacity:0.85;">0,02–0,3 mikrometer</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);">
+              <td style="padding:10px 14px;font-weight:700;">Sel</td>
+              <td style="padding:10px 14px;text-align:center;opacity:0.85;">✅ Punya sel sendiri</td>
+              <td style="padding:10px 14px;text-align:center;opacity:0.85;">❌ Tidak punya sel</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td style="padding:10px 14px;font-weight:700;">Reproduksi</td>
+              <td style="padding:10px 14px;text-align:center;opacity:0.85;">Membelah diri sendiri</td>
+              <td style="padding:10px 14px;text-align:center;opacity:0.85;">Butuh sel inang</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);">
+              <td style="padding:10px 14px;font-weight:700;">Diobati dengan</td>
+              <td style="padding:10px 14px;text-align:center;opacity:0.85;">✅ Antibiotik</td>
+              <td style="padding:10px 14px;text-align:center;opacity:0.85;">❌ Antibiotik tidak mempan!</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;font-weight:700;">Pencegahan</td>
+              <td style="padding:10px 14px;text-align:center;opacity:0.85;">Kebersihan + antibiotik</td>
+              <td style="padding:10px 14px;text-align:center;opacity:0.85;">Vaksin + sistem imun</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="background:rgba(198,40,40,0.08);border:1px solid rgba(229,57,53,0.2);border-radius:16px;padding:18px 20px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">⚠️ <strong>Penting Banget!</strong> Antibiotik HANYA bekerja untuk bakteri — tidak untuk virus! Minum antibiotik saat terkena flu virus justru berbahaya karena bisa membunuh bakteri baik di ususmu dan membuat bakteri jahat menjadi <strong>kebal</strong> (resisten) terhadap antibiotik. Selalu ikuti saran dokter! 👨‍⚕️</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+      <span class="page-indicator">Halaman 5 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(6)">Tentara Tubuhmu! 🛡️ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 6: SISTEM IMUN ── -->
+  <div class="page" id="page-6">
+    <div class="section-header">
+      <span class="tag">🛡️ Bab Empat</span>
+      <h1>Sistem Imun:<br><span style="color:#ff5252">Tentara Heroik di Dalam Tubuhmu!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Di Medan Pertempuran!</p>
+      <p>"Aslan! Alarm Terra Explorer berbunyi! Sensor mendeteksi 'pertempuran' di sekitar kita! Ribuan sel darah putih berbagai jenis sedang bergerak cepat menuju virus influenza yang baru saja masuk! Ada yang berbentuk bulat besar seperti tank — mereka 'memakan' musuh bulat-bulat. Ada yang lebih kecil tapi lebih cerdas — mereka melepaskan 'peluru' yang menempel tepat di target. Dan ada sel 'mata-mata' yang mengingat semua musuh yang pernah datang untuk persiapan serangan berikutnya! Ini pertempuran paling seru yang pernah kita saksikan! ⚔️"</p>
+    </div>
+
+    <div class="card card-immune">
+      <span class="card-icon">🛡️</span>
+      <h2>Sistem Imun: Tentara Terbaik yang Ada!</h2>
+      <p>Di dalam darahmu, ada lebih dari <strong>35 miliar sel darah putih</strong> yang bertugas 24 jam sehari, 7 hari seminggu, tanpa libur! Mereka adalah tentara, detektif, dan memori tubuhmu — selalu siap menghadapi penyerbu dari mana pun!</p>
+
+      <div class="immune-grid">
+        <div class="immune-card">
+          <span class="ic-icon">🍽️</span>
+          <strong>Neutrofil — "Pemakan"</strong>
+          <p>Tentara terdepan! Langsung menyerbu dan memakan bakteri serta puing-puing sel. Ada sekitar 5 miliar neutrofil baru diproduksi sumsum tulang setiap jam! Mereka hidup hanya beberapa jam tapi sangat ganas.</p>
+        </div>
+        <div class="immune-card">
+          <span class="ic-icon">🐲</span>
+          <strong>Makrofag — "Raksasa Pemangsa"</strong>
+          <p>Nama artinya "pemakan besar"! Bisa menelan patogen yang jauh lebih besar dari dirinya. Juga membersihkan puing-puing sel yang sudah mati dan memanggil bantuan sel imun lainnya lewat sinyal kimia.</p>
+        </div>
+        <div class="immune-card">
+          <span class="ic-icon">🎯</span>
+          <strong>Sel B — "Pabrik Antibodi"</strong>
+          <p>Spesialis yang membuat antibodi — protein berbentuk Y yang menempel persis ke musuh tertentu! Satu sel B bisa membuat 2.000 antibodi per detik. Antibodi menandai musuh supaya mudah dihancurkan.</p>
+        </div>
+        <div class="immune-card">
+          <span class="ic-icon">⚔️</span>
+          <strong>Sel T — "Komando Khusus"</strong>
+          <p>Ada dua jenis: Sel T Pembantu yang mengatur strategi perang, dan Sel T Pembunuh yang langsung menghancurkan sel yang sudah terinfeksi virus. Seperti pasukan elite yang bekerja dengan sangat presisi!</p>
+        </div>
+        <div class="immune-card">
+          <span class="ic-icon">💾</span>
+          <strong>Sel Memori — "Mata-Mata Cerdas"</strong>
+          <p>Setelah perang selesai, sel memori menyimpan "foto" musuh yang sudah kalah. Jika musuh yang sama datang lagi, tubuhmu bereaksi JAUH lebih cepat — seringkali musuh dikalahkan sebelum kamu sempat merasa sakit!</p>
+        </div>
+        <div class="immune-card">
+          <span class="ic-icon">🔫</span>
+          <strong>Sel NK — "Pembunuh Alami"</strong>
+          <p>Natural Killer Cell — tidak butuh instruksi, langsung membunuh sel yang terinfeksi virus atau sel kanker! Mereka mendeteksi perubahan di permukaan sel sakit dan langsung menyerang tanpa komando.</p>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Sistem imunmu seperti sebuah angkatan bersenjata lengkap! 🪖 Ada polisi (neutrofil) yang patroli terus-menerus, tentara khusus (sel T) yang menghancurkan target tepat sasaran, pabrik senjata (sel B membuat antibodi), intelijen (sel memori) yang mengingat semua musuh, dan pasukan cadangan (sel NK) yang bisa bergerak sendiri. Semua bekerja sama — dan mereka melakukan ini di dalam tubuhmu setiap saat! 🏆</p>
+      </div>
+
+      <h3>💉 Vaksin: Cara Curang yang Brilian!</h3>
+      <p>Vaksin adalah cara cerdas untuk "melatih" sistem imunmu tanpa harus benar-benar sakit! Vaksin menyuntikkan virus/bakteri yang sudah dilemahkan atau hanya bagian kecilnya. Sistem imun "berlatih melawan" penyerbu palsu ini dan membuat sel memori. Ketika virus asli datang — tubuhmu sudah siap!</p>
+
+      <div style="background:rgba(0,200,83,0.08);border:1px solid rgba(0,200,83,0.22);border-radius:16px;padding:18px 20px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🏆 <strong>Rekor Vaksin:</strong> Berkat vaksin cacar, penyakit yang pernah membunuh 300 juta orang di abad ke-20 ini kini sudah <strong>dinyatakan punah total</strong> pada tahun 1980! Ini adalah kemenangan terbesar ilmu kedokteran dalam sejarah manusia. Vaksin yang kamu terima waktu kecil sudah menyelamatkan jutaan nyawa! 💉</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+      <span class="page-indicator">Halaman 6 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(7)">Fakta Keren Dunia Mikro! 🤯 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 7: FAKTA KEREN ── -->
+  <div class="page" id="page-7">
+    <div class="section-header">
+      <span class="tag">🤯 Bab Lima</span>
+      <h1>Fakta Keren Dunia Mikro<br><span style="color:var(--micro-neon)">yang Bikin Otakmu Meledak!</span></h1>
+    </div>
+
+    <div class="card card-facts">
+      <span class="card-icon">🤯</span>
+      <h2>Rekor-Rekor Mengejutkan Dunia Mikroskopis!</h2>
+      <div class="fact-grid">
+        <div class="fact-card">
+          <span class="fact-emoji">🦠</span>
+          <span class="fact-number">38 triliun</span>
+          <span class="fact-label">Jumlah bakteri di dalam tubuhmu — hampir sama dengan jumlah sel tubuhmu sendiri!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">⚡</span>
+          <span class="fact-number">20 menit</span>
+          <span class="fact-label">Waktu yang dibutuhkan bakteri untuk membelah diri — dalam 6 jam, 1 bakteri jadi 250.000!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">💊</span>
+          <span class="fact-number">1928</span>
+          <span class="fact-label">Tahun Alexander Fleming menemukan penisilin — antibiotik pertama — dari jamur yang tumbuh di piringnya!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🧬</span>
+          <span class="fact-number">8%</span>
+          <span class="fact-label">Porsi DNA manusia yang berasal dari virus kuno yang telah menyatu dengan gen kita jutaan tahun lalu!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌊</span>
+          <span class="fact-number">1 juta</span>
+          <span class="fact-label">Jumlah virus per mililiter air laut! Lautan penuh virus — tapi kebanyakan hanya menyerang bakteri laut.</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">👄</span>
+          <span class="fact-number">700 spesies</span>
+          <span class="fact-label">Jumlah spesies bakteri berbeda yang hidup di dalam mulut manusia. Sikat gigi itu penting banget! 🪥</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-good">
+      <span class="card-icon">💚</span>
+      <h2>Bakteri dan Virus yang Justru Berguna!</h2>
+      <p>Tidak semua mikro-organisme jahat! Banyak yang justru sangat berguna untuk kehidupan manusia dan ekosistem Bumi:</p>
+
+      <div class="step-list">
+        <div class="sl-item">
+          <div class="sl-num">🧀</div>
+          <div class="sl-content">
+            <strong>Bakteri Penghasil Makanan</strong>
+            <p>Tanpa bakteri, kita tidak akan punya yogurt, keju, tempe, kecap, dan tape! Lactobacillus mengubah susu menjadi yogurt, Acetobacter mengubah alkohol menjadi cuka, Aspergillus mengubah kedelai menjadi tempe. Bakteri adalah chef rahasia makanan favoritmu! 🍶</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">💊</div>
+          <div class="sl-content">
+            <strong>Bakteri Penghasil Obat</strong>
+            <p>Banyak antibiotik dan vitamin dibuat dengan bantuan bakteri! Insulin untuk penderita diabetes kini dibuat oleh bakteri E. coli yang telah dimodifikasi secara genetik. Ilmuwan memasukkan gen manusia penghasil insulin ke dalam bakteri dan membiarkan bakteri "beternak" insulin! 🧬</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">♻️</div>
+          <div class="sl-content">
+            <strong>Bakteri Pengurai Alam</strong>
+            <p>Tanpa bakteri pengurai, daun-daun yang jatuh, bangkai hewan, dan sampah organik tidak akan pernah terurai. Bumi akan penuh tumpukan benda mati! Bakteri adalah "petugas kebersihan" alam yang tidak kenal lelah, mengubah sampah organik menjadi nutrisi bagi tumbuhan. 🌱</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">🦠</div>
+          <div class="sl-content">
+            <strong>Bakteriofag: Virus Pembunuh Bakteri!</strong>
+            <p>Ada jenis virus bernama bakteriofag yang hanya menyerang bakteri — bukan manusia! Para ilmuwan sedang meneliti cara menggunakan bakteriofag untuk membunuh bakteri jahat yang sudah kebal antibiotik. Ini disebut "terapi fag" — menggunakan virus untuk melawan bakteri! 🔬</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(0,200,83,0.08);border:1px solid rgba(0,200,83,0.22);border-radius:16px;padding:18px 20px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🌟 <strong>Masa Depan Medis:</strong> Para ilmuwan kini sedang menggunakan bakteri untuk membersihkan polusi minyak di laut, mengurai plastik, menghasilkan bahan bakar ramah lingkungan, dan bahkan mendeteksi kanker! Dunia mikroskopis mungkin kecil, tapi dampaknya untuk masa depan Bumi sangat besar. 🚀</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+      <span class="page-indicator">Halaman 7 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(8)">Tantangan Aslan! 🔬 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 8: TANTANGAN + PENUTUP ── -->
+  <div class="page" id="page-8">
+    <div class="section-header">
+      <span class="tag">🏆 Tantangan Aslan</span>
+      <h1>Buktikan Kamu<br>Mikrobiologis Cilik! 🦠</h1>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-title">🏆 Misi Dunia Mikro Aslan</div>
+      <p style="font-size:15px;opacity:0.8;margin-bottom:20px;">Kamu sudah menjelajahi dunia yang tak terlihat dan bertemu bakteri, virus, serta tentara heroik tubuhmu! Saatnya membuktikan kemampuan mikrobiologismu dengan tantangan-tantangan seru ini!</p>
+
+      <div class="challenge-item">
+        <div class="challenge-num">1</div>
+        <div>
+          <p><strong>Eksperimen Pertumbuhan Ragi (Yeast)!</strong> 🧪 Ragi adalah jamur bersel satu yang mirip bakteri. Siapkan: 1 gelas air hangat (bukan mendidih!), 1 sendok teh gula, dan 1 sachet ragi (tersedia di toko kue). Larutkan gula dalam air hangat, lalu tambahkan ragi. Tunggu 15 menit. Amati apa yang terjadi — kamu akan melihat gelembung-gelembung yang muncul! Itu adalah CO₂ yang dihasilkan ragi saat "memakan" gula. Proses yang sama terjadi dalam pembuatan roti dan minuman berkarbonasi! Tuliskan pengamatanmu. 🍞</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">2</div>
+        <div>
+          <p><strong>Detektif Makanan Fermentasi!</strong> 🔍 Jelajahi dapur rumahmu dan buat daftar semua makanan dan minuman yang dibuat dengan bantuan bakteri atau jamur! Petunjuk: cari yogurt, keju, tempe, kecap, tauco, kimchi, tape, oncom, dan cuka. Untuk setiap item, tulis: nama makanan, jenis mikroba yang membuatnya (bakteri atau jamur?), dan apa manfaatnya bagi tubuh. Kamu akan terkejut betapa banyak makanan kesukaanmu yang dibuat oleh makhluk tak terlihat! 🥢</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">3</div>
+        <div>
+          <p><strong>Kuis Kilat Mikrobiologi!</strong> ⚡ Jawab tanpa melihat buku: (a) Apa perbedaan utama bakteri dan virus? (b) Kenapa antibiotik tidak bisa mengobati flu? (c) Sel darah putih apa yang membuat antibodi? (d) Apa fungsi sel memori dalam sistem imun? (e) Sebutkan satu bakteri baik dan satu bakteri jahat! (f) Apa itu vaksin dan bagaimana cara kerjanya? Tulis jawabanmu dan cek kembali di buku ini! 📝</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">4</div>
+        <div>
+          <p><strong>Gambar Peta Dunia Mikro!</strong> 🎨 Di selembar kertas besar, gambar "peta" dunia mikroskopis karyamu sendiri! Buat minimal: 3 bentuk bakteri berbeda (coccus, bacillus, spirillum) dengan label namanya, 1 virus dengan bagian-bagiannya (kapsid, DNA/RNA, protein spike), sel darah putih yang sedang "memakan" bakteri, dan antibodi berbentuk Y yang menempel ke virus. Gunakan warna-warna cerah dan beri judul: "Peta Dunia Mikro oleh Aslan"! 🖌️</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">5</div>
+        <div>
+          <p><strong>Jadi Dokter Kecil Keluarga!</strong> 🩺 Buat "Panduan Kesehatan Keluarga" sederhana di selembar kertas. Isi dengan: (1) Cara mencegah bakteri jahat — cuci tangan yang benar (minimal 20 detik!), masak makanan hingga matang, hindari kontak dengan orang sakit. (2) Cara mencegah virus — vaksin, jaga jarak saat ada wabah, pakai masker jika perlu. (3) Cara menjaga bakteri baik — makan yogurt dan tempe, hindari antibiotik sembarangan. Tempelkan di kulkas rumah supaya bisa dilihat semua keluarga! 💊</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENUTUP -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--micro-blue2),var(--micro-cyan),var(--micro-purple2),var(--micro-green));margin-top:32px;">
+      <div class="closing-content">
+        <span class="trophy-big">🔬</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(24px,5vw,36px);margin-bottom:16px;">
+          Luar Biasa, Aslan! 🎉
+        </h2>
+        <p style="font-size:clamp(15px,2.5vw,17px);max-width:500px;margin:0 auto 24px;line-height:1.8;opacity:0.9;">
+          Kamu telah menyelesaikan Hari ke-15 dan menjelajahi dunia yang tak pernah dilihat mata biasa! Dari bakteri baik di yogurt, virus flu yang membajak sel, hingga tentara heroik di darahmu — kamu kini tahu bahwa di dunia terkecil pun ada kisah yang luar biasa besar. Kamu adalah <strong>Mikrobiologis Cilik</strong> Indonesia yang sesungguhnya!
+        </p>
+
+        <div class="quote-box" style="max-width:520px;margin:0 auto 28px;">
+          <p>"Di dalam setetes air ada lebih banyak kehidupan daripada semua hewan yang pernah kamu lihat. Dunia yang tak terlihat bukan dunia yang tidak ada — ia adalah dunia yang menunggu orang-orang penasaran sepertimu untuk menemukannya."</p>
+          <cite>— Untuk Aslan, Penjelajah Dunia Mikro & Mikrobiologis Cilik Indonesia 🔬</cite>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px;">
+          <span style="background:rgba(13,71,161,0.15);border:1px solid rgba(0,229,255,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🔬 Ahli Dunia Mikro</span>
+          <span style="background:rgba(0,200,83,0.12);border:1px solid rgba(0,200,83,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🦠 Pakar Bakteri</span>
+          <span style="background:rgba(171,71,188,0.12);border:1px solid rgba(171,71,188,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">😷 Master Virologi</span>
+          <span style="background:rgba(198,40,40,0.12);border:1px solid rgba(229,57,53,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🛡️ Komandan Imunologi</span>
+        </div>
+
+        <button class="btn btn-done" onclick="selesaiMembaca()">
+          ✅ Saya Sudah Selesai Membaca!
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(7)">← Kembali</button>
+      <span class="page-indicator">Halaman 8 dari 8</span>
+      <span></span>
+    </div>
+  </div>
+
+</div><!-- end book-container -->
+
+<script>
+  // ── MICRO PARTICLES ──
+  const container = document.getElementById('microParticles');
+  const colors = ['#00e5ff','#ab47bc','#00c853','#00b0ff','#fdd835','#ff5252','#80deea','#e040fb'];
+  const shapes = ['50%', '40% 60% 60% 40%', '50% 20% 50% 80%', '30% 70% 70% 30%'];
+
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement('div');
+    p.className = 'mp';
+    const size = Math.random() * 8 + 3;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+    p.style.cssText = `
+      width:${size}px;
+      height:${size}px;
+      left:${Math.random() * 100}%;
+      bottom:${Math.random() * 18}%;
+      background:${color};
+      box-shadow:0 0 ${size * 2.5}px ${color}88;
+      border-radius:${shape};
+      animation-duration:${6 + Math.random() * 10}s;
+      animation-delay:${Math.random() * 10}s;
+      opacity:0;
+    `;
+    container.appendChild(p);
+  }
+
+  // ── PAGES ──
+  const TOTAL = 8;
+  let current = 1;
+
+  function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── DARK / LIGHT MODE ──
+  const modeBtn = document.getElementById('modeBtn');
+  let isLight = false;
+  modeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+    modeBtn.textContent = isLight ? '🌙' : '☀️';
+  });
+
+  // ── SELESAI MEMBACA ──
+  function selesaiMembaca() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.88);backdrop-filter:blur(8px);
+      z-index:999;display:flex;align-items:center;justify-content:center;
+      padding:20px;animation:fadeUp 0.3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="background:linear-gradient(135deg,#04060f,#060a18);border:2px solid rgba(0,229,255,0.32);border-radius:28px;padding:40px;max-width:440px;width:100%;text-align:center;color:white;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#0d47a1,#00e5ff,#ab47bc,#00c853);box-shadow:0 0 12px rgba(0,229,255,0.45);"></div>
+        <span style="font-size:80px;display:block;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(0,229,255,0.55));">🔬</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:12px;background:linear-gradient(135deg,#00e5ff,#ab47bc,#00c853);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Keren Banget, Aslan!</h2>
+        <p style="font-size:16px;line-height:1.8;opacity:0.9;margin-bottom:24px;">Hari ke-15 selesai! 🎉<br>Kamu sudah menjelajahi <strong>dunia mikroskopis yang luar biasa</strong> — dari bakteri probiotik yang bersahabat, virus flu yang licik, hingga tentara heroik sistem imunmu!<br><br>Kamu kini adalah Mikrobiologis Cilik Indonesia yang sesungguhnya! 🇮🇩<br>Sampai jumpa di petualangan berikutnya! 🚀</p>
+        <button onclick="this.closest('div').parentElement.remove()" style="background:linear-gradient(135deg,#0d47a1,#7b1fa2);color:white;border:none;padding:14px 32px;border-radius:50px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(0,229,255,0.35);">Mantap! Tutup 🔬</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+  }
+
+  // ── KEYBOARD NAV ──
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(current - 1);
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>

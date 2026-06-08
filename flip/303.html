@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 3: Arus Kuat yang Bernama Internet – Kapten Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean-deep: #0a1628;
+    --ocean-mid: #0d3460;
+    --ocean-bright: #1565c0;
+    --ocean-light: #42a5f5;
+    --ocean-sky: #81d4fa;
+    --ocean-foam: #e1f5fe;
+    --gold: #ffd700;
+    --gold-dark: #f9a825;
+    --orange: #ff6f00;
+    --coral: #ff7043;
+    --white: #ffffff;
+    --cream: #fffde7;
+    --teal: #00acc1;
+    --green-sea: #00897b;
+    --purple-wave: #7c4dff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, var(--ocean-deep) 0%, var(--ocean-mid) 50%, #1a237e 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* BACK BUTTON */
+  .back-btn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 1000;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .back-btn:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateX(-3px);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.4);
+  }
+
+  /* OCEAN BACKGROUND ANIMATION */
+  .ocean-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .wave-layer {
+    position: absolute;
+    width: 200%;
+    bottom: -10px;
+    opacity: 0.08;
+  }
+  .wave-layer svg { width: 100%; }
+  .wave-layer:nth-child(1) { animation: waveMove 8s linear infinite; bottom: 0; opacity: 0.06; }
+  .wave-layer:nth-child(2) { animation: waveMove 12s linear infinite reverse; bottom: 20px; opacity: 0.04; }
+  .wave-layer:nth-child(3) { animation: waveMove 6s linear infinite; bottom: 40px; opacity: 0.03; }
+
+  @keyframes waveMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* BUBBLE PARTICLES */
+  .bubbles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4), rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,255,255,0.2);
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.5; }
+    100% { transform: translateY(-100px) scale(1); opacity: 0; }
+  }
+
+  /* DATA STREAM PARTICLES */
+  .data-stream { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .data-particle {
+    position: absolute;
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(to bottom, transparent, var(--ocean-light), transparent);
+    animation: streamDown linear infinite;
+    opacity: 0.3;
+  }
+  @keyframes streamDown {
+    0% { transform: translateY(-100px); opacity: 0; }
+    10% { opacity: 0.5; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(110vh); opacity: 0; }
+  }
+
+  /* MAIN CONTAINER */
+  .book-container {
+    position: relative;
+    z-index: 10;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    height: 5px;
+    background: rgba(255,255,255,0.1);
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--coral), var(--gold));
+    background-size: 200% 100%;
+    transition: width 0.5s ease;
+    animation: shimmerProgress 2s linear infinite;
+    border-radius: 0 3px 3px 0;
+  }
+  @keyframes shimmerProgress {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+
+  /* PAGE INDICATOR */
+  .page-indicator {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 999;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+  .page-indicator span { color: var(--gold); }
+
+  /* SLIDE CARD */
+  .slide {
+    display: none;
+    width: 100%;
+    animation: slideIn 0.5s ease;
+  }
+  .slide.active { display: block; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 32px;
+    padding: 48px 48px 56px;
+    box-shadow:
+      0 25px 60px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(255,255,255,0.05) inset,
+      0 1px 0 rgba(255,255,255,0.2) inset;
+    position: relative;
+    overflow: hidden;
+    min-height: 520px;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--ocean-light), var(--gold), var(--coral), var(--ocean-light));
+    background-size: 300% 100%;
+    animation: borderFlow 4s linear infinite;
+  }
+  @keyframes borderFlow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+  }
+
+  /* COVER SLIDE */
+  .cover-card {
+    background: linear-gradient(160deg, #0d3460 0%, #1565c0 40%, #0a1628 100%);
+    text-align: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .cover-ocean-scene {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    margin-bottom: 24px;
+  }
+
+  /* Animated ocean scene SVG area */
+  .scene-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* CURRENT/ARUS ANIMATION */
+  .current-line {
+    animation: currentFlow 2s ease-in-out infinite alternate;
+  }
+  @keyframes currentFlow {
+    0% { stroke-dashoffset: 0; opacity: 0.6; }
+    100% { stroke-dashoffset: -60; opacity: 1; }
+  }
+
+  .ship-sail {
+    animation: sailWave 3s ease-in-out infinite;
+    transform-origin: center bottom;
+  }
+  @keyframes sailWave {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+  }
+
+  .ship-group {
+    animation: shipFloat 4s ease-in-out infinite;
+  }
+  @keyframes shipFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .cover-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,215,0,0.15);
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    animation: pulse-gold 2s ease-in-out infinite;
+  }
+  @keyframes pulse-gold {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,215,0,0.3); }
+    50% { box-shadow: 0 0 0 8px rgba(255,215,0,0); }
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(28px, 6vw, 48px);
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  .cover-title .highlight {
+    background: linear-gradient(135deg, var(--gold), var(--coral));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+  }
+
+  .cover-subtitle {
+    font-size: 16px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+
+  .captain-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,111,0,0.2));
+    border: 2px solid rgba(255,215,0,0.4);
+    padding: 14px 28px;
+    border-radius: 20px;
+    color: white;
+    font-weight: 800;
+    font-size: 18px;
+    margin-top: 8px;
+    backdrop-filter: blur(10px);
+  }
+  .captain-badge .emoji { font-size: 28px; }
+
+  /* TYPOGRAPHY STYLES */
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--ocean-light), var(--teal));
+    color: white;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .slide-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(22px, 4vw, 34px);
+    color: white;
+    margin-bottom: 20px;
+    line-height: 1.3;
+  }
+  .slide-title .accent { color: var(--gold); }
+
+  .slide-text {
+    color: rgba(255,255,255,0.85);
+    font-size: 16px;
+    line-height: 1.8;
+    font-weight: 600;
+  }
+  .slide-text strong { color: var(--gold); font-weight: 800; }
+  .slide-text .highlight-coral { color: var(--coral); font-weight: 800; }
+  .slide-text .highlight-teal { color: var(--ocean-sky); font-weight: 800; }
+
+  /* STORY BOXES */
+  .story-box {
+    background: rgba(255,255,255,0.06);
+    border-left: 4px solid var(--gold);
+    border-radius: 0 16px 16px 0;
+    padding: 20px 24px;
+    margin: 20px 0;
+    font-style: italic;
+    color: rgba(255,255,255,0.9);
+    font-size: 15.5px;
+    line-height: 1.85;
+  }
+
+  /* INFO CARDS GRID */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .info-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .info-card:hover {
+    background: rgba(255,255,255,0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+  }
+  .info-card .card-icon { font-size: 40px; margin-bottom: 10px; display: block; }
+  .info-card .card-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .info-card .card-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+  }
+
+  /* CLICKABLE INTERACTIVE ZONE */
+  .interactive-zone {
+    background: linear-gradient(135deg, rgba(21,101,192,0.3), rgba(0,172,193,0.3));
+    border: 2px dashed rgba(255,255,255,0.2);
+    border-radius: 24px;
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    margin: 24px 0;
+  }
+  .interactive-zone:hover {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, rgba(21,101,192,0.4), rgba(0,172,193,0.4));
+    transform: scale(1.01);
+  }
+  .interactive-zone.clicked {
+    background: linear-gradient(135deg, rgba(0,172,193,0.4), rgba(0,137,123,0.4));
+    border-color: var(--ocean-sky);
+  }
+  .interactive-hint {
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* CURRENT ANIMATION SVG inside cards */
+  .current-animation {
+    width: 100%;
+    height: 80px;
+    margin: 16px 0;
+  }
+
+  /* FACT BOXES */
+  .fact-box {
+    background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,111,0,0.1));
+    border: 2px solid rgba(255,215,0,0.3);
+    border-radius: 20px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .fact-emoji { font-size: 32px; flex-shrink: 0; }
+  .fact-text {
+    color: rgba(255,255,255,0.9);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .fact-text strong { color: var(--gold); }
+
+  /* WARNING BOX */
+  .warning-box {
+    background: linear-gradient(135deg, rgba(255,112,67,0.15), rgba(255,111,0,0.1));
+    border: 2px solid rgba(255,112,67,0.4);
+    border-radius: 20px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .warning-box .fact-text strong { color: var(--coral); }
+
+  /* TIP BOXES */
+  .tip-box {
+    background: linear-gradient(135deg, rgba(0,172,193,0.15), rgba(0,137,123,0.15));
+    border: 2px solid rgba(0,172,193,0.4);
+    border-radius: 20px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .tip-box .fact-text strong { color: var(--ocean-sky); }
+
+  /* LESSON POINTS */
+  .lesson-list {
+    list-style: none;
+    margin: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .lesson-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 16px 18px;
+    color: rgba(255,255,255,0.88);
+    font-size: 15px;
+    line-height: 1.6;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: all 0.3s;
+    cursor: default;
+  }
+  .lesson-list li:hover {
+    background: rgba(255,255,255,0.1);
+    transform: translateX(4px);
+  }
+  .lesson-list li .li-icon { font-size: 24px; flex-shrink: 0; }
+  .lesson-list li strong { color: var(--gold); font-size: 14px; display: block; margin-bottom: 2px; }
+
+  /* CHALLENGE CARD */
+  .challenge-card {
+    background: linear-gradient(135deg, rgba(124,77,255,0.25), rgba(21,101,192,0.25));
+    border: 2px solid rgba(124,77,255,0.4);
+    border-radius: 24px;
+    padding: 28px;
+    margin: 20px 0;
+  }
+  .challenge-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .challenge-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.85);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .challenge-item:last-child { border-bottom: none; }
+  .check-box {
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 6px;
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    margin-top: 2px;
+    font-size: 14px;
+  }
+  .check-box:hover { border-color: var(--gold); background: rgba(255,215,0,0.1); }
+  .check-box.checked {
+    background: var(--green-sea);
+    border-color: var(--green-sea);
+    color: white;
+  }
+
+  /* CLOSING CARD */
+  .closing-card {
+    text-align: center;
+    padding: 60px 40px;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .star-rating {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 16px 0;
+  }
+  .star {
+    font-size: 36px;
+    cursor: pointer;
+    transition: all 0.3s;
+    filter: grayscale(1) opacity(0.4);
+  }
+  .star.active, .star:hover {
+    filter: none;
+    transform: scale(1.2) rotate(-10deg);
+  }
+
+  .motivasi-box {
+    background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,111,0,0.1));
+    border: 2px solid rgba(255,215,0,0.3);
+    border-radius: 24px;
+    padding: 24px 32px;
+    max-width: 500px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    color: white;
+    line-height: 1.6;
+    position: relative;
+  }
+  .motivasi-box::before {
+    content: '"';
+    font-size: 80px;
+    color: rgba(255,215,0,0.2);
+    position: absolute;
+    top: -20px;
+    left: 16px;
+    line-height: 1;
+  }
+
+  /* NAVIGATION */
+  .nav-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 32px;
+    width: 100%;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .nav-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.1);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+    transform-origin: left;
+  }
+  .nav-btn:hover::after { transform: scaleX(1); }
+
+  .btn-prev {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.2);
+    color: white;
+  }
+  .btn-prev:hover {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.4);
+    transform: translateX(-3px);
+  }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--ocean-bright), var(--teal));
+    color: white;
+    box-shadow: 0 8px 25px rgba(21,101,192,0.4);
+  }
+  .btn-next:hover {
+    transform: translateX(3px);
+    box-shadow: 0 12px 35px rgba(21,101,192,0.6);
+  }
+
+  .dots-nav {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .dot.active {
+    background: var(--gold);
+    width: 20px;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(255,215,0,0.5);
+  }
+  .dot:hover { background: rgba(255,255,255,0.4); }
+
+  /* DECORATIVE ELEMENTS */
+  .deco-star {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.15;
+    animation: twinkle 3s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.25; transform: scale(1.2); }
+  }
+
+  /* SVG ANIMATIONS */
+  .flowing-arrow {
+    stroke-dasharray: 12 6;
+    animation: dashFlow 1.5s linear infinite;
+  }
+  @keyframes dashFlow {
+    to { stroke-dashoffset: -18; }
+  }
+
+  .pulse-circle {
+    animation: pulseCircle 2s ease-in-out infinite;
+  }
+  @keyframes pulseCircle {
+    0%, 100% { r: 8; opacity: 0.6; }
+    50% { r: 14; opacity: 0.2; }
+  }
+
+  /* INTERNET DIAGRAM */
+  .net-diagram {
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto;
+    display: block;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .card { padding: 32px 24px 40px; min-height: 480px; }
+    .info-grid { grid-template-columns: 1fr 1fr; }
+    .cover-card { padding: 40px 24px; }
+    .nav-btn { padding: 12px 20px; font-size: 14px; }
+  }
+
+  /* TOOLTIP POPUP */
+  .tooltip-popup {
+    display: none;
+    background: linear-gradient(135deg, var(--ocean-mid), var(--ocean-bright));
+    border: 2px solid var(--ocean-light);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-top: 16px;
+    color: white;
+    font-size: 14px;
+    line-height: 1.7;
+    animation: fadeIn 0.3s ease;
+  }
+  .tooltip-popup.show { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* FIBER ANIMATION */
+  @keyframes fiberPulse {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -400; }
+  }
+  .fiber-line {
+    stroke-dasharray: 10 4;
+    animation: fiberPulse 2s linear infinite;
+  }
+
+  /* QUIZ STYLE */
+  .quiz-option {
+    background: rgba(255,255,255,0.07);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 14px;
+    padding: 14px 20px;
+    margin: 8px 0;
+    cursor: pointer;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .quiz-option:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: var(--ocean-light);
+    transform: translateX(4px);
+  }
+  .quiz-option.correct {
+    background: rgba(0,137,123,0.3);
+    border-color: var(--green-sea);
+    color: #80cbc4;
+  }
+  .quiz-option.wrong {
+    background: rgba(255,112,67,0.2);
+    border-color: var(--coral);
+    color: #ffccbc;
+  }
+  .quiz-result {
+    display: none;
+    padding: 16px 20px;
+    border-radius: 14px;
+    margin-top: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    text-align: center;
+  }
+  .quiz-result.show { display: block; }
+  .quiz-result.correct-result {
+    background: rgba(0,137,123,0.2);
+    color: #80cbc4;
+    border: 2px solid var(--green-sea);
+  }
+  .quiz-result.wrong-result {
+    background: rgba(255,112,67,0.15);
+    color: #ffab91;
+    border: 2px solid var(--coral);
+  }
+
+  /* SCROLL TO TOP BUTTON */
+  .scroll-section {
+    padding-top: 80px;
+  }
+</style>
+</head>
+<body>
+
+<!-- BACK BUTTON -->
+<a href="../perpustakaan.html" class="back-btn">← Kembali ke Perpustakaan</a>
+
+<!-- PAGE INDICATOR -->
+<div class="page-indicator" id="pageIndicator">Halaman <span id="currentPageNum">1</span> / <span id="totalPageNum">13</span></div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar-wrapper">
+  <div class="progress-bar-fill" id="progressBar" style="width: 7.7%"></div>
+</div>
+
+<!-- BACKGROUND EFFECTS -->
+<div class="ocean-bg">
+  <div class="wave-layer">
+    <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
+      <path d="M0,40 C200,0 400,80 600,40 C800,0 1000,80 1200,40 L1200,80 L0,80 Z" fill="white"/>
+    </svg>
+  </div>
+  <div class="wave-layer">
+    <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
+      <path d="M0,50 C150,20 350,70 500,40 C650,10 800,60 1000,30 C1100,10 1150,50 1200,50 L1200,80 L0,80 Z" fill="white"/>
+    </svg>
+  </div>
+</div>
+<div class="bubbles" id="bubbles"></div>
+<div class="data-stream" id="dataStream"></div>
+
+<!-- BOOK CONTAINER -->
+<div class="book-container scroll-section" id="bookContainer">
+
+  <!-- ============ SLIDE 1: COVER ============ -->
+  <div class="slide active" id="slide-1">
+    <div class="card cover-card">
+      <!-- Decorative stars -->
+      <div style="position:absolute;top:20px;right:30px;font-size:30px;opacity:0.3;animation:twinkle 2s infinite">⭐</div>
+      <div style="position:absolute;top:60px;left:20px;font-size:20px;opacity:0.2;animation:twinkle 3s infinite 1s">✦</div>
+      <div style="position:absolute;bottom:80px;right:20px;font-size:24px;opacity:0.15;animation:twinkle 2.5s infinite 0.5s">✦</div>
+
+      <!-- Ocean Scene with Internet Current -->
+      <div class="cover-ocean-scene">
+        <svg class="scene-svg" viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg">
+          <!-- Ocean background -->
+          <defs>
+            <linearGradient id="seaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#1565c0;stop-opacity:0.6"/>
+              <stop offset="100%" style="stop-color:#0a1628;stop-opacity:0.8"/>
+            </linearGradient>
+            <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#0d47a1;stop-opacity:0.4"/>
+              <stop offset="100%" style="stop-color:#1565c0;stop-opacity:0"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Sky -->
+          <rect x="0" y="0" width="600" height="120" fill="url(#skyGrad)"/>
+
+          <!-- Stars -->
+          <circle cx="50" cy="20" r="1.5" fill="white" opacity="0.6"/>
+          <circle cx="120" cy="40" r="1" fill="white" opacity="0.5"/>
+          <circle cx="200" cy="15" r="1.5" fill="white" opacity="0.7"/>
+          <circle cx="320" cy="30" r="1" fill="white" opacity="0.4"/>
+          <circle cx="450" cy="20" r="1.5" fill="white" opacity="0.6"/>
+          <circle cx="550" cy="45" r="1" fill="white" opacity="0.5"/>
+          <circle cx="380" cy="10" r="1" fill="white" opacity="0.8"/>
+
+          <!-- Moon/Sun glow -->
+          <circle cx="520" cy="35" r="18" fill="rgba(255,215,0,0.1)"/>
+          <circle cx="520" cy="35" r="10" fill="rgba(255,215,0,0.25)"/>
+          <circle cx="520" cy="35" r="5" fill="rgba(255,215,0,0.5)"/>
+
+          <!-- Ocean surface -->
+          <path d="M0,120 Q75,110 150,120 Q225,130 300,120 Q375,110 450,120 Q525,130 600,120 L600,220 L0,220 Z" fill="url(#seaGrad)"/>
+
+          <!-- Wave details -->
+          <path d="M0,125 Q50,118 100,125 Q150,132 200,125 Q250,118 300,125 Q350,132 400,125 Q450,118 500,125 Q550,132 600,125" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+
+          <!-- INTERNET CURRENT ARROWS - the main feature! -->
+          <!-- Current stream 1 - bright blue -->
+          <path d="M30,145 Q100,135 170,145 Q240,155 310,145 Q380,135 450,145 Q520,155 570,148" fill="none" stroke="#42a5f5" stroke-width="3" stroke-linecap="round" class="current-line" stroke-dasharray="15 8" style="animation-delay:0s"/>
+          <!-- Current stream 2 - gold/orange -->
+          <path d="M0,160 Q80,150 160,160 Q240,170 320,160 Q400,150 480,160 Q550,170 600,163" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" class="current-line" stroke-dasharray="12 6" style="animation-delay:0.5s"/>
+          <!-- Current stream 3 - teal -->
+          <path d="M50,175 Q120,165 200,175 Q270,185 350,175 Q430,165 510,175 Q560,183 600,178" fill="none" stroke="#00acc1" stroke-width="2" stroke-linecap="round" class="current-line" stroke-dasharray="10 5" style="animation-delay:1s"/>
+          <!-- Current stream 4 - coral -->
+          <path d="M0,188 Q90,178 180,188 Q260,198 340,188 Q420,178 500,188 Q560,198 600,192" fill="none" stroke="#ff7043" stroke-width="1.5" stroke-linecap="round" class="current-line" stroke-dasharray="8 4" style="animation-delay:1.5s"/>
+
+          <!-- Data packets on current -->
+          <rect x="80" y="140" width="12" height="8" rx="2" fill="#ffd700" opacity="0.8">
+            <animateTransform attributeName="transform" type="translate" values="0,0; 500,0" dur="4s" repeatCount="indefinite"/>
+          </rect>
+          <rect x="200" y="156" width="10" height="6" rx="2" fill="#42a5f5" opacity="0.7">
+            <animateTransform attributeName="transform" type="translate" values="0,0; 400,0" dur="5s" repeatCount="indefinite" begin="1s"/>
+          </rect>
+          <rect x="300" y="171" width="8" height="5" rx="2" fill="#ff7043" opacity="0.6">
+            <animateTransform attributeName="transform" type="translate" values="0,0; 300,0" dur="3.5s" repeatCount="indefinite" begin="0.5s"/>
+          </rect>
+
+          <!-- Ship -->
+          <g class="ship-group" transform="translate(230, 95)">
+            <!-- Hull -->
+            <ellipse cx="60" cy="30" rx="45" ry="12" fill="#1565c0"/>
+            <path d="M20,30 Q60,18 100,30 L95,38 Q60,26 25,38 Z" fill="#1976d2"/>
+            <!-- Cabin -->
+            <rect x="45" y="15" width="30" height="16" rx="3" fill="#0d47a1"/>
+            <rect x="48" y="17" width="8" height="8" rx="2" fill="#81d4fa" opacity="0.7"/>
+            <rect x="60" y="17" width="8" height="8" rx="2" fill="#81d4fa" opacity="0.7"/>
+            <!-- Mast -->
+            <line x1="64" y1="15" x2="64" y2="-20" stroke="#ffd700" stroke-width="2"/>
+            <!-- Flag/Sail -->
+            <g class="ship-sail">
+              <path d="M64,-18 L90,-5 L64,-5 Z" fill="#ffd700" opacity="0.9"/>
+              <text x="70" y="-8" fill="#0d3460" font-size="8" font-weight="bold">⚓</text>
+            </g>
+            <!-- Anchor symbol on hull -->
+            <text x="50" y="28" fill="rgba(255,255,255,0.5)" font-size="10">⚓</text>
+          </g>
+
+          <!-- Label -->
+          <text x="300" y="215" fill="rgba(255,255,255,0.4)" font-size="10" text-anchor="middle" font-family="Nunito, sans-serif">Lautan Digital dengan Arus Internet</text>
+        </svg>
+      </div>
+
+      <div class="cover-badge">⚡ HARI 3 dari 30 Hari</div>
+
+      <div class="cover-title">
+        Arus Kuat yang
+        <span class="highlight">Bernama Internet</span>
+      </div>
+
+      <div class="cover-subtitle">Petualangan Kapten Cerdas di Lautan Digital</div>
+
+      <div class="captain-badge">
+        <span class="emoji">🧢</span>
+        <span>Kapten <strong>Aslan</strong></span>
+      </div>
+
+      <div style="margin-top:20px;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;letter-spacing:1px">
+        📖 13 Halaman Petualangan Seru
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <div class="dots-nav" id="dotsNav1"></div>
+      <button class="nav-btn btn-next" onclick="nextSlide()">Mulai Petualangan ⚡</button>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 2: PENGANTAR ============ -->
+  <div class="slide" id="slide-2">
+    <div class="card">
+      <div class="section-label">🌊 Pembukaan</div>
+      <div class="slide-title">Selamat Datang Kembali, <span class="accent">Kapten Aslan!</span></div>
+
+      <div class="story-box">
+        "Kapten Aslan berdiri di atas geladak kapal ajaibnya — Tablet Si Biru — sambil memandang hamparan Lautan Digital yang luas. Angin sepoi-sepoi membawa suara desiran aneh... seperti jutaan bisikan yang mengalir di bawah ombak. <em>Apa itu?</em> bisik Aslan penasaran."
+      </div>
+
+      <div class="slide-text">
+        Hei, <strong>Kapten Aslan!</strong> Kemarin kamu sudah berhasil mendapatkan kapal ajaibmu — Tablet dan HP yang luar biasa. 🚢✨
+        <br><br>
+        Di <strong>Hari 1</strong>, kamu menemukan Lautan Digital yang menakjubkan. Di <strong>Hari 2</strong>, kamu mendapatkan kapal canggihmu. Dan sekarang... ada sesuatu yang lebih besar menunggumu! 🌊
+        <br><br>
+        Hari ini, kamu akan belajar tentang rahasia terbesar Lautan Digital: <strong style="color:var(--ocean-sky)">Arus Kuat yang Bernama Internet!</strong>
+      </div>
+
+      <div class="fact-box">
+        <div class="fact-emoji">💡</div>
+        <div class="fact-text">
+          <strong>Tahukah Kamu?</strong><br>
+          Tanpa arus Internet, Lautan Digital hanya akan menjadi lautan kosong yang sunyi. Internet-lah yang membuat segala sesuatu bergerak, mengalir, dan saling terhubung!
+        </div>
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <button class="nav-btn btn-prev" onclick="prevSlide()">← Sebelumnya</button>
+      <div class="dots-nav" id="dotsNav2"></div>
+      <button class="nav-btn btn-next" onclick="nextSlide()">Selanjutnya →</button>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 3: CERITA UTAMA ============ -->
+  <div class="slide" id="slide-3">
+    <div class="card">
+      <div class="section-label">🎭 Cerita Petualangan</div>
+      <div class="slide-title">🌀 Ketika Arus Itu <span class="accent">Muncul Pertama Kali</span></div>
+
+      <div class="story-box">
+        "Tiba-tiba, air di sekitar kapal Aslan mulai bergerak! Bukan ombak biasa — ini lebih seperti sungai yang mengalir deras di tengah lautan. Warnanya berkilau biru elektrik, dan di dalamnya terlihat kilatan-kilatan cahaya kecil yang berlari kencang seperti kunang-kunang."
+        <br><br>
+        "Aslan memegang kemudi dengan erat. 'Ini... apa ini?!' serunya kaget."
+        <br><br>
+        "Lalu muncullah Paman Volta — makhluk kecil berbentuk kilat berwarna kuning — yang tiba-tiba duduk di tepi kapal. 'Ho ho ho! Kamu baru saja menemukan ARUS INTERNET, Kapten muda!'"
+      </div>
+
+      <div class="slide-text">
+        Paman Volta adalah penjaga Arus Internet. Dengan senyum lebar dan rambut yang selalu berdiri seperti disambar petir, dia menjelaskan kepada Aslan tentang kekuatan terbesar di Lautan Digital...
+      </div>
+
+      <!-- Animated scene -->
+      <svg viewBox="0 0 520 120" style="width:100%;margin:20px 0;border-radius:16px;overflow:hidden">
+        <defs>
+          <linearGradient id="storySeaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#1565c0;stop-opacity:0.5"/>
+            <stop offset="100%" style="stop-color:#0a1628;stop-opacity:0.7"/>
+          </linearGradient>
+        </defs>
+        <rect width="520" height="120" fill="url(#storySeaGrad)" rx="16"/>
+
+        <!-- Current lines -->
+        <path d="M0,50 Q130,35 260,50 Q390,65 520,50" fill="none" stroke="#42a5f5" stroke-width="2.5" stroke-dasharray="12 6" class="fiber-line" opacity="0.8"/>
+        <path d="M0,65 Q130,50 260,65 Q390,80 520,65" fill="none" stroke="#ffd700" stroke-width="2" stroke-dasharray="10 5" class="fiber-line" opacity="0.7" style="animation-delay:0.5s"/>
+        <path d="M0,80 Q130,65 260,80 Q390,95 520,80" fill="none" stroke="#ff7043" stroke-width="1.5" stroke-dasharray="8 4" class="fiber-line" opacity="0.6" style="animation-delay:1s"/>
+
+        <!-- Moving data packets -->
+        <g>
+          <rect x="0" y="45" width="14" height="9" rx="3" fill="#ffd700">
+            <animateTransform attributeName="transform" type="translate" values="0,0; 520,0" dur="3s" repeatCount="indefinite"/>
+          </rect>
+        </g>
+        <g>
+          <rect x="100" y="60" width="12" height="8" rx="3" fill="#81d4fa">
+            <animateTransform attributeName="transform" type="translate" values="0,0; 420,0" dur="4s" repeatCount="indefinite" begin="1s"/>
+          </rect>
+        </g>
+        <g>
+          <rect x="200" y="75" width="10" height="7" rx="3" fill="#ff7043">
+            <animateTransform attributeName="transform" type="translate" values="0,0; 320,0" dur="3.5s" repeatCount="indefinite" begin="0.5s"/>
+          </rect>
+        </g>
+
+        <!-- Paman Volta (lightning character) -->
+        <g transform="translate(430, 20)">
+          <ellipse cx="30" cy="50" rx="22" ry="18" fill="#ffd700" opacity="0.9"/>
+          <text x="22" y="55" font-size="18" fill="#0d3460">⚡</text>
+          <!-- Speech bubble -->
+          <path d="M-80,10 Q-50,5 -10,8 Q10,8 10,20 Q10,35 -10,35 Q-50,35 -80,35 Q-90,35 -90,25 Q-90,10 -80,10 Z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+          <text x="-78" y="26" font-size="8" fill="white" font-family="Nunito,sans-serif" font-weight="bold">Arus Internet!</text>
+        </g>
+
+        <!-- Mini ship -->
+        <g transform="translate(40, 25)">
+          <ellipse cx="30" cy="22" rx="25" ry="8" fill="#1976d2"/>
+          <rect x="24" y="10" width="16" height="13" rx="2" fill="#0d47a1"/>
+          <line x1="32" y1="10" x2="32" y2="-5" stroke="#ffd700" stroke-width="1.5"/>
+          <path d="M32,-4 L44,3 L32,3 Z" fill="#ffd700"/>
+        </g>
+
+        <!-- Label -->
+        <text x="260" y="113" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle" font-family="Nunito,sans-serif">Aslan & Paman Volta menemukan Arus Internet</text>
+      </svg>
+    </div>
+    <div class="nav-wrapper">
+      <button class="nav-btn btn-prev" onclick="prevSlide()">← Sebelumnya</button>
+      <div class="dots-nav" id="dotsNav3"></div>
+      <button class="nav-btn btn-next" onclick="nextSlide()">Selanjutnya →</button>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 4: APA ITU INTERNET ============ -->
+  <div class="slide" id="slide-4">
+    <div class="card">
+      <div class="section-label">🔍 Penjelasan</div>
+      <div class="slide-title">⚡ Apa Itu <span class="accent">Internet</span> Sebenarnya?</div>
+
+      <div class="slide-text">
+        <strong>Paman Volta</strong> duduk di tepi kapal dan mulai bercerita dengan semangat...
+      </div>
+
+      <div class="interactive-zone" onclick="toggleInternetExplain(this)">
+        <div style="font-size:50px;margin-bottom:8px">🌐</div>
+        <div style="font-family:'Fredoka One',cursive;font-size:18px;color:var(--gold);margin-bottom:4px">Klik untuk tahu rahasia Internet!</div>
+        <div class="interactive-hint">👆 Ketuk gambar ini untuk penjelasan Paman Volta</div>
+        <div class="tooltip-popup" id="internetExplain">
+          🌐 <strong>Internet</strong> adalah jaringan kabel, gelombang radio, dan koneksi yang menghubungkan jutaan komputer, HP, dan tablet di seluruh dunia — seperti jaring laba-laba raksasa yang melingkupi seluruh bumi! Ketika kamu mengirim pesan, itu sebenarnya adalah data yang terbang melalui kabel di bawah laut dan dipantulkan lewat satelit di angkasa! 🛰️
+        </div>
+      </div>
+
+      <div class="info-grid" style="margin-top:16px">
+        <div class="info-card" onclick="showCardInfo(this, 'Bayangkan Internet seperti sistem sungai dan kanal yang menghubungkan semua kota di bumi. Data mengalir seperti air!')">
+          <span class="card-icon">🌊</span>
+          <div class="card-title">Seperti Arus</div>
+          <div class="card-desc">Data mengalir cepat seperti arus sungai</div>
+        </div>
+        <div class="info-card" onclick="showCardInfo(this, 'Internet sebenarnya adalah ribuan kabel bawah laut yang sangat panjang, bahkan lebih panjang dari perjalanan ke bulan!')">
+          <span class="card-icon">🔗</span>
+          <div class="card-title">Kabel Bawah Laut</div>
+          <div class="card-desc">Kabel fiber optik di dasar lautan nyata</div>
+        </div>
+        <div class="info-card" onclick="showCardInfo(this, 'Internet juga menggunakan gelombang radio yang tidak terlihat mata, seperti angin tak terlihat yang membawa pesan!')">
+          <span class="card-icon">📡</span>
+          <div class="card-title">Gelombang Radio</div>
+          <div class="card-desc">WiFi & data paket menggunakan gelombang</div>
+        </div>
+      </div>
+      <div id="cardInfoBox" style="display:none;background:rgba(255,255,255,0.08);border-radius:14px;padding:14px 18px;color:rgba(255,255,255,0.85);font-size:14px;line-height:1.7;margin-top:4px;border:1px solid rgba(255,255,255,0.15)"></div>
+    </div>
+    <div class="nav-wrapper">
+      <button class="nav-btn btn-prev" onclick="prevSlide()">← Sebelumnya</button>
+      <div class="dots-nav" id="dotsNav4"></div>
+      <button class="nav-btn btn-next" onclick="nextSlide()">Selanjutnya →</button>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 5: BAGAIMANA ARUS BEKERJA ============ -->
+  <div class="slide" id="slide-5">
+    <div class="card">
+      <div class="section-label">⚙️ Cara Kerja</div>
+      <div class="slide-title">🔄 Bagaimana Arus Internet <span class="accent">Bekerja?</span></div>
+
+      <div class="slide-text">
+        "Kapten Aslan, bayangkan kamu mengirim surat kepada temanmu di kota lain," kata Paman Volta sambil menggambar di udara...
+      </div>
+
+      <!-- Diagram cara kerja -->
+      <svg class="net-diagram" viewBox="0 0 480 180" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#42a5f5"/>
+          </marker>
+          <marker id="arrowhead2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#ffd700"/>
+          </marker>
+        </defs>
+
+        <!-- Step 1: HP Aslan -->
+        <rect x="10" y="60" width="70" height="60" rx="12" fill="rgba(21,101,192,0.4)" stroke="#42a5f5" stroke-width="1.5"/>
+        <text x="45" y="88" text-anchor="middle" font-size="22" fill="white">📱</text>
+        <text x="45" y="110" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.8)" font-family="Nunito,sans-serif" font-weight="bold">HP Aslan</text>
+
+        <!-- Arrow 1 -->
+        <line x1="80" y1="90" x2="130" y2="90" stroke="#42a5f5" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="6 3" class="fiber-line"/>
+        <text x="105" y="82" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.5)" font-family="Nunito,sans-serif">Data</text>
+
+        <!-- Step 2: Router -->
+        <rect x="130" y="60" width="70" height="60" rx="12" fill="rgba(0,172,193,0.4)" stroke="#00acc1" stroke-width="1.5"/>
+        <text x="165" y="88" text-anchor="middle" font-size="22" fill="white">📡</text>
+        <text x="165" y="110" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.8)" font-family="Nunito,sans-serif" font-weight="bold">Router/WiFi</text>
+
+        <!-- Arrow 2 -->
+        <line x1="200" y1="90" x2="250" y2="90" stroke="#ffd700" stroke-width="2" marker-end="url(#arrowhead2)" stroke-dasharray="6 3" class="fiber-line" style="animation-delay:0.5s"/>
+        <text x="225" y="82" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.5)" font-family="Nunito,sans-serif">Internet</text>
+
+        <!-- Step 3: Server -->
+        <rect x="250" y="60" width="70" height="60" rx="12" fill="rgba(124,77,255,0.4)" stroke="#7c4dff" stroke-width="1.5"/>
+        <text x="285" y="88" text-anchor="middle" font-size="22" fill="white">🖥️</text>
+        <text x="285" y="110" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.8)" font-family="Nunito,sans-serif" font-weight="bold">Server Dunia</text>
+
+        <!-- Arrow 3 -->
+        <line x1="320" y1="90" x2="370" y2="90" stroke="#42a5f5" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="6 3" class="fiber-line" style="animation-delay:1s"/>
+        <text x="345" y="82" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.5)" font-family="Nunito,sans-serif">Balasan</text>
+
+        <!-- Step 4: HP Teman -->
+        <rect x="370" y="60" width="70" height="60" rx="12" fill="rgba(255,112,67,0.4)" stroke="#ff7043" stroke-width="1.5"/>
+        <text x="405" y="88" text-anchor="middle" font-size="22" fill="white">📲</text>
+        <text x="405" y="110" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.8)" font-family="Nunito,sans-serif" font-weight="bold">HP Teman</text>
+
+        <!-- Underground cable line -->
+        <path d="M45,120 Q120,155 165,155 Q240,155 285,155 Q360,155 405,120" fill="none" stroke="rgba(255,215,0,0.3)" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="240" y="175" text-anchor="middle" font-size="8" fill="rgba(255,215,0,0.4)" font-family="Nunito,sans-serif">Kabel/Gelombang Radio</text>
+
+        <!-- Time badge -->
+        <rect x="185" y="5" width="100" height="22" rx="11" fill="rgba(0,137,123,0.4)" stroke="#00897b" stroke-width="1"/>
+        <text x="235" y="20" text-anchor="middle" font-size="9" fill="#80cbc4" font-family="Nunito,sans-serif" font-weight="bold">⚡ 0.001 Detik!</text>
+      </svg>
+
+      <div class="fact-box">
+        <div class="fact-emoji">🚀</div>
+        <div class="fact-text">
+          <strong>Kecepatan Cahaya!</strong><br>
+          Data Internet bergerak hampir secepat cahaya — yaitu sekitar <strong>200.000 km per detik!</strong> Pesanmu bisa mengelilingi bumi 5 kali hanya dalam 1 detik! Bayangkan itu, Kapten Aslan! 🌍
+        </div>
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <button class="nav-btn btn-prev" onclick="prevSlide()">← Sebelumnya</button>
+      <div class="dots-nav" id="dotsNav5"></div>
+      <button class="nav-btn btn-next" onclick="nextSlide()">Selanjutnya →</button>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 6: KEKUATAN ARUS ============ -->
+  <div class="slide" id="slide-6">
+    <div class="card">
+      <div class="section-label">💪 Kekuatan</div>
+      <div class="slide-title">🌟 Kekuatan Arus Internet yang <span class="accent">Luar Biasa!</span></div>
+
+      <div class="story-box">
+        "Paman Volta menepuk bahu Aslan dengan penuh semangat. 'Arus Internet ini bisa membawamu ke mana saja, Kapten! Bayangkan...'"
+      </div>
+
+      <div class="lesson-list">
+        <li>
+          <span class="li-icon">📚</span>
+          <div>
+            <strong>Pintu Ilmu Pengetahuan</strong>
+            Dengan Internet, kamu bisa belajar tentang dinosaurus, luar angkasa, cara memasak pizza, atau bahasa Jepang — semuanya dalam hitungan detik! Perpustakaan terbesar di dunia ada di genggaman tanganmu.
+          </div>
+        </li>
+        <li>
+          <span class="li-icon">👨‍👩‍👧‍👦</span>
+          <div>
+            <strong>Jembatan Antar Manusia</strong>
+            Internet bisa menghubungkan Aslan di Indonesia dengan teman di Amerika atau Australia secara langsung, seolah mereka duduk bersebelahan!
+          </div>
+        </li>
+        <li>
+          <span class="li-icon">🎨</span>
+          <div>
+            <strong>Panggung Kreativitas</strong>
+            Internet bisa menjadi tempat kamu menampilkan karya seni, cerita, musik, atau video buatanmu kepada seluruh dunia. Siapa pun bisa menjadi bintang!
+          </div>
+        </li>
+        <li>
+          <span class="li-icon">🏥</span>
+          <div>
+            <strong>Penolong Kehidupan Nyata</strong>
+            Dokter bisa memberikan obat lewat video call. Guru bisa mengajar ribuan murid sekaligus. Internet benar-benar membantu kehidupan manusia menjadi lebih baik!
+          </div>
+        </li>
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <button class="nav-btn btn-prev" onclick="prevSlide()">← Sebelumnya</button>
+      <div class="dots-nav" id="dotsNav6"></div>
+      <button class="nav-btn btn-next" onclick="nextSlide()">Selanjutnya →</button>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 7: BAHAYA ARUS KUAT ============ -->
+  <div class="slide" id="slide-7">
+    <div class="card">
+      <div class="section-label">⚠️ Hati-Hati!</div>
+      <div class="slide-title">🌪️ Bahaya Arus yang <span class="accent" style="color:var(--coral)">Terlalu Kuat!</span></div>
+
+      <div class="story-box">
+        "Tapi tiba-tiba, wajah Paman Volta berubah serius. Dia menunjuk ke arah arus yang semakin deras. 'Hati-hati, Kapten Aslan! Arus yang kuat bisa menjadi berbahaya jika kamu tidak berhati-hati...'"
+      </div>
+
+      <div class="warning-box">
+        <div class="fact-emoji">🌀</div>
+        <div class="fact-text">
+          <strong>Terseret Arus Tanpa Batas</strong><br>
+          Sama seperti arus laut yang bisa menyeret kapal, Internet bisa membuatmu terus-terusan menonton video sampai kamu lupa waktu makan, tidur, dan belajar!
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <div class="fact-emoji">🎣</div>
+        <div class="fact-text">
+          <strong>Jerat Tersembunyi di Arus</strong><br>
+          Di dalam arus Internet, ada orang-orang jahat yang memasang jerat. Mereka bisa mencuri informasi pribadimu jika kamu tidak waspada!
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <div class="fact-emoji">🌊</div>
+        <div class="fact-text">
+          <strong>Ombak Informasi yang Membingungkan</strong><br>
+          Karena arus sangat deras, banyak informasi palsu yang ikut mengalir. Tidak semua yang kamu lihat di Internet itu benar!
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <div class="fact-emoji">🕳️</div>
+        <div class="fact-text">
+          <strong>Lubang Gelap di Dasar Laut</strong><br>
+          Ada bagian-bagian Internet yang berbahaya dan tidak boleh dikunjungi anak-anak. Seperti gua gelap di dasar laut yang penuh dengan bahaya!
+        </div>
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <button class="nav-btn btn-prev" onclick="prevSlide()">← Sebelumnya</button>
+      <div class="dots-nav" id="dotsNav7"></div>
+      <button class="nav-btn btn-next" onclick="nextSlide()">Selanjutnya →</button>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 8: MENGENDALIKAN ARUS ============ -->
+  <div class="slide" id="slide-8">
+    <div class="card">
+      <div class="section-label">🎯 Cara Bijak</div>
+      <div class="slide-title">⚓ Cara Mengendalikan Arus <span class="accent">dengan Bijak!</span></div>
+
+      <div class="story-box">
+        "'Tapi jangan takut!' seru Paman Volta sambil mengangkat tongkat kebiruan miliknya. 'Seorang Kapten sejati tahu cara mengendalikan arus, bukan ditenggelamkan olehnya!'"
+      </div>
+
+      <div class="tip-box">
+        <div class="fact-emoji">⏰</div>
+        <div class="fact-text">
+          <strong>Atur Waktu Berlayarmu</strong><br>
+          Gunakan Internet maksimal 1-2 jam per hari untuk hiburan. Gunakan timer atau minta bantuan orang tua sebagai "pemandu kapal" kamu!
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <div class="fact-emoji">🗺️</div>
+        <div class="fact-text">
+          <strong>Punya Tujuan yang Jelas</strong><br>
+          Sebelum membuka Internet, tanya diri sendiri: "Aku mau ke mana?" Kapten yang baik tidak berlayar tanpa tujuan. Pergi ke Internet untuk belajar, bukan hanya "iseng-iseng"!
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <div class="fact-emoji">👨‍👩‍👦</div>
+        <div class="fact-text">
+          <strong>Berlayar Bersama Orang Dewasa</strong><br>
+          Untuk tempat-tempat baru di Internet yang belum pernah kamu kunjungi, ajaklah orang tua atau guru. Mereka adalah pemandu laut berpengalaman!
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <div class="fact-emoji">🛑</div>
+        <div class="fact-text">
+          <strong>Berani Berhenti dan Lapor</strong><br>
+          Jika menemukan konten yang membuatmu tidak nyaman, segera tutup dan ceritakan kepada orang tua. Kapten yang bijak tidak pernah malu meminta bantuan!
+        </div>
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <button class="nav-btn btn-prev" onclick="prevSlide()">← Sebelumnya</button>
+      <div class="dots-nav" id="dotsNav8"></div>
+      <button class="nav-btn btn-next" onclick="nextSlide()">Selanjutnya →</button>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 9: MINI QUIZ ============ -->
+  <div class="slide" id="slide-9">
+    <div class="card">
+      <div class="section-label">🧠 Uji Pengetahuan</div>
+      <div class="slide-title">⚡ Kuis Cepat <span class="accent">Kapten Aslan!</span></div>
+
+      <div class="slide-text" style="margin-bottom:20px">
+        Paman Volta melirik Aslan dengan senyum nakal. <em>"Kapten, sudah siap diuji?"</em> Jawab pertanyaan berikut ini!
+      </div>
+
+      <div id="quizContainer">
+        <!-- Question 1 -->
+        <div id="quiz1" class="quiz-block">
+          <div style="color:var(--gold);font-family:'Fredoka One',cursive;font-size:16px;margin-bottom:12px">🌊 Pertanyaan 1: Apa analogi terbaik untuk Internet?</div>
+          <div class="quiz-option" onclick="checkAnswer(this, true, 'quiz1')">🌊 Arus sungai yang mengalir menghubungkan semua tempat</div>
+          <div class="quiz-option" onclick="checkAnswer(this, false, 'quiz1')">🏝️ Sebuah pulau terpencil di tengah lautan</div>
+          <div class="quiz-option" onclick="checkAnswer(this, false, 'quiz1')">⛵ Kapal yang berlayar sendirian</div>
+          <div class="quiz-result" id="result1"></div>
+        </div>
+
+        <!-- Question 2 -->
+        <div id="quiz2" class="quiz-block" style="margin-top:20px">
+          <div style="color:var(--gold);font-family:'Fredoka One',cursive;font-size:16px;margin-bottom:12px">📡 Pertanyaan 2: Apa yang TIDAK termasuk cara bijak menggunakan Internet?</div>
+          <div class="quiz-option" onclick="checkAnswer(this, false, 'quiz2')">⏰ Mengatur waktu penggunaan</div>
+          <div class="quiz-option" onclick="checkAnswer(this, true, 'quiz2')">🕐 Menggunakan Internet sepanjang hari tanpa henti</div>
+          <div class="quiz-option" onclick="checkAnswer(this, false, 'quiz2')">👨‍👩‍👦 Minta pendampingan orang tua</div>
+          <div class="quiz-result" id="result2"></div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <button class="nav-btn btn-prev" onclick="prevSlide()">← Sebelumnya</button>
+      <div class="dots-nav" id="dotsNav9"></div>
+      <button class="nav-btn btn-next" onclick="nextSlide()">Selanjutnya →</button>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 10: PELAJARAN HARI INI ============ -->
+  <div class="slide" id="slide-10">
+    <div class="card">
+      <div class="section-label">⭐ Pelajaran Hari Ini</div>
+      <div class="slide-title">📖 Yang Dipelajari <span class="accent">Hari Ini</span></div>
+
+      <div class="slide-text" style="margin-bottom:20px">
+        Paman Volta memberikan Aslan sebuah buku catatan emas kecil. <em>"Tulislah semua yang kamu pelajari hari ini, Kapten!"</em>
+      </div>
+
+      <div class="lesson-list">
+        <li>
+          <span class="li-icon">🌐</span>
+          <div>
+            <strong>Internet = Arus Kuat Lautan Digital</strong>
+            Internet adalah jaringan yang menghubungkan jutaan perangkat di seluruh dunia, memungkinkan pertukaran informasi dengan kecepatan luar biasa!
+          </div>
+        </li>
+        <li>
+          <span class="li-icon">⚡</span>
+          <div>
+            <strong>Internet Bekerja Sangat Cepat</strong>
+            Data bergerak hampir secepat cahaya melalui kabel bawah laut dan gelombang radio — dalam sepersekian detik!
+          </div>
+        </li>
+        <li>
+          <span class="li-icon">🌟</span>
+          <div>
+            <strong>Internet Punya Banyak Kekuatan</strong>
+            Belajar, terhubung dengan orang lain, berkreasi, dan membantu kehidupan — Internet bisa jadi teman terbaikmu!
+          </div>
+        </li>
+        <li>
+          <span class="li-icon">⚠️</span>
+          <div>
+            <strong>Internet Juga Punya Bahaya</strong>
+            Kecanduan, informasi palsu, dan orang jahat adalah bahaya nyata yang harus Kapten Aslan waspadai!
+          </div>
+        </li>
+        <li>
+          <span class="li-icon">🎯</span>
+          <div>
+            <strong>Kapten Bijak = Kapten yang Mengendalikan Arus</strong>
+            Dengan mengatur waktu, punya tujuan, dan didampingi orang tua, kamu bisa memanfaatkan Internet dengan luar biasa!
+          </div>
+        </li>
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <button class="nav-btn btn-prev" onclick="prevSlide()">← Sebelumnya</button>
+      <div class="dots-nav" id="dotsNav10"></div>
+      <button class="nav-btn btn-next" onclick="nextSlide()">Selanjutnya →</button>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 11: TANTANGAN ASLAN ============ -->
+  <div class="slide" id="slide-11">
+    <div class="card">
+      <div class="section-label">🎯 Tantangan Kapten</div>
+      <div class="slide-title">🏆 Tantangan Hari Ini untuk <span class="accent">Aslan!</span></div>
+
+      <div class="story-box">
+        "'Kapten Aslan yang hebat!' seru Paman Volta. 'Kamu sudah belajar banyak hari ini. Sekarang saatnya membuktikan kamu adalah Kapten Cerdas sejati!'"
+      </div>
+
+      <div class="challenge-card">
+        <div class="challenge-title">⚡ Misi Hari Ini</div>
+
+        <div class="challenge-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <div>Ceritakan kepada orang tuamu apa itu Internet, menggunakan analogi arus laut yang kamu pelajari hari ini.</div>
+        </div>
+        <div class="challenge-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <div>Hitung berapa lama kamu menggunakan Internet hari ini. Catat hasilnya di buku catatan!</div>
+        </div>
+        <div class="challenge-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <div>Tanyakan kepada orang tua atau guru: "Menurut Ayah/Ibu/Bapak/Ibu, apa kegunaan Internet yang paling penting?"</div>
+        </div>
+        <div class="challenge-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <div>Buatlah gambar "Lautan Digital dengan Arus Internet" versimu sendiri di buku gambar!</div>
+        </div>
+        <div class="challenge-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <div>Bersama orang tua, buat aturan waktu penggunaan Internet yang kamu sepakati bersama.</div>
+        </div>
+      </div>
+
+      <div id="challengeComplete" style="display:none;text-align:center;padding:20px;background:rgba(0,137,123,0.2);border:2px solid var(--green-sea);border-radius:16px;color:#80cbc4;font-family:'Fredoka One',cursive;font-size:18px;margin-top:8px">
+        🎉 Luar biasa, Kapten Aslan! Kamu menyelesaikan semua misi hari ini!
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <button class="nav-btn btn-prev" onclick="prevSlide()">← Sebelumnya</button>
+      <div class="dots-nav" id="dotsNav11"></div>
+      <button class="nav-btn btn-next" onclick="nextSlide()">Selanjutnya →</button>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 12: PRATINJAU HARI 4 ============ -->
+  <div class="slide" id="slide-12">
+    <div class="card">
+      <div class="section-label">🔭 Hari Berikutnya</div>
+      <div class="slide-title">🏝️ Besok: <span class="accent">Pulau-Pulau di Lautan Digital!</span></div>
+
+      <div class="story-box">
+        "Matahari perlahan tenggelam di cakrawala Lautan Digital. Aslan berdiri di puncak tiang kapalnya, memandang ke depan. Di kejauhan, dia bisa melihat pulau-pulau bercahaya yang indah... 'Itu apa?' bisiknya penuh harap."
+        <br><br>
+        "'Itulah tujuanmu berikutnya, Kapten,' kata Paman Volta pelan. 'Pulau YouTube... Pulau TikTok... Pulau Instagram... Masing-masing punya keajaiban dan bahayanya sendiri. Bersiaplah untuk menjelajahinya besok!'"
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="card-icon">📺</span>
+          <div class="card-title">Pulau YouTube</div>
+          <div class="card-desc">Pulau video raksasa yang penuh tontonan menarik</div>
+        </div>
+        <div class="info-card">
+          <span class="card-icon">🎵</span>
+          <div class="card-title">Pulau TikTok</div>
+          <div class="card-desc">Pulau musik dan tarian yang penuh energi</div>
+        </div>
+        <div class="info-card">
+          <span class="card-icon">📸</span>
+          <div class="card-title">Pulau Instagram</div>
+          <div class="card-desc">Pulau foto dan cerita kehidupan</div>
+        </div>
+      </div>
+
+      <div class="fact-box" style="margin-top:20px">
+        <div class="fact-emoji">🧭</div>
+        <div class="fact-text">
+          <strong>Siapkan dirimu!</strong><br>
+          Di Hari 4, Kapten Aslan akan menjelajahi pulau-pulau digital ini. Kamu akan belajar apa yang baik dan apa yang harus diwaspadai di setiap pulau!
+        </div>
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <button class="nav-btn btn-prev" onclick="prevSlide()">← Sebelumnya</button>
+      <div class="dots-nav" id="dotsNav12"></div>
+      <button class="nav-btn btn-next" onclick="nextSlide()">Selesai! 🎊</button>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 13: PENUTUP ============ -->
+  <div class="slide" id="slide-13">
+    <div class="card cover-card closing-card">
+      <div style="font-size:70px;animation:shipFloat 3s ease-in-out infinite">🏆</div>
+
+      <div class="cover-badge">🎉 Hari 3 Selesai!</div>
+
+      <div class="cover-title">
+        Hebat Sekali,
+        <span class="highlight">Kapten Aslan!</span>
+      </div>
+
+      <div class="motivasi-box">
+        "Kapten yang bijak bukan yang paling lama berlayar, tapi yang paling tahu kemana harus pergi. Kamu sudah selangkah lebih dekat menjadi Kapten Cerdas Lautan Digital!"
+      </div>
+
+      <div style="color:rgba(255,255,255,0.7);font-size:15px;margin:8px 0 4px">Berikan bintang untuk petualangan hari ini:</div>
+      <div class="star-rating" id="starRating">
+        <span class="star" onclick="rateStar(1)">⭐</span>
+        <span class="star" onclick="rateStar(2)">⭐</span>
+        <span class="star" onclick="rateStar(3)">⭐</span>
+        <span class="star" onclick="rateStar(4)">⭐</span>
+        <span class="star" onclick="rateStar(5)">⭐</span>
+      </div>
+      <div id="starMessage" style="color:var(--gold);font-family:'Fredoka One',cursive;font-size:16px;min-height:28px"></div>
+
+      <div class="captain-badge" style="margin-top:12px">
+        <span class="emoji">⚓</span>
+        <span>Kapten <strong>Aslan</strong> – Penguasa Arus Digital</span>
+      </div>
+
+      <div style="color:rgba(255,255,255,0.4);font-size:13px;margin-top:16px">
+        Besok: Hari 4 – Pulau-Pulau di Lautan Digital 🏝️
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <button class="nav-btn btn-prev" onclick="prevSlide()">← Sebelumnya</button>
+      <div class="dots-nav" id="dotsNav13"></div>
+      <button class="nav-btn btn-next" onclick="goToStart()">🏠 Baca Lagi</button>
+    </div>
+  </div>
+
+</div><!-- end book-container -->
+
+<script>
+const TOTAL_SLIDES = 13;
+let currentSlide = 1;
+let stars = 0;
+let checkCount = 0;
+const totalChecks = 5;
+
+function updateUI() {
+  // Update slides
+  document.querySelectorAll('.slide').forEach((s, i) => {
+    s.classList.toggle('active', i + 1 === currentSlide);
+  });
+
+  // Update progress bar
+  const pct = (currentSlide / TOTAL_SLIDES) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  // Update page indicator
+  document.getElementById('currentPageNum').textContent = currentSlide;
+  document.getElementById('totalPageNum').textContent = TOTAL_SLIDES;
+
+  // Update all dots navs
+  for (let i = 1; i <= TOTAL_SLIDES; i++) {
+    const nav = document.getElementById('dotsNav' + i);
+    if (nav) renderDots(nav);
+  }
+
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderDots(container) {
+  container.innerHTML = '';
+  // Show max 7 dots, condensed
+  const maxDots = Math.min(TOTAL_SLIDES, 13);
+  for (let i = 1; i <= maxDots; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === currentSlide ? ' active' : '');
+    d.onclick = () => goToSlide(i);
+    container.appendChild(d);
+  }
+}
+
+function nextSlide() {
+  if (currentSlide < TOTAL_SLIDES) {
+    currentSlide++;
+    updateUI();
+  }
+}
+
+function prevSlide() {
+  if (currentSlide > 1) {
+    currentSlide--;
+    updateUI();
+  }
+}
+
+function goToSlide(n) {
+  currentSlide = n;
+  updateUI();
+}
+
+function goToStart() {
+  currentSlide = 1;
+  updateUI();
+}
+
+// Interactive elements
+function toggleInternetExplain(el) {
+  const popup = document.getElementById('internetExplain');
+  popup.classList.toggle('show');
+  el.classList.toggle('clicked');
+  if (popup.classList.contains('show')) {
+    el.querySelector('.interactive-hint').textContent = '👆 Klik lagi untuk menutup';
+  } else {
+    el.querySelector('.interactive-hint').textContent = '👆 Ketuk gambar ini untuk penjelasan Paman Volta';
+  }
+}
+
+let lastCardEl = null;
+function showCardInfo(el, text) {
+  const box = document.getElementById('cardInfoBox');
+  if (lastCardEl === el && box.style.display !== 'none') {
+    box.style.display = 'none';
+    lastCardEl = null;
+    return;
+  }
+  box.textContent = text;
+  box.style.display = 'block';
+  lastCardEl = el;
+}
+
+// Quiz
+function checkAnswer(el, isCorrect, quizId) {
+  const block = document.getElementById(quizId);
+  if (block.querySelector('.correct') || block.querySelector('.wrong')) return; // already answered
+
+  const result = document.getElementById('result' + quizId.replace('quiz',''));
+  if (isCorrect) {
+    el.classList.add('correct');
+    el.innerHTML = '✅ ' + el.textContent;
+    result.textContent = '🎉 Benar! Kamu hebat, Kapten Aslan!';
+    result.className = 'quiz-result show correct-result';
+  } else {
+    el.classList.add('wrong');
+    el.innerHTML = '❌ ' + el.textContent;
+    // highlight correct
+    const options = block.querySelectorAll('.quiz-option');
+    options.forEach(opt => {
+      if (opt !== el && !opt.classList.contains('wrong')) {
+        // mark correct ones
+      }
+    });
+    result.textContent = '💪 Hampir tepat! Yuk coba lagi di petualangan berikutnya!';
+    result.className = 'quiz-result show wrong-result';
+  }
+}
+
+// Challenge checkboxes
+function toggleCheck(el) {
+  const wasChecked = el.classList.contains('checked');
+  if (!wasChecked) {
+    el.classList.add('checked');
+    el.textContent = '✓';
+    checkCount++;
+  } else {
+    el.classList.remove('checked');
+    el.textContent = '';
+    checkCount--;
+  }
+  if (checkCount >= totalChecks) {
+    document.getElementById('challengeComplete').style.display = 'block';
+  } else {
+    document.getElementById('challengeComplete').style.display = 'none';
+  }
+}
+
+// Star rating
+const starMessages = ['', 'Kamu baru mulai berlayar! 🌊', 'Lumayan, terus semangat! ⚡', 'Kamu sudah jago berlayar! 🚢', 'Hampir sempurna, Kapten! 🌟', 'Kapten Cerdas Sejati! 🏆'];
+function rateStar(n) {
+  stars = n;
+  const starEls = document.querySelectorAll('.star');
+  starEls.forEach((s, i) => s.classList.toggle('active', i < n));
+  document.getElementById('starMessage').textContent = starMessages[n];
+}
+
+// Generate bubbles
+function createBubbles() {
+  const container = document.getElementById('bubbles');
+  for (let i = 0; i < 12; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = Math.random() * 20 + 8;
+    b.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${Math.random()*10+8}s;animation-delay:${Math.random()*8}s;`;
+    container.appendChild(b);
+  }
+}
+
+// Generate data stream particles
+function createDataStream() {
+  const container = document.getElementById('dataStream');
+  for (let i = 0; i < 15; i++) {
+    const p = document.createElement('div');
+    p.className = 'data-particle';
+    const height = Math.random() * 30 + 10;
+    p.style.cssText = `height:${height}px;left:${Math.random()*100}%;animation-duration:${Math.random()*4+3}s;animation-delay:${Math.random()*5}s;`;
+    container.appendChild(p);
+  }
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevSlide();
+});
+
+// Touch swipe
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+});
+
+// Init
+createBubbles();
+createDataStream();
+updateUI();
+</script>
+</body>
+</html>

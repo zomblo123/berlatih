@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Programmer Indonesia yang Keren – Ruang Baca Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#E30613;
+  --red-light:#ff3347;
+  --red-pale:#fff0f1;
+  --white:#ffffff;
+  --blue:#00D4FF;
+  --blue-dark:#0099cc;
+  --blue-pale:#e8faff;
+  --green:#39D353;
+  --green-dark:#1a9e30;
+  --gold:#FFB800;
+  --gold-light:#fff3cd;
+  --purple:#764ba2;
+  --text-dark:#0f1923;
+  --text-mid:#3a4a5c;
+  --text-soft:#6b7a8d;
+  --bg-page:#f4f6f9;
+  --card-bg:#ffffff;
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.08);
+  --shadow-md:0 8px 30px rgba(0,0,0,0.12);
+  --shadow-lg:0 20px 60px rgba(0,0,0,0.18);
+  --radius:20px;
+  --radius-sm:12px;
+}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg-page);
+  color:var(--text-dark);
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  overflow:hidden;
+}
+/* ─── animated bg particles ─── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 15% 20%,rgba(227,6,19,0.06) 0%,transparent 55%),
+    radial-gradient(ellipse at 85% 75%,rgba(0,212,255,0.07) 0%,transparent 55%),
+    radial-gradient(ellipse at 50% 95%,rgba(57,211,83,0.05) 0%,transparent 50%);
+  pointer-events:none;z-index:0;
+}
+
+/* ─── TOP BAR ─── */
+.topbar{
+  position:relative;z-index:100;
+  background:linear-gradient(135deg,var(--red) 0%,#b80010 100%);
+  padding:10px 16px;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 4px 20px rgba(227,6,19,0.3);
+  flex-shrink:0;
+}
+.topbar-back{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.2);
+  border:1.5px solid rgba(255,255,255,0.35);
+  color:#fff;
+  font-family:'Fredoka',sans-serif;
+  font-size:13px;font-weight:500;
+  padding:6px 12px;border-radius:30px;
+  text-decoration:none;
+  transition:all .2s;white-space:nowrap;flex-shrink:0;
+}
+.topbar-back:hover{background:rgba(255,255,255,0.3);transform:translateX(-2px);}
+.topbar-center{flex:1;text-align:center;}
+.topbar-title{
+  font-family:'Fredoka',sans-serif;
+  font-size:15px;font-weight:600;color:#fff;
+  line-height:1.2;
+}
+.topbar-sub{font-size:10px;color:rgba(255,255,255,0.8);font-weight:400;}
+.topbar-badge{
+  background:rgba(255,255,255,0.2);
+  border:1.5px solid rgba(255,255,255,0.3);
+  color:#fff;
+  font-family:'Fredoka',sans-serif;
+  font-size:11px;padding:4px 10px;border-radius:20px;flex-shrink:0;
+}
+
+/* ─── PROGRESS BAR ─── */
+.progress-wrap{
+  position:relative;z-index:99;
+  background:#fff;
+  padding:8px 16px 6px;
+  border-bottom:1px solid #eee;
+  flex-shrink:0;
+}
+.progress-info{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:5px;
+}
+.progress-label{font-size:11px;color:var(--text-soft);font-weight:500;}
+.progress-count{font-size:11px;color:var(--red);font-weight:700;}
+.progress-track{
+  height:5px;background:#f0f0f0;border-radius:99px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--red),var(--blue));
+  border-radius:99px;
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+
+/* ─── VIEWPORT ─── */
+.viewport{
+  flex:1;position:relative;overflow:hidden;
+  z-index:1;
+}
+
+/* ─── PAGES ─── */
+.page{
+  position:absolute;inset:0;
+  overflow-y:auto;overflow-x:hidden;
+  padding:16px 16px 8px;
+  opacity:0;pointer-events:none;
+  transform:translateX(60px);
+  transition:all .38s cubic-bezier(.4,0,.2,1);
+  scrollbar-width:thin;scrollbar-color:var(--red) transparent;
+}
+.page::-webkit-scrollbar{width:4px;}
+.page::-webkit-scrollbar-thumb{background:var(--red);border-radius:2px;}
+.page.active{
+  opacity:1;pointer-events:all;
+  transform:translateX(0);
+}
+.page.exit-left{
+  opacity:0;transform:translateX(-60px);
+}
+.page.enter-right{
+  opacity:0;transform:translateX(60px);
+}
+
+/* ─── CARD BASE ─── */
+.card{
+  background:var(--card-bg);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow-md);
+  overflow:hidden;
+  max-width:680px;margin:0 auto;
+  animation:cardIn .4s cubic-bezier(.4,0,.2,1) both;
+}
+@keyframes cardIn{
+  from{opacity:0;transform:translateY(16px) scale(.98);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+
+/* ─── COVER PAGE ─── */
+.cover-hero{
+  background:linear-gradient(160deg,var(--red) 0%,#8b0000 50%,var(--text-dark) 100%);
+  padding:32px 24px 24px;text-align:center;position:relative;overflow:hidden;
+}
+.cover-hero::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.cover-bab{
+  display:inline-block;
+  background:rgba(255,255,255,0.15);
+  border:1.5px solid rgba(255,255,255,0.3);
+  color:#fff;font-family:'Fredoka',sans-serif;
+  font-size:12px;padding:4px 14px;border-radius:30px;
+  margin-bottom:14px;position:relative;
+}
+.cover-title{
+  font-family:'Fredoka',sans-serif;
+  font-size:clamp(22px,5vw,32px);
+  font-weight:700;color:#fff;
+  line-height:1.15;margin-bottom:8px;position:relative;
+  text-shadow:0 2px 20px rgba(0,0,0,0.3);
+}
+.cover-sub{
+  font-size:13px;color:rgba(255,255,255,0.8);
+  font-weight:400;margin-bottom:20px;position:relative;
+}
+.cover-for{
+  font-family:'Fredoka',sans-serif;
+  font-size:14px;color:rgba(255,255,255,0.9);
+  background:rgba(255,255,255,0.12);
+  border:1.5px solid rgba(255,255,255,0.25);
+  border-radius:30px;padding:5px 16px;
+  display:inline-block;position:relative;
+}
+
+/* SVG illustrations */
+.cover-svg{margin:18px auto 0;display:block;position:relative;}
+
+/* ─── PAGE CONTENT SECTIONS ─── */
+.page-header{
+  padding:20px 22px 0;
+}
+.page-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--red-pale);
+  border:1.5px solid rgba(227,6,19,0.15);
+  color:var(--red);
+  font-size:11px;font-weight:600;
+  padding:4px 12px;border-radius:30px;
+  margin-bottom:10px;
+}
+.page-title{
+  font-family:'Fredoka',sans-serif;
+  font-size:clamp(20px,4.5vw,28px);
+  font-weight:700;color:var(--text-dark);
+  line-height:1.2;margin-bottom:4px;
+}
+.page-title span{color:var(--red);}
+.page-body{padding:14px 22px 20px;}
+.page-text{
+  font-size:14.5px;line-height:1.75;
+  color:var(--text-mid);font-weight:400;
+  margin-bottom:14px;
+}
+.page-text strong{color:var(--text-dark);font-weight:700;}
+.page-text em{color:var(--red);font-style:normal;font-weight:600;}
+
+/* ─── HIGHLIGHT BOX ─── */
+.highlight-box{
+  border-radius:var(--radius-sm);padding:14px 16px;
+  margin-bottom:14px;
+}
+.highlight-box.red{background:var(--red-pale);border-left:4px solid var(--red);}
+.highlight-box.blue{background:var(--blue-pale);border-left:4px solid var(--blue);}
+.highlight-box.gold{background:var(--gold-light);border-left:4px solid var(--gold);}
+.highlight-box.green{background:#edfff3;border-left:4px solid var(--green);}
+.highlight-box p{font-size:14px;line-height:1.65;color:var(--text-mid);}
+.highlight-box strong{color:var(--text-dark);}
+
+/* ─── PERSON CARDS ─── */
+.person-grid{display:flex;flex-direction:column;gap:12px;margin-top:12px;}
+.person-card{
+  display:flex;align-items:center;gap:14px;
+  background:#f8f9ff;border-radius:var(--radius-sm);
+  padding:14px;border:1.5px solid #e8ecff;
+  transition:all .2s;cursor:default;
+}
+.person-card:hover{transform:translateX(4px);border-color:var(--blue);box-shadow:var(--shadow-sm);}
+.person-avatar{
+  width:52px;height:52px;border-radius:50%;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+}
+.person-info{}
+.person-name{font-family:'Fredoka',sans-serif;font-size:16px;font-weight:600;color:var(--text-dark);}
+.person-role{font-size:12px;color:var(--text-soft);margin-top:2px;line-height:1.4;}
+.person-tag{
+  display:inline-block;margin-top:5px;
+  background:var(--red);color:#fff;
+  font-size:10px;font-weight:600;
+  padding:2px 8px;border-radius:30px;
+}
+
+/* ─── STAT CARDS ─── */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;}
+.stat-card{
+  background:#fff;border-radius:var(--radius-sm);
+  padding:14px 12px;text-align:center;
+  border:1.5px solid #eee;
+  box-shadow:var(--shadow-sm);
+  transition:transform .2s;cursor:default;
+}
+.stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
+.stat-icon{font-size:26px;margin-bottom:6px;}
+.stat-val{font-family:'Fredoka',sans-serif;font-size:18px;font-weight:700;color:var(--red);}
+.stat-label{font-size:11px;color:var(--text-soft);margin-top:2px;line-height:1.3;}
+
+/* ─── STRENGTH PILLS ─── */
+.strength-list{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;}
+.strength-pill{
+  display:flex;align-items:center;gap:6px;
+  background:#fff;border:1.5px solid #e0e5ff;
+  border-radius:30px;padding:8px 14px;
+  font-size:13px;font-weight:600;color:var(--text-dark);
+  box-shadow:var(--shadow-sm);
+  transition:all .2s;cursor:default;
+}
+.strength-pill:hover{background:var(--red);color:#fff;border-color:var(--red);transform:scale(1.04);}
+.strength-pill .pill-icon{font-size:16px;}
+
+/* ─── FACT INTERACTIVE ─── */
+.fact-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;}
+.fact-card{
+  background:#fff;border-radius:var(--radius-sm);
+  padding:14px;border:1.5px solid #eee;
+  text-align:center;cursor:pointer;
+  transition:all .25s;
+  position:relative;overflow:hidden;
+}
+.fact-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--red),var(--blue));
+  opacity:0;transition:opacity .25s;
+}
+.fact-card.tapped::before{opacity:1;}
+.fact-card.tapped .fact-icon,
+.fact-card.tapped .fact-text{color:#fff;}
+.fact-card.tapped{transform:scale(.97);border-color:transparent;}
+.fact-icon{font-size:28px;margin-bottom:6px;position:relative;}
+.fact-text{font-size:12px;font-weight:600;color:var(--text-mid);line-height:1.4;position:relative;}
+
+/* ─── STEP LIST ─── */
+.step-list{display:flex;flex-direction:column;gap:10px;margin:12px 0;}
+.step-item{
+  display:flex;align-items:flex-start;gap:12px;
+  background:#fff;border-radius:var(--radius-sm);
+  padding:12px 14px;border:1.5px solid #eee;
+}
+.step-num{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red),var(--red-light));
+  color:#fff;font-family:'Fredoka',sans-serif;
+  font-size:14px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.step-content{}
+.step-title{font-size:13px;font-weight:700;color:var(--text-dark);}
+.step-desc{font-size:12px;color:var(--text-soft);margin-top:2px;line-height:1.4;}
+
+/* ─── MESSAGE CARD ─── */
+.message-card{
+  background:linear-gradient(135deg,var(--red) 0%,#c0001a 100%);
+  border-radius:var(--radius);padding:22px;
+  color:#fff;text-align:center;margin:14px 0;
+  position:relative;overflow:hidden;
+}
+.message-card::before{
+  content:'';position:absolute;top:-20px;right:-20px;
+  width:100px;height:100px;border-radius:50%;
+  background:rgba(255,255,255,0.08);
+}
+.message-card::after{
+  content:'';position:absolute;bottom:-30px;left:-20px;
+  width:120px;height:120px;border-radius:50%;
+  background:rgba(255,255,255,0.05);
+}
+.message-card .msg-emoji{font-size:36px;margin-bottom:10px;display:block;position:relative;}
+.message-card .msg-title{
+  font-family:'Fredoka',sans-serif;font-size:20px;
+  font-weight:700;margin-bottom:8px;position:relative;
+}
+.message-card .msg-text{
+  font-size:13px;line-height:1.7;
+  color:rgba(255,255,255,0.92);position:relative;
+}
+
+/* ─── ENDING CARD ─── */
+.next-card{
+  background:linear-gradient(135deg,#f8f9ff,#eef2ff);
+  border-radius:var(--radius-sm);padding:16px;
+  border:2px solid var(--blue);margin:14px 0;
+}
+.next-label{
+  font-size:10px;font-weight:700;color:var(--blue-dark);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;
+}
+.next-title{
+  font-family:'Fredoka',sans-serif;font-size:16px;
+  font-weight:600;color:var(--text-dark);
+}
+.next-desc{font-size:12px;color:var(--text-soft);margin-top:4px;line-height:1.4;}
+
+.ayah-card{
+  background:var(--gold-light);border-radius:var(--radius-sm);
+  padding:14px 16px;border:1.5px solid var(--gold);
+  display:flex;align-items:flex-start;gap:10px;margin:10px 0;
+}
+.ayah-icon{font-size:24px;flex-shrink:0;}
+.ayah-text{font-size:13px;color:var(--text-mid);line-height:1.5;}
+.ayah-text strong{color:var(--text-dark);}
+
+/* ─── NAV ─── */
+.nav-bar{
+  position:relative;z-index:100;
+  background:#fff;
+  border-top:1px solid #eee;
+  padding:10px 14px;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 -4px 20px rgba(0,0,0,0.06);
+  flex-shrink:0;
+}
+.nav-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:12px 10px;border-radius:14px;border:none;
+  font-family:'Fredoka',sans-serif;font-size:15px;font-weight:500;
+  cursor:pointer;transition:all .18s;
+  min-height:48px;
+}
+.nav-prev{
+  background:#f5f5f5;color:var(--text-soft);
+}
+.nav-prev:hover:not(:disabled){background:#ebebeb;color:var(--text-dark);}
+.nav-prev:disabled{opacity:.35;cursor:not-allowed;}
+.nav-next{
+  background:linear-gradient(135deg,var(--red),var(--red-light));
+  color:#fff;box-shadow:0 4px 14px rgba(227,6,19,0.3);
+  flex:1.4;
+}
+.nav-next:hover:not(:disabled){
+  transform:translateY(-1px);
+  box-shadow:0 6px 20px rgba(227,6,19,0.4);
+}
+.nav-next:active{transform:scale(.97);}
+
+.nav-page-indicator{
+  display:flex;align-items:center;gap:5px;flex-direction:column;
+}
+.nav-dots{display:flex;gap:4px;}
+.nav-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#e0e0e0;transition:all .3s;cursor:pointer;
+}
+.nav-dot.active{background:var(--red);width:18px;border-radius:3px;}
+.nav-page-num{
+  font-family:'Fredoka',sans-serif;font-size:11px;
+  color:var(--text-soft);
+}
+
+/* ─── RESPONSIVE ─── */
+@media(min-width:600px){
+  .page{padding:20px 20px 10px;}
+  .card{border-radius:24px;}
+  .stat-grid{grid-template-columns:repeat(4,1fr);}
+  .fact-grid{grid-template-columns:repeat(4,1fr);}
+}
+@media(orientation:landscape) and (max-height:500px){
+  .topbar{padding:7px 14px;}
+  .topbar-title{font-size:13px;}
+  .topbar-sub{display:none;}
+  .progress-wrap{padding:5px 14px 4px;}
+  .nav-btn{padding:9px 10px;}
+}
+
+/* ─── FLAG ANIMATION ─── */
+@keyframes flagWave{
+  0%,100%{transform:rotate(-2deg);}
+  50%{transform:rotate(2deg);}
+}
+.flag-wave{animation:flagWave 2s ease-in-out infinite;}
+
+/* ─── FLOATING STARS ─── */
+@keyframes floatUp{
+  0%{opacity:0;transform:translateY(10px);}
+  50%{opacity:1;}
+  100%{opacity:0;transform:translateY(-20px);}
+}
+.float-star{animation:floatUp 2s ease-in-out infinite;}
+
+/* ─── PULSE BADGE ─── */
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(227,6,19,0.4);}
+  50%{box-shadow:0 0 0 8px rgba(227,6,19,0);}
+}
+.pulse-badge{animation:pulse 2s ease-in-out infinite;}
+
+/* ─── CHALLENGE ITEMS ─── */
+.challenge-item{
+  display:flex;align-items:center;gap:12px;
+  background:#fff;border-radius:var(--radius-sm);
+  padding:12px 14px;border:1.5px solid #eee;margin-bottom:10px;
+  transition:all .2s;
+}
+.challenge-item:hover{border-color:var(--red);box-shadow:var(--shadow-sm);}
+.challenge-icon{font-size:24px;flex-shrink:0;}
+.challenge-text{font-size:13.5px;font-weight:500;color:var(--text-mid);line-height:1.4;}
+.challenge-text strong{color:var(--text-dark);}
+
+/* ─── QUOTE ─── */
+.big-quote{
+  background:linear-gradient(135deg,#fff7f7,#ffe8e8);
+  border-radius:var(--radius-sm);padding:18px;
+  border:1.5px solid rgba(227,6,19,0.15);
+  text-align:center;margin:12px 0;
+}
+.big-quote .q-mark{
+  font-family:'Fredoka',sans-serif;font-size:48px;
+  color:var(--red);opacity:.3;line-height:1;display:block;
+}
+.big-quote .q-text{
+  font-family:'Fredoka',sans-serif;font-size:17px;
+  font-weight:600;color:var(--text-dark);line-height:1.4;
+}
+.big-quote .q-author{font-size:12px;color:var(--text-soft);margin-top:6px;}
+
+/* ─── SCROLLBAR ─── */
+.page::-webkit-scrollbar{width:3px;}
+.page::-webkit-scrollbar-thumb{background:rgba(227,6,19,.3);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<!-- ══════════ TOP BAR ══════════ -->
+<div class="topbar">
+  <a href="../perpustakaan.html" class="topbar-back">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Perpustakaan
+  </a>
+  <div class="topbar-center">
+    <div class="topbar-title">🇮🇩 Programmer Indonesia Keren</div>
+    <div class="topbar-sub">Ruang Baca Aslan</div>
+  </div>
+  <div class="topbar-badge">Bab 26</div>
+</div>
+
+<!-- ══════════ PROGRESS ══════════ -->
+<div class="progress-wrap">
+  <div class="progress-info">
+    <span class="progress-label" id="progressLabel">Halaman 1 dari 12</span>
+    <span class="progress-count" id="progressCount">8%</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:8.33%"></div>
+  </div>
+</div>
+
+<!-- ══════════ VIEWPORT ══════════ -->
+<div class="viewport" id="viewport">
+
+  <!-- ════════ PAGE 1 — COVER ════════ -->
+  <div class="page active" id="page-1">
+    <div class="card">
+      <div class="cover-hero">
+        <div class="cover-bab">📚 Flipbook Edukasi Bab 26</div>
+        <div class="cover-title">Programmer Indonesia<br>yang Keren! 🇮🇩</div>
+        <div class="cover-sub">Anak Indonesia bisa jadi programmer hebat!</div>
+
+        <!-- Cover SVG Illustration -->
+        <svg class="cover-svg" width="240" height="180" viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
+          <!-- Laptop -->
+          <rect x="30" y="70" width="180" height="110" rx="12" fill="#1a1a2e" stroke="#333" stroke-width="1.5"/>
+          <rect x="38" y="78" width="164" height="85" rx="6" fill="#0d1117"/>
+          <!-- Screen code -->
+          <text x="50" y="96" fill="#39d353" font-size="8" font-family="monospace">function Indonesia() {</text>
+          <text x="58" y="108" fill="#00d4ff" font-size="8" font-family="monospace">return "Luar Biasa!";</text>
+          <text x="50" y="120" fill="#39d353" font-size="8" font-family="monospace">}</text>
+          <text x="50" y="132" fill="#ffb800" font-size="8" font-family="monospace">// 🇮🇩 Bisa!</text>
+          <rect x="30" y="178" width="180" height="8" rx="4" fill="#2d2d2d"/>
+          <rect x="85" y="186" width="70" height="4" rx="2" fill="#444"/>
+          <!-- Flag on screen -->
+          <rect x="168" y="82" width="22" height="15" rx="1" fill="#E30613"/>
+          <rect x="168" y="89" width="22" height="8" rx="0" rx="1" fill="white"/>
+          <line x1="166" y1="80" x2="166" y2="100" stroke="#888" stroke-width="1.5"/>
+          <rect x="168" y="89" width="22" height="8" fill="white" rx="0"/>
+          <!-- Stars floating -->
+          <text x="15" y="55" fill="#FFB800" font-size="14" class="float-star" style="animation-delay:0s">⭐</text>
+          <text x="200" y="45" fill="#00D4FF" font-size="12" class="float-star" style="animation-delay:.6s">✨</text>
+          <text x="210" y="120" fill="#39D353" font-size="10" class="float-star" style="animation-delay:1.2s">⭐</text>
+          <text x="8" y="130" fill="#FFB800" font-size="10" class="float-star" style="animation-delay:.3s">✨</text>
+          <!-- Wifi / connection lines -->
+          <path d="M120 60 Q80 30 40 45" stroke="rgba(0,212,255,0.3)" stroke-width="1.5" fill="none" stroke-dasharray="3,4"/>
+          <path d="M120 60 Q160 30 200 45" stroke="rgba(57,211,83,0.3)" stroke-width="1.5" fill="none" stroke-dasharray="3,4"/>
+          <circle cx="120" cy="58" r="5" fill="#00D4FF" opacity=".8"/>
+          <circle cx="40" cy="45" r="4" fill="#39D353" opacity=".7"/>
+          <circle cx="200" cy="45" r="4" fill="#FFB800" opacity=".7"/>
+        </svg>
+
+        <div class="cover-for">Untuk: Aslan 🌟</div>
+      </div>
+      <div class="page-body" style="padding-top:20px;">
+        <div class="highlight-box red">
+          <p>🎯 <strong>Di flipbook ini kamu akan:</strong> Mengenal programmer Indonesia yang luar biasa, belajar dari perjuangan mereka, dan tahu bahwa kamu juga bisa menjadi programmer hebat! 💪</p>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-icon">👨‍💻</div>
+            <div class="stat-val">1000+</div>
+            <div class="stat-label">Startup Tech Indonesia</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🌍</div>
+            <div class="stat-val">Global</div>
+            <div class="stat-label">Karya dinikmati dunia</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-val">Juara</div>
+            <div class="stat-label">Olimpiade Coding</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🚀</div>
+            <div class="stat-val">Kamu!</div>
+            <div class="stat-label">Calon programmer keren</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE 2 — PENGENALAN ════════ -->
+  <div class="page" id="page-2">
+    <div class="card">
+      <div class="page-header">
+        <div class="page-badge">📖 Halaman 2</div>
+        <div class="page-title">Hai, <span>Aslan!</span> 👋</div>
+      </div>
+      <div class="page-body">
+        <!-- Illustration -->
+        <svg width="100%" height="140" viewBox="0 0 320 140" style="margin-bottom:14px;border-radius:12px;overflow:hidden">
+          <rect width="320" height="140" fill="#f0f9ff"/>
+          <!-- Globe -->
+          <circle cx="160" cy="70" r="50" fill="none" stroke="#00D4FF" stroke-width="2" stroke-dasharray="4,3"/>
+          <circle cx="160" cy="70" r="40" fill="rgba(0,212,255,0.08)"/>
+          <!-- Indonesia flag small -->
+          <rect x="148" y="58" width="24" height="16" rx="2" fill="#E30613"/>
+          <rect x="148" y="66" width="24" height="8" rx="0" fill="white"/>
+          <!-- Connection dots around globe -->
+          <circle cx="110" cy="70" r="5" fill="#39D353"/>
+          <circle cx="210" cy="70" r="5" fill="#FFB800"/>
+          <circle cx="160" cy="28" r="5" fill="#E30613"/>
+          <circle cx="160" cy="112" r="5" fill="#00D4FF"/>
+          <line x1="148" y1="66" x2="115" y2="70" stroke="#39D353" stroke-width="1" opacity=".5"/>
+          <line x1="172" y1="66" x2="205" y2="70" stroke="#FFB800" stroke-width="1" opacity=".5"/>
+          <line x1="160" y1="58" x2="160" y2="33" stroke="#E30613" stroke-width="1" opacity=".5"/>
+          <!-- Text labels -->
+          <text x="88" y="74" fill="#39D353" font-size="9" font-family="sans-serif" font-weight="600">Gojek</text>
+          <text x="212" y="74" fill="#FFB800" font-size="9" font-family="sans-serif" font-weight="600">Tokopedia</text>
+          <text x="145" y="22" fill="#E30613" font-size="9" font-family="sans-serif" font-weight="600">🇮🇩 Indonesia</text>
+          <text x="130" y="128" fill="#00D4FF" font-size="9" font-family="sans-serif" font-weight="600">Google, Microsoft...</text>
+          <!-- Stars -->
+          <text x="20" y="30" fill="#FFB800" font-size="12">✨</text>
+          <text x="280" y="30" fill="#39D353" font-size="12">⭐</text>
+          <text x="20" y="120" fill="#00D4FF" font-size="12">⭐</text>
+          <text x="280" y="120" fill="#FFB800" font-size="12">✨</text>
+        </svg>
+
+        <p class="page-text"><strong>Tahukah kamu, Aslan?</strong> 🤩 Banyak programmer Indonesia yang keren dan karyanya dipakai jutaan orang di seluruh dunia!</p>
+        <p class="page-text">Mereka membuktikan bahwa <em>anak Indonesia juga bisa sukses</em> di dunia teknologi — sama seperti programmer dari Amerika, Eropa, atau negara manapun!</p>
+        <div class="highlight-box blue">
+          <p>💡 <strong>Yang paling keren?</strong> Banyak dari mereka mulai belajar coding dari yang sederhana dulu — sama seperti yang kamu lakukan sekarang, Aslan! 🚀</p>
+        </div>
+        <div class="highlight-box green">
+          <p>🌟 Dari Sabang sampai Merauke, anak-anak Indonesia terus belajar coding dan membuat karya hebat untuk dunia!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE 3 — SIAPA PROGRAMMER INDONESIA ════════ -->
+  <div class="page" id="page-3">
+    <div class="card">
+      <div class="page-header">
+        <div class="page-badge">💻 Halaman 3</div>
+        <div class="page-title">Siapa <span>Programmer</span> Indonesia?</div>
+      </div>
+      <div class="page-body">
+        <!-- SVG Illustration -->
+        <svg width="100%" height="120" viewBox="0 0 320 120" style="margin-bottom:14px;border-radius:12px;overflow:hidden">
+          <rect width="320" height="120" fill="linear-gradient(135deg,#fff7f7,#f0f9ff)"/>
+          <rect width="320" height="120" fill="#fafbff"/>
+          <!-- 3 programmer figures -->
+          <!-- Person 1 -->
+          <circle cx="70" cy="45" r="20" fill="#FFE0CC"/>
+          <rect x="50" y="65" width="40" height="35" rx="6" fill="#E30613"/>
+          <text x="70" y="48" text-anchor="middle" font-size="16">👦</text>
+          <text x="70" y="112" text-anchor="middle" fill="#E30613" font-size="9" font-family="sans-serif" font-weight="700">App Dev</text>
+          <!-- Person 2 -->
+          <circle cx="160" cy="42" r="22" fill="#E8F5E9"/>
+          <rect x="138" y="64" width="44" height="36" rx="6" fill="#00D4FF"/>
+          <text x="160" y="46" text-anchor="middle" font-size="18">👩‍💻</text>
+          <text x="160" y="112" text-anchor="middle" fill="#00D4FF" font-size="9" font-family="sans-serif" font-weight="700">Game Dev</text>
+          <!-- Person 3 -->
+          <circle cx="250" cy="45" r="20" fill="#FFF3E0"/>
+          <rect x="230" y="65" width="40" height="35" rx="6" fill="#39D353"/>
+          <text x="250" y="48" text-anchor="middle" font-size="16">🧑‍💻</text>
+          <text x="250" y="112" text-anchor="middle" fill="#39D353" font-size="9" font-family="sans-serif" font-weight="700">Startup Founder</text>
+          <!-- Code floating -->
+          <text x="10" y="25" fill="rgba(227,6,19,0.3)" font-size="9" font-family="monospace">&lt;code&gt;</text>
+          <text x="250" y="25" fill="rgba(0,212,255,0.3)" font-size="9" font-family="monospace">print()</text>
+        </svg>
+
+        <p class="page-text">Programmer Indonesia adalah <strong>orang Indonesia yang ahli membuat aplikasi, website, game, dan teknologi</strong> menggunakan coding.</p>
+
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-title">Pembuat Aplikasi 📱</div>
+              <div class="step-desc">Mereka membuat aplikasi yang kamu pakai setiap hari, seperti aplikasi belajar, belanja, dan transportasi.</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-title">Pembuat Game 🎮</div>
+              <div class="step-desc">Ada programmer Indonesia yang membuat game yang dimainkan anak-anak di seluruh dunia!</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-title">Pendiri Startup 🚀</div>
+              <div class="step-desc">Mereka membangun perusahaan teknologi sendiri yang memberikan lapangan pekerjaan bagi ribuan orang.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE 4 — CONTOH PROGRAMMER KEREN ════════ -->
+  <div class="page" id="page-4">
+    <div class="card">
+      <div class="page-header">
+        <div class="page-badge">🌟 Halaman 4</div>
+        <div class="page-title">Programmer <span>Indonesia</span> yang Keren!</div>
+      </div>
+      <div class="page-body">
+        <p class="page-text" style="margin-bottom:14px;">Aslan, kenalkan beberapa programmer Indonesia yang luar biasa:</p>
+
+        <div class="person-grid">
+          <div class="person-card">
+            <div class="person-avatar" style="background:linear-gradient(135deg,#E30613,#ff3347);">🚗</div>
+            <div class="person-info">
+              <div class="person-name">Nadiem Makarim</div>
+              <div class="person-role">Mulai dari ide sederhana: "Gimana kalau ojek bisa dipesan lewat HP?" — lahirlah <strong>Gojek</strong>, sekarang super besar!</div>
+              <span class="person-tag">🏍️ Pendiri Gojek</span>
+            </div>
+          </div>
+
+          <div class="person-card">
+            <div class="person-avatar" style="background:linear-gradient(135deg,#39D353,#00a821);">🛒</div>
+            <div class="person-info">
+              <div class="person-name">William Tanuwijaya</div>
+              <div class="person-role">Ingin memudahkan jual beli online di Indonesia — ia membangun <strong>Tokopedia</strong>, salah satu e-commerce terbesar Asia!</div>
+              <span class="person-tag">🛍️ Pendiri Tokopedia</span>
+            </div>
+          </div>
+
+          <div class="person-card">
+            <div class="person-avatar" style="background:linear-gradient(135deg,#00D4FF,#0099cc);">🎓</div>
+            <div class="person-info">
+              <div class="person-name">Programmer Muda Indonesia</div>
+              <div class="person-role">Banyak anak SMA & mahasiswa yang sudah membuat <strong>aplikasi belajar, game edukasi, dan tools</strong> bermanfaat untuk jutaan orang!</div>
+              <span class="person-tag">💡 Next-Gen Programmer</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-box gold" style="margin-top:14px;">
+          <p>🤔 <strong>Tahukah kamu, Aslan?</strong> Nadiem Makarim dan William Tanuwijaya sama-sama mulai dari <em>satu ide kecil</em> yang ingin memecahkan masalah sehari-hari. Kamu juga bisa!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE 5 — DARI MANA MEREKA BELAJAR ════════ -->
+  <div class="page" id="page-5">
+    <div class="card">
+      <div class="page-header">
+        <div class="page-badge">📚 Halaman 5</div>
+        <div class="page-title">Dari Mana <span>Mereka</span> Belajar?</div>
+      </div>
+      <div class="page-body">
+        <!-- Learning path SVG -->
+        <svg width="100%" height="100" viewBox="0 0 320 100" style="margin-bottom:14px;border-radius:12px;overflow:hidden">
+          <rect width="320" height="100" fill="#fafbff"/>
+          <!-- Path line -->
+          <path d="M20 50 Q80 20 140 50 Q200 80 260 50 Q280 45 300 50" stroke="#E30613" stroke-width="2.5" fill="none" stroke-dasharray="5,4"/>
+          <!-- Milestones -->
+          <circle cx="20" cy="50" r="8" fill="#E30613"/>
+          <text x="20" y="35" text-anchor="middle" font-size="11">📖</text>
+          <text x="20" y="72" text-anchor="middle" fill="#E30613" font-size="8" font-family="sans-serif">Belajar</text>
+          <circle cx="100" cy="35" r="8" fill="#FFB800"/>
+          <text x="100" y="20" text-anchor="middle" font-size="11">💻</text>
+          <text x="100" y="56" text-anchor="middle" fill="#FFB800" font-size="8" font-family="sans-serif">Latihan</text>
+          <circle cx="180" cy="50" r="8" fill="#39D353"/>
+          <text x="180" y="35" text-anchor="middle" font-size="11">🏗️</text>
+          <text x="180" y="72" text-anchor="middle" fill="#39D353" font-size="8" font-family="sans-serif">Bangun</text>
+          <circle cx="260" cy="35" r="8" fill="#00D4FF"/>
+          <text x="260" y="20" text-anchor="middle" font-size="11">🌍</text>
+          <text x="260" y="56" text-anchor="middle" fill="#00D4FF" font-size="8" font-family="sans-serif">Karya!</text>
+          <circle cx="300" cy="50" r="8" fill="#764ba2"/>
+          <text x="300" y="35" text-anchor="middle" font-size="11">🏆</text>
+          <text x="300" y="72" text-anchor="middle" fill="#764ba2" font-size="8" font-family="sans-serif">Sukses!</text>
+        </svg>
+
+        <p class="page-text">Cara mereka belajar coding bermacam-macam — dan semuanya bisa kamu lakukan juga, Aslan!</p>
+
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">A</div>
+            <div class="step-content">
+              <div class="step-title">Otodidak (Belajar Sendiri) 🔍</div>
+              <div class="step-desc">Banyak programmer hebat belajar dari YouTube, buku, dan internet — gratis! Semangat dan rasa penasaran adalah kuncinya.</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">B</div>
+            <div class="step-content">
+              <div class="step-title">Kursus Online 🖥️</div>
+              <div class="step-desc">Platform seperti Scratch, Code.org, Khan Academy — bisa diakses dari rumah. Mudah dan menyenangkan!</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">C</div>
+            <div class="step-content">
+              <div class="step-title">Latihan Setiap Hari 🏋️</div>
+              <div class="step-desc">Rahasia terbesar mereka: <strong>konsisten latihan tiap hari</strong>. Sedikit-sedikit tapi rutin lebih baik daripada sekali banyak!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-box red">
+          <p>💪 <strong>Kabar baiknya untuk Aslan:</strong> Kamu sudah memulai lebih awal dari kebanyakan programmer sukses itu. Terus semangat belajar ya! 🌟</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE 6 — PRESTASI ════════ -->
+  <div class="page" id="page-6">
+    <div class="card">
+      <div class="page-header">
+        <div class="page-badge">🏆 Halaman 6</div>
+        <div class="page-title">Prestasi <span>Programmer</span> Indonesia!</div>
+      </div>
+      <div class="page-body">
+        <!-- Trophy SVG -->
+        <svg width="100%" height="120" viewBox="0 0 320 120" style="margin-bottom:14px;border-radius:12px;overflow:hidden">
+          <rect width="320" height="120" fill="#fffbf0"/>
+          <!-- Trophy -->
+          <path d="M130 20 L130 70 Q130 90 160 90 Q190 90 190 70 L190 20 Z" fill="#FFB800" stroke="#E8A000" stroke-width="1.5"/>
+          <rect x="145" y="90" width="30" height="12" rx="2" fill="#FFB800"/>
+          <rect x="130" y="100" width="60" height="8" rx="4" fill="#E8A000"/>
+          <!-- Stars on trophy -->
+          <text x="160" y="60" text-anchor="middle" font-size="24">⭐</text>
+          <!-- Confetti -->
+          <text x="50" y="40" font-size="14">🎉</text>
+          <text x="250" y="40" font-size="14">🎊</text>
+          <text x="30" y="80" font-size="12">✨</text>
+          <text x="270" y="80" font-size="12">✨</text>
+          <text x="220" y="20" font-size="10">⭐</text>
+          <text x="80" y="20" font-size="10">🌟</text>
+          <!-- Text -->
+          <text x="160" y="112" text-anchor="middle" fill="#E8A000" font-size="11" font-family="sans-serif" font-weight="700">Kebanggaan Indonesia! 🇮🇩</text>
+        </svg>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-icon">📱</div>
+            <div class="stat-val">Jutaan</div>
+            <div class="stat-label">Pengguna app buatan programmer Indonesia</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🌐</div>
+            <div class="stat-val">Global</div>
+            <div class="stat-label">Bekerja di Google, Microsoft & Meta</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🏅</div>
+            <div class="stat-val">Juara</div>
+            <div class="stat-label">Kompetisi programming internasional</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-val">Triliunan</div>
+            <div class="stat-label">Nilai startup tech Indonesia</div>
+          </div>
+        </div>
+
+        <div class="highlight-box green" style="margin-top:4px;">
+          <p>🌍 <strong>Gojek</strong> kini beroperasi di Vietnam, Thailand, Singapura, dan negara Asia Tenggara lainnya! Dari Indonesia, mendunia! 🚀</p>
+        </div>
+        <div class="highlight-box blue">
+          <p>🏆 <strong>Olimpiade Sains Komputer</strong> — Indonesia rutin memenangkan medali di kompetisi programming internasional. Indonesia keren! 🇮🇩</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE 7 — FAKTA KEREN (INTERACTIVE) ════════ -->
+  <div class="page" id="page-7">
+    <div class="card">
+      <div class="page-header">
+        <div class="page-badge pulse-badge">⚡ Halaman 7 — Interaktif!</div>
+        <div class="page-title">Fakta <span>Keren</span> Indonesia! 🤩</div>
+      </div>
+      <div class="page-body">
+        <p class="page-text" style="margin-bottom:12px;">Klik kartu-kartu di bawah untuk mengungkap fakta keren, Aslan! 👆</p>
+
+        <div class="fact-grid">
+          <div class="fact-card" onclick="this.classList.toggle('tapped')">
+            <div class="fact-icon">🦄</div>
+            <div class="fact-text">Gojek adalah unicorn pertama Indonesia — nilainya $10 miliar lebih!</div>
+          </div>
+          <div class="fact-card" onclick="this.classList.toggle('tapped')">
+            <div class="fact-icon">🧒</div>
+            <div class="fact-text">Anak SMA Indonesia sudah bisa bikin aplikasi sendiri yang dipakai ribuan orang!</div>
+          </div>
+          <div class="fact-card" onclick="this.classList.toggle('tapped')">
+            <div class="fact-icon">🇮🇩</div>
+            <div class="fact-text">Programmer Indonesia terkenal kreatif, ramah, dan pantang menyerah di seluruh dunia!</div>
+          </div>
+          <div class="fact-card" onclick="this.classList.toggle('tapped')">
+            <div class="fact-icon">🏆</div>
+            <div class="fact-text">Indonesia pernah memenangkan medali emas di Olimpiade Informatika Internasional (IOI)!</div>
+          </div>
+          <div class="fact-card" onclick="this.classList.toggle('tapped')">
+            <div class="fact-icon">💼</div>
+            <div class="fact-text">Ribuan programmer Indonesia bekerja di perusahaan top dunia: Google, Apple, NASA!</div>
+          </div>
+          <div class="fact-card" onclick="this.classList.toggle('tapped')">
+            <div class="fact-icon">📊</div>
+            <div class="fact-text">Indonesia memiliki jumlah startup teknologi terbesar ke-5 di dunia. Amazing!</div>
+          </div>
+          <div class="fact-card" onclick="this.classList.toggle('tapped')">
+            <div class="fact-icon">🎮</div>
+            <div class="fact-text">Game buatan studio Indonesia dimainkan oleh pemain dari 50+ negara di seluruh dunia!</div>
+          </div>
+          <div class="fact-card" onclick="this.classList.toggle('tapped')">
+            <div class="fact-icon">🌱</div>
+            <div class="fact-text">Ribuan anak SD-SMA Indonesia kini belajar coding setiap tahun — termasuk kamu, Aslan!</div>
+          </div>
+        </div>
+
+        <div class="highlight-box red" style="margin-top:4px;text-align:center;">
+          <p>💡 <strong>Tip:</strong> Klik semua kartu untuk mengungkap semua fakta kerennya! 🎯</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE 8 — TANTANGAN ════════ -->
+  <div class="page" id="page-8">
+    <div class="card">
+      <div class="page-header">
+        <div class="page-badge">💪 Halaman 8</div>
+        <div class="page-title">Tantangan yang <span>Dihadapi</span></div>
+      </div>
+      <div class="page-body">
+        <!-- Challenge SVG -->
+        <svg width="100%" height="110" viewBox="0 0 320 110" style="margin-bottom:14px;border-radius:12px;overflow:hidden">
+          <rect width="320" height="110" fill="#fff7f7"/>
+          <!-- Road with obstacles -->
+          <rect x="20" y="60" width="280" height="20" rx="10" fill="#f0f0f0"/>
+          <!-- Runner (simple stick figure) -->
+          <circle cx="40" cy="50" r="10" fill="#E30613"/>
+          <text x="40" y="54" text-anchor="middle" font-size="12">🏃</text>
+          <!-- Obstacles -->
+          <rect x="100" y="48" width="20" height="32" rx="4" fill="#FFB800" opacity=".8"/>
+          <text x="110" y="42" text-anchor="middle" font-size="9" fill="#FFB800" font-family="sans-serif">Internet</text>
+          <text x="110" y="52" text-anchor="middle" font-size="8" fill="#666" font-family="sans-serif">Lambat</text>
+          <rect x="180" y="50" width="20" height="30" rx="4" fill="#00D4FF" opacity=".8"/>
+          <text x="190" y="44" text-anchor="middle" font-size="9" fill="#00D4FF" font-family="sans-serif">Fasilitas</text>
+          <text x="190" y="53" text-anchor="middle" font-size="8" fill="#666" font-family="sans-serif">Terbatas</text>
+          <rect x="255" y="46" width="20" height="34" rx="4" fill="#764ba2" opacity=".8"/>
+          <text x="265" y="40" text-anchor="middle" font-size="9" fill="#764ba2" font-family="sans-serif">Persaingan</text>
+          <text x="265" y="50" text-anchor="middle" font-size="8" fill="#666" font-family="sans-serif">Ketat</text>
+          <!-- Goal flag -->
+          <text x="300" y="55" font-size="18">🏁</text>
+          <!-- Arrow over obstacles -->
+          <path d="M55 45 Q80 25 95 45" stroke="#E30613" stroke-width="2" fill="none" stroke-dasharray="3,3"/>
+          <text x="140" y="95" text-anchor="middle" fill="#666" font-size="9" font-family="sans-serif">Tapi mereka tidak menyerah! 💪</text>
+        </svg>
+
+        <p class="page-text">Perjalanan programmer Indonesia tidak selalu mudah. Ada banyak rintangan yang mereka hadapi:</p>
+
+        <div class="challenge-item">
+          <div class="challenge-icon">🌐</div>
+          <div class="challenge-text"><strong>Internet yang lambat</strong> — di banyak daerah, akses internet masih terbatas. Tapi mereka tetap belajar!</div>
+        </div>
+        <div class="challenge-item">
+          <div class="challenge-icon">🖥️</div>
+          <div class="challenge-text"><strong>Fasilitas yang terbatas</strong> — tidak semua punya komputer canggih. Ada yang belajar coding di HP bekas!</div>
+        </div>
+        <div class="challenge-item">
+          <div class="challenge-icon">🌍</div>
+          <div class="challenge-text"><strong>Persaingan global yang ketat</strong> — harus bersaing dengan programmer dari seluruh dunia. Tapi Indonesia bisa!</div>
+        </div>
+        <div class="challenge-item">
+          <div class="challenge-icon">😔</div>
+          <div class="challenge-text"><strong>Keraguan dari orang lain</strong> — "Bisa ga ya?" Tapi mereka membuktikan dengan karya nyata!</div>
+        </div>
+
+        <div class="big-quote">
+          <span class="q-mark">"</span>
+          <div class="q-text">Rintangan bukan penghalang, tapi batu loncatan menuju kesuksesan!</div>
+          <div class="q-author">— Semangat programmer Indonesia</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE 9 — KEKUATAN ════════ -->
+  <div class="page" id="page-9">
+    <div class="card">
+      <div class="page-header">
+        <div class="page-badge">⚡ Halaman 9</div>
+        <div class="page-title">Kekuatan <span>Programmer</span> Indonesia!</div>
+      </div>
+      <div class="page-body">
+        <!-- Strength SVG -->
+        <svg width="100%" height="110" viewBox="0 0 320 110" style="margin-bottom:14px;border-radius:12px;overflow:hidden">
+          <rect width="320" height="110" fill="#f0fff4"/>
+          <!-- Indonesia flag -->
+          <rect x="130" y="15" width="60" height="40" rx="4" fill="#E30613"/>
+          <rect x="130" y="35" width="60" height="20" rx="0" fill="white" style="rx:0 0 4px 4px"/>
+          <rect x="130" y="51" width="60" height="4" rx="0 0 4 4" fill="white"/>
+          <line x1="128" y1="12" x2="128" y2="60" stroke="#8B6914" stroke-width="2"/>
+          <!-- Strengths orbiting -->
+          <text x="50" y="35" text-anchor="middle" font-size="10" fill="#39D353" font-family="sans-serif" font-weight="700">Kreatif 🎨</text>
+          <text x="260" y="35" text-anchor="middle" font-size="10" fill="#00D4FF" font-family="sans-serif" font-weight="700">Adaptif 🔄</text>
+          <text x="40" y="85" text-anchor="middle" font-size="10" fill="#FFB800" font-family="sans-serif" font-weight="700">Kerja Keras 💪</text>
+          <text x="270" y="85" text-anchor="middle" font-size="10" fill="#E30613" font-family="sans-serif" font-weight="700">Gotong Royong 🤝</text>
+          <!-- Connection lines -->
+          <line x1="80" y1="40" x2="128" y2="40" stroke="rgba(57,211,83,0.4)" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="192" y1="40" x2="240" y2="40" stroke="rgba(0,212,255,0.4)" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="90" y1="80" x2="128" y2="55" stroke="rgba(255,184,0,0.4)" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="192" y1="55" x2="240" y2="75" stroke="rgba(227,6,19,0.4)" stroke-width="1" stroke-dasharray="3,3"/>
+          <text x="160" y="100" text-anchor="middle" fill="#39D353" font-size="10" font-family="sans-serif">🇮🇩 Bangga Indonesia! 🇮🇩</text>
+        </svg>
+
+        <p class="page-text">Programmer Indonesia punya kekuatan khusus yang membuat mereka luar biasa! Hover atau sentuh tiap kartu:</p>
+
+        <div class="strength-list">
+          <div class="strength-pill"><span class="pill-icon">🎨</span> Kreatif</div>
+          <div class="strength-pill"><span class="pill-icon">🔄</span> Bisa Beradaptasi</div>
+          <div class="strength-pill"><span class="pill-icon">💪</span> Mau Kerja Keras</div>
+          <div class="strength-pill"><span class="pill-icon">🤝</span> Gotong Royong</div>
+          <div class="strength-pill"><span class="pill-icon">❤️</span> Penuh Semangat</div>
+          <div class="strength-pill"><span class="pill-icon">🧠</span> Pemikir Kritis</div>
+          <div class="strength-pill"><span class="pill-icon">🌱</span> Mau Terus Belajar</div>
+          <div class="strength-pill"><span class="pill-icon">🇮🇩</span> Bangga Indonesia</div>
+        </div>
+
+        <div class="highlight-box green">
+          <p>💡 <strong>Gotong royong</strong> adalah nilai Indonesia yang unik! Programmer Indonesia sering saling membantu dan berbagi ilmu — komunitas yang luar biasa! 🤝</p>
+        </div>
+
+        <div class="highlight-box blue">
+          <p>🌟 Semangat ya Aslan! Kekuatan-kekuatan ini juga ada dalam dirimu. Tinggal diasah setiap hari!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE 10 — PESAN UNTUK ASLAN ════════ -->
+  <div class="page" id="page-10">
+    <div class="card">
+      <div class="page-header">
+        <div class="page-badge">💌 Halaman 10</div>
+        <div class="page-title">Pesan untuk <span>Aslan!</span> 🌟</div>
+      </div>
+      <div class="page-body">
+        <!-- Personal SVG for Aslan -->
+        <svg width="100%" height="130" viewBox="0 0 320 130" style="margin-bottom:16px;border-radius:12px;overflow:hidden">
+          <defs>
+            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fff0f5"/>
+              <stop offset="100%" stop-color="#e8faff"/>
+            </linearGradient>
+          </defs>
+          <rect width="320" height="130" fill="url(#skyGrad)"/>
+          <!-- Stars -->
+          <text x="20" y="30" font-size="16" class="float-star" style="animation-delay:0s">⭐</text>
+          <text x="280" y="25" font-size="14" class="float-star" style="animation-delay:.5s">🌟</text>
+          <text x="150" y="20" font-size="12" class="float-star" style="animation-delay:1s">✨</text>
+          <text x="60" y="115" font-size="12" class="float-star" style="animation-delay:.8s">💫</text>
+          <text x="250" y="115" font-size="14" class="float-star" style="animation-delay:.3s">⭐</text>
+          <!-- Kid figure (Aslan) -->
+          <circle cx="110" cy="60" r="22" fill="#FFE0CC" stroke="#FFC5A0" stroke-width="1.5"/>
+          <text x="110" y="67" text-anchor="middle" font-size="22">😊</text>
+          <rect x="90" y="82" width="40" height="35" rx="8" fill="#E30613"/>
+          <rect x="78" y="86" width="14" height="25" rx="7" fill="#FFE0CC"/>
+          <rect x="128" y="86" width="14" height="25" rx="7" fill="#FFE0CC"/>
+          <text x="108" y="98" text-anchor="middle" fill="white" font-size="9" font-family="sans-serif" font-weight="700">Aslan</text>
+          <!-- Laptop -->
+          <rect x="150" y="58" width="80" height="55" rx="6" fill="#1a1a2e"/>
+          <rect x="156" y="64" width="68" height="40" rx="3" fill="#0d1117"/>
+          <text x="190" y="80" text-anchor="middle" fill="#39D353" font-size="7" font-family="monospace">print("Halo!")</text>
+          <text x="190" y="92" text-anchor="middle" fill="#00D4FF" font-size="7" font-family="monospace">if coding:</text>
+          <text x="190" y="102" text-anchor="middle" fill="#FFB800" font-size="7" font-family="monospace">  sukses = True</text>
+          <rect x="150" y="112" width="80" height="5" rx="2.5" fill="#333"/>
+          <!-- Arrow from Aslan to laptop -->
+          <path d="M132 72 Q142 65 148 72" stroke="#E30613" stroke-width="2" fill="none" marker-end="url(#arrowRed)"/>
+          <!-- Future path -->
+          <path d="M235 75 Q260 60 290 50" stroke="#FFB800" stroke-width="1.5" fill="none" stroke-dasharray="3,3"/>
+          <text x="285" y="46" font-size="14">🚀</text>
+          <text x="160" y="125" text-anchor="middle" fill="#E30613" font-size="10" font-family="sans-serif" font-weight="700">Aslan — Calon Programmer Keren!</text>
+        </svg>
+
+        <div class="message-card">
+          <span class="msg-emoji">💌</span>
+          <div class="msg-title">Pesan Spesial untuk Aslan</div>
+          <div class="msg-text">
+            Aslan, kamu punya semua yang dibutuhkan untuk menjadi programmer hebat! Rasa penasaran, semangat belajar, dan keberanian untuk mencoba — semuanya sudah ada dalam dirimu! 🌟
+          </div>
+        </div>
+
+        <div class="step-list" style="margin-top:14px;">
+          <div class="step-item">
+            <div class="step-num">🎯</div>
+            <div class="step-content">
+              <div class="step-title">Mulai dari Sekarang!</div>
+              <div class="step-desc">Programmer sukses tidak menunggu waktu yang sempurna. Mulailah hari ini, dari yang kecil.</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">🔄</div>
+            <div class="step-content">
+              <div class="step-title">Latihan Setiap Hari</div>
+              <div class="step-desc">15 menit sehari lebih baik dari 2 jam seminggu sekali. Konsistensi adalah kuncinya!</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">🚀</div>
+            <div class="step-content">
+              <div class="step-title">Jangan Takut Salah!</div>
+              <div class="step-desc">Error bukan musuh, tapi guru terbaik. Setiap error yang kamu perbaiki = kamu makin pintar!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE 11 — PESAN PENTING ════════ -->
+  <div class="page" id="page-11">
+    <div class="card">
+      <div class="page-header">
+        <div class="page-badge">🇮🇩 Halaman 11</div>
+        <div class="page-title">Pesan <span>Penting</span> untuk Indonesia</div>
+      </div>
+      <div class="page-body">
+        <!-- Flag SVG -->
+        <svg width="100%" height="110" viewBox="0 0 320 110" style="margin-bottom:14px;border-radius:12px;overflow:hidden">
+          <rect width="320" height="110" fill="#fafbff"/>
+          <!-- Large flag -->
+          <rect x="60" y="15" width="200" height="130" rx="6" fill="#E30613"/>
+          <rect x="60" y="70" width="200" height="75" rx="0 0 6 6" fill="white"/>
+          <!-- Pole -->
+          <line x1="58" y1="10" x2="58" y2="110" stroke="#8B6914" stroke-width="3"/>
+          <rect x="44" y="105" width="28" height="6" rx="3" fill="#8B6914"/>
+          <!-- Tech overlay on flag -->
+          <text x="160" y="52" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="18" font-family="monospace">&lt;/&gt;</text>
+          <text x="160" y="95" text-anchor="middle" fill="rgba(227,6,19,0.4)" font-size="18" font-family="monospace">{ }</text>
+          <!-- Stars -->
+          <text x="290" y="30" font-size="16" class="flag-wave">🌟</text>
+          <text x="10" y="40" font-size="14" class="flag-wave" style="animation-delay:.5s">⭐</text>
+          <text x="290" y="90" font-size="14" class="float-star" style="animation-delay:1s">✨</text>
+        </svg>
+
+        <p class="page-text"><strong>Indonesia punya banyak talenta di bidang teknologi.</strong> Setiap tahun, semakin banyak anak Indonesia yang belajar coding dan membuat karya luar biasa.</p>
+
+        <div class="highlight-box red">
+          <p>🌟 <strong>Kamu, Aslan, adalah bagian dari generasi penerus</strong> yang akan membawa Indonesia semakin maju dan dikenal di dunia teknologi global!</p>
+        </div>
+
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">🌱</div>
+            <div class="step-content">
+              <div class="step-title">Generasi Digital Indonesia</div>
+              <div class="step-desc">Anak-anak seperti kamu yang belajar coding sekarang akan menjadi pemimpin teknologi Indonesia 10-20 tahun ke depan!</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">💡</div>
+            <div class="step-content">
+              <div class="step-title">Satu Ide + Coding = Perubahan</div>
+              <div class="step-desc">Seperti Gojek yang lahir dari satu ide, satu program buatan kamu bisa mengubah kehidupan jutaan orang!</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">🇮🇩</div>
+            <div class="step-content">
+              <div class="step-title">Bangga Jadi Programmer Indonesia</div>
+              <div class="step-desc">Indonesia kaya budaya, kreativitas, dan semangat. Kombinasi itu menjadikan programmer Indonesia unik dan istimewa!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="big-quote">
+          <span class="q-mark">"</span>
+          <div class="q-text">Dengan coding, anak Indonesia bisa membangun masa depan Indonesia yang lebih cerah!</div>
+          <div class="q-author">— Semangat Merah Putih 🇮🇩</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE 12 — ENDING ════════ -->
+  <div class="page" id="page-12">
+    <div class="card">
+      <div class="page-header">
+        <div class="page-badge">🎉 Halaman 12 — Selesai!</div>
+        <div class="page-title">Selamat, <span>Aslan!</span> 🎊</div>
+      </div>
+      <div class="page-body">
+        <!-- Celebration SVG -->
+        <svg width="100%" height="130" viewBox="0 0 320 130" style="margin-bottom:16px;border-radius:12px;overflow:hidden">
+          <defs>
+            <linearGradient id="celebGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fff0f5"/>
+              <stop offset="100%" stop-color="#f0fff4"/>
+            </linearGradient>
+          </defs>
+          <rect width="320" height="130" fill="url(#celebGrad)"/>
+          <!-- Confetti rain -->
+          <text x="30"  y="30"  font-size="12" fill="#E30613">🎉</text>
+          <text x="270" y="25"  font-size="12" fill="#FFB800">🎊</text>
+          <text x="150" y="18"  font-size="14" fill="#39D353">🎉</text>
+          <text x="80"  y="120" font-size="10" fill="#00D4FF">✨</text>
+          <text x="230" y="118" font-size="10" fill="#E30613">⭐</text>
+          <text x="10"  y="80"  font-size="10" fill="#FFB800">🌟</text>
+          <text x="300" y="80"  font-size="10" fill="#39D353">💫</text>
+          <!-- Trophy -->
+          <text x="160" y="82" text-anchor="middle" font-size="48">🏆</text>
+          <!-- Indonesian flag mini -->
+          <rect x="240" y="30" width="40" height="26" rx="3" fill="#E30613"/>
+          <rect x="240" y="43" width="40" height="13" rx="0 0 3 3" fill="white"/>
+          <line x1="238" y1="26" x2="238" y2="62" stroke="#8B6914" stroke-width="1.5"/>
+          <!-- Name badge -->
+          <rect x="70" y="95" width="180" height="28" rx="14" fill="#E30613"/>
+          <text x="160" y="113" text-anchor="middle" fill="white" font-size="12" font-family="sans-serif" font-weight="700">Aslan 🌟</text>
+        </svg>
+
+        <p class="page-text">Kamu sudah mengenal <strong>programmer Indonesia yang keren!</strong> Mereka membuktikan bahwa anak Indonesia bisa berkarya di kancah dunia. 🌍</p>
+
+        <div class="message-card" style="margin-bottom:14px;">
+          <span class="msg-emoji">🚀</span>
+          <div class="msg-title">Ingat, Aslan!</div>
+          <div class="msg-text">
+            Programmmer Indonesia yang sukses itu dulu juga sama seperti kamu — anak yang penasaran dan mau belajar. Yang membedakan mereka adalah mereka <strong style="color:#FFD700;">tidak berhenti belajar!</strong>
+          </div>
+        </div>
+
+        <div class="next-card">
+          <div class="next-label">📚 Flipbook Selanjutnya</div>
+          <div class="next-title">Bab 27: Anak Seumuranku yang Sudah Bisa Coding! 👦💻</div>
+          <div class="next-desc">Temukan kisah-kisah inspiratif anak seusia Aslan dari seluruh dunia yang sudah membuat aplikasi, game, dan website mereka sendiri! Kamu pasti bisa juga! 🌟</div>
+        </div>
+
+        <div class="ayah-card">
+          <div class="ayah-icon">👨</div>
+          <div class="ayah-text">
+            Kalau ada yang ingin ditanyakan tentang <strong>programmer Indonesia, coding, atau hal lainnya</strong>, tanya saja ke <strong>Ayah Sigit</strong> ya! Ayah siap jelasin dengan senang hati. ❤️
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:12px;padding:12px;background:#f8f9ff;border-radius:12px;border:1px solid #e8ecff;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:16px;color:#E30613;margin-bottom:4px;">🇮🇩 Ayo Coding untuk Indonesia! 🇮🇩</div>
+          <div style="font-size:12px;color:#6b7a8d;">Aslan — Calon Programmer Keren Indonesia!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end viewport -->
+
+<!-- ══════════ NAV BAR ══════════ -->
+<div class="nav-bar">
+  <button class="nav-btn nav-prev" id="prevBtn" onclick="navigate(-1)" disabled>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Sebelumnya
+  </button>
+
+  <div class="nav-page-indicator">
+    <div class="nav-dots" id="navDots"></div>
+    <div class="nav-page-num" id="pageNum">1 / 12</div>
+  </div>
+
+  <button class="nav-btn nav-next" id="nextBtn" onclick="navigate(1)">
+    Selanjutnya
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
+<script>
+const TOTAL = 12;
+let cur = 1;
+
+// ── Build dots ──
+const dotsEl = document.getElementById('navDots');
+for(let i=1;i<=TOTAL;i++){
+  const d = document.createElement('div');
+  d.className = 'nav-dot' + (i===1?' active':'');
+  d.onclick = ()=> goTo(i, i>cur?1:-1);
+  d.title = 'Halaman ' + i;
+  dotsEl.appendChild(d);
+}
+
+function goTo(n, dir=1){
+  if(n<1||n>TOTAL||n===cur) return;
+
+  const oldPage = document.getElementById('page-'+cur);
+  const newPage = document.getElementById('page-'+n);
+
+  // Exit animation
+  oldPage.classList.remove('active');
+  oldPage.classList.add(dir>0 ? 'exit-left' : 'enter-right');
+  setTimeout(()=> oldPage.classList.remove('exit-left','enter-right'), 400);
+
+  // Scroll new page to top
+  newPage.scrollTop = 0;
+
+  // Enter animation — start from opposite side
+  newPage.style.transform = dir>0 ? 'translateX(60px)' : 'translateX(-60px)';
+  newPage.style.opacity = '0';
+  newPage.classList.add('active');
+
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      newPage.style.transform = '';
+      newPage.style.opacity = '';
+    });
+  });
+
+  cur = n;
+  updateUI();
+}
+
+function navigate(dir){
+  goTo(cur+dir, dir);
+}
+
+function updateUI(){
+  // Buttons
+  document.getElementById('prevBtn').disabled = cur===1;
+  document.getElementById('nextBtn').disabled = cur===TOTAL;
+  document.getElementById('nextBtn').textContent = cur===TOTAL ? '🎉 Selesai!' : '';
+
+  const nextBtn = document.getElementById('nextBtn');
+  if(cur===TOTAL){
+    nextBtn.innerHTML = '🎉 Selesai!';
+  } else {
+    nextBtn.innerHTML = 'Selanjutnya <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+  }
+
+  // Dots
+  document.querySelectorAll('.nav-dot').forEach((d,i)=>{
+    d.classList.toggle('active', i+1===cur);
+  });
+
+  // Page num
+  document.getElementById('pageNum').textContent = cur + ' / ' + TOTAL;
+
+  // Progress
+  const pct = Math.round((cur/TOTAL)*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = 'Halaman '+cur+' dari '+TOTAL;
+  document.getElementById('progressCount').textContent = pct+'%';
+}
+
+// Keyboard
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') navigate(1);
+  if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   navigate(-1);
+});
+
+// Touch/swipe
+let touchStartX=0, touchStartY=0;
+const vp = document.getElementById('viewport');
+vp.addEventListener('touchstart', e=>{
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+},{passive:true});
+vp.addEventListener('touchend', e=>{
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+  if(Math.abs(dx)>50 && dy<60){
+    navigate(dx<0?1:-1);
+  }
+},{passive:true});
+
+// Init
+updateUI();
+</script>
+</body>
+</html>

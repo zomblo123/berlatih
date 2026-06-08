@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Aslan's English Adventure — Day 19: The Phoenix Feather (Click any word for meaning)</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #0b1437;
+    --deep:    #0f2057;
+    --blue:    #1a56db;
+    --sky:     #3b82f6;
+    --amber:   #f59e0b;
+    --gold:    #fbbf24;
+    --emerald: #10b981;
+    --coral:   #f97316;
+    --purple:  #8b5cf6;
+    --rose:    #f43f5e;
+    --white:   #ffffff;
+    --glass:   rgba(255,255,255,0.06);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star {
+    position: absolute; border-radius: 50%; background: white;
+    animation: twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:.15;transform:scale(1);}50%{opacity:.9;transform:scale(1.4);} }
+  .shoot {
+    position: fixed; top: 15%; left: -10%;
+    width: 140px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    animation: shoot 8s linear infinite 3s; z-index: 0;
+  }
+  @keyframes shoot {
+    0%{left:-10%;top:15%;opacity:0;}5%{opacity:1;}40%{left:110%;top:35%;opacity:0;}100%{left:110%;top:35%;opacity:0;}
+  }
+  .wrapper { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 36px 20px 60px; }
+  .hero { text-align: center; margin-bottom: 44px; animation: fadeDown .8s ease both; }
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
+  .hero-badge {
+    display: inline-flex; gap: 8px;
+    background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.35);
+    color: var(--gold); padding: 7px 22px; border-radius: 100px;
+    font-size: .8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Baloo 2', cursive; font-size: clamp(2rem,6vw,3.2rem);
+    font-weight: 800; color: var(--white); line-height: 1.15; margin-bottom: 12px;
+  }
+  .hero h1 .accent { background: linear-gradient(135deg,#fb923c,#fbbf24,#ef4444); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero-sub { color: rgba(255,255,255,.55); font-size: 1rem; max-width: 480px; margin: 0 auto 28px; line-height: 1.6; }
+  .hero-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .tag { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.7); padding:6px 16px; border-radius:100px; font-size:.78rem; font-weight:600; backdrop-filter:blur(8px); }
+  .progress-wrap { background:rgba(255,255,255,.07); border-radius:100px; height:8px; margin-bottom:40px; overflow:hidden; border:1px solid rgba(255,255,255,.08); }
+  .progress-bar { height:100%; background:linear-gradient(90deg,#f97316,#fbbf24); border-radius:100px; width:0%; transition:width .6s ease; }
+  .progress-label { text-align:right; font-size:.75rem; color:rgba(255,255,255,.4); margin-top:6px; font-weight:600; }
+
+  .illustration-card {
+    background: linear-gradient(135deg,#1c0a00 0%,#3d1a00 50%,#1c0800 100%);
+    border-radius: 32px; padding: 32px 24px 24px; margin-bottom: 40px;
+    text-align: center; position: relative; overflow: hidden; animation: fadeUp .9s ease .1s both;
+    border: 1px solid rgba(251,146,60,.25);
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+  .illus-svg { max-width: 300px; width: 100%; position: relative; z-index: 1; }
+  .illus-quote { color:rgba(255,255,255,.75); font-size:.95rem; font-weight:600; margin-top:16px; font-style:italic; }
+  .illus-quote strong { color:var(--gold); font-style:normal; }
+
+  /* SPEED CONTROLS */
+  .speed-controls {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 16px; animation: fadeUp .9s ease .15s both;
+  }
+  .speed-label { color: rgba(255,255,255,.5); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .speed-btn {
+    padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06); color: rgba(255,255,255,.6);
+    font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s;
+    backdrop-filter: blur(8px); font-family: 'Nunito', sans-serif;
+  }
+  .speed-btn:hover { background: rgba(255,255,255,.12); color: white; }
+  .speed-btn.active {
+    background: linear-gradient(135deg,#f97316,#ef4444);
+    color: white; border-color: transparent;
+    box-shadow: 0 4px 16px rgba(249,115,22,.5);
+  }
+
+  .master-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:40px; animation:fadeUp .9s ease .2s both; }
+  .btn-master { display:inline-flex; align-items:center; gap:10px; padding:13px 28px; border-radius:100px; border:none; cursor:pointer; font-weight:700; transition:transform .15s; font-family:'Nunito',sans-serif; font-size:1rem; }
+  .btn-master:active { transform:scale(.97); }
+  .btn-play-all { background:linear-gradient(135deg,#f97316,#ef4444); color:white; box-shadow:0 6px 24px rgba(249,115,22,.5); }
+  .btn-stop { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:rgba(255,255,255,.75); backdrop-filter:blur(8px); }
+
+  .chapter {
+    background: linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.09); border-radius: 28px;
+    margin-bottom: 24px; overflow: hidden; backdrop-filter: blur(12px);
+    transition: transform .2s; animation: fadeUp .7s ease both;
+  }
+  .chapter:hover { transform: translateY(-3px); }
+  .chapter:nth-child(1){animation-delay:.1s;}.chapter:nth-child(2){animation-delay:.2s;}
+  .chapter:nth-child(3){animation-delay:.3s;}.chapter:nth-child(4){animation-delay:.4s;}
+  .chapter:nth-child(5){animation-delay:.5s;}
+  .chapter-accent { height: 4px; }
+  .ch1 .chapter-accent{background:linear-gradient(90deg,var(--sky),var(--blue));}
+  .ch2 .chapter-accent{background:linear-gradient(90deg,var(--emerald),#0f9f72);}
+  .ch3 .chapter-accent{background:linear-gradient(90deg,var(--amber),var(--coral));}
+  .ch4 .chapter-accent{background:linear-gradient(90deg,var(--purple),#6d28d9);}
+  .ch5 .chapter-accent{background:linear-gradient(90deg,var(--rose),#e11d48);}
+  .chapter-inner { padding: 28px 28px 24px; }
+  .chapter-head { display:flex; align-items:center; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+  .chapter-num {
+    width:52px; height:52px; border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2',cursive; font-size:1.3rem; font-weight:800; color:white; flex-shrink:0;
+  }
+  .ch1 .chapter-num{background:linear-gradient(135deg,var(--sky),var(--blue));}
+  .ch2 .chapter-num{background:linear-gradient(135deg,var(--emerald),#0f9f72);}
+  .ch3 .chapter-num{background:linear-gradient(135deg,var(--amber),var(--coral));}
+  .ch4 .chapter-num{background:linear-gradient(135deg,var(--purple),#6d28d9);}
+  .ch5 .chapter-num{background:linear-gradient(135deg,var(--rose),#e11d48);}
+  .chapter-meta { flex:1; min-width:0; }
+  .chapter-tag { font-size:.7rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.35); margin-bottom:4px; }
+  .chapter-title { font-family:'Baloo 2',cursive; font-size:1.05rem; font-weight:700; color:var(--white); line-height:1.3; }
+  .btn-listen {
+    flex-shrink:0; display:inline-flex; align-items:center; gap:8px;
+    padding:10px 20px; border-radius:100px; border:none; cursor:pointer;
+    font-size:.82rem; font-weight:700; transition:all .2s; font-family:'Nunito',sans-serif;
+  }
+  .ch1 .btn-listen{background:rgba(59,130,246,.18);color:#7db8ff;border:1px solid rgba(59,130,246,.3);}
+  .ch2 .btn-listen{background:rgba(16,185,129,.15);color:#6ee7c0;border:1px solid rgba(16,185,129,.3);}
+  .ch3 .btn-listen{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3);}
+  .ch4 .btn-listen{background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.3);}
+  .ch5 .btn-listen{background:rgba(244,63,94,.15);color:#fda4af;border:1px solid rgba(244,63,94,.3);}
+  .btn-listen:hover{filter:brightness(1.15);transform:scale(1.04);}
+  .btn-listen.playing .icon-play{display:none;}
+  .btn-listen.playing::before{content:'⏸';margin-right:4px;}
+  .wave-bars{display:none;align-items:center;gap:2px;height:16px;}
+  .btn-listen.playing .wave-bars{display:flex;}
+  .wave-bar{width:3px;border-radius:2px;background:currentColor;animation:wave var(--dur,.5s) infinite alternate;}
+  @keyframes wave{from{height:3px;}to{height:14px;}}
+  .chapter-text {
+    font-size: 1rem; line-height: 1.95; color: rgba(255,255,255,.85);
+    padding: 20px 22px; background: rgba(0,0,0,.22);
+    border-radius: 16px; border: 1px solid rgba(255,255,255,.05);
+    position: relative; word-spacing: 2px;
+  }
+  .chapter-text .read-marker {
+    position:absolute; top:12px; right:14px;
+    font-size:.75rem; font-weight:700; color:var(--emerald);
+    opacity:0; transition:opacity .4s;
+  }
+  .chapter.done .chapter-text .read-marker { opacity:1; }
+  .w {
+    display: inline; border-radius: 5px; padding: 1px 2px;
+    cursor: pointer; transition: background 0.08s; white-space: normal;
+  }
+  .w:hover { background: rgba(249,115,22,0.28); }
+  .hl { color: var(--gold); font-weight: 700; }
+  .vocab-box { margin-top:16px; padding:16px 20px; background:rgba(255,255,255,.04); border-radius:14px; border:1px solid rgba(255,255,255,.07); }
+  .vocab-title { font-size:.72rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:10px; }
+  .vocab-pills { display:flex; flex-wrap:wrap; gap:8px; }
+  .vocab-pill {
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
+    border-radius:100px; padding:5px 14px; font-size:.8rem; font-weight:600;
+    color:rgba(255,255,255,.65); cursor:pointer; transition:all .18s;
+  }
+  .vocab-pill:hover{background:rgba(255,255,255,.14);color:var(--white);transform:scale(1.06);}
+  .motivation-card {
+    background: linear-gradient(135deg,#1c0800 0%,#2d1200 60%,#1c0800 100%);
+    border: 1px solid rgba(251,146,60,.28); border-radius:28px;
+    padding:36px 32px; text-align:center; margin-top:40px;
+    position:relative; overflow:hidden; animation:fadeUp .7s ease .6s both;
+  }
+  .motivation-card .star-icon{font-size:2.8rem;margin-bottom:16px;display:block;animation:spin 6s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);}50%{transform:rotate(180deg);}to{transform:rotate(360deg);}}
+  .motivation-card h2{font-family:'Baloo 2',cursive;font-size:clamp(1.2rem,4vw,1.7rem);font-weight:800;color:var(--gold);margin-bottom:14px;}
+  .motivation-card p{color:rgba(255,255,255,.7);font-size:.97rem;line-height:1.7;max-width:520px;margin:0 auto;}
+  .challenge-box{margin-top:24px;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.25);border-radius:16px;padding:18px 22px;}
+  .challenge-box p{font-size:.9rem;font-weight:600;color:rgba(255,255,255,.75);}
+  .challenge-box strong{color:var(--gold);}
+  .footer{text-align:center;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.3);font-size:.82rem;font-weight:600;}
+  .word-toast {
+    position:fixed; bottom:28px; left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:rgba(0,0,0,.9); backdrop-filter:blur(12px);
+    color:#fbbf24; padding:12px 28px; border-radius:100px;
+    font-size:.9rem; font-weight:600; box-shadow:0 8px 32px rgba(0,0,0,.35);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    z-index:9999; white-space:nowrap;
+    border:1px solid rgba(251,191,36,.3); font-family:monospace;
+  }
+  .word-toast.show{transform:translateX(-50%) translateY(0);}
+  .word-toast small{color:#ccc;font-size:0.7rem;margin-left:8px;}
+  @media(max-width:600px){
+    .chapter-inner{padding:20px 18px 18px;}
+    .btn-listen span{display:none;}
+    .chapter-num{width:44px;height:44px;font-size:1.1rem;}
+    .word-toast{white-space:normal;max-width:90vw;text-align:center;}
+    .speed-controls{gap:6px;}
+    .speed-btn{padding:7px 14px;font-size:.75rem;}
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<div class="stars" id="stars"></div>
+<div class="shoot"></div>
+
+<div class="wrapper">
+  <header class="hero">
+    <div class="hero-badge">📘 Day 19 – Late Beginner | ✨ Click ANY word for Indonesian meaning</div>
+    <h1>The Phoenix<br><span class="accent">Feather</span></h1>
+    <p class="hero-sub">A story about <strong style="color:var(--gold)">Aslan</strong> who finds a glowing phoenix feather — and sets off on an epic journey to return it to the most magnificent bird in the world. 🔥🪶✨</p>
+    <div class="hero-tags">
+      <span class="tag">⭐ Late Beginner</span>
+      <span class="tag">🎧 Listen &amp; Learn</span>
+      <span class="tag">📚 5 Chapters</span>
+      <span class="tag">🏆 Vocabulary</span>
+      <span class="tag">🔍 Click words for meaning</span>
+    </div>
+  </header>
+
+  <div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-label" id="progressLabel">0 of 5 chapters read</div>
+  </div>
+
+  <!-- ILLUSTRATION -->
+  <div class="illustration-card">
+    <svg class="illus-svg" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="phoenixGlow" cx="50%" cy="45%" r="50%">
+          <stop offset="0%" stop-color="#fbbf24" stop-opacity=".35"/>
+          <stop offset="60%" stop-color="#f97316" stop-opacity=".15"/>
+          <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="featherGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fbbf24" stop-opacity=".6"/>
+          <stop offset="100%" stop-color="#f97316" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="skyFire" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0c0a00"/>
+          <stop offset="50%" stop-color="#1c0a00"/>
+          <stop offset="100%" stop-color="#2d1200"/>
+        </linearGradient>
+        <linearGradient id="volcanoGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1c1c1c"/>
+          <stop offset="100%" stop-color="#0a0a0a"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Sky -->
+      <rect width="300" height="200" fill="url(#skyFire)"/>
+
+      <!-- Stars -->
+      <circle cx="18"  cy="12"  r="1.2" fill="#fef3c7" opacity=".8"/>
+      <circle cx="55"  cy="7"   r="1"   fill="white"   opacity=".6"/>
+      <circle cx="90"  cy="20"  r="1.4" fill="#fef3c7" opacity=".7"/>
+      <circle cx="140" cy="9"   r="1"   fill="white"   opacity=".5"/>
+      <circle cx="200" cy="16"  r="1.2" fill="#fef3c7" opacity=".8"/>
+      <circle cx="260" cy="8"   r="1"   fill="white"   opacity=".6"/>
+      <circle cx="285" cy="22"  r="1.4" fill="#fef3c7" opacity=".7"/>
+      <circle cx="30"  cy="38"  r="1"   fill="white"   opacity=".5"/>
+      <circle cx="75"  cy="45"  r="1.2" fill="#fef3c7" opacity=".6"/>
+      <circle cx="230" cy="40"  r="1"   fill="white"   opacity=".5"/>
+      <circle cx="270" cy="50"  r="1.2" fill="#fef3c7" opacity=".7"/>
+
+      <!-- Volcano silhouette (background) -->
+      <path d="M180 200 L210 120 L240 200Z" fill="url(#volcanoGrad)" opacity=".9"/>
+      <path d="M195 200 L220 110 L250 200Z" fill="url(#volcanoGrad)" opacity=".8"/>
+      <!-- Lava glow at volcano top -->
+      <ellipse cx="220" cy="112" rx="18" ry="8" fill="#f97316" opacity=".25"/>
+      <ellipse cx="220" cy="112" rx="10" ry="5" fill="#fbbf24" opacity=".3"/>
+      <!-- Lava drips -->
+      <path d="M215 115 Q218 125 216 135" stroke="#f97316" stroke-width="2" fill="none" opacity=".5"/>
+      <path d="M224 114 Q227 124 225 132" stroke="#ef4444" stroke-width="1.5" fill="none" opacity=".4"/>
+
+      <!-- Ground -->
+      <path d="M0 168 Q60 158 120 168 Q180 178 240 168 Q270 162 300 168 L300 200 L0 200Z" fill="#1a0800"/>
+      <path d="M0 180 Q50 172 100 180 Q160 188 220 180 Q260 174 300 180 L300 200 L0 200Z" fill="#0f0500"/>
+
+      <!-- Phoenix glow aura -->
+      <ellipse cx="148" cy="85" rx="70" ry="70" fill="url(#phoenixGlow)"/>
+
+      <!-- ===== PHOENIX BIRD ===== -->
+      <!-- Tail feathers (long, flowing down) -->
+      <path d="M148 110 Q130 140 115 165" stroke="#ef4444" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M148 110 Q148 145 145 170" stroke="#f97316" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M148 110 Q165 140 178 162" stroke="#fbbf24" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M148 110 Q120 150 108 175" stroke="#fb923c" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M148 110 Q172 148 185 170" stroke="#fbbf24" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- Tail feather tips glow -->
+      <circle cx="115" cy="165" r="5" fill="#fbbf24" opacity=".8"/>
+      <circle cx="145" cy="170" r="5" fill="#f97316" opacity=".8"/>
+      <circle cx="178" cy="162" r="5" fill="#fbbf24" opacity=".8"/>
+      <circle cx="108" cy="175" r="4" fill="#ef4444" opacity=".6"/>
+      <circle cx="185" cy="170" r="4" fill="#fbbf24" opacity=".6"/>
+      <!-- Phoenix body -->
+      <ellipse cx="148" cy="88" rx="20" ry="28" fill="#b45309"/>
+      <ellipse cx="148" cy="84" rx="16" ry="22" fill="#d97706"/>
+      <ellipse cx="148" cy="80" rx="11" ry="16" fill="#f59e0b"/>
+      <!-- Phoenix wings (spread wide) -->
+      <!-- Left wing -->
+      <path d="M128 82 Q100 60 70 72 Q95 78 118 92Z" fill="#b45309"/>
+      <path d="M128 82 Q98 58 72 68 Q97 76 120 90Z" fill="#d97706" opacity=".7"/>
+      <path d="M128 82 Q105 65 80 74 Q103 79 122 91Z" fill="#f59e0b" opacity=".5"/>
+      <!-- Wing feather tips left -->
+      <path d="M70 72 Q60 65 55 58" stroke="#fbbf24" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M78 68 Q68 60 63 52" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M88 66 Q80 56 77 48" stroke="#fbbf24" stroke-width="2"   fill="none" stroke-linecap="round"/>
+      <!-- Right wing -->
+      <path d="M168 82 Q196 60 226 72 Q201 78 178 92Z" fill="#b45309"/>
+      <path d="M168 82 Q198 58 224 68 Q199 76 176 90Z" fill="#d97706" opacity=".7"/>
+      <path d="M168 82 Q191 65 216 74 Q193 79 174 91Z" fill="#f59e0b" opacity=".5"/>
+      <!-- Wing feather tips right -->
+      <path d="M226 72 Q236 65 241 58" stroke="#fbbf24" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M218 68 Q228 60 233 52" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M208 66 Q216 56 219 48" stroke="#fbbf24" stroke-width="2"   fill="none" stroke-linecap="round"/>
+      <!-- Phoenix head -->
+      <circle cx="148" cy="58" r="16" fill="#b45309"/>
+      <circle cx="148" cy="56" r="12" fill="#d97706"/>
+      <circle cx="148" cy="54" r="8"  fill="#f59e0b"/>
+      <!-- Crest feathers on head -->
+      <path d="M142 45 Q140 32 136 24" stroke="#fbbf24" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M148 43 Q148 30 148 20" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M154 45 Q156 32 160 24" stroke="#fbbf24" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <circle cx="136" cy="23" r="3" fill="#fbbf24" opacity=".9"/>
+      <circle cx="148" cy="19" r="3.5" fill="#fbbf24" opacity=".9"/>
+      <circle cx="160" cy="23" r="3" fill="#fbbf24" opacity=".9"/>
+      <!-- Phoenix eye -->
+      <circle cx="143" cy="54" r="4.5" fill="white"/>
+      <circle cx="143" cy="54" r="3"   fill="#1c0a00"/>
+      <circle cx="144" cy="52" r="1.5" fill="white"/>
+      <circle cx="153" cy="54" r="4.5" fill="white"/>
+      <circle cx="153" cy="54" r="3"   fill="#1c0a00"/>
+      <circle cx="154" cy="52" r="1.5" fill="white"/>
+      <!-- Beak -->
+      <path d="M140 60 L148 66 L156 60" fill="#b45309" stroke="#7c2d12" stroke-width="1"/>
+      <!-- Flame aura around phoenix -->
+      <path d="M148 40 Q135 30 130 18 Q140 28 148 22 Q156 28 166 18 Q161 30 148 40Z" fill="#fbbf24" opacity=".4"/>
+
+      <!-- THE GLOWING FEATHER (fallen, on ground near Aslan) -->
+      <ellipse cx="68" cy="155" rx="22" ry="8" fill="url(#featherGlow)" opacity=".7"/>
+      <!-- Feather shape -->
+      <path d="M55 160 Q68 135 80 160 Q68 155 55 160Z" fill="#f97316" opacity=".9"/>
+      <path d="M58 158 Q68 138 78 158 Q68 152 58 158Z" fill="#fbbf24" opacity=".8"/>
+      <line x1="68" y1="138" x2="68" y2="162" stroke="#fef3c7" stroke-width="1.2" opacity=".9"/>
+      <!-- Feather glow sparkles -->
+      <circle cx="68" cy="140" r="2.5" fill="#fbbf24" opacity=".9"/>
+      <circle cx="60" cy="148" r="1.5" fill="#fbbf24" opacity=".7"/>
+      <circle cx="76" cy="148" r="1.5" fill="#fbbf24" opacity=".7"/>
+      <circle cx="64" cy="135" r="1"   fill="#fef3c7" opacity=".8"/>
+      <circle cx="72" cy="133" r="1"   fill="#fef3c7" opacity=".8"/>
+
+      <!-- ===== ASLAN (boy silhouette, gazing at feather) ===== -->
+      <ellipse cx="38" cy="170" rx="10" ry="3" fill="#000" opacity=".3"/>
+      <!-- Aslan body -->
+      <rect x="30" y="145" width="16" height="24" rx="5" fill="#1e40af"/>
+      <!-- Aslan head -->
+      <circle cx="38" cy="138" r="9"  fill="#fbbf24" opacity=".9"/>
+      <!-- Hair -->
+      <path d="M29 135 Q38 128 47 135" fill="#92400e"/>
+      <!-- Eyes (wide, amazed) -->
+      <circle cx="35" cy="137" r="2.2" fill="white"/>
+      <circle cx="41" cy="137" r="2.2" fill="white"/>
+      <circle cx="36" cy="138" r="1.3" fill="#1c0a00"/>
+      <circle cx="42" cy="138" r="1.3" fill="#1c0a00"/>
+      <!-- Mouth (open in awe) -->
+      <ellipse cx="38" cy="143" rx="2" ry="1.5" fill="#92400e"/>
+      <!-- Aslan arm reaching toward feather -->
+      <line x1="30" y1="152" x2="20" y2="158" stroke="#1e40af" stroke-width="4" stroke-linecap="round"/>
+      <!-- Hand -->
+      <circle cx="19" cy="159" r="3" fill="#fbbf24" opacity=".85"/>
+      <!-- Other arm -->
+      <line x1="46" y1="152" x2="52" y2="158" stroke="#1e40af" stroke-width="4" stroke-linecap="round"/>
+      <!-- Legs -->
+      <rect x="32" y="167" width="5" height="14" rx="2.5" fill="#1e3a5f"/>
+      <rect x="39" y="167" width="5" height="14" rx="2.5" fill="#1e3a5f"/>
+      <!-- Shoes -->
+      <ellipse cx="34" cy="181" rx="4" ry="2.5" fill="#1e3a5f"/>
+      <ellipse cx="41" cy="181" rx="4" ry="2.5" fill="#1e3a5f"/>
+
+      <!-- Floating embers / sparks -->
+      <circle cx="100" cy="130" r="2"   fill="#fbbf24" opacity=".8"/>
+      <circle cx="115" cy="115" r="1.5" fill="#f97316" opacity=".7"/>
+      <circle cx="170" cy="125" r="2"   fill="#fbbf24" opacity=".6"/>
+      <circle cx="185" cy="108" r="1.5" fill="#ef4444" opacity=".7"/>
+      <circle cx="90"  cy="110" r="1.5" fill="#fbbf24" opacity=".6"/>
+      <text x="242" y="98"  fill="#fbbf24" font-size="10" opacity=".8">✨</text>
+      <text x="30"  y="125" fill="#f97316" font-size="9"  opacity=".7">🔥</text>
+    </svg>
+    <p class="illus-quote">The <strong>Phoenix</strong> spread its golden wings — and <strong>Aslan</strong> knew that some journeys choose you, not the other way around. 🪶🔥</p>
+  </div>
+
+  <!-- SPEED CONTROLS -->
+  <div class="speed-controls">
+    <span class="speed-label">🎚️ Speed:</span>
+    <button class="speed-btn" data-rate="0.65">🐢 Slow</button>
+    <button class="speed-btn active" data-rate="0.88">🚶 Normal</button>
+    <button class="speed-btn" data-rate="1.15">🚀 Fast</button>
+  </div>
+
+  <div class="master-controls">
+    <button class="btn-master btn-play-all" id="playAllBtn">🎧 <span>Listen to Whole Story</span></button>
+    <button class="btn-master btn-stop" id="stopBtn">⏹ <span>Stop Reading</span></button>
+  </div>
+
+  <div id="chapters">
+
+    <!-- CHAPTER 1 -->
+    <div class="chapter ch1" id="ch1">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">01</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter One</div>
+            <div class="chapter-title">🪶 The Glowing Feather</div>
+          </div>
+          <button class="btn-listen" data-ch="1"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.5s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text1">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('Early')">Early</span> <span class="w" onclick="showMeaning('one')">one</span> <span class="w" onclick="showMeaning('morning')">morning</span>, <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('walked')">walked</span> <span class="w" onclick="showMeaning('through')">through</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('forest')">forest</span> <span class="w" onclick="showMeaning('near')">near</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('village')">village</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('air')">air</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('cool')">cool</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('birds')">birds</span> <span class="w" onclick="showMeaning('were')">were</span> <span class="w" onclick="showMeaning('singing')">singing</span>. <span class="w" onclick="showMeaning('Suddenly')">Suddenly</span>, <span class="w" onclick="showMeaning('something')">something</span> <span class="w" onclick="showMeaning('bright')">bright</span> <span class="w" onclick="showMeaning('on')">on</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('ground')">ground</span> <span class="w" onclick="showMeaning('caught')">caught</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('eye')">eye</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('feather')">feather</span> — <span class="w" onclick="showMeaning('long')">long</span>, <span class="w" onclick="showMeaning('curved')">curved</span>, <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('glowing')">glowing</span> <span class="w" onclick="showMeaning('with')">with</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('deep')">deep</span> <span class="w" onclick="showMeaning('orange')">orange</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('gold')">gold</span> <span class="w" onclick="showMeaning('light')">light</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('knelt')">knelt</span> <span class="w" onclick="showMeaning('down')">down</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('gently')">gently</span> <span class="w" onclick="showMeaning('picked')">picked</span> <span class="w" onclick="showMeaning('it')">it</span> <span class="w" onclick="showMeaning('up')">up</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('feather')">feather</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('warm')">warm</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('hand')">hand</span>, <span class="w" onclick="showMeaning('like')">like</span> <span class="w" onclick="showMeaning('holding')">holding</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('tiny')">tiny</span> <span class="w" onclick="showMeaning('flame')">flame</span>. <span class="w" onclick="showMeaning('Where')">Where</span> <span class="w" onclick="showMeaning('it')">it</span> <span class="w" onclick="showMeaning('touched')">touched</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('wilted')">wilted</span> <span class="w" onclick="showMeaning('flower')">flower</span> <span class="w" onclick="showMeaning('near')">near</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('foot')">foot</span>, <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('flower')">flower</span> <span class="w" onclick="showMeaning('immediately')">immediately</span> <span class="w" onclick="showMeaning('bloomed')">bloomed</span> <span class="w" onclick="showMeaning('again')">again</span>. <span class="hl">Aslan gasped. This was no ordinary feather.</span> <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('looked')">looked</span> <span class="w" onclick="showMeaning('at')">at</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('sky')">sky</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('wondered')">wondered</span> <span class="w" onclick="showMeaning('which')">which</span> <span class="w" onclick="showMeaning('creature')">creature</span> <span class="w" onclick="showMeaning('could')">could</span> <span class="w" onclick="showMeaning('have')">have</span> <span class="w" onclick="showMeaning('dropped')">dropped</span> <span class="w" onclick="showMeaning('something')">something</span> <span class="w" onclick="showMeaning('so')">so</span> <span class="w" onclick="showMeaning('magical')">magical</span>.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="feather">feather</span>
+            <span class="vocab-pill" data-word="glowing">glowing</span>
+            <span class="vocab-pill" data-word="flame">flame</span>
+            <span class="vocab-pill" data-word="wilted">wilted</span>
+            <span class="vocab-pill" data-word="bloomed">bloomed</span>
+            <span class="vocab-pill" data-word="knelt">knelt</span>
+            <span class="vocab-pill" data-word="magical">magical</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 2 -->
+    <div class="chapter ch2" id="ch2">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">02</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Two</div>
+            <div class="chapter-title">🔥 The Burning Bird</div>
+          </div>
+          <button class="btn-listen" data-ch="2"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text2">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('An')">An</span> <span class="w" onclick="showMeaning('old')">old</span> <span class="w" onclick="showMeaning('woman')">woman</span> <span class="w" onclick="showMeaning('who')">who</span> <span class="w" onclick="showMeaning('lived')">lived</span> <span class="w" onclick="showMeaning('at')">at</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('edge')">edge</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('forest')">forest</span> <span class="w" onclick="showMeaning('saw')">saw</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('feather')">feather</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('Aslan')">Aslan</span>'s <span class="w" onclick="showMeaning('hand')">hand</span>. <span class="w" onclick="showMeaning('She')">She</span> <span class="w" onclick="showMeaning('gasped')">gasped</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('covered')">covered</span> <span class="w" onclick="showMeaning('her')">her</span> <span class="w" onclick="showMeaning('mouth')">mouth</span>. <span class="hl">"That is a Phoenix feather! The Phoenix is the most sacred bird in the world. It is made of pure fire and lives for one thousand years."</span> <span class="w" onclick="showMeaning('She')">She</span> <span class="w" onclick="showMeaning('explained')">explained</span> <span class="w" onclick="showMeaning('that')">that</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('Phoenix')">Phoenix</span> <span class="w" onclick="showMeaning('had')">had</span> <span class="w" onclick="showMeaning('been')">been</span> <span class="w" onclick="showMeaning('spotted')">spotted</span> <span class="w" onclick="showMeaning('flying')">flying</span> <span class="w" onclick="showMeaning('weakly')">weakly</span> <span class="w" onclick="showMeaning('near')">near</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('great')">great</span> <span class="w" onclick="showMeaning('volcano')">volcano</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('east')">east</span>. <span class="w" onclick="showMeaning('Without')">Without</span> <span class="w" onclick="showMeaning('its')">its</span> <span class="w" onclick="showMeaning('feather')">feather</span>, <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('Phoenix')">Phoenix</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('losing')">losing</span> <span class="w" onclick="showMeaning('its')">its</span> <span class="w" onclick="showMeaning('power')">power</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('its')">its</span> <span class="w" onclick="showMeaning('warmth')">warmth</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('held')">held</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('feather')">feather</span> <span class="w" onclick="showMeaning('tightly')">tightly</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('did')">did</span> <span class="w" onclick="showMeaning('not')">not</span> <span class="w" onclick="showMeaning('hesitate')">hesitate</span>. <span class="w" onclick="showMeaning('I')">I</span> <span class="w" onclick="showMeaning('will')">will</span> <span class="w" onclick="showMeaning('return')">return</span> <span class="w" onclick="showMeaning('it')">it</span>, <span class="w" onclick="showMeaning('he')">he</span> <span class="w" onclick="showMeaning('said')">said</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('old')">old</span> <span class="w" onclick="showMeaning('woman')">woman</span> <span class="w" onclick="showMeaning('smiled')">smiled</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('gave')">gave</span> <span class="w" onclick="showMeaning('him')">him</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('small')">small</span> <span class="w" onclick="showMeaning('leather')">leather</span> <span class="w" onclick="showMeaning('pouch')">pouch</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('carry')">carry</span> <span class="w" onclick="showMeaning('it')">it</span> <span class="w" onclick="showMeaning('safely')">safely</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('journey')">journey</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('volcano')">volcano</span> <span class="w" onclick="showMeaning('would')">would</span> <span class="w" onclick="showMeaning('take')">take</span> <span class="w" onclick="showMeaning('three')">three</span> <span class="w" onclick="showMeaning('days')">days</span>.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="sacred">sacred</span>
+            <span class="vocab-pill" data-word="volcano">volcano</span>
+            <span class="vocab-pill" data-word="spotted">spotted</span>
+            <span class="vocab-pill" data-word="weakly">weakly</span>
+            <span class="vocab-pill" data-word="hesitate">hesitate</span>
+            <span class="vocab-pill" data-word="pouch">pouch</span>
+            <span class="vocab-pill" data-word="warmth">warmth</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 3 -->
+    <div class="chapter ch3" id="ch3">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">03</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Three</div>
+            <div class="chapter-title">🌋 The Journey to the Volcano</div>
+          </div>
+          <button class="btn-listen" data-ch="3"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text3">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('walked')">walked</span> <span class="w" onclick="showMeaning('for')">for</span> <span class="w" onclick="showMeaning('many')">many</span> <span class="w" onclick="showMeaning('hours')">hours</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('crossed')">crossed</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('wide')">wide</span> <span class="w" onclick="showMeaning('river')">river</span> <span class="w" onclick="showMeaning('on')">on</span> <span class="w" onclick="showMeaning('stepping')">stepping</span> <span class="w" onclick="showMeaning('stones')">stones</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('climbed')">climbed</span> <span class="w" onclick="showMeaning('over')">over</span> <span class="w" onclick="showMeaning('rocky')">rocky</span> <span class="w" onclick="showMeaning('hills')">hills</span>. <span class="w" onclick="showMeaning('At')">At</span> <span class="w" onclick="showMeaning('night')">night</span>, <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('feather')">feather</span> <span class="w" onclick="showMeaning('inside')">inside</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('pouch')">pouch</span> <span class="w" onclick="showMeaning('glowed')">glowed</span> <span class="w" onclick="showMeaning('softly')">softly</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('kept')">kept</span> <span class="w" onclick="showMeaning('him')">him</span> <span class="w" onclick="showMeaning('warm')">warm</span>. <span class="w" onclick="showMeaning('On')">On</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('second')">second</span> <span class="w" onclick="showMeaning('day')">day</span>, <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('found')">found</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('small')">small</span> <span class="w" onclick="showMeaning('deer')">deer</span> <span class="w" onclick="showMeaning('with')">with</span> <span class="w" onclick="showMeaning('an')">an</span> <span class="w" onclick="showMeaning('injured')">injured</span> <span class="w" onclick="showMeaning('leg')">leg</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('gently')">gently</span> <span class="w" onclick="showMeaning('pressed')">pressed</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('feather')">feather</span> <span class="w" onclick="showMeaning('against')">against</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('deer')">deer</span>'s <span class="w" onclick="showMeaning('leg')">leg</span>. <span class="w" onclick="showMeaning('A')">A</span> <span class="w" onclick="showMeaning('warm')">warm</span> <span class="w" onclick="showMeaning('golden')">golden</span> <span class="w" onclick="showMeaning('light')">light</span> <span class="w" onclick="showMeaning('spread')">spread</span> <span class="w" onclick="showMeaning('over')">over</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('wound')">wound</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('deer')">deer</span> <span class="w" onclick="showMeaning('stood')">stood</span> <span class="w" onclick="showMeaning('up')">up</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('leaped')">leaped</span> <span class="w" onclick="showMeaning('away')">away</span> <span class="w" onclick="showMeaning('into')">into</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('trees')">trees</span>, <span class="w" onclick="showMeaning('completely')">completely</span> <span class="w" onclick="showMeaning('healed')">healed</span>. <span class="hl">Aslan smiled. The feather was not just beautiful — it was a gift of healing for the world.</span> <span class="w" onclick="showMeaning('By')">By</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('third')">third</span> <span class="w" onclick="showMeaning('day')">day</span>, <span class="w" onclick="showMeaning('he')">he</span> <span class="w" onclick="showMeaning('could')">could</span> <span class="w" onclick="showMeaning('see')">see</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('volcano')">volcano</span> <span class="w" onclick="showMeaning('rising')">rising</span> <span class="w" onclick="showMeaning('above')">above</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('clouds')">clouds</span>.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="crossed">crossed</span>
+            <span class="vocab-pill" data-word="stepping">stepping</span>
+            <span class="vocab-pill" data-word="injured">injured</span>
+            <span class="vocab-pill" data-word="wound">wound</span>
+            <span class="vocab-pill" data-word="healed">healed</span>
+            <span class="vocab-pill" data-word="leaped">leaped</span>
+            <span class="vocab-pill" data-word="healing">healing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 4 -->
+    <div class="chapter ch4" id="ch4">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">04</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Four</div>
+            <div class="chapter-title">🪺 The Phoenix's Nest</div>
+          </div>
+          <button class="btn-listen" data-ch="4"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.15s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text4">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('climbed')">climbed</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('steep')">steep</span> <span class="w" onclick="showMeaning('side')">side</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('volcano')">volcano</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('rock')">rock</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('hot')">hot</span> <span class="w" onclick="showMeaning('under')">under</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('hands')">hands</span>. <span class="w" onclick="showMeaning('At')">At</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('top')">top</span>, <span class="w" onclick="showMeaning('on')">on</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('wide')">wide</span> <span class="w" onclick="showMeaning('ledge')">ledge</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('black')">black</span> <span class="w" onclick="showMeaning('stone')">stone</span>, <span class="w" onclick="showMeaning('he')">he</span> <span class="w" onclick="showMeaning('found')">found</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('nest')">nest</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('built')">built</span> <span class="w" onclick="showMeaning('from')">from</span> <span class="w" onclick="showMeaning('gold')">gold</span> <span class="w" onclick="showMeaning('branches')">branches</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('glowing')">glowing</span> <span class="w" onclick="showMeaning('embers')">embers</span>. <span class="w" onclick="showMeaning('And')">And</span> <span class="w" onclick="showMeaning('there')">there</span>, <span class="w" onclick="showMeaning('curled')">curled</span> <span class="w" onclick="showMeaning('inside')">inside</span> <span class="w" onclick="showMeaning('it')">it</span>, <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('Phoenix')">Phoenix</span>. <span class="w" onclick="showMeaning('Its')">Its</span> <span class="w" onclick="showMeaning('feathers')">feathers</span> <span class="w" onclick="showMeaning('were')">were</span> <span class="w" onclick="showMeaning('dull')">dull</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('dim')">dim</span>. <span class="w" onclick="showMeaning('Its')">Its</span> <span class="w" onclick="showMeaning('eyes')">eyes</span> <span class="w" onclick="showMeaning('were')">were</span> <span class="w" onclick="showMeaning('half')">half</span> <span class="w" onclick="showMeaning('closed')">closed</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('looked')">looked</span> <span class="w" onclick="showMeaning('tired')">tired</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('weak')">weak</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('slowly')">slowly</span> <span class="w" onclick="showMeaning('opened')">opened</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('leather')">leather</span> <span class="w" onclick="showMeaning('pouch')">pouch</span>. <span class="hl">"I found your feather," he said in a soft voice. "I have come to return it."</span> <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('Phoenix')">Phoenix</span> <span class="w" onclick="showMeaning('lifted')">lifted</span> <span class="w" onclick="showMeaning('its')">its</span> <span class="w" onclick="showMeaning('golden')">golden</span> <span class="w" onclick="showMeaning('head')">head</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('looked')">looked</span> <span class="w" onclick="showMeaning('at')">at</span> <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('with')">with</span> <span class="w" onclick="showMeaning('ancient')">ancient</span>, <span class="w" onclick="showMeaning('knowing')">knowing</span> <span class="w" onclick="showMeaning('eyes')">eyes</span>. <span class="w" onclick="showMeaning('A')">A</span> <span class="w" onclick="showMeaning('single')">single</span> <span class="w" onclick="showMeaning('tear')">tear</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('liquid')">liquid</span> <span class="w" onclick="showMeaning('fire')">fire</span> <span class="w" onclick="showMeaning('rolled')">rolled</span> <span class="w" onclick="showMeaning('down')">down</span> <span class="w" onclick="showMeaning('its')">its</span> <span class="w" onclick="showMeaning('cheek')">cheek</span>.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="steep">steep</span>
+            <span class="vocab-pill" data-word="ledge">ledge</span>
+            <span class="vocab-pill" data-word="embers">embers</span>
+            <span class="vocab-pill" data-word="dull">dull</span>
+            <span class="vocab-pill" data-word="ancient">ancient</span>
+            <span class="vocab-pill" data-word="liquid">liquid</span>
+            <span class="vocab-pill" data-word="curled">curled</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 5 -->
+    <div class="chapter ch5" id="ch5">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">05</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Five</div>
+            <div class="chapter-title">🌅 A Flame of Hope</div>
+          </div>
+          <button class="btn-listen" data-ch="5"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text5">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('carefully')">carefully</span> <span class="w" onclick="showMeaning('placed')">placed</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('feather')">feather</span> <span class="w" onclick="showMeaning('back')">back</span> <span class="w" onclick="showMeaning('against')">against</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('Phoenix')">Phoenix</span>'s <span class="w" onclick="showMeaning('wing')">wing</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('moment')">moment</span> <span class="w" onclick="showMeaning('it')">it</span> <span class="w" onclick="showMeaning('touched')">touched</span>, <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('burst')">burst</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('brilliant')">brilliant</span> <span class="w" onclick="showMeaning('light')">light</span> <span class="w" onclick="showMeaning('exploded')">exploded</span> <span class="w" onclick="showMeaning('from')">from</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('bird')">bird</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('shielded')">shielded</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('eyes')">eyes</span>. <span class="w" onclick="showMeaning('When')">When</span> <span class="w" onclick="showMeaning('he')">he</span> <span class="w" onclick="showMeaning('looked')">looked</span> <span class="w" onclick="showMeaning('again')">again</span>, <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('Phoenix')">Phoenix</span> <span class="w" onclick="showMeaning('stood')">stood</span> <span class="w" onclick="showMeaning('tall')">tall</span>, <span class="w" onclick="showMeaning('its')">its</span> <span class="w" onclick="showMeaning('feathers')">feathers</span> <span class="w" onclick="showMeaning('blazing')">blazing</span> <span class="w" onclick="showMeaning('with')">with</span> <span class="w" onclick="showMeaning('gold')">gold</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('crimson')">crimson</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('spread')">spread</span> <span class="w" onclick="showMeaning('its')">its</span> <span class="w" onclick="showMeaning('magnificent')">magnificent</span> <span class="w" onclick="showMeaning('wings')">wings</span> <span class="w" onclick="showMeaning('wide')">wide</span>. <span class="w" onclick="showMeaning('Then')">Then</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('Phoenix')">Phoenix</span> <span class="w" onclick="showMeaning('bowed')">bowed</span> <span class="w" onclick="showMeaning('its')">its</span> <span class="w" onclick="showMeaning('head')">head</span> <span class="w" onclick="showMeaning('slowly')">slowly</span> <span class="w" onclick="showMeaning('toward')">toward</span> <span class="w" onclick="showMeaning('Aslan')">Aslan</span> — <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('deep')">deep</span>, <span class="w" onclick="showMeaning('graceful')">graceful</span> <span class="w" onclick="showMeaning('bow')">bow</span>. <span class="hl">It plucked one small feather from its own wing and placed it gently in Aslan's hand. A gift, freely given.</span> <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('felt')">felt</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('warmth')">warmth</span> <span class="w" onclick="showMeaning('spread')">spread</span> <span class="w" onclick="showMeaning('through')">through</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('whole')">whole</span> <span class="w" onclick="showMeaning('body')">body</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('understood')">understood</span> <span class="w" onclick="showMeaning('now')">now</span>: <span class="w" onclick="showMeaning('kindness')">kindness</span> <span class="w" onclick="showMeaning('always')">always</span> <span class="w" onclick="showMeaning('returns')">returns</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('you')">you</span>, <span class="w" onclick="showMeaning('brighter')">brighter</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('warmer')">warmer</span> <span class="w" onclick="showMeaning('than')">than</span> <span class="w" onclick="showMeaning('before')">before</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('Phoenix')">Phoenix</span> <span class="w" onclick="showMeaning('cried')">cried</span> <span class="w" onclick="showMeaning('out')">out</span> <span class="w" onclick="showMeaning('one')">one</span> <span class="w" onclick="showMeaning('long')">long</span>, <span class="w" onclick="showMeaning('beautiful')">beautiful</span> <span class="w" onclick="showMeaning('call')">call</span> <span class="w" onclick="showMeaning('that')">that</span> <span class="w" onclick="showMeaning('echoed')">echoed</span> <span class="w" onclick="showMeaning('across')">across</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('mountains')">mountains</span>, <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('rose')">rose</span> <span class="w" onclick="showMeaning('blazing')">blazing</span> <span class="w" onclick="showMeaning('into')">into</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('sky')">sky</span>.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="brilliant">brilliant</span>
+            <span class="vocab-pill" data-word="blazing">blazing</span>
+            <span class="vocab-pill" data-word="crimson">crimson</span>
+            <span class="vocab-pill" data-word="magnificent">magnificent</span>
+            <span class="vocab-pill" data-word="bowed">bowed</span>
+            <span class="vocab-pill" data-word="graceful">graceful</span>
+            <span class="vocab-pill" data-word="echoed">echoed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end #chapters -->
+
+  <div class="motivation-card">
+    <span class="star-icon">🔥</span>
+    <h2>You are on fire, Aslan! 🦁🪶</h2>
+    <p>Just like the Phoenix rises again with full power, <strong style="color:var(--gold)">every English word you learn</strong> adds a new feather to your wings. Aslan showed us that true courage is not about being fearless — it is about doing the right thing even when the journey is hard. Keep your flame burning, because your story is only getting brighter! ✨🔥</p>
+    <div class="challenge-box">
+      <p>💪 <strong>Today's Challenge:</strong> Think of one time you helped someone. Write or say <strong>3 sentences in English</strong> about what you did and how it made you feel. Remember: every act of kindness is a Phoenix feather — it always comes back to you! 🪶⭐</p>
+    </div>
+  </div>
+
+  <footer class="footer">Made with ❤️ for <span style="color:var(--amber)">Aslan</span> • Day 19 complete • Click any word to see Indonesian meaning! 🖱️</footer>
+</div>
+
+<div id="wordToast" class="word-toast">📖</div>
+
+<script>
+// ===== STARS =====
+(function(){
+  const wrap = document.getElementById('stars');
+  for(let i=0;i<90;i++){
+    const s=document.createElement('div'); s.className='star';
+    const size=Math.random()*2.5+0.8;
+    s.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--delay:-${(Math.random()*5).toFixed(1)}s;`;
+    wrap.appendChild(s);
+  }
+})();
+
+// ===== DICTIONARY =====
+const dictionary = {
+  // Chapter 1
+  "early":"pagi-pagi / lebih awal","one":"satu / suatu","morning":"pagi","aslan":"Aslan (nama tokoh utama)","walked":"berjalan (masa lalu walk)","through":"melalui / melewati","forest":"hutan","near":"dekat","his":"miliknya (laki-laki)","village":"desa / kampung","air":"udara","was":"adalah / sedang (masa lalu)","cool":"sejuk","and":"dan","birds":"burung-burung","were":"adalah (jamak masa lalu)","singing":"bernyanyi (sedang)","suddenly":"tiba-tiba","something":"sesuatu","bright":"cerah / bersinar","on":"di / pada","ground":"tanah","caught":"menangkap (masa lalu catch)","eye":"mata","it":"itu","a":"sebuah / seorang","feather":"bulu (burung)","long":"panjang","curved":"melengkung","glowing":"bersinar / memancarkan cahaya","with":"dengan","deep":"dalam / gelap","orange":"oranye","gold":"emas","light":"cahaya","knelt":"berlutut (masa lalu kneel)","down":"ke bawah","gently":"dengan lembut","picked":"mengambil (masa lalu pick)","up":"ke atas","feather":"bulu","warm":"hangat","in":"di dalam","hand":"tangan","like":"seperti","holding":"memegang (sedang)","tiny":"sangat kecil","flame":"nyala api","where":"di mana / ketika","touched":"menyentuh (masa lalu touch)","wilted":"layu / sudah mati","flower":"bunga","foot":"kaki","immediately":"segera / langsung","bloomed":"mekar (masa lalu bloom)","again":"lagi","gasped":"terkesiap / napas tertahan (masa lalu gasp)","ordinary":"biasa","he":"dia (laki-laki)","looked":"melihat (masa lalu look)","at":"pada","sky":"langit","wondered":"bertanya-tanya (masa lalu wonder)","which":"yang mana","creature":"makhluk","could":"bisa (masa lalu can)","have":"telah / mempunyai","dropped":"menjatuhkan (masa lalu drop)","so":"sangat / jadi","magical":"ajaib / penuh sihir",
+  // Chapter 2
+  "an":"sebuah / seorang","old":"tua / lama","woman":"wanita","who":"yang / siapa","lived":"tinggal (masa lalu live)","edge":"tepi / pinggiran","saw":"melihat (masa lalu see)","she":"dia (perempuan)","covered":"menutup (masa lalu cover)","her":"dia (perempuan) / miliknya","mouth":"mulut","phoenix":"phoenix (burung api legendaris)","sacred":"suci / keramat","most":"paling","world":"dunia","made":"dibuat (masa lalu make)","pure":"murni","fire":"api","lives":"hidup (untuk orang ketiga)","thousand":"seribu","years":"tahun","explained":"menjelaskan (masa lalu explain)","that":"bahwa / yang","had":"telah (masa lalu have)","been":"telah (present perfect)","spotted":"terlihat / terdeteksi (masa lalu spot)","flying":"terbang (sedang)","weakly":"dengan lemah / tidak bertenaga","great":"besar / agung","volcano":"gunung berapi","to":"untuk / ke","east":"timur","without":"tanpa","its":"miliknya (benda)","losing":"kehilangan (sedang)","power":"kekuatan / daya","warmth":"kehangatan","held":"memegang (masa lalu hold)","tightly":"erat-erat","did":"melakukan (masa lalu do)","not":"tidak","hesitate":"ragu-ragu / berhenti sebentar","will":"akan","return":"mengembalikan / kembali","said":"berkata (masa lalu say)","smiled":"tersenyum (masa lalu smile)","gave":"memberikan (masa lalu give)","him":"dia (objek laki-laki)","small":"kecil","leather":"kulit (bahan)","pouch":"kantong kecil / dompet kecil","carry":"membawa","safely":"dengan aman","journey":"perjalanan","would":"akan (kondisional)","take":"membutuhkan / mengambil","three":"tiga","days":"hari-hari",
+  // Chapter 3
+  "for":"untuk / selama","many":"banyak","hours":"jam-jam (waktu)","crossed":"menyeberangi (masa lalu cross)","wide":"lebar","river":"sungai","stepping":"melangkah (sedang)","stones":"batu-batu","climbed":"menaiki (masa lalu climb)","over":"melewati / di atas","rocky":"berbatu","hills":"bukit-bukit","night":"malam","inside":"di dalam","glowed":"bersinar (masa lalu glow)","softly":"dengan lembut","kept":"menjaga (masa lalu keep)","second":"kedua","day":"hari","found":"menemukan (masa lalu find)","deer":"rusa","injured":"terluka / cedera","leg":"kaki (tungkai)","pressed":"menekan (masa lalu press)","against":"menempel pada / melawan","spread":"menyebar (masa lalu spread)","wound":"luka","stood":"berdiri (masa lalu stand)","leaped":"melompat (masa lalu leap)","away":"pergi / menjauh","into":"ke dalam","trees":"pohon-pohon","completely":"sepenuhnya","healed":"sembuh / disembuhkan (masa lalu heal)","just":"hanya / baru saja","gift":"hadiah / anugerah","healing":"penyembuhan","by":"pada / oleh","third":"ketiga","see":"melihat","rising":"naik (sedang)","above":"di atas","clouds":"awan-awan",
+  // Chapter 4
+  "steep":"curam / terjal","side":"sisi / samping","rock":"batu / bebatuan","hot":"panas","hands":"tangan-tangan","top":"puncak / atas","ledge":"tepian batu / teras batu","black":"hitam","stone":"batu","nest":"sarang","built":"dibangun (masa lalu build)","from":"dari","branches":"cabang-cabang","embers":"bara api / abu membara","there":"di sana","curled":"meringkuk (masa lalu curl)","feathers":"bulu-bulu","dull":"kusam / pudar","dim":"redup / suram","eyes":"mata","half":"setengah","closed":"tertutup","tired":"lelah / capek","weak":"lemah","slowly":"perlahan","opened":"membuka (masa lalu open)","soft":"lembut","voice":"suara","come":"datang","lifted":"mengangkat (masa lalu lift)","golden":"berwarna emas","head":"kepala","ancient":"kuno / sangat tua","knowing":"bijak / penuh pengertian","single":"satu / tunggal","tear":"air mata","liquid":"cair / cairan","rolled":"mengalir (masa lalu roll)","cheek":"pipi",
+  // Chapter 5
+  "carefully":"dengan hati-hati","placed":"meletakkan (masa lalu place)","back":"kembali / kembali ke","wing":"sayap","moment":"saat / momen","burst":"ledakan / semburan","brilliant":"cemerlang / sangat terang","exploded":"meledak (masa lalu explode)","bird":"burung","shielded":"melindungi (masa lalu shield)","when":"ketika","tall":"tinggi","blazing":"menyala-nyala / membara","crimson":"merah tua / merah darah","spread":"mengembangkan (masa lalu spread)","magnificent":"megah / luar biasa indah","wings":"sayap-sayap","wide":"lebar","then":"kemudian","bowed":"membungkuk (masa lalu bow)","toward":"ke arah","graceful":"anggun / elok","bow":"membungkuk hormat","plucked":"mencabut (masa lalu pluck)","own":"sendiri / miliknya","freely":"dengan bebas / dengan ikhlas","given":"diberikan (past participle give)","felt":"merasa (masa lalu feel)","warmth":"kehangatan","whole":"seluruh","body":"tubuh","understood":"memahami (masa lalu understand)","now":"sekarang","kindness":"kebaikan hati","always":"selalu","returns":"kembali / mengembalikan","you":"kamu","brighter":"lebih terang","warmer":"lebih hangat","than":"daripada","before":"sebelumnya","cried":"berseru / menangis (masa lalu cry)","out":"keluar","beautiful":"indah","call":"panggilan / teriakan","echoed":"bergema (masa lalu echo)","across":"melintasi / di seluruh","mountains":"gunung-gunung","rose":"naik / terbang naik (masa lalu rise)","sky":"langit",
+  // Vocab pill extras
+  "glowing":"bersinar / memancarkan cahaya","wilted":"layu","bloomed":"mekar","knelt":"berlutut","sacred":"suci / keramat","volcano":"gunung berapi","spotted":"terlihat / terdeteksi","weakly":"dengan lemah","hesitate":"ragu-ragu","pouch":"kantong kecil","crossed":"menyeberangi","stepping":"melangkah","injured":"terluka","wound":"luka","healed":"sembuh","leaped":"melompat","healing":"penyembuhan","steep":"curam","ledge":"tepian batu","embers":"bara api","dull":"kusam / pudar","ancient":"kuno / sangat tua","liquid":"cair","curled":"meringkuk","brilliant":"sangat terang","blazing":"menyala-nyala","crimson":"merah tua","magnificent":"megah","bowed":"membungkuk","graceful":"anggun","echoed":"bergema",
+  // General words
+  "the":"itu / sang","is":"adalah","are":"adalah (jamak)","i":"saya / aku","this":"ini","to":"untuk / ke","for":"untuk","he":"dia (laki-laki)","she":"dia (perempuan)","we":"kami / kita","they":"mereka","it":"itu","what":"apa","who":"siapa","how":"bagaimana","but":"tetapi","or":"atau","be":"menjadi","do":"melakukan","can":"bisa","its":"miliknya (benda)","more":"lebih","your":"milikmu","my":"milikku","our":"milik kami","some":"beberapa","very":"sangat","good":"baik / bagus","make":"membuat","know":"mengetahui","great":"hebat / luar biasa","think":"berpikir","help":"tolong / membantu","again":"lagi","over":"di atas / melewati","year":"tahun","here":"di sini","need":"butuh","place":"tempat","give":"memberi","tell":"memberitahu","people":"orang-orang","time":"waktu","love":"cinta","always":"selalu","never":"tidak pernah","first":"pertama","magic":"keajaiban","real":"nyata","together":"bersama","happy":"senang","amazing":"menakjubkan","incredible":"luar biasa","important":"penting","kind":"baik hati","share":"berbagi","feel":"merasa","home":"rumah","every":"setiap","never":"tidak pernah","last":"terakhir","still":"masih","before":"sebelum","after":"setelah","also":"juga","new":"baru","high":"tinggi","between":"di antara","around":"sekitar","too":"juga / terlalu","both":"keduanya","body":"tubuh","own":"sendiri","since":"sejak","going":"pergi (sedang)","come":"datang","back":"kembali","each":"masing-masing","might":"mungkin","those":"itu (jamak)","these":"ini (jamak)"
+};
+
+function showMeaning(word) {
+  let clean = word.toLowerCase().replace(/[.,!?;:()'"«»""''—–\-]/g,'');
+  let meaning = dictionary[clean];
+  if(!meaning){
+    if(clean.endsWith('s')   && dictionary[clean.slice(0,-1)])  meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ed')  && dictionary[clean.slice(0,-2)])  meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('ed')  && dictionary[clean.slice(0,-1)])  meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ing') && dictionary[clean.slice(0,-3)])  meaning=dictionary[clean.slice(0,-3)];
+    else if(clean.endsWith('ing') && dictionary[clean.slice(0,-4)])  meaning=dictionary[clean.slice(0,-4)];
+    else if(clean.endsWith('ly')  && dictionary[clean.slice(0,-2)])  meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('er')  && dictionary[clean.slice(0,-2)])  meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('est') && dictionary[clean.slice(0,-3)])  meaning=dictionary[clean.slice(0,-3)];
+    else if(clean.endsWith('ful') && dictionary[clean.slice(0,-3)])  meaning=dictionary[clean.slice(0,-3)];
+    else meaning="❓ arti belum tersedia, coba cek kamus";
+  }
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `📖 <strong>${clean}</strong> → ${meaning} <small>🇮🇩</small>`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>toast.classList.remove('show'), 2800);
+}
+
+// ===== SPEED =====
+let speechRate = 0.88;
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    speechRate = parseFloat(btn.dataset.rate);
+  });
+});
+
+// ===== STORY TEXT FOR TTS =====
+const stories = {
+  1: "Early one morning, Aslan walked through the forest near his village. The air was cool and the birds were singing. Suddenly, something bright on the ground caught his eye. It was a feather — long, curved, and glowing with a deep orange and gold light. Aslan knelt down and gently picked it up. The feather was warm in his hand, like holding a tiny flame. Where it touched a wilted flower near his foot, the flower immediately bloomed again. Aslan gasped. This was no ordinary feather. He looked at the sky and wondered which creature could have dropped something so magical.",
+  2: "An old woman who lived at the edge of the forest saw the feather in Aslan's hand. She gasped and covered her mouth. That is a Phoenix feather! The Phoenix is the most sacred bird in the world. It is made of pure fire and lives for one thousand years. She explained that the Phoenix had been spotted flying weakly near the great volcano to the east. Without its feather, the Phoenix was losing its power and its warmth. Aslan held the feather tightly. He did not hesitate. I will return it, he said. The old woman smiled and gave him a small leather pouch to carry it safely. The journey to the volcano would take three days.",
+  3: "Aslan walked for many hours. He crossed a wide river on stepping stones. He climbed over rocky hills. At night, the feather inside the pouch glowed softly and kept him warm. On the second day, Aslan found a small deer with an injured leg. He gently pressed the feather against the deer's leg. A warm golden light spread over the wound. The deer stood up and leaped away into the trees, completely healed. Aslan smiled. The feather was not just beautiful — it was a gift of healing for the world. By the third day, he could see the volcano rising above the clouds.",
+  4: "Aslan climbed the steep side of the volcano. The rock was hot under his hands. At the top, on a wide ledge of black stone, he found the nest. It was built from gold branches and glowing embers. And there, curled inside it, was the Phoenix. Its feathers were dull and dim. Its eyes were half closed. It looked tired and weak. Aslan slowly opened the leather pouch. I found your feather, he said in a soft voice. I have come to return it. The Phoenix lifted its golden head and looked at Aslan with ancient, knowing eyes. A single tear of liquid fire rolled down its cheek.",
+  5: "Aslan carefully placed the feather back against the Phoenix's wing. The moment it touched, a burst of brilliant light exploded from the bird. Aslan shielded his eyes. When he looked again, the Phoenix stood tall, its feathers blazing with gold and crimson. It spread its magnificent wings wide. Then the Phoenix bowed its head slowly toward Aslan — a deep, graceful bow. It plucked one small feather from its own wing and placed it gently in Aslan's hand. A gift, freely given. Aslan felt a warmth spread through his whole body. He understood now: kindness always returns to you, brighter and warmer than before. The Phoenix cried out one long, beautiful call that echoed across the mountains, and rose blazing into the sky."
+};
+
+let currentUtt = null;
+let isPlayingAll = false;
+let readChapters = new Set();
+
+function pickVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v=>v.lang==='en-US'&&(v.name.includes('Google')||v.name.includes('Samantha')||v.name.includes('Microsoft')))
+    || voices.find(v=>v.lang.startsWith('en')) || null;
+}
+
+function stopAll() {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  currentUtt=null; isPlayingAll=false;
+  document.querySelectorAll('.btn-listen.playing').forEach(b=>b.classList.remove('playing'));
+}
+
+function speak(chId, btn, onEnd) {
+  if(!window.speechSynthesis) return;
+  stopAll();
+  const text = stories[chId];
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang='en-US'; utt.rate=speechRate; utt.pitch=1.05;
+  const v=pickVoice(); if(v) utt.voice=v;
+  if(btn) btn.classList.add('playing');
+  utt.onend  = ()=>{ if(btn) btn.classList.remove('playing'); currentUtt=null; if(onEnd) onEnd(); };
+  utt.onerror= ()=>{ if(btn) btn.classList.remove('playing'); currentUtt=null; };
+  currentUtt=utt;
+  window.speechSynthesis.speak(utt);
+}
+
+document.querySelectorAll('.btn-listen').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const ch=btn.getAttribute('data-ch');
+    if(btn.classList.contains('playing')){ stopAll(); return; }
+    isPlayingAll=false;
+    speak(ch, btn, ()=>{
+      if(!readChapters.has(ch)){
+        readChapters.add(ch);
+        document.getElementById('ch'+ch).classList.add('done');
+        updateProgress();
+      }
+    });
+  });
+});
+
+document.getElementById('playAllBtn').addEventListener('click',()=>{
+  stopAll(); isPlayingAll=true;
+  let keys=['1','2','3','4','5'], idx=0;
+  function next(){
+    if(!isPlayingAll||idx>=keys.length){ isPlayingAll=false; return; }
+    const k=keys[idx];
+    const btn=document.querySelector(`[data-ch="${k}"]`);
+    document.getElementById('ch'+k).scrollIntoView({behavior:'smooth',block:'center'});
+    speak(k, btn, ()=>{
+      if(!readChapters.has(k)){
+        readChapters.add(k);
+        document.getElementById('ch'+k).classList.add('done');
+        updateProgress();
+      }
+      idx++; setTimeout(next,700);
+    });
+  }
+  next();
+});
+
+document.getElementById('stopBtn').addEventListener('click', stopAll);
+
+function updateProgress(){
+  const pct=(readChapters.size/5)*100;
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressLabel').textContent=readChapters.size+' of 5 chapters read'+(readChapters.size===5?' — Legendary! 🏆':'');
+}
+
+document.querySelectorAll('.vocab-pill').forEach(pill=>{
+  pill.addEventListener('click',()=>{
+    const word=pill.getAttribute('data-word');
+    showMeaning(word);
+    if(window.speechSynthesis){
+      const utt=new SpeechSynthesisUtterance(word);
+      utt.lang='en-US'; utt.rate=0.8;
+      const v=pickVoice(); if(v) utt.voice=v;
+      window.speechSynthesis.speak(utt);
+    }
+  });
+});
+
+if(window.speechSynthesis) window.speechSynthesis.getVoices();
+window.addEventListener('beforeunload',()=>{ if(window.speechSynthesis) window.speechSynthesis.cancel(); });
+</script>
+</body>
+</html>

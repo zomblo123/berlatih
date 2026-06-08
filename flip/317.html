@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 17: Sandiwara di Dunia Digital | Kapten Cerdas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ocean-deep: #0a2d5e;
+  --ocean-mid: #1565c0;
+  --ocean-light: #42a5f5;
+  --ocean-pale: #bbdefb;
+  --sky: #e3f2fd;
+  --gold: #f9a825;
+  --gold-light: #fff176;
+  --coral: #ff7043;
+  --mint: #26c6da;
+  --white: #ffffff;
+  --danger: #e53935;
+  --safe: #43a047;
+  --purple: #7e57c2;
+  --pink: #ec407a;
+  --mask-red: #c62828;
+  --theater: #4a148c;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:'Nunito',sans-serif;
+  background:linear-gradient(135deg,#060d1a 0%,#0a1f47 35%,#0d3060 65%,#0a2d5e 100%);
+  min-height:100vh;
+  position:relative;
+}
+
+/* ── Ocean BG ── */
+.ocean-bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.wave{position:absolute;bottom:0;width:220%;height:160px;
+  background:rgba(21,101,192,0.14);border-radius:50% 50% 0 0/30px 30px 0 0;
+  animation:waveMove 9s infinite linear;}
+.wave:nth-child(2){bottom:20px;height:120px;opacity:.1;animation:waveMove 13s infinite linear reverse;}
+.wave:nth-child(3){bottom:40px;height:90px;opacity:.08;animation:waveMove 17s infinite linear;}
+@keyframes waveMove{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* Stage curtain texture lines at top */
+.curtain-top{
+  position:fixed;top:0;left:0;right:0;height:8px;z-index:998;
+  background:repeating-linear-gradient(90deg,#7b1fa2 0px,#9c27b0 8px,#6a1b9a 8px,#7b1fa2 16px);
+  opacity:.7;
+}
+
+/* floating sparkles */
+.spark{position:fixed;pointer-events:none;z-index:0;font-size:14px;
+  animation:sparkDrift linear infinite;opacity:0;}
+@keyframes sparkDrift{
+  0%{transform:translateY(110vh) rotate(0deg);opacity:0;}
+  10%{opacity:.7;}90%{opacity:.3;}
+  100%{transform:translateY(-30px) rotate(720deg);opacity:0;}
+}
+
+/* ── Progress ── */
+.prog-wrap{position:fixed;top:8px;left:0;right:0;z-index:999;height:5px;background:rgba(255,255,255,.08);}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--theater),var(--pink),var(--gold));
+  border-radius:0 3px 3px 0;transition:width .6s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 10px rgba(156,39,176,.8);}
+
+/* ── Back btn ── */
+.back-btn{position:fixed;top:18px;left:16px;z-index:1000;
+  background:rgba(255,255,255,.13);backdrop-filter:blur(12px);
+  border:2px solid rgba(255,255,255,.3);color:#fff;padding:9px 17px;
+  border-radius:50px;font-family:'Fredoka One',cursive;font-size:14px;
+  cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:7px;
+  transition:all .3s;box-shadow:0 4px 18px rgba(0,0,0,.3);}
+.back-btn:hover{background:rgba(255,255,255,.22);transform:translateX(-3px) scale(1.05);}
+
+/* ── Page counter ── */
+.pg-counter{position:fixed;top:18px;right:16px;z-index:1000;
+  background:rgba(255,255,255,.13);backdrop-filter:blur(12px);
+  border:2px solid rgba(255,255,255,.3);color:#fff;padding:7px 15px;
+  border-radius:50px;font-family:'Fredoka One',cursive;font-size:14px;
+  display:flex;align-items:center;gap:5px;box-shadow:0 4px 18px rgba(0,0,0,.3);}
+.pg-current{color:var(--gold);font-size:17px;}
+
+/* ── Sound btn ── */
+.sound-btn{position:fixed;bottom:76px;right:16px;z-index:1000;
+  background:rgba(255,255,255,.13);backdrop-filter:blur(12px);
+  border:2px solid rgba(255,255,255,.3);color:#fff;width:42px;height:42px;
+  border-radius:50%;font-size:17px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:all .3s;}
+.sound-btn:hover{background:rgba(255,255,255,.24);transform:scale(1.1);}
+
+/* ── Book layout ── */
+.book{position:relative;z-index:10;width:100%;max-width:820px;margin:0 auto;
+  height:100vh;display:flex;flex-direction:column;padding:68px 18px 86px;}
+.slides{flex:1;overflow:hidden;position:relative;}
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:translateX(80px) scale(.96);
+  transition:all .55s cubic-bezier(.4,0,.2,1);pointer-events:none;
+  overflow-y:auto;padding:8px 4px;}
+.slide.active{opacity:1;transform:translateX(0) scale(1);pointer-events:all;}
+.slide.go-left{opacity:0;transform:translateX(-80px) scale(.96);}
+.slide::-webkit-scrollbar{width:4px;}
+.slide::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
+
+/* ── Card base ── */
+.card{background:rgba(255,255,255,.96);border-radius:28px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.1);
+  width:100%;max-width:760px;overflow:hidden;}
+.card-inner{padding:34px 38px;}
+@media(max-width:600px){.card-inner{padding:22px 18px;}}
+
+/* ── COVER ── */
+.cover-card{
+  background:linear-gradient(145deg,#1a0533 0%,#4a148c 35%,#1565c0 70%,#0a2d5e 100%);
+  color:#fff;text-align:center;
+}
+.cover-inner{padding:36px 32px 32px;position:relative;z-index:2;}
+.curtain-deco{
+  position:absolute;top:0;left:0;right:0;height:28px;
+  background:repeating-linear-gradient(90deg,#7b1fa2 0px,#9c27b0 10px,#6a1b9a 10px,#7b1fa2 20px);
+  opacity:.8;border-radius:28px 28px 0 0;
+}
+.curtain-deco-bot{
+  position:absolute;bottom:0;left:0;right:0;height:20px;
+  background:repeating-linear-gradient(90deg,#7b1fa2 0px,#9c27b0 10px,#6a1b9a 10px,#7b1fa2 20px);
+  opacity:.6;border-radius:0 0 28px 28px;
+}
+.cover-day-badge{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--gold),var(--coral));
+  color:#fff;padding:7px 22px;border-radius:50px;
+  font-family:'Fredoka One',cursive;font-size:15px;
+  margin-bottom:18px;box-shadow:0 4px 18px rgba(249,168,37,.5);
+}
+.cover-masks{font-size:70px;margin:14px 0;display:flex;justify-content:center;gap:12px;}
+.mask-happy{animation:maskBob 2.5s ease-in-out infinite;}
+.mask-sad{animation:maskBob 2.5s ease-in-out infinite .4s;}
+.mask-mystery{animation:maskBob 2.5s ease-in-out infinite .8s;font-size:60px;}
+@keyframes maskBob{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-10px) rotate(3deg);}}
+.cover-title{font-family:'Fredoka One',cursive;font-size:clamp(22px,5vw,34px);
+  line-height:1.2;margin-bottom:8px;text-shadow:0 2px 20px rgba(0,0,0,.4);}
+.cover-sub{font-size:15px;opacity:.85;margin-bottom:22px;font-weight:600;}
+.captain-name{
+  background:linear-gradient(135deg,var(--gold),var(--gold-light));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  font-family:'Fredoka One',cursive;font-size:clamp(18px,4vw,26px);
+  display:block;margin-bottom:4px;
+}
+.cover-badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px;}
+.cover-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);
+  padding:7px 14px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:13px;
+}
+.series-tag{display:inline-block;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);padding:5px 14px;border-radius:20px;
+  font-size:12px;margin-top:10px;}
+
+/* ── Section header ── */
+.sec-head{text-align:center;margin-bottom:22px;}
+.sec-icon{font-size:50px;display:block;margin-bottom:10px;}
+.sec-title{font-family:'Fredoka One',cursive;font-size:clamp(19px,4vw,27px);
+  color:var(--ocean-deep);line-height:1.2;margin-bottom:7px;}
+.sec-sub{color:#546e7a;font-size:14px;font-weight:700;}
+
+/* ── Typography ── */
+.story{font-size:15.5px;line-height:1.85;color:#37474f;margin-bottom:14px;}
+.story b{color:var(--ocean-mid);}
+.highlight{
+  background:linear-gradient(135deg,#e3f2fd,#bbdefb);
+  border-left:4px solid var(--ocean-mid);border-radius:0 14px 14px 0;
+  padding:13px 18px;margin:14px 0;font-size:15.5px;line-height:1.75;
+  color:var(--ocean-deep);font-weight:600;
+}
+.highlight.purple{background:linear-gradient(135deg,#f3e5f5,#e1bee7);border-color:var(--purple);color:#4a148c;}
+.highlight.danger{background:linear-gradient(135deg,#ffebee,#fce4ec);border-color:var(--danger);color:#b71c1c;}
+.highlight.gold{background:linear-gradient(135deg,#fff8e1,#fff9c4);border-color:var(--gold);color:#e65100;}
+
+/* ── Info box ── */
+.info-box{background:linear-gradient(135deg,#e8f5e9,#f1f8e9);
+  border:2px solid #a5d6a7;border-radius:16px;padding:15px 18px;margin:13px 0;}
+.info-box.purple{background:linear-gradient(135deg,#f3e5f5,#ede7f6);border-color:#ce93d8;}
+.info-box.red{background:linear-gradient(135deg,#ffebee,#fce4ec);border-color:#ef9a9a;}
+.ib-title{font-family:'Fredoka One',cursive;font-size:15px;color:#2e7d32;
+  margin-bottom:7px;display:flex;align-items:center;gap:7px;}
+.info-box.purple .ib-title{color:#6a1b9a;}
+.info-box.red .ib-title{color:#b71c1c;}
+.ib-text{font-size:14px;color:#37474f;line-height:1.75;}
+
+/* ── THEATER SCENE ── */
+.theater{
+  background:linear-gradient(180deg,#1a0533 0%,#4a148c 40%,#311b92 100%);
+  border-radius:20px;padding:24px 18px;text-align:center;
+  position:relative;overflow:hidden;margin:14px 0;
+}
+.theater::before{
+  content:'🎭 PANGGUNG SANDIWARA DIGITAL 🎭';
+  display:block;font-family:'Fredoka One',cursive;font-size:13px;
+  color:rgba(255,255,255,.5);margin-bottom:16px;letter-spacing:2px;
+}
+.theater-curtains{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  margin-bottom:8px;
+}
+.curtain-l,.curtain-r{
+  width:28%;height:80px;border-radius:0 0 50% 50%;
+  background:repeating-linear-gradient(180deg,#9c27b0,#7b1fa2 8px,#9c27b0 8px);
+  opacity:.8;
+}
+.stage-actors{display:flex;justify-content:center;gap:18px;align-items:flex-end;margin:6px 0 12px;}
+.actor{text-align:center;cursor:pointer;transition:transform .3s;}
+.actor:hover{transform:translateY(-5px) scale(1.08);}
+.actor-icon{font-size:46px;display:block;position:relative;}
+.actor-label{font-size:12px;color:rgba(255,255,255,.75);font-weight:700;margin-top:4px;}
+
+/* mask flip card */
+.mask-flip{
+  position:relative;width:60px;height:60px;margin:0 auto;
+  perspective:400px;cursor:pointer;
+}
+.mask-flip-inner{
+  position:relative;width:100%;height:100%;
+  transform-style:preserve-3d;transition:transform .6s ease;
+  transform:rotateY(0deg);
+}
+.mask-flip.flipped .mask-flip-inner{transform:rotateY(180deg);}
+.mask-front,.mask-back{
+  position:absolute;inset:0;backface-visibility:hidden;
+  display:flex;align-items:center;justify-content:center;
+  font-size:46px;border-radius:50%;
+}
+.mask-back{transform:rotateY(180deg);}
+.flip-hint{font-size:11px;color:rgba(255,255,255,.6);margin-top:5px;text-align:center;font-weight:700;}
+
+/* ── MASK REVEAL CARDS ── */
+.mask-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px;}
+@media(max-width:520px){.mask-cards{grid-template-columns:1fr 1fr;}}
+.mask-card{
+  border-radius:18px;padding:16px 12px;text-align:center;
+  cursor:pointer;transition:all .4s;position:relative;overflow:hidden;
+  border:3px solid transparent;user-select:none;
+}
+.mask-card:hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(0,0,0,.15);}
+.mc-front,.mc-back{transition:all .35s;}
+.mask-card.revealed .mc-front{display:none;}
+.mask-card.revealed .mc-back{display:block;}
+.mc-back{display:none;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.mc-icon{font-size:34px;margin-bottom:7px;display:block;}
+.mc-label{font-family:'Fredoka One',cursive;font-size:13px;margin-bottom:5px;}
+.mc-hint{font-size:11px;opacity:.7;font-style:italic;}
+.mc-reveal-text{font-size:12.5px;line-height:1.6;font-weight:700;}
+/* colors */
+.mc-blue{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#42a5f5;}
+.mc-blue .mc-label{color:#0d47a1;}
+.mc-purple{background:linear-gradient(135deg,#f3e5f5,#e1bee7);border-color:#ab47bc;}
+.mc-purple .mc-label{color:#6a1b9a;}
+.mc-red{background:linear-gradient(135deg,#ffebee,#fce4ec);border-color:#ef5350;}
+.mc-red .mc-label{color:#b71c1c;}
+.mc-orange{background:linear-gradient(135deg,#fff3e0,#ffe0b2);border-color:#ff9800;}
+.mc-orange .mc-label{color:#e65100;}
+.mc-teal{background:linear-gradient(135deg,#e0f7fa,#b2ebf2);border-color:#26c6da;}
+.mc-teal .mc-label{color:#006064;}
+.mc-pink{background:linear-gradient(135deg,#fce4ec,#f8bbd0);border-color:#ec407a;}
+.mc-pink .mc-label{color:#880e4f;}
+
+/* ── WHY cards ── */
+.why-list{display:flex;flex-direction:column;gap:10px;}
+.why-item{
+  display:flex;align-items:flex-start;gap:12px;
+  border-radius:16px;padding:13px 15px;
+  border-left:4px solid;transition:transform .2s;cursor:default;
+}
+.why-item:hover{transform:translateX(4px);}
+.wi-icon{font-size:26px;flex-shrink:0;}
+.wi-body{}
+.wi-title{font-family:'Fredoka One',cursive;font-size:14px;margin-bottom:3px;}
+.wi-text{font-size:13.5px;color:#546e7a;line-height:1.6;}
+.why-1{background:#fff3e0;border-color:#ff9800;}.why-1 .wi-title{color:#e65100;}
+.why-2{background:#fce4ec;border-color:#ec407a;}.why-2 .wi-title{color:#880e4f;}
+.why-3{background:#f3e5f5;border-color:#ab47bc;}.why-3 .wi-title{color:#6a1b9a;}
+.why-4{background:#e8eaf6;border-color:#7986cb;}.why-4 .wi-title{color:#283593;}
+.why-5{background:#e0f2f1;border-color:#26a69a;}.why-5 .wi-title{color:#004d40;}
+
+/* ── CLUE cards (ciri-ciri) ── */
+.clue-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:10px;}
+@media(max-width:500px){.clue-grid{grid-template-columns:1fr;}}
+.clue-card{
+  background:#fff;border-radius:16px;padding:14px;
+  box-shadow:0 4px 14px rgba(0,0,0,.07);
+  border-top:4px solid;display:flex;align-items:flex-start;gap:10px;
+  transition:transform .2s;
+}
+.clue-card:hover{transform:translateY(-2px);}
+.cc-icon{font-size:24px;flex-shrink:0;}
+.cc-body{}
+.cc-title{font-family:'Fredoka One',cursive;font-size:13.5px;margin-bottom:4px;}
+.cc-text{font-size:12.5px;color:#546e7a;line-height:1.55;}
+.clue-card:nth-child(1){border-color:var(--coral);}
+.clue-card:nth-child(2){border-color:var(--gold);}
+.clue-card:nth-child(3){border-color:var(--purple);}
+.clue-card:nth-child(4){border-color:var(--mint);}
+.clue-card:nth-child(5){border-color:var(--pink);}
+.clue-card:nth-child(6){border-color:var(--danger);}
+.clue-card:nth-child(1) .cc-title{color:#bf360c;}
+.clue-card:nth-child(2) .cc-title{color:#e65100;}
+.clue-card:nth-child(3) .cc-title{color:#4a148c;}
+.clue-card:nth-child(4) .cc-title{color:#006064;}
+.clue-card:nth-child(5) .cc-title{color:#880e4f;}
+.clue-card:nth-child(6) .cc-title{color:#b71c1c;}
+
+/* ── Danger cards ── */
+.danger-list{display:flex;flex-direction:column;gap:10px;}
+.danger-item{
+  background:linear-gradient(135deg,#ffebee,#fce4ec);
+  border:2px solid #ef9a9a;border-radius:16px;padding:14px 16px;
+  display:flex;gap:12px;align-items:flex-start;
+  transition:transform .2s;cursor:default;
+}
+.danger-item:hover{transform:translateX(3px);}
+.di-icon{font-size:26px;flex-shrink:0;}
+.di-title{font-family:'Fredoka One',cursive;font-size:14px;color:#b71c1c;margin-bottom:4px;}
+.di-text{font-size:13px;color:#5d4037;line-height:1.6;}
+
+/* ── Shield tips ── */
+.shield-list{list-style:none;display:flex;flex-direction:column;gap:11px;}
+.shield-item{
+  display:flex;align-items:flex-start;gap:13px;
+  background:linear-gradient(135deg,#e3f2fd,#f8f9fa);
+  border-radius:16px;padding:13px 15px;border-left:4px solid var(--ocean-light);
+  transition:transform .2s;
+}
+.shield-item:hover{transform:translateX(4px);}
+.si-icon{font-size:26px;flex-shrink:0;}
+.si-text{font-size:14.5px;line-height:1.7;color:var(--ocean-deep);font-weight:600;}
+.si-text span{color:var(--ocean-mid);}
+
+/* ── Lesson grid ── */
+.lesson-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+@media(max-width:500px){.lesson-grid{grid-template-columns:1fr;}}
+.lesson-item{
+  background:#fff;border-radius:16px;padding:15px 13px;
+  box-shadow:0 4px 14px rgba(0,0,0,.07);
+  border-top:4px solid;text-align:center;transition:transform .2s;
+}
+.lesson-item:hover{transform:translateY(-3px);}
+.li-icon{font-size:30px;margin-bottom:7px;}
+.li-title{font-family:'Fredoka One',cursive;font-size:14px;color:var(--ocean-deep);margin-bottom:5px;}
+.li-text{font-size:12.5px;color:#546e7a;line-height:1.55;}
+.lesson-item:nth-child(1){border-color:var(--purple);}
+.lesson-item:nth-child(2){border-color:var(--coral);}
+.lesson-item:nth-child(3){border-color:var(--gold);}
+.lesson-item:nth-child(4){border-color:var(--safe);}
+.lesson-item:nth-child(5){border-color:var(--mint);}
+.lesson-item:nth-child(6){border-color:var(--pink);}
+
+/* ── Challenge ── */
+.challenge-wrap{
+  background:linear-gradient(145deg,#0a1628,#1a0533,#1565c0);
+  border-radius:24px;padding:30px 28px;color:#fff;text-align:center;
+}
+.ch-title{font-family:'Fredoka One',cursive;font-size:22px;color:var(--gold-light);margin-bottom:14px;}
+.ch-tasks{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:18px;}
+.ch-task{
+  background:rgba(255,255,255,.1);border-radius:14px;padding:11px 15px;
+  font-size:14px;font-weight:700;display:flex;align-items:center;gap:11px;
+  cursor:pointer;transition:all .3s;text-align:left;
+}
+.ch-task:hover{background:rgba(255,255,255,.18);}
+.ch-task.done{background:rgba(67,160,71,.3);text-decoration:line-through;opacity:.8;}
+.ct-icon{font-size:18px;flex-shrink:0;}
+.ch-check{margin-left:auto;font-size:16px;}
+.ch-msg{display:none;background:rgba(255,255,255,.15);border-radius:12px;
+  padding:13px;font-family:'Fredoka One',cursive;font-size:15px;}
+
+/* ── Closing ── */
+.closing-wrap{
+  background:linear-gradient(145deg,#060d1a,#1a0533,#1565c0);
+  border-radius:24px;padding:36px 28px;color:#fff;text-align:center;position:relative;overflow:hidden;
+}
+.closing-stars{position:absolute;inset:0;pointer-events:none;}
+.cstar{position:absolute;font-size:15px;animation:cStarTwinkle 2.5s ease-in-out infinite;}
+@keyframes cStarTwinkle{0%,100%{opacity:.3;transform:scale(.8);}50%{opacity:1;transform:scale(1.3);}}
+.cl-hero{font-size:65px;margin-bottom:14px;animation:maskBob 3s ease-in-out infinite;position:relative;z-index:2;}
+.cl-title{font-family:'Fredoka One',cursive;font-size:clamp(19px,4vw,26px);
+  color:var(--gold-light);margin-bottom:10px;position:relative;z-index:2;}
+.cl-msg{font-size:15px;line-height:1.8;opacity:.9;position:relative;z-index:2;margin-bottom:22px;}
+.ach{background:rgba(255,255,255,.1);border-radius:14px;padding:13px 17px;
+  margin:14px 0;display:flex;align-items:center;gap:13px;
+  position:relative;z-index:2;border:1px solid rgba(255,255,255,.15);}
+.ach-ico{font-size:32px;}
+.ach-t{text-align:left;}
+.ach-title{font-family:'Fredoka One',cursive;font-size:15px;color:var(--gold-light);}
+.ach-sub{font-size:12.5px;opacity:.75;margin-top:3px;}
+.next-btn-cl{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--gold),var(--coral));
+  color:#fff;padding:13px 30px;border-radius:50px;
+  font-family:'Fredoka One',cursive;font-size:17px;cursor:pointer;
+  position:relative;z-index:2;box-shadow:0 8px 24px rgba(249,168,37,.5);
+  transition:transform .2s,box-shadow .2s;
+}
+.next-btn-cl:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 12px 32px rgba(249,168,37,.6);}
+
+/* ── Nav ── */
+.nav-bar{position:fixed;bottom:0;left:0;right:0;z-index:999;
+  display:flex;justify-content:center;align-items:center;gap:14px;padding:13px 18px;
+  background:rgba(6,13,26,.88);backdrop-filter:blur(16px);
+  border-top:1px solid rgba(255,255,255,.08);}
+.nb-btn{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);
+  color:#fff;padding:9px 20px;border-radius:50px;
+  font-family:'Fredoka One',cursive;font-size:15px;
+  cursor:pointer;transition:all .3s;min-width:115px;justify-content:center;
+}
+.nb-btn:hover:not(:disabled){background:rgba(255,255,255,.2);transform:translateY(-2px);}
+.nb-btn:disabled{opacity:.3;cursor:not-allowed;}
+.nb-btn.nb-next{background:linear-gradient(135deg,var(--gold),var(--coral));border-color:transparent;
+  box-shadow:0 4px 18px rgba(249,168,37,.4);}
+.nb-btn.nb-next:hover:not(:disabled){box-shadow:0 8px 26px rgba(249,168,37,.6);}
+.nav-dots{display:flex;gap:5px;align-items:center;}
+.ndot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.22);cursor:pointer;transition:all .3s;}
+.ndot.active{background:var(--gold);transform:scale(1.5);box-shadow:0 0 7px var(--gold);}
+
+/* ── Interactive finger ── */
+.tap-hint{text-align:center;font-size:12px;color:#90a4ae;margin-top:8px;font-weight:700;
+  animation:pulseO 2s ease-in-out infinite;}
+@keyframes pulseO{0%,100%{opacity:.4;}50%{opacity:.9;}}
+
+/* scenario compare */
+.sc-compare{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:13px 0;}
+@media(max-width:500px){.sc-compare{grid-template-columns:1fr;}}
+.scc{border-radius:18px;padding:16px;text-align:center;}
+.scc.fake{background:linear-gradient(135deg,#ffebee,#fce4ec);border:2px solid #ef9a9a;}
+.scc.real{background:linear-gradient(135deg,#e8f5e9,#dcedc8);border:2px solid #a5d6a7;}
+.scc-head{font-family:'Fredoka One',cursive;font-size:15px;margin-bottom:10px;}
+.scc.fake .scc-head{color:#c62828;}
+.scc.real .scc-head{color:#2e7d32;}
+.scc-list{list-style:none;text-align:left;display:flex;flex-direction:column;gap:6px;}
+.scc-item{font-size:13px;display:flex;gap:7px;line-height:1.5;}
+
+/* Stage glow effect */
+.stage-glow{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:200px;height:40px;
+  background:radial-gradient(ellipse,rgba(255,235,59,.25) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+</style>
+</head>
+<body>
+
+<div class="ocean-bg">
+  <div class="wave"></div><div class="wave"></div><div class="wave"></div>
+</div>
+<div class="curtain-top"></div>
+
+<div class="prog-wrap"><div class="prog-bar" id="progBar"></div></div>
+<a href="../perpustakaan.html" class="back-btn">← Kembali ke Perpustakaan</a>
+<div class="pg-counter"><span class="pg-current" id="pgCur">1</span><span>/ 15</span></div>
+<button class="sound-btn" id="sndBtn" title="Suara ombak">🔊</button>
+
+<div class="book">
+  <div class="slides" id="slides">
+
+    <!-- ═══ SLIDE 1 – COVER ═══ -->
+    <div class="slide active" data-i="0">
+      <div class="card cover-card" style="width:100%;max-width:760px;">
+        <div class="curtain-deco"></div>
+        <div class="cover-inner">
+          <div class="cover-day-badge">🎭 Hari 17 dari 30</div>
+          <div class="cover-masks">
+            <span class="mask-happy">😊</span>
+            <span class="mask-mystery">🎭</span>
+            <span class="mask-sad">😈</span>
+          </div>
+          <h1 class="cover-title">Sandiwara di Dunia Digital</h1>
+          <p class="cover-sub">Orang-Orang yang Berpura-Pura di Lautan Digital!</p>
+          <span class="captain-name">⚓ Kapten Aslan</span>
+          <div class="cover-badges">
+            <div class="cover-badge">🎭 Detektif Topeng</div>
+            <div class="cover-badge">🔎 Pengenal Wajah Asli</div>
+            <div class="cover-badge">🛡️ Terlindungi</div>
+          </div>
+          <p class="series-tag">📚 Petualangan Kapten Cerdas di Lautan Digital</p>
+        </div>
+        <div class="curtain-deco-bot"></div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 2 – REKAP ═══ -->
+    <div class="slide" data-i="1">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner" style="overflow-y:auto;max-height:calc(100vh - 170px);">
+          <div class="sec-head">
+            <span class="sec-icon">📖</span>
+            <h2 class="sec-title">Pelayaran Kapten Aslan Sejauh Ini...</h2>
+            <p class="sec-sub">Minggu ke-3: Keselamatan dan Perlindungan</p>
+          </div>
+          <div class="info-box purple">
+            <div class="ib-title">🌟 Yang Sudah Dipelajari Minggu Ini</div>
+            <div class="ib-text">
+              <b>Hari 15:</b> Aslan bertemu monster-monster yang bersembunyi di balik layar — virus, malware, dan penjahat siber. 👾<br><br>
+              <b>Hari 16:</b> Aslan belajar menjaga privasi seperti menjaga kunci rumah — tidak sembarangan kasih ke orang asing! 🔑<br><br>
+              <b>Hari 17 (Hari Ini):</b> Ada bahaya baru yang lebih licik... orang-orang yang memakai <b>topeng digital</b> untuk berpura-pura jadi orang lain! 🎭
+            </div>
+          </div>
+          <p class="story">Kapten Aslan sudah sangat pandai menghindari monster dan menjaga privasi. Tapi hari ini, dia akan menghadapi tantangan yang lebih rumit: <b>bagaimana mengenali orang yang berpura-pura</b> di Lautan Digital?</p>
+          <div class="highlight purple">
+            🎭 <i>"Di dunia nyata, aktor memakai topeng di panggung sandiwara. Di Lautan Digital, ada orang yang memakai topeng SETIAP HARI untuk menipu orang lain..."</i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 3 – CERITA UTAMA ═══ -->
+    <div class="slide" data-i="2">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner" style="overflow-y:auto;max-height:calc(100vh - 170px);">
+          <div class="sec-head">
+            <span class="sec-icon">⚓</span>
+            <h2 class="sec-title">Aslan Bertemu "Kapten Keren"</h2>
+            <p class="sec-sub">Sebuah petualangan yang mengejutkan...</p>
+          </div>
+          <p class="story">Suatu sore, Kapten Aslan berlayar santai di Pelabuhan Chat Lautan Digital. Tiba-tiba, sebuah pesan masuk dari akun bernama <b>@KaptenKeren_99</b>:</p>
+
+          <div class="theater">
+            <div class="theater-curtains">
+              <div class="curtain-l"></div>
+              <div style="flex:1;padding:0 10px;">
+                <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:14px;font-size:14px;color:#fff;line-height:1.8;text-align:left;">
+                  <div style="color:#80cbc4;font-weight:900;font-family:'Fredoka One',cursive;margin-bottom:8px;">@KaptenKeren_99:</div>
+                  "Hei Aslan! Aku juga kapten kapal lho! Umurku 11 tahun, aku suka gaming juga! Aku punya kapal super keren. Mau jadi teman baikku? Aku bisa ajari banyak trik berlayar yang tidak ada di buku manapun! Boleh aku minta nomor telepon kamu buat chatting lebih enak?"
+                </div>
+              </div>
+              <div class="curtain-r"></div>
+            </div>
+            <div class="stage-glow"></div>
+          </div>
+
+          <p class="story" style="margin-top:14px;">Aslan merasa senang ada teman baru. Tapi tiba-tiba, alarm di <b>kompas hati</b>-nya berbunyi... 🔔</p>
+          <div class="highlight gold">
+            💭 <i>"Tunggu dulu. Bagaimana orang ini bisa tahu namaku? Kenapa langsung minta nomor telepon? Ini terasa aneh..."</i>
+          </div>
+          <p class="story">Aslan ingat pelajaran dari Hari 16 — <b>jangan kasih kunci rumah ke orang asing!</b> Dan kali ini, dia memutuskan untuk menyelidiki lebih dalam sebelum merespons. Ternyata... penemuan Aslan sangat mengejutkan! 😱</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 4 – APA ITU SANDIWARA DIGITAL ═══ -->
+    <div class="slide" data-i="3">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner" style="overflow-y:auto;max-height:calc(100vh - 170px);">
+          <div class="sec-head">
+            <span class="sec-icon">🎭</span>
+            <h2 class="sec-title">Apa Itu Sandiwara Digital?</h2>
+            <p class="sec-sub">Mengenal panggung bohong di Lautan Digital</p>
+          </div>
+          <p class="story">Di dunia nyata, ada <b>panggung sandiwara</b> — tempat aktor memakai topeng dan kostum untuk memerankan karakter yang bukan dirinya. Di Lautan Digital, ada hal serupa yang jauh lebih berbahaya.</p>
+
+          <div class="theater" style="padding:18px;">
+            <div style="display:flex;justify-content:space-around;align-items:center;padding:10px 0;">
+              <div style="text-align:center;">
+                <div style="font-size:50px;">👴</div>
+                <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:4px;font-weight:700;">Wajah Asli</div>
+                <div style="font-size:11px;color:rgba(255,255,255,.5);">Orang dewasa jahat</div>
+              </div>
+              <div style="font-size:30px;color:#ffeb3b;">→</div>
+              <div style="font-size:40px;animation:maskBob 2s ease-in-out infinite;">🎭</div>
+              <div style="font-size:30px;color:#ffeb3b;">→</div>
+              <div style="text-align:center;">
+                <div style="font-size:50px;">😊</div>
+                <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:4px;font-weight:700;">Topeng Digital</div>
+                <div style="font-size:11px;color:rgba(255,255,255,.5);">Berpura anak kecil</div>
+              </div>
+            </div>
+            <div class="stage-glow"></div>
+          </div>
+
+          <div class="why-list" style="margin-top:14px;">
+            <div class="why-item why-1">
+              <span class="wi-icon">🧑‍💻</span>
+              <div class="wi-body">
+                <div class="wi-title">Fake Account (Akun Palsu)</div>
+                <div class="wi-text">Membuat akun dengan nama, foto, dan identitas yang sepenuhnya palsu. Bisa menggunakan foto orang lain yang dicuri dari internet.</div>
+              </div>
+            </div>
+            <div class="why-item why-3">
+              <span class="wi-icon">🐟</span>
+              <div class="wi-body">
+                <div class="wi-title">Catfishing</div>
+                <div class="wi-text">Istilah khusus untuk orang yang berpura-pura jadi orang lain untuk mendekati dan menipu seseorang. Seperti umpan pancing yang memikat ikan...</div>
+              </div>
+            </div>
+            <div class="why-item why-2">
+              <span class="wi-icon">🤖</span>
+              <div class="wi-body">
+                <div class="wi-title">Bot & Akun Otomatis</div>
+                <div class="wi-text">Program komputer yang berpura-pura menjadi manusia sungguhan! Mengirim ribuan komentar dan pesan secara otomatis.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 5 – KENAPA ORANG BERSANDIWARA ═══ -->
+    <div class="slide" data-i="4">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner" style="overflow-y:auto;max-height:calc(100vh - 170px);">
+          <div class="sec-head">
+            <span class="sec-icon">🤔</span>
+            <h2 class="sec-title">Mengapa Orang Bersandiwara?</h2>
+            <p class="sec-sub">Ada banyak alasan di balik topeng...</p>
+          </div>
+          <p class="story">Kapten Aslan bertanya kepada Penjaga Mercusuar yang bijak: <b>"Mengapa ada orang yang susah payah membuat topeng digital?"</b></p>
+          <p class="story">Sang Penjaga menjawab dengan menunjukkan 5 alasan yang paling sering terjadi:</p>
+          <div class="why-list">
+            <div class="why-item why-1">
+              <span class="wi-icon">💰</span>
+              <div class="wi-body">
+                <div class="wi-title">Ingin Mencuri Uang / Barang</div>
+                <div class="wi-text">Berpura-pura jadi teman baik atau saudara yang butuh bantuan untuk meminta uang, data, atau hadiah dari korban.</div>
+              </div>
+            </div>
+            <div class="why-item why-2">
+              <span class="wi-icon">📋</span>
+              <div class="wi-body">
+                <div class="wi-title">Ingin Mencuri Data Pribadi</div>
+                <div class="wi-text">Mendapatkan nomor telepon, alamat rumah, nama sekolah, atau kata sandi untuk digunakan dengan cara jahat.</div>
+              </div>
+            </div>
+            <div class="why-item why-3">
+              <span class="wi-icon">😈</span>
+              <div class="wi-body">
+                <div class="wi-title">Ingin Menyakiti / Bully Online</div>
+                <div class="wi-text">Membuat akun palsu untuk menghina, mengancam, atau menyebarkan kebohongan tentang seseorang tanpa diketahui identitasnya.</div>
+              </div>
+            </div>
+            <div class="why-item why-4">
+              <span class="wi-icon">🤫</span>
+              <div class="wi-body">
+                <div class="wi-title">Ingin Diterima / Tidak Percaya Diri</div>
+                <div class="wi-text">Beberapa orang berpura-pura jadi "lebih keren" karena tidak percaya diri dengan identitas aslinya. Ini tidak jahat tapi tetap tidak jujur.</div>
+              </div>
+            </div>
+            <div class="why-item why-5">
+              <span class="wi-icon">🎪</span>
+              <div class="wi-body">
+                <div class="wi-title">Penjahat yang Mengincar Anak-Anak</div>
+                <div class="wi-text">Ini yang paling berbahaya! Orang dewasa jahat yang berpura-pura jadi anak sebaya untuk mendekati dan menyakiti anak-anak.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 6 – CIRI-CIRI INTERAKTIF ═══ -->
+    <div class="slide" data-i="5">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner" style="overflow-y:auto;max-height:calc(100vh - 170px);">
+          <div class="sec-head">
+            <span class="sec-icon">🔍</span>
+            <h2 class="sec-title">Ciri-Ciri Orang yang Berpura-Pura</h2>
+            <p class="sec-sub">6 tanda peringatan yang harus kamu waspadai!</p>
+          </div>
+          <p class="tap-hint">👆 Ketuk setiap kartu untuk melihat penjelasan lengkapnya!</p>
+
+          <div class="mask-cards" style="margin-top:12px;">
+            <div class="mask-card mc-red" onclick="flipMask(this)">
+              <div class="mc-front">
+                <span class="mc-icon">📷</span>
+                <span class="mc-label">Foto Terlalu Sempurna</span>
+                <span class="mc-hint">Ketuk untuk tahu lebih!</span>
+              </div>
+              <div class="mc-back">
+                <span class="mc-icon">⚠️</span>
+                <span class="mc-reveal-text" style="color:#b71c1c;">Foto profil terlalu bagus seperti model majalah, atau hanya punya sedikit foto. Mungkin foto dicuri dari orang lain!</span>
+              </div>
+            </div>
+            <div class="mask-card mc-orange" onclick="flipMask(this)">
+              <div class="mc-front">
+                <span class="mc-icon">⚡</span>
+                <span class="mc-label">Terlalu Cepat Akrab</span>
+                <span class="mc-hint">Ketuk untuk tahu lebih!</span>
+              </div>
+              <div class="mc-back">
+                <span class="mc-icon">⚠️</span>
+                <span class="mc-reveal-text" style="color:#e65100;">Baru kenal tapi sudah bilang "sahabat terbaik" atau "aku percaya kamu banget!" Pertemanan sungguhan butuh waktu.</span>
+              </div>
+            </div>
+            <div class="mask-card mc-purple" onclick="flipMask(this)">
+              <div class="mc-front">
+                <span class="mc-icon">🔑</span>
+                <span class="mc-label">Minta Data Pribadi</span>
+                <span class="mc-hint">Ketuk untuk tahu lebih!</span>
+              </div>
+              <div class="mc-back">
+                <span class="mc-icon">🚨</span>
+                <span class="mc-reveal-text" style="color:#6a1b9a;">Segera bertanya nomor HP, alamat rumah, nama sekolah, atau kata sandi. Teman sungguhan tidak pernah butuh ini!</span>
+              </div>
+            </div>
+            <div class="mask-card mc-teal" onclick="flipMask(this)">
+              <div class="mc-front">
+                <span class="mc-icon">🤐</span>
+                <span class="mc-label">Minta Dirahasiakan</span>
+                <span class="mc-hint">Ketuk untuk tahu lebih!</span>
+              </div>
+              <div class="mc-back">
+                <span class="mc-icon">🚨</span>
+                <span class="mc-reveal-text" style="color:#006064;">Berkata "Jangan ceritakan ke orang tua/guru ya!" — Ini ALARM MERAH TERANG! Orang baik tidak pernah minta anak menyembunyikan pertemanan.</span>
+              </div>
+            </div>
+            <div class="mask-card mc-pink" onclick="flipMask(this)">
+              <div class="mc-front">
+                <span class="mc-icon">🎁</span>
+                <span class="mc-label">Tawaran Hadiah Tiba-tiba</span>
+                <span class="mc-hint">Ketuk untuk tahu lebih!</span>
+              </div>
+              <div class="mc-back">
+                <span class="mc-icon">⚠️</span>
+                <span class="mc-reveal-text" style="color:#880e4f;">Menawarkan hadiah, item game gratis, atau uang tanpa alasan jelas. Ini sering dipakai untuk "membeli" kepercayaan korban.</span>
+              </div>
+            </div>
+            <div class="mask-card mc-blue" onclick="flipMask(this)">
+              <div class="mc-front">
+                <span class="mc-icon">❓</span>
+                <span class="mc-label">Cerita Tidak Konsisten</span>
+                <span class="mc-hint">Ketuk untuk tahu lebih!</span>
+              </div>
+              <div class="mc-back">
+                <span class="mc-icon">⚠️</span>
+                <span class="mc-reveal-text" style="color:#0d47a1;">Kadang bilang umurnya 11 tahun, lain waktu 13 tahun. Sekolahnya berubah-ubah. Cerita yang bohong sulit dijaga konsistensinya.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 7 – THEATER FLIP INTERACTIVE ═══ -->
+    <div class="slide" data-i="6">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner" style="overflow-y:auto;max-height:calc(100vh - 170px);">
+          <div class="sec-head">
+            <span class="sec-icon">🎪</span>
+            <h2 class="sec-title">Buka Topengnya, Aslan!</h2>
+            <p class="sec-sub">Lihat siapa di balik sandiwara ini...</p>
+          </div>
+          <p class="tap-hint">👆 Ketuk setiap topeng untuk melihat wajah aslinya!</p>
+
+          <div class="theater" style="padding:22px 18px;">
+            <div class="stage-actors">
+
+              <div class="actor">
+                <div class="mask-flip" onclick="this.classList.toggle('flipped')">
+                  <div class="mask-flip-inner">
+                    <div class="mask-front"><span>😇</span></div>
+                    <div class="mask-back" style="background:rgba(229,57,53,.15);border-radius:50%;"><span>👨‍💻</span></div>
+                  </div>
+                </div>
+                <div class="flip-hint">@TemanSnda<br>Berbalik!</div>
+                <div style="font-size:11px;color:rgba(255,200,200,.7);margin-top:5px;">"Anak baik 10th"<br>→ Orang asing!</div>
+              </div>
+
+              <div class="actor">
+                <div class="mask-flip" onclick="this.classList.toggle('flipped')">
+                  <div class="mask-flip-inner">
+                    <div class="mask-front"><span>👧</span></div>
+                    <div class="mask-back" style="background:rgba(156,39,176,.15);border-radius:50%;"><span>🤖</span></div>
+                  </div>
+                </div>
+                <div class="flip-hint">@GadisKeren<br>Berbalik!</div>
+                <div style="font-size:11px;color:rgba(200,180,255,.7);margin-top:5px;">"Teman sebaya"<br>→ Robot/Bot!</div>
+              </div>
+
+              <div class="actor">
+                <div class="mask-flip" onclick="this.classList.toggle('flipped')">
+                  <div class="mask-flip-inner">
+                    <div class="mask-front"><span>🤩</span></div>
+                    <div class="mask-back" style="background:rgba(255,152,0,.15);border-radius:50%;"><span>💸</span></div>
+                  </div>
+                </div>
+                <div class="flip-hint">@SelebrPalsu<br>Berbalik!</div>
+                <div style="font-size:11px;color:rgba(255,220,150,.7);margin-top:5px;">"Artis terkenal"<br>→ Penipu!</div>
+              </div>
+
+            </div>
+            <div class="stage-glow"></div>
+          </div>
+
+          <div class="highlight danger" style="margin-top:14px;">
+            🎭 <b>Ingat:</b> Di Lautan Digital, siapapun bisa memakai topeng apapun. Foto profil yang cantik dan kata-kata yang manis BUKAN bukti bahwa seseorang itu jujur!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 8 – BAHAYA ═══ -->
+    <div class="slide" data-i="7">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner" style="overflow-y:auto;max-height:calc(100vh - 170px);">
+          <div class="sec-head">
+            <span class="sec-icon">⚠️</span>
+            <h2 class="sec-title">Bahaya Tertipu Sandiwara Digital</h2>
+            <p class="sec-sub">Kenapa ini sangat serius dan penting?</p>
+          </div>
+          <p class="story">Setelah membuka topeng @KaptenKeren_99, Kapten Aslan sadar betapa bahayanya kalau dia langsung memberikan nomornya. Penjaga Mercusuar menjelaskan bahaya-bahaya yang bisa terjadi:</p>
+
+          <div class="danger-list">
+            <div class="danger-item">
+              <span class="di-icon">📍</span>
+              <div>
+                <div class="di-title">Penjahat Tahu Lokasimu</div>
+                <div class="di-text">Dari nama sekolah dan alamat, orang jahat bisa menemukan kamu di dunia nyata. Ini sangat berbahaya!</div>
+              </div>
+            </div>
+            <div class="danger-item">
+              <span class="di-icon">💳</span>
+              <div>
+                <div class="di-title">Penipuan Uang & Barang</div>
+                <div class="di-text">Tertipu memberikan uang, pulsa, atau data perbankan milik orang tua kepada orang yang berpura-pura sebagai teman.</div>
+              </div>
+            </div>
+            <div class="danger-item">
+              <span class="di-icon">📸</span>
+              <div>
+                <div class="di-title">Foto Pribadi Disalahgunakan</div>
+                <div class="di-text">Foto yang dikirimkan ke "teman online" bisa disebarkan atau dipakai untuk tujuan jahat.</div>
+              </div>
+            </div>
+            <div class="danger-item">
+              <span class="di-icon">💔</span>
+              <div>
+                <div class="di-title">Luka Hati yang Dalam</div>
+                <div class="di-text">Mengetahui "teman terbaik" selama ini adalah tipuan bisa sangat menyakitkan dan mempengaruhi kepercayaan diri.</div>
+              </div>
+            </div>
+          </div>
+          <div class="highlight" style="margin-top:14px;">
+            ✅ <b>Kabar Baiknya:</b> Dengan mengetahui tanda-tandanya, kamu bisa melindungi diri sebelum bahaya datang! Itu sebabnya ilmu ini sangat berharga, Kapten Aslan! 🛡️
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 9 – CARA MELINDUNGI DIRI ═══ -->
+    <div class="slide" data-i="8">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner" style="overflow-y:auto;max-height:calc(100vh - 170px);">
+          <div class="sec-head">
+            <span class="sec-icon">🛡️</span>
+            <h2 class="sec-title">Perisai Kapten dari Sandiwara Digital</h2>
+            <p class="sec-sub">Cara melindungi diri seperti seorang Kapten sejati!</p>
+          </div>
+          <ul class="shield-list">
+            <li class="shield-item">
+              <span class="si-icon">🚫</span>
+              <span class="si-text"><span>TIDAK pernah</span> memberikan data pribadi (nomor HP, alamat, nama sekolah) kepada orang yang baru dikenal online, meskipun terasa seperti teman baik.</span>
+            </li>
+            <li class="shield-item" style="border-color:var(--purple);background:linear-gradient(135deg,#f3e5f5,#f8f9fa);">
+              <span class="si-icon">👁️</span>
+              <span class="si-text"><span>Perhatikan</span> 6 ciri-ciri tanda peringatan. Kalau menemukan salah satunya, langsung waspada dan mundur!</span>
+            </li>
+            <li class="shield-item" style="border-color:var(--gold);background:linear-gradient(135deg,#fff8e1,#f8f9fa);">
+              <span class="si-icon">👨‍👩‍👧</span>
+              <span class="si-text"><span>Ceritakan</span> kepada orang tua atau orang dewasa yang dipercaya jika ada orang online yang membuatmu tidak nyaman. Ini BUKAN mengadu, ini CERDAS!</span>
+            </li>
+            <li class="shield-item" style="border-color:var(--coral);background:linear-gradient(135deg,#fbe9e7,#f8f9fa);">
+              <span class="si-icon">🔍</span>
+              <span class="si-text"><span>Reverse Image Search:</span> Kalau ragu foto profil asli atau tidak, bisa tanya orang tua untuk memeriksa foto itu di internet. Foto curian akan terdeteksi!</span>
+            </li>
+            <li class="shield-item" style="border-color:var(--safe);background:linear-gradient(135deg,#e8f5e9,#f8f9fa);">
+              <span class="si-icon">📵</span>
+              <span class="si-text"><span>Blokir dan Laporkan</span> akun yang mencurigakan. Tombol "Blokir" adalah senjata ajaib kapten — gunakan tanpa ragu-ragu!</span>
+            </li>
+            <li class="shield-item" style="border-color:var(--mint);background:linear-gradient(135deg,#e0f7fa,#f8f9fa);">
+              <span class="si-icon">🤝</span>
+              <span class="si-text"><span>Berteman online hanya</span> dengan orang yang JUGA kamu kenal di dunia nyata. Teman sejati di digital dimulai dari teman nyata!</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 10 – ASLAN vs @KAPTENKEREN ═══ -->
+    <div class="slide" data-i="9">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner" style="overflow-y:auto;max-height:calc(100vh - 170px);">
+          <div class="sec-head">
+            <span class="sec-icon">⚓</span>
+            <h2 class="sec-title">Apa yang Dilakukan Aslan?</h2>
+            <p class="sec-sub">Kapten Cerdas beraksi!</p>
+          </div>
+          <p class="story">Setelah menyelidiki akun @KaptenKeren_99, Aslan menemukan banyak tanda peringatan! Dia memutuskan untuk tidak membalas pesan itu.</p>
+
+          <div class="sc-compare">
+            <div class="scc fake">
+              <div class="scc-head">❌ Jika Aslan Tidak Waspada</div>
+              <ul class="scc-list">
+                <li class="scc-item"><span>😔</span> Langsung memberi nomor HP</li>
+                <li class="scc-item"><span>😔</span> Percaya cerita yang tidak konsisten</li>
+                <li class="scc-item"><span>😔</span> Merahasiakan dari orang tua</li>
+                <li class="scc-item"><span>😔</span> Data pribadi bocor ke penjahat</li>
+              </ul>
+            </div>
+            <div class="scc real">
+              <div class="scc-head">✅ Yang Dilakukan Aslan</div>
+              <ul class="scc-list">
+                <li class="scc-item"><span>😊</span> Tidak membalas dan tidak memberi data</li>
+                <li class="scc-item"><span>😊</span> Memperhatikan 6 tanda peringatan</li>
+                <li class="scc-item"><span>😊</span> Langsung cerita ke Ibunya</li>
+                <li class="scc-item"><span>😊</span> Akun dilaporkan dan diblokir</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="highlight" style="margin-top:14px;background:linear-gradient(135deg,#e8f5e9,#dcedc8);border-color:var(--safe);color:#1b5e20;">
+            🎉 <b>Aslan selamat!</b> Ibunya berterima kasih karena Aslan mau bercerita. Bersama, mereka melaporkan akun itu ke platform. Satu Kapten Cerdas sudah melindungi satu bagian Lautan Digital! ⚓
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 11 – PELAJARAN ═══ -->
+    <div class="slide" data-i="10">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner" style="overflow-y:auto;max-height:calc(100vh - 170px);">
+          <div class="sec-head">
+            <span class="sec-icon">📚</span>
+            <h2 class="sec-title">Pelajaran Hari Ke-17</h2>
+            <p class="sec-sub">Permata ilmu yang kamu bawa pulang hari ini!</p>
+          </div>
+          <div class="lesson-grid">
+            <div class="lesson-item">
+              <div class="li-icon">🎭</div>
+              <div class="li-title">Topeng Digital Ada!</div>
+              <div class="li-text">Di Lautan Digital, siapa saja bisa pura-pura jadi siapa saja. Tidak semua yang terlihat baik itu benar-benar baik.</div>
+            </div>
+            <div class="lesson-item">
+              <div class="li-icon">🐟</div>
+              <div class="li-title">Kenali Catfishing</div>
+              <div class="li-text">Catfishing adalah jebakan berbahaya di Lautan Digital. Pelajari ciri-cirinya dan kamu sudah selangkah lebih aman!</div>
+            </div>
+            <div class="lesson-item">
+              <div class="li-icon">🚨</div>
+              <div class="li-title">6 Tanda Peringatan</div>
+              <div class="li-text">Foto sempurna, terlalu cepat akrab, minta data, minta dirahasiakan, beri hadiah, dan cerita tidak konsisten.</div>
+            </div>
+            <div class="lesson-item">
+              <div class="li-icon">👨‍👩‍👧</div>
+              <div class="li-title">Cerita ke Orang Tua!</div>
+              <div class="li-text">Ini bukan mengadu — ini CERDAS! Orang tua adalah sekutu terbaik Kapten dalam menghadapi sandiwara digital.</div>
+            </div>
+            <div class="lesson-item">
+              <div class="li-icon">📵</div>
+              <div class="li-title">Blokir Tanpa Ragu</div>
+              <div class="li-text">Tombol blokir adalah senjata sah Kapten. Tidak ada yang salah dari memblokir akun yang membuatmu tidak nyaman.</div>
+            </div>
+            <div class="lesson-item">
+              <div class="li-icon">❤️</div>
+              <div class="li-title">Teman Nyata Dulu</div>
+              <div class="li-text">Berteman online paling aman dimulai dari orang yang sudah kamu kenal baik di dunia nyata.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 12 – TANTANGAN ═══ -->
+    <div class="slide" data-i="11">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner">
+          <div class="challenge-wrap">
+            <div style="font-size:55px;margin-bottom:12px;animation:maskBob 3s ease-in-out infinite;">🎯</div>
+            <div class="ch-title">Tantangan Harian Kapten Aslan!</div>
+            <p style="opacity:.85;margin-bottom:18px;font-size:14px;line-height:1.7;">
+              Buktikan kamu sudah jadi Detektif Topeng Digital yang handal! Centang setiap misi yang berhasil diselesaikan:
+            </p>
+            <ul class="ch-tasks">
+              <li class="ch-task" onclick="doChallenge(this)">
+                <span class="ct-icon">🎭</span>
+                <span>Ceritakan apa itu "catfishing" kepada satu anggota keluarga</span>
+                <span class="ch-check">⬜</span>
+              </li>
+              <li class="ch-task" onclick="doChallenge(this)">
+                <span class="ct-icon">🔍</span>
+                <span>Periksa apakah semua akun media sosialmu menggunakan pengaturan privasi</span>
+                <span class="ch-check">⬜</span>
+              </li>
+              <li class="ch-task" onclick="doChallenge(this)">
+                <span class="ct-icon">📋</span>
+                <span>Tulis 3 ciri-ciri tanda peringatan akun palsu dari ingatanmu</span>
+                <span class="ch-check">⬜</span>
+              </li>
+              <li class="ch-task" onclick="doChallenge(this)">
+                <span class="ct-icon">👨‍👩‍👧</span>
+                <span>Tanya orang tua: apakah mereka pernah bertemu akun mencurigakan?</span>
+                <span class="ch-check">⬜</span>
+              </li>
+              <li class="ch-task" onclick="doChallenge(this)">
+                <span class="ct-icon">🛡️</span>
+                <span>Buat "daftar teman online terpercaya" — hanya yang kamu kenal nyata!</span>
+                <span class="ch-check">⬜</span>
+              </li>
+            </ul>
+            <div class="ch-msg" id="chMsg">
+              🌟 Luar Biasa, Detektif Aslan! Kamu sudah jadi pelindung Lautan Digital yang andal!
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 13 – QUIZ MINI ═══ -->
+    <div class="slide" data-i="12">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner" style="overflow-y:auto;max-height:calc(100vh - 170px);">
+          <div class="sec-head">
+            <span class="sec-icon">🧩</span>
+            <h2 class="sec-title">Uji Kemampuan Detektifmu!</h2>
+            <p class="sec-sub">Ketuk jawabanmu, Kapten Aslan!</p>
+          </div>
+          <p class="story">Seseorang kamu baru kenal online berkata: <b>"Hei! Aku teman baikmu! Jangan cerita ke orang tuamu ya, biar kita bisa jadi sahabat rahasia. Kamu mau kasih nomor HP-mu?"</b></p>
+          <p style="text-align:center;font-family:'Fredoka One',cursive;font-size:16px;color:var(--ocean-deep);margin-bottom:14px;">Apa yang sebaiknya Kapten Aslan lakukan?</p>
+
+          <div style="display:flex;flex-direction:column;gap:10px;" id="quizOptions">
+            <div class="quiz-opt" onclick="answerQuiz(this, false)" style="background:linear-gradient(135deg,#ffebee,#fce4ec);border:2px solid #ef9a9a;border-radius:14px;padding:13px 16px;cursor:pointer;transition:all .3s;display:flex;gap:11px;align-items:center;">
+              <span style="font-size:22px;">😊</span>
+              <span style="font-size:14px;font-weight:700;color:#b71c1c;">Senang punya sahabat rahasia! Langsung kasih nomor HP.</span>
+            </div>
+            <div class="quiz-opt" onclick="answerQuiz(this, false)" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:2px solid #ff9800;border-radius:14px;padding:13px 16px;cursor:pointer;transition:all .3s;display:flex;gap:11px;align-items:center;">
+              <span style="font-size:22px;">🤔</span>
+              <span style="font-size:14px;font-weight:700;color:#e65100;">Tidak kasih HP, tapi setuju jadi sahabat rahasia.</span>
+            </div>
+            <div class="quiz-opt correct-opt" onclick="answerQuiz(this, true)" style="background:linear-gradient(135deg,#e8f5e9,#dcedc8);border:2px solid #a5d6a7;border-radius:14px;padding:13px 16px;cursor:pointer;transition:all .3s;display:flex;gap:11px;align-items:center;">
+              <span style="font-size:22px;">⚓</span>
+              <span style="font-size:14px;font-weight:700;color:#2e7d32;">Tidak membalas, langsung cerita ke orang tua, dan blokir akun itu!</span>
+            </div>
+          </div>
+          <div id="quizResult" style="display:none;margin-top:14px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 14 – RENUNGAN ═══ -->
+    <div class="slide" data-i="13">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner" style="overflow-y:auto;max-height:calc(100vh - 170px);">
+          <div class="sec-head">
+            <span class="sec-icon">💭</span>
+            <h2 class="sec-title">Renungan Kapten Aslan</h2>
+            <p class="sec-sub">Sebelum menutup buku hari ini...</p>
+          </div>
+          <p class="story">Malam itu, Kapten Aslan menatap bintang-bintang di langit malam sambil menulis di buku hariannya:</p>
+          <div class="highlight purple" style="font-style:italic;font-size:16px;line-height:2;">
+            "Hari ini aku belajar bahwa tidak semua orang yang terlihat baik itu benar-benar baik. Tapi aku juga belajar bahwa aku punya kekuatan untuk melindungi diri sendiri — dengan ilmu, dengan waspada, dan dengan berbicara kepada orang-orang yang benar-benar mencintaiku. Topeng bisa menipu mata, tapi tidak bisa menipu hati yang cerdas." — Kapten Aslan 🎭⚓
+          </div>
+          <p class="story">Aslan juga menyadari sesuatu yang penting: <b>memiliki teman online tidak salah</b> — yang penting adalah cerdas dalam memilih dan mengenali siapa mereka sebenarnya.</p>
+          <div class="info-box purple">
+            <div class="ib-title">🔮 Sneak Peek Hari 18</div>
+            <div class="ib-text">Besok, Aslan akan belajar tentang sesuatu yang misterius: <b>"Jejak Kaki di Pasir Digital"</b> — setiap langkah yang kamu ambil di Lautan Digital meninggalkan jejak... dan itu bisa membantu atau membahayakanmu! 👣</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 15 – PENUTUP ═══ -->
+    <div class="slide" data-i="14">
+      <div class="card" style="width:100%;max-width:760px;">
+        <div class="card-inner">
+          <div class="closing-wrap">
+            <div class="closing-stars">
+              <span class="cstar" style="top:5%;left:8%;animation-delay:0s;">⭐</span>
+              <span class="cstar" style="top:12%;right:12%;animation-delay:.5s;">✨</span>
+              <span class="cstar" style="top:50%;left:2%;animation-delay:1s;">💫</span>
+              <span class="cstar" style="bottom:18%;right:4%;animation-delay:1.5s;">⭐</span>
+              <span class="cstar" style="bottom:8%;left:20%;animation-delay:.8s;">🎭</span>
+              <span class="cstar" style="top:35%;right:2%;animation-delay:.3s;">✨</span>
+            </div>
+            <div class="cl-hero">🏆</div>
+            <h2 class="cl-title">Selamat, Detektif Topeng Digital!</h2>
+            <p class="cl-msg">
+              Hari ini Kapten Aslan telah mempelajari salah satu pelajaran paling penting dalam pelayaran digital: mengenali orang yang berpura-pura di Lautan Digital. Kamu sekarang jauh lebih aman! 🛡️
+            </p>
+            <div class="ach">
+              <span class="ach-ico">🎭</span>
+              <div class="ach-t">
+                <div class="ach-title">Pencapaian Terbuka!</div>
+                <div class="ach-sub">"Detektif Topeng Digital" — Menguasai ilmu mengenali sandiwara di Lautan Digital!</div>
+              </div>
+            </div>
+            <div class="ach">
+              <span class="ach-ico">⚓</span>
+              <div class="ach-t">
+                <div class="ach-title">Progress: 17/30 Hari</div>
+                <div class="ach-sub">Lebih dari setengah perjalanan sudah ditaklukkan! Kapten Aslan semakin tangguh!</div>
+              </div>
+            </div>
+             </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /slides -->
+</div><!-- /book -->
+
+<!-- Nav -->
+<div class="nav-bar">
+  <button class="nb-btn" id="prevBtn" onclick="nav(-1)" disabled>← Sebelumnya</button>
+  <div class="nav-dots" id="navDots"></div>
+  <button class="nb-btn nb-next" id="nextBtn" onclick="nav(1)">Selanjutnya →</button>
+</div>
+
+<script>
+const TOTAL = 15;
+let cur = 0;
+
+// Build dots
+const dotsEl = document.getElementById('navDots');
+for(let i=0;i<TOTAL;i++){
+  const d=document.createElement('div');
+  d.className='ndot'+(i===0?' active':'');
+  d.onclick=()=>goTo(i);
+  dotsEl.appendChild(d);
+}
+
+function updateUI(){
+  document.getElementById('pgCur').textContent=cur+1;
+  document.getElementById('progBar').style.width=((cur+1)/TOTAL*100)+'%';
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===TOTAL-1;
+  document.querySelectorAll('.ndot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+}
+
+function nav(dir){goTo(cur+dir);}
+function goTo(next){
+  if(next<0||next>=TOTAL||next===cur)return;
+  const slides=document.querySelectorAll('.slide');
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('go-left');
+  cur=next;
+  setTimeout(()=>{
+    slides.forEach((s,i)=>{s.classList.remove('active','go-left');if(i===cur)s.classList.add('active');});
+  },60);
+  updateUI();
+  setTimeout(()=>{const sc=slides[cur].querySelector('[style*="overflow-y"]');if(sc)sc.scrollTop=0;},250);
+}
+
+function flipMask(el){el.classList.toggle('revealed');}
+
+// Theater mask flip is handled inline
+
+function doChallenge(el){
+  el.classList.toggle('done');
+  el.querySelector('.ch-check').textContent=el.classList.contains('done')?'✅':'⬜';
+  const done=document.querySelectorAll('.ch-task.done').length;
+  document.getElementById('chMsg').style.display=done>=3?'block':'none';
+}
+
+function answerQuiz(el,correct){
+  const opts=document.querySelectorAll('.quiz-opt');
+  opts.forEach(o=>o.style.pointerEvents='none');
+  const res=document.getElementById('quizResult');
+  if(correct){
+    el.style.border='3px solid #43a047';
+    el.style.background='linear-gradient(135deg,#e8f5e9,#c8e6c9)';
+    res.innerHTML='<div style="background:linear-gradient(135deg,#e8f5e9,#dcedc8);border:2px solid #a5d6a7;border-radius:14px;padding:14px 16px;color:#1b5e20;font-weight:700;font-size:14px;line-height:1.7;">🎉 <b>BENAR!</b> Itu persis yang dilakukan Kapten Aslan yang cerdas! Minta dirahasiakan dan minta data pribadi adalah DUA tanda peringatan sekaligus. Langsung cerita ke orang tua adalah langkah terbaik! ⚓</div>';
+  } else {
+    el.style.border='3px solid #e53935';
+    el.style.opacity='.7';
+    document.querySelector('.correct-opt').style.border='3px solid #43a047';
+    document.querySelector('.correct-opt').style.background='linear-gradient(135deg,#e8f5e9,#c8e6c9)';
+    res.innerHTML='<div style="background:linear-gradient(135deg,#ffebee,#fce4ec);border:2px solid #ef9a9a;border-radius:14px;padding:14px 16px;color:#b71c1c;font-weight:700;font-size:14px;line-height:1.7;">😊 <b>Hampir!</b> Jawaban terbaik adalah yang hijau — langsung cerita ke orang tua dan blokir akun itu. Permintaan "jadi sahabat rahasia" dari orang asing online adalah tanda peringatan MERAH! 🎭</div>';
+  }
+  res.style.display='block';
+}
+
+// Sound
+let audioCtx=null, sndNodes=null, sndOn=false;
+document.getElementById('sndBtn').addEventListener('click',()=>{
+  sndOn=!sndOn;
+  document.getElementById('sndBtn').textContent=sndOn?'🔇':'🔊';
+  if(sndOn){
+    try{
+      audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+      const bufSize=4096;
+      const node=audioCtx.createScriptProcessor(bufSize,1,1);
+      node.onaudioprocess=(e)=>{const o=e.outputBuffer.getChannelData(0);for(let i=0;i<bufSize;i++)o[i]=(Math.random()*2-1)*.05;};
+      const f=audioCtx.createBiquadFilter();f.type='lowpass';f.frequency.value=380;
+      node.connect(f);f.connect(audioCtx.destination);
+      sndNodes={node,f};
+    }catch(e){}
+  }else{
+    try{if(sndNodes){sndNodes.node.disconnect();sndNodes.f.disconnect();sndNodes=null;audioCtx=null;}}catch(e){}
+  }
+});
+
+// Floating sparks
+const sparkChars=['✨','⭐','💫','🎭','🎪'];
+for(let i=0;i<12;i++){
+  const s=document.createElement('div');s.className='spark';
+  s.textContent=sparkChars[Math.floor(Math.random()*sparkChars.length)];
+  s.style.cssText=`left:${Math.random()*100}%;animation-duration:${Math.random()*9+5}s;animation-delay:${Math.random()*9}s;font-size:${Math.random()*10+10}px;`;
+  document.body.appendChild(s);
+}
+
+// Swipe
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX;});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-tx;if(Math.abs(dx)>55)nav(dx<0?1:-1);});
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')nav(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')nav(-1);});
+
+updateUI();
+</script>
+</body>
+</html>

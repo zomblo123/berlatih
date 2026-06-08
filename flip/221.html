@@ -1,0 +1,1155 @@
+<!-- BUKU DIGITAL ASLAN - Hari 21: Perjalanan ke Planet Mars — Rumah Baru Manusia? -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perjalanan ke Planet Mars — Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest:  #2d6a4f;
+    --moss:    #40916c;
+    --leaf:    #74c69d;
+    --sky:     #1a6985;
+    --ocean:   #2196a0;
+    --sand:    #d4a574;
+    --earth:   #8b5e3c;
+    /* Mars palette */
+    --mars:    #c1440e;
+    --rust:    #a63d00;
+    --crater:  #7a2d00;
+    --dusty:   #e07038;
+    --glow:    #ff6b35;
+    --orange:  #f4a261;
+    --gold:    #fbbf24;
+    --sky-m:   #1a0a00;
+    --stardust:#ffe8d6;
+    --iceblue: #bfdbfe;
+    --dark-bg: #0a0500;
+    --radius:  24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #0a0500;
+    color: #ffe8d6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background .4s, color .4s;
+  }
+  body.light-mode { background: #fff3ee; color: #1a0500; }
+
+  /* ── STAR FIELD ── */
+  .starfield {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .star-p {
+    position: absolute; border-radius: 50%;
+    background: white; opacity: 0;
+    animation: twinkle-s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle-s {
+    from { opacity: .1; transform: scale(1); }
+    to   { opacity: .9; transform: scale(1.4); }
+  }
+  /* Dust motes drifting */
+  .dust {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .dust-p {
+    position: absolute; border-radius: 50%;
+    background: var(--dusty); opacity: 0;
+    animation: drift linear infinite;
+  }
+  @keyframes drift {
+    0%   { transform: translateY(110vh) translateX(0); opacity: 0; }
+    10%  { opacity: .5; }
+    90%  { opacity: .3; }
+    100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
+  }
+  body.light-mode .starfield { opacity: .3; }
+  body.light-mode .dust      { opacity: .2; }
+
+  /* ── TOP NAV ── */
+  .top-nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(10,5,0,.9);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(193,68,14,.28);
+  }
+  body.light-mode .top-nav {
+    background: rgba(255,243,238,.94);
+    border-color: rgba(193,68,14,.2);
+  }
+
+  .back-btn {
+    display: flex; align-items: center; gap: 8px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--moss), var(--forest));
+    color: white; padding: 10px 18px; border-radius: 50px;
+    font-size: 14px; font-weight: 800;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 14px rgba(64,145,108,.4);
+  }
+  .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(64,145,108,.5); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .book-day-badge {
+    background: linear-gradient(135deg, var(--mars), var(--rust));
+    color: white; padding: 6px 14px; border-radius: 50px;
+    font-size: 12px; font-weight: 800; letter-spacing: .5px;
+  }
+
+  .mode-btn {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    color: var(--stardust); width: 40px; height: 40px;
+    border-radius: 50%; font-size: 18px; cursor: pointer;
+    transition: background .2s, transform .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,.2); transform: rotate(20deg); }
+  body.light-mode .mode-btn { background: rgba(0,0,0,.07); border-color: rgba(0,0,0,.12); color: #1a0500; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    position: fixed; top: 64px; left: 0; right: 0;
+    z-index: 99; height: 6px;
+    background: rgba(255,255,255,.07);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--glow), var(--mars), var(--rust));
+    transition: width .35s ease;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* ── BOOK CONTAINER ── */
+  .book-container {
+    position: relative; z-index: 1;
+    max-width: 860px; margin: 0 auto;
+    padding: 80px 20px 40px;
+  }
+
+  /* ── PAGES ── */
+  .page { display: none; animation: fadeUp .5s ease forwards; }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ═══════ COVER ═══════ */
+  .cover-page {
+    min-height: calc(100vh - 80px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 20px;
+    position: relative;
+  }
+
+  /* Mars planet CSS */
+  .cover-mars-wrap {
+    width: 230px; height: 230px;
+    position: relative; margin: 0 auto 32px;
+    animation: float-mars 4s ease-in-out infinite;
+  }
+  @keyframes float-mars {
+    0%,100% { transform: translateY(0) rotate(-1deg); }
+    50%      { transform: translateY(-16px) rotate(1deg); }
+  }
+  .mars-sphere {
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 32%,
+        #e85d20 0%, #c1440e 30%, #8b2800 60%, #5a1500 85%, #2a0800 100%);
+    box-shadow:
+      0 0 0 10px rgba(193,68,14,.18),
+      0 0 0 26px rgba(193,68,14,.08),
+      0 0 80px rgba(193,68,14,.45),
+      inset -35px -25px 60px rgba(0,0,0,.6),
+      inset 15px 12px 30px rgba(255,120,50,.15);
+    position: absolute; top: 15px; left: 15px;
+    overflow: hidden;
+  }
+  /* Surface detail stripes */
+  .mars-sphere::before {
+    content: '';
+    position: absolute;
+    top: 38%; left: 0; right: 0;
+    height: 28%;
+    background: rgba(160,60,0,.35);
+    border-radius: 50%;
+    filter: blur(8px);
+  }
+  /* Polar ice cap */
+  .mars-sphere::after {
+    content: '';
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    width: 80px; height: 36px;
+    background: radial-gradient(ellipse, rgba(200,220,255,.55), transparent 70%);
+    border-radius: 50%;
+  }
+  /* Valles Marineris-like canyon */
+  .mars-canyon {
+    position: absolute;
+    top: 52%; left: 15%;
+    width: 65%; height: 8px;
+    background: rgba(80,20,0,.6);
+    border-radius: 4px;
+    filter: blur(3px);
+    transform: rotate(-8deg);
+  }
+  /* Olympus Mons crater hint */
+  .mars-crater {
+    position: absolute;
+    top: 30%; left: 20%;
+    width: 36px; height: 30px;
+    background: radial-gradient(ellipse, rgba(255,100,30,.25), transparent 70%);
+    border-radius: 50%;
+  }
+
+  /* Orbit ring */
+  .mars-orbit {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%) rotateX(72deg);
+    width: 220px; height: 220px;
+    border: 2px solid rgba(193,68,14,.22);
+    border-radius: 50%;
+  }
+  /* Rocket on orbit */
+  .mars-rocket {
+    position: absolute;
+    top: -14px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    animation: orbit-rocket 6s linear infinite;
+    transform-origin: 0 110px;
+  }
+  @keyframes orbit-rocket { from{transform:rotate(0deg) translateY(-110px)} to{transform:rotate(360deg) translateY(-110px)} }
+
+  /* Floating debris */
+  .space-float {
+    position: absolute; font-size: 26px;
+    animation: space-drift ease-in-out infinite;
+  }
+  .space-float:nth-child(1){ top:4%;  left:7%;  animation-duration:5s; animation-delay:0s; }
+  .space-float:nth-child(2){ top:6%;  right:9%; animation-duration:4s; animation-delay:-2s; }
+  .space-float:nth-child(3){ bottom:22%; left:4%;  animation-duration:6s; animation-delay:-4s; }
+  .space-float:nth-child(4){ bottom:18%; right:6%; animation-duration:5s; animation-delay:-1s; }
+  @keyframes space-drift {
+    0%,100%{ transform:translateY(0) rotate(0deg); }
+    50%    { transform:translateY(-12px) rotate(15deg); }
+  }
+
+  .cover-badge {
+    background: linear-gradient(135deg, var(--mars), var(--rust));
+    color: white; padding: 6px 20px; border-radius: 50px;
+    font-size: 13px; font-weight: 800;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 16px; display: inline-block;
+  }
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(26px,6vw,50px); line-height: 1.2;
+    background: linear-gradient(135deg, var(--gold), var(--glow), var(--mars), var(--glow));
+    background-size: 300%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease infinite; margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+  .cover-subtitle { font-size: clamp(15px,3vw,21px); opacity: .75; margin-bottom: 24px; }
+
+  .cover-name-badge {
+    background: linear-gradient(135deg,rgba(193,68,14,.15),rgba(244,162,97,.15));
+    border: 2px solid rgba(193,68,14,.38);
+    border-radius: 20px; padding: 16px 32px; margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+  }
+  .cover-name-badge p { font-size: 14px; opacity: .7; margin-bottom: 4px; }
+  .cover-name-badge h2 { font-family:'Fredoka One',cursive; font-size:clamp(22px,4vw,32px); color:var(--gold); }
+
+  /* ═══════ CARDS ═══════ */
+  .card {
+    background: rgba(255,232,214,.05);
+    border: 1px solid rgba(193,68,14,.18);
+    border-radius: var(--radius); padding: 32px; margin-bottom: 24px;
+    backdrop-filter: blur(8px); position: relative; overflow: hidden;
+  }
+  body.light-mode .card {
+    background: white; border-color: rgba(193,68,14,.14);
+    box-shadow: 0 4px 24px rgba(193,68,14,.09); color: #1a0500;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: var(--accent, linear-gradient(90deg, var(--mars), var(--gold)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .card-red    { --accent: linear-gradient(90deg, #5a1500, #c1440e); }
+  .card-atmo   { --accent: linear-gradient(90deg, #c1440e, #e07038); }
+  .card-colony { --accent: linear-gradient(90deg, #e07038, #fbbf24); }
+  .card-robot  { --accent: linear-gradient(90deg, var(--sky), var(--ocean)); }
+  .card-future { --accent: linear-gradient(90deg, var(--moss), var(--leaf)); }
+
+  .card-icon { font-size:56px; margin-bottom:16px; display:block; line-height:1; filter:drop-shadow(0 4px 8px rgba(0,0,0,.35)); }
+  .card h2 { font-family:'Fredoka One',cursive; font-size:clamp(22px,4vw,30px); margin-bottom:8px; color:var(--glow); }
+  body.light-mode .card h2 { color:var(--mars); }
+  .card h3 { font-size:18px; font-weight:800; margin:20px 0 10px; color:var(--orange); }
+  body.light-mode .card h3 { color:var(--rust); }
+  .card p { font-size:clamp(15px,2.5vw,17px); line-height:1.85; opacity:.9; margin-bottom:14px; }
+
+  /* depth badge */
+  .depth-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(193,68,14,.15); border:1px solid rgba(193,68,14,.38);
+    border-radius:50px; padding:6px 16px;
+    font-size:13px; font-weight:800; color:var(--glow); margin-bottom:16px;
+  }
+
+  /* analogy box */
+  .analogy-box {
+    background: linear-gradient(135deg,rgba(193,68,14,.08),rgba(244,162,97,.1));
+    border: 2px dashed rgba(193,68,14,.3);
+    border-radius:16px; padding:20px 24px; margin:20px 0; position:relative;
+  }
+  .analogy-box::before {
+    content:'💡 Analogi Keren!';
+    position:absolute; top:-12px; left:20px;
+    background:var(--dark-bg); padding:2px 12px; border-radius:20px;
+    font-size:12px; font-weight:800; color:var(--glow);
+  }
+  body.light-mode .analogy-box::before { background:white; color:var(--mars); }
+  body.light-mode .analogy-box { background:rgba(193,68,14,.04); }
+
+  /* section header */
+  .section-header { text-align:center; margin-bottom:32px; padding-top:20px; }
+  .section-header .tag {
+    display:inline-block; background:rgba(193,68,14,.12);
+    border:1px solid rgba(193,68,14,.32); color:var(--glow);
+    padding:4px 16px; border-radius:50px;
+    font-size:12px; font-weight:800; letter-spacing:1px; text-transform:uppercase; margin-bottom:12px;
+  }
+  .section-header h1 { font-family:'Fredoka One',cursive; font-size:clamp(24px,5vw,40px); line-height:1.2; }
+
+  /* scene box */
+  .scene-box {
+    background:linear-gradient(135deg,rgba(10,5,0,.88),rgba(90,21,0,.28));
+    border:1px solid rgba(193,68,14,.28); border-radius:20px;
+    padding:28px; margin:20px 0; position:relative; overflow:hidden;
+  }
+  body.light-mode .scene-box {
+    background:linear-gradient(135deg,rgba(255,243,238,.96),rgba(193,68,14,.07));
+    border-color:rgba(193,68,14,.22);
+  }
+  .scene-title { font-weight:900; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--glow); margin-bottom:12px; opacity:.85; }
+  .scene-box p { font-size:clamp(15px,2.5vw,17px); line-height:1.9; font-style:italic; opacity:.92; }
+
+  /* comparison table */
+  .compare-table {
+    width:100%; border-collapse:separate; border-spacing:0 10px; margin:16px 0;
+  }
+  .compare-table th {
+    padding:12px 16px; font-size:14px; font-weight:900;
+    text-align:center; border-radius:12px 12px 0 0;
+  }
+  .compare-table td {
+    padding:11px 16px; font-size:14px; line-height:1.6;
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  body.light-mode .compare-table td { border-color:rgba(0,0,0,.06); }
+  .th-earth { background:linear-gradient(135deg,#1a6985,#2196a0); color:white; }
+  .th-mars  { background:linear-gradient(135deg,#8b2800,#c1440e); color:white; }
+  .td-earth { background:rgba(34,150,160,.07); }
+  .td-mars  { background:rgba(193,68,14,.09); }
+  .td-label { background:rgba(255,255,255,.04); font-weight:800; font-size:13px; opacity:.75; }
+  body.light-mode .td-earth { background:rgba(34,150,160,.05); }
+  body.light-mode .td-mars  { background:rgba(193,68,14,.05); }
+  body.light-mode .td-label { background:rgba(0,0,0,.03); }
+
+  /* two-col */
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; }
+  @media(max-width:520px){ .two-col{ grid-template-columns:1fr; } }
+  .mini-card { border-radius:18px; padding:20px 18px; display:flex; flex-direction:column; gap:8px; }
+  .mc-danger  { background:rgba(193,68,14,.12); border:1px solid rgba(193,68,14,.26); }
+  .mc-cool    { background:rgba(26,105,133,.12); border:1px solid rgba(26,105,133,.26); }
+  .mc-green   { background:rgba(64,145,108,.12); border:1px solid rgba(64,145,108,.26); }
+  .mc-gold    { background:rgba(251,191,36,.1);  border:1px solid rgba(251,191,36,.22); }
+  body.light-mode .mc-danger { background:rgba(193,68,14,.05); }
+  body.light-mode .mc-cool   { background:rgba(26,105,133,.05); }
+  body.light-mode .mc-green  { background:rgba(64,145,108,.05); }
+  body.light-mode .mc-gold   { background:rgba(251,191,36,.05); }
+  .mini-card .mini-icon { font-size:36px; }
+  .mini-card strong { font-size:15px; font-weight:900; }
+  .mini-card p { font-size:14px; line-height:1.6; opacity:.85; margin:0; }
+
+  /* fact grid */
+  .fact-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:16px; margin:20px 0; }
+  .fact-card { background:rgba(255,232,214,.05); border:1px solid rgba(193,68,14,.16); border-radius:20px; padding:24px 20px; text-align:center; transition:transform .2s; }
+  .fact-card:hover { transform:translateY(-4px); }
+  body.light-mode .fact-card { background:#fff3ee; border-color:rgba(193,68,14,.14); }
+  .fact-card .fact-emoji { font-size:40px; margin-bottom:10px; display:block; }
+  .fact-card .fact-number { font-family:'Fredoka One',cursive; font-size:23px; color:var(--gold); display:block; margin-bottom:4px; }
+  .fact-card .fact-label  { font-size:13px; opacity:.7; font-weight:700; }
+
+  /* challenge */
+  .challenge-card {
+    background:linear-gradient(135deg,rgba(26,105,133,.18),rgba(193,68,14,.14));
+    border:2px solid rgba(193,68,14,.26); border-radius:var(--radius); padding:32px; margin:20px 0;
+  }
+  body.light-mode .challenge-card { background:linear-gradient(135deg,rgba(26,105,133,.06),rgba(193,68,14,.05)); }
+  .challenge-title { font-family:'Fredoka One',cursive; font-size:24px; color:var(--glow); margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+  body.light-mode .challenge-title { color:var(--mars); }
+  .challenge-item { display:flex; align-items:flex-start; gap:14px; padding:14px 0; border-bottom:1px solid rgba(255,255,255,.08); }
+  .challenge-item:last-child { border-bottom:none; }
+  body.light-mode .challenge-item { border-color:rgba(0,0,0,.06); }
+  .challenge-num { width:32px; height:32px; background:linear-gradient(135deg,var(--mars),var(--rust)); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:14px; flex-shrink:0; margin-top:2px; }
+  .challenge-item p { font-size:15px; line-height:1.7; opacity:.9; }
+
+  /* nav buttons */
+  .nav-btns { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-top:40px; padding-top:24px; border-top:1px solid rgba(193,68,14,.18); }
+  body.light-mode .nav-btns { border-color:rgba(0,0,0,.06); }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:14px 24px; border-radius:50px; font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; cursor:pointer; border:none; transition:transform .2s,box-shadow .2s; }
+  .btn:hover  { transform:translateY(-2px); }
+  .btn:active { transform:translateY(0); }
+  .btn-prev { background:rgba(255,232,214,.08); color:inherit; border:1px solid rgba(193,68,14,.22); }
+  body.light-mode .btn-prev { background:rgba(0,0,0,.05); border-color:rgba(0,0,0,.1); color:#1a0500; }
+  .btn-next { background:linear-gradient(135deg,var(--mars),var(--rust)); color:white; box-shadow:0 4px 16px rgba(193,68,14,.38); flex:1; justify-content:center; max-width:280px; }
+  .btn-next:hover { box-shadow:0 6px 24px rgba(193,68,14,.55); }
+  .btn-done { background:linear-gradient(135deg,var(--moss),var(--forest)); color:white; box-shadow:0 4px 16px rgba(64,145,108,.35); width:100%; max-width:400px; margin:0 auto; justify-content:center; font-size:17px; padding:18px 32px; }
+  .btn-done:hover { box-shadow:0 6px 24px rgba(64,145,108,.5); }
+  .page-indicator { font-size:13px; opacity:.5; font-weight:700; white-space:nowrap; }
+
+  /* closing */
+  .closing-content { text-align:center; padding:40px 20px; }
+  .trophy-big { font-size:100px; display:block; margin:0 auto 24px; animation:bounceIn .8s cubic-bezier(.36,.07,.19,.97); filter:drop-shadow(0 8px 24px rgba(193,68,14,.5)); }
+  @keyframes bounceIn { 0%{transform:scale(0);opacity:0} 60%{transform:scale(1.2)} 100%{transform:scale(1);opacity:1} }
+  .quote-box { background:linear-gradient(135deg,rgba(193,68,14,.1),rgba(244,162,97,.1)); border-left:4px solid var(--mars); border-radius:0 16px 16px 0; padding:20px 24px; margin:24px 0; text-align:left; }
+  .quote-box p { font-size:18px; font-style:italic; line-height:1.8; }
+  .quote-box cite { font-size:13px; opacity:.6; margin-top:8px; display:block; font-style:normal; font-weight:700; }
+
+  /* info row */
+  .info-row { display:flex; align-items:flex-start; gap:14px; padding:14px 0; border-bottom:1px solid rgba(193,68,14,.12); }
+  .info-row:last-child { border-bottom:none; }
+  .info-row .info-icon { font-size:32px; flex-shrink:0; margin-top:2px; }
+  .info-row p { font-size:clamp(15px,2.5vw,17px); line-height:1.75; opacity:.9; }
+
+  /* Mars surface CSS scene */
+  .mars-surface {
+    width:100%; height:120px; position:relative;
+    border-radius:16px; overflow:hidden; margin:20px 0;
+    background:linear-gradient(180deg,#1a0800 0%,#3d1000 55%,#7a2800 55%,#a63d00 75%,#c1440e 100%);
+  }
+  .mars-surface::before { /* craters */
+    content:'';
+    position:absolute; bottom:20px; left:15%;
+    width:40px; height:18px;
+    background:rgba(0,0,0,.3); border-radius:50%;
+    box-shadow: 100px 5px 0 30px rgba(0,0,0,.25), 230px -8px 0 20px rgba(0,0,0,.2);
+  }
+  .mars-surface::after { /* dust storm hint */
+    content:'';
+    position:absolute; top:0; left:0; right:0; bottom:0;
+    background:linear-gradient(180deg,transparent 40%,rgba(193,68,14,.25));
+    border-radius:16px;
+  }
+  .surface-rover {
+    position:absolute; bottom:28px; left:40%;
+    font-size:32px;
+    animation:rover-move 8s linear infinite;
+  }
+  @keyframes rover-move {
+    0%  { left:5%; }
+    100%{ left:85%; }
+  }
+  .surface-label {
+    position:absolute; top:10px; left:16px;
+    font-size:11px; font-weight:900; letter-spacing:1.5px; text-transform:uppercase;
+    color:rgba(255,180,100,.7);
+  }
+  /* sky stars in surface scene */
+  .surf-star { position:absolute; top:10%; left:80%; font-size:14px; opacity:.6; animation:twinkle-s 2s infinite alternate; }
+  .surf-star:nth-child(2){ left:20%; top:20%; animation-delay:.5s; }
+  .surf-star:nth-child(3){ left:55%; top:8%;  animation-delay:1s; }
+
+  /* responsive */
+  @media(max-width:600px){
+    .book-container{ padding:76px 16px 32px; }
+    .card{ padding:24px 20px; }
+    .nav-btns{ flex-wrap:wrap; }
+    .btn-next{ max-width:100%; }
+    .fact-grid{ grid-template-columns:1fr 1fr; }
+    .compare-table th,.compare-table td{ padding:8px 10px; font-size:13px; }
+  }
+  @media(min-width:768px) and (max-width:1024px){
+    .book-container{ padding:80px 32px 40px; }
+    .card p{ font-size:18px; }
+  }
+
+  ::-webkit-scrollbar{ width:6px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  ::-webkit-scrollbar-thumb{ background:rgba(193,68,14,.35); border-radius:4px; }
+</style>
+</head>
+<body>
+
+<!-- STAR FIELD -->
+<div class="starfield" id="starfield"></div>
+<!-- MARS DUST -->
+<div class="dust" id="dust"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+  <div class="nav-right">
+    <span class="book-day-badge">🔴 Hari ke-21</span>
+    <button class="mode-btn" id="modeBtn" title="Ganti Mode">☀️</button>
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<!-- ═══════════════ BOOK CONTAINER ═══════════════ -->
+<div class="book-container">
+
+  <!-- ══ PAGE 1: COVER ══ -->
+  <div class="page active" id="page-1">
+    <div class="cover-page">
+      <span class="space-float">🚀</span>
+      <span class="space-float">🌌</span>
+      <span class="space-float">⭐</span>
+      <span class="space-float">🛸</span>
+
+      <div class="cover-mars-wrap">
+        <div class="mars-sphere">
+          <div class="mars-canyon"></div>
+          <div class="mars-crater"></div>
+        </div>
+        <div class="mars-orbit">
+          <div class="mars-rocket">🚀</div>
+        </div>
+      </div>
+
+      <div class="cover-badge">📚 Buku Sains Petualangan • Hari ke-21</div>
+      <h1 class="cover-title">Perjalanan ke<br>Planet Mars!</h1>
+      <p class="cover-subtitle">🔴 Rumah Baru Manusia?</p>
+
+      <div class="cover-name-badge">
+        <p>Petualangan antariksa milik:</p>
+        <h2>🌟 Aslan 🌟</h2>
+        <p style="font-size:13px;margin-top:4px;">Penjelajah Luar Angkasa • Kelas 3 SD</p>
+      </div>
+
+      <div class="nav-btns" style="justify-content:center;border:none;padding-top:0;">
+        <button class="btn btn-next" onclick="goPage(2)" style="max-width:290px;font-size:17px;padding:16px 32px;">
+          🚀 Berangkat ke Mars!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 2: PENGANTAR ══ -->
+  <div class="page" id="page-2">
+    <div class="section-header">
+      <span class="tag">✉️ Petualangan Hari 21</span>
+      <h1>Hei Aslan,<br>Kita Pergi ke Mars! 🔴</h1>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🚀</span>
+      <p>Hei, <strong>Aslan</strong>! Hari ke-21 sudah tiba! Selama 20 hari terakhir kamu sudah menjelajahi isi Bumi, samudra, otak manusia, dan masih banyak lagi. Kamu benar-benar penjelajah yang luar biasa!</p>
+      <p>Tapi hari ini kita melompat lebih jauh dari sebelumnya — jauh meninggalkan planet Bumi kita tercinta. Kita akan menempuh perjalanan <strong>225 juta kilometer</strong> menembus ruang angkasa yang gelap dan dingin untuk menuju… Planet Merah!</p>
+      <p>Duduk nyaman, kencangkan sabuk pengamanmu — <strong>Terra Explorer</strong> siap diluncurkan! 🚀💨</p>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — T-Minus 10 Detik</p>
+      <p>"Aslan! Terra Explorer di sini. Sistem pendorong sudah aktif. Bahan bakar: 100%. Koordinat tujuan: Planet Mars, 225 juta km dari Bumi. Perkiraan waktu tiba: sekitar 7 bulan perjalanan nyata — tapi dalam buku kita, kita sampai dalam hitungan halaman! 😄 Bersiaplah… 3… 2… 1… IGNITION! 🔥🚀"</p>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--sky),var(--glow));">
+      <h3>🗺️ Yang Akan Kita Pelajari Hari Ini</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(193,68,14,.12);border-radius:14px;">
+          <span style="font-size:28px;">🔴</span>
+          <div><strong>Mengapa Mars Berwarna Merah</strong><p style="font-size:13px;margin:0;opacity:.7;">Rahasia karat raksasa di planet tetangga kita</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(160,61,0,.14);border-radius:14px;">
+          <span style="font-size:28px;">⚖️</span>
+          <div><strong>Mars vs Bumi</strong><p style="font-size:13px;margin:0;opacity:.7;">Perbedaan suhu, atmosfer, gravitasi, dan ukuran</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(220,47,2,.12);border-radius:14px;">
+          <span style="font-size:28px;">😰</span>
+          <div><strong>Tantangan Hidup di Mars</strong><p style="font-size:13px;margin:0;opacity:.7;">Kenapa hidup di Mars itu sangat-sangat sulit</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(26,105,133,.14);border-radius:14px;">
+          <span style="font-size:28px;">🤖</span>
+          <div><strong>Robot Perseverance & Penemuan Terbaru</strong><p style="font-size:13px;margin:0;opacity:.7;">Mata dan tangan manusia di Mars</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(64,145,108,.12);border-radius:14px;">
+          <span style="font-size:28px;">🏠</span>
+          <div><strong>Koloni Mars di Masa Depan</strong><p style="font-size:13px;margin:0;opacity:.7;">Mungkinkah manusia tinggal di Mars?</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+      <span class="page-indicator">Halaman 2 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(3)">Kenapa Merah? 🔴 →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 3: PLANET MERAH ══ -->
+  <div class="page" id="page-3">
+    <div class="section-header">
+      <span class="tag">🔴 Bab Satu</span>
+      <h1>Mengapa Mars<br><span style="color:var(--glow)">Berwarna Merah?</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Mendekati Mars</p>
+      <p>"Aslan! Setelah melewati kegelapan luar angkasa selama beberapa saat, aku bisa melihatnya sekarang — bulatan merah besar yang makin lama makin besar di depan kita! Tidak ada awan putih, tidak ada laut biru seperti Bumi. Semuanya… merah. Merah kecokelatan. Seperti planet yang berkarat! Mari kita masuk ke orbitnya. 🔴"</p>
+    </div>
+
+    <div class="card card-red">
+      <span class="card-icon">🔴</span>
+      <span class="depth-badge">📏 Jarak dari Matahari: ~228 juta km</span>
+      <h2>Misteri Warna Merah Mars</h2>
+      <p>Mars berwarna merah karena permukaannya dipenuhi oleh <strong>debu dan tanah yang mengandung zat besi beroksida</strong> — atau yang kita kenal sehari-hari sebagai <strong>karat!</strong> Bayangkan sebuah paku besi yang dibiarkan di tempat lembab — lama-lama berubah menjadi merah kecokelatan. Nah, seluruh planet Mars seperti itu!</p>
+
+      <div class="analogy-box">
+        <p>Ingat pernah melihat paku berkarat? 🔩 Warnanya merah kecokelatan. Tanah di Mars penuh dengan besi yang bereaksi dengan oksigen (dari atmosfer Mars di masa lalu) membentuk <strong>besi oksida</strong> — persis karat! Makanya dari jauh, Mars terlihat merah menyala seperti bola api. Tapi sebenarnya… itu cuma karat planet!</p>
+      </div>
+
+      <!-- Mars surface CSS scene -->
+      <div class="mars-surface">
+        <span class="surface-label">🌋 PERMUKAAN MARS</span>
+        <span class="surf-star">⭐</span>
+        <span class="surf-star">✦</span>
+        <span class="surf-star">·</span>
+        <div class="surface-rover">🤖</div>
+      </div>
+
+      <h3>🏔️ Olympus Mons — Gunung Terbesar di Tata Surya!</h3>
+      <p>Di Mars ada gunung berapi raksasa bernama <strong>Olympus Mons</strong>. Tingginya <strong>21 kilometer</strong> — hampir 3 kali lebih tinggi dari Gunung Everest yang tertinggi di Bumi! Kalau kamu berdiri di kaki Olympus Mons, puncaknya sudah berada di luar atmosfer Mars yang tipis. 🌋😲</p>
+
+      <h3>🏜️ Valles Marineris — Ngarai Terbesar di Tata Surya!</h3>
+      <p>Mars juga punya ngarai raksasa bernama <strong>Valles Marineris</strong>. Panjangnya hampir <strong>4.000 km</strong> (hampir sepanjang benua Amerika!) dan dalamnya sampai 7 km. Dibandingkan dengan Grand Canyon di Amerika yang hanya 446 km — Valles Marineris jauh, jauh lebih besar! 🏜️</p>
+
+      <h3>❄️ Tutup Es di Kutub Mars</h3>
+      <p>Meskipun tampak gersang, Mars punya <strong>tutup es di kutub utara dan selatannya</strong> — terbuat dari campuran es air dan es karbon dioksida (es kering). Ilmuwan percaya di bawah permukaan Mars tersimpan <strong>air es yang sangat banyak</strong>. Ini kabar baik untuk rencana koloni Mars di masa depan! ❄️</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+      <span class="page-indicator">Halaman 3 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(4)">Mars vs Bumi! ⚖️ →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 4: MARS VS BUMI ══ -->
+  <div class="page" id="page-4">
+    <div class="section-header">
+      <span class="tag">⚖️ Bab Dua</span>
+      <h1>Mars vs Bumi:<br><span style="color:var(--glow)">Dua Dunia Berbeda</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Orbit Mars</p>
+      <p>"Kita sudah mengorbit Mars! Dari ketinggian ini, aku bisa membandingkan Mars dan Bumi di monitor Terra Explorer. Aslan… perbedaannya sangat besar. Bumi terlihat seperti surga yang hidup dan berwarna-warni dari luar angkasa. Mars? Lebih seperti padang gurun merah yang sunyi, sepi, dan sangat-sangat dingin. Mari kita lihat data lengkapnya!"</p>
+    </div>
+
+    <div class="card card-atmo">
+      <span class="card-icon">⚖️</span>
+      <h2>Data Perbandingan Mars & Bumi</h2>
+
+      <div style="overflow-x:auto;margin:16px 0;">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th class="td-label" style="border-radius:12px 0 0 0;padding:12px 16px;font-size:13px;font-weight:800;"></th>
+              <th class="th-earth">🌍 Bumi</th>
+              <th class="th-mars">🔴 Mars</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-label">🌡️ Suhu</td>
+              <td class="td-earth">Rata-rata +15°C</td>
+              <td class="td-mars">Rata-rata −60°C</td>
+            </tr>
+            <tr>
+              <td class="td-label">🌬️ Atmosfer</td>
+              <td class="td-earth">Tebal, 78% Nitrogen, 21% Oksigen</td>
+              <td class="td-mars">Sangat tipis, 95% CO₂</td>
+            </tr>
+            <tr>
+              <td class="td-label">📏 Ukuran</td>
+              <td class="td-earth">Diameter 12.742 km</td>
+              <td class="td-mars">Diameter 6.779 km (≈ ½ Bumi)</td>
+            </tr>
+            <tr>
+              <td class="td-label">⚡ Gravitasi</td>
+              <td class="td-earth">1g (normal)</td>
+              <td class="td-mars">0,38g (hanya 38% Bumi)</td>
+            </tr>
+            <tr>
+              <td class="td-label">💧 Air</td>
+              <td class="td-earth">71% permukaan tertutup air</td>
+              <td class="td-mars">Tidak ada air cair di permukaan</td>
+            </tr>
+            <tr>
+              <td class="td-label">☀️ Satu Hari</td>
+              <td class="td-earth">24 jam</td>
+              <td class="td-mars">24 jam 37 menit (hampir sama!)</td>
+            </tr>
+            <tr>
+              <td class="td-label">📅 Satu Tahun</td>
+              <td class="td-earth">365 hari</td>
+              <td class="td-mars">687 hari (hampir 2× Bumi!)</td>
+            </tr>
+            <tr>
+              <td class="td-label">🌙 Bulan</td>
+              <td class="td-earth">1 bulan (Bulan)</td>
+              <td class="td-mars">2 bulan kecil (Phobos & Deimos)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>🌡️ Dingin yang Ekstrem!</h3>
+      <p>Suhu di Mars bisa turun sampai <strong>−125°C</strong> di musim dingin kutub — lebih dingin dari tempat mana pun di Bumi! Di daerah khatulistiwa Mars, di siang hari yang terik, suhunya masih hanya sekitar <strong>20°C</strong> — hampir sama seperti musim semi di daerah sejuk. Tapi begitu malam tiba, langsung terjun ke −70°C. 🥶</p>
+
+      <div class="analogy-box">
+        <p>Gravitasi Mars hanya 38% dari Bumi. Artinya kalau berat badanmu 30 kg di Bumi, di Mars kamu hanya berasa 11 kg! 😄 Kamu bisa <strong>melompat 3 kali lebih tinggi</strong> dibanding di Bumi. Tapi ingat — kalau kamu berlari terlalu kencang dan tidak bisa berhenti, kamu bisa terbang melayang! 🦘</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+      <span class="page-indicator">Halaman 4 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(5)">Tantangan Hidup! 😰 →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 5: TANTANGAN HIDUP DI MARS ══ -->
+  <div class="page" id="page-5">
+    <div class="section-header">
+      <span class="tag">😰 Bab Tiga</span>
+      <h1>Kenapa Hidup di Mars<br><span style="color:var(--glow)">Sangat Sulit?</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Mendarat di Permukaan</p>
+      <p>"Kita mendarat! Roda Terra Explorer menyentuh tanah Mars yang berwarna merah kecokelatan. Aku melihat batu-batu kecil berserakan, bukit-bukit rendah di kejauhan, dan langit… warnanya tidak biru seperti di Bumi. Langitnya berwarna MERAH JAMBU kemerahan — karena debu Mars melayang di mana-mana. Indah, tapi juga mengingatkan betapa keras kondisi di sini! 😮"</p>
+    </div>
+
+    <div class="card card-atmo">
+      <span class="card-icon">😰</span>
+      <h2>Lima Rintangan Besar di Mars</h2>
+
+      <div class="info-row">
+        <span class="info-icon">😮‍💨</span>
+        <div>
+          <p><strong>Tidak Ada Oksigen untuk Bernafas.</strong> Atmosfer Mars hampir seluruhnya adalah karbon dioksida (CO₂) — gas yang kita keluarkan saat bernafas. Kalau kamu pergi ke Mars tanpa pelindung, dalam hitungan detik kamu akan kehabisan nafas. Manusia yang tinggal di Mars harus selalu memakai <strong>pakaian luar angkasa atau tinggal di kubah tertutup</strong> berisi udara buatan. 🏠</p>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-icon">☢️</span>
+        <div>
+          <p><strong>Radiasi Matahari yang Berbahaya.</strong> Bumi punya perisai tak kasat mata bernama <strong>medan magnet</strong> (kamu belajar ini di buku Hari ke-1 tentang lapisan Bumi!) yang melindungi kita dari radiasi berbahaya Matahari. Mars tidak punya medan magnet yang kuat, sehingga radiasi langsung menghantam permukaannya. Radiasi ini bisa merusak sel-sel tubuh manusia dan menyebabkan kanker. ☢️</p>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-icon">🌪️</span>
+        <div>
+          <p><strong>Badai Debu Raksasa.</strong> Mars punya <strong>badai debu yang bisa menutup seluruh planet</strong>! Badai ini bisa berlangsung berbulan-bulan dan memblokir cahaya Matahari sepenuhnya. Robot Opportunity pernah kehabisan daya karena badai debu menutup panel suryanya selama berbulan-bulan. Debu Mars juga sangat halus seperti serbuk dan sangat berbahaya kalau terhirup. 🌪️</p>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-icon">💧</span>
+        <div>
+          <p><strong>Tidak Ada Air Cair.</strong> Tekanan atmosfer Mars terlalu rendah — jika air cair ada di permukaan Mars, ia langsung menguap atau membeku secepat kilat. Ada air dalam bentuk es di kutub dan di bawah tanah, tapi untuk diminum manusia harus mencairkannya dulu. Tanpa air, bertani dan hidup jadi sangat susah! 💧</p>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-icon">🌡️</span>
+        <div>
+          <p><strong>Suhu Ekstrem Setiap Hari.</strong> Dalam satu hari di Mars, suhu bisa berubah dari <strong>+20°C di siang hari</strong> menjadi <strong>−70°C di malam hari</strong> — perbedaan 90 derajat hanya dalam beberapa jam! Tidak ada makhluk hidup biasa yang bisa bertahan di perubahan suhu sehebat itu tanpa perlindungan canggih. 🥶🔥</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+      <span class="page-indicator">Halaman 5 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(6)">Robot di Mars! 🤖 →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 6: ROBOT & PENEMUAN ══ -->
+  <div class="page" id="page-6">
+    <div class="section-header">
+      <span class="tag">🤖 Bab Empat</span>
+      <h1>Robot Kita<br><span style="color:var(--glow)">di Planet Mars</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Bertemu Robot!</p>
+      <p>"Aslan! Di kejauhan aku melihat sesuatu bergerak! Bukan makhluk hidup… tapi robot! Ini adalah robot milik NASA yang dikirim dari Bumi untuk menjelajahi Mars. Ia bergerak pelan di atas batu-batu merah, mengambil sampel tanah, memotret pemandangan, dan mengirim data ke Bumi. Kita melambai padanya — dan sensor kameranya berputar ke arah kita! 🤖👋"</p>
+    </div>
+
+    <div class="card card-robot">
+      <span class="card-icon">🤖</span>
+      <h2>Mata Manusia di Mars</h2>
+      <p>Karena terlalu sulit dan mahal mengirim manusia ke Mars sekarang, para ilmuwan mengirimkan <strong>robot penjelajah (rover)</strong> untuk mengeksplorasi Mars terlebih dahulu. Robot-robot ini adalah "mata dan tangan" kita di sana!</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:20px 0;">
+        <div style="background:rgba(26,105,133,.12);border:1px solid rgba(26,105,133,.28);border-radius:20px;padding:20px;text-align:center;">
+          <span style="font-size:44px;display:block;margin-bottom:10px;">🔬</span>
+          <strong style="display:block;font-size:15px;margin-bottom:6px;">Perseverance</strong>
+          <span style="font-size:12px;opacity:.65;display:block;margin-bottom:8px;">Mendarat: Februari 2021</span>
+          <p style="font-size:13px;line-height:1.6;margin:0;opacity:.85;">Robot tercanggih saat ini di Mars. Sedang mencari bukti kehidupan masa lalu dan mengumpulkan sampel batuan untuk dibawa ke Bumi di misi berikutnya!</p>
+        </div>
+        <div style="background:rgba(193,68,14,.12);border:1px solid rgba(193,68,14,.25);border-radius:20px;padding:20px;text-align:center;">
+          <span style="font-size:44px;display:block;margin-bottom:10px;">🚁</span>
+          <strong style="display:block;font-size:15px;margin-bottom:6px;">Ingenuity</strong>
+          <span style="font-size:12px;opacity:.65;display:block;margin-bottom:8px;">Helikopter Mini NASA</span>
+          <p style="font-size:13px;line-height:1.6;margin:0;opacity:.85;">Helikopter kecil yang terbang pertama kali di Mars pada 2021 — momen BERSEJARAH! Ini adalah pertama kalinya manusia menerbangkan pesawat di planet lain!</p>
+        </div>
+        <div style="background:rgba(64,145,108,.12);border:1px solid rgba(64,145,108,.26);border-radius:20px;padding:20px;text-align:center;">
+          <span style="font-size:44px;display:block;margin-bottom:10px;">🛰️</span>
+          <strong style="display:block;font-size:15px;margin-bottom:6px;">Curiosity</strong>
+          <span style="font-size:12px;opacity:.65;display:block;margin-bottom:8px;">Mendarat: Agustus 2012</span>
+          <p style="font-size:13px;line-height:1.6;margin:0;opacity:.85;">Sudah menjelajah Mars lebih dari 10 tahun! Curiosity menemukan bahwa Mars dulu pernah punya sungai dan danau air cair — tanda penting kemungkinan kehidupan!</p>
+        </div>
+      </div>
+
+      <h3>💧 Penemuan Terbesar: AIR di Mars!</h3>
+      <p>Para ilmuwan menggunakan radar khusus dari satelit dan menemukan bahwa di bawah lapisan es di Kutub Selatan Mars terdapat <strong>danau air cair bawah tanah</strong>! Ini luar biasa karena air adalah syarat utama kehidupan. Penemuan ini membuat para ilmuwan semakin yakin bahwa dahulu kala, Mars mungkin pernah dihuni oleh makhluk hidup sederhana (seperti bakteri). 💧🎉</p>
+
+      <h3>🌬️ MOXIE: Membuat Oksigen di Mars!</h3>
+      <p>Di dalam robot Perseverance ada alat kecil bernama <strong>MOXIE</strong> (Mars Oxygen In-Situ Resource Utilization Experiment). Alat ini bisa mengambil CO₂ dari atmosfer Mars dan mengubahnya menjadi <strong>oksigen yang bisa dihirup</strong>! Ini seperti "pabrik udara mini" — dan ini adalah teknologi kunci jika manusia ingin tinggal di Mars. 😲</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+      <span class="page-indicator">Halaman 6 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(7)">Koloni Mars + Fakta! 🏠 →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 7: KOLONI + FAKTA ══ -->
+  <div class="page" id="page-7">
+    <div class="section-header">
+      <span class="tag">🏠 Bab Lima</span>
+      <h1>Rumah Baru di Mars<br><span style="color:var(--gold)">Mungkinkah?</span></h1>
+    </div>
+
+    <div class="card card-future">
+      <span class="card-icon">🏠</span>
+      <h2>Rencana Manusia Tinggal di Mars</h2>
+      <p>Walaupun sangat sulit, banyak ilmuwan dan perusahaan luar angkasa yang serius merencanakan untuk mengirim manusia ke Mars — bahkan membangun <strong>koloni permanen</strong> di sana! Bagaimana caranya?</p>
+
+      <div class="two-col">
+        <div class="mini-card mc-cool">
+          <span class="mini-icon">🏔️</span>
+          <strong>Kubah Habitat</strong>
+          <p>Manusia akan tinggal di kubah transparan raksasa berisi udara dan tekanan yang mirip Bumi. Di dalamnya ada perumahan, kebun, laboratorium!</p>
+        </div>
+        <div class="mini-card mc-danger">
+          <span class="mini-icon">☀️</span>
+          <strong>Energi Surya & Nuklir</strong>
+          <p>Panel surya dan reaktor nuklir kecil akan menyediakan listrik untuk seluruh koloni — menghangatkan ruangan dan menjalankan mesin.</p>
+        </div>
+        <div class="mini-card mc-green">
+          <span class="mini-icon">🌱</span>
+          <strong>Bertani di Mars</strong>
+          <p>Seperti di film "The Martian", manusia bisa menanam sayuran di dalam kubah dengan tanah khusus dan lampu buatan. Kentang bisa jadi makanan pertama! 🥔</p>
+        </div>
+        <div class="mini-card mc-gold">
+          <span class="mini-icon">💧</span>
+          <strong>Mencairkan Es Mars</strong>
+          <p>Es yang ada di bawah tanah Mars akan dicairkan untuk mendapatkan air minum, air untuk tanaman, dan bahan bakar roket!</p>
+        </div>
+        <div class="mini-card mc-cool">
+          <span class="mini-icon">🌍</span>
+          <strong>Terraforming Mars</strong>
+          <p>Rencana jangka super panjang: mengubah seluruh Mars menjadi mirip Bumi — menambah atmosfer, air, dan kehangatan. Butuh ribuan tahun tapi mungkin!</p>
+        </div>
+        <div class="mini-card mc-danger">
+          <span class="mini-icon">🚀</span>
+          <strong>Roket Raksasa</strong>
+          <p>SpaceX sedang membangun roket "Starship" — roket terbesar yang pernah dibuat — yang dirancang untuk mengangkut ratusan orang ke Mars sekaligus!</p>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);border-radius:16px;padding:18px 20px;">
+        <p style="margin:0;font-size:15px;line-height:1.8;">🌟 <strong>Kapan Manusia Akan ke Mars?</strong> Para ilmuwan memperkirakan manusia pertama bisa menginjakkan kaki di Mars pada sekitar <strong>tahun 2030–2040</strong>. Artinya, saat Aslan dewasa nanti, sangat mungkin kamu bisa menyaksikan — atau bahkan ikut — misi bersejarah ke Mars! 🚀</p>
+      </div>
+    </div>
+
+    <!-- FAKTA KEREN -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--glow),var(--gold));">
+      <span class="card-icon">🤯</span>
+      <h2>Fakta Keren Planet Mars!</h2>
+      <div class="fact-grid">
+        <div class="fact-card">
+          <span class="fact-emoji">📏</span>
+          <span class="fact-number">225 juta km</span>
+          <span class="fact-label">Jarak rata-rata Bumi ke Mars</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">⏱️</span>
+          <span class="fact-number">7 bulan</span>
+          <span class="fact-label">Waktu perjalanan Bumi–Mars dengan roket</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌡️</span>
+          <span class="fact-number">−125°C</span>
+          <span class="fact-label">Suhu terdingin di kutub Mars</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🏔️</span>
+          <span class="fact-number">21 km</span>
+          <span class="fact-label">Tinggi Olympus Mons — gunung terbesar di Tata Surya</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌙</span>
+          <span class="fact-number">2 bulan</span>
+          <span class="fact-label">Mars punya 2 bulan: Phobos & Deimos</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🕐</span>
+          <span class="fact-number">687 hari</span>
+          <span class="fact-label">Panjang satu tahun di Mars</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+      <span class="page-indicator">Halaman 7 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(8)">Tantangan Aslan! ⚡ →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 8: TANTANGAN + PENUTUP ══ -->
+  <div class="page" id="page-8">
+    <div class="section-header">
+      <span class="tag">⚡ Tantangan Aslan</span>
+      <h1>Buktikan Kamu<br>Calon Astronot! 🚀</h1>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-title">🏆 Misi Antariksa Aslan</div>
+      <p style="font-size:15px;opacity:.8;margin-bottom:20px;">Kamu baru saja menyelesaikan perjalanan ke Mars! Sekarang saatnya membuktikan kamu siap jadi penjelajah antariksa masa depan!</p>
+
+      <div class="challenge-item">
+        <div class="challenge-num">1</div>
+        <div>
+          <p><strong>Rancang Koloni Marsmu!</strong> 🖍️ Gambar denah "koloni Mars versi Aslan" di kertas besar. Pikirkan: di mana orang tidur? Di mana tanaman ditanam? Di mana mesin oksigen? Di mana panel surya? Beri label setiap bagian — ini adalah proyekmu sebagai arsitek koloni Mars!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">2</div>
+        <div>
+          <p><strong>Hitung Beratmu di Mars!</strong> ⚖️ Gravitasi Mars adalah 38% dari Bumi. Kalau berat badanmu 30 kg, berapa berat badanmu di Mars? (Petunjuk: kalikan beratmu dengan 0,38). Hitung juga untuk anggota keluargamu — siapa yang paling ringan di Mars? 😄</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">3</div>
+        <div>
+          <p><strong>Surat untuk Astronot Mars!</strong> ✉️ Tulis surat singkat (5–7 kalimat) untuk astronot pertama yang mendarat di Mars. Ceritakan apa yang kamu bayangkan akan mereka rasakan, apa yang perlu mereka hati-hati, dan apa yang kamu harap mereka temukan di sana!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">4</div>
+        <div>
+          <p><strong>Eksperimen "Tanah Berkarat"!</strong> 🔩 Ambil paku besi dan taruh di dalam gelas berisi air selama 3 hari. Amati setiap hari — apa yang terjadi pada paku? Warna apa yang muncul? Ini adalah proses SAMA yang membuat Mars berwarna merah. Foto hasilnya dan ceritakan ke teman-temanmu!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">5</div>
+        <div>
+          <p><strong>Debat Seru!</strong> 🗣️ Diskusikan dengan orang tuamu: <em>"Apakah manusia sebaiknya pindah ke Mars, atau lebih baik kita jaga dan perbaiki Bumi dulu?"</em> Tidak ada jawaban benar atau salah — ini adalah pertanyaan yang para ilmuwan dan filosof pun masih perdebatkan! Apa pendapatmu, Aslan?</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENUTUP -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--mars),var(--glow),var(--gold));margin-top:32px;">
+      <div class="closing-content">
+        <span class="trophy-big">🚀</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(24px,5vw,36px);margin-bottom:16px;">
+          Luar Biasa, Aslan! 🎉
+        </h2>
+        <p style="font-size:clamp(15px,2.5vw,17px);max-width:520px;margin:0 auto 24px;line-height:1.85;opacity:.92;">
+          Kamu telah menyelesaikan Hari ke-21 — sebuah perjalanan 225 juta kilometer ke Planet Merah! Kini kamu tahu mengapa Mars berwarna merah, apa tantangannya, dan bagaimana manusia bermimpi untuk tinggal di sana. Siapa tahu… suatu hari kamu yang akan menjadi astronot pertama Indonesia yang menginjakkan kaki di Mars! 🇮🇩🔴
+        </p>
+
+        <div class="quote-box" style="max-width:540px;margin:0 auto 28px;">
+          <p>"Bumi adalah buaian kemanusiaan, tapi manusia tidak bisa selamanya tinggal dalam buaian. Suatu hari, kita akan meraih bintang-bintang — dan mungkin Mars adalah batu loncatan pertama kita menuju alam semesta yang tak terbatas."</p>
+          <cite>— Untuk Aslan, Calon Penjelajah Mars 🚀🔴</cite>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px;">
+          <span style="background:rgba(193,68,14,.15);border:1px solid rgba(193,68,14,.32);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🔴 Penakluk Planet Merah</span>
+          <span style="background:rgba(26,105,133,.15);border:1px solid rgba(26,105,133,.32);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🤖 Komandan Robot Mars</span>
+          <span style="background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.32);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🏠 Arsitek Koloni Mars</span>
+          <span style="background:rgba(64,145,108,.15);border:1px solid rgba(64,145,108,.32);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🚀 Astronot Masa Depan</span>
+        </div>
+
+        <button class="btn btn-done" onclick="selesaiMembaca()">
+          ✅ Saya Sudah Selesai Membaca!
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(7)">← Kembali</button>
+      <span class="page-indicator">Halaman 8 dari 8</span>
+      <span></span>
+    </div>
+  </div>
+
+</div><!-- /.book-container -->
+
+<script>
+  // ── STAR FIELD ──
+  const sf = document.getElementById('starfield');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star-p';
+    const sz = Math.random() * 2.5 + 0.8;
+    s.style.cssText = `
+      width:${sz}px;height:${sz}px;
+      top:${Math.random()*100}%;left:${Math.random()*100}%;
+      animation-duration:${2+Math.random()*4}s;
+      animation-delay:${Math.random()*4}s;
+    `;
+    sf.appendChild(s);
+  }
+
+  // ── MARS DUST ──
+  const dustEl = document.getElementById('dust');
+  for (let i = 0; i < 18; i++) {
+    const d = document.createElement('div');
+    d.className = 'dust-p';
+    const sz = Math.random() * 4 + 1.5;
+    d.style.cssText = `
+      width:${sz}px;height:${sz}px;
+      left:${Math.random()*100}%;
+      bottom:${Math.random()*5}%;
+      animation-duration:${10+Math.random()*14}s;
+      animation-delay:${Math.random()*10}s;
+    `;
+    dustEl.appendChild(d);
+  }
+
+  // ── PAGES ──
+  const TOTAL = 8;
+  let current = 1;
+
+  function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── DARK / LIGHT MODE ──
+  const modeBtn = document.getElementById('modeBtn');
+  let isLight = false;
+  modeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+    modeBtn.textContent = isLight ? '🌙' : '☀️';
+  });
+
+  // ── SELESAI MEMBACA ──
+  function selesaiMembaca() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,.85);backdrop-filter:blur(12px);
+      z-index:999;display:flex;align-items:center;justify-content:center;
+      padding:20px;animation:fadeUp .3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="
+        background:linear-gradient(135deg,#1a0500,#0a0500);
+        border:2px solid rgba(193,68,14,.48);
+        border-radius:28px;padding:40px;max-width:440px;width:100%;
+        text-align:center;color:#ffe8d6;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;
+          background:linear-gradient(90deg,#fbbf24,#f4a261,#c1440e,#7a2d00);"></div>
+        <span style="font-size:80px;display:block;margin-bottom:16px;">🔴</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:12px;
+          background:linear-gradient(135deg,#fbbf24,#f4a261);
+          -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+          background-clip:text;">Luar Angkasa Menunggumu, Aslan!</h2>
+        <p style="font-size:16px;line-height:1.85;opacity:.92;margin-bottom:24px;">
+          Hari ke-21 selesai! 🎉<br>
+          Kamu baru saja menempuh <strong>225 juta kilometer</strong><br>
+          dan menjelajahi Planet Merah bersama Terra Explorer.<br><br>
+          Sampai jumpa di petualangan berikutnya! 🚀⭐
+        </p>
+        <button onclick="this.closest('div').parentElement.remove()" style="
+          background:linear-gradient(135deg,#c1440e,#7a2d00);
+          color:white;border:none;padding:14px 32px;border-radius:50px;
+          font-size:16px;font-weight:800;cursor:pointer;
+          font-family:'Nunito',sans-serif;
+          box-shadow:0 4px 16px rgba(193,68,14,.5);">
+          Mantap! Tutup 🔴
+        </button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  }
+
+  // ── KEYBOARD NAVIGATION ──
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(current - 1);
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>

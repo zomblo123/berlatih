@@ -1,0 +1,1697 @@
+<!-- BUKU DIGITAL ASLAN - Hari 9: Pertarungan Tyrannosaurus vs Triceratops -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pertarungan Tyrannosaurus vs Triceratops — Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --battle-dark:   #100a0a;
+    --battle-deep:   #1a0e0e;
+    --battle-slate:  #2d1f1f;
+    --trex-red:      #b71c1c;
+    --trex-red2:     #7f0000;
+    --trex-orange:   #e64a19;
+    --trex-amber:    #ff6d00;
+    --tric-green:    #2e7d32;
+    --tric-green2:   #1b5e20;
+    --tric-lime:     #8bc34a;
+    --battle-gold:   #f9a825;
+    --battle-tan:    #a1887f;
+    --dark-bg:       #100a0a;
+    --mid-bg:        #1a0e0e;
+    --surface-bg:    #221414;
+    --text-light:    #fce4ec;
+    --shadow:        0 8px 32px rgba(0,0,0,0.45);
+    --radius:        24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #100a0a;
+    color: #fce4ec;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  body.light-mode {
+    background: #fbe9e7;
+    color: #1a0e0e;
+  }
+
+  /* ─── FLOATING PARTICLES ─── */
+  .battle-particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .btp {
+    position: absolute;
+    border-radius: 2px;
+    animation: btpFloat linear infinite;
+    opacity: 0;
+  }
+  @keyframes btpFloat {
+    0%   { opacity: 0; transform: translateY(0) translateX(0) rotate(0deg); }
+    15%  { opacity: 0.5; }
+    85%  { opacity: 0.25; }
+    100% { opacity: 0; transform: translateY(-105vh) translateX(30px) rotate(540deg); }
+  }
+  body.light-mode .battle-particles { opacity: 0.2; }
+
+  /* ─── TOP NAV ─── */
+  .top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(16,10,10,0.93);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(249,168,37,0.15);
+  }
+  body.light-mode .top-nav {
+    background: rgba(251,233,231,0.96);
+    border-color: rgba(183,28,28,0.18);
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--trex-red2), var(--battle-slate));
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 800;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(127,0,0,0.45);
+  }
+  .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(230,74,25,0.5); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .book-day-badge {
+    background: linear-gradient(135deg, var(--battle-slate), var(--trex-orange));
+    color: white;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  .mode-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,0.16); transform: rotate(20deg); }
+  body.light-mode .mode-btn { background: rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.1); color: #1a0e0e; }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-wrap {
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    z-index: 99;
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--trex-red2), var(--trex-orange), var(--tric-green), var(--battle-gold));
+    transition: width 0.35s ease;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 8px rgba(249,168,37,0.4);
+  }
+
+  /* ─── MAIN CONTAINER ─── */
+  .book-container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 20px 40px;
+  }
+
+  /* ─── PAGES ─── */
+  .page { display: none; animation: fadeUp 0.5s ease forwards; }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── COVER ─── */
+  .cover-page {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    position: relative;
+  }
+
+  /* ── BATTLE ILLUSTRATION ── */
+  .cover-battle-wrap {
+    width: 300px;
+    height: 220px;
+    position: relative;
+    margin: 0 auto 32px;
+    animation: floatBattle 3.5s ease-in-out infinite;
+  }
+  @keyframes floatBattle {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+
+  /* T-Rex (left side, facing right) */
+  .cover-trex {
+    position: absolute;
+    bottom: 30px;
+    left: 10px;
+  }
+  .ct-torso {
+    width: 78px; height: 52px;
+    background: linear-gradient(135deg, #b71c1c, #7f0000);
+    border-radius: 28px 36px 18px 28px;
+    position: relative;
+    box-shadow: 0 0 18px rgba(183,28,28,0.5);
+    animation: trexBob 0.6s ease-in-out infinite alternate;
+  }
+  @keyframes trexBob { from { transform: translateY(0); } to { transform: translateY(-4px); } }
+  .ct-head {
+    position: absolute;
+    top: -34px; right: -16px;
+    width: 52px; height: 32px;
+    background: linear-gradient(135deg, #c62828, #7f0000);
+    border-radius: 12px 18px 7px 7px;
+    box-shadow: 0 0 12px rgba(198,40,40,0.5);
+  }
+  .ct-jaw {
+    position: absolute;
+    bottom: -11px; right: 2px;
+    width: 38px; height: 13px;
+    background: linear-gradient(135deg, #b71c1c, #7f0000);
+    border-radius: 4px 7px 7px 4px;
+    animation: jawSnap 1.2s ease-in-out infinite;
+  }
+  @keyframes jawSnap {
+    0%,80%,100% { transform: rotate(0deg); }
+    40%          { transform: rotate(-8deg); }
+  }
+  .ct-eye {
+    position: absolute;
+    top: 7px; right: 9px;
+    width: 9px; height: 9px;
+    background: #ffeb3b;
+    border-radius: 50%;
+    box-shadow: 0 0 7px #ffeb3b;
+  }
+  .ct-eye::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 4px; height: 4px;
+    background: #1a1a1a;
+    border-radius: 50%;
+  }
+  .ct-arm {
+    position: absolute;
+    top: 12px; right: -8px;
+    width: 18px; height: 12px;
+    background: linear-gradient(135deg, #e53935, #b71c1c);
+    border-radius: 8px;
+    transform: rotate(-15deg);
+  }
+  .ct-leg-l {
+    position: absolute;
+    bottom: -28px; left: 18px;
+    width: 16px; height: 30px;
+    background: linear-gradient(180deg, #b71c1c, #7f0000);
+    border-radius: 5px 5px 4px 4px;
+  }
+  .ct-leg-r {
+    position: absolute;
+    bottom: -28px; left: 40px;
+    width: 16px; height: 26px;
+    background: linear-gradient(180deg, #b71c1c, #7f0000);
+    border-radius: 5px 5px 4px 4px;
+    animation: trexStep 0.6s ease-in-out infinite alternate;
+  }
+  @keyframes trexStep { from { transform: rotate(-6deg); } to { transform: rotate(6deg); } }
+  .ct-tail {
+    position: absolute;
+    top: 24px; left: -48px;
+    width: 50px; height: 16px;
+    background: linear-gradient(90deg, #7f0000, #b71c1c);
+    border-radius: 28px 5px 5px 28px;
+    transform: rotate(8deg);
+  }
+
+  /* VS divider */
+  .cover-vs {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Fredoka One', cursive;
+    font-size: 42px;
+    color: #f9a825;
+    text-shadow: 0 0 20px rgba(249,168,37,0.7), 0 2px 0 #7f0000;
+    animation: vsPulse 1s ease-in-out infinite alternate;
+    z-index: 5;
+  }
+  @keyframes vsPulse { from { transform: translateX(-50%) scale(1); } to { transform: translateX(-50%) scale(1.15); } }
+
+  /* Triceratops (right side, facing left) */
+  .cover-tric {
+    position: absolute;
+    bottom: 30px;
+    right: 8px;
+  }
+  .ctr-body {
+    width: 90px; height: 56px;
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-radius: 30px 20px 22px 32px;
+    position: relative;
+    box-shadow: 0 0 18px rgba(46,125,50,0.5);
+    animation: tricBob 0.7s ease-in-out infinite alternate;
+  }
+  @keyframes tricBob { from { transform: translateY(0); } to { transform: translateY(-3px); } }
+  .ctr-head {
+    position: absolute;
+    top: -26px; left: -20px;
+    width: 50px; height: 36px;
+    background: linear-gradient(135deg, #388e3c, #1b5e20);
+    border-radius: 14px 8px 8px 14px;
+    box-shadow: 0 0 12px rgba(56,142,60,0.4);
+  }
+  .ctr-frill {
+    position: absolute;
+    top: -18px; left: -4px;
+    width: 38px; height: 28px;
+    background: linear-gradient(135deg, rgba(56,142,60,0.7), rgba(27,94,32,0.5));
+    border-radius: 50% 50% 0 0;
+    border: 2px solid rgba(139,195,74,0.4);
+  }
+  .ctr-horn1 {
+    position: absolute;
+    top: -14px; left: 4px;
+    width: 6px; height: 18px;
+    background: linear-gradient(180deg, #e8f5e9, #a5d6a7);
+    border-radius: 3px 3px 0 0;
+    transform: rotate(-10deg);
+    box-shadow: 0 0 6px rgba(232,245,233,0.6);
+  }
+  .ctr-horn2 {
+    position: absolute;
+    top: -12px; left: 18px;
+    width: 6px; height: 16px;
+    background: linear-gradient(180deg, #e8f5e9, #a5d6a7);
+    border-radius: 3px 3px 0 0;
+    transform: rotate(5deg);
+    box-shadow: 0 0 6px rgba(232,245,233,0.6);
+  }
+  .ctr-horn3 {
+    position: absolute;
+    top: -4px; left: -4px;
+    width: 5px; height: 11px;
+    background: linear-gradient(180deg, #f1f8e9, #c8e6c9);
+    border-radius: 3px 3px 0 0;
+    transform: rotate(-25deg);
+  }
+  .ctr-eye {
+    position: absolute;
+    top: 9px; right: 8px;
+    width: 8px; height: 8px;
+    background: #ffee58;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #ffee58;
+  }
+  .ctr-eye::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 4px; height: 4px;
+    background: #1a1a1a;
+    border-radius: 50%;
+  }
+  .ctr-leg-fl {
+    position: absolute;
+    bottom: -26px; left: 10px;
+    width: 15px; height: 28px;
+    background: linear-gradient(180deg, #2e7d32, #1b5e20);
+    border-radius: 5px 5px 4px 4px;
+    animation: tricStep 0.7s ease-in-out infinite alternate;
+  }
+  .ctr-leg-fr {
+    position: absolute;
+    bottom: -26px; left: 30px;
+    width: 15px; height: 26px;
+    background: linear-gradient(180deg, #2e7d32, #1b5e20);
+    border-radius: 5px 5px 4px 4px;
+  }
+  .ctr-leg-bl {
+    position: absolute;
+    bottom: -26px; right: 22px;
+    width: 15px; height: 26px;
+    background: linear-gradient(180deg, #2e7d32, #1b5e20);
+    border-radius: 5px 5px 4px 4px;
+  }
+  .ctr-leg-br {
+    position: absolute;
+    bottom: -26px; right: 6px;
+    width: 15px; height: 28px;
+    background: linear-gradient(180deg, #2e7d32, #1b5e20);
+    border-radius: 5px 5px 4px 4px;
+    animation: tricStep 0.7s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes tricStep { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+  .ctr-tail {
+    position: absolute;
+    top: 22px; right: -34px;
+    width: 38px; height: 14px;
+    background: linear-gradient(90deg, #2e7d32, #1b5e20);
+    border-radius: 5px 26px 26px 5px;
+    transform: rotate(-8deg);
+  }
+
+  /* Dust cloud between them */
+  .cover-dust {
+    position: absolute;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px; height: 30px;
+    background: radial-gradient(ellipse, rgba(161,136,127,0.35), transparent 70%);
+    border-radius: 50%;
+    animation: dustPuff 0.8s ease-in-out infinite alternate;
+  }
+  @keyframes dustPuff { from { opacity: 0.4; transform: translateX(-50%) scale(1); } to { opacity: 0.9; transform: translateX(-50%) scale(1.3); } }
+
+  /* Ground */
+  .cover-ground {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 32px;
+    background: linear-gradient(180deg, #3e2723, #4e342e);
+    border-radius: 50% 50% 0 0 / 12px 12px 0 0;
+  }
+
+  /* Impact stars */
+  .impact-star {
+    position: absolute;
+    font-size: 20px;
+    animation: starSpin 1s ease-in-out infinite;
+  }
+  @keyframes starSpin { 0%,100% { transform: scale(1) rotate(0deg); } 50% { transform: scale(1.3) rotate(180deg); } }
+
+  /* Floating battle emojis */
+  .floating-battle {
+    position: absolute;
+    font-size: 24px;
+    animation: battleFloat 4s ease-in-out infinite;
+  }
+  .floating-battle:nth-child(1) { top: 5%;  left: 6%;   animation-delay: 0s; }
+  .floating-battle:nth-child(2) { top: 9%;  right: 8%;  animation-delay: -1.5s; }
+  .floating-battle:nth-child(3) { bottom: 28%; left: 5%; animation-delay: -3s; }
+  .floating-battle:nth-child(4) { bottom: 22%; right: 6%; animation-delay: -2s; }
+  @keyframes battleFloat {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50%     { transform: translateY(-10px) rotate(10deg); }
+  }
+
+  .cover-badge {
+    background: linear-gradient(135deg, var(--battle-slate), var(--trex-orange));
+    color: white;
+    padding: 6px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: inline-block;
+    box-shadow: 0 0 16px rgba(230,74,25,0.3);
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(28px, 6vw, 50px);
+    line-height: 1.2;
+    background: linear-gradient(135deg, #ef9a9a, #f9a825, #b71c1c, #8bc34a, #ef9a9a);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease infinite;
+    margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+
+  .cover-subtitle { font-size: clamp(16px, 3vw, 22px); opacity: 0.75; margin-bottom: 24px; }
+
+  .cover-name-badge {
+    background: linear-gradient(135deg, rgba(183,28,28,0.08), rgba(46,125,50,0.08));
+    border: 2px solid rgba(249,168,37,0.22);
+    border-radius: 20px;
+    padding: 16px 32px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+  }
+  .cover-name-badge p { font-size: 14px; opacity: 0.7; margin-bottom: 4px; }
+  .cover-name-badge h2 { font-family: 'Fredoka One', cursive; font-size: clamp(22px,4vw,32px); color: var(--battle-gold); }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+  }
+  body.light-mode .card {
+    background: white;
+    border-color: rgba(183,28,28,0.12);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    color: #1a0e0e;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent, linear-gradient(90deg, var(--trex-red), var(--trex-orange)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .card-trex   { --accent: linear-gradient(90deg, #7f0000, #c62828, #ff6d00); }
+  .card-tric   { --accent: linear-gradient(90deg, #1b5e20, #43a047, #8bc34a); }
+  .card-battle { --accent: linear-gradient(90deg, #7f0000, #f9a825, #1b5e20); }
+  .card-cret   { --accent: linear-gradient(90deg, #4e342e, #a1887f, #f9a825); }
+  .card-safe   { --accent: linear-gradient(90deg, #1b5e20, #43a047, #69f0ae); }
+
+  .card-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    display: block;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
+  }
+
+  .card h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(22px, 4vw, 30px);
+    margin-bottom: 8px;
+    color: var(--trex-amber);
+  }
+  body.light-mode .card h2 { color: var(--trex-red2); }
+
+  .card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 20px 0 10px;
+    color: var(--trex-amber);
+  }
+  body.light-mode .card h3 { color: var(--trex-red2); }
+
+  .card p {
+    font-size: clamp(15px, 2.5vw, 17px);
+    line-height: 1.85;
+    opacity: 0.9;
+    margin-bottom: 14px;
+  }
+
+  /* ─── ANALOGY BOX ─── */
+  .analogy-box {
+    background: linear-gradient(135deg, rgba(183,28,28,0.06), rgba(46,125,50,0.06));
+    border: 2px dashed rgba(249,168,37,0.25);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .analogy-box::before {
+    content: '💡 Analogi Keren!';
+    position: absolute;
+    top: -12px; left: 20px;
+    background: var(--dark-bg);
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--battle-gold);
+  }
+  body.light-mode .analogy-box { background: linear-gradient(135deg, rgba(183,28,28,0.05), rgba(46,125,50,0.05)); }
+  body.light-mode .analogy-box::before { background: white; }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header { text-align: center; margin-bottom: 32px; padding-top: 20px; }
+  .section-header .tag {
+    display: inline-block;
+    background: rgba(249,168,37,0.1);
+    border: 1px solid rgba(249,168,37,0.28);
+    color: var(--battle-gold);
+    padding: 4px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-header h1 { font-family: 'Fredoka One', cursive; font-size: clamp(24px,5vw,40px); line-height: 1.2; }
+
+  /* ─── SCENE BOX ─── */
+  .scene-box {
+    background: linear-gradient(135deg, rgba(16,10,10,0.94), rgba(183,28,28,0.08));
+    border: 1px solid rgba(249,168,37,0.13);
+    border-radius: 20px;
+    padding: 28px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .scene-box::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 85% 50%, rgba(230,74,25,0.04), transparent 60%);
+    pointer-events: none;
+  }
+  body.light-mode .scene-box {
+    background: linear-gradient(135deg, rgba(251,233,231,0.97), rgba(183,28,28,0.04));
+    border-color: rgba(183,28,28,0.16);
+  }
+  .scene-title {
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--battle-gold);
+    margin-bottom: 12px;
+    opacity: 0.85;
+  }
+  .scene-box p { font-size: clamp(15px,2.5vw,17px); line-height: 1.9; font-style: italic; opacity: 0.9; }
+
+  /* ─── STEP LIST ─── */
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .sl-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(249,168,37,0.10);
+    transition: transform 0.2s;
+  }
+  .sl-item:hover { transform: translateX(4px); }
+  body.light-mode .sl-item { background: rgba(183,28,28,0.03); border-color: rgba(183,28,28,0.10); }
+  .sl-num {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--trex-red2), var(--trex-orange));
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 15px;
+    flex-shrink: 0; margin-top: 2px;
+    box-shadow: 0 0 10px rgba(230,74,25,0.3);
+  }
+  .sl-content strong { display: block; font-size: 16px; font-weight: 900; margin-bottom: 5px; }
+  .sl-content p { font-size: 14px; line-height: 1.65; opacity: 0.88; margin: 0; }
+
+  /* ─── STAT BAR ─── */
+  .stat-wrap { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+  .stat-row { }
+  .stat-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 5px;
+  }
+  .stat-bar-bg {
+    background: rgba(0,0,0,0.28);
+    border-radius: 8px;
+    height: 26px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .stat-bar {
+    height: 100%;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    font-size: 12px;
+    font-weight: 900;
+    color: white;
+    white-space: nowrap;
+  }
+
+  /* ─── VERSUS CARD ─── */
+  .versus-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 12px;
+    align-items: center;
+    margin: 20px 0;
+  }
+  @media (max-width: 520px) {
+    .versus-grid { grid-template-columns: 1fr; }
+    .vs-divider { display: none; }
+  }
+  .vs-card {
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+  }
+  .vs-card-red   { background: rgba(183,28,28,0.12); border: 2px solid rgba(183,28,28,0.3); }
+  .vs-card-green { background: rgba(46,125,50,0.12); border: 2px solid rgba(46,125,50,0.3); }
+  body.light-mode .vs-card-red   { background: rgba(183,28,28,0.06); }
+  body.light-mode .vs-card-green { background: rgba(46,125,50,0.06); }
+  .vs-card .vc-icon { font-size: 52px; display: block; margin-bottom: 10px; }
+  .vs-card strong { display: block; font-size: 16px; font-weight: 900; margin-bottom: 8px; }
+  .vs-card.vs-card-red strong { color: #ef5350; }
+  .vs-card.vs-card-green strong { color: #66bb6a; }
+  .vs-card p { font-size: 13px; line-height: 1.65; opacity: 0.85; margin: 0; }
+  .vs-divider {
+    font-family: 'Fredoka One', cursive;
+    font-size: 32px;
+    color: var(--battle-gold);
+    text-align: center;
+    text-shadow: 0 0 14px rgba(249,168,37,0.6);
+    animation: vsPulse2 1s ease-in-out infinite alternate;
+  }
+  @keyframes vsPulse2 { from { transform: scale(1); } to { transform: scale(1.15); } }
+
+  /* ─── TWO COL ─── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+
+  .mini-card {
+    border-radius: 18px;
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mini-card-red    { background: rgba(183,28,28,0.09);   border: 1px solid rgba(183,28,28,0.22); }
+  .mini-card-green  { background: rgba(46,125,50,0.09);   border: 1px solid rgba(46,125,50,0.22); }
+  .mini-card-gold   { background: rgba(249,168,37,0.07);  border: 1px solid rgba(249,168,37,0.20); }
+  .mini-card-orange { background: rgba(230,74,25,0.09);   border: 1px solid rgba(230,74,25,0.22); }
+  .mini-card-brown  { background: rgba(121,85,72,0.09);   border: 1px solid rgba(121,85,72,0.22); }
+  .mini-card-gray   { background: rgba(120,144,156,0.09); border: 1px solid rgba(120,144,156,0.20); }
+  body.light-mode .mini-card-red    { background: rgba(183,28,28,0.05); }
+  body.light-mode .mini-card-green  { background: rgba(46,125,50,0.05); }
+  body.light-mode .mini-card-gold   { background: rgba(249,168,37,0.05); }
+  body.light-mode .mini-card-orange { background: rgba(230,74,25,0.05); }
+  body.light-mode .mini-card-brown  { background: rgba(121,85,72,0.05); }
+  body.light-mode .mini-card-gray   { background: rgba(120,144,156,0.05); }
+  .mini-card .mini-icon { font-size: 36px; }
+  .mini-card strong { font-size: 15px; font-weight: 900; }
+  .mini-card p { font-size: 14px; line-height: 1.6; opacity: 0.85; margin: 0; }
+
+  /* ─── FACT GRID ─── */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .fact-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .fact-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(249,168,37,0.10); }
+  body.light-mode .fact-card { background: #fff3e0; border-color: rgba(183,28,28,0.12); }
+  .fact-card .fact-emoji { font-size: 40px; margin-bottom: 10px; display: block; }
+  .fact-card .fact-number { font-family: 'Fredoka One', cursive; font-size: 20px; color: var(--battle-gold); display: block; margin-bottom: 4px; }
+  body.light-mode .fact-card .fact-number { color: var(--trex-red2); }
+  .fact-card .fact-label { font-size: 13px; opacity: 0.72; font-weight: 700; }
+
+  /* ─── CHALLENGE ─── */
+  .challenge-card {
+    background: linear-gradient(135deg, rgba(16,10,10,0.90), rgba(183,28,28,0.08));
+    border: 2px solid rgba(249,168,37,0.18);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin: 20px 0;
+  }
+  body.light-mode .challenge-card {
+    background: linear-gradient(135deg, rgba(183,28,28,0.03), rgba(46,125,50,0.03));
+    border-color: rgba(183,28,28,0.18);
+  }
+
+  .challenge-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 24px;
+    color: var(--battle-gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  body.light-mode .challenge-title { color: var(--trex-red2); }
+
+  .challenge-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .challenge-item:last-child { border-bottom: none; }
+  body.light-mode .challenge-item { border-color: rgba(0,0,0,0.05); }
+
+  .challenge-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--trex-red2), var(--trex-orange));
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 14px;
+    flex-shrink: 0; margin-top: 2px;
+    box-shadow: 0 0 10px rgba(230,74,25,0.28);
+  }
+  .challenge-item p { font-size: 15px; line-height: 1.7; opacity: 0.9; }
+
+  /* ─── NAV BUTTONS ─── */
+  .nav-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  body.light-mode .nav-btns { border-color: rgba(0,0,0,0.05); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover  { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-prev {
+    background: rgba(255,255,255,0.06);
+    color: inherit;
+    border: 1px solid rgba(255,255,255,0.11);
+  }
+  body.light-mode .btn-prev { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.09); color: #1a0e0e; }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--trex-red2), var(--trex-orange));
+    color: white;
+    box-shadow: 0 4px 16px rgba(127,0,0,0.35);
+    flex: 1; justify-content: center;
+    max-width: 300px;
+  }
+  .btn-next:hover { box-shadow: 0 6px 24px rgba(230,74,25,0.45); }
+
+  .btn-done {
+    background: linear-gradient(135deg, var(--trex-red2), var(--trex-orange));
+    color: white;
+    box-shadow: 0 4px 16px rgba(127,0,0,0.4);
+    width: 100%; max-width: 400px;
+    margin: 0 auto;
+    justify-content: center;
+    font-size: 17px;
+    padding: 18px 32px;
+  }
+  .btn-done:hover { box-shadow: 0 6px 24px rgba(230,74,25,0.5); }
+
+  .page-indicator { font-size: 13px; opacity: 0.5; font-weight: 700; white-space: nowrap; }
+
+  /* ─── CLOSING ─── */
+  .closing-content { text-align: center; padding: 40px 20px; }
+  .trophy-big {
+    font-size: 100px;
+    display: block; margin: 0 auto 24px;
+    animation: bounceIn 0.8s cubic-bezier(0.36,0.07,0.19,0.97);
+    filter: drop-shadow(0 0 24px rgba(249,168,37,0.55));
+  }
+  @keyframes bounceIn {
+    0%  { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); }
+    100%{ transform: scale(1); opacity: 1; }
+  }
+  .quote-box {
+    background: linear-gradient(135deg, rgba(183,28,28,0.07), rgba(46,125,50,0.07));
+    border-left: 4px solid var(--trex-orange);
+    border-radius: 0 16px 16px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+    text-align: left;
+  }
+  .quote-box p { font-size: 18px; font-style: italic; line-height: 1.8; }
+  .quote-box cite { font-size: 13px; opacity: 0.6; margin-top: 8px; display: block; font-style: normal; font-weight: 700; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .book-container { padding: 76px 16px 32px; }
+    .card { padding: 24px 20px; }
+    .nav-btns { flex-wrap: wrap; }
+    .btn-next { max-width: 100%; }
+    .fact-grid { grid-template-columns: 1fr 1fr; }
+    .cover-battle-wrap { width: 260px; height: 200px; }
+    .cover-vs { font-size: 32px; }
+  }
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .book-container { padding: 80px 32px 40px; }
+    .card p { font-size: 18px; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(249,168,37,0.25); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- BATTLE PARTICLES -->
+<div class="battle-particles" id="battleParticles"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+  <div class="nav-right">
+    <span class="book-day-badge">⚔️ Hari ke-9</span>
+    <button class="mode-btn" id="modeBtn" title="Ganti Mode">☀️</button>
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<!-- ═══════════════ BOOK CONTAINER ═══════════════ -->
+<div class="book-container">
+
+  <!-- ── PAGE 1: COVER ── -->
+  <div class="page active" id="page-1">
+    <div class="cover-page">
+      <span class="floating-battle">🦖</span>
+      <span class="floating-battle">🦏</span>
+      <span class="floating-battle">⚔️</span>
+      <span class="floating-battle">💥</span>
+
+      <!-- Battle Illustration -->
+      <div class="cover-battle-wrap">
+
+        <!-- T-Rex (left) -->
+        <div class="cover-trex">
+          <div class="ct-torso">
+            <div class="ct-head">
+              <div class="ct-eye"></div>
+              <div class="ct-jaw"></div>
+            </div>
+            <div class="ct-arm"></div>
+            <div class="ct-tail"></div>
+          </div>
+          <div class="ct-leg-l"></div>
+          <div class="ct-leg-r"></div>
+        </div>
+
+        <!-- VS -->
+        <div class="cover-vs">VS</div>
+
+        <!-- Dust cloud -->
+        <div class="cover-dust"></div>
+
+        <!-- Impact stars -->
+        <span class="impact-star" style="top:60px;left:44%;font-size:22px;animation-delay:0s;">💥</span>
+        <span class="impact-star" style="top:80px;left:48%;font-size:14px;animation-delay:-0.4s;">✨</span>
+
+        <!-- Triceratops (right) -->
+        <div class="cover-tric">
+          <div class="ctr-body">
+            <div class="ctr-head">
+              <div class="ctr-frill"></div>
+              <div class="ctr-horn1"></div>
+              <div class="ctr-horn2"></div>
+              <div class="ctr-horn3"></div>
+              <div class="ctr-eye"></div>
+            </div>
+            <div class="ctr-tail"></div>
+          </div>
+          <div class="ctr-leg-fl"></div>
+          <div class="ctr-leg-fr"></div>
+          <div class="ctr-leg-bl"></div>
+          <div class="ctr-leg-br"></div>
+        </div>
+
+        <!-- Ground -->
+        <div class="cover-ground"></div>
+      </div>
+
+      <div class="cover-badge">📚 Buku Sains Petualangan • Hari ke-9</div>
+      <h1 class="cover-title">Pertarungan Tyrannosaurus<br>vs Triceratops!</h1>
+      <p class="cover-subtitle">⚔️ Duel Epik Para Raksasa di Era Kapur!</p>
+
+      <div class="cover-name-badge">
+        <p>Petualangan sains milik:</p>
+        <h2>🌟 Aslan 🌟</h2>
+        <p style="font-size:13px;margin-top:4px;">Saksi Mata Pertarungan Dino Terbesar • Kelas 3 SD</p>
+      </div>
+
+      <div class="nav-btns" style="justify-content:center;border:none;padding-top:0;">
+        <button class="btn btn-next" onclick="goPage(2)" style="max-width:300px;font-size:17px;padding:16px 32px;">
+          ⚔️ Saksikan Pertarungannya!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE 2: PENGANTAR ── -->
+  <div class="page" id="page-2">
+    <div class="section-header">
+      <span class="tag">✉️ Hari Kesembilan!</span>
+      <h1>Hei Aslan, Siap Menyaksikan<br>Duel Terbesar Sepanjang Masa? ⚔️</h1>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🦖</span>
+      <p>Hei, <strong>Aslan</strong>! Kemarin kamu sudah bertualang ke zaman dinosaurus — mempelajari bagaimana T-Rex, Triceratops, dan ratusan spesies lain menguasai Bumi selama 165 juta tahun. Kamu sudah tahu fosil, kepunahan, dan bahkan mengetahui bahwa burung adalah dinosaurus yang masih hidup!</p>
+      <p>Hari ini misi kita jauh lebih mendebarkan: Terra Explorer akan membawa kita ke sebuah padang savana luas di Amerika Utara, <strong>68 juta tahun yang lalu</strong> — dan kita akan menyaksikan langsung pertarungan yang sudah ditunggu-tunggu sepanjang sejarah: <strong>Tyrannosaurus Rex melawan Triceratops!</strong> 🦖⚔️🦏</p>
+      <p>Ini bukan hanya tentang siapa yang lebih kuat — tapi kita akan belajar sains yang nyata tentang gigi, tanduk, otot, strategi bertahan, dan bagaimana dua makhluk luar biasa ini berevolusi selama jutaan tahun untuk menjadi raksasa yang sempurna di era mereka. Siapkan dirimu — ini akan spektakuler! 🚀</p>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Pesan Dari Terra Explorer</p>
+      <p>"Aslan! Mesin Waktu aktif — kita meluncur ke 68 juta tahun yang lalu! Terra Explorer mendarat di balik batu besar di tepi padang terbuka. Di sebelah kiri... seekor T-Rex raksasa sedang berjalan perlahan, mendekus hebat — hidungnya yang super sensitif mencium sesuatu. Di sebelah kanan, ada kawanan Triceratops! Tapi satu Triceratops jantan besar terpisah dari kawanan dan berbalik menghadapi sang predator dengan ketiga tanduknya siap tempur. Tanah mulai bergetar dengan setiap langkah T-Rex. Ini adalah pertarungan yang akan dimulai... Kita di tempat yang tepat, di waktu yang tepat!"</p>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--trex-red2),var(--battle-gold),var(--tric-green));">
+      <h3>🗺️ Yang Akan Kita Pelajari Hari Ini</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(183,28,28,0.15);border-radius:14px;">
+          <span style="font-size:28px;">🦖</span>
+          <div><strong>Profil Lengkap T-Rex: Raja Predator!</strong><p style="font-size:13px;margin:0;opacity:0.7;">Ukuran, kekuatan gigitan, indera, dan gaya berburu si Raja!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(46,125,50,0.15);border-radius:14px;">
+          <span style="font-size:28px;">🦏</span>
+          <div><strong>Profil Lengkap Triceratops: Benteng Berjalan!</strong><p style="font-size:13px;margin:0;opacity:0.7;">Tiga tanduk maut, perisai kepala, dan kekuatan tak terbendung!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(249,168,37,0.10);border-radius:14px;">
+          <span style="font-size:28px;">⚔️</span>
+          <div><strong>Bagaimana Mereka Bertarung?</strong><p style="font-size:13px;margin:0;opacity:0.7;">Strategi serangan, pertahanan, dan titik lemah masing-masing!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(121,85,72,0.15);border-radius:14px;">
+          <span style="font-size:28px;">🏆</span>
+          <div><strong>Siapa yang Biasanya Menang?</strong><p style="font-size:13px;margin:0;opacity:0.7;">Bukti dari fosil dan sains — jawaban yang mengejutkan!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(46,125,50,0.10);border-radius:14px;">
+          <span style="font-size:28px;">🌿</span>
+          <div><strong>Kehidupan di Era Kapur</strong><p style="font-size:13px;margin:0;opacity:0.7;">Ekosistem tempat kedua raksasa ini tinggal bersama!</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+      <span class="page-indicator">Halaman 2 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(3)">Profil T-Rex! 🦖 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 3: PROFIL T-REX ── -->
+  <div class="page" id="page-3">
+    <div class="section-header">
+      <span class="tag">🦖 Bab Satu</span>
+      <h1>Tyrannosaurus Rex:<br><span style="color:var(--battle-gold)">Raja yang Tak Tertandingi!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Mengamati T-Rex dari Dekat!</p>
+      <p>"Aslan! Terra Explorer dalam mode siluman penuh, melayang 10 meter di atas tanah mengikuti T-Rex dari jarak aman. Makhluk ini... luar biasa. Setiap langkahnya membuat tanah berguncang. Aku bisa menghitung ukurannya dari sensor — 4 meter tinggi di bagian pinggul, 12 meter dari kepala ke ujung ekor. Beratnya lebih dari 8 ton! Tapi yang paling mengesankan bukan ukurannya — adalah caranya bergerak. Untuk sesuatu yang sebesar itu, T-Rex bergerak dengan keanggunan mematikan. Dan hidungnya terus bergerak, mencium udara. Predator ini tahu ada Triceratops di dekat sini..."</p>
+    </div>
+
+    <div class="card card-trex">
+      <span class="card-icon">🦖</span>
+      <h2>T-Rex: Mesin Pembunuh yang Sempurna!</h2>
+      <p>Tyrannosaurus Rex — artinya "Raja Kadal Tiran" — adalah predator puncak yang paling dominan di Amerika Utara selama Era Kapur Akhir. Setiap bagian tubuhnya berevolusi selama jutaan tahun untuk menjadi mesin berburu yang sempurna.</p>
+
+      <h3>📊 Statistik Lengkap T-Rex</h3>
+      <div class="stat-wrap">
+        <div class="stat-row">
+          <div class="stat-label"><span>⚖️ Berat Badan</span><span style="color:#ef5350;">6–9 ton</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:88%;background:linear-gradient(90deg,#7f0000,#c62828);">Setara 1–1,5 gajah Afrika!</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label"><span>📏 Panjang Tubuh</span><span style="color:#ef5350;">12–13 meter</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:82%;background:linear-gradient(90deg,#b71c1c,#e53935);">Sepanjang 2 mobil bus kota!</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label"><span>🦷 Kekuatan Gigitan</span><span style="color:#ff6d00;">57.000–183.000 N</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:100%;background:linear-gradient(90deg,#e64a19,#ff6d00);font-weight:900;">Terkuat dari semua hewan darat yang pernah ada! 🚨</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label"><span>💨 Kecepatan Lari</span><span style="color:#ffb74d;">17–25 km/jam</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:45%;background:linear-gradient(90deg,#e65100,#ff8f00);">Lebih lambat dari kuda, tapi momentum raksasa!</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label"><span>🦷 Jumlah & Panjang Gigi</span><span style="color:#ef5350;">50–60 gigi, 20–30 cm</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:75%;background:linear-gradient(90deg,#880e4f,#c2185b);">Sepanjang pisang, serrated seperti pisau gergaji!</div></div>
+        </div>
+      </div>
+
+      <h3>🧠 Senjata dan Kemampuan Super T-Rex!</h3>
+      <div class="step-list">
+        <div class="sl-item">
+          <div class="sl-num">👃</div>
+          <div class="sl-content">
+            <strong>Hidung Super Sensitif — Bisa Mencium dari 6 km!</strong>
+            <p>Bagian otak T-Rex yang memproses bau (olfactory bulb) sangat besar! Mereka bisa mendeteksi bau darah atau mangsa dari jarak beberapa kilometer. Indera penciuman T-Rex bahkan lebih baik dari sebagian besar hewan modern termasuk anjing pelacak!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">👁️</div>
+          <div class="sl-content">
+            <strong>Mata Menghadap Ke Depan — Penglihatan 3D yang Tajam!</strong>
+            <p>Tidak seperti kebanyakan herbivora yang matanya di samping kepala, mata T-Rex menghadap ke depan memberikan penglihatan binokular (3D) yang sangat baik — memungkinkan mereka mengukur jarak dengan presisi tinggi saat mengincar mangsa. Penglihatan T-Rex 13 kali lebih tajam dari manusia!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">🦷</div>
+          <div class="sl-content">
+            <strong>Gigi yang Terus Diperbarui Sepanjang Hidup!</strong>
+            <p>T-Rex terus menumbuhkan gigi baru sepanjang hidupnya, menggantikan yang rusak atau rontok. Gigi mereka berbentuk pisau gergaji (serrated) yang memudahkan merobek daging dan memotong tulang! Kekuatan gigitannya bisa menembus tulang Triceratops yang tebal sekalipun.</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">🧠</div>
+          <div class="sl-content">
+            <strong>Otak Terbesar Relatif di Antara Dinosaurus Besar!</strong>
+            <p>Meskipun ada mitos bahwa dinosaurus bodoh, T-Rex sebenarnya cukup cerdas. Studi terbaru (2023) menunjukkan kepadatan neuron otak T-Rex mirip dengan buaya atau burung beo modern — yang terkenal cerdas! Mereka mungkin bisa memecahkan masalah sederhana dalam berburu.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Bayangkan kamu punya Tang pelubang yang kuat banget. 🔧 Sekarang perbesar Tang itu menjadi seukuran mobil, dengan gigi-gigi bergerigi tajam. Itulah perkiraan kekuatan rahang T-Rex! Para ilmuwan memperkirakan T-Rex bisa menghancurkan tulang setebal buku ini hanya dengan satu gigitan. Tidak ada hewan darat yang pernah punya gigitan sekuat ini sebelum atau sesudahnya! 💀</p>
+      </div>
+
+      <div style="background:rgba(183,28,28,0.08);border:1px solid rgba(183,28,28,0.22);border-radius:16px;padding:18px 20px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🦖 <strong>Fakta Mengejutkan:</strong> T-Rex mungkin punya bibir! Penelitian terbaru (2023) menyimpulkan T-Rex kemungkinan memiliki bibir yang menutupi gigi mereka saat mulut tertutup — mirip komodo modern, bukan seperti di film Jurassic Park yang giginya selalu kelihatan. Sains terus berkembang mengungkap rahasia dinosaurus! 💋</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+      <span class="page-indicator">Halaman 3 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(4)">Profil Triceratops! 🦏 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 4: PROFIL TRICERATOPS ── -->
+  <div class="page" id="page-4">
+    <div class="section-header">
+      <span class="tag">🦏 Bab Dua</span>
+      <h1>Triceratops:<br><span style="color:var(--battle-gold)">Benteng Berjalan Berkepala Perisai!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Mendekati Kawanan Triceratops!</p>
+      <p>"Aslan! Terra Explorer bergeser ke kawanan Triceratops di padang. Lihatlah — ada sekitar 20 ekor dalam satu kawanan! Yang paling besar di depan pasti pejantan dominan. Kepalanya... luar biasa. Frill (perisai kepala) yang besar berwarna merah dan oranye cerah menandakan ia jantan terkuat. Dua tanduk atas panjangnya melebihi lenganku dan terlihat sangat tajam. T-Rex yang kita amati tadi mulai mendekati posisi mereka. Kawanan Triceratops sudah sadar — mereka bergerak membentuk formasi lingkaran, bayi dan betina di tengah, pejantan-pejantan besar di luar. Ini pertahanan yang sangat cerdas!"</p>
+    </div>
+
+    <div class="card card-tric">
+      <span class="card-icon">🦏</span>
+      <h2>Triceratops: Pejuang Herbivora yang Luar Biasa!</h2>
+      <p>Triceratops artinya "wajah berkepala tiga tanduk" — dan nama itu sangat tepat. Ini bukan hanya herbivora besar yang pasif. Triceratops adalah salah satu dinosaurus paling tangguh yang pernah ada, dengan persenjataan pertahanan yang membuat bahkan T-Rex harus berpikir dua kali!</p>
+
+      <h3>📊 Statistik Lengkap Triceratops</h3>
+      <div class="stat-wrap">
+        <div class="stat-row">
+          <div class="stat-label"><span>⚖️ Berat Badan</span><span style="color:#66bb6a;">6–12 ton</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:90%;background:linear-gradient(90deg,#1b5e20,#43a047);">Bahkan bisa lebih berat dari T-Rex!</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label"><span>📏 Panjang Tubuh</span><span style="color:#66bb6a;">7,9–9 meter</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:68%;background:linear-gradient(90deg,#2e7d32,#66bb6a);">Lebih pendek tapi jauh lebih kompak dan kuat!</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label"><span>🔱 Panjang Tanduk</span><span style="color:#8bc34a;">hingga 1,2 meter!</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:72%;background:linear-gradient(90deg,#558b2f,#8bc34a);">Tanduk atas sepanjang lengan orang dewasa!</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label"><span>🛡️ Ukuran Frill (Perisai)</span><span style="color:#66bb6a;">diameter 1–1,5 meter</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:65%;background:linear-gradient(90deg,#1b5e20,#4caf50);">Tulang tebal seperti bumper besi!</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label"><span>💨 Kecepatan Lari</span><span style="color:#8bc34a;">hingga 32 km/jam</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:52%;background:linear-gradient(90deg,#33691e,#8bc34a);">Lebih cepat dari T-Rex saat berlari penuh!</div></div>
+        </div>
+      </div>
+
+      <h3>🛡️ Persenjataan dan Pertahanan Triceratops!</h3>
+      <div class="step-list">
+        <div class="sl-item">
+          <div class="sl-num">🔱</div>
+          <div class="sl-content">
+            <strong>Tiga Tanduk yang Mematikan!</strong>
+            <p>Dua tanduk brow (di atas mata) bisa sepanjang 1,2 meter dan sekuat baja — terbuat dari keratin dan tulang. Satu tanduk nasal (di hidung) lebih pendek tapi kuat. Ketiga tanduk ini bukan hanya untuk pertahanan — juga untuk pertarungan sesama jantan dan bisa menusuk hingga menembus tubuh T-Rex yang tebal sekalipun!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">🛡️</div>
+          <div class="sl-content">
+            <strong>Frill Kepala — Perisai Hidup!</strong>
+            <p>Frill adalah perpanjangan tulang tengkorak yang membentuk "perisai" besar di bagian belakang kepala. Tebalnya bisa mencapai 10 cm! Ini melindungi leher — titik serangan favorit T-Rex — dari gigitan maut sang predator. Frill juga berfungsi sebagai sinyal visual berwarna-warni untuk komunikasi dalam kawanan.</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">💪</div>
+          <div class="sl-content">
+            <strong>Leher dan Bahu Super Kuat!</strong>
+            <p>Untuk menahan dan menggunakan tanduk besar dengan efektif, Triceratops memiliki otot leher dan bahu yang luar biasa kuat. Saat menundukkan kepala dan menyerang, seluruh beratnya (hingga 12 ton!) menjadi dorongan di balik tanduk tersebut. Seperti kereta api berkecepatan tinggi yang menghantam!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">🦷</div>
+          <div class="sl-content">
+            <strong>Ratusan Gigi Baterai — Penghancur Tanaman!</strong>
+            <p>Triceratops punya "baterai gigi" — ratusan gigi kecil yang tersusun berlapis di sepanjang rahang, yang terus diperbarui seumur hidup. Ini memungkinkan mereka mengunyah tanaman keras seperti pakis dan cycad yang tidak bisa dimakan dinosaurus lain. Rahang mereka begitu kuat sehingga bahkan bisa mengunyah kayu!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Triceratops itu seperti tank tempur modern! 🛡️ Sebuah tank punya lapis baja untuk melindungi diri (frill + tubuh berat Triceratops) dan meriam untuk menyerang (tanduk maut). Tank bergerak lambat tapi hampir tidak bisa dihentikan saat bergerak maju. Itulah Triceratops — senjata pertahanan dan serangan yang sempurna dalam satu paket yang sangat berat! ⚙️</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+      <span class="page-indicator">Halaman 4 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(5)">Pertarungan Epik! ⚔️ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 5: PERTARUNGAN ── -->
+  <div class="page" id="page-5">
+    <div class="section-header">
+      <span class="tag">⚔️ Bab Tiga</span>
+      <h1>Pertarungan Epik:<br><span style="color:var(--battle-gold)">Raja vs Benteng!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Pertarungan Dimulai!</p>
+      <p>"Aslan! Ini dia! T-Rex sudah berada dalam radius 50 meter dari Triceratops jantan yang sendirian itu. T-Rex berhenti, kepalanya bergerak perlahan mengamati mangsa. Triceratops menundukkan kepalanya, ketiga tanduknya terarah ke depan, kakinya menapak kuat di tanah. Ini bukan lari terbirit-birit seperti dalam bayangan kita! Triceratops TIDAK lari — dia menghadapi T-Rex dengan berani! Tanah bergetar saat T-Rex mengambil langkah pertama... PERTARUNGAN DIMULAI!"</p>
+    </div>
+
+    <div class="card card-battle">
+      <span class="card-icon">⚔️</span>
+      <h2>Anatomi Sebuah Pertarungan!</h2>
+      <p>Berdasarkan bukti fosil — termasuk fosil Triceratops dengan bekas gigitan T-Rex dan tulang T-Rex yang pernah terluka oleh tanduk — para ilmuwan bisa merekonstruksi bagaimana pertarungan ini berlangsung. Ini bukan spekulasi — ini SAINS!</p>
+
+      <div class="versus-grid">
+        <div class="vs-card vs-card-red">
+          <span class="vc-icon">🦖</span>
+          <strong>🔴 T-Rex — SERANGAN</strong>
+          <p>Strategi: mengincar leher dan punggung. Mencoba menjatuhkan dengan berat badan. Menggunakan kecepatan untuk menghindari tanduk. Menggigit dan menarik mundur.</p>
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="vs-card vs-card-green">
+          <span class="vc-icon">🦏</span>
+          <strong>🟢 Triceratops — BERTAHAN</strong>
+          <p>Strategi: menjaga kepala selalu menghadap T-Rex. Menyerang balik dengan tanduk. Menggunakan berat badan untuk menabrak. Melindungi leher dengan frill.</p>
+        </div>
+      </div>
+
+      <h3>🎬 Urutan Pertarungan — Langkah demi Langkah!</h3>
+      <div class="step-list">
+        <div class="sl-item">
+          <div class="sl-num">1</div>
+          <div class="sl-content">
+            <strong>🔍 Fase Pengintaian — T-Rex Mencari Kelemahan</strong>
+            <p>T-Rex tidak langsung menyerang. Mereka cerdas — berjalan melingkar perlahan, mencoba mendekati dari samping atau belakang di mana tanduk Triceratops tidak bisa menjangkau. Triceratops terus berputar, memastikan tanduknya selalu menghadap ancaman. Ini bisa berlangsung 10–30 menit! Adu taktik dimulai jauh sebelum kontak fisik.</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">2</div>
+          <div class="sl-content">
+            <strong>💥 Fase Serangan Pertama — Siapa yang Menyerang Duluan?</strong>
+            <p>Ironisnya, Triceratops sering menyerang duluan! Dengan mendundukkan kepala dan berlari penuh kecepatan (hingga 32 km/jam), Triceratops bisa menusukkan tanduknya sebelum T-Rex bereaksi. Benturan 10 ton lebih berjalan pada kecepatan 32 km/jam adalah daya hantam yang luar biasa — bisa merusak tulang rusuk atau kaki T-Rex serius!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">3</div>
+          <div class="sl-content">
+            <strong>🦷 Fase Gigitan — T-Rex Mengincar Leher dan Frill</strong>
+            <p>Ketika T-Rex berhasil mendekati dari sudut yang aman, mereka mengincar leher — tapi frill menghalangi! Bukti fosil menunjukkan T-Rex sering menggigit dan menarik frill Triceratops, bahkan ada fosil frill yang menunjukkan bekas gigitan T-Rex yang sembuh — artinya Triceratops itu selamat dari serangan T-Rex! 🤯</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">4</div>
+          <div class="sl-content">
+            <strong>🏃 Fase Penentu — Siapa yang Kelelahan Duluan?</strong>
+            <p>Pertarungan besar seperti ini sangat melelahkan bagi kedua pihak. T-Rex yang berdarah atau kelelahan akan mundur — risiko cedera terlalu besar untuk predator. Triceratops yang terluka parah mungkin goyah. Biasanya pertarungan berakhir ketika salah satu mundur atau tidak bisa bergerak, bukan selalu dengan kematian langsung.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>🦴 Bukti Nyata dari Fosil!</h3>
+      <div class="two-col">
+        <div class="mini-card mini-card-red">
+          <span class="mini-icon">🦷</span>
+          <strong>Bekas Gigitan T-Rex di Fosil Triceratops</strong>
+          <p>Para paleontologis menemukan tulang Triceratops dengan bekas gigitan yang ukurannya persis cocok dengan gigi T-Rex. Beberapa bekas gigitan ini menunjukkan proses penyembuhan — artinya Triceratops itu selamat! Bukti pertarungan nyata!</p>
+        </div>
+        <div class="mini-card mini-card-green">
+          <span class="mini-icon">🔱</span>
+          <strong>Tanduk Triceratops di Area Tulang T-Rex</strong>
+          <p>Beberapa situs fosil menemukan fragmen tanduk Triceratops di dekat tulang T-Rex yang menunjukkan kerusakan. Bisa jadi ini sisa pertarungan di mana tanduk Triceratops patah saat menghantam T-Rex dengan keras!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+      <span class="page-indicator">Halaman 5 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(6)">Siapa yang Menang? 🏆 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 6: SIAPA YANG MENANG ── -->
+  <div class="page" id="page-6">
+    <div class="section-header">
+      <span class="tag">🏆 Bab Empat</span>
+      <h1>Siapa yang Menang?<br><span style="color:var(--battle-gold)">Jawaban Sains yang Mengejutkan!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Akhir Pertarungan!</p>
+      <p>"Aslan! Pertarungan berjalan sengit selama hampir 20 menit! T-Rex berhasil menggigit frill Triceratops — tapi langsung mendapat hantaman tanduk di bagian kaki depannya! T-Rex mundur, tampak sedikit pincang. Triceratops tegak berdiri, napasnya berat tapi masih kuat. T-Rex menatap Triceratops beberapa saat... kemudian perlahan berbalik dan pergi! Tidak ada kemenangan dramatis — tapi ada pemenang yang jelas. Triceratops berhasil mempertahankan dirinya! Tapi jangan buru-buru simpulkan — jawaban ilmiahnya jauh lebih kompleks dan menarik dari itu!"</p>
+    </div>
+
+    <div class="card card-battle">
+      <span class="card-icon">🏆</span>
+      <h2>Hasil Pertarungan: Tidak Sesederhana yang Dikira!</h2>
+      <p>Pertanyaan "siapa yang menang" tidak punya jawaban tunggal — karena hasilnya sangat bergantung pada <strong>kondisi, situasi, dan individu yang bertarung</strong>. Tapi bukti sains memberikan jawaban yang sangat menarik!</p>
+
+      <h3>📈 Analisis Keunggulan Masing-Masing</h3>
+
+      <div class="stat-wrap">
+        <div class="stat-row">
+          <div class="stat-label"><span>🦷 Kekuatan Serangan</span><span style="color:#ef5350;">🔴 T-Rex Unggul</span></div>
+          <div class="stat-bar-bg" style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+            <div class="stat-bar" style="width:100%;background:linear-gradient(90deg,#7f0000,#c62828);">T-Rex: 10/10</div>
+            <div class="stat-bar" style="width:70%;background:linear-gradient(90deg,#1b5e20,#43a047);">Triceratops: 7/10</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label"><span>🛡️ Pertahanan</span><span style="color:#66bb6a;">🟢 Triceratops Unggul</span></div>
+          <div class="stat-bar-bg" style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+            <div class="stat-bar" style="width:50%;background:linear-gradient(90deg,#7f0000,#c62828);">T-Rex: 5/10</div>
+            <div class="stat-bar" style="width:100%;background:linear-gradient(90deg,#1b5e20,#43a047);">Triceratops: 10/10</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label"><span>💨 Kecepatan</span><span style="color:#66bb6a;">🟢 Triceratops Sedikit Lebih Cepat</span></div>
+          <div class="stat-bar-bg" style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+            <div class="stat-bar" style="width:58%;background:linear-gradient(90deg,#7f0000,#c62828);">T-Rex: ~20 km/j</div>
+            <div class="stat-bar" style="width:68%;background:linear-gradient(90deg,#1b5e20,#43a047);">Triceratops: ~32 km/j</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label"><span>🧠 Kecerdasan</span><span style="color:#ef5350;">🔴 T-Rex Sedikit Lebih Cerdas</span></div>
+          <div class="stat-bar-bg" style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+            <div class="stat-bar" style="width:72%;background:linear-gradient(90deg,#7f0000,#c62828);">T-Rex: 7/10</div>
+            <div class="stat-bar" style="width:55%;background:linear-gradient(90deg,#1b5e20,#43a047);">Triceratops: 5/10</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label"><span>⚖️ Berat Badan</span><span style="color:#ffb74d;">⚖️ Hampir Setara</span></div>
+          <div class="stat-bar-bg" style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+            <div class="stat-bar" style="width:78%;background:linear-gradient(90deg,#7f0000,#c62828);">T-Rex: 7–9 ton</div>
+            <div class="stat-bar" style="width:88%;background:linear-gradient(90deg,#1b5e20,#43a047);">Triceratops: 6–12 ton</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>🔬 Kesimpulan Berdasarkan Sains!</h3>
+      <div class="step-list">
+        <div class="sl-item">
+          <div class="sl-num">✅</div>
+          <div class="sl-content">
+            <strong>Triceratops Dewasa Sehat = Pemenang yang Sangat Mungkin!</strong>
+            <p>Bukti fosil menunjukkan T-Rex lebih sering berburu Triceratops yang <em>sudah mati, sakit, atau tua</em>. Menghadapi Triceratops sehat yang bisa berlari 32 km/jam dengan tanduk maut sangat berbahaya! Satu tusukan tanduk di kaki bisa melumpuhkan T-Rex dan menyebabkan kematian perlahan. Risiko terlalu besar!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">✅</div>
+          <div class="sl-content">
+            <strong>T-Rex Tetap Berburu Triceratops — Tapi Selektif!</strong>
+            <p>Meski berbahaya, T-Rex tetap berburu Triceratops — terbukti dari bekas gigitan di fosil. Tapi mereka kemungkinan memilih target yang lebih lemah: bayi, yang sedang sakit, atau terluka. Predator cerdas tidak mengambil risiko yang tidak perlu — strategi bertahan hidup yang cerdas!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">✅</div>
+          <div class="sl-content">
+            <strong>Faktor Terpenting: Skenario Pertarungan!</strong>
+            <p>Jika T-Rex menyerang dari belakang atau samping: T-Rex berpeluang menang. Jika Triceratops menghadap langsung dengan tanduk: Triceratops berpeluang besar selamat. Pertarungan 1 lawan 1 dengan kondisi setara — Triceratops mungkin lebih sering menang atau seri. Alam jarang hitam-putih!</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(249,168,37,0.07);border:1px solid rgba(249,168,37,0.22);border-radius:16px;padding:18px 20px;margin-top:12px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🏆 <strong>Kesimpulan Ilmiah:</strong> Tidak ada pemenang mutlak! Keduanya adalah puncak evolusi di era mereka masing-masing. T-Rex adalah predator paling sempurna yang pernah ada di darat. Triceratops adalah herbivora paling terlindungi yang pernah ada. Mereka berevolusi BERSAMA selama jutaan tahun — satu sebagai predator, satu sebagai mangsa yang melawan — dan keduanya membuat satu sama lain menjadi lebih sempurna! 🔄</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+      <span class="page-indicator">Halaman 6 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(7)">Kehidupan Era Kapur & Fakta Keren! 🌿 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 7: ERA KAPUR + FAKTA ── -->
+  <div class="page" id="page-7">
+    <div class="section-header">
+      <span class="tag">🌿 Bab Lima</span>
+      <h1>Dunia Mereka:<br><span style="color:var(--battle-gold)">Kehidupan di Era Kapur!</span></h1>
+    </div>
+
+    <div class="card card-cret">
+      <span class="card-icon">🌿</span>
+      <h2>Era Kapur: Dunia yang Sangat Berbeda dari Sekarang!</h2>
+      <p>T-Rex dan Triceratops tidak hidup di dunia yang kita kenal. Bumi 68 juta tahun lalu sangat berbeda — dan memahami dunia mereka membantu kita memahami mengapa mereka bisa menjadi raksasa seperti itu!</p>
+
+      <div class="two-col">
+        <div class="mini-card mini-card-green">
+          <span class="mini-icon">🌡️</span>
+          <strong>Lebih Panas dari Sekarang!</strong>
+          <p>Suhu rata-rata Bumi 5–10°C lebih panas dari hari ini. Tidak ada es di kutub! Laut jauh lebih tinggi, menenggelamkan banyak daratan yang sekarang kita kenal. Benua Antartika bahkan punya hutan!</p>
+        </div>
+        <div class="mini-card mini-card-orange">
+          <span class="mini-icon">🌬️</span>
+          <strong>Udara Lebih Banyak Oksigen!</strong>
+          <p>Kadar oksigen di atmosfer lebih tinggi dari sekarang — salah satu alasan mengapa makhluk hidup bisa tumbuh sangat besar! Serangga raksasa, reptil raksasa, dan tentu saja dinosaurus raksasa semua dipengaruhi oleh faktor ini.</p>
+        </div>
+        <div class="mini-card mini-card-brown">
+          <span class="mini-icon">🌺</span>
+          <strong>Bunga Pertama Kali Muncul!</strong>
+          <p>Era Kapur menyaksikan kemunculan tanaman berbunga (angiosperm) untuk pertama kalinya! Sebelumnya hanya ada pakis, cycad, dan pohon jenis konifera. Triceratops menikmati makanan baru yang lebih lezat!</p>
+        </div>
+        <div class="mini-card mini-card-gray">
+          <span class="mini-icon">🌊</span>
+          <strong>Amerika Terbagi Dua oleh Laut!</strong>
+          <p>Laut dangkal besar (Western Interior Seaway) membelah Amerika Utara menjadi dua bagian dari timur ke barat. T-Rex dan Triceratops tinggal di bagian barat, di tepi lautan ini — ekosistem yang kaya dan beragam!</p>
+        </div>
+      </div>
+
+      <h3>🦕 Siapa Lagi yang Tinggal di Sana?</h3>
+      <p>T-Rex dan Triceratops berbagi dunia dengan banyak makhluk menakjubkan lainnya!</p>
+      <div class="two-col">
+        <div class="mini-card mini-card-green">
+          <span class="mini-icon">🔨</span>
+          <strong>Ankylosaurus</strong>
+          <p>Si tank berlapis baju zirah dengan ekor palu. Bahkan T-Rex berpikir dua kali sebelum menyerang Ankylosaurus! Satu pukulan ekornya bisa mematahkan tulang kaki T-Rex.</p>
+        </div>
+        <div class="mini-card mini-card-brown">
+          <span class="mini-icon">🦆</span>
+          <strong>Edmontosaurus (Dinosaurus Bebek)</strong>
+          <p>Herbivora besar berbentuk bebek yang hidup dalam kawanan ribuan ekor. Mangsa favorit T-Rex yang lebih "aman" dari Triceratops — tidak punya tanduk maut!</p>
+        </div>
+        <div class="mini-card mini-card-red">
+          <span class="mini-icon">🦅</span>
+          <strong>Quetzalcoatlus</strong>
+          <p>Pterosaurus raksasa dengan rentang sayap 11 meter — selebar pesawat kecil! Terbang di langit Amerika Utara dan bisa memburu hewan kecil dari udara. Makhluk terbang terbesar yang pernah ada!</p>
+        </div>
+        <div class="mini-card mini-card-gray">
+          <span class="mini-icon">🐊</span>
+          <strong>Buaya & Mamalia Kecil</strong>
+          <p>Nenek moyang buaya modern sudah ada di sini! Dan mamalia kecil seukuran tikus berlarian di antara kaki dinosaurus, bersembunyi di malam hari — mereka adalah nenek moyang kita!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--trex-red2),var(--battle-gold),var(--tric-green));">
+      <span class="card-icon">🤯</span>
+      <h2>Fakta-Fakta yang Bikin Melongo!</h2>
+      <div class="fact-grid">
+        <div class="fact-card">
+          <span class="fact-emoji">🦷</span>
+          <span class="fact-number">183.000 N</span>
+          <span class="fact-label">Kekuatan gigitan T-Rex — terkuat semua hewan darat yang pernah ada di Bumi!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🔱</span>
+          <span class="fact-number">1,2 meter</span>
+          <span class="fact-label">Panjang tanduk Triceratops — lebih panjang dari lengan orang dewasa!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">👁️</span>
+          <span class="fact-number">13x</span>
+          <span class="fact-label">Penglihatan T-Rex lebih tajam dari manusia — bisa melihat mangsa dari jarak sangat jauh!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🦷</span>
+          <span class="fact-number">800 gigi!</span>
+          <span class="fact-label">Jumlah gigi baterai Triceratops dalam satu rahang — terus diperbarui seumur hidup!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🛡️</span>
+          <span class="fact-number">10 cm</span>
+          <span class="fact-label">Tebal tulang frill kepala Triceratops — seteba buku tebal! Hampir tidak bisa ditembus!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🏃</span>
+          <span class="fact-number">32 km/jam</span>
+          <span class="fact-label">Kecepatan maksimal Triceratops — lebih cepat dari T-Rex! Kejutan terbesar dalam pertarungan ini.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+      <span class="page-indicator">Halaman 7 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(8)">Tantangan Aslan! ⚡ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 8: TANTANGAN + PENUTUP ── -->
+  <div class="page" id="page-8">
+    <div class="section-header">
+      <span class="tag">⚡ Tantangan Aslan</span>
+      <h1>Buktikan Kamu<br>Ahli Pertarungan Dino! 🏆</h1>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-title">🏆 Misi Pertarungan Epik Aslan</div>
+      <p style="font-size:15px;opacity:0.8;margin-bottom:20px;">Kamu sudah menyaksikan langsung pertarungan paling epik dalam sejarah Bumi bersama Terra Explorer! Saatnya membuktikan ilmumu sebagai ahli paleontologi pertarungan dinosaurus!</p>
+
+      <div class="challenge-item">
+        <div class="challenge-num">1</div>
+        <div>
+          <p><strong>Simulasikan Pertarungan dengan Mainan! 🎮</strong> Kalau kamu punya mainan atau gambar T-Rex dan Triceratops, ciptakan simulasi pertarunganmu sendiri! Terapkan apa yang sudah kamu pelajari: Triceratops selalu menghadapkan tanduknya ke T-Rex, T-Rex mencoba mencari sudut serangan dari samping. Mainkan beberapa skenario berbeda dan tentukan pemenang berdasarkan faktor-faktor ilmiah yang sudah kamu pelajari. Tulis hasil "penelitianmu" di buku catatan! 📔</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">2</div>
+        <div>
+          <p><strong>Kartu Statistik Dinosaurus Kamu! 🃏</strong> Buat "kartu statistik" seperti kartu game untuk T-Rex dan Triceratops! Setiap kartu harus mencantumkan: nama, ukuran, berat, kecepatan, serangan utama, pertahanan utama, kekuatan khusus, dan kelemahan. Lalu buat kartu untuk 2 dinosaurus lain pilihanmu (misalnya Velociraptor atau Spinosaurus). Hias kartunya dengan gambar atau warna yang menarik. Ini bisa jadi game kartu sains yang seru untuk dimainkan bersama teman! 🎨</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">3</div>
+        <div>
+          <p><strong>Kuis Kilat Pertarungan Dino! ⚡</strong> Jawab tanpa melihat buku: (a) Berapa kekuatan gigitan T-Rex dalam Newton? (b) Apa fungsi frill kepala Triceratops selain perlindungan? (c) Dinosaurus mana yang berlari lebih cepat, T-Rex atau Triceratops? (d) Mengapa T-Rex cenderung menghindari Triceratops dewasa yang sehat? (e) Apa bukti fosil bahwa T-Rex dan Triceratops pernah bertarung? (f) Nama laut yang membelah Amerika Utara di era Kapur? Tulis jawabanmu dan periksa bersama orang tua! 📝</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">4</div>
+        <div>
+          <p><strong>Desain Pertarungan Impianmu! ✏️</strong> Pilih DUA dinosaurus yang berbeda (bukan T-Rex vs Triceratops) dan analisis siapa yang akan menang! Riset singkat karakteristik keduanya, lalu buat analisis tertulis: kekuatan masing-masing, kelemahan, strategi yang mungkin digunakan, dan pemenang berdasarkan logika ilmiahmu. Contoh: Spinosaurus vs Ankylosaurus, atau Velociraptor vs Protoceratops. Jadilah paleontologis sesungguhnya! 🔬</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">5</div>
+        <div>
+          <p><strong>Cerita dari Sudut Pandang Dinosaurus! ✍️</strong> Tulis cerita pendek (minimal 1 halaman) tentang pertarungan T-Rex vs Triceratops — tapi dari sudut pandang TRICERATOPS atau T-REX! Ceritakan apa yang dilihat, dirasakan, dan dipikirkan oleh dinosaurusmu saat menghadapi musuh besarnya. Gunakan detail ilmiah yang sudah kamu pelajari: cara mencium bau, cara melihat dengan penglihatan 3D (T-Rex), atau perasaan berat frill di kepala (Triceratops). Sains + kreativitas = sains terbaik! 🦕</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENUTUP -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--trex-red2),var(--battle-gold),var(--tric-green2));margin-top:32px;">
+      <div class="closing-content">
+        <span class="trophy-big">⚔️</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(24px,5vw,36px);margin-bottom:16px;">
+          Luar Biasa, Aslan! 🎉
+        </h2>
+        <p style="font-size:clamp(15px,2.5vw,17px);max-width:500px;margin:0 auto 24px;line-height:1.8;opacity:0.9;">
+          Kamu telah menyelesaikan Hari ke-9 dan menyaksikan pertarungan paling epik dalam sejarah Bumi! Kamu sudah memahami bahwa alam tidak sesederhana "siapa yang terkuat selalu menang" — tapi tentang adaptasi, strategi, ekosistem, dan evolusi yang saling membentuk selama jutaan tahun. Kamu adalah <strong>Ahli Pertarungan Dino Cilik</strong> sejati Indonesia!
+        </p>
+
+        <div class="quote-box" style="max-width:520px;margin:0 auto 28px;">
+          <p>"Dalam alam, tidak ada pemenang dan pecundang sejati — hanya makhluk yang berevolusi bersama, saling membentuk menjadi versi terbaik mereka. T-Rex menjadi lebih kuat karena Triceratops melawan. Triceratops menjadi lebih tangguh karena T-Rex berburu. Inilah keindahan sains: kita belajar bahwa musuh pun bisa menjadi kekuatan terbesar yang membuatmu berkembang."</p>
+          <cite>— Untuk Aslan, Saksi Mata Pertarungan Dino Terbesar & Ilmuwan Muda Indonesia ⚔️</cite>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px;">
+          <span style="background:rgba(183,28,28,0.15);border:1px solid rgba(183,28,28,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🦖 Ahli T-Rex</span>
+          <span style="background:rgba(46,125,50,0.15);border:1px solid rgba(46,125,50,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🦏 Master Triceratops</span>
+          <span style="background:rgba(249,168,37,0.12);border:1px solid rgba(249,168,37,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">⚔️ Analis Pertarungan Dino</span>
+          <span style="background:rgba(121,85,72,0.15);border:1px solid rgba(161,136,127,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🌿 Pakar Era Kapur</span>
+        </div>
+
+        <button class="btn btn-done" onclick="selesaiMembaca()">
+          ✅ Saya Sudah Selesai Membaca!
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(7)">← Kembali</button>
+      <span class="page-indicator">Halaman 8 dari 8</span>
+      <span></span>
+    </div>
+  </div>
+
+</div><!-- end book-container -->
+
+<script>
+  // ── BATTLE PARTICLES ──
+  const container = document.getElementById('battleParticles');
+  const colors = ['#c62828','#e64a19','#ff6d00','#2e7d32','#8bc34a','#f9a825','#a1887f','#ef9a9a'];
+
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement('div');
+    p.className = 'btp';
+    const size = Math.random() * 6 + 2;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const isStreak = Math.random() > 0.55;
+    p.style.cssText = `
+      width:${isStreak ? 2 : size}px;
+      height:${isStreak ? size * 5 : size}px;
+      left:${Math.random() * 100}%;
+      bottom:${Math.random() * 20}%;
+      background:${color};
+      box-shadow:0 0 ${size * 2}px ${color}77;
+      border-radius:${isStreak ? '1px' : '50%'};
+      animation-duration:${5 + Math.random() * 9}s;
+      animation-delay:${Math.random() * 10}s;
+      opacity:0;
+    `;
+    container.appendChild(p);
+  }
+
+  // ── PAGES ──
+  const TOTAL = 8;
+  let current = 1;
+
+  function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── DARK / LIGHT MODE ──
+  const modeBtn = document.getElementById('modeBtn');
+  let isLight = false;
+  modeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+    modeBtn.textContent = isLight ? '🌙' : '☀️';
+  });
+
+  // ── SELESAI MEMBACA ──
+  function selesaiMembaca() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.87);backdrop-filter:blur(8px);
+      z-index:999;display:flex;align-items:center;justify-content:center;
+      padding:20px;animation:fadeUp 0.3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="background:linear-gradient(135deg,#100a0a,#1a0e0e);border:2px solid rgba(249,168,37,0.32);border-radius:28px;padding:40px;max-width:440px;width:100%;text-align:center;color:white;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#7f0000,#e64a19,#f9a825,#2e7d32);box-shadow:0 0 12px rgba(249,168,37,0.45);"></div>
+        <span style="font-size:80px;display:block;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(230,74,25,0.6));">⚔️</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:12px;background:linear-gradient(135deg,#ef9a9a,#f9a825,#8bc34a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Keren Banget, Aslan!</h2>
+        <p style="font-size:16px;line-height:1.8;opacity:0.9;margin-bottom:24px;">Hari ke-9 selesai! 🎉<br>Kamu sudah menyaksikan <strong>pertarungan T-Rex vs Triceratops</strong> yang sesungguhnya dan memahami sains di balik duel terbesar sepanjang masa!<br><br>Kamu kini adalah Analis Pertarungan Dino Cilik Indonesia! 🇮🇩<br>Sampai jumpa di Hari ke-10! 🚀</p>
+        <button onclick="this.closest('div').parentElement.remove()" style="background:linear-gradient(135deg,#7f0000,#e64a19);color:white;border:none;padding:14px 32px;border-radius:50px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(230,74,25,0.4);">Mantap! Tutup ⚔️</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+  }
+
+  // ── KEYBOARD NAV ──
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(current - 1);
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>

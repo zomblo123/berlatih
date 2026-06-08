@@ -1,0 +1,2219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 5: Kemunculan Mamalia & Primata – Kapten Cerdas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #2d6a4f;
+    --forest-light: #40916c;
+    --forest-pale: #d8f3dc;
+    --earth: #8b5e3c;
+    --earth-light: #c68642;
+    --earth-pale: #f5e6d0;
+    --sky: #4a90d9;
+    --sky-light: #74b9e8;
+    --sky-pale: #e3f2fd;
+    --gold: #f4b942;
+    --gold-light: #ffd166;
+    --orange: #f4762a;
+    --purple: #7b4fa6;
+    --purple-light: #a86cc1;
+    --cream: #fffbf0;
+    --dark: #1a2e1a;
+    --page-bg: #f9f4e8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #1a3d2b 0%, #2d6a4f 40%, #1a2e3d 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* Floating background particles */
+  .bg-particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.15;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.15; }
+    90% { opacity: 0.15; }
+    100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+  }
+
+  /* Back button */
+  .back-btn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 1000;
+    background: rgba(255,255,255,0.95);
+    border: 2px solid var(--gold);
+    border-radius: 50px;
+    padding: 8px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--forest);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s;
+  }
+  .back-btn:hover {
+    background: var(--gold);
+    color: var(--dark);
+    transform: translateX(-3px);
+  }
+
+  /* Sound button */
+  .sound-btn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+    background: rgba(255,255,255,0.95);
+    border: 2px solid var(--forest-light);
+    border-radius: 50px;
+    padding: 8px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--forest);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s;
+    border: none;
+  }
+  .sound-btn:hover { transform: scale(1.05); }
+
+  /* Main container */
+  .book-wrapper {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 60px 20px 100px;
+  }
+
+  /* Book */
+  .book {
+    width: 100%;
+    max-width: 780px;
+    position: relative;
+  }
+
+  /* Pages */
+  .page {
+    display: none;
+    background: var(--page-bg);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 2px 0 rgba(255,255,255,0.1) inset;
+    overflow: hidden;
+    animation: pageIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    min-height: 560px;
+  }
+  .page.active { display: block; }
+
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes pageOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(-20px) scale(0.97); }
+  }
+
+  /* Page decorative spine */
+  .page::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 8px;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--earth-light) 50%, var(--gold) 100%);
+    border-radius: 24px 0 0 24px;
+  }
+
+  /* ===== PAGE 1: COVER ===== */
+  .cover {
+    background: linear-gradient(160deg, #0d2b1a 0%, #1a4d30 40%, #0d2233 100%);
+    padding: 50px 50px 50px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 600px;
+  }
+  .cover-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 3s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.4); }
+  }
+
+  .series-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 13px;
+    padding: 6px 18px;
+    border-radius: 50px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(244,185,66,0.4);
+  }
+
+  .cover-day {
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    color: var(--gold-light);
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(28px, 5vw, 42px);
+    line-height: 1.2;
+    color: white;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    margin-bottom: 8px;
+  }
+  .cover-title span { color: var(--gold); }
+
+  .cover-subtitle {
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 30px;
+    font-style: italic;
+  }
+
+  /* Forest scene illustration */
+  .forest-scene {
+    position: relative;
+    height: 220px;
+    margin: 10px auto 20px;
+    max-width: 500px;
+  }
+
+  /* Trees */
+  .tree {
+    position: absolute;
+    bottom: 0;
+  }
+  .tree-trunk {
+    background: #5c3a1e;
+    margin: 0 auto;
+    border-radius: 4px;
+  }
+  .tree-crown {
+    background: radial-gradient(ellipse, #40916c 30%, #2d6a4f 100%);
+    border-radius: 50%;
+    position: relative;
+    margin: 0 auto;
+  }
+  .tree-crown::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.1), transparent 60%);
+    border-radius: 50%;
+  }
+
+  /* Sun/moon rising */
+  .cover-sun {
+    position: absolute;
+    top: 40px;
+    right: 80px;
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle, #fff8b0, #ffd700, #ff9500);
+    border-radius: 50%;
+    box-shadow: 0 0 30px 10px rgba(255,210,0,0.3);
+    animation: sunPulse 4s ease-in-out infinite;
+  }
+  @keyframes sunPulse {
+    0%, 100% { box-shadow: 0 0 30px 10px rgba(255,210,0,0.3); }
+    50% { box-shadow: 0 0 50px 20px rgba(255,210,0,0.5); }
+  }
+
+  /* Mammals on cover */
+  .cover-mammal {
+    position: absolute;
+    cursor: pointer;
+    transition: transform 0.3s;
+    font-size: 40px;
+    filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
+  }
+  .cover-mammal:hover { transform: scale(1.2) rotate(5deg); }
+  .cover-mammal.running { animation: runAnim 3s ease-in-out infinite; }
+  @keyframes runAnim {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(10px) translateY(-5px); }
+    75% { transform: translateX(-5px) translateY(-2px); }
+  }
+
+  /* Ground */
+  .ground {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    height: 40px;
+    background: linear-gradient(180deg, #4a7c59, #2d5a3d);
+    border-radius: 0 0 8px 8px;
+  }
+  .grass-tuft {
+    position: absolute;
+    bottom: 35px;
+    font-size: 18px;
+  }
+
+  .captain-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 16px;
+    padding: 10px 20px;
+    color: white;
+    font-size: 15px;
+    backdrop-filter: blur(10px);
+  }
+  .captain-tag strong {
+    color: var(--gold);
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+  }
+
+  /* ===== GENERAL PAGE STYLES ===== */
+  .page-inner {
+    padding: 40px 45px 40px 55px;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .page-icon {
+    font-size: 36px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+  }
+  .page-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 26px;
+    color: var(--forest);
+    line-height: 1.2;
+  }
+  .page-title span { color: var(--orange); }
+
+  .story-text {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #2c3e1a;
+    margin-bottom: 18px;
+  }
+  .story-text strong { color: var(--forest); font-weight: 800; }
+  .story-text em { color: var(--orange); font-style: normal; font-weight: 700; }
+
+  .callout {
+    background: linear-gradient(135deg, var(--forest-pale), #b7e4c7);
+    border-left: 5px solid var(--forest-light);
+    border-radius: 0 16px 16px 0;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 15px;
+    color: var(--dark);
+    position: relative;
+  }
+  .callout::before {
+    content: attr(data-emoji);
+    font-size: 24px;
+    margin-right: 10px;
+  }
+
+  .gold-callout {
+    background: linear-gradient(135deg, #fffbea, #fff3cc);
+    border-left: 5px solid var(--gold);
+    border-radius: 0 16px 16px 0;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 15px;
+    color: #5c4000;
+  }
+
+  /* ===== PAGE 2: INTRO ===== */
+  .intro-scene {
+    background: linear-gradient(160deg, #e8f5e9 0%, #f3e5d0 100%);
+    border-radius: 20px;
+    padding: 24px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .aslan-avatar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .avatar-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sky), var(--purple));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+    animation: avatarBob 3s ease-in-out infinite;
+  }
+  @keyframes avatarBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  .avatar-text { flex: 1; }
+  .avatar-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    color: var(--forest);
+  }
+  .avatar-role { font-size: 13px; color: var(--earth); font-weight: 600; }
+
+  /* ===== MAMMAL CARDS ===== */
+  .mammal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .mammal-card {
+    background: white;
+    border-radius: 18px;
+    padding: 18px 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  .mammal-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--forest-pale), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .mammal-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    border-color: var(--forest-light);
+    box-shadow: 0 12px 30px rgba(45,106,79,0.2);
+  }
+  .mammal-card:hover::before { opacity: 1; }
+  .mammal-card.clicked { animation: cardPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  @keyframes cardPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1) rotate(3deg); }
+    100% { transform: scale(1); }
+  }
+  .mammal-emoji { font-size: 44px; display: block; margin-bottom: 8px; filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.1)); }
+  .mammal-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px;
+    color: var(--forest);
+    margin-bottom: 4px;
+  }
+  .mammal-fact {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.4;
+  }
+  .mammal-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--dark);
+    color: white;
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    width: 160px;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 10;
+    margin-bottom: 8px;
+  }
+  .mammal-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--dark);
+  }
+  .mammal-card:hover .mammal-tooltip { opacity: 1; }
+
+  /* ===== TIMELINE ===== */
+  .timeline {
+    position: relative;
+    padding-left: 30px;
+    margin: 20px 0;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--forest-light), var(--gold), var(--orange));
+    border-radius: 3px;
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+    padding-left: 20px;
+  }
+  .timeline-dot {
+    position: absolute;
+    left: -25px;
+    top: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    animation: dotPulse 2s ease-in-out infinite;
+  }
+  @keyframes dotPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+  .timeline-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px;
+    color: var(--forest);
+    margin-bottom: 4px;
+  }
+  .timeline-text { font-size: 14px; color: #444; line-height: 1.6; }
+  .timeline-time {
+    display: inline-block;
+    background: var(--gold-light);
+    color: #5c3a00;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 4px;
+  }
+
+  /* ===== PRIMATE FEATURES ===== */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .feature-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+  }
+  .feature-card:hover {
+    border-color: var(--purple-light);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(123,79,166,0.15);
+  }
+  .feature-icon { font-size: 32px; margin-bottom: 8px; display: block; }
+  .feature-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px;
+    color: var(--purple);
+    margin-bottom: 6px;
+  }
+  .feature-desc { font-size: 13px; color: #555; line-height: 1.5; }
+
+  /* ===== LESSON POINTS ===== */
+  .lesson-list {
+    list-style: none;
+    margin: 20px 0;
+  }
+  .lesson-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    transition: transform 0.2s;
+  }
+  .lesson-item:hover { transform: translateX(5px); }
+  .lesson-bullet {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .lesson-text { font-size: 15px; color: #333; line-height: 1.6; }
+  .lesson-text strong { color: var(--forest); }
+
+  /* ===== CHALLENGE ===== */
+  .challenge-box {
+    background: linear-gradient(135deg, #1a3d2b, #2d6a4f);
+    border-radius: 20px;
+    padding: 28px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    margin: 20px 0;
+  }
+  .challenge-box::before {
+    content: '🏆';
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 60px;
+    opacity: 0.15;
+  }
+  .challenge-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .challenge-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .challenge-check {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+  .challenge-check.done {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+  .challenge-check.done::after { content: '✓'; color: white; font-weight: 900; font-size: 16px; }
+
+  /* ===== CLOSING PAGE ===== */
+  .closing-bg {
+    background: linear-gradient(160deg, #0d1f3c 0%, #1a3a4f 50%, #0d2b1a 100%);
+    padding: 40px 45px 40px 55px;
+    min-height: 560px;
+    position: relative;
+    overflow: hidden;
+  }
+  .closing-bg .page-title { color: var(--gold); }
+  .closing-bg .story-text { color: rgba(255,255,255,0.85); }
+
+  .teaser-box {
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(244,185,66,0.5);
+    border-radius: 20px;
+    padding: 20px 24px;
+    margin-top: 24px;
+    backdrop-filter: blur(10px);
+  }
+  .teaser-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px;
+    color: var(--gold-light);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .teaser-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    color: white;
+    margin-bottom: 8px;
+  }
+  .teaser-name span { color: var(--orange); }
+  .teaser-desc { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+
+  .stars-earned {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0;
+  }
+  .star-icon {
+    font-size: 28px;
+    animation: starSpin 2s ease-in-out infinite;
+  }
+  .star-icon:nth-child(2) { animation-delay: 0.2s; }
+  .star-icon:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes starSpin {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.2) rotate(20deg); }
+  }
+
+  /* ===== NAVIGATION ===== */
+  .nav-area {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 16px 20px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.5));
+    pointer-events: none;
+  }
+
+  .nav-btn {
+    pointer-events: all;
+    background: rgba(255,255,255,0.95);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 28px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: var(--forest);
+    min-width: 120px;
+    justify-content: center;
+  }
+  .nav-btn:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  }
+  .nav-btn:active { transform: translateY(0) scale(0.97); }
+  .nav-btn:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .nav-btn.next-btn {
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    color: white;
+  }
+
+  /* Progress */
+  .progress-indicator {
+    pointer-events: all;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.9);
+    padding: 8px 16px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  .progress-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .progress-dot.active {
+    background: var(--forest);
+    width: 22px;
+    border-radius: 5px;
+  }
+  .progress-dot.visited { background: var(--forest-light); }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes leafWave {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+  @keyframes primate-jump {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    40% { transform: translateY(-30px) rotate(5deg); }
+  }
+  @keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1) rotate(180deg); }
+  }
+
+  .sparkle-dot {
+    position: absolute;
+    pointer-events: none;
+    font-size: 16px;
+    animation: sparkle 2s ease-in-out infinite;
+  }
+
+  .leaf {
+    display: inline-block;
+    animation: leafWave 2s ease-in-out infinite;
+    transform-origin: bottom center;
+  }
+
+  .primate-anim {
+    display: inline-block;
+    animation: primate-jump 3s ease-in-out infinite;
+    cursor: pointer;
+    font-size: 50px;
+    filter: drop-shadow(3px 5px 8px rgba(0,0,0,0.3));
+  }
+
+  /* Scene illustration for pages */
+  .scene-banner {
+    background: linear-gradient(135deg, #1a4d30 0%, #2d6a4f 50%, #1e3d5c 100%);
+    border-radius: 18px;
+    padding: 20px;
+    margin: 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    overflow: hidden;
+    position: relative;
+    min-height: 100px;
+  }
+  .scene-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .scene-text {
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px;
+    max-width: 60%;
+    line-height: 1.5;
+    position: relative;
+  }
+  .scene-emoji { font-size: 48px; position: relative; }
+
+  /* Comparison table */
+  .compare-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    margin: 16px 0;
+  }
+  .compare-table th {
+    background: var(--forest);
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px;
+    padding: 10px 16px;
+    text-align: left;
+  }
+  .compare-table th:first-child { border-radius: 12px 0 0 12px; }
+  .compare-table th:last-child { border-radius: 0 12px 12px 0; }
+  .compare-table td {
+    background: white;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #333;
+  }
+  .compare-table td:first-child { border-radius: 12px 0 0 12px; font-weight: 700; color: var(--forest); }
+  .compare-table td:last-child { border-radius: 0 12px 12px 0; }
+  .compare-table tr:hover td { background: var(--forest-pale); }
+
+  /* Fun fact bubble */
+  .fun-fact {
+    background: linear-gradient(135deg, var(--purple), var(--purple-light));
+    color: white;
+    border-radius: 20px;
+    padding: 18px 22px;
+    margin: 16px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .fun-fact::before {
+    content: '💡';
+    font-size: 40px;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.2;
+  }
+  .fun-fact-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .fun-fact-text { font-size: 14px; line-height: 1.6; }
+
+  /* Reading page number */
+  .page-number {
+    position: absolute;
+    bottom: 16px;
+    right: 24px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 13px;
+    color: rgba(0,0,0,0.25);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .page-inner { padding: 24px 24px 24px 34px; }
+    .cover { padding: 30px 24px 30px 34px; }
+    .feature-grid { grid-template-columns: 1fr; }
+    .mammal-grid { grid-template-columns: repeat(2, 1fr); }
+    .closing-bg { padding: 30px 24px 30px 34px; }
+  }
+
+  /* Scroll within pages */
+  .page { overflow-y: auto; max-height: 85vh; }
+  .page::-webkit-scrollbar { width: 4px; }
+  .page::-webkit-scrollbar-track { background: transparent; }
+  .page::-webkit-scrollbar-thumb { background: var(--forest-light); border-radius: 4px; }
+
+  /* Page transition classes */
+  .page.exit { animation: pageOut 0.3s forwards; }
+
+  /* Bounce arrow hint */
+  .scroll-hint {
+    text-align: center;
+    color: rgba(0,0,0,0.3);
+    font-size: 12px;
+    margin-top: 12px;
+    animation: bounceDown 1.5s ease-in-out infinite;
+  }
+  @keyframes bounceDown {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+
+  /* ===== INTERACTIVE EVOLUTION ===== */
+  .evo-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: linear-gradient(135deg, var(--earth-pale), #fff);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 16px 0;
+    gap: 4px;
+  }
+  .evo-item {
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  .evo-item:hover { transform: scale(1.15); }
+  .evo-emoji { font-size: 28px; display: block; }
+  .evo-label { font-size: 10px; color: #666; margin-top: 4px; font-weight: 700; }
+  .evo-arrow { font-size: 20px; color: var(--gold); flex-shrink: 0; }
+
+  /* Confetti effect */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background particles -->
+<div class="bg-particles" id="particles"></div>
+
+<!-- Back button -->
+<a href="../perpustakaan.html" class="back-btn">← Kembali ke Perpustakaan</a>
+
+<!-- Sound button -->
+<button class="sound-btn" id="soundBtn" onclick="toggleSound()">🔇 Suara Hutan</button>
+
+<!-- Book wrapper -->
+<div class="book-wrapper">
+  <div class="book">
+
+    <!-- ===== PAGE 1: COVER ===== -->
+    <div class="page active" id="page-1">
+      <div class="cover">
+        <!-- Stars -->
+        <div class="cover-stars" id="coverStars"></div>
+
+        <div class="series-badge">✨ Petualangan Kapten Cerdas ✨</div>
+        <div class="cover-day">— HARI KE-5 —</div>
+        <h1 class="cover-title">Kemunculan <span>Mamalia</span><br>& Primata</h1>
+        <p class="cover-subtitle">Ketika para pemenang baru mengambil alih Bumi 🌿</p>
+
+        <!-- Forest scene -->
+        <div class="forest-scene">
+          <div class="cover-sun"></div>
+
+          <!-- Trees -->
+          <div class="tree" style="left:5%;bottom:0">
+            <div class="tree-crown" style="width:70px;height:70px"></div>
+            <div class="tree-trunk" style="width:14px;height:40px"></div>
+          </div>
+          <div class="tree" style="left:15%;bottom:0">
+            <div class="tree-crown" style="width:100px;height:95px;background:radial-gradient(ellipse,#52b788 30%,#2d6a4f 100%)"></div>
+            <div class="tree-trunk" style="width:18px;height:50px"></div>
+          </div>
+          <div class="tree" style="right:10%;bottom:0">
+            <div class="tree-crown" style="width:90px;height:85px"></div>
+            <div class="tree-trunk" style="width:16px;height:45px"></div>
+          </div>
+          <div class="tree" style="right:25%;bottom:0">
+            <div class="tree-crown" style="width:65px;height:60px;background:radial-gradient(ellipse,#74c69d 30%,#40916c 100%)"></div>
+            <div class="tree-trunk" style="width:12px;height:35px"></div>
+          </div>
+
+          <!-- Animals -->
+          <div class="cover-mammal running" style="left:30%;bottom:45px" title="Mammoth kecil!" onclick="showSparkle(this)">🦣</div>
+          <div class="cover-mammal" style="right:38%;bottom:45px" title="Primata purba!" onclick="showSparkle(this)" style="animation:primate-jump 2.5s ease-in-out infinite">🐒</div>
+          <div class="cover-mammal" style="left:50%;bottom:48px" onclick="showSparkle(this)">🦔</div>
+
+          <!-- Grass tufts -->
+          <span class="grass-tuft" style="left:8%">🌿</span>
+          <span class="grass-tuft" style="left:35%">🌾</span>
+          <span class="grass-tuft" style="right:15%">🌿</span>
+          <span class="grass-tuft" style="right:42%">🌱</span>
+
+          <div class="ground"></div>
+        </div>
+
+        <div class="captain-tag">
+          🧭 Kapten: <strong>Aslan</strong> — Penjelajah Waktu Cilik
+        </div>
+
+        <div class="scroll-hint" style="margin-top:16px;color:rgba(255,255,255,0.4)">
+          ▼ Tekan NEXT untuk mulai petualangan
+        </div>
+      </div>
+      <span class="page-number">1 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 2: PENGANTAR ===== -->
+    <div class="page" id="page-2">
+      <div class="page-inner">
+        <div class="page-header">
+          <span class="page-icon">🧭</span>
+          <h2 class="page-title">Hei, <span>Kapten Aslan!</span></h2>
+        </div>
+
+        <div class="intro-scene">
+          <div class="aslan-avatar">
+            <div class="avatar-circle">🧢</div>
+            <div class="avatar-text">
+              <div class="avatar-name">Aslan</div>
+              <div class="avatar-role">⭐ Kapten Cerdas — Penjelajah Waktu Tingkat 5</div>
+            </div>
+          </div>
+          <p style="font-size:14px;color:#333;line-height:1.7">
+            Selamat datang kembali, Kapten! Kemarin kamu sudah menyaksikan kepunahan dinosaurus yang luar biasa. 
+            Hari ini, mesin waktumu akan membawamu ke era baru yang penuh kejutan... 🌟
+          </p>
+        </div>
+
+        <p class="story-text">
+          Bayangkan kamu duduk di kokpit mesin waktu berkilauan milikmu. 
+          <em>SWOOSSSH!</em> — tuas besar kamu tarik, dan kamu terbang mundur 65 juta tahun ke belakang!
+        </p>
+
+        <div class="callout" data-emoji="🌋">
+          <strong>Kamu tiba tepat setelah bencana meteor besar!</strong> 
+          Debu masih menyelimuti langit, suhu sedang perlahan membaik. 
+          Dinosaurus sudah tiada... tapi bumi tidak kosong!
+        </div>
+
+        <p class="story-text">
+          Di balik semak-semak, terdengar suara kecil. <em>SRIK-SRIK-SRIK.</em> 
+          Makhluk berbulu kecil mengintip dari celah batu. 
+          Matanya bersinar cerdas. Hidungnya bergerak-gerak mengendus udara segar.
+        </p>
+
+        <div class="scene-banner">
+          <div class="scene-text">
+            "Siapa makhluk kecil berbulu itu, Kapten?<br>
+            Merekalah para <strong style="color:var(--gold)">pemenang baru Bumi</strong> — cikal bakal kita semua!"
+          </div>
+          <span class="scene-emoji">🐭✨</span>
+        </div>
+
+        <div class="scroll-hint">▼ Gulir ke bawah atau tekan Next</div>
+      </div>
+      <span class="page-number">2 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 3: CERITA UTAMA 1 ===== -->
+    <div class="page" id="page-3">
+      <div class="page-inner">
+        <div class="page-header">
+          <span class="page-icon">🌅</span>
+          <h2 class="page-title">Dunia Setelah <span>Dinosaurus</span></h2>
+        </div>
+
+        <p class="story-text">
+          Kapten Aslan melangkah keluar dari mesin waktu dengan hati-hati. 
+          Langit berwarna jingga gelap — debu sisa meteor masih tipis di udara. 
+          Tapi di bawah kakinya, rumput hijau mulai tumbuh kembali!
+        </p>
+
+        <p class="story-text">
+          <strong>65 juta tahun yang lalu</strong>, dunia seperti sudah "di-reset." 
+          Raja-raja besar — T-Rex, Triceratops, Brachiosaurus — semuanya sudah hilang. 
+          Tumbuhan mulai tumbuh lagi. Sungai mulai mengalir jernih. 
+          Dan di mana-mana, makhluk-makhluk kecil mulai berani keluar dari persembunyian mereka!
+        </p>
+
+        <div class="scene-banner">
+          <span class="scene-emoji">🌿</span>
+          <div class="scene-text">
+            Selama jutaan tahun, makhluk kecil berbulu bersembunyi di bawah tanah dan di celah batu — takut pada dinosaurus. Kini, waktunya mereka bersinar! ⭐
+          </div>
+        </div>
+
+        <div class="callout" data-emoji="🤔">
+          <strong>Bayangkan seperti ini:</strong> Kalau dinosaurus adalah "raja-raja besar" yang menguasai semua sumber daya, maka mamalia kecil seperti "anak-anak baru" yang selalu tersudut. Begitu raja-raja itu pergi... mereka punya <em>seluruh dunia</em> untuk dieksplorasi!
+        </div>
+
+        <p class="story-text">
+          Kapten Aslan mengintip dari balik semak. <em>"Whoa!"</em> 
+          Ada makhluk berbulu coklat kecil sedang memakan serangga dengan gesit. 
+          Di pohon, ada yang memanjat dengan empat kaki. Di sungai, ada yang berenang!
+        </p>
+
+        <div class="fun-fact">
+          <div class="fun-fact-title">💡 FAKTA GILA!</div>
+          <div class="fun-fact-text">
+            Leluhur mamalia pertama seukuran tikus kecil! Mereka aktif di malam hari saat dinosaurus tidur. Strategi cerdas untuk bertahan hidup, bukan? 🐭
+          </div>
+        </div>
+      </div>
+      <span class="page-number">3 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 4: APA ITU MAMALIA ===== -->
+    <div class="page" id="page-4">
+      <div class="page-inner">
+        <div class="page-header">
+          <span class="page-icon">🦁</span>
+          <h2 class="page-title">Apa Itu <span>Mamalia?</span></h2>
+        </div>
+
+        <p class="story-text">
+          "Kapten, tolong jelaskan — apa itu mamalia?" tanya mesin waktu lewat speakernya. 
+          Kamu pun membuka buku sains ajaibmu:
+        </p>
+
+        <div class="gold-callout">
+          🌟 <strong>MAMALIA</strong> adalah hewan yang: melahirkan anaknya hidup-hidup 
+          (bukan bertelur), menyusui anaknya dengan air susu ibu, dan punya rambut/bulu di tubuhnya!
+        </div>
+
+        <p class="story-text">
+          <strong>Klik setiap kartu</strong> di bawah ini untuk melihat contoh mamalia purba yang muncul setelah zaman dinosaurus!
+        </p>
+
+        <div class="mammal-grid">
+          <div class="mammal-card" onclick="popCard(this)">
+            <div class="mammal-tooltip">Condylarthra — nenek moyang kuda dan gajah, hidup 60 juta tahun lalu!</div>
+            <span class="mammal-emoji">🐎</span>
+            <div class="mammal-name">Condylarthra</div>
+            <div class="mammal-fact">Nenek moyang kuda & gajah</div>
+          </div>
+          <div class="mammal-card" onclick="popCard(this)">
+            <div class="mammal-tooltip">Creodonta — pemangsa ganas setinggi anjing, nenek moyang kucing dan singa!</div>
+            <span class="mammal-emoji">🐅</span>
+            <div class="mammal-name">Creodonta</div>
+            <div class="mammal-fact">Pemangsa purba pertama</div>
+          </div>
+          <div class="mammal-card" onclick="popCard(this)">
+            <div class="mammal-tooltip">Multituberculata — seperti tupai tapi lebih tua dari dinosaurus! Mereka bertahan hingga 35 juta tahun lalu.</div>
+            <span class="mammal-emoji">🐿️</span>
+            <div class="mammal-name">Multituberculata</div>
+            <div class="mammal-fact">Mamalia paling tua</div>
+          </div>
+          <div class="mammal-card" onclick="popCard(this)">
+            <div class="mammal-tooltip">Ambulocetus — mamalia yang kembali ke laut dan akhirnya menjadi paus! Sungguh mengagumkan!</div>
+            <span class="mammal-emoji">🐋</span>
+            <div class="mammal-name">Ambulocetus</div>
+            <div class="mammal-fact">Nenek moyang paus</div>
+          </div>
+          <div class="mammal-card" onclick="popCard(this)">
+            <div class="mammal-tooltip">Plesiadapiformes — primata pertama! Mereka tinggal di pohon dan punya kuku, bukan cakar!</div>
+            <span class="mammal-emoji">🐒</span>
+            <div class="mammal-name">Plesiadapiformes</div>
+            <div class="mammal-fact">Primata paling awal</div>
+          </div>
+          <div class="mammal-card" onclick="popCard(this)">
+            <div class="mammal-tooltip">Uintatherium — mamalia raksasa bertanduk! Sebesar badak, hidup 45 juta tahun lalu.</div>
+            <span class="mammal-emoji">🦏</span>
+            <div class="mammal-name">Uintatherium</div>
+            <div class="mammal-fact">Mamalia raksasa bertanduk</div>
+          </div>
+        </div>
+
+        <div class="scroll-hint">▼ Klik kartu di atas untuk fakta seru!</div>
+      </div>
+      <span class="page-number">4 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 5: MENGAPA MAMALIA BERHASIL ===== -->
+    <div class="page" id="page-5">
+      <div class="page-inner">
+        <div class="page-header">
+          <span class="page-icon">🏆</span>
+          <h2 class="page-title">Rahasia <span>Kesuksesan</span> Mamalia</h2>
+        </div>
+
+        <p class="story-text">
+          "Kapten Aslan, mengapa mamalia berhasil sementara dinosaurus gagal?" 
+          — Pertanyaan bagus! Yuk kita investigasi bersama! 🔍
+        </p>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:linear-gradient(135deg,#f4b942,#f4762a)">🧠</div>
+            <span class="timeline-time">Keunggulan #1</span>
+            <div class="timeline-title">Otak yang Lebih Cerdas</div>
+            <div class="timeline-text">
+              Mamalia punya bagian otak baru — <em>neokorteks</em> — yang membuat mereka lebih pintar, bisa belajar dari pengalaman, dan memecahkan masalah!
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:linear-gradient(135deg,#40916c,#2d6a4f)">🌡️</div>
+            <span class="timeline-time">Keunggulan #2</span>
+            <div class="timeline-title">Tubuh Berdarah Panas</div>
+            <div class="timeline-text">
+              Mamalia bisa mengatur suhu tubuhnya sendiri! Saat cuaca dingin setelah meteor, mereka tetap aktif — sementara reptil kedinginan dan lamban.
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:linear-gradient(135deg,#7b4fa6,#a86cc1)">💕</div>
+            <span class="timeline-time">Keunggulan #3</span>
+            <div class="timeline-title">Merawat Anak</div>
+            <div class="timeline-text">
+              Mamalia menyusui dan merawat bayinya. Anak-anak yang dirawat tumbuh lebih cerdas dan kuat — dibanding yang harus bertahan sendiri dari lahir!
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:linear-gradient(135deg,#4a90d9,#74b9e8)">🌙</div>
+            <span class="timeline-time">Keunggulan #4</span>
+            <div class="timeline-title">Aktif di Malam Hari</div>
+            <div class="timeline-text">
+              Selama zaman dinosaurus, mamalia berkembang indera pendengaran dan penciumannya yang tajam untuk bertahan hidup di gelap malam!
+            </div>
+          </div>
+        </div>
+
+        <div class="fun-fact">
+          <div class="fun-fact-title">💡 ANALOGI SERU</div>
+          <div class="fun-fact-text">
+            Kalau dinosaurus seperti ponsel kuno yang baterainya habis ketika cuaca ekstrem, maka mamalia seperti power bank canggih yang bisa charge diri sendiri kapan saja! 🔋
+          </div>
+        </div>
+      </div>
+      <span class="page-number">5 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 6: EVOLUSI MAMALIA ===== -->
+    <div class="page" id="page-6">
+      <div class="page-inner">
+        <div class="page-header">
+          <span class="page-icon">📈</span>
+          <h2 class="page-title">Ledakan <span>Evolusi</span> Luar Biasa!</h2>
+        </div>
+
+        <p class="story-text">
+          Kapten Aslan menekan tombol fast-forward di mesin waktunya. 
+          Dalam hitungan detik, jutaan tahun berlalu... dan pemandangan di depannya berubah drastis!
+        </p>
+
+        <p class="story-text">
+          Dari satu kelompok kecil mamalia purba, lahirlah <em>ratusan jenis</em> makhluk berbeda! 
+          Ini disebut <strong>"Radiasi Adaptif"</strong> — seperti pohon yang tumbuh dari satu biji menjadi ribuan cabang!
+        </p>
+
+        <div class="evo-strip">
+          <div class="evo-item" onclick="this.style.transform='scale(1.2)';setTimeout(()=>this.style.transform='',500)">
+            <span class="evo-emoji">🐭</span>
+            <div class="evo-label">65 juta thn<br>Mamalia kecil</div>
+          </div>
+          <span class="evo-arrow">➜</span>
+          <div class="evo-item" onclick="this.style.transform='scale(1.2)';setTimeout(()=>this.style.transform='',500)">
+            <span class="evo-emoji">🐻</span>
+            <div class="evo-label">50 juta thn<br>Mamalia besar</div>
+          </div>
+          <span class="evo-arrow">➜</span>
+          <div class="evo-item" onclick="this.style.transform='scale(1.2)';setTimeout(()=>this.style.transform='',500)">
+            <span class="evo-emoji">🦒</span>
+            <div class="evo-label">30 juta thn<br>Mamalia raksasa</div>
+          </div>
+          <span class="evo-arrow">➜</span>
+          <div class="evo-item" onclick="this.style.transform='scale(1.2)';setTimeout(()=>this.style.transform='',500)">
+            <span class="evo-emoji">🐒</span>
+            <div class="evo-label">20 juta thn<br>Primata maju</div>
+          </div>
+        </div>
+
+        <table class="compare-table">
+          <tr>
+            <th>Kelompok Mamalia</th>
+            <th>Contoh Hewan Modern</th>
+            <th>Muncul Kapan</th>
+          </tr>
+          <tr>
+            <td>🐭 Pengerat</td>
+            <td>Tikus, Hamster, Kelinci</td>
+            <td>~56 juta thn lalu</td>
+          </tr>
+          <tr>
+            <td>🐳 Cetacea</td>
+            <td>Paus, Lumba-lumba</td>
+            <td>~50 juta thn lalu</td>
+          </tr>
+          <tr>
+            <td>🦁 Karnivora</td>
+            <td>Kucing, Anjing, Singa</td>
+            <td>~42 juta thn lalu</td>
+          </tr>
+          <tr>
+            <td>🐒 Primata</td>
+            <td>Monyet, Kera, Manusia</td>
+            <td>~55 juta thn lalu</td>
+          </tr>
+          <tr>
+            <td>🐘 Proboscidea</td>
+            <td>Gajah</td>
+            <td>~55 juta thn lalu</td>
+          </tr>
+        </table>
+
+        <div class="callout" data-emoji="✨">
+          <strong>Dalam waktu 20 juta tahun saja</strong>, bumi yang dulunya dikuasai dinosaurus berubah menjadi taman yang penuh dengan mamalia dari segala bentuk dan ukuran!
+        </div>
+      </div>
+      <span class="page-number">6 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 7: PERKENALAN PRIMATA ===== -->
+    <div class="page" id="page-7">
+      <div class="page-inner">
+        <div class="page-header">
+          <span class="page-icon">🐒</span>
+          <h2 class="page-title">Kenalan dengan <span>Primata!</span></h2>
+        </div>
+
+        <p class="story-text">
+          "Mesin waktu, apa itu primata?" tanya Kapten Aslan. 
+          Layar holografik menyala — menampilkan seekor makhluk berbulu yang sedang bergelantungan di pohon tropis!
+        </p>
+
+        <div class="scene-banner" style="background:linear-gradient(135deg,#1e3a5f,#2d6a4f)">
+          <span class="scene-emoji" style="animation:primate-jump 2.5s ease-in-out infinite;cursor:pointer" onclick="showSparkle(this)">🐒</span>
+          <div class="scene-text">
+            <strong style="color:var(--gold)">Primata</strong> — kelompok mamalia yang termasuk monyet, kera, dan... manusia! Kita semua satu keluarga besar! 🌳
+          </div>
+        </div>
+
+        <p class="story-text">
+          Nenek moyang primata pertama muncul sekitar <em>55 juta tahun lalu</em> — makhluk seukuran tupai yang hidup di pohon-pohon hutan tropis.
+          Mereka punya keistimewaan yang akan mengubah sejarah bumi selamanya...
+        </p>
+
+        <div class="gold-callout">
+          🌟 <strong>PRIMATA</strong> termasuk: Prosimian (lemur, galago), Monyet Dunia Lama & Baru, Kera Besar (gorila, simpanse, orang utan)... dan <strong>MANUSIA!</strong> 
+          Kita adalah primata! 🤯
+        </div>
+
+        <div class="fun-fact">
+          <div class="fun-fact-title">💡 PRIMATA PERTAMA DI BUMI</div>
+          <div class="fun-fact-text">
+            <strong>Purgatorius</strong> — makhluk mirip tupai yang hidup 65 juta tahun lalu, tepat setelah kepunahan dinosaurus! Mungkin inilah kakek moyang paling awal dari seluruh primata, termasuk kita! 🌟
+          </div>
+        </div>
+
+        <div class="callout" data-emoji="🌿">
+          Kapten Aslan melangkah pelan ke bawah pohon besar. Di atas, seekor primata kecil berbulu mengintipnya dengan mata bulat besar. Lalu... <em>LOMPAT!</em> Dia terbang ke pohon sebelah dengan gesit!
+        </div>
+      </div>
+      <span class="page-number">7 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 8: CIRI-CIRI PRIMATA ===== -->
+    <div class="page" id="page-8">
+      <div class="page-inner">
+        <div class="page-header">
+          <span class="page-icon">🔬</span>
+          <h2 class="page-title">3 Kekuatan Super <span>Primata!</span></h2>
+        </div>
+
+        <p class="story-text">
+          Apa yang membuat primata begitu istimewa? 
+          Mereka punya tiga fitur super yang tidak dimiliki mamalia lain secara bersamaan!
+          <strong>Klik setiap kartu</strong> untuk melihat detailnya!
+        </p>
+
+        <div class="feature-grid">
+          <div class="feature-card" onclick="expandFeature(this, 'tangan')">
+            <span class="feature-icon">✋</span>
+            <div class="feature-title">Tangan Ajaib</div>
+            <div class="feature-desc">
+              Jempol yang bisa berhadapan dengan jari lain — memungkinkan primata <strong>menggenggam</strong> dengan kuat dan presisi!
+            </div>
+          </div>
+          <div class="feature-card" onclick="expandFeature(this, 'mata')">
+            <span class="feature-icon">👁️</span>
+            <div class="feature-title">Penglihatan 3D</div>
+            <div class="feature-desc">
+              Kedua mata menghadap ke depan — memberikan penglihatan <strong>stereoskopik</strong> untuk menilai jarak saat melompat di pohon!
+            </div>
+          </div>
+          <div class="feature-card" onclick="expandFeature(this, 'otak')">
+            <span class="feature-icon">🧠</span>
+            <div class="feature-title">Otak Semakin Besar</div>
+            <div class="feature-desc">
+              Neokorteks primata jauh lebih besar dibanding mamalia lain — memungkinkan mereka <strong>berpikir, belajar, dan berinovasi!</strong>
+            </div>
+          </div>
+          <div class="feature-card" onclick="expandFeature(this, 'sosial')">
+            <span class="feature-icon">👨‍👩‍👧‍👦</span>
+            <div class="feature-title">Kehidupan Sosial</div>
+            <div class="feature-desc">
+              Primata hidup berkelompok, berkomunikasi, dan <strong>berbagi pengetahuan</strong> — fondasi awal peradaban!
+            </div>
+          </div>
+          <div class="feature-card" onclick="expandFeature(this, 'kuku')">
+            <span class="feature-icon">💅</span>
+            <div class="feature-title">Kuku, Bukan Cakar</div>
+            <div class="feature-desc">
+              Primata punya kuku pipih yang membantu mereka <strong>merasakan dan memegang</strong> benda kecil dengan lembut!
+            </div>
+          </div>
+          <div class="feature-card" onclick="expandFeature(this, 'lambat')">
+            <span class="feature-icon">🍼</span>
+            <div class="feature-title">Tumbuh Lambat</div>
+            <div class="feature-desc">
+              Anak primata tumbuh lambat tapi belajar banyak — <strong>masa kanak-kanak panjang</strong> untuk mengembangkan kecerdasan!
+            </div>
+          </div>
+        </div>
+
+        <div id="featureDetail" style="display:none;background:linear-gradient(135deg,var(--forest-pale),#fff);border-radius:16px;padding:16px 20px;margin-top:12px;border-left:5px solid var(--forest)">
+          <div id="featureDetailText" style="font-size:14px;color:#333;line-height:1.7"></div>
+        </div>
+      </div>
+      <span class="page-number">8 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 9: VISUAL MAMALIA & PRIMATA ===== -->
+    <div class="page" id="page-9">
+      <div class="page-inner">
+        <div class="page-header">
+          <span class="page-icon">🌳</span>
+          <h2 class="page-title">Hutan Purba <span>Yang Hidup!</span></h2>
+        </div>
+
+        <p class="story-text">
+          Kapten Aslan melihat ke sekeliling. Hutan tropis 40 juta tahun lalu ini luar biasa! 
+          <strong>Klik makhluk-makhluk di bawah ini</strong> untuk kenalan lebih dekat!
+        </p>
+
+        <!-- Interactive forest scene -->
+        <div style="background:linear-gradient(180deg,#1a4d30 0%,#2d6a4f 40%,#4a7c59 70%,#5c8a3c 100%);border-radius:20px;padding:20px;position:relative;min-height:240px;overflow:hidden">
+
+          <!-- Sky elements -->
+          <span style="position:absolute;top:15px;left:20px;font-size:28px;cursor:pointer;animation:leafWave 3s ease-in-out infinite;display:inline-block" onclick="showInfo('Awan hangat di langit hutan tropis purba — saat ini adalah Zaman Eosen, sekitar 40 juta tahun lalu! 🌥️')">☁️</span>
+          <span style="position:absolute;top:10px;right:30px;font-size:32px;cursor:pointer" onclick="showInfo('Matahari bersinar terang — hutan tropis sangat subur dan kaya makanan! ☀️')">☀️</span>
+
+          <!-- Trees -->
+          <span style="position:absolute;bottom:30px;left:15px;font-size:54px;cursor:pointer;animation:leafWave 4s ease-in-out infinite;display:inline-block;transform-origin:bottom" onclick="showInfo('Pohon tropis purba! Daunnya lebar untuk menangkap sinar matahari sebanyak mungkin. 🌴')">🌴</span>
+          <span style="position:absolute;bottom:30px;right:20px;font-size:50px;cursor:pointer;animation:leafWave 3.5s ease-in-out infinite 0.5s;display:inline-block;transform-origin:bottom" onclick="showInfo('Pohon hutan hujan! Di sinilah primata pertama tinggal — melompat dari cabang ke cabang. 🌳')">🌳</span>
+          <span style="position:absolute;bottom:35px;left:40%;font-size:42px;cursor:pointer;animation:leafWave 5s ease-in-out infinite 1s;display:inline-block" onclick="showInfo('Semak tropis purba — penuh dengan buah-buahan lezat untuk mamalia! 🌿')">🌿</span>
+
+          <!-- Animals — clickable! -->
+          <span style="position:absolute;top:60px;left:35%;font-size:36px;cursor:pointer;animation:primate-jump 3s ease-in-out infinite" onclick="showInfo('INI DIA! Primata purba! Mereka melompat-lompat di antara pohon dengan lincah. Otak mereka sedang berkembang menjadi semakin besar! 🐒✨')">🐒</span>
+          <span style="position:absolute;top:80px;right:35%;font-size:30px;cursor:pointer;animation:primate-jump 4s ease-in-out infinite 1s" onclick="showInfo('Lemur purba! Salah satu primata tertua yang masih hidup sampai sekarang — di Madagaskar! Matanya besar untuk melihat di malam hari. 👀')">🦎</span>
+          <span style="position:absolute;bottom:65px;left:55%;font-size:28px;cursor:pointer" onclick="showInfo('Mamalia kecil pemakan serangga — nenek moyang dari banyak mamalia modern! Gerakannya cepat dan gesit. 🐁')">🐁</span>
+          <span style="position:absolute;bottom:60px;left:22%;font-size:32px;cursor:pointer" onclick="showInfo('Purussaurus kecil? Bukan — ini Mesonyx! Mamalia pemangsa purba yang berlari kencang seperti serigala zaman sekarang! 🦊')">🦊</span>
+          <span style="position:absolute;top:50px;left:15%;font-size:24px;cursor:pointer;animation:sparkle 3s ease-in-out infinite" onclick="showInfo('Kupu-kupu purba! Serangga sudah ada jauh sebelum manusia — mereka penyerbuk terpenting di hutan purba! 🦋')">🦋</span>
+
+          <!-- Ground elements -->
+          <div style="position:absolute;bottom:0;left:0;right:0;height:35px;background:linear-gradient(180deg,#5c8a3c,#3d5c28);border-radius:0 0 20px 20px"></div>
+          <span style="position:absolute;bottom:28px;left:60px;font-size:18px">🍄</span>
+          <span style="position:absolute;bottom:28px;right:60px;font-size:16px">🌸</span>
+        </div>
+
+        <div id="infoBox" style="display:none;background:linear-gradient(135deg,#1a3d2b,#2d6a4f);color:white;border-radius:14px;padding:14px 18px;margin-top:12px;font-size:14px;line-height:1.6;animation:pageIn 0.3s ease">
+          <span id="infoText"></span>
+        </div>
+
+        <p class="story-text" style="margin-top:14px;font-size:14px;color:#555">
+          ☝️ <em>Klik makhluk-makhluk di hutan untuk kenalan lebih dekat!</em>
+        </p>
+      </div>
+      <span class="page-number">9 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 10: POHON KELUARGA ===== -->
+    <div class="page" id="page-10">
+      <div class="page-inner">
+        <div class="page-header">
+          <span class="page-icon">🌳</span>
+          <h2 class="page-title">Pohon Keluarga <span>Primata</span></h2>
+        </div>
+
+        <p class="story-text">
+          "Kapten, aku mau tunjukkan sesuatu yang mengagumkan!" kata mesin waktu.  
+          Layar menampilkan <em>pohon keluarga primata</em> — mulai dari nenek moyang purba hingga... manusia!
+        </p>
+
+        <div style="background:linear-gradient(135deg,#e8f5e9,#fff9e6);border-radius:20px;padding:20px;margin:16px 0">
+          <!-- Family tree visual -->
+          <div style="text-align:center;margin-bottom:16px">
+            <div style="display:inline-block;background:var(--earth-light);color:white;padding:8px 20px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:14px">
+              🌱 55 Juta Tahun Lalu: Primata Pertama
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center;margin:12px 0">
+            <div style="background:white;border-radius:14px;padding:12px;box-shadow:0 3px 10px rgba(0,0,0,0.07);cursor:pointer;transition:transform 0.3s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+              <div style="font-size:32px">🦔</div>
+              <div style="font-family:'Fredoka One',cursive;font-size:12px;color:var(--forest)">Prosimian</div>
+              <div style="font-size:10px;color:#666">Lemur, Galago, Tarsier</div>
+            </div>
+            <div style="background:white;border-radius:14px;padding:12px;box-shadow:0 3px 10px rgba(0,0,0,0.07);cursor:pointer;transition:transform 0.3s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+              <div style="font-size:32px">🐒</div>
+              <div style="font-family:'Fredoka One',cursive;font-size:12px;color:var(--forest)">Monyet</div>
+              <div style="font-size:10px;color:#666">Baboon, Kera, Macaque</div>
+            </div>
+            <div style="background:white;border-radius:14px;padding:12px;box-shadow:0 3px 10px rgba(0,0,0,0.07);cursor:pointer;transition:transform 0.3s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+              <div style="font-size:32px">🦍</div>
+              <div style="font-family:'Fredoka One',cursive;font-size:12px;color:var(--forest)">Kera Besar</div>
+              <div style="font-size:10px;color:#666">Gorila, Simpanse, Orang Utan</div>
+            </div>
+          </div>
+
+          <div style="text-align:center;margin:12px 0">
+            <div style="font-size:24px">⬇️</div>
+            <div style="display:inline-block;background:linear-gradient(135deg,var(--gold),var(--orange));color:white;padding:10px 24px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:15px;box-shadow:0 4px 15px rgba(244,185,66,0.3)">
+              👤 MANUSIA (Homo sapiens) — Kita!
+            </div>
+          </div>
+        </div>
+
+        <div class="callout" data-emoji="🤝">
+          <strong>Kita berbagi 98,7% DNA dengan simpanse!</strong> Itu artinya hanya 1,3% perbedaan DNA yang membuat kita berbeda dari simpanse. Sungguh luar biasa, bukan?
+        </div>
+
+        <div class="fun-fact">
+          <div class="fun-fact-title">💡 APA BEDANYA MONYET DAN KERA?</div>
+          <div class="fun-fact-text">
+            Monyet punya ekor, kera tidak! Gorila, simpanse, orang utan, dan manusia adalah kera. Kita tidak berekor! 😄
+          </div>
+        </div>
+      </div>
+      <span class="page-number">10 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 11: CERITA ASLAN KETEMU PRIMATA ===== -->
+    <div class="page" id="page-11">
+      <div class="page-inner">
+        <div class="page-header">
+          <span class="page-icon">🎭</span>
+          <h2 class="page-title">Aslan Bertemu <span>Primata Purba!</span></h2>
+        </div>
+
+        <p class="story-text">
+          Kapten Aslan duduk diam di bawah pohon besar. Kalau terlalu bising, primata-primata itu akan lari!  
+          Perlahan, seekor makhluk kecil berbulu coklat turun dari cabang...
+        </p>
+
+        <div style="background:linear-gradient(135deg,#f5e6d0,#fff3e0);border-radius:18px;padding:20px;margin:16px 0;border-left:5px solid var(--earth-light)">
+          <p style="font-size:15px;color:#3c2a1a;line-height:1.8;font-style:italic">
+            "Hei kamu..." bisik Aslan pelan. Makhluk itu berhenti. Kepalanya miring — persis seperti anjing yang penasaran. 
+            Matanya yang besar dan hitam menatap Aslan dengan... <strong>kecerdasan</strong>.
+          </p>
+          <p style="font-size:15px;color:#3c2a1a;line-height:1.8;font-style:italic;margin-top:12px">
+            Lalu... makhluk itu mengambil buah kecil dari dahan. Menatap Aslan. Dan melemparkannya ke arah Aslan!
+          </p>
+          <p style="font-size:16px;color:var(--forest);font-weight:800;margin-top:12px">
+            "Apakah dia baru saja... berbagi makanan denganku?!" 🤯
+          </p>
+        </div>
+
+        <p class="story-text">
+          Itulah momen luar biasa, Kapten! <em>Berbagi makanan</em> adalah tanda kecerdasan sosial. 
+          Primata purba ini sudah menunjukkan benih-benih perilaku yang jutaan tahun kemudian 
+          akan berkembang menjadi budaya manusia!
+        </p>
+
+        <div class="callout" data-emoji="💡">
+          <strong>Perilaku sosial primata</strong> — berbagi, bermain, belajar dari sesama — adalah fondasi awal dari semua kerja sama manusia: keluarga, masyarakat, dan peradaban!
+        </div>
+
+        <div class="scene-banner">
+          <span class="scene-emoji">🐒</span>
+          <div class="scene-text">
+            Di hutan purba ini, ribuan generasi primata akan belajar, berkembang, dan akhirnya... melahirkan <strong style="color:var(--gold)">kita</strong>! ✨
+          </div>
+        </div>
+      </div>
+      <span class="page-number">11 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 12: PELAJARAN HARI INI ===== -->
+    <div class="page" id="page-12">
+      <div class="page-inner">
+        <div class="page-header">
+          <span class="page-icon">📚</span>
+          <h2 class="page-title">Pelajaran Hari <span>Ini!</span></h2>
+        </div>
+
+        <p class="story-text">
+          Hebat, Kapten Aslan! Kamu sudah menjelajahi 65 juta tahun evolusi hari ini! 
+          Mari kita simpulkan apa yang kamu temukan:
+        </p>
+
+        <ul class="lesson-list">
+          <li class="lesson-item">
+            <div class="lesson-bullet" style="background:linear-gradient(135deg,#f4b942,#f4762a)">☄️</div>
+            <div class="lesson-text">
+              <strong>Meteor besar 65 juta tahun lalu</strong> memusnahkan dinosaurus — dan memberi kesempatan bagi mamalia untuk berkembang pesat di seluruh Bumi.
+            </div>
+          </li>
+          <li class="lesson-item">
+            <div class="lesson-bullet" style="background:linear-gradient(135deg,#40916c,#2d6a4f)">🦁</div>
+            <div class="lesson-text">
+              <strong>Mamalia</strong> adalah hewan berdarah panas, berbulu, melahirkan anak, dan menyusui — keunggulan ini membuat mereka survive di iklim ekstrem.
+            </div>
+          </li>
+          <li class="lesson-item">
+            <div class="lesson-bullet" style="background:linear-gradient(135deg,#7b4fa6,#a86cc1)">🐒</div>
+            <div class="lesson-text">
+              <strong>Primata</strong> muncul 55 juta tahun lalu dengan tiga kekuatan super: tangan yang bisa menggenggam, penglihatan 3D, dan otak yang semakin besar.
+            </div>
+          </li>
+          <li class="lesson-item">
+            <div class="lesson-bullet" style="background:linear-gradient(135deg,#4a90d9,#74b9e8)">🌳</div>
+            <div class="lesson-text">
+              <strong>Kehidupan di pohon</strong> mendorong perkembangan kecerdasan primata — melompat antar cabang butuh koordinasi mata-tangan yang presisi!
+            </div>
+          </li>
+          <li class="lesson-item">
+            <div class="lesson-bullet" style="background:linear-gradient(135deg,#f4762a,#e63946)">👨‍👩‍👧</div>
+            <div class="lesson-text">
+              <strong>Kita adalah primata!</strong> Manusia berbagi 98,7% DNA dengan simpanse. Nenek moyang jauh kita adalah primata kecil yang hidup di hutan purba.
+            </div>
+          </li>
+          <li class="lesson-item">
+            <div class="lesson-bullet" style="background:linear-gradient(135deg,#06d6a0,#40916c)">🤝</div>
+            <div class="lesson-text">
+              <strong>Perilaku sosial primata</strong> — berbagi, bermain, belajar — adalah akar dari seluruh kebudayaan dan peradaban manusia!
+            </div>
+          </li>
+        </ul>
+
+        <div class="gold-callout">
+          ⭐ <strong>Kata Kunci Hari Ini:</strong> Mamalia, Radiasi Adaptif, Primata, Neokorteks, Penglihatan Stereoskopik, Perilaku Sosial
+        </div>
+      </div>
+      <span class="page-number">12 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 13: TANTANGAN ===== -->
+    <div class="page" id="page-13">
+      <div class="page-inner">
+        <div class="page-header">
+          <span class="page-icon">🎯</span>
+          <h2 class="page-title">Tantangan <span>Kapten Aslan!</span></h2>
+        </div>
+
+        <p class="story-text">
+          Setiap Kapten Cerdas perlu menyelesaikan tantangan harian! 
+          Ini adalah misi khusus untukmu hari ini, Aslan:
+        </p>
+
+        <div class="challenge-box">
+          <div class="challenge-title">🏆 Misi Hari Ke-5</div>
+
+          <div class="challenge-item">
+            <div class="challenge-check" id="ch1" onclick="toggleCheck(this)"></div>
+            <div>
+              <strong style="color:var(--gold-light)">🔍 Tantangan Observasi:</strong><br>
+              Amati hewan peliharaanmu atau hewan di sekitar rumah — apakah mereka mamalia? Cek: apakah mereka menyusui bayinya, punya rambut/bulu, dan berdarah panas?
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <div class="challenge-check" id="ch2" onclick="toggleCheck(this)"></div>
+            <div>
+              <strong style="color:var(--gold-light)">✏️ Tantangan Kreasi:</strong><br>
+              Gambar peta pohon keluarga primata versimu sendiri — mulai dari primata purba hingga manusia modern! Tempel di kamarmu.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <div class="challenge-check" id="ch3" onclick="toggleCheck(this)"></div>
+            <div>
+              <strong style="color:var(--gold-light)">🧪 Tantangan Sains:</strong><br>
+              Coba genggam pensil dengan hanya satu tangan — rasakan bagaimana jempolmu bekerja! Ini keahlian unik primata yang disebut "grip presisi." Coba jelaskan ke temanmu!
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <div class="challenge-check" id="ch4" onclick="toggleCheck(this)"></div>
+            <div>
+              <strong style="color:var(--gold-light)">📖 Tantangan Eksplorasi:</strong><br>
+              Cari tahu: hewan apa saja yang termasuk primata yang ada di Indonesia? (Petunjuk: ada kera besar yang sangat terkenal dari Kalimantan! 🦧)
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <div class="challenge-check" id="ch5" onclick="toggleCheck(this)"></div>
+            <div>
+              <strong style="color:var(--gold-light)">🤔 Tantangan Berpikir:</strong><br>
+              Kalau kamu bisa berbicara dengan primata purba 30 juta tahun lalu, apa tiga hal yang ingin kamu ceritakan tentang kehidupan manusia modern?
+            </div>
+          </div>
+        </div>
+
+        <div id="challengeComplete" style="display:none;text-align:center;padding:16px;animation:pageIn 0.5s ease">
+          <div style="font-size:40px">🎉</div>
+          <div style="font-family:'Fredoka One',cursive;font-size:20px;color:var(--forest)">Semua Misi Selesai, Kapten!</div>
+          <div style="font-size:14px;color:#666;margin-top:4px">Kamu luar biasa, Aslan! ⭐⭐⭐</div>
+        </div>
+      </div>
+      <span class="page-number">13 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 14: QUIZ ===== -->
+    <div class="page" id="page-14">
+      <div class="page-inner">
+        <div class="page-header">
+          <span class="page-icon">🧪</span>
+          <h2 class="page-title">Quiz <span>Cepat!</span></h2>
+        </div>
+
+        <p class="story-text">
+          Uji pengetahuanmu, Kapten! Pilih jawaban yang benar:
+        </p>
+
+        <div id="quiz-container">
+          <!-- Q1 -->
+          <div class="quiz-q" style="background:white;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 3px 10px rgba(0,0,0,0.07)">
+            <div style="font-family:'Fredoka One',cursive;color:var(--forest);font-size:15px;margin-bottom:12px">
+              1. Apa ciri khas utama mamalia?
+            </div>
+            <div class="quiz-options" data-answer="b">
+              <div class="quiz-opt" onclick="checkAnswer(this,'a')">🦎 A. Bertelur dan berdarah dingin</div>
+              <div class="quiz-opt" onclick="checkAnswer(this,'b')">🍼 B. Menyusui anaknya dan berdarah panas</div>
+              <div class="quiz-opt" onclick="checkAnswer(this,'c')">🐟 C. Hidup di dalam air</div>
+              <div class="quiz-opt" onclick="checkAnswer(this,'d')">🦅 D. Punya sayap dan bisa terbang</div>
+            </div>
+          </div>
+          <!-- Q2 -->
+          <div class="quiz-q" style="background:white;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 3px 10px rgba(0,0,0,0.07)">
+            <div style="font-family:'Fredoka One',cursive;color:var(--forest);font-size:15px;margin-bottom:12px">
+              2. Manusia termasuk kelompok hewan apa?
+            </div>
+            <div class="quiz-options" data-answer="c">
+              <div class="quiz-opt" onclick="checkAnswer(this,'a')">🦎 A. Reptilia</div>
+              <div class="quiz-opt" onclick="checkAnswer(this,'b')">🐟 B. Amfibia</div>
+              <div class="quiz-opt" onclick="checkAnswer(this,'c')">🐒 C. Primata</div>
+              <div class="quiz-opt" onclick="checkAnswer(this,'d')">🦅 D. Aves (burung)</div>
+            </div>
+          </div>
+          <!-- Q3 -->
+          <div class="quiz-q" style="background:white;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 3px 10px rgba(0,0,0,0.07)">
+            <div style="font-family:'Fredoka One',cursive;color:var(--forest);font-size:15px;margin-bottom:12px">
+              3. Berapa persen DNA yang kita bagikan dengan simpanse?
+            </div>
+            <div class="quiz-options" data-answer="d">
+              <div class="quiz-opt" onclick="checkAnswer(this,'a')">A. 50%</div>
+              <div class="quiz-opt" onclick="checkAnswer(this,'b')">B. 75%</div>
+              <div class="quiz-opt" onclick="checkAnswer(this,'c')">C. 90%</div>
+              <div class="quiz-opt" onclick="checkAnswer(this,'d')">D. 98,7%</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="quiz-result" style="display:none;background:linear-gradient(135deg,var(--forest),var(--forest-light));color:white;border-radius:16px;padding:16px 20px;text-align:center;margin-top:8px">
+          <div id="quiz-score" style="font-family:'Fredoka One',cursive;font-size:22px"></div>
+          <div id="quiz-msg" style="font-size:14px;margin-top:6px;opacity:0.9"></div>
+        </div>
+
+        <style>
+          .quiz-opt {
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 6px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.2s;
+            background: #fafafa;
+          }
+          .quiz-opt:hover { border-color: var(--forest-light); background: var(--forest-pale); }
+          .quiz-opt.correct { background: #d8f3dc; border-color: var(--forest); color: var(--forest); font-weight: 700; }
+          .quiz-opt.wrong { background: #ffe0e0; border-color: #e63946; color: #c0392b; }
+          .quiz-opt.disabled { pointer-events: none; }
+        </style>
+      </div>
+      <span class="page-number">14 / 15</span>
+    </div>
+
+    <!-- ===== PAGE 15: PENUTUP ===== -->
+    <div class="page" id="page-15">
+      <div class="closing-bg">
+        <!-- Stars decoration -->
+        <div id="closingStars" style="position:absolute;inset:0;pointer-events:none"></div>
+
+        <div style="position:relative;z-index:1">
+          <div class="page-header">
+            <span class="page-icon">🌟</span>
+            <h2 class="page-title">Luar Biasa, <span style="color:var(--orange)">Kapten Aslan!</span></h2>
+          </div>
+
+          <p class="story-text">
+            Hari ini kamu sudah menyelesaikan perjalanan luar biasa! 
+            Dari menyaksikan kepunahan dinosaurus, hingga bertemu mamalia pertama, 
+            hingga mengintip primata cerdas di hutan purba — semua dalam satu hari petualangan!
+          </p>
+
+          <div class="stars-earned">
+            <span class="star-icon">⭐</span>
+            <span class="star-icon">⭐</span>
+            <span class="star-icon">⭐</span>
+            <span style="font-family:'Fredoka One',cursive;font-size:16px;color:var(--gold)">3 Bintang Diraih!</span>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.08);border-radius:16px;padding:16px 20px;margin:16px 0;border:1px solid rgba(255,255,255,0.15)">
+            <div style="font-family:'Fredoka One',cursive;color:var(--gold-light);font-size:14px;margin-bottom:8px">📜 SERTIFIKAT HARI KE-5</div>
+            <div style="color:white;font-size:14px;line-height:1.7">
+              Dengan ini dinyatakan bahwa <strong style="color:var(--gold)">Aslan</strong> telah berhasil mempelajari kemunculan mamalia dan primata, dan siap melanjutkan petualangan menuju Hari ke-6!
+            </div>
+          </div>
+
+          <div class="teaser-box">
+            <div class="teaser-title">BESOK — HARI KE-6 ▶</div>
+            <div class="teaser-name">Leluhur Manusia — <span>Si Kera Kecil yang Penasaran!</span></div>
+            <div class="teaser-desc">
+              Kapten Aslan akan bertemu langsung dengan hominid pertama — makhluk yang berjalan tegak, menggunakan alat, dan mulai menjelajahi savana Afrika! 
+              Bersiaplah untuk petualangan terbesar! 🌍
+            </div>
+          </div>
+
+          <div style="text-align:center;margin-top:24px">
+            <button onclick="celebrate()" style="background:linear-gradient(135deg,var(--gold),var(--orange));border:none;color:white;font-family:'Fredoka One',cursive;font-size:18px;padding:14px 36px;border-radius:50px;cursor:pointer;box-shadow:0 6px 20px rgba(244,185,66,0.4);transition:all 0.3s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+              🎉 Rayakan Keberhasilanmu!
+            </button>
+          </div>
+        </div>
+      </div>
+      <span class="page-number">15 / 15</span>
+    </div>
+
+  </div><!-- end .book -->
+</div><!-- end .book-wrapper -->
+
+<!-- Navigation -->
+<div class="nav-area">
+  <button class="nav-btn" id="prevBtn" onclick="changePage(-1)" disabled>
+    ← Sebelumnya
+  </button>
+
+  <div class="progress-indicator" id="progressDots"></div>
+
+  <button class="nav-btn next-btn" id="nextBtn" onclick="changePage(1)">
+    Selanjutnya →
+  </button>
+</div>
+
+<script>
+// ===== STATE =====
+const TOTAL_PAGES = 15;
+let currentPage = 1;
+let soundOn = false;
+let audioCtx = null;
+let quizAnswers = {};
+let checkedChallenges = 0;
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  createParticles();
+  createStars('coverStars', 40);
+  createStars('closingStars', 30);
+  buildProgressDots();
+  updateNav();
+});
+
+// ===== PARTICLES =====
+function createParticles() {
+  const container = document.getElementById('particles');
+  const colors = ['#40916c','#f4b942','#7b4fa6','#4a90d9','#f4762a'];
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 60 + 20;
+    p.style.cssText = `
+      width:${size}px;height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}%;
+      animation-duration:${Math.random()*20+15}s;
+      animation-delay:${Math.random()*15}s;
+    `;
+    container.appendChild(p);
+  }
+}
+
+function createStars(containerId, count) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 3 + 1;
+    s.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      animation-delay:${Math.random()*3}s;
+      animation-duration:${Math.random()*2+2}s;
+    `;
+    container.appendChild(s);
+  }
+}
+
+// ===== PROGRESS DOTS =====
+function buildProgressDots() {
+  const container = document.getElementById('progressDots');
+  container.innerHTML = '';
+  for (let i = 1; i <= TOTAL_PAGES; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'progress-dot' + (i === currentPage ? ' active' : i < currentPage ? ' visited' : '');
+    dot.onclick = () => goToPage(i);
+    dot.title = `Halaman ${i}`;
+    container.appendChild(dot);
+  }
+}
+
+function updateNav() {
+  document.getElementById('prevBtn').disabled = currentPage === 1;
+  document.getElementById('nextBtn').disabled = currentPage === TOTAL_PAGES;
+  buildProgressDots();
+}
+
+// ===== PAGE NAVIGATION =====
+function changePage(dir) {
+  const newPage = currentPage + dir;
+  if (newPage < 1 || newPage > TOTAL_PAGES) return;
+  goToPage(newPage);
+}
+
+function goToPage(num) {
+  const current = document.getElementById(`page-${currentPage}`);
+  current.classList.add('exit');
+  setTimeout(() => {
+    current.classList.remove('active', 'exit');
+    currentPage = num;
+    const next = document.getElementById(`page-${currentPage}`);
+    next.classList.add('active');
+    next.scrollTop = 0;
+    updateNav();
+  }, 280);
+}
+
+// ===== MAMMAL CARDS =====
+function popCard(el) {
+  el.classList.remove('clicked');
+  void el.offsetWidth;
+  el.classList.add('clicked');
+  const name = el.querySelector('.mammal-name').textContent;
+  setTimeout(() => el.classList.remove('clicked'), 400);
+}
+
+// ===== FEATURE DETAILS =====
+const featureData = {
+  tangan: "✋ <strong>Tangan Ajaib Primata</strong><br>Jempol yang berlawanan arah dengan jari-jari lain disebut 'opposable thumb.' Bayangkan mencoba mengambil pensil tanpa jempol — hampir tidak mungkin! Keistimewaan ini memungkinkan primata membuat alat, memanjat pohon, dan akhirnya... menulis buku seperti ini! 📝",
+  mata: "👁️ <strong>Penglihatan Stereoskopik</strong><br>Dengan dua mata menghadap ke depan, otak bisa menggabungkan dua gambar menjadi satu gambaran 3D. Ini sangat penting saat melompat dari pohon ke pohon — bisa menilai jarak dengan tepat! Manusia mewarisi kemampuan ini dan menggunakannya untuk segala hal, dari membaca hingga bermain bola. ⚽",
+  otak: "🧠 <strong>Otak yang Terus Berkembang</strong><br>Neokorteks adalah bagian otak untuk berpikir, merencanakan, dan berkreasi. Primata memiliki neokorteks yang jauh lebih besar dibanding mamalia lain dengan ukuran tubuh yang sama. Inilah yang memungkinkan kita menulis puisi, bermain musik, dan... membaca buku tentang evolusi! 🎵",
+  sosial: "👨‍👩‍👧‍👦 <strong>Makhluk Sosial</strong><br>Primata hidup berkelompok dan belajar dari satu sama lain. Seekor simpanse yang melihat kawannya menggunakan batu untuk memecah kacang bisa meniru dan mengajarkan ke generasi berikutnya. Ini adalah cikal bakal budaya dan pendidikan manusia! 📚",
+  kuku: "💅 <strong>Kuku vs Cakar</strong><br>Kuku pipih memberikan sensitivitas sentuhan yang jauh lebih besar dari cakar. Ujung jari primata dipenuhi saraf sensitif — itulah mengapa kita bisa merasakan perbedaan antara permukaan halus dan kasar, memungkinkan kita membuat dan menggunakan alat dengan presisi luar biasa! 🔧",
+  lambat: "🍼 <strong>Masa Kanak-Kanak yang Panjang</strong><br>Bayi manusia perlu sekitar 18 tahun untuk menjadi dewasa — jauh lebih lama dari mamalia lain! Tapi inilah kuncinya: semakin lama masa belajar, semakin banyak yang bisa dipelajari. Otak yang berkembang lambat punya waktu lebih lama untuk menyerap pengetahuan dari orang tua dan masyarakat! 🌱"
+};
+
+function expandFeature(el, key) {
+  const box = document.getElementById('featureDetail');
+  const text = document.getElementById('featureDetailText');
+  
+  // Remove highlight from all
+  document.querySelectorAll('.feature-card').forEach(c => c.style.background = '');
+  
+  if (box.style.display === 'block' && text.innerHTML.includes(featureData[key].split('<')[0])) {
+    box.style.display = 'none';
+  } else {
+    text.innerHTML = featureData[key];
+    box.style.display = 'block';
+    el.style.background = 'linear-gradient(135deg, #e8f5e9, #d0f0e0)';
+    el.style.borderColor = 'var(--forest)';
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+// ===== INFO BOX =====
+function showInfo(text) {
+  const box = document.getElementById('infoBox');
+  const textEl = document.getElementById('infoText');
+  if (box && textEl) {
+    textEl.textContent = text;
+    box.style.display = 'block';
+    box.style.animation = 'none';
+    void box.offsetWidth;
+    box.style.animation = 'pageIn 0.3s ease';
+  }
+}
+
+// ===== SPARKLE EFFECT =====
+function showSparkle(el) {
+  for (let i = 0; i < 6; i++) {
+    const sp = document.createElement('div');
+    sp.style.cssText = `
+      position:fixed;
+      pointer-events:none;
+      z-index:9999;
+      font-size:${Math.random()*10+10}px;
+      left:${Math.random()*window.innerWidth}px;
+      top:${Math.random()*window.innerHeight}px;
+      animation:sparkle ${Math.random()*1+1}s ease forwards;
+    `;
+    sp.textContent = ['✨','⭐','🌟','💫','🎇'][Math.floor(Math.random()*5)];
+    document.body.appendChild(sp);
+    setTimeout(() => sp.remove(), 2000);
+  }
+}
+
+// ===== CHALLENGE CHECKBOXES =====
+function toggleCheck(el) {
+  el.classList.toggle('done');
+  const total = document.querySelectorAll('.challenge-check').length;
+  const done = document.querySelectorAll('.challenge-check.done').length;
+  if (done === total) {
+    document.getElementById('challengeComplete').style.display = 'block';
+    celebrate();
+  }
+}
+
+// ===== QUIZ =====
+function checkAnswer(optEl, selected) {
+  const container = optEl.closest('.quiz-options');
+  if (container.dataset.answered) return;
+  container.dataset.answered = true;
+  
+  const correct = container.dataset.answer;
+  const qId = Array.from(document.querySelectorAll('.quiz-options')).indexOf(container);
+  
+  container.querySelectorAll('.quiz-opt').forEach(o => o.classList.add('disabled'));
+  
+  if (selected === correct) {
+    optEl.classList.add('correct');
+    quizAnswers[qId] = true;
+  } else {
+    optEl.classList.add('wrong');
+    quizAnswers[qId] = false;
+    // Show correct
+    container.querySelectorAll('.quiz-opt').forEach((o, i) => {
+      if (i === ['a','b','c','d'].indexOf(correct)) o.classList.add('correct');
+    });
+  }
+  
+  // Check if all answered
+  const totalQ = document.querySelectorAll('.quiz-options').length;
+  if (Object.keys(quizAnswers).length === totalQ) {
+    const correctCount = Object.values(quizAnswers).filter(Boolean).length;
+    const resultEl = document.getElementById('quiz-result');
+    resultEl.style.display = 'block';
+    document.getElementById('quiz-score').textContent = `🎯 Skor: ${correctCount}/${totalQ}`;
+    const msgs = [
+      'Tetap semangat belajar, Kapten! 💪',
+      'Bagus! Hampir sempurna! ⭐⭐',
+      'LUAR BIASA! Nilai sempurna, Kapten Cerdas! 🏆⭐⭐⭐'
+    ];
+    document.getElementById('quiz-msg').textContent = msgs[correctCount - 1] || msgs[0];
+    if (correctCount === totalQ) celebrate();
+  }
+}
+
+// ===== CELEBRATE =====
+function celebrate() {
+  const colors = ['#f4b942','#40916c','#7b4fa6','#4a90d9','#f4762a','#e63946'];
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.cssText = `
+        left:${Math.random()*100}vw;
+        top:-20px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        width:${Math.random()*10+6}px;
+        height:${Math.random()*10+6}px;
+        border-radius:${Math.random()>0.5?'50%':'2px'};
+        animation-duration:${Math.random()*2+2}s;
+        animation-delay:${Math.random()*2}s;
+      `;
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 4000);
+    }, i * 40);
+  }
+}
+
+// ===== SOUND =====
+function toggleSound() {
+  soundOn = !soundOn;
+  const btn = document.getElementById('soundBtn');
+  if (soundOn) {
+    btn.textContent = '🔊 Suara Hutan';
+    startForestAmbience();
+  } else {
+    btn.textContent = '🔇 Suara Hutan';
+    if (audioCtx) { audioCtx.close(); audioCtx = null; }
+  }
+}
+
+function startForestAmbience() {
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    playForestLoop();
+  } catch(e) { console.log('Audio not supported'); }
+}
+
+function playForestLoop() {
+  if (!audioCtx || !soundOn) return;
+  
+  // Create layered nature sounds
+  const masterGain = audioCtx.createGain();
+  masterGain.gain.value = 0.08;
+  masterGain.connect(audioCtx.destination);
+  
+  // Wind noise
+  const bufferSize = audioCtx.sampleRate * 4;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+  
+  const wind = audioCtx.createBufferSource();
+  wind.buffer = buffer;
+  wind.loop = true;
+  
+  const windFilter = audioCtx.createBiquadFilter();
+  windFilter.type = 'bandpass';
+  windFilter.frequency.value = 400;
+  windFilter.Q.value = 0.5;
+  
+  const windGain = audioCtx.createGain();
+  windGain.gain.value = 0.3;
+  
+  wind.connect(windFilter);
+  windFilter.connect(windGain);
+  windGain.connect(masterGain);
+  wind.start();
+  
+  // Bird chirps
+  function chirp() {
+    if (!audioCtx || !soundOn) return;
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.connect(g); g.connect(masterGain);
+    osc.type = 'sine';
+    const freq = 800 + Math.random() * 1200;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(freq * 1.5, audioCtx.currentTime + 0.1);
+    g.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.3);
+    setTimeout(chirp, Math.random() * 3000 + 1000);
+  }
+  
+  setTimeout(chirp, 500);
+}
+
+// ===== KEYBOARD NAV =====
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changePage(1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changePage(-1);
+});
+</script>
+
+</body>
+</html>

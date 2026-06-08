@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petualangan Aslan di Negeri AI – Hari 18</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --hijau:      #00C853;
+      --hijau-tua:  #00695C;
+      --hijau-muda: #B2DFDB;
+      --biru:       #0288D1;
+      --biru-muda:  #4FC3F7;
+      --biru-tua:   #01579B;
+      --kuning:     #FFD600;
+      --oranye:     #FF6D00;
+      --ungu:       #7C4DFF;
+      --merah:      #E53935;
+      --pink:       #F50057;
+      --bg:         #E8F5E9;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      background-image:
+        radial-gradient(circle at 10% 15%, #C8E6C955 0%, transparent 38%),
+        radial-gradient(circle at 90% 80%, #B3E5FC55 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, #E8F5E966 0%, transparent 60%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .font-kartun { font-family: 'Fredoka One', cursive; }
+
+    /* ── BACK LINK ── */
+    .top-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.22);
+      backdrop-filter: blur(6px);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.95rem;
+      padding: 8px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      border: 2px solid rgba(255,255,255,0.45);
+      transition: background 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+    }
+    .top-back-link:hover {
+      background: rgba(255,255,255,0.35);
+      transform: translateX(-4px);
+    }
+
+    /* ── FLOATING SHAPES ── */
+    .shapes-bg {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .shape {
+      position: absolute;
+      animation: floatShape linear infinite;
+      opacity: 0.10;
+    }
+    @keyframes floatShape {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.10; }
+      90%  { opacity: 0.10; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ── HEADER ── */
+    .header-bar {
+      background: linear-gradient(135deg, #005005 0%, #00695C 30%, #00897B 60%, #00C853 100%);
+      position: relative; overflow: hidden;
+    }
+    .header-bar::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        55deg,
+        transparent 0px, transparent 24px,
+        rgba(255,255,255,0.05) 24px, rgba(255,255,255,0.05) 48px
+      );
+    }
+    .header-bar::after {
+      content: 'LEARN • DATA • TRAIN • PREDICT • LEARN';
+      position: absolute;
+      bottom: 10px; right: 10px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.55rem;
+      color: rgba(255,255,255,0.12);
+      letter-spacing: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 260px;
+    }
+
+    .badge-hari {
+      background: var(--kuning);
+      color: #005005;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      padding: 4px 18px;
+      border-radius: 999px;
+      display: inline-block;
+      box-shadow: 0 4px 0 #F57F17;
+      animation: bounceIn 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes bounceIn {
+      0%   { transform: scale(0.3); opacity: 0; }
+      60%  { transform: scale(1.12); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .aslan-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2rem, 6.5vw, 4rem);
+      color: #fff;
+      text-shadow: 0 5px 0 #00695C, 0 8px 24px rgba(0,0,0,0.30);
+      letter-spacing: 1px;
+      animation: slideDown 0.7s ease both 0.2s;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-40px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .subtitle-header {
+      font-size: clamp(0.88rem, 2.6vw, 1.25rem);
+      color: #B2DFDB;
+      animation: slideDown 0.7s ease both 0.4s;
+    }
+    .tier-badge {
+      background: linear-gradient(135deg, #FFD600, #FF6D00);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.3rem;
+      padding: 10px 26px;
+      border-radius: 999px;
+      display: inline-block;
+      box-shadow: 0 6px 0 #E65100, 0 10px 30px rgba(255,109,0,0.30);
+      animation: bounceIn 0.8s cubic-bezier(.36,.07,.19,.97) both 0.5s;
+      letter-spacing: 1px;
+    }
+
+    /* ── CARD BASE ── */
+    .card {
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 8px 32px rgba(0,137,123,0.12), 0 2px 8px rgba(0,0,0,0.07);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 5px;
+    }
+    .card-green::before   { background: linear-gradient(90deg, #00C853, #00BCD4); }
+    .card-blue::before    { background: linear-gradient(90deg, #0288D1, #4FC3F7); }
+    .card-yellow::before  { background: linear-gradient(90deg, #FFD600, #FFAB40); }
+    .card-orange::before  { background: linear-gradient(90deg, #FF6D00, #FFB300); }
+    .card-purple::before  { background: linear-gradient(90deg, #7C4DFF, #B388FF); }
+    .card-pink::before    { background: linear-gradient(90deg, #F50057, #FF80AB); }
+
+    /* ── MAIN ILLUSTRATION ── */
+    .main-ilus {
+      border-radius: 24px;
+      overflow: hidden;
+      border: 5px solid #fff;
+      box-shadow: 0 14px 44px rgba(0,105,92,0.22), 0 4px 0 #00897B;
+      background: linear-gradient(145deg, #E0F7FA 0%, #E8F5E9 50%, #F1F8E9 100%);
+      min-height: 380px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── SVG SCENE ── */
+    .scene-svg { width: 100%; max-width: 620px; }
+
+    /* ── STORY PARAGRAPH ── */
+    .story-paragraph {
+      font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+      line-height: 2;
+      color: #37474F;
+      font-weight: 600;
+    }
+    .story-paragraph .hl-green {
+      background: linear-gradient(120deg, #CCFF90 0%, #69F0AE 100%);
+      padding: 2px 8px; border-radius: 8px;
+      color: #005005; font-weight: 800;
+    }
+    .story-paragraph .hl-blue {
+      background: linear-gradient(120deg, #B3E5FC 0%, #4FC3F7 100%);
+      padding: 2px 8px; border-radius: 8px;
+      color: #01579B; font-weight: 800;
+    }
+    .story-paragraph .hl-yellow {
+      background: linear-gradient(120deg, #FFF9C4 0%, #FFD600 100%);
+      padding: 2px 8px; border-radius: 8px;
+      color: #E65100; font-weight: 800;
+    }
+    .story-drop-cap::first-letter {
+      font-family: 'Fredoka One', cursive;
+      font-size: 4rem;
+      color: #00897B;
+      float: left;
+      line-height: 1;
+      margin-right: 8px;
+      margin-top: 4px;
+      text-shadow: 0 4px 0 #B2DFDB;
+    }
+
+    /* ── ANALOGI BOX ── */
+    .analogi-box {
+      background: linear-gradient(135deg, #FFF9C4 0%, #FFFDE7 100%);
+      border-radius: 22px;
+      border: 3px solid #FFD600;
+      box-shadow: 0 6px 0 #F57F17, 0 10px 30px rgba(255,214,0,0.18);
+      padding: 24px 24px 20px;
+      position: relative;
+    }
+    .analogi-box::before {
+      content: '🐶';
+      position: absolute;
+      top: -18px; left: 20px;
+      font-size: 2.2rem;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+    }
+
+    /* ── KOMIK STRIP ── */
+    .komik-wrap {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (min-width: 640px) {
+      .komik-wrap { grid-template-columns: repeat(4, 1fr); }
+    }
+    .komik-panel {
+      border-radius: 18px;
+      border: 4px solid #00C853;
+      background: #fff;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 6px 0 #00695C;
+    }
+    .komik-panel:hover {
+      transform: translateY(-6px) rotate(-1.5deg);
+      box-shadow: 0 12px 0 #00695C;
+    }
+    .komik-panel:nth-child(2) {
+      border-color: #FFD600; box-shadow: 0 6px 0 #F57F17;
+    }
+    .komik-panel:nth-child(2):hover { box-shadow: 0 12px 0 #F57F17; }
+    .komik-panel:nth-child(3) {
+      border-color: #0288D1; box-shadow: 0 6px 0 #01579B;
+    }
+    .komik-panel:nth-child(3):hover { box-shadow: 0 12px 0 #01579B; }
+    .komik-panel:nth-child(4) {
+      border-color: #7C4DFF; box-shadow: 0 6px 0 #4527A0;
+    }
+    .komik-panel:nth-child(4):hover { box-shadow: 0 12px 0 #4527A0; }
+
+    .panel-scene {
+      width: 100%; height: 160px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .panel-num {
+      position: absolute; top: 8px; left: 8px;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.9rem;
+      color: #fff;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.25);
+      z-index: 2;
+    }
+    .komik-panel:nth-child(1) .panel-num { background: #00C853; }
+    .komik-panel:nth-child(2) .panel-num { background: #FFD600; color: #005005; }
+    .komik-panel:nth-child(3) .panel-num { background: #0288D1; }
+    .komik-panel:nth-child(4) .panel-num { background: #7C4DFF; }
+
+    .panel-bubble {
+      position: absolute; top: 8px; right: 8px;
+      background: #fff;
+      border: 2px solid #00C853;
+      border-radius: 12px 12px 12px 2px;
+      font-size: 0.65rem; font-weight: 800;
+      padding: 3px 7px;
+      max-width: 72%; color: #005005;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+      z-index: 2; line-height: 1.4;
+    }
+    .komik-panel:nth-child(2) .panel-bubble { border-color: #FFD600; color: #E65100; }
+    .komik-panel:nth-child(3) .panel-bubble { border-color: #0288D1; color: #01579B; }
+    .komik-panel:nth-child(4) .panel-bubble { border-color: #7C4DFF; color: #4527A0; }
+
+    .panel-text {
+      padding: 10px 12px;
+      font-size: 0.78rem; font-weight: 700;
+      color: #37474F; text-align: center;
+      min-height: 52px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── FAKTA KEREN ── */
+    .fakta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (min-width: 640px) {
+      .fakta-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .fakta-item {
+      border-radius: 20px;
+      padding: 18px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.25s ease;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.13);
+    }
+    .fakta-item:hover { transform: translateY(-6px) rotate(1deg); }
+    .fakta-emoji {
+      font-size: 2.8rem;
+      display: block; margin-bottom: 8px;
+      animation: factaBounce 2.5s ease-in-out infinite;
+    }
+    @keyframes factaBounce {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50%      { transform: translateY(-9px) rotate(3deg); }
+    }
+    .fakta-item:nth-child(2) .fakta-emoji { animation-delay: 0.4s; }
+    .fakta-item:nth-child(3) .fakta-emoji { animation-delay: 0.8s; }
+    .fakta-item:nth-child(4) .fakta-emoji { animation-delay: 1.2s; }
+
+    /* ── TIER COMPARE ── */
+    .tier-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .tier-box {
+      border-radius: 20px;
+      padding: 18px 16px;
+      text-align: center;
+      border: 3px solid transparent;
+      position: relative;
+    }
+    .tier-box-1 {
+      background: linear-gradient(145deg, #E3F2FD, #BBDEFB);
+      border-color: #1E88E5;
+      box-shadow: 0 5px 0 #0D47A1;
+    }
+    .tier-box-2 {
+      background: linear-gradient(145deg, #E8F5E9, #C8E6C9);
+      border-color: #00C853;
+      box-shadow: 0 5px 0 #00695C;
+    }
+
+    /* ── QUIZ ── */
+    .quiz-option {
+      background: linear-gradient(135deg, #F1F8E9 0%, #E8F5E9 100%);
+      border: 3px solid #A5D6A7;
+      border-radius: 16px;
+      padding: 14px 18px;
+      cursor: pointer;
+      font-size: 1rem; font-weight: 700;
+      color: #37474F;
+      transition: all 0.2s ease;
+      text-align: left;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 4px 0 #A5D6A7;
+    }
+    .quiz-option:hover {
+      background: linear-gradient(135deg, #CCFF90 0%, #69F0AE 100%);
+      border-color: #00C853;
+      color: #005005;
+      transform: translateX(6px);
+      box-shadow: 0 4px 0 #00695C;
+    }
+    .quiz-option.correct {
+      background: linear-gradient(135deg, #CCFF90 0%, #69F0AE 100%);
+      border-color: #00C853;
+      color: #005005;
+      animation: correctPop 0.4s ease;
+    }
+    .quiz-option.wrong {
+      background: linear-gradient(135deg, #FFCDD2 0%, #EF9A9A 100%);
+      border-color: #E53935;
+      color: #B71C1C;
+    }
+    @keyframes correctPop {
+      0%   { transform: scale(0.95); }
+      60%  { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+
+    .quiz-result {
+      display: none;
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.4rem;
+      margin-top: 14px;
+      animation: bounceIn 0.5s ease both;
+    }
+    .quiz-result.show { display: block; }
+
+    /* ── PROGRESS BAR LEARNING ── */
+    .progress-track {
+      background: #B2DFDB;
+      border-radius: 999px;
+      height: 18px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #00C853, #00BCD4);
+      box-shadow: 0 2px 8px rgba(0,200,83,0.4);
+      animation: progressAnim 2s cubic-bezier(.4,0,.2,1) both 0.5s;
+      transform-origin: left;
+    }
+    @keyframes progressAnim {
+      from { width: 0% !important; }
+    }
+
+    /* ── STARS & REWARD ── */
+    .reward-section {
+      background: linear-gradient(135deg, #0D1B2A 0%, #01579B 50%, #00695C 100%);
+      border-radius: 28px;
+      padding: 32px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.20);
+    }
+    .reward-section::before {
+      content: '★ ✦ ⬟ ✦ ★ ✦ ⬟ ✦ ★ ✦ ⬟ ✦ ★';
+      position: absolute; top: 12px; left: 0; right: 0;
+      font-size: 0.7rem; color: rgba(255,255,255,0.12);
+      letter-spacing: 6px; text-align: center;
+    }
+    @keyframes starPulse {
+      0%,100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+      50%      { transform: scale(1.2) rotate(15deg); filter: brightness(1.4) drop-shadow(0 0 12px #FFD600); }
+    }
+    .star-icon {
+      font-size: 3rem;
+      display: inline-block;
+      animation: starPulse 2s ease-in-out infinite;
+    }
+    .star-icon:nth-child(2) { animation-delay: 0.3s; font-size: 3.8rem; }
+    .star-icon:nth-child(3) { animation-delay: 0.6s; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #E8F5E9; border-radius: 8px; }
+    ::-webkit-scrollbar-thumb { background: #80CBC4; border-radius: 8px; }
+
+    /* ── CONTENT ENTRANCE ── */
+    .fade-up {
+      animation: fadeUp 0.6s ease both;
+    }
+    @keyframes fadeUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    /* ── DATA DOTS ANIMATION ── */
+    @keyframes dataFlow {
+      0%   { opacity: 0; transform: translateX(-30px); }
+      20%  { opacity: 1; }
+      80%  { opacity: 1; }
+      100% { opacity: 0; transform: translateX(30px); }
+    }
+    .data-dot {
+      animation: dataFlow 1.8s ease-in-out infinite;
+    }
+    .data-dot:nth-child(2) { animation-delay: 0.3s; }
+    .data-dot:nth-child(3) { animation-delay: 0.6s; }
+    .data-dot:nth-child(4) { animation-delay: 0.9s; }
+    .data-dot:nth-child(5) { animation-delay: 1.2s; }
+
+    /* ── BRAIN PULSE ── */
+    @keyframes brainPulse {
+      0%,100% { filter: drop-shadow(0 0 4px #00C853); }
+      50%      { filter: drop-shadow(0 0 20px #00C853) drop-shadow(0 0 40px #00BCD4); }
+    }
+    .brain-anim { animation: brainPulse 2s ease-in-out infinite; }
+
+    /* ── ROBO FLOAT ── */
+    @keyframes roboFloat {
+      0%,100% { transform: translateY(0) rotate(-2deg); }
+      50%      { transform: translateY(-12px) rotate(2deg); }
+    }
+    .robo-float { animation: roboFloat 3s ease-in-out infinite; }
+
+    /* ── ASLAN WALK ── */
+    @keyframes aslanWalk {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-5px); }
+    }
+    .aslan-anim { animation: aslanWalk 1.8s ease-in-out infinite; }
+
+    /* ── LEARNING GLOW ── */
+    @keyframes learnGlow {
+      0%,100% { box-shadow: 0 0 0 0 rgba(0,200,83,0); }
+      50%      { box-shadow: 0 0 0 10px rgba(0,200,83,0.15); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Floating background shapes -->
+<div class="shapes-bg" aria-hidden="true">
+  <div class="shape" style="left:8%;  width:40px;height:40px;border-radius:50%;background:#00C853;animation-duration:14s;animation-delay:0s;"></div>
+  <div class="shape" style="left:22%; width:28px;height:28px;border-radius:4px;background:#FFD600;animation-duration:18s;animation-delay:3s;"></div>
+  <div class="shape" style="left:45%; width:50px;height:50px;border-radius:50%;background:#0288D1;animation-duration:12s;animation-delay:1s;"></div>
+  <div class="shape" style="left:68%; width:32px;height:32px;border-radius:8px;background:#7C4DFF;animation-duration:20s;animation-delay:5s;"></div>
+  <div class="shape" style="left:85%; width:44px;height:44px;border-radius:50%;background:#FF6D00;animation-duration:16s;animation-delay:2s;"></div>
+  <div class="shape" style="left:35%; width:24px;height:24px;border-radius:4px;background:#00BCD4;animation-duration:22s;animation-delay:7s;"></div>
+  <div class="shape" style="left:75%; width:36px;height:36px;border-radius:50%;background:#FFD600;animation-duration:13s;animation-delay:4s;"></div>
+</div>
+
+<!-- ════ HEADER ════ -->
+<header class="header-bar px-4 pt-5 pb-10">
+  <div class="max-w-3xl mx-auto">
+    <!-- Back button -->
+    <div class="mb-5">
+      <a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+    </div>
+
+    <div class="text-center relative z-10">
+      <div class="mb-3">
+        <span class="badge-hari">📅 HARI 18 dari 30</span>
+      </div>
+      <h1 class="aslan-title">
+        Tier 2 – Machine Learning
+      </h1>
+      <p class="subtitle-header font-bold">AI Belajar dari Contoh! 🤖✨</p>
+      <div class="mt-4">
+        <span class="tier-badge">⚡ Tingkat Kesulitan: Sedang 🧠</span>
+      </div>
+
+      <!-- Progress bar for 30 days -->
+      <div class="mt-6 max-w-md mx-auto">
+        <p class="text-white/70 text-sm font-bold mb-2">Progres Buku: 18/30 Hari</p>
+        <div class="progress-track">
+          <div class="progress-fill" style="width: 60%"></div>
+        </div>
+        <p class="text-white/60 text-xs mt-1">60% selesai 🎉</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 -mt-6 pb-16 relative z-10">
+
+  <!-- ════ MAIN ILLUSTRATION ════ -->
+  <div class="fade-up" style="animation-delay:0.1s">
+    <div class="main-ilus mb-6">
+      <svg class="scene-svg" viewBox="0 0 620 380" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustrasi Aslan mengajari AI dengan banyak contoh gambar">
+        <!-- Sky gradient background -->
+        <defs>
+          <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#E0F7FA"/>
+            <stop offset="100%" stop-color="#E8F5E9"/>
+          </linearGradient>
+          <linearGradient id="screenGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#0D1B2A"/>
+            <stop offset="100%" stop-color="#00695C"/>
+          </linearGradient>
+          <linearGradient id="brainGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#00C853"/>
+            <stop offset="100%" stop-color="#00BCD4"/>
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+          <radialGradient id="floorGrad" cx="50%" cy="50%">
+            <stop offset="0%" stop-color="#B2DFDB" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#B2DFDB" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="620" height="380" fill="url(#bgGrad)"/>
+
+        <!-- Floating data particles -->
+        <circle class="data-dot" cx="30" cy="80" r="5" fill="#FFD600" opacity="0.7"/>
+        <circle class="data-dot" cx="60" cy="140" r="4" fill="#00C853" opacity="0.7"/>
+        <circle class="data-dot" cx="50" cy="200" r="6" fill="#0288D1" opacity="0.7"/>
+        <circle class="data-dot" cx="570" cy="100" r="5" fill="#7C4DFF" opacity="0.7"/>
+        <circle class="data-dot" cx="590" cy="180" r="4" fill="#FF6D00" opacity="0.7"/>
+
+        <!-- Floor shadow -->
+        <ellipse cx="310" cy="365" rx="270" ry="18" fill="url(#floorGrad)"/>
+
+        <!-- ── BIG SCREEN / AI MONITOR ── -->
+        <rect x="200" y="60" width="220" height="160" rx="18" fill="url(#screenGrad)" stroke="#00C853" stroke-width="4"/>
+        <!-- Screen glare -->
+        <rect x="208" y="68" width="80" height="40" rx="8" fill="rgba(255,255,255,0.06)"/>
+        <!-- Screen label -->
+        <rect x="218" y="78" width="184" height="132" rx="12" fill="#0a1a14" opacity="0.7"/>
+        <!-- Brain on screen -->
+        <g class="brain-anim">
+          <ellipse cx="310" cy="130" rx="42" ry="36" fill="url(#brainGrad)" opacity="0.9"/>
+          <path d="M290 118 Q298 104 310 118 Q322 104 330 118 Q336 130 328 140 Q320 152 310 148 Q300 152 292 140 Q284 130 290 118Z" fill="#fff" opacity="0.25"/>
+          <!-- Brain wrinkles -->
+          <path d="M294 126 Q302 120 310 126" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+          <path d="M310 126 Q318 120 326 126" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+          <path d="M296 138 Q310 132 324 138" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+          <text x="310" y="168" text-anchor="middle" font-family="Fredoka One, cursive" font-size="11" fill="#69F0AE">BELAJAR! 🎓</text>
+        </g>
+        <!-- Monitor stand -->
+        <rect x="295" y="218" width="30" height="18" rx="4" fill="#37474F"/>
+        <rect x="272" y="233" width="76" height="10" rx="5" fill="#546E7A"/>
+
+        <!-- ── EXAMPLE IMAGE CARDS floating to AI ── -->
+        <!-- Cat card -->
+        <g transform="translate(90, 140)">
+          <rect width="70" height="55" rx="10" fill="#fff" stroke="#FFD600" stroke-width="3" filter="url(#glow)"/>
+          <rect x="4" y="4" width="62" height="36" rx="7" fill="#FFF9C4"/>
+          <text x="35" y="28" text-anchor="middle" font-size="22">🐱</text>
+          <text x="35" y="50" text-anchor="middle" font-family="Nunito, sans-serif" font-size="8" font-weight="800" fill="#E65100">KUCING</text>
+          <!-- Arrow to screen -->
+          <line x1="70" y1="27" x2="108" y2="27" stroke="#FFD600" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <polygon points="108,22 118,27 108,32" fill="#FFD600"/>
+        </g>
+        <!-- Dog card -->
+        <g transform="translate(90, 210)">
+          <rect width="70" height="55" rx="10" fill="#fff" stroke="#00C853" stroke-width="3"/>
+          <rect x="4" y="4" width="62" height="36" rx="7" fill="#E8F5E9"/>
+          <text x="35" y="28" text-anchor="middle" font-size="22">🐶</text>
+          <text x="35" y="50" text-anchor="middle" font-family="Nunito, sans-serif" font-size="8" font-weight="800" fill="#005005">ANJING</text>
+          <line x1="70" y1="27" x2="108" y2="27" stroke="#00C853" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <polygon points="108,22 118,27 108,32" fill="#00C853"/>
+        </g>
+        <!-- Apple card -->
+        <g transform="translate(90, 75)">
+          <rect width="70" height="55" rx="10" fill="#fff" stroke="#0288D1" stroke-width="3"/>
+          <rect x="4" y="4" width="62" height="36" rx="7" fill="#E3F2FD"/>
+          <text x="35" y="28" text-anchor="middle" font-size="22">🍎</text>
+          <text x="35" y="50" text-anchor="middle" font-family="Nunito, sans-serif" font-size="8" font-weight="800" fill="#01579B">APEL</text>
+          <line x1="70" y1="27" x2="108" y2="27" stroke="#0288D1" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <polygon points="108,22 118,27 108,32" fill="#0288D1"/>
+        </g>
+
+        <!-- ── OUTPUT CARD from AI ── -->
+        <g transform="translate(430, 130)">
+          <rect width="90" height="70" rx="14" fill="#fff" stroke="#00C853" stroke-width="3" filter="url(#glow)"/>
+          <rect x="4" y="4" width="82" height="46" rx="10" fill="url(#screenGrad)" opacity="0.85"/>
+          <text x="45" y="32" text-anchor="middle" font-size="24">🐱</text>
+          <text x="45" y="50" text-anchor="middle" font-family="Nunito, sans-serif" font-size="7" font-weight="800" fill="#69F0AE">INI KUCING!</text>
+          <text x="45" y="65" text-anchor="middle" font-family="Nunito, sans-serif" font-size="8" font-weight="800" fill="#005005">✅ Benar 98%!</text>
+          <!-- Arrow from screen -->
+          <line x1="-2" y1="35" x2="-32" y2="35" stroke="#00C853" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <polygon points="-30,30 -20,35 -30,40" fill="#00C853"/>
+        </g>
+
+        <!-- Label "BANYAK CONTOH" -->
+        <rect x="68" y="50" width="110" height="24" rx="12" fill="#FFD600"/>
+        <text x="123" y="66" text-anchor="middle" font-family="Fredoka One, cursive" font-size="11" fill="#005005">📚 Banyak Contoh</text>
+
+        <!-- ── ASLAN CHARACTER ── -->
+        <g class="aslan-anim" transform="translate(18, 250)">
+          <!-- Body -->
+          <rect x="20" y="50" width="38" height="44" rx="10" fill="#FF8A65"/>
+          <!-- Explorer vest -->
+          <rect x="22" y="52" width="34" height="40" rx="8" fill="#8D6E63" opacity="0.5"/>
+          <!-- Pocket -->
+          <rect x="30" y="64" width="18" height="12" rx="4" fill="#795548" opacity="0.6"/>
+          <!-- Head -->
+          <circle cx="39" cy="38" r="22" fill="#FFCC80"/>
+          <!-- Hair -->
+          <path d="M18 30 Q22 10 39 14 Q56 10 60 30 Q56 18 39 20 Q22 18 18 30Z" fill="#5D4037"/>
+          <!-- Eyes -->
+          <circle cx="31" cy="34" r="4" fill="#fff"/>
+          <circle cx="47" cy="34" r="4" fill="#fff"/>
+          <circle cx="32" cy="35" r="2.5" fill="#37474F"/>
+          <circle cx="48" cy="35" r="2.5" fill="#37474F"/>
+          <circle cx="33" cy="34" r="1" fill="#fff"/>
+          <circle cx="49" cy="34" r="1" fill="#fff"/>
+          <!-- Smile -->
+          <path d="M32 45 Q39 52 46 45" fill="none" stroke="#E65100" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Cheeks -->
+          <circle cx="26" cy="44" r="5" fill="#FF8A65" opacity="0.5"/>
+          <circle cx="52" cy="44" r="5" fill="#FF8A65" opacity="0.5"/>
+          <!-- Explorer hat -->
+          <rect x="16" y="14" width="46" height="10" rx="5" fill="#8D6E63"/>
+          <rect x="20" y="6" width="38" height="18" rx="8" fill="#A1887F"/>
+          <!-- Legs -->
+          <rect x="22" y="90" width="14" height="22" rx="7" fill="#5C6BC0"/>
+          <rect x="43" y="90" width="14" height="22" rx="7" fill="#5C6BC0"/>
+          <!-- Shoes -->
+          <rect x="18" y="108" width="20" height="10" rx="5" fill="#37474F"/>
+          <rect x="41" y="108" width="20" height="10" rx="5" fill="#37474F"/>
+          <!-- Arms / holding tablet -->
+          <rect x="58" y="54" width="10" height="32" rx="5" fill="#FFCC80"/>
+          <rect x="66" y="62" width="30" height="24" rx="8" fill="#37474F"/>
+          <text x="81" y="77" text-anchor="middle" font-size="14">📱</text>
+          <!-- Speech bubble -->
+          <rect x="65" y="10" width="100" height="32" rx="12" fill="#fff" stroke="#00C853" stroke-width="2.5"/>
+          <polygon points="75,42 85,32 95,42" fill="#fff" stroke="#00C853" stroke-width="2"/>
+          <text x="115" y="28" text-anchor="middle" font-family="Fredoka One, cursive" font-size="10" fill="#005005">Belajar dari</text>
+          <text x="115" y="40" text-anchor="middle" font-family="Fredoka One, cursive" font-size="10" fill="#005005">contoh, Robo!</text>
+        </g>
+
+        <!-- ── ROBO CHARACTER ── -->
+        <g class="robo-float" transform="translate(490, 240)">
+          <!-- Body -->
+          <rect x="10" y="52" width="50" height="44" rx="12" fill="#E0F7FA" stroke="#0288D1" stroke-width="3"/>
+          <!-- Belly screen -->
+          <rect x="16" y="60" width="38" height="28" rx="8" fill="#0D1B2A"/>
+          <text x="35" y="72" text-anchor="middle" font-family="Fredoka One, cursive" font-size="7" fill="#69F0AE">ML</text>
+          <text x="35" y="83" text-anchor="middle" font-size="12">🧠</text>
+          <!-- Head -->
+          <rect x="12" y="14" width="46" height="42" rx="14" fill="#B2EBF2" stroke="#0288D1" stroke-width="3"/>
+          <!-- Eyes -->
+          <rect x="18" y="22" width="12" height="10" rx="4" fill="#0288D1"/>
+          <rect x="40" y="22" width="12" height="10" rx="4" fill="#0288D1"/>
+          <rect x="21" y="25" width="6" height="4" rx="2" fill="#fff"/>
+          <rect x="43" y="25" width="6" height="4" rx="2" fill="#fff"/>
+          <!-- Mouth happy -->
+          <path d="M22 40 Q35 50 48 40" fill="none" stroke="#0288D1" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Antenna -->
+          <line x1="35" y1="14" x2="35" y2="4" stroke="#0288D1" stroke-width="2.5"/>
+          <circle cx="35" cy="3" r="5" fill="#00C853"/>
+          <!-- Arms -->
+          <rect x="-8" y="58" width="18" height="10" rx="5" fill="#B2EBF2" stroke="#0288D1" stroke-width="2"/>
+          <rect x="60" y="58" width="18" height="10" rx="5" fill="#B2EBF2" stroke="#0288D1" stroke-width="2"/>
+          <!-- Legs -->
+          <rect x="16" y="92" width="14" height="18" rx="7" fill="#B2EBF2" stroke="#0288D1" stroke-width="2"/>
+          <rect x="40" y="92" width="14" height="18" rx="7" fill="#B2EBF2" stroke="#0288D1" stroke-width="2"/>
+          <!-- Star sparkles -->
+          <text x="72" y="30" font-size="14">✨</text>
+          <text x="-12" y="30" font-size="12">⭐</text>
+          <!-- Speech -->
+          <rect x="-90" y="-10" width="102" height="30" rx="12" fill="#FFD600" stroke="#F57F17" stroke-width="2"/>
+          <polygon points="10,20 20,8 30,20" fill="#FFD600" stroke="#F57F17" stroke-width="1.5"/>
+          <text x="-39" y="8" text-anchor="middle" font-family="Fredoka One, cursive" font-size="9" fill="#005005">Aku mengerti</text>
+          <text x="-39" y="18" text-anchor="middle" font-family="Fredoka One, cursive" font-size="9" fill="#005005">sekarang! 🎊</text>
+        </g>
+
+        <!-- Ground line -->
+        <line x1="10" y1="368" x2="610" y2="368" stroke="#A5D6A7" stroke-width="2" stroke-dasharray="8,5"/>
+
+        <!-- Title label at bottom -->
+        <rect x="200" y="348" width="220" height="22" rx="11" fill="#00C853" opacity="0.9"/>
+        <text x="310" y="363" text-anchor="middle" font-family="Fredoka One, cursive" font-size="11" fill="#fff">Tier 2: Machine Learning 🤖</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ════ PENJELASAN ════ -->
+  <div class="card card-green p-7 mb-6 fade-up" style="animation-delay:0.2s">
+    <div class="flex items-center gap-3 mb-4">
+      <span style="font-size:2rem">📖</span>
+      <h2 class="font-kartun text-2xl" style="color:#005005">Apa Itu Machine Learning?</h2>
+    </div>
+    <p class="story-paragraph story-drop-cap">
+      Kalau kemarin Aslan belajar tentang <span class="hl-blue">Tier 1</span> – AI yang hanya mengikuti aturan yang sudah dibuat manusia, sekarang kita naik level ke <span class="hl-green">Tier 2: Machine Learning!</span>
+    </p>
+    <p class="story-paragraph mt-4">
+      Machine Learning artinya <span class="hl-yellow">AI yang bisa belajar sendiri</span> dari banyak contoh. Manusia tidak perlu menuliskan semua aturannya satu per satu. Cukup berikan <span class="hl-green">ribuan atau jutaan contoh</span>, lalu AI akan menemukan polanya sendiri!
+    </p>
+    <p class="story-paragraph mt-4">
+      Misalnya, kita kasih AI 10.000 foto kucing dan 10.000 foto anjing. Lama-lama, AI <span class="hl-green">bisa membedakan kucing dan anjing sendiri</span> – tanpa kita jelaskan perbedaannya! Keren kan? Inilah yang disebut <span class="hl-yellow">belajar dari contoh!</span> 🧠✨
+    </p>
+  </div>
+
+  <!-- ════ TIER COMPARE ════ -->
+  <div class="card card-blue p-6 mb-6 fade-up" style="animation-delay:0.25s">
+    <h2 class="font-kartun text-2xl mb-4 text-center" style="color:#01579B">⚡ Tier 1 vs Tier 2 – Apa Bedanya?</h2>
+    <div class="tier-compare">
+      <div class="tier-box tier-box-1">
+        <div style="font-size:2.5rem;margin-bottom:8px">🤖</div>
+        <div class="font-kartun text-lg" style="color:#01579B">Tier 1</div>
+        <div class="font-bold text-sm mt-1" style="color:#37474F">AI Dasar</div>
+        <div class="mt-3 text-xs font-bold" style="color:#546E7A">
+          ✅ Ikut aturan yang dibuat manusia<br/>
+          ❌ Tidak bisa belajar sendiri<br/>
+          📝 Contoh: robot pabrik, lampu lalu lintas otomatis
+        </div>
+      </div>
+      <div class="tier-box tier-box-2">
+        <div style="font-size:2.5rem;margin-bottom:8px">🧠</div>
+        <div class="font-kartun text-lg" style="color:#005005">Tier 2</div>
+        <div class="font-bold text-sm mt-1" style="color:#37474F">Machine Learning</div>
+        <div class="mt-3 text-xs font-bold" style="color:#546E7A">
+          ✅ Belajar dari banyak contoh<br/>
+          ✅ Makin pintar seiring waktu<br/>
+          📝 Contoh: filter spam email, rekomendasi YouTube
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ANALOGI ════ -->
+  <div class="analogi-box mb-6 fade-up" style="animation-delay:0.3s">
+    <div class="flex items-start gap-3 mt-2">
+      <div>
+        <h3 class="font-kartun text-xl mb-3" style="color:#E65100">🎾 Analogi Lucu: Seperti Melatih Anjing!</h3>
+        <div class="story-paragraph" style="font-size:1rem">
+          Bayangkan kamu melatih anjing kesayanganmu! 🐶<br/><br/>
+          <strong style="color:#E65100">Tier 1 (AI Biasa):</strong> Seperti anjing robot yang cuma tahu perintah yang sudah diprogram. Kalau tidak ada perintahnya, dia bingung!<br/><br/>
+          <strong style="color:#005005">Tier 2 (Machine Learning):</strong> Seperti anjing pintar yang dilatih berulang-ulang. Pertama kamu kasih contoh: "Duduk! ✅ Bagus!" lalu diulang ratusan kali. Lama-lama anjingmu <span class="hl-green">mengerti sendiri</span> apa yang diminta, bahkan bisa menebak keinginanmu dari gerak tubuhmu! 🌟
+        </div>
+
+        <!-- Mini analogy diagram -->
+        <div class="mt-4 p-4 rounded-xl flex flex-wrap gap-3 items-center justify-center" style="background:rgba(255,214,0,0.15);">
+          <div class="text-center">
+            <div style="font-size:1.8rem">📸</div>
+            <div class="text-xs font-bold" style="color:#E65100">Data Contoh</div>
+          </div>
+          <div style="font-size:1.4rem">→</div>
+          <div class="text-center">
+            <div style="font-size:1.8rem">🤖</div>
+            <div class="text-xs font-bold" style="color:#E65100">AI Belajar</div>
+          </div>
+          <div style="font-size:1.4rem">→</div>
+          <div class="text-center">
+            <div style="font-size:1.8rem">✨</div>
+            <div class="text-xs font-bold" style="color:#E65100">AI Pintar</div>
+          </div>
+          <div style="font-size:1.4rem">→</div>
+          <div class="text-center">
+            <div style="font-size:1.8rem">🎯</div>
+            <div class="text-xs font-bold" style="color:#E65100">Prediksi!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ KOMIK STRIP ════ -->
+  <div class="card card-orange p-6 mb-6 fade-up" style="animation-delay:0.35s">
+    <h2 class="font-kartun text-2xl mb-5 text-center" style="color:#E65100">🎬 Komik: Tier 1 vs Tier 2!</h2>
+    <div class="komik-wrap">
+
+      <!-- Panel 1 -->
+      <div class="komik-panel">
+        <div class="panel-scene" style="background: linear-gradient(145deg,#E3F2FD,#BBDEFB);">
+          <div class="panel-num">1</div>
+          <div class="panel-bubble" style="border-color:#1E88E5;color:#01579B;">Tier 1 🤖</div>
+          <div style="text-align:center;padding:8px">
+            <div style="font-size:2.4rem">🤖</div>
+            <div style="font-family:'Fredoka One',cursive;font-size:0.7rem;color:#01579B;margin-top:4px">Robo Tier 1</div>
+            <!-- rule book -->
+            <div style="background:#fff;border:2px solid #1E88E5;border-radius:8px;padding:4px 8px;font-size:0.6rem;font-weight:800;color:#01579B;margin-top:6px">
+              📋 Buku Aturan:<br/>IF kucing → bilang "Kucing"<br/>IF anjing → bilang "Anjing"
+            </div>
+          </div>
+        </div>
+        <div class="panel-text">Robo Tier 1 hanya mengikuti buku aturan yang dibuat manusia!</div>
+      </div>
+
+      <!-- Panel 2 -->
+      <div class="komik-panel">
+        <div class="panel-scene" style="background: linear-gradient(145deg,#FFFDE7,#FFF9C4);">
+          <div class="panel-num">2</div>
+          <div class="panel-bubble" style="border-color:#FFD600;color:#E65100;">Masalah! 😱</div>
+          <div style="text-align:center;padding:8px">
+            <div style="font-size:2.4rem">🤖</div>
+            <div style="font-size:1.8rem">🐰</div>
+            <div style="background:#FFD600;border-radius:8px;padding:3px 8px;font-size:0.6rem;font-weight:800;color:#E65100;margin-top:4px">
+              ???<br/>Di buku aturan tidak ada kelinci! 😢
+            </div>
+          </div>
+        </div>
+        <div class="panel-text">Tier 1 bingung saat melihat kelinci – tidak ada di buku aturannya!</div>
+      </div>
+
+      <!-- Panel 3 -->
+      <div class="komik-panel">
+        <div class="panel-scene" style="background: linear-gradient(145deg,#E8F5E9,#C8E6C9);">
+          <div class="panel-num">3</div>
+          <div class="panel-bubble" style="border-color:#00C853;color:#005005;">Tier 2 🧠</div>
+          <div style="text-align:center;padding:8px">
+            <div style="font-size:2.4rem">🤖</div>
+            <!-- Data flowing in -->
+            <div style="display:flex;gap:4px;justify-content:center;margin-top:4px">
+              <span style="font-size:1.2rem">🐱</span>
+              <span style="font-size:1.2rem">🐶</span>
+              <span style="font-size:1.2rem">🐰</span>
+              <span style="font-size:1.2rem">🐦</span>
+            </div>
+            <div style="background:#00C853;border-radius:8px;padding:3px 8px;font-size:0.6rem;font-weight:800;color:#fff;margin-top:4px">
+              Kasih 10.000 contoh! 📚
+            </div>
+          </div>
+        </div>
+        <div class="panel-text">Robo Tier 2 diberi ribuan contoh gambar binatang untuk dipelajari!</div>
+      </div>
+
+      <!-- Panel 4 -->
+      <div class="komik-panel">
+        <div class="panel-scene" style="background: linear-gradient(145deg,#EDE7F6,#D1C4E9);">
+          <div class="panel-num">4</div>
+          <div class="panel-bubble" style="border-color:#7C4DFF;color:#4527A0;">Pintar! 🌟</div>
+          <div style="text-align:center;padding:8px">
+            <div style="font-size:2.4rem">🤖</div>
+            <div style="font-size:1.8rem">🐰</div>
+            <div style="background:linear-gradient(135deg,#7C4DFF,#B388FF);border-radius:8px;padding:3px 8px;font-size:0.6rem;font-weight:800;color:#fff;margin-top:4px">
+              ✅ Ini KELINCI!<br/>Keyakinan 94%! 🎉
+            </div>
+          </div>
+        </div>
+        <div class="panel-text">Tier 2 langsung tahu itu kelinci tanpa diajarkan secara khusus!</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════ FAKTA KEREN ════ -->
+  <div class="card card-purple p-6 mb-6 fade-up" style="animation-delay:0.4s">
+    <h2 class="font-kartun text-2xl mb-5 text-center" style="color:#4527A0">💥 Fakta Keren Machine Learning!</h2>
+    <div class="fakta-grid">
+      <div class="fakta-item" style="background:linear-gradient(145deg,#E3F2FD,#BBDEFB);border:3px solid #1E88E5;">
+        <span class="fakta-emoji">🎵</span>
+        <div class="font-kartun text-sm" style="color:#01579B">Spotify</div>
+        <div class="text-xs font-bold mt-1" style="color:#546E7A">ML yang memilihkan lagu untukmu setiap hari berdasarkan kebiasaan dengarmu!</div>
+      </div>
+      <div class="fakta-item" style="background:linear-gradient(145deg,#FFF9C4,#FFFDE7);border:3px solid #FFD600;">
+        <span class="fakta-emoji">📧</span>
+        <div class="font-kartun text-sm" style="color:#E65100">Filter Spam</div>
+        <div class="text-xs font-bold mt-1" style="color:#546E7A">Email sampah diblokir otomatis oleh ML yang sudah belajar dari jutaan email!</div>
+      </div>
+      <div class="fakta-item" style="background:linear-gradient(145deg,#E8F5E9,#C8E6C9);border:3px solid #00C853;">
+        <span class="fakta-emoji">📱</span>
+        <div class="font-kartun text-sm" style="color:#005005">Wajah Terkunci</div>
+        <div class="text-xs font-bold mt-1" style="color:#546E7A">Face ID di HP menggunakan ML yang mengenali wajahmu dari ribuan foto latihan!</div>
+      </div>
+      <div class="fakta-item" style="background:linear-gradient(145deg,#EDE7F6,#D1C4E9);border:3px solid #7C4DFF;">
+        <span class="fakta-emoji">🎮</span>
+        <div class="font-kartun text-sm" style="color:#4527A0">Game NPC</div>
+        <div class="text-xs font-bold mt-1" style="color:#546E7A">Karakter di game belajar cara melawanmu makin pintar semakin sering kamu main!</div>
+      </div>
+    </div>
+
+    <!-- Extra fact banner -->
+    <div class="mt-5 p-4 rounded-2xl text-center" style="background:linear-gradient(135deg,#7C4DFF,#4527A0);color:#fff">
+      <span style="font-size:1.5rem">🤯</span>
+      <p class="font-kartun text-base mt-1">Tahukah Kamu?</p>
+      <p class="text-sm font-bold mt-1" style="color:#EDE7F6">Netflix menggunakan Machine Learning untuk merekomendasikan film. Tanpa ML, kamu mungkin tidak akan pernah menemukan film favoritmu! 🎬</p>
+    </div>
+  </div>
+
+  <!-- ════ CARA KERJA ML STEPS ════ -->
+  <div class="card card-green p-6 mb-6 fade-up" style="animation-delay:0.45s">
+    <h2 class="font-kartun text-2xl mb-5" style="color:#005005">🔬 Bagaimana ML Bekerja? (Langkah-langkah)</h2>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <!-- Step 1 -->
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px;border-radius:16px;background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border:2px solid #A5D6A7;">
+        <div style="min-width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00C853,#00BCD4);display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 3px 0 #00695C;flex-shrink:0;">📚</div>
+        <div>
+          <div class="font-kartun" style="color:#005005;font-size:1rem">Langkah 1: Kumpulkan Data</div>
+          <div class="text-sm font-bold mt-1" style="color:#546E7A">Kumpulkan ribuan atau jutaan contoh. Mau AI mengenali kucing? Kasih 100.000 foto kucing!</div>
+        </div>
+      </div>
+      <!-- Step 2 -->
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px;border-radius:16px;background:linear-gradient(135deg,#E3F2FD,#F3F4FF);border:2px solid #90CAF9;">
+        <div style="min-width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0288D1,#7C4DFF);display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 3px 0 #01579B;flex-shrink:0;">🏷️</div>
+        <div>
+          <div class="font-kartun" style="color:#01579B;font-size:1rem">Langkah 2: Beri Label</div>
+          <div class="text-sm font-bold mt-1" style="color:#546E7A">Setiap contoh diberi label. Foto kucing → "kucing ✅". Foto anjing → "anjing ✅". Inilah "jawaban"-nya!</div>
+        </div>
+      </div>
+      <!-- Step 3 -->
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px;border-radius:16px;background:linear-gradient(135deg,#FFFDE7,#FFF8E1);border:2px solid #FFD600;">
+        <div style="min-width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#FFD600,#FF6D00);display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 3px 0 #E65100;flex-shrink:0;">🏋️</div>
+        <div>
+          <div class="font-kartun" style="color:#E65100;font-size:1rem">Langkah 3: Latih AI</div>
+          <div class="text-sm font-bold mt-1" style="color:#546E7A">AI "membaca" semua contoh dan mencari pola. "Kucing punya telinga runcing, anjing punya moncong panjang..." dan seterusnya!</div>
+        </div>
+      </div>
+      <!-- Step 4 -->
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px;border-radius:16px;background:linear-gradient(135deg,#EDE7F6,#F3E5F5);border:2px solid #CE93D8;">
+        <div style="min-width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#7C4DFF,#F50057);display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 3px 0 #4527A0;flex-shrink:0;">🎯</div>
+        <div>
+          <div class="font-kartun" style="color:#4527A0;font-size:1rem">Langkah 4: Prediksi!</div>
+          <div class="text-sm font-bold mt-1" style="color:#546E7A">Setelah selesai latihan, AI bisa menebak gambar baru yang belum pernah dilihat sebelumnya. Itulah Machine Learning!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ QUIZ INTERAKTIF ════ -->
+  <div class="card card-yellow p-7 mb-6 fade-up" style="animation-delay:0.5s">
+    <div class="flex items-center gap-3 mb-2">
+      <span style="font-size:2rem">🎯</span>
+      <h2 class="font-kartun text-2xl" style="color:#E65100">Pertanyaan untuk Aslan!</h2>
+    </div>
+    <p class="font-bold mb-5" style="color:#546E7A;font-size:0.95rem">Robo punya pertanyaan seru untukmu. Pilih jawaban yang menurutmu benar!</p>
+
+    <!-- Question 1 -->
+    <div class="mb-6">
+      <div class="font-kartun text-lg mb-3" style="color:#005005">
+        🤔 Pertanyaan 1: Apa yang membuat Machine Learning berbeda dari AI biasa (Tier 1)?
+      </div>
+      <div id="q1-options" style="display:flex;flex-direction:column;gap:10px;">
+        <button class="quiz-option" onclick="checkAnswer(this,'q1','A')">
+          <span style="font-size:1.4rem">🅰️</span>
+          <span>Machine Learning lebih mahal harganya dari AI biasa</span>
+        </button>
+        <button class="quiz-option" onclick="checkAnswer(this,'q1','B')">
+          <span style="font-size:1.4rem">🅱️</span>
+          <span>Machine Learning bisa belajar sendiri dari banyak contoh, tanpa perlu aturan satu per satu</span>
+        </button>
+        <button class="quiz-option" onclick="checkAnswer(this,'q1','C')">
+          <span style="font-size:1.4rem">🅾️</span>
+          <span>Machine Learning selalu lebih cepat dari AI biasa</span>
+        </button>
+      </div>
+      <div id="q1-result" class="quiz-result"></div>
+    </div>
+
+    <!-- Question 2 -->
+    <div class="mb-6">
+      <div class="font-kartun text-lg mb-3" style="color:#005005">
+        🐱 Pertanyaan 2: Aslan ingin membuat AI yang bisa membedakan kucing dan anjing. Apa yang harus dilakukan pertama kali?
+      </div>
+      <div id="q2-options" style="display:flex;flex-direction:column;gap:10px;">
+        <button class="quiz-option" onclick="checkAnswer(this,'q2','A')">
+          <span style="font-size:1.4rem">🅰️</span>
+          <span>Langsung minta AI menebak tanpa latihan</span>
+        </button>
+        <button class="quiz-option" onclick="checkAnswer(this,'q2','B')">
+          <span style="font-size:1.4rem">🅱️</span>
+          <span>Kumpulkan banyak foto kucing dan anjing, lalu beri label</span>
+        </button>
+        <button class="quiz-option" onclick="checkAnswer(this,'q2','C')">
+          <span style="font-size:1.4rem">🅾️</span>
+          <span>Jelaskan perbedaan kucing dan anjing satu per satu ke AI</span>
+        </button>
+      </div>
+      <div id="q2-result" class="quiz-result"></div>
+    </div>
+
+    <!-- Question 3 -->
+    <div>
+      <div class="font-kartun text-lg mb-3" style="color:#005005">
+        📱 Pertanyaan 3: Fitur di HP yang bisa mengenali wajahmu untuk membuka kunci layar menggunakan...
+      </div>
+      <div id="q3-options" style="display:flex;flex-direction:column;gap:10px;">
+        <button class="quiz-option" onclick="checkAnswer(this,'q3','A')">
+          <span style="font-size:1.4rem">🅰️</span>
+          <span>Tier 1 – AI yang mengikuti aturan sederhana</span>
+        </button>
+        <button class="quiz-option" onclick="checkAnswer(this,'q3','B')">
+          <span style="font-size:1.4rem">🅱️</span>
+          <span>Machine Learning yang belajar dari ribuan foto wajahmu</span>
+        </button>
+        <button class="quiz-option" onclick="checkAnswer(this,'q3','C')">
+          <span style="font-size:1.4rem">🅾️</span>
+          <span>Manusia yang mengetik nama kamu setiap kali HP dikunci</span>
+        </button>
+      </div>
+      <div id="q3-result" class="quiz-result"></div>
+    </div>
+
+    <!-- Final score display -->
+    <div id="final-score" style="display:none" class="mt-6 p-5 rounded-2xl text-center" style="">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- ════ REWARD SECTION ════ -->
+  <div class="reward-section fade-up" style="animation-delay:0.55s">
+    <div class="mb-3">
+      <span class="star-icon">⭐</span>
+      <span class="star-icon">🌟</span>
+      <span class="star-icon">⭐</span>
+    </div>
+    <h2 class="font-kartun text-3xl mb-2" style="color:#FFD600;text-shadow:0 3px 0 #E65100">
+      Selamat, Aslan! 🎊
+    </h2>
+    <p class="font-bold mb-5" style="color:#B2DFDB;font-size:1rem">Kamu sudah menyelesaikan Hari 18!</p>
+
+    <!-- Badge earned -->
+    <div class="inline-block p-4 rounded-2xl mb-5" style="background:rgba(255,255,255,0.1);border:2px solid rgba(0,200,83,0.4)">
+      <div style="font-size:3rem">🏅</div>
+      <div class="font-kartun text-base mt-1" style="color:#FFD600">Badge Machine Learner</div>
+      <div class="text-xs font-bold mt-1" style="color:#B2DFDB">Diraih pada Hari 18!</div>
+    </div>
+
+    <p class="font-bold text-sm" style="color:#80CBC4">
+      Besok di <span style="color:#FFD600">Hari 19</span>, kita akan naik ke <strong style="color:#69F0AE">Tier 3: Deep Learning</strong> –<br/>
+      otak AI yang sangat-sangat dalam! Siap? 🚀
+    </p>
+
+    <!-- Mini progress tier strip -->
+    <div class="mt-6 flex justify-center gap-2 flex-wrap">
+      <div class="px-3 py-2 rounded-xl text-xs font-bold" style="background:#00695C;color:#69F0AE;border:2px solid #00C853">✅ T1: AI Dasar</div>
+      <div class="px-3 py-2 rounded-xl text-xs font-bold" style="background:#FFD600;color:#005005;border:2px solid #F57F17">⭐ T2: Machine Learning ← Kamu Di Sini!</div>
+      <div class="px-3 py-2 rounded-xl text-xs font-bold" style="background:rgba(255,255,255,0.1);color:#90A4AE;border:2px solid rgba(255,255,255,0.15)">🔒 T3: Deep Learning</div>
+      <div class="px-3 py-2 rounded-xl text-xs font-bold" style="background:rgba(255,255,255,0.1);color:#90A4AE;border:2px solid rgba(255,255,255,0.15)">🔒 T4 ~ T6</div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // Quiz logic
+  const correctAnswers = { q1: 'B', q2: 'B', q3: 'B' };
+  const answered = {};
+  let totalScore = 0;
+
+  function checkAnswer(btn, qid, choice) {
+    if (answered[qid]) return; // prevent re-answering
+    answered[qid] = true;
+
+    const optionsDiv = document.getElementById(qid + '-options');
+    const resultDiv  = document.getElementById(qid + '-result');
+    const allBtns    = optionsDiv.querySelectorAll('button');
+
+    allBtns.forEach(b => b.style.pointerEvents = 'none');
+
+    if (choice === correctAnswers[qid]) {
+      btn.classList.add('correct');
+      totalScore++;
+      resultDiv.innerHTML = '🎉 <strong>Betul banget!</strong> ' + getCorrectMsg(qid);
+      resultDiv.style.background = 'linear-gradient(135deg,#CCFF90,#69F0AE)';
+      resultDiv.style.color = '#005005';
+      resultDiv.style.border = '3px solid #00C853';
+    } else {
+      btn.classList.add('wrong');
+      // highlight correct
+      allBtns.forEach(b => {
+        const val = b.getAttribute('onclick').match(/'([ABC])'\)/)[1];
+        if (val === correctAnswers[qid]) b.classList.add('correct');
+      });
+      resultDiv.innerHTML = '😅 <strong>Hampir benar!</strong> ' + getWrongMsg(qid);
+      resultDiv.style.background = 'linear-gradient(135deg,#FFCDD2,#EF9A9A)';
+      resultDiv.style.color = '#B71C1C';
+      resultDiv.style.border = '3px solid #E53935';
+    }
+    resultDiv.classList.add('show');
+
+    // Show final score when all answered
+    if (Object.keys(answered).length === 3) {
+      setTimeout(showFinalScore, 600);
+    }
+  }
+
+  function getCorrectMsg(qid) {
+    const msgs = {
+      q1: 'Machine Learning memang bisa belajar dari contoh, berbeda dari AI Tier 1 yang hanya mengikuti aturan!',
+      q2: 'Mengumpulkan data dan memberi label adalah langkah pertama yang paling penting dalam Machine Learning!',
+      q3: 'Face ID menggunakan ML yang sudah dilatih dari foto wajahmu agar bisa mengenalimu!'
+    };
+    return msgs[qid];
+  }
+
+  function getWrongMsg(qid) {
+    const msgs = {
+      q1: 'Jawaban yang benar adalah B – Machine Learning belajar dari banyak contoh tanpa perlu semua aturan ditulis manual!',
+      q2: 'Jawaban yang benar adalah B – Mengumpulkan data berlabel adalah fondasi semua Machine Learning!',
+      q3: 'Jawaban yang benar adalah B – Face ID menggunakan Machine Learning yang sudah dilatih dari fotomu!'
+    };
+    return msgs[qid];
+  }
+
+  function showFinalScore() {
+    const div = document.getElementById('final-score');
+    const emoji = totalScore === 3 ? '🏆' : totalScore === 2 ? '🥈' : '🌱';
+    const msg   = totalScore === 3
+      ? 'Sempurna! Kamu adalah Machine Learner sejati!'
+      : totalScore === 2
+      ? 'Bagus sekali! Hampir sempurna!'
+      : 'Terus semangat belajar ya, Aslan!';
+    const bg    = totalScore === 3
+      ? 'linear-gradient(135deg,#FFD600,#FF6D00)'
+      : totalScore === 2
+      ? 'linear-gradient(135deg,#00C853,#0288D1)'
+      : 'linear-gradient(135deg,#7C4DFF,#F50057)';
+
+    div.style.display = 'block';
+    div.style.background = bg;
+    div.style.color = '#fff';
+    div.style.borderRadius = '20px';
+    div.style.padding = '24px';
+    div.style.boxShadow = '0 8px 30px rgba(0,0,0,0.18)';
+    div.style.animation = 'bounceIn 0.5s ease both';
+    div.innerHTML = `
+      <div style="font-size:3rem;margin-bottom:8px">${emoji}</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:1.8rem">Skor: ${totalScore}/3</div>
+      <div style="font-weight:800;margin-top:6px;font-size:1rem">${msg}</div>
+    `;
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hari 19: Deep Learning – Petualangan Aslan di Negeri AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink:    #05030F;
+      --deep:   #0C0828;
+      --abyss:  #120A40;
+      --mid:    #1E1260;
+      --indigo: #3730A3;
+      --violet: #6D28D9;
+      --purple: #9333EA;
+      --pink:   #EC4899;
+      --rose:   #FB7185;
+      --blue:   #2563EB;
+      --sky:    #38BDF8;
+      --cyan:   #22D3EE;
+      --teal:   #14B8A6;
+      --mint:   #34D399;
+      --lime:   #A3E635;
+      --gold:   #FBBF24;
+      --sun:    #FDE68A;
+      --white:  #FFFFFF;
+      --radius: 20px;
+      --shadow: 0 8px 32px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(170deg,#05030F 0%,#0C0828 35%,#1A0A50 70%,#05030F 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── BG CANVAS ── */
+    #bgCanvas { position:fixed;inset:0;z-index:0;pointer-events:none; }
+
+    /* ── BACK LINK ── */
+    .top-back-link {
+      display:inline-flex;align-items:center;gap:6px;
+      text-decoration:none;
+      font-family:'Fredoka One',cursive;font-size:1rem;
+      color:var(--sky);
+      background:rgba(255,255,255,.07);
+      border:2.5px solid rgba(99,102,241,.55);
+      border-radius:999px;padding:7px 18px;
+      box-shadow:0 4px 0 rgba(50,20,150,.5),0 0 20px rgba(109,40,217,.2);
+      transition:transform .2s,box-shadow .2s;
+      backdrop-filter:blur(6px);
+      position:relative;z-index:10;
+    }
+    .top-back-link:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(50,20,150,.6),0 0 30px rgba(109,40,217,.35);}
+
+    /* ── PAGE ── */
+    .page{max-width:720px;margin:0 auto;padding:20px 16px 60px;position:relative;z-index:1;}
+
+    .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px;}
+    .day-badge{
+      font-family:'Fredoka One',cursive;font-size:.9rem;
+      background:linear-gradient(135deg,var(--violet),var(--purple));
+      color:white;padding:6px 16px;border-radius:999px;
+      box-shadow:0 4px 0 rgba(30,10,100,.5),0 0 16px rgba(147,51,234,.3);
+    }
+    .prog-wrap{display:flex;align-items:center;gap:4px;flex-wrap:wrap;max-width:200px;}
+    .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.15);display:inline-block;}
+    .dot.done{background:var(--mint);}
+    .dot.active{background:var(--gold);box-shadow:0 0 0 3px rgba(251,191,36,.35);}
+
+    /* ── HERO ── */
+    .hero-card{
+      background:linear-gradient(145deg,#05030F 0%,#140E50 55%,#08041A 100%);
+      border:2px solid rgba(109,40,217,.28);
+      border-radius:28px;padding:32px 24px 24px;
+      margin-bottom:26px;position:relative;overflow:hidden;
+      box-shadow:var(--shadow),0 0 80px rgba(109,40,217,.12);
+    }
+    .hero-card::before{
+      content:'';position:absolute;inset:0;
+      background:
+        radial-gradient(circle at 25% 30%,rgba(109,40,217,.18) 0%,transparent 55%),
+        radial-gradient(circle at 75% 70%,rgba(34,211,238,.1) 0%,transparent 50%);
+      pointer-events:none;
+    }
+    .hero-card::after{
+      content:'';position:absolute;inset:0;
+      background-image:radial-gradient(circle,rgba(99,102,241,.06) 1px,transparent 1px);
+      background-size:26px 26px;pointer-events:none;
+    }
+    .hero-tag{
+      display:inline-block;font-family:'Fredoka One',cursive;font-size:.85rem;
+      background:linear-gradient(135deg,var(--violet),var(--pink));
+      color:white;padding:4px 14px;border-radius:999px;
+      box-shadow:0 3px 0 rgba(80,0,120,.5);
+      margin-bottom:14px;position:relative;z-index:1;
+      animation:tagPop .6s cubic-bezier(.36,.07,.19,.97) both .3s;
+    }
+    @keyframes tagPop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+    .hero-title{
+      font-family:'Fredoka One',cursive;
+      font-size:clamp(1.6rem,4.8vw,2.7rem);
+      color:white;
+      text-shadow:0 4px 22px rgba(109,40,217,.6),0 2px 0 rgba(0,0,0,.5);
+      line-height:1.15;position:relative;z-index:1;
+      animation:slideDown .7s ease both .4s;
+    }
+    .hero-title span{
+      background:linear-gradient(90deg,var(--sky),var(--cyan),var(--mint));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    @keyframes slideDown{from{transform:translateY(-28px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .hero-sub{font-size:1rem;color:rgba(186,230,253,.75);font-weight:700;margin-top:8px;position:relative;z-index:1;animation:slideDown .7s ease both .55s;}
+    .illus-wrap{margin:20px -4px 0;animation:slideDown .7s ease both .65s;}
+    .illus-scene{width:100%;max-width:560px;margin:0 auto;display:block;}
+
+    /* ── CARD ── */
+    .card{
+      background:rgba(255,255,255,.97);
+      border-radius:var(--radius);box-shadow:var(--shadow);
+      padding:24px;margin-bottom:22px;
+      position:relative;overflow:hidden;
+      animation:revealUp .5s ease both;
+    }
+    @keyframes revealUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .card-accent{position:absolute;top:0;left:0;right:0;height:5px;border-radius:var(--radius) var(--radius) 0 0;}
+    .card-title{font-family:'Fredoka One',cursive;font-size:1.25rem;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .et{font-size:.98rem;font-weight:700;color:#12103A;line-height:1.85;}
+    .hl {background:linear-gradient(90deg,rgba(251,191,36,.45),rgba(253,230,138,.3));padding:1px 5px;border-radius:5px;color:#78350F;}
+    .hlv{color:var(--violet);font-weight:900;}
+    .hlc{color:#0369A1;font-weight:900;}
+    .hlg{color:#065F46;font-weight:900;}
+
+    /* ── TIER COMPARISON BAR ── */
+    .tier-stack{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+    .tier-row{
+      border-radius:14px;padding:14px 16px;
+      display:flex;align-items:center;gap:14px;
+      border:2.5px solid;position:relative;overflow:hidden;
+      cursor:pointer;transition:transform .2s,box-shadow .2s;
+    }
+    .tier-row:hover{transform:translateX(5px);}
+    .tier-badge{
+      font-family:'Fredoka One',cursive;font-size:.9rem;
+      width:62px;flex-shrink:0;text-align:center;
+      padding:6px 4px;border-radius:10px;line-height:1.3;
+    }
+    .tier-info{flex:1;}
+    .tier-name{font-family:'Fredoka One',cursive;font-size:1rem;margin-bottom:3px;}
+    .tier-desc{font-size:.78rem;font-weight:700;line-height:1.5;}
+    .tier-layers{display:flex;gap:4px;margin-top:6px;}
+    .layer-dot{width:14px;height:14px;border-radius:50%;border:2px solid;}
+
+    /* ── ANALOGY ── */
+    .analogy-card{
+      margin-top:16px;
+      background:linear-gradient(135deg,#FEF3C7,#FDE68A);
+      border:3px solid var(--gold);border-radius:18px;padding:18px;
+      display:flex;gap:14px;align-items:flex-start;
+    }
+    .analogy-icon{font-size:2.8rem;flex-shrink:0;animation:floatY 3s ease-in-out infinite;}
+    @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .analogy-text{font-size:.95rem;font-weight:700;color:#78350F;line-height:1.75;}
+
+    /* ── BUILDING VISUAL ── */
+    .building-wrap{
+      background:#05030F;border-radius:18px;padding:18px;
+      border:2px solid rgba(109,40,217,.35);margin-top:14px;
+      box-shadow:0 0 40px rgba(109,40,217,.1);
+    }
+    .building-title{font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--sky);text-align:center;margin-bottom:14px;}
+
+    /* ── COMIC ── */
+    .comic-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+    @media(max-width:480px){.comic-grid{grid-template-columns:1fr;}}
+    .panel{
+      border:3px solid rgba(109,40,217,.6);border-radius:16px;
+      overflow:hidden;cursor:pointer;
+      transition:transform .25s,box-shadow .25s;
+      background:white;position:relative;
+    }
+    .panel:hover{transform:scale(1.04) rotate(.4deg);box-shadow:0 14px 36px rgba(109,40,217,.25);}
+    .panel-num{
+      position:absolute;top:8px;left:8px;width:26px;height:26px;
+      background:var(--violet);color:white;border-radius:50%;
+      font-family:'Fredoka One',cursive;font-size:.85rem;
+      display:flex;align-items:center;justify-content:center;z-index:3;
+      box-shadow:0 2px 6px rgba(0,0,0,.3);
+    }
+    .panel-art{width:100%;display:block;}
+    .panel-bubble{font-family:'Fredoka One',cursive;font-size:.82rem;text-align:center;padding:6px 10px;border-top:2.5px dashed;background:rgba(255,255,255,.9);}
+    .panel-caption{font-size:.74rem;text-align:center;font-weight:800;color:#4A5568;padding:5px 8px 8px;background:#F8F5FF;}
+
+    /* ── FACTS ── */
+    .facts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+    @media(max-width:440px){.facts-grid{grid-template-columns:1fr;}}
+    .fact-item{border-radius:16px;border:3px solid;padding:14px 12px;display:flex;flex-direction:column;gap:5px;}
+    .fact-icon{font-size:2rem;animation:floatY 2s ease-in-out infinite;}
+    .fact-label{font-family:'Fredoka One',cursive;font-size:1rem;}
+    .fact-desc{font-size:.82rem;font-weight:700;line-height:1.55;}
+
+    /* ── QUIZ ── */
+    .quiz-q{background:#F3E8FF;border-radius:16px;padding:18px;margin-bottom:14px;}
+    .q-label{font-family:'Fredoka One',cursive;font-size:1rem;margin-bottom:4px;}
+    .q-text{font-weight:800;font-size:1rem;color:#12103A;margin-bottom:14px;}
+    .quiz-wrap{display:flex;flex-direction:column;gap:10px;}
+    .q-btn{
+      border:3px solid #DDD8FF;border-radius:14px;padding:13px 18px;
+      cursor:pointer;font-family:'Nunito',sans-serif;font-size:.97rem;font-weight:700;
+      color:#12103A;background:white;text-align:left;
+      display:flex;align-items:center;gap:12px;transition:all .2s;
+    }
+    .q-btn:hover{border-color:var(--violet);background:#F5F0FF;transform:translateX(5px);}
+    .q-btn.correct{border-color:var(--mint);background:#E6FDF6;animation:correctB .4s ease;}
+    .q-btn.wrong{border-color:var(--pink);background:#FDE8F5;animation:shakeX .4s ease;}
+    @keyframes correctB{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+    @keyframes shakeX{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+    .q-result{display:none;border-radius:12px;padding:13px 16px;font-weight:800;font-size:.95rem;text-align:center;animation:fadeUp .4s ease;margin-top:8px;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .score-reveal{
+      display:none;border-radius:20px;padding:24px;text-align:center;
+      background:linear-gradient(135deg,var(--violet),var(--purple),var(--pink));
+      color:white;margin-top:16px;animation:fadeUp .5s ease;
+      box-shadow:0 8px 0 rgba(60,10,100,.5),0 14px 30px rgba(109,40,217,.4);
+    }
+    .score-num{font-family:'Fredoka One',cursive;font-size:3.5rem;line-height:1;text-shadow:0 3px 0 rgba(0,0,0,.3);}
+
+    .divider{text-align:center;font-size:1.1rem;letter-spacing:7px;color:rgba(109,40,217,.3);margin:4px 0;}
+    .sp{display:inline-block;animation:floatY 1.8s ease-in-out infinite;}
+    .page-footer{text-align:center;margin-top:32px;font-size:.78rem;font-weight:700;color:rgba(186,230,253,.3);}
+  </style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="page">
+
+  <!-- ── TOP BAR ── -->
+  <div class="top-bar">
+    <a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+    <div class="prog-wrap">
+      <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span>
+      <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span>
+      <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span>
+      <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span>
+      <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span>
+      <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span>
+      <span class="dot active"></span>
+    </div>
+    <div class="day-badge">🔮 HARI 19 / 30</div>
+  </div>
+
+  <!-- ── HERO ── -->
+  <div class="hero-card">
+    <div class="hero-tag">🔮 Minggu 3 – Level Tertinggi AI!</div>
+    <h1 class="hero-title">Hari 19: Tier 3 –<br/><span>Deep Learning</span> 🧠✨</h1>
+    <p class="hero-sub">Otak AI yang punya lapisan sangat dalam — dan sangat ajaib! 🌌🔥</p>
+
+    <!-- MAIN ILLUSTRATION -->
+    <div class="illus-wrap">
+      <svg class="illus-scene" viewBox="0 0 560 330" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hBg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#05030F"/>
+            <stop offset="100%" stop-color="#1A0A50"/>
+          </linearGradient>
+          <!-- Layer gradients -->
+          <linearGradient id="lyr1" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#2563EB" stop-opacity=".9"/>
+            <stop offset="100%" stop-color="#3730A3" stop-opacity=".9"/>
+          </linearGradient>
+          <linearGradient id="lyr2" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#6D28D9" stop-opacity=".95"/>
+            <stop offset="100%" stop-color="#7C3AED" stop-opacity=".95"/>
+          </linearGradient>
+          <linearGradient id="lyr3" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#9333EA" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#A855F7" stop-opacity="1"/>
+          </linearGradient>
+          <linearGradient id="lyr4" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#EC4899" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#F472B6" stop-opacity="1"/>
+          </linearGradient>
+          <linearGradient id="lyr5" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#22D3EE" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#34D399" stop-opacity="1"/>
+          </linearGradient>
+          <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#A855F7" stop-opacity=".6"/>
+            <stop offset="60%" stop-color="#6D28D9" stop-opacity=".2"/>
+            <stop offset="100%" stop-color="#6D28D9" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="roboGlowD" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#38BDF8" stop-opacity=".4"/>
+            <stop offset="100%" stop-color="#38BDF8" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="glowF" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="4" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="softF" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="7"/>
+          </filter>
+          <filter id="medF" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="4"/>
+          </filter>
+        </defs>
+
+        <!-- BG -->
+        <rect width="560" height="330" fill="url(#hBg)" rx="18"/>
+        <!-- Dot grid -->
+        <pattern id="dpat" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="12" cy="12" r=".9" fill="rgba(109,40,217,.12)"/>
+        </pattern>
+        <rect width="560" height="330" fill="url(#dpat)" rx="18"/>
+
+        <!-- Stars -->
+        <circle cx="25"  cy="22" r="1.5" fill="white" opacity=".5"/>
+        <circle cx="95"  cy="14" r="1"   fill="white" opacity=".4"/>
+        <circle cx="510" cy="20" r="1.5" fill="white" opacity=".6"/>
+        <circle cx="545" cy="42" r="1"   fill="white" opacity=".4"/>
+        <circle cx="450" cy="10" r="2"   fill="white" opacity=".5"/>
+        <circle cx="170" cy="16" r="1"   fill="white" opacity=".4"/>
+        <circle cx="340" cy="8"  r="1.5" fill="white" opacity=".5"/>
+        <circle cx="250" cy="18" r="1"   fill="white" opacity=".4"/>
+
+        <!-- ── DEEP LEARNING BUILDING (CENTER) ── -->
+        <!-- Big glow behind building -->
+        <ellipse cx="295" cy="185" rx="110" ry="130" fill="url(#coreGlow)" filter="url(#softF)"/>
+
+        <!-- Building outline / container -->
+        <rect x="210" y="38" width="170" height="262" rx="14"
+          fill="rgba(5,3,15,.7)" stroke="rgba(109,40,217,.4)" stroke-width="2"/>
+
+        <!-- Floor labels left side -->
+        <text x="196" y="75"  font-size="8" fill="rgba(255,255,255,.45)" font-family="Fredoka One,cursive" text-anchor="end">Layer 1</text>
+        <text x="196" y="115" font-size="8" fill="rgba(255,255,255,.45)" font-family="Fredoka One,cursive" text-anchor="end">Layer 2</text>
+        <text x="196" y="155" font-size="8" fill="rgba(255,255,255,.45)" font-family="Fredoka One,cursive" text-anchor="end">Layer 3</text>
+        <text x="196" y="195" font-size="8" fill="rgba(255,255,255,.45)" font-family="Fredoka One,cursive" text-anchor="end">Layer 4</text>
+        <text x="196" y="235" font-size="8" fill="rgba(255,255,255,.45)" font-family="Fredoka One,cursive" text-anchor="end">Layer 5</text>
+        <text x="196" y="275" font-size="8" fill="rgba(255,255,255,.45)" font-family="Fredoka One,cursive" text-anchor="end">Output</text>
+
+        <!-- Layer 1 – BLUE -->
+        <rect x="215" y="48" width="160" height="36" rx="9" fill="url(#lyr1)" filter="url(#glowF)"/>
+        <text x="252" y="62" font-size="9" fill="white" font-family="Fredoka One,cursive">📷 Piksel &amp; Tepi Gambar</text>
+        <!-- Nodes row 1 -->
+        <circle cx="226" cy="72" r="5.5" fill="white" opacity=".85"/><circle cx="240" cy="72" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="254" cy="72" r="5.5" fill="white" opacity=".85"/><circle cx="268" cy="72" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="282" cy="72" r="5.5" fill="white" opacity=".85"/><circle cx="296" cy="72" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="310" cy="72" r="5.5" fill="white" opacity=".85"/><circle cx="324" cy="72" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="338" cy="72" r="5.5" fill="white" opacity=".85"/><circle cx="352" cy="72" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="366" cy="72" r="5.5" fill="white" opacity=".85"/>
+
+        <!-- Layer 2 – INDIGO -->
+        <rect x="215" y="88" width="160" height="36" rx="9" fill="url(#lyr2)" filter="url(#glowF)"/>
+        <text x="248" y="102" font-size="9" fill="white" font-family="Fredoka One,cursive">🔲 Bentuk &amp; Pola Dasar</text>
+        <circle cx="228" cy="112" r="5.5" fill="white" opacity=".85"/><circle cx="245" cy="112" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="262" cy="112" r="5.5" fill="white" opacity=".85"/><circle cx="279" cy="112" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="296" cy="112" r="5.5" fill="white" opacity=".85"/><circle cx="313" cy="112" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="330" cy="112" r="5.5" fill="white" opacity=".85"/><circle cx="347" cy="112" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="364" cy="112" r="5.5" fill="white" opacity=".85"/>
+
+        <!-- Layer 3 – PURPLE -->
+        <rect x="215" y="128" width="160" height="36" rx="9" fill="url(#lyr3)" filter="url(#glowF)"/>
+        <text x="248" y="142" font-size="9" fill="white" font-family="Fredoka One,cursive">👁️ Bagian Objek (Mata, dll)</text>
+        <circle cx="230" cy="152" r="5.5" fill="white" opacity=".85"/><circle cx="250" cy="152" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="270" cy="152" r="5.5" fill="white" opacity=".85"/><circle cx="290" cy="152" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="310" cy="152" r="5.5" fill="white" opacity=".85"/><circle cx="330" cy="152" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="350" cy="152" r="5.5" fill="white" opacity=".85"/>
+
+        <!-- Layer 4 – PINK -->
+        <rect x="215" y="168" width="160" height="36" rx="9" fill="url(#lyr4)" filter="url(#glowF)"/>
+        <text x="240" y="182" font-size="9" fill="white" font-family="Fredoka One,cursive">🐱 Bagian Kompleks (Muka)</text>
+        <circle cx="235" cy="192" r="5.5" fill="white" opacity=".85"/><circle cx="258" cy="192" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="281" cy="192" r="5.5" fill="white" opacity=".85"/><circle cx="304" cy="192" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="327" cy="192" r="5.5" fill="white" opacity=".85"/><circle cx="350" cy="192" r="5.5" fill="white" opacity=".85"/>
+
+        <!-- Layer 5 – CYAN/MINT -->
+        <rect x="215" y="208" width="160" height="36" rx="9" fill="url(#lyr5)" filter="url(#glowF)"/>
+        <text x="248" y="222" font-size="9" fill="white" font-family="Fredoka One,cursive">🧠 Konsep Tinggi (Hewan?)</text>
+        <circle cx="240" cy="232" r="5.5" fill="white" opacity=".85"/><circle cx="267" cy="232" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="294" cy="232" r="5.5" fill="white" opacity=".85"/><circle cx="321" cy="232" r="5.5" fill="white" opacity=".85"/>
+        <circle cx="348" cy="232" r="5.5" fill="white" opacity=".85"/>
+
+        <!-- Output -->
+        <rect x="215" y="248" width="160" height="44" rx="9" fill="rgba(251,191,36,.2)" stroke="#FBBF24" stroke-width="2"/>
+        <text x="260" y="262" font-size="10" fill="#FDE68A" font-family="Fredoka One,cursive">✅ JAWABAN FINAL</text>
+        <text x="268" y="282" font-size="18">😺</text>
+        <rect x="288" y="268" width="68" height="12" rx="5" fill="rgba(251,191,36,.15)" stroke="#FBBF24" stroke-width="1"/>
+        <rect x="288" y="268" width="64" height="12" rx="5" fill="#FBBF24"/>
+        <text x="296" y="278" font-size="8" fill="#12103A" font-family="Fredoka One,cursive">KUCING 97%</text>
+
+        <!-- Animated signal pulses flowing DOWN layers -->
+        <circle r="5" fill="#60A5FA" opacity=".9">
+          <animateMotion dur="2.5s" repeatCount="indefinite" path="M295,48 L295,90"/>
+        </circle>
+        <circle r="5" fill="#A78BFA" opacity=".9">
+          <animateMotion dur="2.5s" repeatCount="indefinite" begin=".4s" path="M295,88 L295,130"/>
+        </circle>
+        <circle r="5" fill="#C084FC" opacity=".9">
+          <animateMotion dur="2.5s" repeatCount="indefinite" begin=".8s" path="M295,128 L295,170"/>
+        </circle>
+        <circle r="5" fill="#F472B6" opacity=".9">
+          <animateMotion dur="2.5s" repeatCount="indefinite" begin="1.2s" path="M295,168 L295,210"/>
+        </circle>
+        <circle r="5" fill="#34D399" opacity=".9">
+          <animateMotion dur="2.5s" repeatCount="indefinite" begin="1.6s" path="M295,208 L295,250"/>
+        </circle>
+        <circle r="6" fill="#FBBF24" opacity=".95">
+          <animateMotion dur="2.5s" repeatCount="indefinite" begin="2s" path="M295,248 L295,270"/>
+        </circle>
+
+        <!-- "Deep Learning" label -->
+        <rect x="218" y="294" width="154" height="20" rx="8" fill="rgba(109,40,217,.3)" stroke="rgba(109,40,217,.6)" stroke-width="1.5"/>
+        <text x="295" y="308" font-size="9" fill="#C084FC" font-family="Fredoka One,cursive" text-anchor="middle">🔮 Deep Learning — 5+ Lapisan!</text>
+
+        <!-- Arrow "input" at top -->
+        <line x1="295" y1="26" x2="295" y2="44" stroke="#60A5FA" stroke-width="2.5" stroke-linecap="round"/>
+        <polygon points="289,41 295,48 301,41" fill="#60A5FA"/>
+        <rect x="255" y="12" width="80" height="17" rx="7" fill="rgba(37,99,235,.3)" stroke="#60A5FA" stroke-width="1.5"/>
+        <text x="295" y="24" font-size="8.5" fill="#BAE6FD" font-family="Fredoka One,cursive" text-anchor="middle">📷 Input Gambar</text>
+
+        <!-- ── ASLAN (left) ── -->
+        <!-- Glow -->
+        <circle cx="105" cy="195" r="55" fill="rgba(37,99,235,.08)" filter="url(#softF)"/>
+        <!-- Explorer hat -->
+        <ellipse cx="105" cy="172" rx="24" ry="7" fill="#8B4513"/>
+        <rect x="93"  cy="160" width="24" height="14" rx="5" fill="#A0522D"/>
+        <!-- Head -->
+        <ellipse cx="105" cy="184" rx="20" ry="22" fill="#FFCC80"/>
+        <!-- Hair -->
+        <path d="M86 176 Q85 163 91 160 Q96 154 105 157 Q114 154 119 160 Q123 163 122 176" fill="#3E2723"/>
+        <!-- Eyes wide (amazed) -->
+        <circle cx="98"  cy="183" r="5.5" fill="white" stroke="#6D28D9" stroke-width="1.5"/>
+        <circle cx="112" cy="183" r="5.5" fill="white" stroke="#6D28D9" stroke-width="1.5"/>
+        <circle cx="99"  cy="184" r="3.2" fill="#6D28D9"/>
+        <circle cx="113" cy="184" r="3.2" fill="#6D28D9"/>
+        <circle cx="100" cy="182" r="1.3" fill="white"/>
+        <circle cx="114" cy="182" r="1.3" fill="white"/>
+        <!-- Mouth awed -->
+        <ellipse cx="105" cy="197" rx="5.5" ry="5" fill="#C62828"/>
+        <ellipse cx="105" cy="198" rx="3.5" ry="3" fill="#FF8A80"/>
+        <!-- Body explorer -->
+        <rect x="88" y="203" width="34" height="40" rx="9" fill="#4CAF50"/>
+        <rect x="91" y="208" width="11" height="9" rx="3" fill="#388E3C"/>
+        <rect x="107" y="208" width="11" height="9" rx="3" fill="#388E3C"/>
+        <!-- Arms pointing at building -->
+        <line x1="122" y1="218" x2="205" y2="200" stroke="#FFCC80" stroke-width="8" stroke-linecap="round"/>
+        <text x="197" y="198" font-size="16">👆</text>
+        <!-- Legs -->
+        <rect x="93"  y="241" width="13" height="18" rx="6" fill="#4CAF50"/>
+        <rect x="109" y="241" width="13" height="18" rx="6" fill="#4CAF50"/>
+        <!-- Speech bubble -->
+        <rect x="14" y="138" width="128" height="34" rx="12" fill="white" stroke="#6D28D9" stroke-width="2.5"/>
+        <polygon points="66,172 78,180 78,172" fill="white" stroke="#6D28D9" stroke-width="2.5"/>
+        <text x="20" y="151" font-size="8.5" fill="#12103A" font-family="Nunito,sans-serif" font-weight="800">Gila! Otaknya banyak</text>
+        <text x="20" y="162" font-size="8.5" fill="#12103A" font-family="Nunito,sans-serif" font-weight="800">banget lapisannya! 🤯</text>
+        <text x="20" y="166" font-size="8.5" fill="#6D28D9" font-family="Fredoka One,cursive">Kayak gedung pencakar langit!</text>
+
+        <!-- ── ROBO (right) ── -->
+        <circle cx="460" cy="188" r="52" fill="url(#roboGlowD)" filter="url(#softF)"/>
+        <!-- Body -->
+        <rect x="435" y="200" width="50" height="46" rx="12" fill="#D6F4FF" stroke="#6D28D9" stroke-width="2.5"/>
+        <!-- Chest display: mini layer stack -->
+        <rect x="441" y="207" width="38" height="28" rx="7" fill="#05030F"/>
+        <rect x="444" y="210" width="32" height="5" rx="2.5" fill="#2563EB" opacity=".9"/>
+        <rect x="444" y="217" width="32" height="5" rx="2.5" fill="#7C3AED" opacity=".9"/>
+        <rect x="444" y="224" width="32" height="5" rx="2.5" fill="#EC4899" opacity=".9"/>
+        <rect x="444" y="231" width="32" height="5" rx="2.5" fill="#22D3EE" opacity=".9"/>
+        <!-- Head -->
+        <rect x="438" y="160" width="44" height="42" rx="13" fill="#D6F4FF" stroke="#6D28D9" stroke-width="2.5"/>
+        <!-- Eyes star -->
+        <text x="441" y="182" font-size="16">⭐</text>
+        <text x="460" y="182" font-size="16">⭐</text>
+        <!-- Smile -->
+        <path d="M446 188 Q460 198 474 188" fill="none" stroke="#6D28D9" stroke-width="3" stroke-linecap="round"/>
+        <!-- Antenna glow -->
+        <line x1="460" y1="160" x2="460" y2="144" stroke="#6D28D9" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="460" cy="140" r="6" fill="#A855F7" stroke="#6D28D9" stroke-width="2">
+          <animate attributeName="r" values="5;9;5" dur="1.2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="1;.4;1" dur="1.2s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Arms -->
+        <line x1="435" y1="216" x2="415" y2="205" stroke="#D6F4FF" stroke-width="8" stroke-linecap="round"/>
+        <text x="398" y="210" font-size="16">🧠</text>
+        <line x1="485" y1="216" x2="505" y2="205" stroke="#D6F4FF" stroke-width="8" stroke-linecap="round"/>
+        <text x="500" y="210" font-size="16">✨</text>
+        <!-- Legs -->
+        <rect x="444" y="244" width="13" height="18" rx="6" fill="#D6F4FF" stroke="#6D28D9" stroke-width="2"/>
+        <rect x="463" y="244" width="13" height="18" rx="6" fill="#D6F4FF" stroke="#6D28D9" stroke-width="2"/>
+        <!-- Robo speech -->
+        <rect x="396" y="126" width="148" height="34" rx="12" fill="white" stroke="#6D28D9" stroke-width="2.5"/>
+        <polygon points="456,160 468,168 468,160" fill="white" stroke="#6D28D9" stroke-width="2.5"/>
+        <text x="402" y="139" font-size="8.5" fill="#12103A" font-family="Nunito,sans-serif" font-weight="800">Inilah otakku! Setiap</text>
+        <text x="402" y="150" font-size="8.5" fill="#12103A" font-family="Nunito,sans-serif" font-weight="800">lapisan makin paham! 💜</text>
+        <text x="406" y="156" font-size="8" fill="#9333EA" font-family="Fredoka One,cursive">Itulah Deep Learning! 🔮</text>
+
+        <!-- Glow halos on layers (visible from outside) -->
+        <rect x="205" y="48"  width="5" height="36" rx="3" fill="#2563EB" opacity=".8" filter="url(#medF)"/>
+        <rect x="205" y="88"  width="5" height="36" rx="3" fill="#6D28D9" opacity=".8" filter="url(#medF)"/>
+        <rect x="205" y="128" width="5" height="36" rx="3" fill="#9333EA" opacity=".8" filter="url(#medF)"/>
+        <rect x="205" y="168" width="5" height="36" rx="3" fill="#EC4899" opacity=".8" filter="url(#medF)"/>
+        <rect x="205" y="208" width="5" height="36" rx="3" fill="#22D3EE" opacity=".8" filter="url(#medF)"/>
+        <rect x="375" y="48"  width="5" height="36" rx="3" fill="#2563EB" opacity=".8" filter="url(#medF)"/>
+        <rect x="375" y="88"  width="5" height="36" rx="3" fill="#6D28D9" opacity=".8" filter="url(#medF)"/>
+        <rect x="375" y="128" width="5" height="36" rx="3" fill="#9333EA" opacity=".8" filter="url(#medF)"/>
+        <rect x="375" y="168" width="5" height="36" rx="3" fill="#EC4899" opacity=".8" filter="url(#medF)"/>
+        <rect x="375" y="208" width="5" height="36" rx="3" fill="#22D3EE" opacity=".8" filter="url(#medF)"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── TIER COMPARISON ── -->
+  <div class="card" style="animation-delay:.08s">
+    <div class="card-accent" style="background:linear-gradient(90deg,#2563EB,#9333EA,#EC4899);"></div>
+    <div class="card-title" style="color:var(--violet);">
+      <span class="sp">🏆</span> Tiga Tingkat Kecerdasan AI!
+    </div>
+    <p style="font-size:.88rem;font-weight:700;color:#6B7280;margin-bottom:12px;">Klik setiap tier untuk lihat detail! 🎯</p>
+    <div class="tier-stack">
+
+      <div class="tier-row" style="background:#EFF6FF;border-color:#93C5FD;" onclick="toggleTier('t1')">
+        <div class="tier-badge" style="background:#DBEAFE;color:#1D4ED8;">🥉<br/>Tier 1</div>
+        <div class="tier-info">
+          <div class="tier-name" style="color:#1D4ED8;">Machine Learning Biasa</div>
+          <div class="tier-desc" style="color:#1E40AF;">Belajar dari aturan dan data sederhana. Butuh manusia untuk memilih fitur-fiturnya. 🤔</div>
+          <div class="tier-layers" id="t1" style="display:none;margin-top:8px;">
+            <div class="layer-dot" style="background:#93C5FD;border-color:#3B82F6;" title="Layer 1"></div>
+            <div class="layer-dot" style="background:#93C5FD;border-color:#3B82F6;" title="Layer 2"></div>
+            <span style="font-size:.75rem;font-weight:700;color:#1D4ED8;margin-left:4px;">2-3 lapisan saja</span>
+          </div>
+        </div>
+        <span style="font-size:1.5rem;">🧮</span>
+      </div>
+
+      <div class="tier-row" style="background:#F5F3FF;border-color:#C4B5FD;" onclick="toggleTier('t2')">
+        <div class="tier-badge" style="background:#EDE9FE;color:#6D28D9;">🥈<br/>Tier 2</div>
+        <div class="tier-info">
+          <div class="tier-name" style="color:#6D28D9;">Neural Network</div>
+          <div class="tier-desc" style="color:#5B21B6;">Jaringan neuron yang meniru otak. AI mulai bisa menemukan polanya sendiri! 🧠</div>
+          <div class="tier-layers" id="t2" style="display:none;margin-top:8px;">
+            <div class="layer-dot" style="background:#A78BFA;border-color:#7C3AED;"></div>
+            <div class="layer-dot" style="background:#A78BFA;border-color:#7C3AED;"></div>
+            <div class="layer-dot" style="background:#A78BFA;border-color:#7C3AED;"></div>
+            <div class="layer-dot" style="background:#A78BFA;border-color:#7C3AED;"></div>
+            <span style="font-size:.75rem;font-weight:700;color:#6D28D9;margin-left:4px;">3-5 lapisan</span>
+          </div>
+        </div>
+        <span style="font-size:1.5rem;">🕸️</span>
+      </div>
+
+      <div class="tier-row" style="background:linear-gradient(135deg,#FDF4FF,#F0FDFA);border-color:#D946EF;" onclick="toggleTier('t3')">
+        <div class="tier-badge" style="background:linear-gradient(135deg,#FAE8FF,#CCFBF1);color:#86198F;">🥇<br/>Tier 3</div>
+        <div class="tier-info">
+          <div class="tier-name" style="color:#9333EA;">✨ Deep Learning</div>
+          <div class="tier-desc" style="color:#7E22CE;">Banyak lapisan tersembunyi — bisa memahami gambar, suara, dan bahasa seperti manusia! 🚀🌟</div>
+          <div class="tier-layers" id="t3" style="display:none;margin-top:8px;">
+            <div class="layer-dot" style="background:#2563EB;border-color:#1D4ED8;"></div>
+            <div class="layer-dot" style="background:#7C3AED;border-color:#6D28D9;"></div>
+            <div class="layer-dot" style="background:#9333EA;border-color:#7E22CE;"></div>
+            <div class="layer-dot" style="background:#EC4899;border-color:#DB2777;"></div>
+            <div class="layer-dot" style="background:#22D3EE;border-color:#0891B2;"></div>
+            <div class="layer-dot" style="background:#34D399;border-color:#059669;"></div>
+            <div class="layer-dot" style="background:#FBBF24;border-color:#D97706;"></div>
+            <span style="font-size:.75rem;font-weight:700;color:#9333EA;margin-left:4px;">5 – 1000+ lapisan! 🤯</span>
+          </div>
+        </div>
+        <span style="font-size:1.5rem;">🔮</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── PENJELASAN ── -->
+  <div class="card" style="animation-delay:.12s">
+    <div class="card-accent" style="background:linear-gradient(90deg,var(--violet),var(--cyan));"></div>
+    <div class="card-title" style="color:var(--violet);">
+      <span class="sp">🧠</span> Apa Itu Deep Learning?
+    </div>
+    <p class="et">
+      Deep Learning adalah AI paling canggih — bayangkan
+      <span class="hl">neural network biasa</span> tapi punya
+      <span class="hlv">BANYAK sekali lapisan tersembunyi</span>!
+      Kata "Deep" itu artinya "dalam" — karena lapisan otaknya sangat dalam. 🌊
+    </p>
+    <p class="et" style="margin-top:10px;">
+      Setiap lapisan punya tugasnya sendiri. Lapisan pertama mengenali
+      <span class="hl">garis dan piksel</span>. Lapisan berikutnya mengenali
+      <span class="hl">bentuk</span>. Lapisan selanjutnya mengenali
+      <span class="hlv">bagian wajah</span>. Dan lapisan paling dalam akhirnya bisa
+      bilang: <span class="hl">"Ini kucing!"</span> 😺
+    </p>
+    <p class="et" style="margin-top:10px;">
+      Inilah kenapa Deep Learning bisa melakukan hal-hal luar biasa —
+      <span class="hlc">mengenali wajah</span>, memahami
+      <span class="hlg">ucapanmu</span>, menerjemahkan bahasa, bahkan
+      <span class="hlv">membuat gambar dari imajinasi</span>! Semua
+      teknologi AI keren yang kamu tahu — hampir semuanya pakai Deep Learning! 🚀
+    </p>
+
+    <div class="analogy-card">
+      <div class="analogy-icon">🏢</div>
+      <div class="analogy-text">
+        <strong style="font-size:1rem;display:block;margin-bottom:5px;color:#78350F;">Analogi Aslan: Gedung Pencakar Langit! 😄</strong>
+        Bayangkan kamu mau masak pizza. Di lantai 1 kamu siapkan bahannya.
+        Di lantai 2 kamu uleni adonannya. Di lantai 3 kamu beri saus.
+        Di lantai 4 kamu tabur keju. Di lantai 5 kamu panggang.
+        Di lantai 6 pizza jadi! 🍕<br/>
+        Deep Learning juga begitu — setiap lapisan punya tugasnya,
+        dan hasil akhirnya jauh lebih <strong>lezat</strong> dari otak AI biasa! 🤤
+      </div>
+    </div>
+
+    <!-- Building visual with labeled floors -->
+    <div class="building-wrap">
+      <div class="building-title">🏢 Deep Learning = Gedung Berlapis-lapis Pengetahuan!</div>
+      <svg width="100%" viewBox="0 0 420 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="fl1" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#1D4ED8"/><stop offset="100%" stop-color="#3B82F6"/>
+          </linearGradient>
+          <linearGradient id="fl2" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#5B21B6"/><stop offset="100%" stop-color="#7C3AED"/>
+          </linearGradient>
+          <linearGradient id="fl3" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#86198F"/><stop offset="100%" stop-color="#A855F7"/>
+          </linearGradient>
+          <linearGradient id="fl4" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#9D174D"/><stop offset="100%" stop-color="#EC4899"/>
+          </linearGradient>
+          <linearGradient id="fl5" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#0E7490"/><stop offset="100%" stop-color="#22D3EE"/>
+          </linearGradient>
+          <filter id="gf2"><feGaussianBlur stdDeviation="3"/></filter>
+        </defs>
+
+        <!-- Building floors (bottom to top visually = top to bottom in flow) -->
+        <!-- Floor 5 (top / input) -->
+        <rect x="80" y="8"   width="260" height="30" rx="8" fill="url(#fl1)" filter="url(#gf2)" opacity=".3"/>
+        <rect x="80" y="8"   width="260" height="30" rx="8" fill="url(#fl1)"/>
+        <text x="138" y="22" font-size="9" fill="white" font-family="Fredoka One,cursive">Layer 1: 📷 Piksel &amp; Tepi</text>
+        <text x="138" y="32" font-size="7.5" fill="rgba(255,255,255,.75)" font-family="Nunito,sans-serif" font-weight="700">mendeteksi garis-garis dan warna</text>
+        <text x="60"  y="26" font-size="8.5" fill="#93C5FD" font-family="Fredoka One,cursive" text-anchor="end">L1</text>
+        <text x="350" y="26" font-size="9" fill="white" text-anchor="start">🔵</text>
+
+        <!-- Floor 4 -->
+        <rect x="80" y="44"  width="260" height="30" rx="8" fill="url(#fl2)" filter="url(#gf2)" opacity=".3"/>
+        <rect x="80" y="44"  width="260" height="30" rx="8" fill="url(#fl2)"/>
+        <text x="138" y="58" font-size="9" fill="white" font-family="Fredoka One,cursive">Layer 2: 🔲 Bentuk &amp; Pola</text>
+        <text x="138" y="68" font-size="7.5" fill="rgba(255,255,255,.75)" font-family="Nunito,sans-serif" font-weight="700">mengenali lingkaran, persegi, kurva</text>
+        <text x="60"  y="62" font-size="8.5" fill="#C4B5FD" font-family="Fredoka One,cursive" text-anchor="end">L2</text>
+        <text x="350" y="62" font-size="9" fill="white" text-anchor="start">🟣</text>
+
+        <!-- Floor 3 -->
+        <rect x="80" y="80"  width="260" height="30" rx="8" fill="url(#fl3)" filter="url(#gf2)" opacity=".3"/>
+        <rect x="80" y="80"  width="260" height="30" rx="8" fill="url(#fl3)"/>
+        <text x="138" y="94" font-size="9" fill="white" font-family="Fredoka One,cursive">Layer 3: 👁️ Bagian Objek</text>
+        <text x="138" y="104" font-size="7.5" fill="rgba(255,255,255,.75)" font-family="Nunito,sans-serif" font-weight="700">mengenali telinga, kumis, hidung kucing</text>
+        <text x="60"  y="98" font-size="8.5" fill="#E879F9" font-family="Fredoka One,cursive" text-anchor="end">L3</text>
+        <text x="350" y="98" font-size="9" fill="white" text-anchor="start">🟤</text>
+
+        <!-- Floor 2 -->
+        <rect x="80" y="116" width="260" height="30" rx="8" fill="url(#fl4)" filter="url(#gf2)" opacity=".3"/>
+        <rect x="80" y="116" width="260" height="30" rx="8" fill="url(#fl4)"/>
+        <text x="138" y="130" font-size="9" fill="white" font-family="Fredoka One,cursive">Layer 4: 🐱 Muka &amp; Konsep</text>
+        <text x="138" y="140" font-size="7.5" fill="rgba(255,255,255,.75)" font-family="Nunito,sans-serif" font-weight="700">mengenali wajah hewan secara keseluruhan</text>
+        <text x="60"  y="134" font-size="8.5" fill="#F9A8D4" font-family="Fredoka One,cursive" text-anchor="end">L4</text>
+        <text x="350" y="134" font-size="9" fill="white" text-anchor="start">🔴</text>
+
+        <!-- Floor 1 (output) -->
+        <rect x="80" y="152" width="260" height="30" rx="8" fill="url(#fl5)" filter="url(#gf2)" opacity=".3"/>
+        <rect x="80" y="152" width="260" height="30" rx="8" fill="url(#fl5)"/>
+        <text x="138" y="166" font-size="9" fill="white" font-family="Fredoka One,cursive">Layer 5+: 🧠 Pemahaman Tinggi</text>
+        <text x="138" y="176" font-size="7.5" fill="rgba(255,255,255,.75)" font-family="Nunito,sans-serif" font-weight="700">memutuskan "ini kucing!" dengan 97% yakin</text>
+        <text x="60"  y="170" font-size="8.5" fill="#67E8F9" font-family="Fredoka One,cursive" text-anchor="end">L5</text>
+        <text x="350" y="170" font-size="9" fill="white" text-anchor="start">🩵</text>
+
+        <!-- Down arrows -->
+        <line x1="210" y1="0" x2="210" y2="5"   stroke="#60A5FA" stroke-width="2" stroke-dasharray="3,2"/>
+        <line x1="210" y1="38"  x2="210" y2="42" stroke="#A78BFA" stroke-width="2" stroke-dasharray="3,2"/>
+        <line x1="210" y1="74"  x2="210" y2="78" stroke="#C084FC" stroke-width="2" stroke-dasharray="3,2"/>
+        <line x1="210" y1="110" x2="210" y2="114" stroke="#F472B6" stroke-width="2" stroke-dasharray="3,2"/>
+        <line x1="210" y1="146" x2="210" y2="150" stroke="#22D3EE" stroke-width="2" stroke-dasharray="3,2"/>
+
+        <!-- Output box -->
+        <rect x="140" y="186" width="140" height="14" rx="6" fill="rgba(251,191,36,.3)" stroke="#FBBF24" stroke-width="1.5"/>
+        <text x="210" y="196" font-size="8.5" fill="#FDE68A" font-family="Fredoka One,cursive" text-anchor="middle">✅ Output: KUCING 😺 97%</text>
+
+        <!-- Label -->
+        <text x="25" y="10"  font-size="8" fill="rgba(255,255,255,.45)" font-family="Fredoka One,cursive" text-anchor="start">DATA IN</text>
+        <text x="18" y="195" font-size="8" fill="rgba(255,255,255,.45)" font-family="Fredoka One,cursive" text-anchor="start">JAWABAN</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ── COMIC STRIP ── -->
+  <div class="card" style="animation-delay:.18s;margin-top:16px;">
+    <div class="card-accent" style="background:linear-gradient(90deg,var(--blue),var(--violet),var(--pink));"></div>
+    <div class="card-title" style="color:var(--violet);">
+      <span class="sp">🎭</span> Komik: Perbandingan Tier 1, 2, dan 3!
+    </div>
+    <div class="comic-grid">
+
+      <!-- Panel 1: Tier 1 -->
+      <div class="panel">
+        <div class="panel-num">1</div>
+        <svg class="panel-art" viewBox="0 0 140 152" xmlns="http://www.w3.org/2000/svg">
+          <rect width="140" height="152" fill="#EFF6FF"/>
+          <text x="70" y="15" font-size="9" fill="#1D4ED8" font-family="Fredoka One,cursive" text-anchor="middle">🥉 Tier 1: ML Biasa</text>
+          <!-- Simple 2-layer network -->
+          <circle cx="30"  cy="55" r="12" fill="#DBEAFE" stroke="#3B82F6" stroke-width="2"/>
+          <circle cx="30"  cy="80" r="12" fill="#DBEAFE" stroke="#3B82F6" stroke-width="2"/>
+          <circle cx="30"  cy="105" r="12" fill="#DBEAFE" stroke="#3B82F6" stroke-width="2"/>
+          <text x="30" y="59"  font-size="9" fill="#1D4ED8" text-anchor="middle" font-family="Fredoka One,cursive">N</text>
+          <text x="30" y="84"  font-size="9" fill="#1D4ED8" text-anchor="middle" font-family="Fredoka One,cursive">N</text>
+          <text x="30" y="109" font-size="9" fill="#1D4ED8" text-anchor="middle" font-family="Fredoka One,cursive">N</text>
+          <line x1="42" y1="55"  x2="83" y2="75" stroke="#93C5FD" stroke-width="1.5"/>
+          <line x1="42" y1="80"  x2="83" y2="80" stroke="#93C5FD" stroke-width="1.5"/>
+          <line x1="42" y1="105" x2="83" y2="85" stroke="#93C5FD" stroke-width="1.5"/>
+          <circle cx="95" cy="80" r="12" fill="#DBEAFE" stroke="#3B82F6" stroke-width="2"/>
+          <text x="95" y="84" font-size="9" fill="#1D4ED8" text-anchor="middle" font-family="Fredoka One,cursive">OUT</text>
+          <!-- Result -->
+          <text x="115" y="84" font-size="14">🙂</text>
+          <!-- Aslan thinking -->
+          <ellipse cx="70" cy="125" rx="14" ry="15" fill="#FFCC80"/>
+          <path d="M58 118 Q57 110 62 108 Q66 103 70 105 Q74 103 78 108 Q81 110 80 118" fill="#3E2723"/>
+          <text x="61" y="122" font-size="10">🤔</text>
+          <rect x="10" y="138" width="120" height="14" rx="6" fill="#DBEAFE"/>
+          <text x="70" y="148" font-size="8" fill="#1D4ED8" font-family="Fredoka One,cursive" text-anchor="middle">Bisa dikit, kurang canggih 😅</text>
+        </svg>
+        <div class="panel-bubble" style="color:#1D4ED8;border-color:#93C5FD;">Tier 1 – Sederhana 🥉</div>
+        <div class="panel-caption">ML biasa: cuma 2-3 lapisan, kemampuan terbatas!</div>
+      </div>
+
+      <!-- Panel 2: Tier 2 -->
+      <div class="panel">
+        <div class="panel-num">2</div>
+        <svg class="panel-art" viewBox="0 0 140 152" xmlns="http://www.w3.org/2000/svg">
+          <rect width="140" height="152" fill="#F5F3FF"/>
+          <text x="70" y="15" font-size="9" fill="#6D28D9" font-family="Fredoka One,cursive" text-anchor="middle">🥈 Tier 2: Neural Network</text>
+          <!-- 3-layer network -->
+          <circle cx="22" cy="45"  r="9" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2"/>
+          <circle cx="22" cy="70"  r="9" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2"/>
+          <circle cx="22" cy="95"  r="9" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2"/>
+          <circle cx="22" cy="120" r="9" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2"/>
+          <text x="22" y="49"  font-size="7" fill="#6D28D9" text-anchor="middle" font-family="Fredoka One,cursive">N</text>
+          <text x="22" y="74"  font-size="7" fill="#6D28D9" text-anchor="middle" font-family="Fredoka One,cursive">N</text>
+          <text x="22" y="99"  font-size="7" fill="#6D28D9" text-anchor="middle" font-family="Fredoka One,cursive">N</text>
+          <text x="22" y="124" font-size="7" fill="#6D28D9" text-anchor="middle" font-family="Fredoka One,cursive">N</text>
+          <!-- hidden layer -->
+          <circle cx="60" cy="55"  r="9" fill="#DDD6FE" stroke="#7C3AED" stroke-width="2"/>
+          <circle cx="60" cy="80"  r="9" fill="#DDD6FE" stroke="#7C3AED" stroke-width="2"/>
+          <circle cx="60" cy="105" r="9" fill="#DDD6FE" stroke="#7C3AED" stroke-width="2"/>
+          <text x="60" y="59"  font-size="7" fill="#6D28D9" text-anchor="middle" font-family="Fredoka One,cursive">N</text>
+          <text x="60" y="84"  font-size="7" fill="#6D28D9" text-anchor="middle" font-family="Fredoka One,cursive">N</text>
+          <text x="60" y="109" font-size="7" fill="#6D28D9" text-anchor="middle" font-family="Fredoka One,cursive">N</text>
+          <!-- connection lines -->
+          <line x1="31" y1="50"  x2="51" y2="57" stroke="#A78BFA" stroke-width="1"/>
+          <line x1="31" y1="70"  x2="51" y2="80" stroke="#A78BFA" stroke-width="1"/>
+          <line x1="31" y1="95"  x2="51" y2="103" stroke="#A78BFA" stroke-width="1"/>
+          <line x1="31" y1="120" x2="51" y2="105" stroke="#A78BFA" stroke-width="1"/>
+          <!-- output -->
+          <circle cx="100" cy="80" r="12" fill="#EDE9FE" stroke="#6D28D9" stroke-width="2"/>
+          <text x="100" y="78" font-size="8" text-anchor="middle" fill="#6D28D9" font-family="Fredoka One,cursive">OUT</text>
+          <text x="100" y="90" font-size="8" text-anchor="middle">🧠</text>
+          <line x1="69" y1="57"  x2="88" y2="76" stroke="#A78BFA" stroke-width="1"/>
+          <line x1="69" y1="80"  x2="88" y2="80" stroke="#A78BFA" stroke-width="1"/>
+          <line x1="69" y1="103" x2="88" y2="84" stroke="#A78BFA" stroke-width="1"/>
+          <!-- excited robo -->
+          <text x="116" y="60" font-size="22">🤖</text>
+          <rect x="10" y="134" width="120" height="14" rx="6" fill="#EDE9FE"/>
+          <text x="70" y="144" font-size="8" fill="#6D28D9" font-family="Fredoka One,cursive" text-anchor="middle">Lebih pintar dari Tier 1! 💜</text>
+        </svg>
+        <div class="panel-bubble" style="color:#6D28D9;border-color:#A78BFA;">Tier 2 – Lebih Pintar 🥈</div>
+        <div class="panel-caption">Neural network: bisa belajar pola sendiri! 🕸️</div>
+      </div>
+
+      <!-- Panel 3: Tier 3 -->
+      <div class="panel">
+        <div class="panel-num">3</div>
+        <svg class="panel-art" viewBox="0 0 140 152" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="dp3bg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1E1260"/>
+              <stop offset="100%" stop-color="#0C0828"/>
+            </linearGradient>
+          </defs>
+          <rect width="140" height="152" fill="url(#dp3bg)"/>
+          <text x="70" y="14" font-size="9" fill="#E879F9" font-family="Fredoka One,cursive" text-anchor="middle">🥇 Tier 3: Deep Learning</text>
+          <!-- Multi-layer stack visual -->
+          <rect x="20" y="22"  width="100" height="16" rx="5" fill="#1D4ED8" opacity=".9"/>
+          <rect x="20" y="41"  width="100" height="16" rx="5" fill="#6D28D9" opacity=".9"/>
+          <rect x="20" y="60"  width="100" height="16" rx="5" fill="#9333EA" opacity=".9"/>
+          <rect x="20" y="79"  width="100" height="16" rx="5" fill="#C026D3" opacity=".9"/>
+          <rect x="20" y="98"  width="100" height="16" rx="5" fill="#EC4899" opacity=".9"/>
+          <rect x="20" y="117" width="100" height="16" rx="5" fill="#22D3EE" opacity=".9"/>
+          <text x="70" y="34"  font-size="8" fill="white" font-family="Fredoka One,cursive" text-anchor="middle">Layer 1 – Piksel 📷</text>
+          <text x="70" y="53"  font-size="8" fill="white" font-family="Fredoka One,cursive" text-anchor="middle">Layer 2 – Bentuk 🔲</text>
+          <text x="70" y="72"  font-size="8" fill="white" font-family="Fredoka One,cursive" text-anchor="middle">Layer 3 – Bagian 👁️</text>
+          <text x="70" y="91"  font-size="8" fill="white" font-family="Fredoka One,cursive" text-anchor="middle">Layer 4 – Objek 🐱</text>
+          <text x="70" y="110" font-size="8" fill="white" font-family="Fredoka One,cursive" text-anchor="middle">Layer 5 – Konsep 🧠</text>
+          <text x="70" y="129" font-size="8" fill="white" font-family="Fredoka One,cursive" text-anchor="middle">Layer 6 – Jawaban ✅</text>
+          <!-- Sparkles -->
+          <text x="4"   y="40" font-size="10" opacity=".8">✨</text>
+          <text x="126" y="65" font-size="10" opacity=".8">⭐</text>
+          <text x="4"   y="95" font-size="10" opacity=".8">💜</text>
+          <text x="126" y="112" font-size="10" opacity=".8">✨</text>
+          <rect x="20" y="136" width="100" height="14" rx="6" fill="rgba(251,191,36,.3)" stroke="#FBBF24" stroke-width="1.5"/>
+          <text x="70" y="146" font-size="8.5" fill="#FDE68A" font-family="Fredoka One,cursive" text-anchor="middle">😺 KUCING! 97% 🏆</text>
+        </svg>
+        <div class="panel-bubble" style="color:#9333EA;border-color:#C084FC;">Tier 3 – Luar Biasa! 🥇</div>
+        <div class="panel-caption">Deep Learning: banyak lapisan, sangat akurat! 🔮</div>
+      </div>
+
+      <!-- Panel 4: Results comparison -->
+      <div class="panel">
+        <div class="panel-num">4</div>
+        <svg class="panel-art" viewBox="0 0 140 152" xmlns="http://www.w3.org/2000/svg">
+          <rect width="140" height="152" fill="#FAFAF5"/>
+          <text x="70" y="14" font-size="9" fill="#4A5568" font-family="Fredoka One,cursive" text-anchor="middle">📊 Perbandingan Hasil!</text>
+          <!-- Tier 1 result -->
+          <rect x="10" y="22" width="120" height="32" rx="8" fill="#EFF6FF" stroke="#93C5FD" stroke-width="2"/>
+          <text x="18" y="34" font-size="8" fill="#1D4ED8" font-family="Fredoka One,cursive">🥉 Tier 1 (ML)</text>
+          <rect x="18" y="38" width="90" height="8" rx="3" fill="rgba(147,197,253,.2)" stroke="#93C5FD" stroke-width="1"/>
+          <rect x="18" y="38" width="45" height="8" rx="3" fill="#3B82F6"/>
+          <text x="114" y="46" font-size="8" fill="#1D4ED8" font-family="Fredoka One,cursive">50%</text>
+          <!-- Tier 2 result -->
+          <rect x="10" y="60" width="120" height="32" rx="8" fill="#F5F3FF" stroke="#C4B5FD" stroke-width="2"/>
+          <text x="18" y="72" font-size="8" fill="#6D28D9" font-family="Fredoka One,cursive">🥈 Tier 2 (NN)</text>
+          <rect x="18" y="76" width="90" height="8" rx="3" fill="rgba(196,181,253,.2)" stroke="#C4B5FD" stroke-width="1"/>
+          <rect x="18" y="76" width="68" height="8" rx="3" fill="#7C3AED"/>
+          <text x="114" y="84" font-size="8" fill="#6D28D9" font-family="Fredoka One,cursive">75%</text>
+          <!-- Tier 3 result -->
+          <rect x="10" y="98" width="120" height="32" rx="8" fill="linear-gradient(135deg,#FDF4FF,#F0FDFA)" stroke="#D946EF" stroke-width="2.5"/>
+          <text x="18" y="110" font-size="8" fill="#9333EA" font-family="Fredoka One,cursive">🥇 Tier 3 (DL)</text>
+          <rect x="18" y="114" width="90" height="8" rx="3" fill="rgba(217,70,239,.15)" stroke="#D946EF" stroke-width="1"/>
+          <rect x="18" y="114" width="88" height="8" rx="3" fill="url(#fl3)"/>
+          <text x="114" y="122" font-size="8" fill="#9333EA" font-family="Fredoka One,cursive">97%</text>
+          <!-- Winner trophy -->
+          <text x="5"  y="122" font-size="16">🏆</text>
+          <!-- Aslan thumbsup -->
+          <text x="48" y="148" font-size="22">🧒👍</text>
+          <text x="90" y="148" font-size="20">🤖⭐</text>
+        </svg>
+        <div class="panel-bubble" style="color:#9333EA;border-color:#D946EF;">Deep Learning MENANG! 🏆</div>
+        <div class="panel-caption">Tier 3 paling akurat — 97% vs 50% Tier 1! 🚀</div>
+      </div>
+
+    </div>
+    <p style="font-size:.75rem;text-align:center;color:#9CA3AF;font-weight:600;margin-top:10px;">💡 <em>Klik tiap panel untuk animasi!</em></p>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ── FAKTA KEREN ── -->
+  <div class="card" style="animation-delay:.24s;margin-top:16px;">
+    <div class="card-accent" style="background:linear-gradient(90deg,var(--gold),var(--pink),var(--violet));"></div>
+    <div class="card-title" style="color:#92400E;">
+      <span class="sp">⭐</span> Fakta Keren tentang Deep Learning!
+    </div>
+    <div class="facts-grid">
+
+      <div class="fact-item" style="background:#F3E8FF;border-color:#C4B5FD;">
+        <span class="fact-icon">🏗️</span>
+        <span class="fact-label" style="color:#6D28D9;">1000+ Lapisan!</span>
+        <span class="fact-desc" style="color:#4C1D95;">AI modern seperti GPT-4 punya ratusan hingga ribuan lapisan di deep neural network-nya! 🤯</span>
+      </div>
+
+      <div class="fact-item" style="background:#E0F2FE;border-color:#7DD3FC;">
+        <span class="fact-icon" style="animation-delay:.4s;">🖼️</span>
+        <span class="fact-label" style="color:#0369A1;">Bisa Lihat & Dengar!</span>
+        <span class="fact-desc" style="color:#0C4A6E;">Deep Learning bisa mengenali gambar, suara, video, dan teks — semuanya sekaligus! 👁️👂</span>
+      </div>
+
+      <div class="fact-item" style="background:#ECFDF5;border-color:#6EE7B7;">
+        <span class="fact-icon" style="animation-delay:.8s;">🎨</span>
+        <span class="fact-label" style="color:#065F46;">Bisa Berkreasi!</span>
+        <span class="fact-desc" style="color:#064E3B;">Deep Learning juga yang ada di balik AI pembuat gambar seperti Midjourney dan DALL-E! 🎭</span>
+      </div>
+
+      <div class="fact-item" style="background:#FEF3C7;border-color:#FCD34D;">
+        <span class="fact-icon" style="animation-delay:1.2s;">⚡</span>
+        <span class="fact-label" style="color:#92400E;">Butuh Komputer Raksasa</span>
+        <span class="fact-desc" style="color:#78350F;">Melatih model Deep Learning butuh ribuan GPU khusus selama berbulan-bulan! 🖥️🖥️🖥️</span>
+      </div>
+
+      <div class="fact-item" style="background:#FDE8F5;border-color:#F0ABFC;">
+        <span class="fact-icon" style="animation-delay:1.6s;">🏥</span>
+        <span class="fact-label" style="color:#86198F;">Menyelamatkan Nyawa!</span>
+        <span class="fact-desc" style="color:#701A75;">Deep Learning bisa mendeteksi kanker dari foto rontgen lebih akurat dari kebanyakan dokter! 💊</span>
+      </div>
+
+      <div class="fact-item" style="background:#F0FDF4;border-color:#86EFAC;">
+        <span class="fact-icon" style="animation-delay:2s;">🚗</span>
+        <span class="fact-label" style="color:#15803D;">Mobil Tanpa Sopir!</span>
+        <span class="fact-desc" style="color:#14532D;">Deep Learning yang membuat mobil bisa melihat jalan dan berkendara sendiri tanpa manusia! 🛣️</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ── QUIZ ── -->
+  <div class="card" style="animation-delay:.3s;margin-top:16px;">
+    <div class="card-accent" style="background:linear-gradient(90deg,var(--violet),var(--pink));"></div>
+    <div class="card-title" style="color:var(--violet);">
+      <span class="sp">🧠</span> Pertanyaan untuk Aslan!
+    </div>
+    <p style="font-size:.95rem;font-weight:700;color:#6B7280;margin-bottom:16px;">
+      Ayo buktikan kamu sudah paham Deep Learning! 💪🔮
+    </p>
+
+    <!-- Q1 -->
+    <div class="quiz-q" id="q1w">
+      <p class="q-label" style="color:var(--violet);">❓ Pertanyaan 1 dari 3</p>
+      <p class="q-text">Apa arti kata "Deep" dalam Deep Learning? 🔮</p>
+      <div class="quiz-wrap" id="q1o">
+        <button class="q-btn" onclick="jawab(this,'q1',false)"><span>🙅</span><span>Deep artinya AI belajar di bawah laut</span></button>
+        <button class="q-btn" onclick="jawab(this,'q1',true)"><span>🤔</span><span>Deep artinya banyak lapisan tersembunyi yang sangat dalam</span></button>
+        <button class="q-btn" onclick="jawab(this,'q1',false)"><span>😅</span><span>Deep artinya AI bisa bicara dengan suara dalam</span></button>
+        <button class="q-btn" onclick="jawab(this,'q1',false)"><span>🧐</span><span>Deep artinya warna biru yang sangat gelap</span></button>
+      </div>
+      <div class="q-result" id="q1r"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q" style="background:#E0F2FE;" id="q2w">
+      <p class="q-label" style="color:#0369A1;">❓ Pertanyaan 2 dari 3</p>
+      <p class="q-text">Apa yang dilakukan setiap lapisan dalam Deep Learning? 🏢</p>
+      <div class="quiz-wrap" id="q2o">
+        <button class="q-btn" onclick="jawab(this,'q2',false)"><span>🙅</span><span>Semua lapisan melakukan tugas yang sama persis</span></button>
+        <button class="q-btn" onclick="jawab(this,'q2',false)"><span>😅</span><span>Hanya lapisan pertama yang bekerja, lainnya tidur</span></button>
+        <button class="q-btn" onclick="jawab(this,'q2',true)"><span>🤔</span><span>Setiap lapisan memiliki tugas sendiri dan semakin dalam semakin paham</span></button>
+        <button class="q-btn" onclick="jawab(this,'q2',false)"><span>🧐</span><span>Lapisan-lapisan bersaing dan hanya pemenang yang bekerja</span></button>
+      </div>
+      <div class="q-result" id="q2r"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q" style="background:#ECFDF5;" id="q3w">
+      <p class="q-label" style="color:#065F46;">❓ Pertanyaan 3 dari 3</p>
+      <p class="q-text">Contoh nyata penggunaan Deep Learning yang paling keren adalah? 🚀</p>
+      <div class="quiz-wrap" id="q3o">
+        <button class="q-btn" onclick="jawab(this,'q3',false)"><span>🙅</span><span>Membuat kalkulator sederhana</span></button>
+        <button class="q-btn" onclick="jawab(this,'q3',false)"><span>😅</span><span>Mengatur jadwal alarm di HP</span></button>
+        <button class="q-btn" onclick="jawab(this,'q3',true)"><span>🤔</span><span>Mengenali wajah, memahami suara, dan membuat gambar AI</span></button>
+        <button class="q-btn" onclick="jawab(this,'q3',false)"><span>🧐</span><span>Menghitung 2+2 dengan sangat cepat</span></button>
+      </div>
+      <div class="q-result" id="q3r"></div>
+    </div>
+
+    <div class="score-reveal" id="scoreReveal">
+      <div style="font-family:'Fredoka One',cursive;font-size:1.6rem;margin-bottom:6px;">🏆 Hasil Kuis Aslan!</div>
+      <div class="score-num" id="scoreNum"></div>
+      <div style="font-weight:700;font-size:.95rem;margin-top:8px;opacity:.9;" id="scoreMsg"></div>
+    </div>
+  </div>
+
+  <!-- ── MOTIVASI ── -->
+  <div class="card" style="animation-delay:.36s;background:linear-gradient(135deg,#F3E8FF,#EDE9FE);border:2.5px solid rgba(109,40,217,.35);">
+    <div style="text-align:center;">
+      <span style="font-size:4rem;display:block;margin-bottom:8px;" class="sp">🔮</span>
+      <div style="font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--violet);margin-bottom:10px;">
+        Pesan dari Aslan &amp; Robo! 💌
+      </div>
+      <p style="font-size:.98rem;font-weight:700;color:#12103A;line-height:1.85;">
+        "Deep Learning mengajarkan kita bahwa
+        <span style="color:var(--violet);">semakin dalam kita belajar</span>,
+        semakin banyak yang bisa kita pahami!
+        Sama seperti lapisan-lapisan AI, kita juga bisa
+        terus <span style="color:var(--cyan);">menambah lapisan pengetahuan</span>
+        di otak kita setiap hari. Jangan pernah berhenti belajar —
+        karena otak terdalam kita belum selesai berkembang! 🌌🌟"
+      </p>
+      <p style="font-size:2rem;margin-top:12px;">🤖🔮🧒</p>
+    </div>
+  </div>
+
+  <!-- PROGRESS DOTS -->
+  <div style="text-align:center;margin-top:28px;">
+    <div style="font-family:'Fredoka One',cursive;color:rgba(186,230,253,.35);font-size:.9rem;margin-bottom:8px;">Hari 19 dari 30</div>
+    <div style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;max-width:260px;margin:0 auto;">
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#6D28D9;display:inline-block;"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#FBBF24;display:inline-block;box-shadow:0 0 0 3px rgba(251,191,36,.35);"></span>
+    </div>
+  </div>
+
+  <div class="page-footer">🔮 Petualangan Aslan di Negeri AI • Hari 19 dari 30 ✨</div>
+</div>
+
+<script>
+  /* ── CANVAS BG ── */
+  (function(){
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [], lines = [];
+
+    function resize(){
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Particle class
+    class P {
+      constructor(){
+        this.reset();
+      }
+      reset(){
+        this.x  = Math.random()*W;
+        this.y  = Math.random()*H;
+        this.r  = Math.random()*2.5+.5;
+        this.vx = (Math.random()-.5)*.25;
+        this.vy = (Math.random()-.5)*.25;
+        const cols = ['#7C3AED','#6D28D9','#38BDF8','#22D3EE','#34D399','#A855F7','#EC4899'];
+        this.col = cols[Math.floor(Math.random()*cols.length)];
+        this.a   = Math.random()*.7+.1;
+        this.phase = Math.random()*Math.PI*2;
+        this.speed = Math.random()*.02+.01;
+      }
+      update(t){
+        this.x += this.vx;
+        this.y += this.vy;
+        this.a  = .3 + .35*Math.sin(t*this.speed + this.phase);
+        if(this.x<-10||this.x>W+10||this.y<-10||this.y>H+10) this.reset();
+      }
+      draw(){
+        ctx.save();
+        ctx.globalAlpha = this.a;
+        ctx.fillStyle = this.col;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = this.col;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    for(let i=0;i<80;i++) particles.push(new P());
+
+    let t = 0;
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      t++;
+
+      // Draw connections between nearby particles
+      for(let i=0;i<particles.length;i++){
+        for(let j=i+1;j<particles.length;j++){
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const d  = Math.sqrt(dx*dx+dy*dy);
+          if(d < 110){
+            ctx.save();
+            ctx.globalAlpha = .07*(1-d/110);
+            ctx.strokeStyle = '#7C3AED';
+            ctx.lineWidth = .8;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+      }
+
+      particles.forEach(p=>{ p.update(t); p.draw(); });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  /* ── TIER TOGGLE ── */
+  function toggleTier(id){
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+  }
+  // Open tier 3 by default
+  window.addEventListener('load', ()=>{ toggleTier('t3'); });
+
+  /* ── PANEL CLICK ── */
+  document.querySelectorAll('.panel').forEach(p=>{
+    p.addEventListener('click',function(){
+      this.style.transform='scale(1.06)';
+      setTimeout(()=>this.style.transform='',300);
+    });
+  });
+
+  /* ── QUIZ ── */
+  const sc={q1:null,q2:null,q3:null};
+  function jawab(btn,id,benar){
+    const opts=document.getElementById(id+'o');
+    if(opts.querySelector('.correct')||opts.querySelector('.wrong')) return;
+    sc[id]=benar;
+    Array.from(opts.querySelectorAll('.q-btn')).forEach(b=>b.style.pointerEvents='none');
+    const res=document.getElementById(id+'r');
+    res.style.display='block';
+    if(benar){
+      btn.classList.add('correct'); btn.querySelector('span').textContent='✅';
+      res.style.cssText+='display:block;background:#E6FDF6;color:#065F46;border:2px solid #34D399;';
+      res.innerHTML='🎉 Tepat! Otakmu sedalam Deep Learning! 🔮⭐';
+    } else {
+      btn.classList.add('wrong'); btn.querySelector('span').textContent='❌';
+      res.style.cssText+='display:block;background:#FDE8F5;color:#9D174D;border:2px solid #EC4899;';
+      res.innerHTML='😅 Belum tepat, Aslan! Baca lagi biar makin dalam! 📖💜';
+    }
+    if(sc.q1!==null&&sc.q2!==null&&sc.q3!==null) tampilSkor();
+  }
+  function tampilSkor(){
+    const total=[sc.q1,sc.q2,sc.q3].filter(Boolean).length;
+    const el=document.getElementById('scoreReveal');
+    el.style.display='block';
+    document.getElementById('scoreNum').textContent=`${total} / 3`;
+    const msgs=[
+      '😔 Lapisan otakmu butuh lebih banyak latihan! Ayo coba lagi! 💪',
+      '🙂 Sudah bagus! Lapisan pengetahuanmu makin tebal!',
+      '😊 Hampir sempurna! Satu lapisan lagi! 🔥',
+      '🏆 SEMPURNA! Otakmu sekelas Deep Learning! Luar biasa! 🔮🌟🎉',
+    ];
+    document.getElementById('scoreMsg').textContent=msgs[total];
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+</script>
+</body>
+</html>

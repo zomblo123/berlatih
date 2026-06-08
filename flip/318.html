@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 18: Jejak Kaki di Pasir Digital – Kapten Cerdas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean-deep: #0a2a6e;
+    --ocean-mid: #1565c0;
+    --ocean-light: #42a5f5;
+    --ocean-pale: #bbdefb;
+    --sky: #e3f2fd;
+    --sand: #fff8e1;
+    --sand-dark: #ffe082;
+    --sand-mid: #ffcc02;
+    --gold: #f9a825;
+    --gold-bright: #ffd54f;
+    --orange: #ff7043;
+    --orange-bright: #ff5722;
+    --white: #ffffff;
+    --danger: #e53935;
+    --danger-light: #ffebee;
+    --success: #2e7d32;
+    --success-light: #e8f5e9;
+    --warning: #f57f17;
+    --text-dark: #1a237e;
+    --text-mid: #283593;
+    --shadow-ocean: 0 20px 60px rgba(10,42,110,0.25);
+    --shadow-card: 0 8px 32px rgba(21,101,192,0.18);
+    --shadow-gold: 0 4px 20px rgba(249,168,37,0.4);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Nunito', 'Comic Neue', cursive;
+    background: linear-gradient(160deg, #001970 0%, #0d47a1 35%, #1565c0 60%, #0288d1 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Animated ocean background */
+  body::before {
+    content: '';
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 220px;
+    background: linear-gradient(180deg, transparent, rgba(2,119,189,0.3) 40%, rgba(2,119,189,0.6));
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Floating bubbles */
+  .bubble {
+    position: fixed;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    animation: floatBubble linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes floatBubble {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.5; }
+    100% { transform: translateY(-100px) scale(1); opacity: 0; }
+  }
+
+  /* Wave decoration */
+  .wave-bottom {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 80px;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .wave-bottom svg { width:100%; height:100%; }
+
+  /* Back button */
+  .back-btn {
+    position: fixed;
+    top: 18px; left: 18px;
+    z-index: 1000;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  .back-btn:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateX(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+
+  /* Progress */
+  .progress-container {
+    position: fixed;
+    top: 18px; left: 50%; transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(12px);
+    padding: 8px 20px;
+    border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .progress-track {
+    width: 160px;
+    height: 8px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--orange));
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 8px rgba(249,168,37,0.6);
+  }
+  .progress-text {
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* Main container */
+  .book-container {
+    position: relative;
+    z-index: 10;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 90px 20px 100px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Page/Slide */
+  .page {
+    display: none;
+    width: 100%;
+    animation: pageIn 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .page.active { display: block; }
+  @keyframes pageIn {
+    0% { opacity:0; transform: scale(0.92) translateY(20px); }
+    100% { opacity:1; transform: scale(1) translateY(0); }
+  }
+
+  /* Cards */
+  .card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.97), rgba(227,242,253,0.95));
+    border-radius: 28px;
+    padding: 36px 40px;
+    box-shadow: var(--shadow-ocean), inset 0 1px 0 rgba(255,255,255,0.8);
+    border: 2px solid rgba(255,255,255,0.6);
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--ocean-mid), var(--ocean-light), var(--gold), var(--orange));
+    border-radius: 28px 28px 0 0;
+  }
+
+  /* Cover page */
+  .cover-card {
+    background: linear-gradient(145deg, #001970, #0d47a1, #1565c0);
+    border-radius: 32px;
+    padding: 50px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,10,50,0.5);
+    border: 3px solid rgba(255,215,0,0.3);
+  }
+  .cover-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(255,213,0,0.12), transparent 60%),
+                radial-gradient(ellipse at 80% 90%, rgba(66,165,245,0.15), transparent 50%);
+    pointer-events: none;
+  }
+
+  .cover-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    color: white;
+    padding: 6px 20px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 15px rgba(255,112,67,0.4);
+    position: relative; z-index: 1;
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(28px, 5vw, 46px);
+    color: white;
+    line-height: 1.2;
+    margin: 10px 0 6px;
+    position: relative; z-index: 1;
+    text-shadow: 0 3px 15px rgba(0,0,0,0.3);
+  }
+  .cover-subtitle {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(20px, 3.5vw, 32px);
+    color: var(--gold-bright);
+    margin-bottom: 20px;
+    position: relative; z-index: 1;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+
+  .cover-illustration {
+    width: 220px;
+    height: 220px;
+    margin: 20px auto;
+    position: relative; z-index: 1;
+  }
+
+  .captain-name-banner {
+    background: linear-gradient(135deg, rgba(255,213,0,0.2), rgba(255,112,67,0.2));
+    border: 2px solid rgba(255,213,0,0.5);
+    border-radius: 18px;
+    padding: 14px 28px;
+    margin: 16px auto 0;
+    display: inline-block;
+    position: relative; z-index: 1;
+  }
+  .captain-name-banner p {
+    color: rgba(255,255,255,0.8);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .captain-name-banner h2 {
+    font-family: 'Fredoka One', cursive;
+    color: var(--gold-bright);
+    font-size: 26px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+
+  /* Footprints SVG art */
+  .footprint-trail {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 10px 0;
+  }
+
+  /* Story sections */
+  .story-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .story-icon {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  }
+  .icon-ocean { background: linear-gradient(135deg, var(--ocean-mid), var(--ocean-light)); }
+  .icon-gold { background: linear-gradient(135deg, var(--gold), var(--orange)); }
+  .icon-sand { background: linear-gradient(135deg, var(--sand-dark), var(--sand-mid)); }
+  .icon-danger { background: linear-gradient(135deg, #ef5350, #e53935); }
+  .icon-success { background: linear-gradient(135deg, #66bb6a, #2e7d32); }
+  .icon-info { background: linear-gradient(135deg, #42a5f5, #0d47a1); }
+
+  .section-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(20px, 3.5vw, 28px);
+    color: var(--text-dark);
+    line-height: 1.3;
+  }
+
+  .story-text {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #37474f;
+    margin-bottom: 16px;
+  }
+  .story-text strong { color: var(--ocean-deep); }
+  .highlight-box {
+    background: linear-gradient(135deg, var(--sky), #e1f5fe);
+    border-left: 5px solid var(--ocean-light);
+    border-radius: 0 16px 16px 0;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 15px;
+    color: var(--text-dark);
+    font-weight: 600;
+  }
+  .warning-box {
+    background: var(--danger-light);
+    border-left: 5px solid var(--danger);
+    border-radius: 0 16px 16px 0;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 15px;
+    color: #b71c1c;
+    font-weight: 600;
+  }
+  .success-box {
+    background: var(--success-light);
+    border-left: 5px solid var(--success);
+    border-radius: 0 16px 16px 0;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 15px;
+    color: var(--success);
+    font-weight: 600;
+  }
+
+  /* Interactive beach scene */
+  .beach-scene {
+    position: relative;
+    width: 100%;
+    height: 260px;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 20px 0;
+    cursor: pointer;
+    user-select: none;
+  }
+  .beach-sky {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 55%;
+    background: linear-gradient(180deg, #87CEEB, #b3e5fc);
+  }
+  .beach-ocean {
+    position: absolute;
+    top: 45%; left: 0; right: 0;
+    height: 25%;
+    background: linear-gradient(180deg, #42a5f5, #1565c0);
+    overflow: hidden;
+  }
+  .beach-wave {
+    position: absolute;
+    top: -10px; left: -20px; right: -20px;
+    height: 30px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    animation: waveMove 3s ease-in-out infinite;
+  }
+  @keyframes waveMove {
+    0%, 100% { transform: translateX(-10px) scaleY(0.8); }
+    50% { transform: translateX(10px) scaleY(1.2); }
+  }
+  .beach-sand {
+    position: absolute;
+    top: 60%; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, #ffe082, #ffcc02);
+  }
+
+  .footprint-on-sand {
+    position: absolute;
+    font-size: 22px;
+    animation: footAppear 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    cursor: pointer;
+    transition: transform 0.2s;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+  }
+  .footprint-on-sand:hover { transform: scale(1.3); }
+  .footprint-on-sand.danger { filter: drop-shadow(0 0 6px rgba(229,57,53,0.8)); }
+  .footprint-on-sand.safe { filter: drop-shadow(0 0 6px rgba(249,168,37,0.9)); }
+  @keyframes footAppear {
+    0% { opacity:0; transform: scale(0) rotate(-20deg); }
+    100% { opacity:1; transform: scale(1) rotate(0deg); }
+  }
+  .footprint-label {
+    position: absolute;
+    background: white;
+    color: var(--text-dark);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    pointer-events: none;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+  .beach-instruction {
+    position: absolute;
+    bottom: 10px; left: 50%; transform: translateX(-50%);
+    background: rgba(255,255,255,0.9);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ocean-deep);
+    white-space: nowrap;
+    animation: bounce2 2s ease-in-out infinite;
+  }
+  @keyframes bounce2 {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-4px); }
+  }
+
+  /* Footprint types grid */
+  .footprint-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .footprint-card {
+    background: white;
+    border-radius: 18px;
+    padding: 16px 14px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .footprint-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.15);
+  }
+  .footprint-card.type-visible { border-color: #42a5f5; }
+  .footprint-card.type-hidden { border-color: #ff7043; }
+  .footprint-card .fc-icon { font-size: 32px; margin-bottom: 8px; }
+  .footprint-card .fc-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+  }
+  .footprint-card .fc-desc {
+    font-size: 11px;
+    color: #78909c;
+    line-height: 1.4;
+  }
+  .footprint-card .fc-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900;
+    color: white;
+  }
+  .badge-visible { background: #42a5f5; }
+  .badge-hidden { background: #ff7043; }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 30px;
+    margin: 20px 0;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 12px; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--ocean-light), var(--gold));
+    border-radius: 3px;
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+    padding-left: 20px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -22px; top: 6px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--ocean-light);
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .timeline-item .tl-title {
+    font-family: 'Fredoka One', cursive;
+    color: var(--ocean-deep);
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .timeline-item .tl-desc {
+    font-size: 14px;
+    color: #546e7a;
+    line-height: 1.6;
+  }
+
+  /* Erase demo */
+  .erase-demo {
+    margin: 20px 0;
+    background: linear-gradient(135deg, #fff8e1, #fff3cd);
+    border-radius: 20px;
+    padding: 24px;
+    border: 2px solid var(--sand-dark);
+  }
+  .erase-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .erase-item {
+    background: white;
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .erase-item:hover { transform: translateY(-2px); }
+  .erase-icon-wrap { font-size: 26px; flex-shrink: 0; }
+  .erase-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.4;
+  }
+  .erase-status {
+    position: absolute;
+    top: 6px; right: 8px;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 800;
+  }
+  .can-erase { background: #e8f5e9; color: #2e7d32; }
+  .hard-erase { background: #ffebee; color: #c62828; }
+  .erase-item.erased::after {
+    content: '✓ DIHAPUS';
+    position: absolute;
+    inset: 0;
+    background: rgba(76,175,80,0.9);
+    color: white;
+    font-weight: 900;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+  }
+  .erase-item.failed::after {
+    content: '✗ TIDAK BISA';
+    position: absolute;
+    inset: 0;
+    background: rgba(229,57,53,0.9);
+    color: white;
+    font-weight: 900;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+  }
+
+  .erase-btn {
+    background: linear-gradient(135deg, var(--ocean-mid), var(--ocean-deep));
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 17px;
+    cursor: pointer;
+    display: block;
+    margin: 18px auto 0;
+    transition: all 0.3s;
+    box-shadow: 0 4px 18px rgba(21,101,192,0.4);
+  }
+  .erase-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(21,101,192,0.5);
+  }
+
+  /* Rules cards */
+  .rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .rule-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: white;
+    border-radius: 18px;
+    padding: 16px 18px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+    transition: all 0.3s;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+  .rule-item:hover {
+    border-color: var(--ocean-light);
+    transform: translateX(5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+  .rule-num {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--ocean-light), var(--ocean-mid));
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(21,101,192,0.3);
+  }
+  .rule-content .rule-title {
+    font-family: 'Fredoka One', cursive;
+    color: var(--text-dark);
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .rule-content .rule-desc {
+    font-size: 13px;
+    color: #607d8b;
+    line-height: 1.5;
+  }
+
+  /* Key learnings */
+  .learnings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .learning-item {
+    background: white;
+    border-radius: 18px;
+    padding: 20px 16px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    cursor: pointer;
+    border: 2px solid rgba(0,0,0,0.04);
+  }
+  .learning-item:hover {
+    transform: translateY(-8px) rotate(1deg);
+    box-shadow: 0 14px 35px rgba(0,0,0,0.14);
+    border-color: var(--ocean-light);
+  }
+  .learning-item .li-icon { font-size: 40px; margin-bottom: 12px; }
+  .learning-item .li-title {
+    font-family: 'Fredoka One', cursive;
+    color: var(--text-dark);
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  .learning-item .li-text {
+    font-size: 12px;
+    color: #78909c;
+    line-height: 1.5;
+  }
+
+  /* Challenge section */
+  .challenge-card {
+    background: linear-gradient(145deg, #001970, #0d47a1);
+    border-radius: 24px;
+    padding: 30px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(255,213,0,0.3);
+  }
+  .challenge-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top right, rgba(255,213,0,0.1), transparent 60%);
+    pointer-events: none;
+  }
+  .challenge-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 24px;
+    color: var(--gold-bright);
+    margin-bottom: 6px;
+  }
+  .challenge-subtitle { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 20px; }
+  .challenge-tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .challenge-task {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+  }
+  .challenge-task:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,213,0,0.4); }
+  .challenge-task.done {
+    background: rgba(76,175,80,0.2);
+    border-color: rgba(76,175,80,0.5);
+  }
+  .task-check {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.4);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+    transition: all 0.3s;
+  }
+  .challenge-task.done .task-check {
+    background: #4caf50;
+    border-color: #4caf50;
+    color: white;
+  }
+  .task-text { font-size: 14px; font-weight: 600; color: white; }
+  .challenge-score {
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    color: var(--gold-bright);
+  }
+
+  /* Closing page */
+  .closing-card {
+    background: linear-gradient(145deg, #001970, #0d47a1, #1565c0);
+    border-radius: 32px;
+    padding: 50px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,10,50,0.5);
+    border: 3px solid rgba(255,213,0,0.3);
+    color: white;
+  }
+  .closing-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 100%, rgba(255,213,0,0.1), transparent 60%),
+                radial-gradient(ellipse at 20% 20%, rgba(66,165,245,0.1), transparent 50%);
+    pointer-events: none;
+  }
+
+  /* Nav buttons */
+  .nav-buttons {
+    position: fixed;
+    bottom: 28px;
+    left: 50%; transform: translateX(-50%);
+    display: flex;
+    gap: 16px;
+    z-index: 1000;
+    align-items: center;
+  }
+  .nav-btn {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 14px 30px;
+    border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 17px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  }
+  .nav-btn:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.3);
+  }
+  .nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .nav-btn.next {
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    border-color: transparent;
+    box-shadow: 0 6px 22px rgba(249,168,37,0.4);
+  }
+  .nav-btn.next:hover {
+    box-shadow: 0 10px 30px rgba(249,168,37,0.5);
+  }
+
+  /* Stars */
+  .stars-bg {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(0.8); }
+    50% { opacity: 0.7; transform: scale(1.2); }
+  }
+
+  /* Sun in cover */
+  .sun {
+    position: absolute;
+    top: 16%; right: 18%;
+    width: 54px; height: 54px;
+    background: radial-gradient(circle, #ffd740, #ffab00);
+    border-radius: 50%;
+    box-shadow: 0 0 0 8px rgba(255,215,64,0.15), 0 0 0 16px rgba(255,215,64,0.07);
+    animation: sunPulse 4s ease-in-out infinite;
+  }
+  @keyframes sunPulse {
+    0%,100% { box-shadow: 0 0 0 8px rgba(255,215,64,0.15), 0 0 0 16px rgba(255,215,64,0.07); }
+    50% { box-shadow: 0 0 0 12px rgba(255,215,64,0.2), 0 0 0 24px rgba(255,215,64,0.1); }
+  }
+
+  /* Floating elements */
+  .float-em { animation: floatGently 3s ease-in-out infinite; }
+  .float-em:nth-child(2n) { animation-delay: 0.5s; }
+  @keyframes floatGently {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  /* Sparkle */
+  @keyframes sparkle {
+    0%,100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    50% { opacity: 0.6; transform: scale(1.3) rotate(180deg); }
+  }
+  .sparkle { animation: sparkle 2s ease-in-out infinite; }
+
+  /* Story emoji large */
+  .story-emoji-large {
+    font-size: 80px;
+    text-align: center;
+    display: block;
+    margin: 16px auto;
+    animation: floatGently 3s ease-in-out infinite;
+  }
+
+  /* Section divider */
+  .wave-divider {
+    text-align: center;
+    font-size: 24px;
+    margin: 16px 0;
+    opacity: 0.4;
+    letter-spacing: 4px;
+  }
+
+  /* Quiz/reflection */
+  .reflection-box {
+    background: linear-gradient(135deg, #fff8e1, #fffde7);
+    border: 3px solid var(--sand-dark);
+    border-radius: 20px;
+    padding: 22px 24px;
+    margin: 16px 0;
+  }
+  .reflection-box h3 {
+    font-family: 'Fredoka One', cursive;
+    color: var(--warning);
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  /* Comparison table */
+  .compare-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    margin: 16px 0;
+  }
+  .compare-table th {
+    padding: 12px 16px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px;
+    text-align: left;
+    color: white;
+    border-radius: 10px;
+  }
+  .compare-table th.header-real { background: linear-gradient(135deg, var(--ocean-mid), var(--ocean-light)); }
+  .compare-table th.header-dig { background: linear-gradient(135deg, var(--gold), var(--orange)); }
+  .compare-table td {
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #37474f;
+    background: white;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .compare-table td:first-child { border-radius: 10px 0 0 10px; }
+  .compare-table td:last-child { border-radius: 0 10px 10px 0; }
+  .compare-table tr:hover td { background: var(--sky); }
+
+  /* Tooltip */
+  .tooltip-trigger {
+    cursor: pointer;
+    border-bottom: 2px dashed var(--ocean-light);
+    display: inline;
+  }
+  .tooltip-trigger:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    background: var(--ocean-deep);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 100;
+    margin-top: -40px;
+    margin-left: 10px;
+    font-weight: 600;
+  }
+
+  /* Page counter dots */
+  .page-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  .page-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transition: all 0.3s;
+  }
+  .page-dot.active {
+    background: var(--gold);
+    width: 22px;
+    border-radius: 4px;
+    box-shadow: 0 0 8px rgba(249,168,37,0.5);
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .book-container { padding: 80px 14px 90px; }
+    .card { padding: 24px 20px; }
+    .cover-card { padding: 36px 24px; }
+    .footprint-grid { grid-template-columns: repeat(2, 1fr); }
+    .learnings-grid { grid-template-columns: 1fr 1fr; }
+    .erase-grid { grid-template-columns: 1fr; }
+    .nav-btn { padding: 12px 22px; font-size: 15px; }
+    .compare-table { font-size: 12px; }
+    .compare-table th, .compare-table td { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Stars background -->
+<div class="stars-bg" id="stars"></div>
+
+<!-- Bubbles -->
+<div id="bubbles"></div>
+
+<!-- Wave bottom -->
+<div class="wave-bottom">
+  <svg viewBox="0 0 1440 80" preserveAspectRatio="none" fill="none">
+    <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill="rgba(255,255,255,0.06)"/>
+    <path d="M0,55 C360,20 720,80 1080,40 C1260,25 1380,50 1440,55 L1440,80 L0,80 Z" fill="rgba(255,255,255,0.04)"/>
+  </svg>
+</div>
+
+<!-- Back button -->
+<a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+
+<!-- Progress -->
+<div class="progress-container">
+  <span class="progress-text" id="pageLabel">1 / 12</span>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:8%"></div>
+  </div>
+  <span>🐾</span>
+</div>
+
+<!-- Book Container -->
+<div class="book-container">
+
+  <!-- PAGE 1: COVER -->
+  <div class="page active" id="page-1">
+    <div class="cover-card">
+      <div class="sun"></div>
+      <div class="cover-badge">📅 HARI 18 · MINGGU 3</div>
+      <div class="cover-title">🐾 Jejak Kaki di Pasir Digital</div>
+      <div class="cover-subtitle">Digital Footprint</div>
+
+      <div style="text-align:center; margin: 24px 0 16px; position:relative; z-index:1;">
+        <!-- Illustration: Beach scene with footprints -->
+        <svg width="260" height="180" viewBox="0 0 260 180" class="float-em">
+          <!-- Sky -->
+          <rect x="0" y="0" width="260" height="100" rx="16" fill="#87CEEB"/>
+          <!-- Sun -->
+          <circle cx="210" cy="30" r="22" fill="#FFD740"/>
+          <circle cx="210" cy="30" r="28" fill="rgba(255,215,64,0.2)"/>
+          <!-- Clouds -->
+          <ellipse cx="60" cy="28" rx="30" ry="14" fill="white" opacity="0.85"/>
+          <ellipse cx="80" cy="22" rx="22" ry="13" fill="white" opacity="0.85"/>
+          <!-- Ocean -->
+          <rect x="0" y="95" width="260" height="30" rx="0" fill="#1565c0"/>
+          <path d="M0,100 Q40,92 80,100 Q120,108 160,100 Q200,92 260,100 L260,95 L0,95 Z" fill="#42a5f5"/>
+          <!-- Sand -->
+          <rect x="0" y="120" width="260" height="60" rx="0 0 16 16" fill="#ffe082"/>
+          <!-- Footprints -->
+          <text x="25" y="148" font-size="18">👣</text>
+          <text x="58" y="155" font-size="18">👣</text>
+          <text x="91" y="145" font-size="18">👣</text>
+          <text x="124" y="153" font-size="18">👣</text>
+          <text x="157" y="144" font-size="18">👣</text>
+          <!-- Captain figure -->
+          <circle cx="200" cy="125" r="14" fill="#ffd54f"/>
+          <text x="188" y="131" font-size="18">🧒</text>
+          <text x="188" y="162" font-size="11" fill="#795548" font-weight="bold" font-family="sans-serif">Aslan</text>
+          <!-- Eye icon watching -->
+          <text x="90" y="50" font-size="16">👁️</text>
+          <text x="110" y="50" font-size="16">👁️</text>
+          <text x="130" y="50" font-size="16">👁️</text>
+          <!-- Arrow from eye to footprints -->
+          <path d="M115,58 Q115,90 100,120" stroke="#ff7043" stroke-width="1.5" stroke-dasharray="4,3" fill="none"/>
+        </svg>
+      </div>
+
+      <div class="captain-name-banner" style="position:relative;z-index:1;">
+        <p>Petualangan Hari Ini untuk Kapten</p>
+        <h2>⚓ Aslan</h2>
+      </div>
+
+      <div style="position:relative;z-index:1; margin-top:20px;">
+        <p style="color:rgba(255,255,255,0.7); font-size:13px; font-style:italic;">
+          "Setiap langkahmu di internet meninggalkan<br>jejak yang bisa dilihat semua orang... 🌊"
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2: INTRO / RECAP -->
+  <div class="page" id="page-2">
+    <div class="card">
+      <div class="story-header">
+        <div class="story-icon icon-ocean">🌊</div>
+        <div class="section-title">Petualangan Aslan Berlanjut!</div>
+      </div>
+      <p class="story-text">
+        Hei, <strong>Kapten Aslan!</strong> 🎉 Kamu sudah berhasil melewati dua hari petualangan yang luar biasa!
+      </p>
+      <div class="highlight-box">
+        🔑 <strong>Hari 16:</strong> Kamu belajar tidak boleh memberi "kunci rumah" (data pribadi) ke orang asing di internet.
+      </div>
+      <div class="highlight-box">
+        🎭 <strong>Hari 17:</strong> Kamu belajar mengenali orang yang pura-pura jadi orang baik di lautan digital.
+      </div>
+      <p class="story-text">
+        Dan hari ini, Aslan, kamu akan menemukan sesuatu yang sangat mengejutkan... 
+        Sesuatu yang selama ini tidak pernah kamu sadari tapi selalu terjadi setiap kali kamu "berlayar" di internet! 🐾
+      </p>
+      <div class="wave-divider">🌊 〜 🌊 〜 🌊</div>
+      <p class="story-text" style="text-align:center; font-size:17px; font-weight:700; color: var(--ocean-deep);">
+        Siap untuk petualangan hari ini?<br>Tapi pegang erat-erat ya, Kapten... 😮
+      </p>
+      <span class="story-emoji-large">⚓</span>
+    </div>
+  </div>
+
+  <!-- PAGE 3: MAIN STORY -->
+  <div class="page" id="page-3">
+    <div class="card">
+      <div class="story-header">
+        <div class="story-icon icon-gold">📖</div>
+        <div class="section-title">Suatu Hari di Pantai Digital... 🏖️</div>
+      </div>
+      <p class="story-text">
+        Sore itu, <strong>Aslan</strong> dan kapal ajaibnya berlayar santai di lautan digital. Aslan membuka YouTube, menonton video dinosaurus, lalu berpindah ke Instagram untuk melihat foto-foto keren teman-temannya.
+      </p>
+      <p class="story-text">
+        Tanpa sadar, Aslan melakukan banyak hal: <em>like foto ini, tulis komentar di sana, buka aplikasi game, cari nama sekolahnya, dan berbagi lokasi di peta online.</em>
+      </p>
+      <p class="story-text">
+        Tiba-tiba... <strong>Kapten Tua Bijaksa</strong> — pemandu petualangan Aslan — muncul dengan ekspresi serius.
+      </p>
+      <div class="highlight-box">
+        🧙 <strong>Kapten Tua:</strong> "Aslan! Berhenti dulu! Coba lihat ke belakangmu..."
+      </div>
+      <p class="story-text">
+        Aslan menoleh... dan terkejut setengah mati! 😱
+      </p>
+      <p class="story-text">
+        Di sepanjang pantai digital tempat dia berjalan, ada <strong>jejak kaki yang sangat jelas</strong> — puluhan jejak! Dan yang lebih mengejutkan... ada banyak <strong>mata yang mengamati</strong> jejak-jejak itu dari kejauhan!
+      </p>
+      <div class="warning-box">
+        👁️👁️👁️ <strong>"Jejak kakimu bisa dilihat oleh siapa saja, Kapten Aslan!"</strong> kata Kapten Tua.
+      </div>
+      <p class="story-text" style="font-style:italic;">
+        Aslan sangat terkejut. "Tapi... aku kan tidak melakukan sesuatu yang jahat? Aku cuma browsing biasa..."<br>
+        <strong>"Itulah yang harus kamu pelajari hari ini,"</strong> jawab Kapten Tua. <em>"Mari kita lihat bersama."</em>
+      </p>
+    </div>
+  </div>
+
+  <!-- PAGE 4: INTERACTIVE BEACH SCENE -->
+  <div class="page" id="page-4">
+    <div class="card">
+      <div class="story-header">
+        <div class="story-icon icon-sand">🏖️</div>
+        <div class="section-title">Lihat Jejak Kakimu di Pasir! 👇</div>
+      </div>
+      <p class="story-text">
+        Bayangkan internet seperti <strong>pantai pasir yang luas</strong>. Setiap kali kamu melakukan sesuatu di internet, kamu meninggalkan jejak kaki di pasir itu. <strong>Klik area pasir di bawah untuk melihat jejak-jejak itu!</strong>
+      </p>
+
+      <div class="beach-scene" id="beachScene">
+        <div class="beach-sky">
+          <!-- Sun -->
+          <div style="position:absolute;top:12px;right:20px;width:40px;height:40px;background:radial-gradient(#ffd740,#ffab00);border-radius:50%;box-shadow:0 0 0 8px rgba(255,215,64,0.2);"></div>
+          <!-- Cloud -->
+          <div style="position:absolute;top:16px;left:18px;width:60px;height:22px;background:rgba(255,255,255,0.8);border-radius:30px;"></div>
+          <div style="position:absolute;top:10px;left:36px;width:40px;height:20px;background:rgba(255,255,255,0.8);border-radius:30px;"></div>
+        </div>
+        <div class="beach-ocean">
+          <div class="beach-wave"></div>
+        </div>
+        <div class="beach-sand" id="sandArea"></div>
+        <div class="beach-instruction" id="beachInstruction">👆 Klik di pasir untuk meninggalkan jejak kaki!</div>
+      </div>
+
+      <div id="footprintCounter" style="text-align:center;font-family:'Fredoka One',cursive;color:var(--ocean-deep);font-size:16px;margin:12px 0;">
+        Jejak digital: <span id="fpCount" style="color:var(--orange);font-size:22px;">0</span> jejak
+      </div>
+
+      <div class="highlight-box" id="beachTip">
+        💡 Setiap klik di internet = satu jejak kaki di pasir digital. Sudah berapa jejak yang kamu tinggalkan hari ini?
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 5: WHAT IS DIGITAL FOOTPRINT -->
+  <div class="page" id="page-5">
+    <div class="card">
+      <div class="story-header">
+        <div class="story-icon icon-info">🔍</div>
+        <div class="section-title">Apa itu Jejak Kaki Digital? 🐾</div>
+      </div>
+      <p class="story-text">
+        <strong>Jejak kaki digital (Digital Footprint)</strong> adalah semua informasi tentang dirimu yang tersimpan di internet setelah kamu melakukan aktivitas online.
+      </p>
+
+      <div style="text-align:center; margin: 20px 0;">
+        <svg width="100%" height="160" viewBox="0 0 360 160">
+          <!-- Left: Real beach -->
+          <rect x="10" y="100" width="150" height="50" rx="8" fill="#ffe082"/>
+          <text x="20" y="92" font-size="11" fill="#795548" font-weight="bold" font-family="sans-serif">PANTAI NYATA</text>
+          <text x="20" y="135" font-size="22">👣</text>
+          <text x="55" y="142" font-size="22">👣</text>
+          <text x="90" y="133" font-size="22">👣</text>
+          <!-- Arrow -->
+          <text x="165" y="128" font-size="28">≈</text>
+          <!-- Right: Digital beach -->
+          <rect x="200" y="100" width="150" height="50" rx="8" fill="#bbdefb"/>
+          <text x="210" y="92" font-size="11" fill="#0d47a1" font-weight="bold" font-family="sans-serif">LAUTAN DIGITAL</text>
+          <text x="210" y="135" font-size="22">📸</text>
+          <text x="245" y="142" font-size="22">💬</text>
+          <text x="280" y="133" font-size="22">❤️</text>
+          <!-- Labels -->
+          <text x="85" y="175" font-size="10" fill="#795548" text-anchor="middle" font-family="sans-serif">Jejak yang terlihat</text>
+          <text x="275" y="175" font-size="10" fill="#0d47a1" text-anchor="middle" font-family="sans-serif">Jejak digital-mu</text>
+        </svg>
+      </div>
+
+      <table class="compare-table">
+        <tr>
+          <th class="header-real">🏖️ Jejak Kaki di Pantai</th>
+          <th class="header-dig">💻 Jejak Kaki Digital</th>
+        </tr>
+        <tr>
+          <td>Terlihat di pasir pantai</td>
+          <td>Tersimpan di server internet</td>
+        </tr>
+        <tr>
+          <td>Bisa dihapus ombak</td>
+          <td>Sangat sulit dihapus</td>
+        </tr>
+        <tr>
+          <td>Hanya orang terdekat yang melihat</td>
+          <td>Bisa dilihat jutaan orang</td>
+        </tr>
+        <tr>
+          <td>Hilang dalam beberapa jam</td>
+          <td>Bisa bertahan bertahun-tahun!</td>
+        </tr>
+      </table>
+
+      <div class="success-box">
+        🌟 Setiap foto yang kamu upload, komentar yang kamu tulis, dan konten yang kamu "like" — semua itu adalah <strong>jejak kaki digitalmu</strong>!
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 6: TYPES OF FOOTPRINTS -->
+  <div class="page" id="page-6">
+    <div class="card">
+      <div class="story-header">
+        <div class="story-icon icon-sand">🗺️</div>
+        <div class="section-title">Jenis-jenis Jejak Digital yang Kita Tinggalkan 👀</div>
+      </div>
+      <p class="story-text">Ada dua jenis jejak digital yang kamu tinggalkan setiap hari. Ketuk kartu-kartu di bawah untuk belajar lebih lanjut!</p>
+
+      <div style="display:flex; gap:10px; margin:14px 0 18px; flex-wrap:wrap;">
+        <div style="background:linear-gradient(135deg,#42a5f5,#1565c0);color:white;padding:8px 18px;border-radius:30px;font-weight:700;font-size:13px;">👁️ Jejak Aktif (kamu sengaja)</div>
+        <div style="background:linear-gradient(135deg,#ff7043,#e53935);color:white;padding:8px 18px;border-radius:30px;font-weight:700;font-size:13px;">🕵️ Jejak Pasif (tanpa sadar)</div>
+      </div>
+
+      <div class="footprint-grid" id="footprintGrid">
+        <div class="footprint-card type-visible" onclick="showFootprintInfo(this,'📸 Foto','Setiap foto yang kamu upload langsung bisa dilihat orang lain dan tersimpan di server!','Aktif')">
+          <div class="fc-badge badge-visible">A</div>
+          <div class="fc-icon">📸</div>
+          <div class="fc-name">Foto & Video</div>
+          <div class="fc-desc">Foto yang kamu upload atau tag</div>
+        </div>
+        <div class="footprint-card type-visible" onclick="showFootprintInfo(this,'💬 Komentar','Semua komentar yang kamu tulis bisa dibaca siapa saja, bahkan tahun depan!','Aktif')">
+          <div class="fc-badge badge-visible">A</div>
+          <div class="fc-icon">💬</div>
+          <div class="fc-name">Komentar</div>
+          <div class="fc-desc">Tulisan & balas pesan publik</div>
+        </div>
+        <div class="footprint-card type-visible" onclick="showFootprintInfo(this,'❤️ Like & Reaksi','Semua like dan reaksi yang kamu beri tersimpan dan bisa dilihat oleh platform!','Aktif')">
+          <div class="fc-badge badge-visible">A</div>
+          <div class="fc-icon">❤️</div>
+          <div class="fc-name">Like & Reaksi</div>
+          <div class="fc-desc">Tombol suka, reaksi, share</div>
+        </div>
+        <div class="footprint-card type-visible" onclick="showFootprintInfo(this,'👤 Username','Username-mu adalah identitas digitalmu yang terlihat oleh semua orang!','Aktif')">
+          <div class="fc-badge badge-visible">A</div>
+          <div class="fc-icon">👤</div>
+          <div class="fc-name">Username</div>
+          <div class="fc-desc">Nama pengguna di semua platform</div>
+        </div>
+        <div class="footprint-card type-hidden" onclick="showFootprintInfo(this,'📍 Lokasi','Banyak aplikasi menyimpan lokasimu tanpa kamu sadari! Ini bisa sangat berbahaya.','Pasif ⚠️')">
+          <div class="fc-badge badge-hidden">P</div>
+          <div class="fc-icon">📍</div>
+          <div class="fc-name">Lokasi</div>
+          <div class="fc-desc">GPS & lokasi otomatis tersimpan</div>
+        </div>
+        <div class="footprint-card type-hidden" onclick="showFootprintInfo(this,'🔍 Pencarian','Semua hal yang kamu cari di Google tersimpan! Google tahu semua pertanyaanmu.','Pasif')">
+          <div class="fc-badge badge-hidden">P</div>
+          <div class="fc-icon">🔍</div>
+          <div class="fc-name">Riwayat Cari</div>
+          <div class="fc-desc">Semua yang kamu googling</div>
+        </div>
+        <div class="footprint-card type-hidden" onclick="showFootprintInfo(this,'🕐 Waktu Online','Platform merekam kapan saja kamu online, berapa lama, dan apa yang kamu lakukan.','Pasif')">
+          <div class="fc-badge badge-hidden">P</div>
+          <div class="fc-icon">🕐</div>
+          <div class="fc-name">Waktu Online</div>
+          <div class="fc-desc">Jam & durasi kamu online</div>
+        </div>
+        <div class="footprint-card type-hidden" onclick="showFootprintInfo(this,'📱 Perangkat','Internet juga tahu kamu pakai HP apa, browser apa, dan dari mana kamu mengakses!','Pasif')">
+          <div class="fc-badge badge-hidden">P</div>
+          <div class="fc-icon">📱</div>
+          <div class="fc-name">Info Perangkat</div>
+          <div class="fc-desc">HP, browser, & sistem yang dipakai</div>
+        </div>
+      </div>
+
+      <div id="footprintInfoBox" style="display:none;" class="highlight-box">
+        <strong id="fpInfoTitle"></strong><br>
+        <span id="fpInfoDesc"></span>
+        <span id="fpInfoType" style="margin-left:8px;padding:2px 10px;background:var(--ocean-mid);color:white;border-radius:10px;font-size:12px;font-weight:700;"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 7: WHY IT MATTERS (FOREVER) -->
+  <div class="page" id="page-7">
+    <div class="card">
+      <div class="story-header">
+        <div class="story-icon icon-info">⏰</div>
+        <div class="section-title">Jejak Digital Bisa Bertahan Selamanya! 😮</div>
+      </div>
+      <p class="story-text">
+        Kapten Tua menunjukkan sesuatu yang sangat mengejutkan kepada Aslan...
+      </p>
+      <div class="highlight-box">
+        🧙 <strong>Kapten Tua:</strong> "Aslan, tahukah kamu? Foto yang kamu upload hari ini bisa masih ada di internet <strong>20 tahun lagi</strong>. Bahkan setelah kamu hapus sekalipun!"
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="tl-title">📸 Kamu Upload Foto Sekarang</div>
+          <div class="tl-desc">Foto tersimpan di server platform, tersimpan di perangkat teman yang screenshot, dan mungkin sudah di-share ke orang lain.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-title">🗓️ 1 Bulan Kemudian</div>
+          <div class="tl-desc">Foto itu mungkin sudah di-share oleh beberapa orang. Mesin pencari mungkin sudah mengindeksnya.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-title">📅 1 Tahun Kemudian</div>
+          <div class="tl-desc">Foto itu mungkin ada di banyak tempat di internet yang kamu tidak ketahui. Beberapa orang mungkin sudah menyimpannya.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-title">🎓 10 Tahun Kemudian</div>
+          <div class="tl-desc">Kamu sudah dewasa dan melamar pekerjaan. Manajer HRD bisa mencari namamu dan menemukan foto-foto lamamu!</div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-title">🌟 Kesimpulannya...</div>
+          <div class="tl-desc">Sebelum posting apapun, tanyakan dulu: "Apakah aku mau foto/tulisan ini dilihat guru, orang tua, atau bossku 10 tahun lagi?"</div>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        ⚠️ <strong>Fakta Mengejutkan:</strong> Bahkan setelah kamu menekan tombol "Hapus", salinan data kamu bisa masih tersimpan di server perusahaan, cache browser orang lain, atau website yang sudah screenshot kontenmu!
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 8: DANGERS -->
+  <div class="page" id="page-8">
+    <div class="card">
+      <div class="story-header">
+        <div class="story-icon icon-danger">⚠️</div>
+        <div class="section-title">Bahaya Jika Jejak Ditinggalkan Sembarangan! 🚨</div>
+      </div>
+      <p class="story-text">
+        Aslan mendengarkan dengan serius saat Kapten Tua menjelaskan bahaya-bahaya yang bisa terjadi...
+      </p>
+
+      <div style="display:flex;flex-direction:column;gap:14px;margin:16px 0;">
+        <div style="display:flex;gap:14px;align-items:flex-start;background:#fff3e0;border-radius:16px;padding:16px;border:2px solid #ff9800;">
+          <span style="font-size:32px;flex-shrink:0;">🦹</span>
+          <div>
+            <div style="font-family:'Fredoka One',cursive;color:#e65100;font-size:16px;margin-bottom:4px;">Dimanfaatkan Orang Jahat</div>
+            <div style="font-size:13px;color:#5d4037;line-height:1.5;">Orang jahat bisa mengumpulkan jejak-jejak kecilmu (nama, sekolah, lokasi, foto) dan menggabungkannya untuk mengetahui siapa kamu dan di mana kamu tinggal.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;background:#fce4ec;border-radius:16px;padding:16px;border:2px solid #e91e63;">
+          <span style="font-size:32px;flex-shrink:0;">😞</span>
+          <div>
+            <div style="font-family:'Fredoka One',cursive;color:#880e4f;font-size:16px;margin-bottom:4px;">Cyberbullying & Malu</div>
+            <div style="font-size:13px;color:#5d4037;line-height:1.5;">Foto atau tulisan yang tidak bijak bisa dipakai orang lain untuk menghina, mengganggu, atau mempermalukanmu di depan banyak orang.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;background:#e8f5e9;border-radius:16px;padding:16px;border:2px solid #4caf50;">
+          <span style="font-size:32px;flex-shrink:0;">🎓</span>
+          <div>
+            <div style="font-family:'Fredoka One',cursive;color:#1b5e20;font-size:16px;margin-bottom:4px;">Masalah di Masa Depan</div>
+            <div style="font-size:13px;color:#5d4037;line-height:1.5;">Sekolah favorit atau perusahaan impianmu mungkin akan mencari namamu di internet. Jejak buruk bisa menutup kesempatan bagus!</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;background:#e3f2fd;border-radius:16px;padding:16px;border:2px solid #2196f3;">
+          <span style="font-size:32px;flex-shrink:0;">📍</span>
+          <div>
+            <div style="font-family:'Fredoka One',cursive;color:#0d47a1;font-size:16px;margin-bottom:4px;">Membocorkan Lokasi</div>
+            <div style="font-size:13px;color:#5d4037;line-height:1.5;">Foto yang kamu upload bisa mengandung data lokasi tersembunyi (GPS metadata). Orang jahat bisa tahu persis di mana kamu berada!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        🔔 <strong>Ingat:</strong> Jejak kaki di pasir pantai bisa dihapus ombak, tapi jejak digital jauh lebih sulit dihapus!
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 9: ERASE DEMO -->
+  <div class="page" id="page-9">
+    <div class="card">
+      <div class="story-header">
+        <div class="story-icon icon-ocean">🗑️</div>
+        <div class="section-title">Mana yang Bisa Dihapus? 🌊</div>
+      </div>
+      <p class="story-text">
+        Aslan bertanya, <em>"Kapten Tua, apakah aku bisa menghapus semua jejak kakiku?"</em>
+      </p>
+      <p class="story-text">
+        Kapten Tua tersenyum, <strong>"Sebagian bisa, sebagian sangat sulit. Coba klik tombol 'Hapus Ombak' dan lihat apa yang terjadi!"</strong>
+      </p>
+
+      <div class="erase-demo">
+        <div style="font-family:'Fredoka One',cursive;color:var(--warning);font-size:18px;margin-bottom:4px;">🌊 Simulasi Ombak Penghapus</div>
+        <div style="font-size:13px;color:#78909c;margin-bottom:4px;">Klik setiap item untuk mengetahui bisa dihapus atau tidak. Lalu tekan tombol di bawah!</div>
+
+        <div class="erase-grid" id="eraseGrid">
+          <div class="erase-item" id="ei1" onclick="toggleErase('ei1','can')">
+            <div class="erase-icon-wrap">📸</div>
+            <div>
+              <div class="erase-label">Foto di akun sendiri</div>
+              <div style="font-size:11px;color:#90a4ae;">Instagram, TikTok, dll</div>
+            </div>
+            <span class="erase-status can-erase">✓ BISA</span>
+          </div>
+          <div class="erase-item" id="ei2" onclick="toggleErase('ei2','hard')">
+            <div class="erase-icon-wrap">🔄</div>
+            <div>
+              <div class="erase-label">Foto yang sudah di-share orang lain</div>
+              <div style="font-size:11px;color:#90a4ae;">Sudah tersebar</div>
+            </div>
+            <span class="erase-status hard-erase">✗ SULIT</span>
+          </div>
+          <div class="erase-item" id="ei3" onclick="toggleErase('ei3','can')">
+            <div class="erase-icon-wrap">💬</div>
+            <div>
+              <div class="erase-label">Komentar di akun sendiri</div>
+              <div style="font-size:11px;color:#90a4ae;">Bisa diedit/hapus</div>
+            </div>
+            <span class="erase-status can-erase">✓ BISA</span>
+          </div>
+          <div class="erase-item" id="ei4" onclick="toggleErase('ei4','hard')">
+            <div class="erase-icon-wrap">🔍</div>
+            <div>
+              <div class="erase-label">Riwayat pencarian Google</div>
+              <div style="font-size:11px;color:#90a4ae;">Tersimpan di server</div>
+            </div>
+            <span class="erase-status hard-erase">✗ SULIT</span>
+          </div>
+          <div class="erase-item" id="ei5" onclick="toggleErase('ei5','hard')">
+            <div class="erase-icon-wrap">📸</div>
+            <div>
+              <div class="erase-label">Screenshot oleh orang lain</div>
+              <div style="font-size:11px;color:#90a4ae;">Di perangkat mereka</div>
+            </div>
+            <span class="erase-status hard-erase">✗ TIDAK BISA</span>
+          </div>
+          <div class="erase-item" id="ei6" onclick="toggleErase('ei6','can')">
+            <div class="erase-icon-wrap">👤</div>
+            <div>
+              <div class="erase-label">Akun media sosial milik sendiri</div>
+              <div style="font-size:11px;color:#90a4ae;">Bisa di-deactivate</div>
+            </div>
+            <span class="erase-status can-erase">✓ BISA</span>
+          </div>
+        </div>
+
+        <button class="erase-btn" onclick="doWaveErase()">🌊 Kirim Ombak Penghapus!</button>
+      </div>
+
+      <div id="eraseResult" style="display:none;" class="success-box">
+        ✅ Ombak sudah dikirim! Tapi lihat — hanya sebagian yang bisa dihapus. Makanya lebih baik <strong>berpikir dua kali sebelum posting!</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 10: HOW TO WALK SAFELY -->
+  <div class="page" id="page-10">
+    <div class="card">
+      <div class="story-header">
+        <div class="story-icon icon-success">🛡️</div>
+        <div class="section-title">Cara Berjalan Bijak di Lautan Digital 🌟</div>
+      </div>
+      <p class="story-text">
+        <strong>"Bagus, Aslan!"</strong> kata Kapten Tua. <em>"Sekarang kamu mengerti. Kamu tidak bisa tidak meninggalkan jejak — tapi kamu bisa memilih jejak apa yang kamu tinggalkan!"</em>
+      </p>
+
+      <div class="rules-list">
+        <div class="rule-item">
+          <div class="rule-num">1</div>
+          <div class="rule-content">
+            <div class="rule-title">🤔 Pikirkan Dulu Sebelum Posting</div>
+            <div class="rule-desc">Tanyakan: "Apakah aku mau semua orang melihat ini? Apakah aku masih bangga dengan ini 5 tahun lagi?"</div>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">2</div>
+          <div class="rule-content">
+            <div class="rule-title">🔒 Atur Privasi Akun</div>
+            <div class="rule-desc">Buat akunmu private agar hanya orang yang kamu kenal yang bisa melihat posting-anmu. Minta bantuan orang tua!</div>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">3</div>
+          <div class="rule-content">
+            <div class="rule-title">📍 Matikan Lokasi</div>
+            <div class="rule-desc">Jangan biarkan aplikasi mengakses lokasimu secara otomatis. Minta orang tua membantumu mengatur ini di HP.</div>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">4</div>
+          <div class="rule-content">
+            <div class="rule-title">🎭 Jangan Bagikan Informasi Pribadi</div>
+            <div class="rule-desc">Nama lengkap, alamat rumah, nomor telepon, nama sekolah — jangan dibagikan secara publik di internet.</div>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">5</div>
+          <div class="rule-content">
+            <div class="rule-title">💚 Tinggalkan Jejak yang Baik</div>
+            <div class="rule-desc">Komentar yang baik, konten yang positif, dan perilaku sopan — ini adalah jejak digital yang indah dan membanggakan!</div>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">6</div>
+          <div class="rule-content">
+            <div class="rule-title">👨‍👩‍👧 Selalu Cerita ke Orang Tua</div>
+            <div class="rule-desc">Jika ada yang membuatmu bingung atau tidak nyaman di internet, segera cerita ke Ayah, Ibu, atau guru terpercaya.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 11: KEY LEARNINGS -->
+  <div class="page" id="page-11">
+    <div class="card">
+      <div class="story-header">
+        <div class="story-icon icon-gold">⭐</div>
+        <div class="section-title">Harta Karun Hari Ini! 💎</div>
+      </div>
+      <p class="story-text">Ketuk setiap harta karun untuk melihat pelajaran pentingnya, Kapten Aslan!</p>
+
+      <div class="learnings-grid">
+        <div class="learning-item" onclick="flipLearning(this)">
+          <div class="li-icon">🐾</div>
+          <div class="li-title">Jejak Digital</div>
+          <div class="li-text">Semua aktivitas online meninggalkan jejak yang bisa dilihat orang lain.</div>
+        </div>
+        <div class="learning-item" onclick="flipLearning(this)">
+          <div class="li-icon">⏳</div>
+          <div class="li-title">Bertahan Lama</div>
+          <div class="li-text">Jejak digitalmu bisa bertahan selamanya, bahkan setelah kamu hapus!</div>
+        </div>
+        <div class="learning-item" onclick="flipLearning(this)">
+          <div class="li-icon">👁️</div>
+          <div class="li-title">Bisa Dilihat</div>
+          <div class="li-text">Jejak aktif: foto, komentar, like. Jejak pasif: lokasi, riwayat search.</div>
+        </div>
+        <div class="learning-item" onclick="flipLearning(this)">
+          <div class="li-icon">🤔</div>
+          <div class="li-title">Pikir Dulu</div>
+          <div class="li-text">Sebelum posting, tanya: "Apa aku bangga kalau guru/orang tua melihat ini?"</div>
+        </div>
+        <div class="learning-item" onclick="flipLearning(this)">
+          <div class="li-icon">🔒</div>
+          <div class="li-title">Privasi</div>
+          <div class="li-text">Atur akun jadi private dan matikan izin lokasi untuk keamanan.</div>
+        </div>
+        <div class="learning-item" onclick="flipLearning(this)">
+          <div class="li-icon">💚</div>
+          <div class="li-title">Jejak Baik</div>
+          <div class="li-text">Lebih baik tinggalkan jejak yang positif dan membanggakan!</div>
+        </div>
+      </div>
+
+      <div class="reflection-box">
+        <h3>🤔 Renungkan, Kapten Aslan!</h3>
+        <p style="font-size:14px;color:#5d4037;line-height:1.6;">
+          Bayangkan seseorang bisa melihat semua yang pernah kamu lakukan di internet selama satu tahun terakhir. Apakah kamu akan merasa bangga? Kalau ya, bagus sekali! Kalau ada yang membuat kurang nyaman, itulah saatnya kita mulai berhati-hati! 🌟
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 12: CHALLENGE + CLOSING -->
+  <div class="page" id="page-12">
+    <div class="challenge-card">
+      <div class="challenge-title">🎯 Tantangan Hari Ini!</div>
+      <div class="challenge-subtitle">Untuk Kapten Aslan • Hari 18</div>
+
+      <div class="challenge-tasks" id="challengeTasks">
+        <div class="challenge-task" onclick="toggleTask(this)">
+          <div class="task-check">1</div>
+          <div class="task-text">🔍 Cari tahu: kalau kamu Google nama sendiri, apa yang muncul? Tanya bantuan Ayah/Ibu!</div>
+        </div>
+        <div class="challenge-task" onclick="toggleTask(this)">
+          <div class="task-check">2</div>
+          <div class="task-text">📱 Minta orang tuamu memeriksa pengaturan privasi di HP-mu bersama-sama.</div>
+        </div>
+        <div class="challenge-task" onclick="toggleTask(this)">
+          <div class="task-check">3</div>
+          <div class="task-text">✍️ Tulis 3 contoh "Jejak Digital yang Aku Bangga Tinggalkan" di selembar kertas!</div>
+        </div>
+        <div class="challenge-task" onclick="toggleTask(this)">
+          <div class="task-check">4</div>
+          <div class="task-text">🗣️ Ceritakan kepada 1 teman tentang apa itu jejak digital dan kenapa penting!</div>
+        </div>
+        <div class="challenge-task" onclick="toggleTask(this)">
+          <div class="task-check">5</div>
+          <div class="task-text">🌟 BONUS: Buat "Janji Digital" versimu sendiri dan tempelkan di kamar!</div>
+        </div>
+      </div>
+
+      <div class="challenge-score" id="challengeScore">
+        🏆 Selesai: <span id="scoreNum">0</span>/5 Tantangan
+      </div>
+    </div>
+
+    <div style="height:20px;"></div>
+
+    <div class="closing-card">
+      <div style="position:relative;z-index:1;">
+        <div style="font-size:60px;margin-bottom:10px;" class="sparkle">🐾</div>
+        <div style="font-family:'Fredoka One',cursive;font-size:26px;color:var(--gold-bright);margin-bottom:8px;">
+          Selamat, Kapten Aslan! 🎉
+        </div>
+        <p style="font-size:15px;color:rgba(255,255,255,0.85);line-height:1.7;margin-bottom:20px;">
+          Hari ini kamu sudah mempelajari salah satu rahasia terpenting lautan digital — <strong style="color:var(--gold-bright);">Jejak Kaki Digital</strong>! Setiap langkahmu di internet meninggalkan bekas, jadi berjalanlah dengan bijak dan percaya diri!
+        </p>
+
+        <div style="background:rgba(255,255,255,0.1);border-radius:16px;padding:16px;margin-bottom:20px;border:1px solid rgba(255,213,0,0.3);">
+          <div style="font-family:'Fredoka One',cursive;color:var(--gold-bright);font-size:15px;margin-bottom:8px;">🚢 Besok di Hari 19:</div>
+          <div style="font-size:14px;color:rgba(255,255,255,0.8);">
+            <strong style="color:white;">🗡️ Kata Sandi adalah Pedang Ajaib!</strong><br>
+            Aslan akan belajar cara membuat "pedang" yang kuat untuk melindungi semua harta karunnya di lautan digital!
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
+          <span style="background:rgba(255,255,255,0.15);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;">Hari 16 ✅</span>
+          <span style="background:rgba(255,255,255,0.15);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;">Hari 17 ✅</span>
+          <span style="background:rgba(255,215,0,0.3);border:2px solid var(--gold-bright);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;color:var(--gold-bright);">Hari 18 ✅</span>
+          <span style="background:rgba(255,255,255,0.08);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;color:rgba(255,255,255,0.4);">Hari 19 →</span>
+        </div>
+
+        <div style="font-size:28px;letter-spacing:4px;">⚓ 🌊 🐾 🌟 ⚓</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Nav Buttons -->
+<div class="nav-buttons">
+  <button class="nav-btn prev" id="prevBtn" onclick="changePage(-1)" disabled>← Sebelumnya</button>
+  <div class="page-dots" id="pageDots"></div>
+  <button class="nav-btn next" id="nextBtn" onclick="changePage(1)">Selanjutnya →</button>
+</div>
+
+<script>
+// =========================================
+// SETUP
+// =========================================
+const TOTAL_PAGES = 12;
+let currentPage = 1;
+
+// Stars
+const starsContainer = document.getElementById('stars');
+for (let i = 0; i < 55; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+  const size = Math.random() * 3 + 1;
+  star.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${Math.random()*100}%;
+    top:${Math.random()*70}%;
+    animation-delay:${Math.random()*5}s;
+    animation-duration:${Math.random()*3+2}s;
+  `;
+  starsContainer.appendChild(star);
+}
+
+// Bubbles
+const bubblesContainer = document.getElementById('bubbles');
+for (let i = 0; i < 10; i++) {
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  const size = Math.random() * 40 + 10;
+  b.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${Math.random()*100}%;
+    animation-duration:${Math.random()*10+8}s;
+    animation-delay:${Math.random()*10}s;
+  `;
+  bubblesContainer.appendChild(b);
+}
+
+// Page dots
+function buildDots() {
+  const dots = document.getElementById('pageDots');
+  dots.innerHTML = '';
+  for (let i = 1; i <= TOTAL_PAGES; i++) {
+    const d = document.createElement('div');
+    d.className = 'page-dot' + (i === currentPage ? ' active' : '');
+    d.onclick = () => goToPage(i);
+    d.style.cursor = 'pointer';
+    dots.appendChild(d);
+  }
+}
+
+function updateUI() {
+  document.querySelectorAll('.page').forEach((p, i) => {
+    p.classList.toggle('active', i + 1 === currentPage);
+  });
+  document.getElementById('prevBtn').disabled = currentPage === 1;
+  document.getElementById('nextBtn').disabled = currentPage === TOTAL_PAGES;
+  document.getElementById('nextBtn').textContent = currentPage === TOTAL_PAGES ? 'Selesai ✓' : 'Selanjutnya →';
+  document.getElementById('pageLabel').textContent = `${currentPage} / ${TOTAL_PAGES}`;
+  document.getElementById('progressFill').style.width = `${(currentPage / TOTAL_PAGES) * 100}%`;
+  buildDots();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function changePage(dir) {
+  const np = currentPage + dir;
+  if (np >= 1 && np <= TOTAL_PAGES) {
+    currentPage = np;
+    updateUI();
+  }
+}
+
+function goToPage(n) {
+  currentPage = n;
+  updateUI();
+}
+
+// =========================================
+// PAGE 4: BEACH INTERACTIVE
+// =========================================
+let fpCount = 0;
+const footprintEmojis = ['👣','📸','💬','❤️','👍','🔍','📍','🎮','🎬','📝'];
+const footprintLabels = ['Foto upload!','Komentar!','Like!','Share!','Search!','Lokasi!','Main game!','Nonton video!','Tulis status!','Follow akun!'];
+const sandArea = document.getElementById('sandArea');
+
+document.getElementById('beachScene').addEventListener('click', function(e) {
+  const rect = sandArea.getBoundingClientRect();
+  const sceneRect = this.getBoundingClientRect();
+  if (e.clientY < rect.top) return;
+
+  fpCount++;
+  document.getElementById('fpCount').textContent = fpCount;
+
+  const idx = Math.floor(Math.random() * footprintEmojis.length);
+  const fp = document.createElement('div');
+  fp.className = 'footprint-on-sand ' + (Math.random() > 0.5 ? 'safe' : 'danger');
+
+  const xPct = ((e.clientX - sceneRect.left) / sceneRect.width) * 100;
+  const yPct = ((e.clientY - rect.top) / (sceneRect.bottom - rect.top)) * 100 + 60;
+
+  fp.style.left = `clamp(3%, ${xPct}%, 90%)`;
+  fp.style.top = `clamp(62%, ${yPct}%, 90%)`;
+  fp.style.animationDelay = '0s';
+  fp.textContent = footprintEmojis[idx];
+
+  const lbl = document.createElement('div');
+  lbl.className = 'footprint-label';
+  lbl.textContent = footprintLabels[idx];
+  lbl.style.left = `clamp(3%, ${xPct}%, 80%)`;
+  lbl.style.top = `clamp(55%, ${Math.max(55, yPct - 12)}%, 85%)`;
+
+  this.appendChild(fp);
+  this.appendChild(lbl);
+
+  if (fpCount >= 3) {
+    document.getElementById('beachInstruction').textContent = `👁️ ${fpCount} jejak sudah terlihat! Siapa yang bisa melihatnya?`;
+  }
+  if (fpCount >= 6) {
+    document.getElementById('beachTip').innerHTML = `⚠️ Wow! Sudah <strong>${fpCount} jejak</strong>! Bayangkan inilah yang terjadi setiap kamu online. Semua jejak ini bisa dilihat orang lain!`;
+  }
+
+  setTimeout(() => { if (lbl.parentNode) lbl.remove(); }, 2000);
+});
+
+// =========================================
+// PAGE 6: FOOTPRINT INFO
+// =========================================
+function showFootprintInfo(card, title, desc, type) {
+  document.querySelectorAll('.footprint-card').forEach(c => c.style.transform = '');
+  card.style.transform = 'scale(1.05)';
+  const box = document.getElementById('footprintInfoBox');
+  box.style.display = 'block';
+  document.getElementById('fpInfoTitle').textContent = title;
+  document.getElementById('fpInfoDesc').textContent = desc;
+  const tp = document.getElementById('fpInfoType');
+  tp.textContent = type;
+  tp.style.background = type.includes('Pasif') ? '#ff7043' : '#1565c0';
+}
+
+// =========================================
+// PAGE 9: ERASE DEMO
+// =========================================
+let eraseState = {};
+function toggleErase(id, type) {
+  eraseState[id] = type;
+}
+
+function doWaveErase() {
+  Object.entries(eraseState).forEach(([id, type]) => {
+    const el = document.getElementById(id);
+    el.classList.remove('erased','failed');
+    setTimeout(() => {
+      el.classList.add(type === 'can' ? 'erased' : 'failed');
+    }, Math.random() * 800 + 200);
+  });
+  // Also animate ones not clicked
+  ['ei1','ei2','ei3','ei4','ei5','ei6'].forEach(id => {
+    if (!eraseState[id]) {
+      const el = document.getElementById(id);
+      const defaultType = el.querySelector('.erase-status').classList.contains('can-erase') ? 'can' : 'hard';
+      setTimeout(() => {
+        el.classList.add(defaultType === 'can' ? 'erased' : 'failed');
+      }, Math.random() * 1000 + 300);
+    }
+  });
+  setTimeout(() => {
+    document.getElementById('eraseResult').style.display = 'block';
+  }, 1500);
+}
+
+// =========================================
+// PAGE 11: LEARNINGS FLIP
+// =========================================
+function flipLearning(el) {
+  el.style.background = 'linear-gradient(135deg, #e3f2fd, #bbdefb)';
+  el.style.borderColor = 'var(--ocean-light)';
+  const icon = el.querySelector('.li-icon');
+  icon.style.animation = 'sparkle 0.5s ease';
+  setTimeout(() => { icon.style.animation = ''; }, 600);
+}
+
+// =========================================
+// PAGE 12: CHALLENGE TASKS
+// =========================================
+let tasksDone = 0;
+function toggleTask(el) {
+  const wasDone = el.classList.contains('done');
+  el.classList.toggle('done');
+  tasksDone += wasDone ? -1 : 1;
+  tasksDone = Math.max(0, tasksDone);
+  document.getElementById('scoreNum').textContent = tasksDone;
+}
+
+// Initialize
+updateUI();
+</script>
+</body>
+</html>

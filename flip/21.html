@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Flip 21 – HP Kamu Itu Komputer Kecil</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Nunito:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --cyber-blue:   #00d2ff;
+  --cyber-blue2:  #0099cc;
+  --circuit-green:#00ff9d;
+  --elec-purple:  #b16bff;
+  --elec-pink:    #ff6bca;
+  --dark-bg:      #060b14;
+  --dark-panel:   #0a1628;
+  --dark-card:    #0d1f38;
+  --dark-border:  rgba(0,210,255,0.18);
+  --dark-border2: rgba(0,255,157,0.14);
+  --text-main:    #e8f4ff;
+  --text-sub:     #8ab8d8;
+  --text-dim:     #4a7a9a;
+  --glow-blue:    0 0 18px rgba(0,210,255,0.55), 0 0 40px rgba(0,210,255,0.2);
+  --glow-green:   0 0 18px rgba(0,255,157,0.55), 0 0 40px rgba(0,255,157,0.2);
+  --glow-purple:  0 0 18px rgba(177,107,255,0.55), 0 0 40px rgba(177,107,255,0.2);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--dark-bg);
+  font-family: 'Nunito', 'Plus Jakarta Sans', sans-serif;
+  color: var(--text-main);
+}
+
+/* ─── CIRCUIT GRID BACKGROUND ─── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,210,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,210,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 700px 400px at 15% 20%, rgba(0,210,255,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 500px 350px at 85% 75%, rgba(177,107,255,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 400px 300px at 50% 50%, rgba(0,255,157,0.04) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── SCAN LINE OVERLAY ─── */
+.scanline {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,210,255,0.012) 3px,
+    rgba(0,210,255,0.012) 4px
+  );
+}
+
+/* ─── CORNER DECORATIONS ─── */
+.corner-deco {
+  position: fixed; width: 60px; height: 60px;
+  z-index: 2; pointer-events: none;
+}
+.corner-deco.tl { top: 10px; left: 10px; border-top: 2px solid rgba(0,210,255,0.4); border-left: 2px solid rgba(0,210,255,0.4); border-radius: 6px 0 0 0; }
+.corner-deco.tr { top: 10px; right: 10px; border-top: 2px solid rgba(0,210,255,0.4); border-right: 2px solid rgba(0,210,255,0.4); border-radius: 0 6px 0 0; }
+.corner-deco.bl { bottom: 10px; left: 10px; border-bottom: 2px solid rgba(0,210,255,0.4); border-left: 2px solid rgba(0,210,255,0.4); border-radius: 0 0 0 6px; }
+.corner-deco.br { bottom: 10px; right: 10px; border-bottom: 2px solid rgba(0,210,255,0.4); border-right: 2px solid rgba(0,210,255,0.4); border-radius: 0 0 6px 0; }
+
+/* ─── PROGRESS BAR ─── */
+#prog-bar-wrap {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px;
+  background: rgba(0,210,255,0.08); z-index: 200;
+}
+#prog-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyber-blue), var(--circuit-green), var(--elec-purple));
+  border-radius: 0 3px 3px 0;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: var(--glow-blue);
+}
+
+/* ─── BACK BUTTON ─── */
+#back-btn {
+  position: fixed; top: 14px; left: 16px; z-index: 200;
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(0,210,255,0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0,210,255,0.25);
+  color: var(--cyber-blue);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; letter-spacing: 1px;
+  padding: 7px 14px 7px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+#back-btn:hover {
+  background: rgba(0,210,255,0.15);
+  box-shadow: var(--glow-blue);
+  border-color: var(--cyber-blue);
+}
+
+/* ─── PAGE COUNTER ─── */
+#page-counter {
+  position: fixed; top: 14px; right: 16px; z-index: 200;
+  background: rgba(0,210,255,0.06);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0,210,255,0.2);
+  color: var(--cyber-blue);
+  font-family: 'Orbitron', monospace;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  padding: 7px 14px;
+  border-radius: 6px;
+}
+
+/* ─── CIRCUIT DOTS (page indicator) ─── */
+#circuit-dots {
+  position: fixed; bottom: 86px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 0; z-index: 200;
+}
+.cdot-wrap { display: flex; align-items: center; }
+.cdot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(0,210,255,0.15);
+  border: 1px solid rgba(0,210,255,0.25);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.cdot.active {
+  background: var(--cyber-blue);
+  box-shadow: var(--glow-blue);
+  transform: scale(1.25);
+}
+.cdot.done {
+  background: rgba(0,210,255,0.4);
+  border-color: rgba(0,210,255,0.5);
+}
+.cdot-line {
+  width: 14px; height: 1px;
+  background: rgba(0,210,255,0.2);
+}
+.cdot-line.done { background: rgba(0,210,255,0.5); }
+
+/* ─── NAV BUTTONS ─── */
+#nav-prev, #nav-next {
+  position: fixed; bottom: 20px; z-index: 200;
+  width: 58px; height: 58px; border-radius: 50%;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  font-size: 0;
+}
+#nav-prev {
+  left: 50%; transform: translateX(calc(-50% - 40px));
+  background: rgba(0,210,255,0.07);
+  border: 1.5px solid rgba(0,210,255,0.3);
+  color: var(--cyber-blue);
+}
+#nav-next {
+  left: 50%; transform: translateX(calc(-50% + 40px));
+  background: linear-gradient(135deg, #006a99, #00d2ff22);
+  border: 1.5px solid var(--cyber-blue);
+  box-shadow: var(--glow-blue);
+  color: var(--cyber-blue);
+}
+#nav-prev:hover:not(:disabled) {
+  transform: translateX(calc(-50% - 40px)) scale(1.1);
+  background: rgba(0,210,255,0.14);
+  box-shadow: var(--glow-blue);
+}
+#nav-next:hover:not(:disabled) {
+  transform: translateX(calc(-50% + 40px)) scale(1.12);
+  box-shadow: 0 0 24px rgba(0,210,255,0.8), 0 0 50px rgba(0,210,255,0.3);
+}
+#nav-prev:disabled, #nav-next:disabled { opacity: 0.2; pointer-events: none; }
+
+/* ─── FLIPBOOK WRAPPER ─── */
+#flipbook {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 52px 16px 115px;
+  z-index: 10;
+}
+
+/* ─── PAGE BASE ─── */
+.page {
+  display: none;
+  width: 100%; max-width: 920px; height: 100%;
+  animation: fadeInUp 0.55s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+.page.active { display: flex; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes fadeOutUp {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(-16px) scale(0.985); }
+}
+
+/* ─── GLASSMORPHISM PANEL ─── */
+.glass-panel {
+  background: rgba(10,22,40,0.75);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid var(--dark-border);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(0,210,255,0.08);
+  position: relative; overflow: hidden;
+}
+.glass-panel::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyber-blue), transparent);
+  opacity: 0.5;
+}
+
+/* ─── SPLIT LAYOUT ─── */
+.split-page { flex-direction: row; gap: 12px; }
+.split-left {
+  flex: 0 0 40%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; padding: 24px 18px;
+}
+.split-right {
+  flex: 1;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  padding: 26px 24px; gap: 14px;
+  overflow-y: auto;
+}
+.split-right::-webkit-scrollbar { width: 3px; }
+.split-right::-webkit-scrollbar-thumb { background: rgba(0,210,255,0.25); border-radius: 2px; }
+
+/* ─── TYPOGRAPHY ─── */
+.page-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--cyber-blue); opacity: 0.7;
+  display: flex; align-items: center; gap: 6px;
+}
+.page-label::before {
+  content: '//'; opacity: 0.5;
+}
+.page-heading {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(16px, 2.5vw, 23px);
+  font-weight: 800; line-height: 1.25;
+  color: var(--text-main);
+  text-shadow: 0 0 20px rgba(0,210,255,0.2);
+}
+.page-heading .cyber { color: var(--cyber-blue); }
+.page-heading .green { color: var(--circuit-green); }
+.page-heading .purple { color: var(--elec-purple); }
+.page-body {
+  font-size: clamp(13px,1.6vw,14.5px);
+  color: var(--text-sub);
+  line-height: 1.8; font-weight: 500;
+}
+.page-body strong { color: var(--text-main); }
+
+/* ─── CYBER TAG ─── */
+.cyber-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(0,210,255,0.07);
+  border: 1px solid rgba(0,210,255,0.2);
+  color: var(--cyber-blue);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 4px;
+}
+
+/* ─── BENTO GRID ─── */
+.bento { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.bento-card {
+  background: rgba(0,210,255,0.04);
+  border: 1px solid rgba(0,210,255,0.12);
+  border-radius: 12px; padding: 12px 10px;
+  display: flex; flex-direction: column; gap: 5px;
+  transition: all 0.25s ease;
+}
+.bento-card:hover {
+  border-color: rgba(0,210,255,0.35);
+  box-shadow: 0 0 12px rgba(0,210,255,0.15);
+  background: rgba(0,210,255,0.08);
+}
+.bento-card.wide { grid-column: 1/-1; }
+.bento-card.green-card {
+  border-color: rgba(0,255,157,0.15);
+  background: rgba(0,255,157,0.04);
+}
+.bento-card.green-card:hover { border-color: rgba(0,255,157,0.4); box-shadow: var(--glow-green); }
+.bento-card.purple-card {
+  border-color: rgba(177,107,255,0.15);
+  background: rgba(177,107,255,0.04);
+}
+.bento-card.purple-card:hover { border-color: rgba(177,107,255,0.4); box-shadow: var(--glow-purple); }
+.bento-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-dim);
+}
+.bento-value {
+  font-family: 'Orbitron', monospace;
+  font-size: 13px; font-weight: 700; color: var(--text-main);
+  display: flex; align-items: center; gap: 6px;
+}
+.bento-desc { font-size: 11px; color: var(--text-sub); line-height: 1.5; }
+
+/* ─── HARDWARE CARDS (page 5) ─── */
+.hw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.hw-card {
+  background: rgba(0,210,255,0.04);
+  border: 1px solid rgba(0,210,255,0.15);
+  border-radius: 14px; padding: 14px 12px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative; overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+.hw-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,210,255,0.1) 0%, transparent 65%);
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.hw-card:hover::before, .hw-card.glowing::before { opacity: 1; }
+.hw-card:hover, .hw-card.glowing {
+  border-color: var(--cyber-blue);
+  box-shadow: var(--glow-blue);
+  transform: translateY(-3px) scale(1.03);
+  background: rgba(0,210,255,0.09);
+}
+.hw-card.green-glow:hover, .hw-card.green-glow.glowing {
+  border-color: var(--circuit-green);
+  box-shadow: var(--glow-green);
+  background: rgba(0,255,157,0.07);
+}
+.hw-card.purple-glow:hover, .hw-card.purple-glow.glowing {
+  border-color: var(--elec-purple);
+  box-shadow: var(--glow-purple);
+  background: rgba(177,107,255,0.07);
+}
+.hw-card.pink-glow:hover, .hw-card.pink-glow.glowing {
+  border-color: var(--elec-pink);
+  box-shadow: 0 0 18px rgba(255,107,202,0.55), 0 0 40px rgba(255,107,202,0.2);
+  background: rgba(255,107,202,0.06);
+}
+.hw-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.hw-icon.blue-icon  { background: rgba(0,210,255,0.1);   border: 1px solid rgba(0,210,255,0.25); }
+.hw-icon.green-icon { background: rgba(0,255,157,0.1);   border: 1px solid rgba(0,255,157,0.25); }
+.hw-icon.purp-icon  { background: rgba(177,107,255,0.1); border: 1px solid rgba(177,107,255,0.25); }
+.hw-icon.pink-icon  { background: rgba(255,107,202,0.1); border: 1px solid rgba(255,107,202,0.25); }
+.hw-icon.orng-icon  { background: rgba(255,165,0,0.1);   border: 1px solid rgba(255,165,0,0.25); }
+.hw-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px; font-weight: 700; color: var(--text-main);
+  text-align: center;
+}
+.hw-role {
+  font-size: 10px; color: var(--text-sub);
+  text-align: center; line-height: 1.4;
+}
+.hw-tap-hint {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; color: var(--text-dim);
+  letter-spacing: 1px;
+  text-align: center; margin-top: 2px;
+}
+
+/* ─── EDU LIST ─── */
+.edu-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.edu-list li {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13px; color: var(--text-sub); line-height: 1.65;
+}
+.edu-list li .dot {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+  background: rgba(0,210,255,0.08);
+  border: 1px solid rgba(0,210,255,0.25);
+}
+.edu-list li.green-li .dot {
+  background: rgba(0,255,157,0.08); border-color: rgba(0,255,157,0.25);
+}
+.edu-list li.purple-li .dot {
+  background: rgba(177,107,255,0.08); border-color: rgba(177,107,255,0.25);
+}
+
+/* ─── CYBER FACT ─── */
+.cyber-fact {
+  background: rgba(0,255,157,0.04);
+  border: 1px solid rgba(0,255,157,0.18);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 12.5px; color: var(--text-sub); line-height: 1.65;
+}
+.cyber-fact-icon {
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
+  background: rgba(0,255,157,0.1);
+  border: 1px solid rgba(0,255,157,0.3);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 10px rgba(0,255,157,0.2);
+}
+
+/* ─── COVER PAGE ─── */
+.cover-page {
+  flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: 20px;
+  padding: 36px 28px; position: relative;
+}
+.cover-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(0,210,255,0.08);
+  border: 1px solid rgba(0,210,255,0.3);
+  color: var(--cyber-blue);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 6px 16px; border-radius: 4px;
+  box-shadow: 0 0 12px rgba(0,210,255,0.15);
+}
+.cover-icon-wrap {
+  position: relative; width: 130px; height: 130px;
+  display: flex; align-items: center; justify-content: center;
+}
+.cover-icon-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 1px solid rgba(0,210,255,0.25);
+  animation: spin 15s linear infinite;
+}
+.cover-icon-ring::before {
+  content: '';
+  position: absolute; inset: 8px; border-radius: 50%;
+  border: 1px dashed rgba(0,255,157,0.2);
+  animation: spin-r 10s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin-r { to { transform: rotate(-360deg); } }
+.cover-icon-core {
+  width: 88px; height: 88px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,210,255,0.12) 0%, rgba(0,210,255,0.04) 60%, transparent 100%);
+  border: 1.5px solid rgba(0,210,255,0.35);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--glow-blue);
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%,100% { box-shadow: var(--glow-blue); }
+  50% { box-shadow: 0 0 30px rgba(0,210,255,0.8), 0 0 60px rgba(0,210,255,0.4); }
+}
+.cover-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(18px, 3.2vw, 30px);
+  font-weight: 900; line-height: 1.2;
+  color: var(--text-main);
+  text-shadow: 0 0 30px rgba(0,210,255,0.3);
+}
+.cover-title .line2 {
+  display: block;
+  background: linear-gradient(90deg, var(--cyber-blue), var(--circuit-green));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cover-subtitle {
+  font-size: 13px; color: var(--text-sub); font-weight: 500;
+  max-width: 420px;
+}
+.cover-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+
+/* ─── ENDING PAGE ─── */
+.ending-page {
+  flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: 16px; padding: 32px 26px;
+}
+.next-chip {
+  background: rgba(0,255,157,0.06);
+  border: 1px solid rgba(0,255,157,0.2);
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex; align-items: center; gap: 12px;
+  text-align: left; max-width: 440px; width: 100%;
+}
+.ayah-chip {
+  background: rgba(177,107,255,0.05);
+  border: 1px solid rgba(177,107,255,0.18);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 12.5px; color: var(--text-sub); line-height: 1.7;
+  font-style: italic;
+  display: flex; align-items: flex-start; gap: 10px;
+  text-align: left; max-width: 440px; width: 100%;
+}
+.back-big-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(0,210,255,0.08);
+  border: 1.5px solid var(--cyber-blue);
+  color: var(--cyber-blue);
+  font-family: 'Orbitron', monospace;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+  padding: 13px 30px; border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 14px rgba(0,210,255,0.15);
+}
+.back-big-btn:hover {
+  background: rgba(0,210,255,0.15);
+  box-shadow: var(--glow-blue);
+  transform: translateY(-2px);
+}
+
+/* ─── VISUAL SVG AREA ─── */
+.vis-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; color: var(--text-dim); letter-spacing: 1.5px;
+  text-align: center;
+}
+.vis-main { animation: float 4s ease-in-out infinite; }
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* ─── MOBILE ─── */
+@media (max-width: 620px) {
+  .split-page { flex-direction: column; }
+  .split-left  { flex: none; min-height: 160px; padding: 14px 12px; }
+  .split-right { padding: 16px 14px; }
+  .hw-grid     { grid-template-columns: 1fr 1fr; }
+  .bento       { grid-template-columns: 1fr; }
+  .bento-card.wide { grid-column: 1; }
+  #flipbook    { padding: 50px 10px 110px; }
+}
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+<div class="corner-deco tl"></div>
+<div class="corner-deco tr"></div>
+<div class="corner-deco bl"></div>
+<div class="corner-deco br"></div>
+
+<div id="prog-bar-wrap"><div id="prog-bar" style="width:8.33%"></div></div>
+
+<a href="..\/perpustakaan.html" id="back-btn">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+  PERPUSTAKAAN
+</a>
+
+<div id="page-counter">01 / 12</div>
+
+<!-- ─── CIRCUIT DOTS ─── -->
+<div id="circuit-dots"></div>
+
+<!-- ═══════════════ FLIPBOOK ═══════════════ -->
+<div id="flipbook">
+
+  <!-- ░░ PAGE 1: COVER ░░ -->
+  <div class="page active glass-panel cover-page" id="page-1">
+    <div class="cover-badge">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+      SERI EDUKASI #21 · ASLAN'S WORLD
+    </div>
+    <div class="cover-icon-wrap">
+      <div class="cover-icon-ring"></div>
+      <div class="cover-icon-core">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+          <line x1="12" y1="18" x2="12.01" y2="18"/>
+        </svg>
+      </div>
+    </div>
+    <h1 class="cover-title">
+      HP KAMU ITU<br/>
+      <span class="line2">KOMPUTER KECIL</span><br/>
+      YANG SUPER PINTAR
+    </h1>
+    <p class="cover-subtitle">Kenapa HP bisa melakukan begitu banyak hal sekaligus?</p>
+    <div class="cover-tags">
+      <span class="cyber-tag">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+        Hardware
+      </span>
+      <span class="cyber-tag">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Software
+      </span>
+      <span class="cyber-tag">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        12 Halaman
+      </span>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 2 ░░ -->
+  <div class="page split-page" id="page-2">
+    <div class="split-left glass-panel">
+      <div class="vis-main">
+        <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+        </svg>
+      </div>
+      <!-- Mini timeline -->
+      <svg width="150" height="70" viewBox="0 0 150 70" fill="none">
+        <line x1="10" y1="35" x2="140" y2="35" stroke="rgba(0,210,255,0.2)" stroke-width="1"/>
+        <!-- Old computer -->
+        <rect x="5" y="18" width="20" height="22" rx="3" fill="rgba(0,210,255,0.06)" stroke="rgba(0,210,255,0.25)" stroke-width="1"/>
+        <text x="15" y="52" font-size="7" text-anchor="middle" fill="rgba(0,210,255,0.5)" font-family="Share Tech Mono">1970</text>
+        <text x="15" y="62" font-size="7" text-anchor="middle" fill="rgba(0,210,255,0.35)" font-family="Share Tech Mono">BESAR</text>
+        <!-- Arrow -->
+        <polyline points="30,35 60,35" stroke="rgba(0,255,157,0.3)" stroke-width="1" stroke-dasharray="4 3"/>
+        <!-- Mid comp -->
+        <rect x="60" y="24" width="14" height="18" rx="2" fill="rgba(0,255,157,0.05)" stroke="rgba(0,255,157,0.2)" stroke-width="1"/>
+        <text x="67" y="52" font-size="7" text-anchor="middle" fill="rgba(0,255,157,0.4)" font-family="Share Tech Mono">2000</text>
+        <!-- Arrow -->
+        <polyline points="78,35 108,35" stroke="rgba(177,107,255,0.3)" stroke-width="1" stroke-dasharray="4 3"/>
+        <!-- HP -->
+        <rect x="108" y="27" width="10" height="16" rx="2" fill="rgba(177,107,255,0.08)" stroke="rgba(177,107,255,0.35)" stroke-width="1" filter="url(#gp)"/>
+        <text x="113" y="52" font-size="7" text-anchor="middle" fill="rgba(177,107,255,0.6)" font-family="Share Tech Mono">KINI</text>
+        <text x="113" y="62" font-size="7" text-anchor="middle" fill="rgba(177,107,255,0.4)" font-family="Share Tech Mono">SAKU!</text>
+        <defs>
+          <filter id="gp"><feGaussianBlur stdDeviation="2" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
+        </defs>
+      </svg>
+      <p class="vis-label">// EVOLUSI KOMPUTER</p>
+    </div>
+    <div class="split-right glass-panel">
+      <div class="page-label">Halaman 2 · Pengenalan</div>
+      <h2 class="page-heading">Komputer <span class="cyber">Super Kecil</span><br/>di Tanganmu!</h2>
+      <p class="page-body">HP di tanganmu ini ternyata adalah <strong>komputer super kecil</strong> yang sangat canggih. Dulu komputer besar sekali — sebesar lemari! Sekarang semua itu muat di saku celana.</p>
+      <div class="bento">
+        <div class="bento-card">
+          <div class="bento-label">Komputer Dulu</div>
+          <div class="bento-value">🏢 Selemari</div>
+          <div class="bento-desc">Seukuran ruangan penuh</div>
+        </div>
+        <div class="bento-card purple-card">
+          <div class="bento-label">HP Sekarang</div>
+          <div class="bento-value">📱 Saku!</div>
+          <div class="bento-desc">Bisa dibawa ke mana saja</div>
+        </div>
+        <div class="bento-card green-card wide">
+          <div class="bento-label">Kesimpulannya</div>
+          <div class="bento-value">⚡ HP = Komputer · Lebih kecil, lebih cepat, lebih canggih!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 3 ░░ -->
+  <div class="page split-page" id="page-3">
+    <div class="split-left glass-panel">
+      <div class="vis-main">
+        <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+      </div>
+      <svg width="150" height="80" viewBox="0 0 150 80">
+        <!-- Old vs new comparison -->
+        <rect x="5" y="5" width="60" height="55" rx="8" fill="rgba(0,210,255,0.04)" stroke="rgba(0,210,255,0.18)" stroke-width="1"/>
+        <rect x="85" y="15" width="60" height="40" rx="8" fill="rgba(0,255,157,0.06)" stroke="rgba(0,255,157,0.25)" stroke-width="1"/>
+        <text x="35" y="25" font-size="8" text-anchor="middle" fill="rgba(0,210,255,0.5)" font-family="Share Tech Mono">APOLLO</text>
+        <text x="35" y="35" font-size="8" text-anchor="middle" fill="rgba(0,210,255,0.4)" font-family="Share Tech Mono">KOMPUTER</text>
+        <text x="35" y="48" font-size="7" text-anchor="middle" fill="rgba(0,210,255,0.3)" font-family="Nunito">4KB RAM</text>
+        <text x="35" y="58" font-size="7" text-anchor="middle" fill="rgba(0,210,255,0.3)" font-family="Nunito">0.04 MHz</text>
+        <text x="115" y="30" font-size="8" text-anchor="middle" fill="rgba(0,255,157,0.6)" font-family="Share Tech Mono">HP KAMU</text>
+        <text x="115" y="41" font-size="7" text-anchor="middle" fill="rgba(0,255,157,0.4)" font-family="Nunito">8GB+ RAM</text>
+        <text x="115" y="51" font-size="7" text-anchor="middle" fill="rgba(0,255,157,0.4)" font-family="Nunito">3 GHz CPU</text>
+        <text x="35" y="73" font-size="7" text-anchor="middle" fill="rgba(0,210,255,0.45)" font-family="Share Tech Mono">1969</text>
+        <text x="115" y="73" font-size="7" text-anchor="middle" fill="rgba(0,255,157,0.55)" font-family="Share Tech Mono">SEKARANG</text>
+        <text x="75" y="45" font-size="12" text-anchor="middle">⚡</text>
+      </svg>
+      <p class="vis-label">// HP vs KOMPUTER BULAN</p>
+    </div>
+    <div class="split-right glass-panel">
+      <div class="page-label">Halaman 3 · HP vs Komputer Besar</div>
+      <h2 class="page-heading"><span class="green">Lebih Kuat</span><br/>dari Komputer Bulan!</h2>
+      <p class="page-body">Dulu komputer besar seperti lemari. Sekarang HP kamu punya kekuatan yang <strong>jauh lebih besar</strong> daripada komputer yang dipakai kirim manusia ke Bulan!</p>
+      <div class="cyber-fact">
+        <div class="cyber-fact-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <span>Komputer Apollo 11 (1969) punya RAM 4 Kilobyte. HP kamu punya <strong>8 Gigabyte</strong> — 2 juta kali lebih besar! 🚀</span>
+      </div>
+      <div class="bento">
+        <div class="bento-card">
+          <div class="bento-label">Apollo 1969</div>
+          <div class="bento-value">4 KB RAM</div>
+          <div class="bento-desc">Ke Bulan dengan ini!</div>
+        </div>
+        <div class="bento-card green-card">
+          <div class="bento-label">HP Kamu</div>
+          <div class="bento-value">8 GB RAM</div>
+          <div class="bento-desc">2 juta kali lebih besar!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 4 ░░ -->
+  <div class="page split-page" id="page-4">
+    <div class="split-left glass-panel">
+      <div class="vis-main">
+        <svg width="105" height="105" viewBox="0 0 24 24" fill="none" stroke="#b16bff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>
+        </svg>
+      </div>
+      <svg width="150" height="70" viewBox="0 0 150 70">
+        <!-- CPU die illustration -->
+        <rect x="25" y="5" width="100" height="60" rx="8" fill="rgba(177,107,255,0.06)" stroke="rgba(177,107,255,0.25)" stroke-width="1.5"/>
+        <rect x="38" y="18" width="74" height="34" rx="4" fill="rgba(177,107,255,0.08)" stroke="rgba(177,107,255,0.2)" stroke-width="1"/>
+        <!-- Core grid 2x2 -->
+        <rect x="45" y="23" width="28" height="10" rx="2" fill="rgba(0,210,255,0.12)" stroke="rgba(0,210,255,0.3)" stroke-width="0.8"/>
+        <rect x="77" y="23" width="28" height="10" rx="2" fill="rgba(0,210,255,0.12)" stroke="rgba(0,210,255,0.3)" stroke-width="0.8"/>
+        <rect x="45" y="37" width="28" height="10" rx="2" fill="rgba(0,255,157,0.1)" stroke="rgba(0,255,157,0.25)" stroke-width="0.8"/>
+        <rect x="77" y="37" width="28" height="10" rx="2" fill="rgba(0,255,157,0.1)" stroke="rgba(0,255,157,0.25)" stroke-width="0.8"/>
+        <!-- Pins -->
+        <line x1="30" y1="20" x2="38" y2="20" stroke="rgba(177,107,255,0.3)" stroke-width="1"/>
+        <line x1="30" y1="30" x2="38" y2="30" stroke="rgba(177,107,255,0.3)" stroke-width="1"/>
+        <line x1="30" y1="40" x2="38" y2="40" stroke="rgba(177,107,255,0.3)" stroke-width="1"/>
+        <line x1="30" y1="50" x2="38" y2="50" stroke="rgba(177,107,255,0.3)" stroke-width="1"/>
+        <line x1="112" y1="20" x2="120" y2="20" stroke="rgba(177,107,255,0.3)" stroke-width="1"/>
+        <line x1="112" y1="30" x2="120" y2="30" stroke="rgba(177,107,255,0.3)" stroke-width="1"/>
+        <line x1="112" y1="40" x2="120" y2="40" stroke="rgba(177,107,255,0.3)" stroke-width="1"/>
+        <line x1="112" y1="50" x2="120" y2="50" stroke="rgba(177,107,255,0.3)" stroke-width="1"/>
+        <text x="75" y="64" font-size="7" text-anchor="middle" fill="rgba(177,107,255,0.6)" font-family="Share Tech Mono">PROCESSOR · SoC</text>
+      </svg>
+      <p class="vis-label">// CPU / CHIP OTAK HP</p>
+    </div>
+    <div class="split-right glass-panel">
+      <div class="page-label">Halaman 4 · Otak HP</div>
+      <h2 class="page-heading">Processor:<br/><span class="purple">Otak</span> di Dalam HP!</h2>
+      <p class="page-body">Di dalam HP ada chip kecil bernama <strong>Processor</strong> atau otak HP. Chip ini bisa mengerjakan <strong>miliaran perhitungan</strong> dalam waktu 1 detik — lebih cepat dari kedipan mata!</p>
+      <div class="bento">
+        <div class="bento-card purple-card">
+          <div class="bento-label">Ukurannya</div>
+          <div class="bento-value">🔬 Nano</div>
+          <div class="bento-desc">Lebih kecil dari rambut!</div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-label">Kecepatannya</div>
+          <div class="bento-value">⚡ 3 GHz+</div>
+          <div class="bento-desc">Miliaran siklus/detik</div>
+        </div>
+        <div class="bento-card wide">
+          <div class="bento-label">Nama Kerennya</div>
+          <div class="bento-value">🧠 SoC (System on Chip) · Processor + GPU + RAM dalam 1 chip!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 5 — HARDWARE INTERACTIVE ░░ -->
+  <div class="page split-page" id="page-5">
+    <div class="split-left glass-panel" style="justify-content:flex-start;padding-top:20px;">
+      <div class="page-label" style="margin-bottom:4px;">// KETUK KARTU UNTUK GLOW!</div>
+      <div class="hw-grid" style="width:100%">
+        <!-- Processor -->
+        <div class="hw-card" onclick="glowCard(this)" ontouchstart="glowCard(this)">
+          <div class="hw-icon blue-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+          </div>
+          <div class="hw-name">PROCESSOR</div>
+          <div class="hw-role">Otak HP 🧠</div>
+          <div class="hw-tap-hint">[ KETUK ]</div>
+        </div>
+        <!-- RAM -->
+        <div class="hw-card green-glow" onclick="glowCard(this)" ontouchstart="glowCard(this)">
+          <div class="hw-icon green-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12.01" y2="12"/></svg>
+          </div>
+          <div class="hw-name">RAM</div>
+          <div class="hw-role">Memori Cepat ⚡</div>
+          <div class="hw-tap-hint">[ KETUK ]</div>
+        </div>
+        <!-- Storage -->
+        <div class="hw-card purple-glow" onclick="glowCard(this)" ontouchstart="glowCard(this)">
+          <div class="hw-icon purp-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b16bff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          </div>
+          <div class="hw-name">STORAGE</div>
+          <div class="hw-role">Gudang Data 💾</div>
+          <div class="hw-tap-hint">[ KETUK ]</div>
+        </div>
+        <!-- Battery -->
+        <div class="hw-card" onclick="glowCard(this)" ontouchstart="glowCard(this)">
+          <div class="hw-icon orng-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffab40" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2"/><path d="M22 11v2"/><path d="m7 11 3-4v4h4l-3 4v-4H7z" stroke="#ffab40" fill="rgba(255,171,64,0.2)"/></svg>
+          </div>
+          <div class="hw-name">BATTERY</div>
+          <div class="hw-role">Jantung HP ❤️</div>
+          <div class="hw-tap-hint">[ KETUK ]</div>
+        </div>
+        <!-- Sensor -->
+        <div class="hw-card pink-glow" onclick="glowCard(this)" ontouchstart="glowCard(this)" style="grid-column:1/-1">
+          <div style="display:flex;gap:8px;align-items:center">
+            <div class="hw-icon pink-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff6bca" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <div class="hw-name" style="text-align:left">SENSOR</div>
+              <div class="hw-role" style="text-align:left">Cahaya · Jarak · Gerak · Sidik Jari 👆</div>
+            </div>
+          </div>
+          <div class="hw-tap-hint">[ KETUK UNTUK GLOW ]</div>
+        </div>
+      </div>
+    </div>
+    <div class="split-right glass-panel">
+      <div class="page-label">Halaman 5 · Bagian-Bagian HP</div>
+      <h2 class="page-heading">Komponen <span class="cyber">Penting</span><br/>di Dalam HP</h2>
+      <ul class="edu-list">
+        <li>
+          <div class="dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg></div>
+          <span><strong style="color:#00d2ff">Processor</strong> — Otak HP, mengerjakan semua perintah</span>
+        </li>
+        <li class="green-li">
+          <div class="dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+          <span><strong style="color:#00ff9d">RAM</strong> — Memori sementara supaya lancar buka banyak aplikasi</span>
+        </li>
+        <li class="purple-li">
+          <div class="dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#b16bff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+          <span><strong style="color:#b16bff">Storage</strong> — Tempat menyimpan foto, video, dan semua aplikasi</span>
+        </li>
+        <li>
+          <div class="dot" style="background:rgba(255,171,64,0.08);border-color:rgba(255,171,64,0.25)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffab40" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2"/><path d="M22 11v2"/></svg></div>
+          <span><strong style="color:#ffab40">Battery</strong> — Jantung HP, sumber daya seluruh komponen</span>
+        </li>
+        <li>
+          <div class="dot" style="background:rgba(255,107,202,0.08);border-color:rgba(255,107,202,0.25)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ff6bca" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/></svg></div>
+          <span><strong style="color:#ff6bca">Sensor</strong> — Cahaya, jarak, gerakan, dan sidik jari</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 6 ░░ -->
+  <div class="page split-page" id="page-6">
+    <div class="split-left glass-panel">
+      <div class="vis-main">
+        <svg width="95" height="95" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M3 9h6"/><path d="M3 15h6"/><path d="M13 7h2"/><path d="M13 12h2"/><path d="M13 17h2"/><path d="M17 7h1"/><path d="M17 12h1"/><path d="M17 17h1"/>
+        </svg>
+      </div>
+      <svg width="150" height="70" viewBox="0 0 150 70">
+        <!-- OS Orchestration diagram -->
+        <ellipse cx="75" cy="35" rx="30" ry="20" fill="rgba(0,210,255,0.06)" stroke="rgba(0,210,255,0.25)" stroke-width="1.5"/>
+        <text x="75" y="33" font-size="7" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-family="Share Tech Mono">Android</text>
+        <text x="75" y="42" font-size="7" text-anchor="middle" fill="rgba(0,210,255,0.5)" font-family="Share Tech Mono">/ iOS</text>
+        <!-- Apps around it -->
+        <circle cx="18" cy="20" r="12" fill="rgba(0,255,157,0.06)" stroke="rgba(0,255,157,0.2)" stroke-width="1"/>
+        <text x="18" y="24" font-size="9" text-anchor="middle">💬</text>
+        <circle cx="132" cy="20" r="12" fill="rgba(177,107,255,0.06)" stroke="rgba(177,107,255,0.2)" stroke-width="1"/>
+        <text x="132" y="24" font-size="9" text-anchor="middle">🎮</text>
+        <circle cx="18" cy="55" r="12" fill="rgba(255,107,202,0.05)" stroke="rgba(255,107,202,0.2)" stroke-width="1"/>
+        <text x="18" y="59" font-size="9" text-anchor="middle">🎵</text>
+        <circle cx="132" cy="55" r="12" fill="rgba(255,171,64,0.05)" stroke="rgba(255,171,64,0.2)" stroke-width="1"/>
+        <text x="132" y="59" font-size="9" text-anchor="middle">📷</text>
+        <!-- Connection lines -->
+        <line x1="30" y1="22" x2="47" y2="28" stroke="rgba(0,210,255,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+        <line x1="120" y1="22" x2="103" y2="28" stroke="rgba(0,210,255,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+        <line x1="30" y1="52" x2="47" y2="42" stroke="rgba(0,210,255,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+        <line x1="120" y1="52" x2="103" y2="42" stroke="rgba(0,210,255,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+      </svg>
+      <p class="vis-label">// OS MENGATUR SEMUA APP</p>
+    </div>
+    <div class="split-right glass-panel">
+      <div class="page-label">Halaman 6 · Multitasking</div>
+      <h2 class="page-heading">Kenapa HP Bisa<br/><span class="cyber">Kerja Sekaligus?</span></h2>
+      <p class="page-body">HP bisa buka WhatsApp, main game, putar musik, dan foto <strong>sekaligus</strong>! Ini karena ada <strong>Sistem Operasi</strong> (Android atau iOS) yang mengatur semuanya dengan sangat rapi.</p>
+      <div class="cyber-fact">
+        <div class="cyber-fact-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        </div>
+        <span>Sistem operasi seperti <strong>manajer kantor</strong> yang super hebat — tahu mana yang harus dikerjakan duluan!</span>
+      </div>
+      <div class="bento">
+        <div class="bento-card">
+          <div class="bento-label">Android</div>
+          <div class="bento-value">🤖 Google</div>
+          <div class="bento-desc">Dipakai banyak HP merek lain</div>
+        </div>
+        <div class="bento-card purple-card">
+          <div class="bento-label">iOS</div>
+          <div class="bento-value">🍎 Apple</div>
+          <div class="bento-desc">Khusus iPhone &amp; iPad</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 7 ░░ -->
+  <div class="page split-page" id="page-7">
+    <div class="split-left glass-panel">
+      <div class="vis-main">
+        <svg width="95" height="95" viewBox="0 0 24 24" fill="none" stroke="#ffab40" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;width:100%">
+        <div style="background:rgba(255,171,64,0.06);border:1px solid rgba(255,171,64,0.2);border-radius:8px;padding:8px 10px;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,171,64,0.8);display:flex;align-items:center;gap:6px;letter-spacing:1px">
+          🚀 LEBIH PINTAR DARI KOMPUTER APOLLO
+        </div>
+        <div style="background:rgba(0,210,255,0.05);border:1px solid rgba(0,210,255,0.18);border-radius:8px;padding:8px 10px;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(0,210,255,0.7);display:flex;align-items:center;gap:6px;letter-spacing:1px">
+          🎨 LAYAR: JUTAAN WARNA
+        </div>
+        <div style="background:rgba(177,107,255,0.05);border:1px solid rgba(177,107,255,0.18);border-radius:8px;padding:8px 10px;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(177,107,255,0.7);display:flex;align-items:center;gap:6px;letter-spacing:1px">
+          🌐 TERHUBUNG KE INTERNET
+        </div>
+        <div style="background:rgba(0,255,157,0.05);border:1px solid rgba(0,255,157,0.18);border-radius:8px;padding:8px 10px;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(0,255,157,0.7);display:flex;align-items:center;gap:6px;letter-spacing:1px">
+          👁️ KAMERA KENALI WAJAH
+        </div>
+      </div>
+    </div>
+    <div class="split-right glass-panel">
+      <div class="page-label">Halaman 7 · Fakta Keren</div>
+      <h2 class="page-heading">🌟 Fakta <span class="green">Super Keren</span><br/>tentang HP!</h2>
+      <ul class="edu-list">
+        <li>
+          <div class="dot" style="background:rgba(255,171,64,0.08);border-color:rgba(255,171,64,0.3)">🚀</div>
+          <span>HP kamu <strong style="color:#ffab40">lebih pintar dari komputer</strong> yang dipakai kirim manusia ke Bulan tahun 1969!</span>
+        </li>
+        <li class="green-li">
+          <div class="dot">🎨</div>
+          <span>Layar HP bisa menampilkan lebih dari <strong style="color:#00ff9d">16 juta warna</strong> yang berbeda sekaligus!</span>
+        </li>
+        <li>
+          <div class="dot" style="background:rgba(177,107,255,0.08);border-color:rgba(177,107,255,0.3)">👁️</div>
+          <span>Kamera HP bisa <strong style="color:#b16bff">mengenali wajah kamu</strong> dalam sepersekian detik dengan AI!</span>
+        </li>
+        <li>
+          <div class="dot">🌐</div>
+          <span>HP bisa <strong>terhubung ke internet</strong> di mana saja lewat WiFi atau jaringan 4G/5G!</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 8 ░░ -->
+  <div class="page split-page" id="page-8">
+    <div class="split-left glass-panel">
+      <div class="vis-main">
+        <svg width="95" height="95" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <svg width="150" height="75" viewBox="0 0 150 75">
+        <!-- Code-to-app animation -->
+        <rect x="5" y="10" width="60" height="50" rx="6" fill="rgba(0,255,157,0.04)" stroke="rgba(0,255,157,0.2)" stroke-width="1"/>
+        <text x="15" y="28" font-size="7" fill="rgba(0,255,157,0.5)" font-family="Share Tech Mono">if rain:</text>
+        <text x="15" y="38" font-size="7" fill="rgba(0,210,255,0.4)" font-family="Share Tech Mono">  open(</text>
+        <text x="15" y="48" font-size="7" fill="rgba(0,210,255,0.4)" font-family="Share Tech Mono">  app)</text>
+        <text x="15" y="58" font-size="7" fill="rgba(177,107,255,0.4)" font-family="Share Tech Mono">else: ...</text>
+        <!-- Arrow -->
+        <polyline points="70,35 88,35" stroke="rgba(0,255,157,0.4)" stroke-width="1.5" fill="none"/>
+        <polygon points="88,31 96,35 88,39" fill="rgba(0,255,157,0.4)"/>
+        <!-- App box -->
+        <rect x="98" y="18" width="47" height="35" rx="6" fill="rgba(177,107,255,0.06)" stroke="rgba(177,107,255,0.25)" stroke-width="1"/>
+        <text x="121" y="32" font-size="10" text-anchor="middle">📱</text>
+        <text x="121" y="45" font-size="7" text-anchor="middle" fill="rgba(177,107,255,0.6)" font-family="Nunito" font-weight="bold">APLIKASI!</text>
+        <text x="75" y="70" font-size="7" text-anchor="middle" fill="rgba(0,255,157,0.4)" font-family="Share Tech Mono">Coding → App</text>
+      </svg>
+      <p class="vis-label">// KODE JADI APLIKASI</p>
+    </div>
+    <div class="split-right glass-panel">
+      <div class="page-label">Halaman 8 · Coding di Dalam HP</div>
+      <h2 class="page-heading"><span class="green">Coding</span> Adalah<br/>Jiwa HP!</h2>
+      <p class="page-body">Semua aplikasi di HP — game, WhatsApp, YouTube, TikTok — dibuat dengan <strong>coding</strong>. Tanpa coding, HP hanya benda mati tanpa fungsi.</p>
+      <div class="cyber-fact">
+        <div class="cyber-fact-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <span>Programmer menulis <strong>miliaran baris kode</strong> agar HP bisa melakukan semua hal yang kamu minta!</span>
+      </div>
+      <div class="bento">
+        <div class="bento-card green-card">
+          <div class="bento-label">Game</div>
+          <div class="bento-value">🎮 C++ / Lua</div>
+          <div class="bento-desc">Dibuat dengan kode game</div>
+        </div>
+        <div class="bento-card purple-card">
+          <div class="bento-label">Aplikasi</div>
+          <div class="bento-value">📱 Kotlin/Swift</div>
+          <div class="bento-desc">Bahasa coding untuk HP</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 9 ░░ -->
+  <div class="page split-page" id="page-9">
+    <div class="split-left glass-panel">
+      <div class="vis-main">
+        <svg width="95" height="95" viewBox="0 0 24 24" fill="none" stroke="#b16bff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/>
+        </svg>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">
+        <span style="background:rgba(0,210,255,0.06);border:1px solid rgba(0,210,255,0.18);border-radius:6px;padding:5px 9px;font-size:10px;color:rgba(0,210,255,0.7);font-family:'Share Tech Mono',monospace;letter-spacing:1px">📷 KAMERA</span>
+        <span style="background:rgba(0,255,157,0.05);border:1px solid rgba(0,255,157,0.18);border-radius:6px;padding:5px 9px;font-size:10px;color:rgba(0,255,157,0.6);font-family:'Share Tech Mono',monospace;letter-spacing:1px">📺 TV</span>
+        <span style="background:rgba(177,107,255,0.06);border:1px solid rgba(177,107,255,0.18);border-radius:6px;padding:5px 9px;font-size:10px;color:rgba(177,107,255,0.6);font-family:'Share Tech Mono',monospace;letter-spacing:1px">📻 RADIO</span>
+        <span style="background:rgba(255,107,202,0.05);border:1px solid rgba(255,107,202,0.18);border-radius:6px;padding:5px 9px;font-size:10px;color:rgba(255,107,202,0.6);font-family:'Share Tech Mono',monospace;letter-spacing:1px">📚 BUKU</span>
+        <span style="background:rgba(255,171,64,0.05);border:1px solid rgba(255,171,64,0.18);border-radius:6px;padding:5px 9px;font-size:10px;color:rgba(255,171,64,0.6);font-family:'Share Tech Mono',monospace;letter-spacing:1px">🗺️ PETA</span>
+        <span style="background:rgba(0,210,255,0.06);border:1px solid rgba(0,210,255,0.18);border-radius:6px;padding:5px 9px;font-size:10px;color:rgba(0,210,255,0.7);font-family:'Share Tech Mono',monospace;letter-spacing:1px">🔢 KALKULATOR</span>
+      </div>
+      <p class="vis-label">// SATU HP, BANYAK FUNGSI</p>
+    </div>
+    <div class="split-right glass-panel">
+      <div class="page-label">Halaman 9 · Keajaiban HP</div>
+      <h2 class="page-heading">HP = <span class="purple">Ribuan Alat</span><br/>dalam Satu!</h2>
+      <ul class="edu-list">
+        <li>
+          <div class="dot" style="background:rgba(177,107,255,0.08);border-color:rgba(177,107,255,0.25)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#b16bff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <span>Bisa jadi <strong>kamera, TV, radio, buku, peta, dan kalkulator</strong> — semua dalam satu benda kecil!</span>
+        </li>
+        <li class="green-li">
+          <div class="dot">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.68 11.7a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.77 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6z"/></svg>
+          </div>
+          <span>Bisa <strong style="color:#00ff9d">berkomunikasi</strong> dengan orang di seluruh dunia dalam hitungan detik!</span>
+        </li>
+        <li>
+          <div class="dot">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span>Bisa untuk <strong>belajar, bermain, dan bekerja</strong> — alat paling serba guna di dunia!</span>
+        </li>
+      </ul>
+      <div class="cyber-fact">
+        <div class="cyber-fact-icon">💡</div>
+        <span>Dulu butuh <strong>10+ alat terpisah</strong> untuk semua itu. Sekarang cukup satu HP!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 10 ░░ -->
+  <div class="page split-page" id="page-10">
+    <div class="split-left glass-panel">
+      <div class="vis-main">
+        <svg width="95" height="95" viewBox="0 0 24 24" fill="none" stroke="#ff6bca" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <svg width="150" height="65" viewBox="0 0 150 65">
+        <!-- Battery level bar -->
+        <rect x="10" y="20" width="130" height="20" rx="6" fill="rgba(255,107,202,0.06)" stroke="rgba(255,107,202,0.2)" stroke-width="1.5"/>
+        <rect x="12" y="22" width="80" height="16" rx="4" fill="rgba(0,255,157,0.25)" stroke="none"/>
+        <text x="75" y="33" font-size="7" text-anchor="middle" fill="rgba(0,255,157,0.8)" font-family="Share Tech Mono">KESEHATAN HP: 75%</text>
+        <text x="75" y="52" font-size="7" text-anchor="middle" fill="rgba(255,107,202,0.5)" font-family="Share Tech Mono">Jaga HP-mu dengan baik!</text>
+        <text x="140" y="33" font-size="8" text-anchor="middle">🔋</text>
+      </svg>
+      <p class="vis-label">// RAWAT HP-MU</p>
+    </div>
+    <div class="split-right glass-panel">
+      <div class="page-label">Halaman 10 · Yang Harus Diingat</div>
+      <h2 class="page-heading">HP Hebat,<br/><span class="purple">Tapi Harus</span> Bijak!</h2>
+      <p class="page-body">HP itu alat yang sangat hebat, tapi ada beberapa hal penting yang harus kamu ingat:</p>
+      <ul class="edu-list">
+        <li>
+          <div class="dot" style="background:rgba(255,107,202,0.08);border-color:rgba(255,107,202,0.25)">⏰</div>
+          <span>Jangan dipakai <strong>terlalu lama</strong> — batasi waktu layar setiap hari</span>
+        </li>
+        <li class="green-li">
+          <div class="dot">👁️</div>
+          <span><strong style="color:#00ff9d">Istirahatkan mata</strong> setiap 20 menit — lihat jauh 20 detik!</span>
+        </li>
+        <li>
+          <div class="dot" style="background:rgba(255,171,64,0.08);border-color:rgba(255,171,64,0.25)">🔋</div>
+          <span><strong style="color:#ffab40">Isi daya</strong> dengan benar dan jangan habiskan baterai hingga 0%</span>
+        </li>
+        <li class="purple-li">
+          <div class="dot">✅</div>
+          <span><strong style="color:#b16bff">Gunakan</strong> untuk hal-hal yang bermanfaat dan positif!</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 11 ░░ -->
+  <div class="page split-page" id="page-11">
+    <div class="split-left glass-panel">
+      <div class="vis-main">
+        <svg width="95" height="95" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <svg width="150" height="80" viewBox="0 0 150 80">
+        <!-- Team of experts -->
+        <circle cx="30" cy="32" r="14" fill="rgba(0,210,255,0.06)" stroke="rgba(0,210,255,0.22)" stroke-width="1"/>
+        <text x="30" y="37" font-size="16" text-anchor="middle">👩‍💻</text>
+        <text x="30" y="55" font-size="7" text-anchor="middle" fill="rgba(0,210,255,0.6)" font-family="Share Tech Mono">CODER</text>
+        <circle cx="75" cy="28" r="14" fill="rgba(0,255,157,0.06)" stroke="rgba(0,255,157,0.22)" stroke-width="1"/>
+        <text x="75" y="33" font-size="16" text-anchor="middle">🔬</text>
+        <text x="75" y="51" font-size="7" text-anchor="middle" fill="rgba(0,255,157,0.6)" font-family="Share Tech Mono">ILMUWAN</text>
+        <circle cx="120" cy="32" r="14" fill="rgba(177,107,255,0.06)" stroke="rgba(177,107,255,0.22)" stroke-width="1"/>
+        <text x="120" y="37" font-size="16" text-anchor="middle">🎨</text>
+        <text x="120" y="55" font-size="7" text-anchor="middle" fill="rgba(177,107,255,0.6)" font-family="Share Tech Mono">DESAINER</text>
+        <!-- Result -->
+        <rect x="45" y="62" width="60" height="16" rx="5" fill="rgba(0,210,255,0.06)" stroke="rgba(0,210,255,0.2)" stroke-width="1"/>
+        <text x="75" y="73" font-size="8" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-family="Share Tech Mono">→ HP HEBAT! 📱</text>
+        <line x1="30" y1="46" x2="60" y2="62" stroke="rgba(0,210,255,0.15)" stroke-width="1" stroke-dasharray="2 2"/>
+        <line x1="75" y1="42" x2="75" y2="62" stroke="rgba(0,210,255,0.15)" stroke-width="1" stroke-dasharray="2 2"/>
+        <line x1="120" y1="46" x2="90" y2="62" stroke="rgba(0,210,255,0.15)" stroke-width="1" stroke-dasharray="2 2"/>
+      </svg>
+      <p class="vis-label">// TIM PEMBUAT HP</p>
+    </div>
+    <div class="split-right glass-panel">
+      <div class="page-label">Halaman 11 · Pesan Penting</div>
+      <h2 class="page-heading">Di Balik HP,<br/>Ada <span class="cyber">Ribuan Orang</span> Hebat!</h2>
+      <p class="page-body">HP kamu adalah hasil dari <strong>ribuan orang ahli</strong> dalam coding, elektronika, fisika, matematika, dan desain. Ini bukti betapa hebatnya <strong>ilmu komputer</strong>!</p>
+      <div class="bento">
+        <div class="bento-card">
+          <div class="bento-label">👩‍💻 Programmer</div>
+          <div class="bento-value">Coding</div>
+          <div class="bento-desc">Menulis jutaan baris kode</div>
+        </div>
+        <div class="bento-card green-card">
+          <div class="bento-label">⚡ Electrical Engineer</div>
+          <div class="bento-value">Chip &amp; PCB</div>
+          <div class="bento-desc">Merancang sirkuit elektronik</div>
+        </div>
+        <div class="bento-card purple-card">
+          <div class="bento-label">🎨 UI Designer</div>
+          <div class="bento-value">Tampilan</div>
+          <div class="bento-desc">Membuat HP mudah dipakai</div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-label">📐 Matematikawan</div>
+          <div class="bento-value">Algoritma</div>
+          <div class="bento-desc">Rumus di balik AI &amp; kamera</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 12: ENDING ░░ -->
+  <div class="page glass-panel ending-page" id="page-12">
+    <div style="display:flex;gap:14px;align-items:center">
+      <div style="width:56px;height:56px;border-radius:50%;background:radial-gradient(circle,rgba(0,210,255,0.15),rgba(0,210,255,0.04));border:1.5px solid rgba(0,210,255,0.4);display:flex;align-items:center;justify-content:center;box-shadow:var(--glow-blue);animation:pulse-glow 3s ease-in-out infinite;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div>
+        <div style="font-family:'Orbitron',monospace;font-weight:800;font-size:20px;color:var(--text-main);text-shadow:0 0 20px rgba(0,210,255,0.3)">SELAMAT, ASLAN!</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:2px">// FLIP #21 SELESAI ✓</div>
+      </div>
+    </div>
+    <p style="font-size:14px;color:var(--text-sub);line-height:1.75;text-align:center;max-width:460px">
+      Sekarang kamu tahu bahwa <strong style="color:var(--text-main)">HP di tanganmu adalah komputer kecil yang super pintar</strong> — hasil kerja keras ribuan ilmuwan dan programmer! 🚀
+    </p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <span class="cyber-tag">⚡ Processor</span>
+      <span class="cyber-tag" style="border-color:rgba(0,255,157,0.25);color:var(--circuit-green)">💾 RAM</span>
+      <span class="cyber-tag" style="border-color:rgba(177,107,255,0.25);color:var(--elec-purple)">🧬 Coding</span>
+    </div>
+    <div class="next-chip">
+      <div style="font-size:22px">👩‍💻</div>
+      <div>
+        <div style="font-family:'Orbitron',monospace;font-weight:700;font-size:11px;color:var(--circuit-green)">FLIPBOOK SELANJUTNYA → BAB 22</div>
+        <div style="font-size:12px;color:var(--text-sub)">Ada Lovelace – Gadis Pintar Penemu Coding</div>
+      </div>
+    </div>
+    <div class="ayah-chip">
+      <div style="font-size:20px;flex-shrink:0">👨‍💼</div>
+      <div>Kalau ada yang ingin ditanyakan tentang HP, komputer, atau coding — <strong style="color:var(--text-main)">tanya saja ke Ayah Sigit ya!</strong> Ayah senang menjelaskan. 😊</div>
+    </div>
+    <a href="..\/perpustakaan.html" class="back-big-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      KEMBALI KE PERPUSTAKAAN
+    </a>
+  </div>
+
+</div>
+<!-- ─── END FLIPBOOK ─── -->
+
+<!-- NAV BUTTONS -->
+<button id="nav-prev" onclick="goPage(-1)" disabled aria-label="Sebelumnya">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+</button>
+<button id="nav-next" onclick="goPage(1)" aria-label="Selanjutnya">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+</button>
+
+<script>
+const TOTAL = 12;
+let current = 1, animating = false;
+
+// Build circuit dots
+const dotsEl = document.getElementById('circuit-dots');
+for (let i = 1; i <= TOTAL; i++) {
+  const wrap = document.createElement('div');
+  wrap.className = 'cdot-wrap';
+  const dot = document.createElement('div');
+  dot.className = 'cdot' + (i === 1 ? ' active' : '');
+  dot.id = 'cdot-' + i;
+  dot.onclick = () => jumpPage(i);
+  wrap.appendChild(dot);
+  if (i < TOTAL) {
+    const line = document.createElement('div');
+    line.className = 'cdot-line'; line.id = 'cline-' + i;
+    wrap.appendChild(line);
+  }
+  dotsEl.appendChild(wrap);
+}
+
+function updateUI() {
+  document.getElementById('prog-bar').style.width = (current / TOTAL * 100) + '%';
+  document.getElementById('page-counter').textContent =
+    String(current).padStart(2,'0') + ' / ' + String(TOTAL).padStart(2,'0');
+  document.getElementById('nav-prev').disabled = current === 1;
+  document.getElementById('nav-next').disabled = current === TOTAL;
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.getElementById('cdot-' + i);
+    d.className = 'cdot' + (i === current ? ' active' : i < current ? ' done' : '');
+    if (i < TOTAL) {
+      const l = document.getElementById('cline-' + i);
+      l.className = 'cdot-line' + (i < current ? ' done' : '');
+    }
+  }
+}
+
+function jumpPage(target) {
+  if (animating || target === current || target < 1 || target > TOTAL) return;
+  animating = true;
+  const curEl = document.getElementById('page-' + current);
+  const nxtEl = document.getElementById('page-' + target);
+  curEl.style.animation = 'fadeOutUp 0.28s ease forwards';
+  setTimeout(() => {
+    curEl.classList.remove('active'); curEl.style.animation = '';
+    current = target;
+    nxtEl.style.animation = '';
+    nxtEl.classList.add('active');
+    void nxtEl.offsetWidth;
+    nxtEl.style.animation = 'fadeInUp 0.5s cubic-bezier(0.22,1,0.36,1) forwards';
+    updateUI();
+    setTimeout(() => { animating = false; }, 500);
+  }, 265);
+}
+function goPage(dir) { jumpPage(current + dir); }
+
+// Hardware card glow
+function glowCard(el) {
+  el.classList.toggle('glowing');
+  setTimeout(() => el.classList.remove('glowing'), 1500);
+}
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(-1);
+});
+
+// Swipe
+let tx = 0, ty = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  const dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 45) goPage(dx < 0 ? 1 : -1);
+}, { passive: true });
+
+// Floating circuit particles
+const canvas = document.createElement('canvas');
+canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0.35';
+document.body.appendChild(canvas);
+const ctx2 = canvas.getContext('2d');
+const particles = [];
+function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+for (let i = 0; i < 18; i++) {
+  particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    r: Math.random() * 2 + 1,
+    color: ['#00d2ff','#00ff9d','#b16bff'][Math.floor(Math.random()*3)],
+    alpha: Math.random() * 0.5 + 0.2
+  });
+}
+(function drawParticles() {
+  ctx2.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = canvas.width;
+    if (p.x > canvas.width) p.x = 0;
+    if (p.y < 0) p.y = canvas.height;
+    if (p.y > canvas.height) p.y = 0;
+    ctx2.beginPath();
+    ctx2.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx2.fillStyle = p.color;
+    ctx2.globalAlpha = p.alpha;
+    ctx2.fill();
+    ctx2.globalAlpha = 1;
+  });
+  // Draw faint lines between nearby particles
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i+1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 120) {
+        ctx2.beginPath();
+        ctx2.moveTo(particles[i].x, particles[i].y);
+        ctx2.lineTo(particles[j].x, particles[j].y);
+        ctx2.strokeStyle = '#00d2ff';
+        ctx2.globalAlpha = (1 - dist / 120) * 0.12;
+        ctx2.lineWidth = 0.5;
+        ctx2.stroke();
+        ctx2.globalAlpha = 1;
+      }
+    }
+  }
+  requestAnimationFrame(drawParticles);
+})();
+
+updateUI();
+</script>
+</body>
+</html>

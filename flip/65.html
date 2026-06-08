@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petualangan Aslan di Negeri AI – Hari 5</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --hijau-catur: #388E3C;
+      --hijau-muda: #81C784;
+      --krem-catur: #F5DEB3;
+      --kuning: #FFD600;
+      --merah: #E53935;
+      --ungu: #7B1FA2;
+      --oranye: #F57C00;
+      --biru: #1565C0;
+      --bg: #FFFDF5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      background-image:
+        /* Papan catur subtle di background */
+        repeating-conic-gradient(#E8F5E944 0% 25%, transparent 0% 50%) 0 0 / 60px 60px,
+        radial-gradient(circle at 15% 20%, #F3E5F544 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, #E8F5E944 0%, transparent 45%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .font-kartun { font-family: 'Fredoka One', cursive; }
+
+    /* ========== FLOATING SHAPES ========== */
+    .shapes-bg {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .shape {
+      position: absolute;
+      animation: floatShape linear infinite;
+      opacity: 0.13;
+    }
+    @keyframes floatShape {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.13; }
+      90%  { opacity: 0.13; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ========== HEADER ========== */
+    .header-bar {
+      background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 30%, #388E3C 65%, #66BB6A 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    /* Kotak catur di header */
+    .header-bar::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        repeating-conic-gradient(rgba(255,255,255,0.07) 0% 25%, transparent 0% 50%)
+        0 0 / 36px 36px;
+    }
+
+    .badge-hari {
+      background: var(--kuning);
+      color: #1B5E20;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      padding: 4px 16px;
+      border-radius: 999px;
+      display: inline-block;
+      box-shadow: 0 4px 0 #F9A825;
+      animation: bounceIn 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes bounceIn {
+      0%   { transform: scale(0.3); opacity: 0; }
+      60%  { transform: scale(1.12); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .aslan-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2.5rem, 7.5vw, 4.8rem);
+      color: #fff;
+      text-shadow: 0 6px 0 #1B5E20, 0 8px 20px rgba(0,0,0,0.35);
+      letter-spacing: 2px;
+      animation: slideDown 0.7s ease both 0.2s;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-40px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .subtitle-header {
+      font-size: clamp(0.9rem, 2.8vw, 1.3rem);
+      color: #C8E6C9;
+      animation: slideDown 0.7s ease both 0.4s;
+    }
+
+    /* ========== CARD BASE ========== */
+    .card {
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 8px 32px rgba(56,142,60,0.10), 0 2px 8px rgba(0,0,0,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 5px;
+    }
+    .card-green::before  { background: linear-gradient(90deg, #388E3C, #81C784); }
+    .card-yellow::before { background: linear-gradient(90deg, #FFD600, #FFAB40); }
+    .card-purple::before { background: linear-gradient(90deg, #7B1FA2, #CE93D8); }
+    .card-red::before    { background: linear-gradient(90deg, #E53935, #EF9A9A); }
+    .card-blue::before   { background: linear-gradient(90deg, #1565C0, #64B5F6); }
+    .card-orange::before { background: linear-gradient(90deg, #F57C00, #FFB300); }
+    .card-chess::before  { background: repeating-linear-gradient(90deg,#1B5E20 0px,#1B5E20 20px,#F5DEB3 20px,#F5DEB3 40px); }
+
+    /* ========== MAIN IMAGE ========== */
+    .main-image-wrap {
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 5px solid #fff;
+      box-shadow: 0 12px 40px rgba(27,94,32,0.22), 0 4px 0 #388E3C;
+    }
+    .main-image-wrap img {
+      width: 100%; height: 420px; object-fit: cover;
+      transition: transform 0.5s ease;
+      display: block;
+    }
+    .main-image-wrap:hover img { transform: scale(1.03); }
+    .image-caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(27,94,32,0.93) 0%, transparent 100%);
+      color: #fff;
+      padding: 28px 20px 16px;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .image-label {
+      position: absolute; top: 14px; left: 14px;
+      background: var(--kuning);
+      color: #1B5E20;
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.85rem;
+      padding: 4px 14px;
+      border-radius: 999px;
+      box-shadow: 0 3px 0 #F9A825;
+      z-index: 2;
+    }
+
+    /* ========== STORY ========== */
+    .story-paragraph {
+      font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+      line-height: 2;
+      color: #37474F;
+      font-weight: 600;
+    }
+    .story-paragraph span.highlight {
+      background: linear-gradient(120deg, #FFF176 0%, #FFD600 100%);
+      padding: 2px 8px;
+      border-radius: 8px;
+      color: #1B5E20;
+      font-weight: 800;
+    }
+    .story-paragraph span.highlight-green {
+      background: linear-gradient(120deg, #C8E6C9 0%, #81C784 100%);
+      padding: 2px 8px;
+      border-radius: 8px;
+      color: #1B5E20;
+      font-weight: 800;
+    }
+    .story-drop-cap::first-letter {
+      font-family: 'Fredoka One', cursive;
+      font-size: 4rem;
+      color: #388E3C;
+      float: left;
+      line-height: 1;
+      margin-right: 8px;
+      margin-top: 4px;
+      text-shadow: 0 4px 0 #C8E6C9;
+    }
+
+    /* ========== KOMIK PANEL ========== */
+    .komik-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    @media (min-width: 640px) {
+      .komik-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .panel {
+      border-radius: 18px;
+      border: 4px solid #388E3C;
+      overflow: hidden;
+      background: #fff;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 6px 0 #1B5E20;
+    }
+    .panel:hover {
+      transform: translateY(-6px) rotate(-1deg);
+      box-shadow: 0 12px 0 #1B5E20;
+    }
+    .panel:nth-child(2) { border-color: #FFD600; box-shadow: 0 6px 0 #F9A825; }
+    .panel:nth-child(2):hover { box-shadow: 0 12px 0 #F9A825; }
+    .panel:nth-child(3) { border-color: #E53935; box-shadow: 0 6px 0 #B71C1C; }
+    .panel:nth-child(3):hover { box-shadow: 0 12px 0 #B71C1C; }
+    .panel:nth-child(4) { border-color: #7B1FA2; box-shadow: 0 6px 0 #4A148C; }
+    .panel:nth-child(4):hover { box-shadow: 0 12px 0 #4A148C; }
+
+    .panel-img-bg {
+      width: 100%; height: 165px;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel-num {
+      position: absolute; top: 8px; left: 8px;
+      width: 28px; height: 28px;
+      background: #388E3C;
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 0 #1B5E20;
+      z-index: 2;
+    }
+    .panel:nth-child(2) .panel-num { background: #FFD600; color: #1B5E20; box-shadow: 0 2px 0 #F9A825; }
+    .panel:nth-child(3) .panel-num { background: #E53935; color:#fff; box-shadow: 0 2px 0 #B71C1C; }
+    .panel:nth-child(4) .panel-num { background: #7B1FA2; color:#fff; box-shadow: 0 2px 0 #4A148C; }
+
+    .panel-dialog {
+      position: absolute; top: 8px; right: 8px;
+      background: #fff;
+      border: 2px solid currentColor;
+      border-radius: 12px 12px 12px 2px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 3px 7px;
+      max-width: 70%;
+      color: #1B5E20;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+      z-index: 2;
+    }
+    .panel-text {
+      padding: 10px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #37474F;
+      text-align: center;
+      min-height: 52px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ========== PAPAN CATUR INTERAKTIF ========== */
+    .chess-board {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      border: 4px solid #1B5E20;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(27,94,32,0.25), 0 4px 0 #1B5E20;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+    .chess-cell {
+      aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: clamp(1rem, 3.5vw, 1.5rem);
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.15s ease;
+      user-select: none;
+    }
+    .chess-cell:hover { transform: scale(1.15); filter: brightness(1.1); }
+    .chess-cell.light { background: #F5DEB3; }
+    .chess-cell.dark  { background: #388E3C; }
+    .chess-cell.highlight-move {
+      animation: cellPulse 0.6s ease;
+    }
+    @keyframes cellPulse {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.2); filter: brightness(1.3) drop-shadow(0 0 6px #FFD600); }
+      100% { transform: scale(1); }
+    }
+    .chess-label {
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.7rem;
+      color: #555;
+      text-align: center;
+      max-width: 320px;
+      margin: 6px auto 0;
+    }
+
+    /* ========== AI VS MANUSIA ========== */
+    .vs-card {
+      border-radius: 20px;
+      padding: 16px 14px;
+      text-align: center;
+      border: 3px solid transparent;
+      flex: 1;
+      min-width: 130px;
+    }
+    .vs-badge {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2rem;
+      padding: 10px 24px;
+      border-radius: 999px;
+      display: inline-block;
+      animation: vsPulse 1.5s ease-in-out infinite;
+    }
+    @keyframes vsPulse {
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.08); }
+    }
+
+    /* ========== TIMELINE ========== */
+    .timeline-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 2px dashed #C8E6C9;
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-dot {
+      min-width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.15);
+    }
+    .timeline-year {
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.85rem;
+      margin-bottom: 2px;
+    }
+
+    /* ========== PROGRAM CARDS ========== */
+    .program-scroll {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: #81C784 #E8F5E9;
+    }
+    .program-card {
+      min-width: 155px;
+      border-radius: 20px;
+      padding: 16px 12px;
+      text-align: center;
+      flex-shrink: 0;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: transform 0.25s ease;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.12);
+    }
+    .program-card:hover { transform: translateY(-5px) rotate(1deg); }
+    .prog-emoji {
+      font-size: 2.8rem;
+      display: block;
+      margin-bottom: 8px;
+      animation: progBounce 2.5s ease-in-out infinite;
+    }
+    @keyframes progBounce {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50%      { transform: translateY(-8px) rotate(3deg); }
+    }
+    .program-card:nth-child(2) .prog-emoji { animation-delay: 0.4s; }
+    .program-card:nth-child(3) .prog-emoji { animation-delay: 0.8s; }
+    .program-card:nth-child(4) .prog-emoji { animation-delay: 1.2s; }
+    .program-card:nth-child(5) .prog-emoji { animation-delay: 1.6s; }
+
+    /* ========== QUIZ ========== */
+    .quiz-option {
+      border: 3px solid #C8E6C9;
+      border-radius: 16px;
+      padding: 14px 20px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1B5E20;
+      background: #fff;
+      transition: all 0.2s ease;
+      display: flex; align-items: center; gap: 12px;
+      text-align: left;
+      width: 100%;
+    }
+    .quiz-option:hover {
+      border-color: #388E3C;
+      background: #E8F5E9;
+      transform: translateX(6px);
+    }
+    .quiz-option.correct {
+      border-color: #43A047;
+      background: #E8F5E9;
+      animation: correctPop 0.4s ease;
+    }
+    .quiz-option.wrong {
+      border-color: #E53935;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    @keyframes correctPop {
+      0%  { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100%{ transform: scale(1); }
+    }
+    @keyframes shake {
+      0%,100%{ transform: translateX(0); }
+      25%    { transform: translateX(-8px); }
+      75%    { transform: translateX(8px); }
+    }
+    .quiz-result {
+      display: none;
+      border-radius: 16px;
+      padding: 16px 20px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-align: center;
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ========== PROGRESS BAR ========== */
+    .progress-track {
+      height: 10px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #fff, #C8E6C9);
+      border-radius: 999px;
+      width: 71.42%; /* 5/7 */
+      transition: width 1.2s ease;
+    }
+
+    /* ========== SPARKLE ========== */
+    .sparkle {
+      display: inline-block;
+      animation: sparkle 1.5s ease-in-out infinite;
+    }
+    @keyframes sparkle {
+      0%,100% { transform: scale(1) rotate(0deg); }
+      50%      { transform: scale(1.3) rotate(15deg); }
+    }
+
+    /* ========== SCROLL REVEAL ========== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ========== FLOATING MASCOT ========== */
+    .mascot-float {
+      animation: mascotFloat 3s ease-in-out infinite;
+      display: inline-block;
+    }
+    @keyframes mascotFloat {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-12px); }
+    }
+
+    /* ========== SECTION DIVIDER ========== */
+    .divider {
+      text-align: center;
+      font-size: 1.5rem;
+      letter-spacing: 6px;
+      color: #A5D6A7;
+      margin: 8px 0;
+    }
+
+    /* ========== TOOLTIP ========== */
+    .has-tooltip { position: relative; }
+    .tooltip-box {
+      display: none;
+      position: absolute;
+      bottom: 110%; left: 50%;
+      transform: translateX(-50%);
+      background: #1B5E20;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: 12px;
+      white-space: nowrap;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .tooltip-box::after {
+      content: '';
+      position: absolute;
+      top: 100%; left: 50%; transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: #1B5E20;
+    }
+    .has-tooltip:hover .tooltip-box { display: block; }
+
+    /* ========== DEEP BLUE SCORE BOX ========== */
+    .score-box {
+      background: linear-gradient(135deg, #1B5E20, #388E3C);
+      border-radius: 20px;
+      padding: 18px;
+      color: #fff;
+      text-align: center;
+      border: 3px solid #81C784;
+      box-shadow: 0 6px 0 #1B5E20;
+    }
+    .score-num {
+      font-family: 'Fredoka One', cursive;
+      font-size: 3rem;
+      line-height: 1;
+      text-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    }
+
+    /* ========== THINKING ANIMATION ========== */
+    .thinking-dots span {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #388E3C;
+      margin: 0 3px;
+      animation: dotBounce 1.2s ease-in-out infinite;
+    }
+    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotBounce {
+      0%,80%,100% { transform: scale(0.7); opacity: 0.5; }
+      40%          { transform: scale(1.2); opacity: 1; }
+    }
+    .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ========== FLOATING SHAPES BG ========== -->
+<div class="shapes-bg" id="shapesBg"></div>
+
+<div class="relative z-10 max-w-3xl mx-auto px-4 pb-16">
+
+  <!-- ========== HEADER ========== -->
+  <div class="header-bar rounded-b-[40px] mb-8 px-6 pt-10 pb-8 text-center relative">
+    <div style="position:absolute;width:110px;height:65px;top:6px;left:-18px;border-radius:50%;background:rgba(255,255,255,0.1);"></div>
+    <div style="position:absolute;width:85px;height:52px;top:16px;right:4px;border-radius:50%;background:rgba(255,255,255,0.1);"></div>
+    <div style="position:absolute;width:55px;height:55px;bottom:18px;left:8%;border-radius:50%;background:rgba(255,255,255,0.08);"></div>
+
+    <!-- Dekorasi emoji -->
+    <div style="position:absolute;top:12px;right:22px;font-size:2rem;opacity:0.3;">♟️</div>
+    <div style="position:absolute;top:8px;left:62px;font-size:1.5rem;opacity:0.25;">🤖</div>
+    <div style="position:absolute;bottom:22px;right:42px;font-size:1.6rem;opacity:0.2;">♔</div>
+    <div style="position:absolute;bottom:28px;left:30px;font-size:1.2rem;opacity:0.22;">🏆</div>
+
+    <div class="badge-hari mb-4">♟️ HARI 5 DARI 7</div>
+
+    <div class="aslan-name mb-2">
+      <span class="mascot-float">♟️</span> Petualangan Aslan
+    </div>
+    <div class="subtitle-header font-bold mb-1">di Negeri AI 🌟</div>
+    <div class="subtitle-header font-extrabold text-white mb-5" style="font-size:clamp(0.95rem,2.8vw,1.3rem);opacity:0.95;">
+      ✨ AI Pertama yang Bisa Main Catur! ♔ ✨
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="max-w-xs mx-auto">
+      <div class="flex justify-between text-xs font-bold mb-1" style="color:rgba(255,255,255,0.75);">
+        <span>Progres Petualangan</span>
+        <span>Hari 5/7</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== JUDUL HARI ========== -->
+  <div class="reveal card card-green p-6 mb-6 text-center">
+    <div class="font-kartun text-3xl md:text-4xl text-green-800 mb-2">
+      ♟️ Hari 5: AI Pertama yang Bisa Main Catur! 🤖
+    </div>
+    <p class="text-green-500 font-bold text-sm">Saat mesin mulai mengalahkan manusia dalam permainan otak! 🧠🎮</p>
+  </div>
+
+  <!-- ========== GAMBAR UTAMA ========== -->
+  <div class="reveal mb-6">
+    <div class="card card-yellow p-4">
+      <div class="image-label">🎨 Gambar Utama</div>
+      <!--
+        🖼️ GANTI GAMBAR DI SINI!
+        Deskripsi untuk AI Image Generator:
+        "A cheerful 9-year-old Indonesian boy named Aslan sitting across a giant vintage
+         computer robot at a chess board, looking amazed. The robot has glowing eyes and
+         long mechanical arms moving chess pieces. Chess pieces flying dramatically, sparkles
+         and lightning bolts everywhere. Old 1950s laboratory background. Bold score board
+         on wall shows 'COMPUTER 1 - HUMAN 0'. Pixar cartoon style, vivid green and gold
+         colors, dramatic and fun, child-friendly illustration."
+      -->
+      <div class="main-image-wrap">
+        <img
+          src="https://majapahit.id/blog/wp-content/uploads/2019/12/human-ai1.png"
+          alt="Aslan bermain catur melawan komputer AI raksasa tahun 1950-an"
+          loading="lazy"
+        />
+        <div class="image-caption">
+          ♟️ Aslan melongo saat melihat komputer raksasa menggerakkan bidak catur sendiri!
+        </div>
+      </div>
+      <p class="text-xs text-gray-400 font-semibold mt-2 text-center">
+        💡 <em>Ganti dengan gambar AI sesuai deskripsi di komentar HTML</em>
+      </p>
+    </div>
+  </div>
+
+  <!-- ========== PAPAN CATUR INTERAKTIF ========== -->
+  <div class="reveal card card-chess p-6 mb-6">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="text-3xl sparkle">♟️</span>
+      <h2 class="font-kartun text-2xl text-green-800">Papan Catur Ajaib! Klik bidaknya!</h2>
+    </div>
+    <p class="text-green-600 font-bold text-sm mb-4">Inilah posisi bidak terakhir sebelum AI menang! Klik bidak untuk lihat gerakannya! 👇</p>
+
+    <div class="chess-board" id="chessBoard"></div>
+    <div class="chess-label" id="chessLabel">👆 Klik bidak untuk lihat gerakan AI!</div>
+
+    <!-- Skor -->
+    <div class="flex gap-3 mt-4">
+      <div class="score-box flex-1">
+        <div class="text-xs font-bold opacity-75 mb-1">🤖 KOMPUTER AI</div>
+        <div class="score-num" id="scoreAI">1</div>
+        <div class="text-xs font-bold opacity-75 mt-1">MENANG!</div>
+      </div>
+      <div class="flex items-center justify-center">
+        <div class="vs-badge" style="background:#FFD600;color:#1B5E20;font-size:1.5rem;padding:8px 16px;">VS</div>
+      </div>
+      <div style="background:linear-gradient(135deg,#ECEFF1,#CFD8DC);border:3px solid #90A4AE;box-shadow:0 6px 0 #607D8B;" class="score-box flex-1">
+        <div class="text-xs font-bold text-gray-600 mb-1" style="color:#546E7A;">👤 MANUSIA</div>
+        <div class="score-num" style="color:#546E7A;text-shadow:none;">0</div>
+        <div class="text-xs font-bold mt-1" style="color:#546E7A;">KALAH 😔</div>
+      </div>
+    </div>
+
+    <!-- AI berpikir -->
+    <div class="mt-4 rounded-2xl p-4 text-center" style="background:#E8F5E9;border:2px dashed #81C784;">
+      <p class="font-bold text-green-700 text-sm mb-2">🤖 AI sedang berpikir...</p>
+      <div class="thinking-dots flex justify-center">
+        <span></span><span></span><span></span>
+      </div>
+      <p class="text-green-600 text-xs font-semibold mt-2" id="aiThinkText">Menganalisis 10.000 kemungkinan gerakan per detik! ⚡</p>
+    </div>
+  </div>
+
+  <!-- ========== CERITA PENDEK ========== -->
+  <div class="reveal card card-purple p-6 md:p-8 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-3xl sparkle">📚</span>
+      <h2 class="font-kartun text-2xl md:text-3xl text-purple-700">Cerita Aslan</h2>
+    </div>
+
+    <p class="story-paragraph story-drop-cap mb-4">
+      Petualangan berlanjut! Aslan menemukan dirinya berdiri di depan sebuah <span class="highlight">meja catur raksasa</span>.
+      Di satu sisi duduk seorang pria berjas dengan wajah tegang. Di sisi lain — tidak ada manusia!
+      Hanya sebuah mesin besar dengan kabel-kabel dan lampu berkedip. 😱
+    </p>
+    <p class="story-paragraph mb-4">
+      "Ssshh!" bisik seseorang di belakang Aslan. "Ini pertandingan bersejarah, Aslan!
+      Tahun <span class="highlight">1997</span>, komputer <span class="highlight-green">Deep Blue</span>
+      milik perusahaan IBM sedang bertanding melawan <span class="highlight">Garry Kasparov</span> —
+      juara catur nomor satu dunia!" 🤯
+    </p>
+    <p class="story-paragraph mb-4">
+      Aslan mengintip dari balik kursi. Mesin itu diam saja, tapi tiba-tiba —
+      sebuah lengan mekanik <strong>KLIK!</strong> — menggerakkan bidak catur dengan presisi sempurna!
+      Kasparov mengerutkan dahi. Para penonton menahan napas. 😮
+    </p>
+    <p class="story-paragraph mb-4">
+      "Mesin itu bisa mikir?!" bisik Aslan. "Bukan hanya mikir," jawab suara itu,
+      "Deep Blue bisa menganalisis <span class="highlight">200 juta posisi catur per detik!</span>
+      Tidak ada manusia yang bisa menandingi itu!" ⚡🤖
+    </p>
+    <p class="story-paragraph mb-4">
+      Dan akhirnya — Kasparov meletakkan bidak rajanya. <span class="highlight-green">Menyerah.</span>
+      Untuk pertama kali dalam sejarah, komputer berhasil mengalahkan juara catur dunia!
+      Kasparov tidak percaya. Dunia tidak percaya. Tapi itu kenyataan! 👑
+    </p>
+    <p class="story-paragraph">
+      "Ini bukan berarti mesin lebih hebat dari manusia," jelas suara itu lagi.
+      "Ini artinya manusia berhasil mengajarkan mesin cara berpikir. Dan itu... jauh lebih menakjubkan!" 🌟
+      Aslan mengangguk pelan. Ia baru saja menyaksikan lompatan besar dalam sejarah AI! 🚀
+    </p>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ========== KOMIK 4 PANEL ========== -->
+  <div class="reveal card card-orange p-6 mb-6 mt-4">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-3xl sparkle">🎭</span>
+      <h2 class="font-kartun text-2xl md:text-3xl text-orange-700">Komik: AI vs Juara Dunia! ♟️</h2>
+    </div>
+    <div class="komik-grid">
+
+      <!-- PANEL 1 -->
+      <div class="panel">
+        <div class="panel-num">1</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">
+          <svg viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <!-- Papan catur perspektif -->
+            <rect x="15" y="55" width="90" height="70" rx="3" fill="#795548" stroke="#5D4037" stroke-width="2"/>
+            <!-- Kotak-kotak catur -->
+            <rect x="18" y="58" width="11" height="11" fill="#F5DEB3"/>
+            <rect x="29" y="58" width="11" height="11" fill="#388E3C"/>
+            <rect x="40" y="58" width="11" height="11" fill="#F5DEB3"/>
+            <rect x="51" y="58" width="11" height="11" fill="#388E3C"/>
+            <rect x="62" y="58" width="11" height="11" fill="#F5DEB3"/>
+            <rect x="73" y="58" width="11" height="11" fill="#388E3C"/>
+            <rect x="84" y="58" width="11" height="11" fill="#F5DEB3"/>
+            <rect x="95" y="58" width="11" height="11" fill="#388E3C"/>
+
+            <rect x="18" y="69" width="11" height="11" fill="#388E3C"/>
+            <rect x="29" y="69" width="11" height="11" fill="#F5DEB3"/>
+            <rect x="40" y="69" width="11" height="11" fill="#388E3C"/>
+            <rect x="51" y="69" width="11" height="11" fill="#F5DEB3"/>
+            <rect x="62" y="69" width="11" height="11" fill="#388E3C"/>
+            <rect x="73" y="69" width="11" height="11" fill="#F5DEB3"/>
+            <rect x="84" y="69" width="11" height="11" fill="#388E3C"/>
+            <rect x="95" y="69" width="11" height="11" fill="#F5DEB3"/>
+            <!-- Bidak raja & kuda -->
+            <text x="55" y="68" font-size="9">♔</text>
+            <text x="66" y="80" font-size="9">♟</text>
+            <text x="33" y="80" font-size="9">♗</text>
+            <!-- Aslan kecil mengintip dari sudut -->
+            <ellipse cx="140" cy="100" rx="13" ry="14" fill="#FFCC80"/>
+            <path d="M129 93 Q128 86 133 84 Q137 80 140 82 Q143 80 147 84 Q150 86 149 93" fill="#3E2723"/>
+            <circle cx="136" cy="99" r="3.5" fill="white"/>
+            <circle cx="144" cy="99" r="3.5" fill="white"/>
+            <circle cx="137" cy="100" r="2" fill="#1565C0"/>
+            <circle cx="145" cy="100" r="2" fill="#1565C0"/>
+            <!-- Mata bulat besar -->
+            <ellipse cx="140" cy="107" rx="4" ry="3" fill="#E65100"/>
+            <!-- Baju -->
+            <rect x="128" y="113" width="22" height="26" rx="6" fill="#1565C0"/>
+            <!-- Tanda tanya -->
+            <text x="115" y="90" font-size="14" fill="#FF6F00" font-weight="bold">?</text>
+          </svg>
+        </div>
+        <div class="panel-dialog" style="color:#1B5E20;border-color:#388E3C;">Ini permainan apa?! 🤔</div>
+        <div class="panel-text">Aslan menemukan papan catur raksasa yang misterius! ♟️</div>
+      </div>
+
+      <!-- PANEL 2 -->
+      <div class="panel">
+        <div class="panel-num">2</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#FFF9C4,#FFE082);">
+          <svg viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <!-- Komputer raksasa / Deep Blue -->
+            <rect x="15" y="20" width="65" height="90" rx="5" fill="#37474F" stroke="#263238" stroke-width="2"/>
+            <rect x="20" y="25" width="55" height="50" rx="3" fill="#455A64"/>
+            <!-- Lampu-lampu -->
+            <circle cx="27" cy="35" r="4" fill="#EF5350"/>
+            <circle cx="37" cy="35" r="4" fill="#FFD600" style="animation: clignotant 1s infinite;"/>
+            <circle cx="47" cy="35" r="4" fill="#66BB6A"/>
+            <circle cx="57" cy="35" r="4" fill="#42A5F5"/>
+            <circle cx="67" cy="35" r="4" fill="#FF4081"/>
+            <!-- Layar dengan teks -->
+            <text x="28" y="56" font-size="7" fill="#80CBC4" font-family="monospace">ANALYZING</text>
+            <text x="28" y="65" font-size="7" fill="#A5D6A7" font-family="monospace">200M/sec</text>
+            <!-- Tombol panel -->
+            <rect x="22" y="80" width="55" height="20" rx="4" fill="#546E7A"/>
+            <circle cx="33" cy="90" r="4" fill="#ECEFF1"/>
+            <circle cx="47" cy="90" r="4" fill="#ECEFF1"/>
+            <circle cx="61" cy="90" r="4" fill="#ECEFF1"/>
+            <!-- Kabel -->
+            <path d="M25 110 Q20 125 15 135" fill="none" stroke="#78909C" stroke-width="2"/>
+            <path d="M55 110 Q55 125 50 135" fill="none" stroke="#78909C" stroke-width="2"/>
+            <!-- Logo IBM -->
+            <text x="25" y="125" font-size="9" fill="#1565C0" font-family="Fredoka One,cursive" font-weight="bold">IBM</text>
+            <!-- Lengan mekanik menggerakkan bidak -->
+            <line x1="80" y1="60" x2="120" y2="80" stroke="#78909C" stroke-width="4" stroke-linecap="round"/>
+            <line x1="120" y1="80" x2="130" y2="100" stroke="#78909C" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="130" cy="103" r="5" fill="#455A64" stroke="#90A4AE" stroke-width="2"/>
+            <!-- Bidak catur di ujung lengan -->
+            <text x="123" y="120" font-size="14">♟</text>
+            <!-- Sparkle -->
+            <text x="135" y="65" font-size="12">⚡</text>
+            <text x="145" y="50" font-size="10">✨</text>
+          </svg>
+        </div>
+        <div class="panel-dialog" style="color:#E65100;border-color:#FFD600;">Aku bisa 200 juta/dtk! ⚡</div>
+        <div class="panel-text">Deep Blue menggerakkan bidak dengan lengan mekanik! 🤖</div>
+      </div>
+
+      <!-- PANEL 3 -->
+      <div class="panel">
+        <div class="panel-num">3</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#FFEBEE,#FFCDD2);">
+          <svg viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <!-- Kasparov (manusia juara catur) -->
+            <ellipse cx="80" cy="75" rx="18" ry="20" fill="#FFCC80"/>
+            <!-- Rambut -->
+            <path d="M63 65 Q62 52 68 50 Q74 44 80 47 Q86 44 92 50 Q97 52 96 65" fill="#3E2723"/>
+            <!-- Kacamata -->
+            <circle cx="74" cy="73" r="5.5" fill="none" stroke="#37474F" stroke-width="2"/>
+            <circle cx="86" cy="73" r="5.5" fill="none" stroke="#37474F" stroke-width="2"/>
+            <line x1="80" y1="73" x2="80" y2="73" stroke="#37474F" stroke-width="1.5"/>
+            <!-- Ekspresi tegang: alis turun -->
+            <path d="M70 68 Q74 66 78 68" fill="none" stroke="#5D4037" stroke-width="2.5"/>
+            <path d="M82 68 Q86 66 90 68" fill="none" stroke="#5D4037" stroke-width="2.5"/>
+            <!-- Mulut O -->
+            <ellipse cx="80" cy="88" rx="6" ry="5" fill="#C62828"/>
+            <!-- Keringat -->
+            <path d="M92 62 Q95 58 94 65" fill="none" stroke="#42A5F5" stroke-width="2" stroke-linecap="round"/>
+            <path d="M97 58 Q100 54 99 61" fill="none" stroke="#42A5F5" stroke-width="2" stroke-linecap="round"/>
+            <!-- Jas formal -->
+            <rect x="62" y="93" width="36" height="35" rx="8" fill="#263238"/>
+            <!-- Dasi -->
+            <rect x="77" y="93" width="6" height="22" rx="3" fill="#E53935"/>
+            <!-- Tanda seru merah di atas -->
+            <text x="103" y="62" font-size="20" fill="#E53935" font-weight="bold" font-family="Fredoka One,cursive">!</text>
+            <text x="110" y="48" font-size="14" fill="#FF6F00" font-weight="bold" font-family="Fredoka One,cursive">?!</text>
+            <!-- Bidak raja jatuh -->
+            <text x="20" y="115" font-size="22" fill="#1B5E20" style="transform:rotate(45deg);transform-origin:30px 105px;">♔</text>
+            <!-- Tangan Kasparov di meja -->
+            <rect x="55" y="128" width="50" height="20" rx="5" fill="#795548"/>
+          </svg>
+        </div>
+        <div class="panel-dialog" style="color:#B71C1C;border-color:#E53935;">T-tidak mungkin!! 😱</div>
+        <div class="panel-text">Kasparov mengerutkan dahi — ia mulai kalah! 😰</div>
+      </div>
+
+      <!-- PANEL 4 -->
+      <div class="panel">
+        <div class="panel-num">4</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#EDE7F6,#D1C4E9);">
+          <svg viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <!-- Trofi besar -->
+            <path d="M65 30 Q55 30 52 45 Q50 55 60 60 L65 75 L95 75 L100 60 Q110 55 108 45 Q105 30 95 30 Z" fill="#FFD600" stroke="#F9A825" stroke-width="2"/>
+            <rect x="72" y="75" width="16" height="20" rx="3" fill="#FFD600"/>
+            <rect x="58" y="95" width="44" height="10" rx="5" fill="#FFD600"/>
+            <!-- Bintang di trofi -->
+            <text x="73" y="58" font-size="14">⭐</text>
+            <!-- Teks di trofi -->
+            <text x="70" y="48" font-size="7" fill="#1B5E20" font-family="Fredoka One,cursive">AI</text>
+            <text x="65" y="58" font-size="6" fill="#1B5E20" font-family="Fredoka One,cursive">MENANG!</text>
+            <!-- Konfeti -->
+            <text x="10" y="20" font-size="12">🎉</text>
+            <text x="135" y="22" font-size="10">✨</text>
+            <text x="75" y="14" font-size="14">♟️</text>
+            <text x="40" y="32" font-size="10">⭐</text>
+            <text x="118" y="35" font-size="10">🎊</text>
+            <!-- Aslan melompat senang -->
+            <ellipse cx="130" cy="105" rx="13" ry="14" fill="#FFCC80"/>
+            <path d="M119 97 Q118 89 123 87 Q127 83 130 85 Q133 83 137 87 Q140 89 139 97" fill="#3E2723"/>
+            <path d="M124 102 Q127 98 130 102" fill="none" stroke="#1565C0" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M131 102 Q134 98 137 102" fill="none" stroke="#1565C0" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M123 110 Q130 116 137 110" fill="#E65100"/>
+            <rect x="118" y="118" width="22" height="25" rx="6" fill="#43A047"/>
+            <!-- Tangan terangkat -->
+            <line x1="118" y1="125" x2="108" y2="112" stroke="#FFCC80" stroke-width="3" stroke-linecap="round"/>
+            <text x="102" y="110" font-size="12">🙌</text>
+          </svg>
+        </div>
+        <div class="panel-dialog" style="color:#4A148C;border-color:#7B1FA2;">AI menang! Sejarah! 🏆</div>
+        <div class="panel-text">Pertama kali sejarah — AI kalahkan juara catur dunia! 🌍</div>
+      </div>
+
+    </div>
+    <p class="text-xs text-center text-gray-400 font-semibold mt-3">
+      💡 <em>Klik tiap panel untuk efek seru!</em>
+    </p>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ========== PENJELASAN SEJARAH ========== -->
+  <div class="reveal card card-green p-6 mb-6 mt-4">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-4xl mascot-float">♔</span>
+      <div>
+        <h2 class="font-kartun text-2xl md:text-3xl text-green-700">AI Belajar Main Catur!</h2>
+        <p class="text-green-400 font-bold text-sm">Perjalanan AI dari pemula sampai juara dunia! 🌟</p>
+      </div>
+    </div>
+
+    <div class="rounded-2xl p-4 mb-5" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">
+      <p class="text-green-800 font-bold text-sm leading-relaxed">
+        ♟️ Mengapa catur? Karena catur adalah permainan yang sangat <strong>kompleks</strong> —
+        ada lebih banyak kemungkinan gerakan dalam catur daripada jumlah atom di seluruh alam semesta!
+        Mengajarkan mesin bermain catur berarti mengajarkan mesin cara <strong>berpikir strategis</strong>! 🧠
+      </p>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:#388E3C;color:#fff;">📅</div>
+      <div>
+        <div class="timeline-year text-green-600">1950 — Alan Turing Menulis Program Catur Pertama!</div>
+        <p class="text-gray-700 text-sm font-semibold">
+          <strong>Alan Turing</strong> — yang kita kenal dari hari kemarin — menulis program catur pertama
+          untuk komputer! Saat itu komputer belum cukup kuat menjalankannya, jadi Turing
+          <em>mensimulasikan komputer dengan tangan</em> di atas kertas. Satu "giliran" butuh 30 menit! 😅
+        </p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:#F57C00;color:#fff;">🎮</div>
+      <div>
+        <div class="timeline-year text-orange-600">1957 — Program Catur Pertama yang Jalan di Komputer!</div>
+        <p class="text-gray-700 text-sm font-semibold">
+          <strong>Alex Bernstein</strong> membuat program catur pertama yang benar-benar berjalan di komputer
+          nyata — IBM 704! Program ini bisa menyelesaikan satu gerakan dalam 8 menit.
+          Masih lambat, tapi ini langkah pertama yang luar biasa! 💻
+        </p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:#7B1FA2;color:#fff;">🧠</div>
+      <div>
+        <div class="timeline-year text-purple-600">1988 — Deep Thought: AI yang Bisa Kalahkan Grandmaster!</div>
+        <p class="text-gray-700 text-sm font-semibold">
+          Program <strong>Deep Thought</strong> dari Carnegie Mellon University berhasil mengalahkan
+          <em>grandmaster</em> catur pertama kali! Dunia mulai was-was — apakah mesin bisa
+          mengalahkan juara dunia sungguhan? 😨
+        </p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:#1565C0;color:#fff;">🏆</div>
+      <div>
+        <div class="timeline-year text-blue-700">1997 — Deep Blue Kalahkan Garry Kasparov!</div>
+        <p class="text-gray-700 text-sm font-semibold">
+          Momen paling bersejarah! Komputer <strong>Deep Blue</strong> milik IBM mengalahkan
+          <strong>Garry Kasparov</strong>, juara catur dunia no. 1 dalam pertandingan 6 game.
+          Deep Blue bisa menganalisis <strong>200 juta posisi per detik</strong>!
+          Seluruh dunia terkejut — era baru AI dimulai! 🌍
+        </p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:#FFD600;color:#1B5E20;">♟️</div>
+      <div>
+        <div class="timeline-year text-yellow-700">2017 — AlphaZero Belajar Catur dalam 4 Jam!</div>
+        <p class="text-gray-700 text-sm font-semibold">
+          AI terbaru dari Google bernama <strong>AlphaZero</strong> belajar catur <em>dari nol</em>
+          hanya dalam 4 jam dan langsung menjadi yang terkuat di dunia! Ia tidak diberi
+          aturan — ia menemukan sendiri strategi terbaik! 🤯
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ========== KENALAN PROGRAM-PROGRAM CATUR AI ========== -->
+  <div class="reveal card card-yellow p-6 mb-6 mt-4">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-3xl sparkle">🤖</span>
+      <h2 class="font-kartun text-2xl md:text-3xl text-yellow-700">Para Juara AI Catur!</h2>
+    </div>
+    <p class="text-yellow-600 font-bold text-sm mb-4">Geser untuk kenalan dengan program-program AI catur terhebat! 👉</p>
+
+    <div class="program-scroll">
+      <div class="program-card has-tooltip" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-color:#388E3C;">
+        <span class="prog-emoji">🖊️</span>
+        <div class="font-kartun text-green-700 text-sm">Turing's Chess</div>
+        <div class="text-green-500 font-bold text-xs mt-1">Tahun 1950</div>
+        <div class="text-green-600 text-xs mt-2 font-semibold">Program catur pertama di dunia! ✏️</div>
+        <div class="tooltip-box">Ditulis di atas kertas oleh Alan Turing!</div>
+      </div>
+
+      <div class="program-card has-tooltip" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border-color:#F57C00;">
+        <span class="prog-emoji" style="animation-delay:0.4s;">💾</span>
+        <div class="font-kartun text-orange-700 text-sm">Bernstein Chess</div>
+        <div class="text-orange-500 font-bold text-xs mt-1">Tahun 1957</div>
+        <div class="text-orange-600 text-xs mt-2 font-semibold">Program pertama di komputer nyata! 🖥️</div>
+        <div class="tooltip-box">Berjalan di IBM 704, 8 menit per gerakan</div>
+      </div>
+
+      <div class="program-card has-tooltip" style="background:linear-gradient(135deg,#EDE7F6,#D1C4E9);border-color:#7B1FA2;">
+        <span class="prog-emoji" style="animation-delay:0.8s;">🧠</span>
+        <div class="font-kartun text-purple-700 text-sm">Deep Thought</div>
+        <div class="text-purple-500 font-bold text-xs mt-1">Tahun 1988</div>
+        <div class="text-purple-600 text-xs mt-2 font-semibold">Pertama kalahkan grandmaster! 🥊</div>
+        <div class="tooltip-box">Dibuat di Carnegie Mellon University</div>
+      </div>
+
+      <div class="program-card has-tooltip" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-color:#1565C0;">
+        <span class="prog-emoji" style="animation-delay:1.2s;">🏆</span>
+        <div class="font-kartun text-blue-700 text-sm">Deep Blue</div>
+        <div class="text-blue-500 font-bold text-xs mt-1">Tahun 1997</div>
+        <div class="text-blue-600 text-xs mt-2 font-semibold">Kalahkan juara dunia Kasparov! 👑</div>
+        <div class="tooltip-box">IBM Deep Blue, 200 juta posisi/detik!</div>
+      </div>
+
+      <div class="program-card has-tooltip" style="background:linear-gradient(135deg,#FFF9C4,#FFE082);border-color:#FFD600;">
+        <span class="prog-emoji" style="animation-delay:1.6s;">🌟</span>
+        <div class="font-kartun text-yellow-700 text-sm">AlphaZero</div>
+        <div class="text-yellow-500 font-bold text-xs mt-1">Tahun 2017</div>
+        <div class="text-yellow-600 text-xs mt-2 font-semibold">Belajar sendiri dalam 4 jam! ⚡</div>
+        <div class="tooltip-box">Dibuat oleh Google DeepMind</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MINI GAME: TEBAK GERAKAN ========== -->
+  <div class="reveal card card-blue p-6 mb-6">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="text-3xl sparkle">🎯</span>
+      <h2 class="font-kartun text-2xl text-blue-700">Tebak Seperti Deep Blue!</h2>
+    </div>
+    <p class="text-blue-600 font-bold text-sm mb-4">
+      Deep Blue bisa analisis 200 juta gerakan per detik. Sekarang giliran Aslan! Pilih gerakan terbaik: 🧩
+    </p>
+    <div class="rounded-2xl p-4" style="background:#E3F2FD;border:2px solid #90CAF9;">
+      <p class="font-bold text-blue-800 text-sm mb-3 text-center">
+        ♔ Raja Putih sedang terancam! Gerakan mana yang menyelamatkannya?
+      </p>
+      <!-- Mini chess visual -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);max-width:200px;margin:0 auto 12px;border:3px solid #1565C0;border-radius:8px;overflow:hidden;">
+        <div style="background:#F5DEB3;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">♜</div>
+        <div style="background:#388E3C;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;"></div>
+        <div style="background:#F5DEB3;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;"></div>
+        <div style="background:#388E3C;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;"></div>
+        <div style="background:#388E3C;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;"></div>
+        <div style="background:#F5DEB3;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">♔</div>
+        <div style="background:#388E3C;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;"></div>
+        <div style="background:#F5DEB3;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;"></div>
+        <div style="background:#F5DEB3;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;"></div>
+        <div style="background:#388E3C;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;"></div>
+        <div style="background:#F5DEB3;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">♛</div>
+        <div style="background:#388E3C;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;"></div>
+        <div style="background:#388E3C;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;"></div>
+        <div style="background:#F5DEB3;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;"></div>
+        <div style="background:#388E3C;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;"></div>
+        <div style="background:#F5DEB3;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;"></div>
+      </div>
+      <div class="flex flex-col gap-2" id="chessGameOptions">
+        <button onclick="jawabCatur(this, false)" class="quiz-option" style="border-color:#BBDEFB;">
+          <span class="text-lg">🙅</span> <span>Raja tetap diam saja</span>
+        </button>
+        <button onclick="jawabCatur(this, true)" class="quiz-option" style="border-color:#BBDEFB;">
+          <span class="text-lg">🤔</span> <span>Raja mundur ke kotak aman!</span>
+        </button>
+        <button onclick="jawabCatur(this, false)" class="quiz-option" style="border-color:#BBDEFB;">
+          <span class="text-lg">😅</span> <span>Raja maju ke arah bahaya</span>
+        </button>
+      </div>
+      <div id="chessGameResult" class="hidden mt-3 rounded-xl p-3 text-center font-bold text-sm"></div>
+    </div>
+  </div>
+
+  <!-- ========== PERTANYAAN INTERAKTIF ========== -->
+  <div class="reveal card card-yellow p-6 mb-6 mt-4">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-3xl sparkle">🧠</span>
+      <div>
+        <h2 class="font-kartun text-2xl md:text-3xl text-yellow-700">Pertanyaan untuk Aslan!</h2>
+        <p class="text-yellow-600 font-bold text-sm">Sudah setajam Deep Blue belum? 💪</p>
+      </div>
+    </div>
+
+    <!-- KUIS 1 -->
+    <div class="bg-green-50 rounded-2xl p-5 mb-4 border-2 border-green-200 mt-4" id="quiz1">
+      <p class="font-bold text-green-700 text-lg mb-1">❓ Pertanyaan 1 dari 3</p>
+      <p class="font-extrabold text-green-900 text-base mb-4">
+        Berapa posisi catur yang bisa dianalisis Deep Blue dalam satu detik? ⚡
+      </p>
+      <div class="flex flex-col gap-3" id="q1-options">
+        <button class="quiz-option" onclick="jawab(this,'q1',false)">
+          <span class="text-xl">🙅</span> <span>1.000 posisi</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q1',false)">
+          <span class="text-xl">😅</span> <span>1 juta posisi</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q1',true)">
+          <span class="text-xl">🤔</span> <span>200 juta posisi</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q1',false)">
+          <span class="text-xl">🧐</span> <span>1 miliar posisi</span>
+        </button>
+      </div>
+      <div class="quiz-result mt-3" id="q1-result"></div>
+    </div>
+
+    <!-- KUIS 2 -->
+    <div class="bg-purple-50 rounded-2xl p-5 mb-4 border-2 border-purple-200" id="quiz2">
+      <p class="font-bold text-purple-700 text-lg mb-1">❓ Pertanyaan 2 dari 3</p>
+      <p class="font-extrabold text-purple-900 text-base mb-4">
+        Siapa juara catur dunia yang dikalahkan Deep Blue pada tahun 1997? ♔
+      </p>
+      <div class="flex flex-col gap-3" id="q2-options">
+        <button class="quiz-option" onclick="jawab(this,'q2',false)">
+          <span class="text-xl">🙅</span> <span>Magnus Carlsen</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q2',false)">
+          <span class="text-xl">😅</span> <span>Bobby Fischer</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q2',true)">
+          <span class="text-xl">🤔</span> <span>Garry Kasparov</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q2',false)">
+          <span class="text-xl">🧐</span> <span>Anatoly Karpov</span>
+        </button>
+      </div>
+      <div class="quiz-result mt-3" id="q2-result"></div>
+    </div>
+
+    <!-- KUIS 3 -->
+    <div class="bg-blue-50 rounded-2xl p-5 border-2 border-blue-200" id="quiz3">
+      <p class="font-bold text-blue-700 text-lg mb-1">❓ Pertanyaan 3 dari 3</p>
+      <p class="font-extrabold text-blue-900 text-base mb-4">
+        Program AI catur mana yang belajar dari NOL hanya dalam 4 jam? 🤯
+      </p>
+      <div class="flex flex-col gap-3" id="q3-options">
+        <button class="quiz-option" onclick="jawab(this,'q3',false)">
+          <span class="text-xl">🙅</span> <span>Deep Blue</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q3',false)">
+          <span class="text-xl">😅</span> <span>Deep Thought</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q3',true)">
+          <span class="text-xl">🤔</span> <span>AlphaZero</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q3',false)">
+          <span class="text-xl">🧐</span> <span>Stockfish</span>
+        </button>
+      </div>
+      <div class="quiz-result mt-3" id="q3-result"></div>
+    </div>
+
+    <!-- Skor -->
+    <div id="skor-area" class="hidden mt-5 text-center">
+      <div class="rounded-2xl p-5 text-white" style="background:linear-gradient(135deg,#1B5E20,#388E3C);">
+        <div class="font-kartun text-3xl mb-1">🏆 Hasil Kuis Aslan!</div>
+        <div id="skor-text" class="font-bold text-xl"></div>
+        <div id="skor-pesan" class="font-semibold text-sm mt-1 opacity-90"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PESAN MOTIVASI ========== -->
+  <div class="reveal card card-green p-6 mb-8 text-center" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">
+    <span class="text-5xl mascot-float block mb-3">🦁</span>
+    <h3 class="font-kartun text-2xl text-green-700 mb-2">Pesan dari Deep Blue untuk Aslan! 💌</h3>
+    <p class="text-green-800 font-bold text-base leading-relaxed">
+      "Hei Aslan! Aku bisa menganalisis 200 juta gerakan per detik,<br/>
+      tapi aku tidak bisa <span style="color:#1B5E20">bermimpi, berkreasi, dan merasakan kegembiraan</span>.<br/>
+      Kamu punya sesuatu yang tidak aku punya — imajinasi!<br/>
+      Gunakan itu untuk membuat AI yang lebih baik dariku! ♟️🤖❤️"
+    </p>
+    <p class="text-3xl mt-3">♟️💡🧒</p>
+  </div>
+
+  <!-- ========== DOT NAVIGASI ========== -->
+  <div class="text-center">
+    <div class="font-kartun text-green-600 text-sm">Hari 5 dari 7</div>
+    <div class="flex justify-center gap-1 mt-1">
+      <span class="w-3 h-3 rounded-full inline-block" style="background:#388E3C;"></span>
+      <span class="w-3 h-3 rounded-full inline-block" style="background:#388E3C;"></span>
+      <span class="w-3 h-3 rounded-full inline-block" style="background:#388E3C;"></span>
+      <span class="w-3 h-3 rounded-full inline-block" style="background:#388E3C;"></span>
+      <span class="w-3 h-3 rounded-full inline-block" style="background:#388E3C;"></span>
+      <span class="w-3 h-3 rounded-full bg-green-200 inline-block"></span>
+      <span class="w-3 h-3 rounded-full bg-green-200 inline-block"></span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="text-center mt-8 font-bold text-xs" style="color:#A5D6A7;">
+    ♟️ Petualangan Aslan di Negeri AI • Hari 5 dari 7 ♟️
+  </div>
+
+</div>
+
+<script>
+  /* ===== FLOATING SHAPES ===== */
+  (function(){
+    const emojis = ['♟️','♔','⭐','🤖','✨','🏆','🎉','🧠'];
+    const colors  = ['#388E3C','#FFD600','#7B1FA2','#1565C0','#F57C00','#E53935'];
+    const container = document.getElementById('shapesBg');
+    for(let i = 0; i < 24; i++){
+      const s = document.createElement('div');
+      s.className = 'shape';
+      const isEmoji = Math.random() > 0.5;
+      const size = Math.random() * 28 + 12;
+      if(isEmoji){
+        s.style.cssText = `left:${Math.random()*100}%;font-size:${size}px;animation-duration:${Math.random()*14+8}s;animation-delay:${Math.random()*12}s;`;
+        s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      } else {
+        s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${Math.random()*14+8}s;animation-delay:${Math.random()*12}s;border-radius:${Math.random()>0.5?'50%':'30%'};`;
+      }
+      container.appendChild(s);
+    }
+  })();
+
+  /* ===== SCROLL REVEAL ===== */
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.10 });
+  reveals.forEach(r => observer.observe(r));
+
+  /* ===== PANEL CLICK ===== */
+  document.querySelectorAll('.panel').forEach(panel => {
+    panel.addEventListener('click', function(){
+      this.style.transform = 'scale(1.04) rotate(0deg)';
+      setTimeout(() => { this.style.transform = ''; }, 300);
+    });
+  });
+
+  /* ===== CHESS BOARD BUILDER ===== */
+  const pieces = {
+    '0,0':'♜','0,3':'♝','0,5':'♛','0,7':'♜',
+    '1,0':'♟','1,1':'♟','1,2':'♟','1,4':'♟','1,5':'♟','1,6':'♟',
+    '2,4':'♞','2,6':'♟',
+    '3,3':'♙','3,5':'♗',
+    '4,2':'♙','4,4':'♙',
+    '5,1':'♘','5,5':'♙',
+    '6,0':'♙','6,1':'♙','6,3':'♙','6,6':'♙','6,7':'♙',
+    '7,2':'♖','7,4':'♔','7,6':'♖'
+  };
+  const aiMessages = [
+    'Deep Blue memindahkan bidak ini! Menganalisis 200 juta opsi... ⚡',
+    'Gerakan strategis! Raja harus dilindungi! ♔',
+    'AI memperhitungkan 12 langkah ke depan! 🧠',
+    'Bidak ini membuka jalur kemenangan! 🏆',
+    'Deep Blue memilih gerakan terbaik dari miliaran kemungkinan! ✨',
+    'Ini gerakan yang bahkan grandmaster tidak pikirkan! 🤯',
+  ];
+  const board = document.getElementById('chessBoard');
+  for(let r = 0; r < 8; r++){
+    for(let c = 0; c < 8; c++){
+      const cell = document.createElement('div');
+      cell.className = 'chess-cell ' + ((r+c)%2===0 ? 'light' : 'dark');
+      const key = `${r},${c}`;
+      if(pieces[key]) cell.textContent = pieces[key];
+      cell.addEventListener('click', function(){
+        this.classList.add('highlight-move');
+        setTimeout(() => this.classList.remove('highlight-move'), 600);
+        const lbl = document.getElementById('chessLabel');
+        const think = document.getElementById('aiThinkText');
+        const msg = aiMessages[Math.floor(Math.random()*aiMessages.length)];
+        lbl.textContent = '🤖 ' + msg;
+        think.textContent = msg;
+      });
+      board.appendChild(cell);
+    }
+  }
+
+  /* ===== AI THINK TEXT ROTATE ===== */
+  const thinkMessages = [
+    'Menganalisis 200 juta posisi per detik! ⚡',
+    'Menghitung 12 langkah ke depan! 🧠',
+    'Mencari gerakan terbaik dari miliaran kemungkinan! 🔍',
+    'Strategi optimal ditemukan! ♟️',
+  ];
+  let thinkIdx = 0;
+  setInterval(() => {
+    thinkIdx = (thinkIdx + 1) % thinkMessages.length;
+    document.getElementById('aiThinkText').textContent = thinkMessages[thinkIdx];
+  }, 2500);
+
+  /* ===== MINI CATUR GAME ===== */
+  function jawabCatur(btn, benar){
+    const opts = document.getElementById('chessGameOptions');
+    if(opts.querySelector('.correct') || opts.querySelector('.wrong')) return;
+    const result = document.getElementById('chessGameResult');
+    Array.from(opts.querySelectorAll('button')).forEach(b => b.style.pointerEvents = 'none');
+    result.classList.remove('hidden');
+    if(benar){
+      btn.classList.add('correct');
+      btn.querySelector('span:first-child').textContent = '✅';
+      result.style.cssText = 'display:block;background:#E8F5E9;color:#2E7D32;border:2px solid #43A047;';
+      result.innerHTML = '🎉 Bravo! Persis seperti yang Deep Blue pilih! Kamu berpikir seperti AI! 🤖♟️';
+    } else {
+      btn.classList.add('wrong');
+      btn.querySelector('span:first-child').textContent = '❌';
+      result.style.cssText = 'display:block;background:#FFEBEE;color:#C62828;border:2px solid #E53935;';
+      result.innerHTML = '😅 Hmm, bukan itu. Deep Blue selalu mundurkan raja ke posisi aman! 👑';
+    }
+  }
+
+  /* ===== QUIZ ===== */
+  const skor = { q1: null, q2: null, q3: null };
+
+  function jawab(btn, quizId, benar){
+    const opts = document.getElementById(quizId + '-options');
+    if(opts.querySelector('.correct') || opts.querySelector('.wrong')) return;
+    const resultEl = document.getElementById(quizId + '-result');
+    skor[quizId] = benar;
+    Array.from(opts.querySelectorAll('.quiz-option')).forEach(b => b.style.pointerEvents = 'none');
+    if(benar){
+      btn.classList.add('correct');
+      btn.querySelector('span:first-child').textContent = '✅';
+      resultEl.style.cssText = 'display:block;background:#E8F5E9;color:#2E7D32;border:2px solid #43A047;';
+      resultEl.innerHTML = '🎉 Yeay, benar! Kamu setajam Deep Blue! 🌟♟️';
+    } else {
+      btn.classList.add('wrong');
+      btn.querySelector('span:first-child').textContent = '❌';
+      resultEl.style.cssText = 'display:block;background:#FFEBEE;color:#C62828;border:2px solid #E53935;';
+      resultEl.innerHTML = '😅 Belum tepat nih! Baca lagi cerita Deep Blue-nya ya! 📖';
+    }
+    if(skor.q1 !== null && skor.q2 !== null && skor.q3 !== null) tampilSkor();
+  }
+
+  function tampilSkor(){
+    const total = (skor.q1?1:0) + (skor.q2?1:0) + (skor.q3?1:0);
+    const area = document.getElementById('skor-area');
+    const pesanList = [
+      ['😔 Belum beruntung... Yuk baca lagi ceritanya! 💪', 'Nilai: 0/3'],
+      ['🙂 Lumayan! Masih ada yang bisa diperbaiki!', 'Nilai: 1/3'],
+      ['😊 Bagus! Hampir setajam Deep Blue!', 'Nilai: 2/3'],
+      ['🏆 SEMPURNA! Kamu selevel Deep Blue! 🎉🌟♟️', 'Nilai: 3/3'],
+    ];
+    area.classList.remove('hidden');
+    document.getElementById('skor-text').textContent = pesanList[total][1];
+    document.getElementById('skor-pesan').textContent = pesanList[total][0];
+  }
+
+  /* ===== PROGRAM CARD CLICK ===== */
+  document.querySelectorAll('.program-card').forEach(card => {
+    card.addEventListener('click', function(){
+      const title = this.querySelector('.font-kartun').textContent;
+      const year  = this.querySelector('[class*="font-bold"]').textContent;
+      const desc  = this.querySelector('[class*="font-semibold"]').textContent;
+      const tip   = this.querySelector('.tooltip-box').textContent;
+      alert(`♟️ ${title}\n${year}\n\n${desc}\n\n${tip}`);
+    });
+  });
+</script>
+</body>
+</html>

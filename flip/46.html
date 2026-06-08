@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 16: Monitor – Mata Besar Komputer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #5ec8f2;
+    --mint: #3dd9b3;
+    --sun: #ffd43b;
+    --orange: #ff8c42;
+    --pink: #ff6b9d;
+    --purple: #a78bfa;
+    --bg: #f0f9ff;
+    --teal: #0d9488;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(94,200,242,0.18) 0%, transparent 40%),
+      radial-gradient(circle at 90% 75%, rgba(13,148,136,0.12) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(255,212,59,0.08) 0%, transparent 60%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  h1,h2,h3,.display { font-family:'Fredoka One',cursive; }
+
+  /* ── Header ── */
+  .header-grad {
+    background: linear-gradient(135deg,#134e4a 0%,#0f766e 35%,#14b8a6 70%,#5eead4 100%);
+    position:relative; overflow:hidden;
+  }
+  .header-grad::after {
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* ── Animations ── */
+  @keyframes bounceAslan { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  .aslan-bounce { animation:bounceAslan 2.2s ease-in-out infinite; }
+
+  @keyframes floatGently { 0%,100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-8px) rotate(2deg);} }
+  .float-gentle { animation:floatGently 3.5s ease-in-out infinite; }
+
+  @keyframes slideUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+  .slide-up { animation:slideUp 0.6s ease forwards; }
+
+  @keyframes popIn { 0%{transform:scale(0) rotate(-20deg);opacity:0;} 100%{transform:scale(1) rotate(0deg);opacity:1;} }
+  .pop-in { animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+  @keyframes wiggle { 0%,100%{transform:rotate(0deg);} 20%{transform:rotate(-8deg) scale(1.05);} 40%{transform:rotate(8deg) scale(1.05);} 60%{transform:rotate(-4deg);} 80%{transform:rotate(4deg);} }
+  .wiggle { animation:wiggle 0.55s ease; }
+
+  @keyframes shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-8px);} 40%{transform:translateX(8px);} 60%{transform:translateX(-6px);} 80%{transform:translateX(6px);} }
+  .shake { animation:shake 0.5s ease; }
+
+  @keyframes confettiBurst { 0%{transform:translate(0,0) scale(1) rotate(0deg);opacity:1;} 100%{transform:translate(var(--cx),var(--cy)) scale(0) rotate(720deg);opacity:0;} }
+  .confetti-bit { position:fixed;width:10px;height:10px;border-radius:2px;animation:confettiBurst 1s ease-out forwards;pointer-events:none;z-index:9999; }
+
+  @keyframes screenPowerOn {
+    0%   { opacity:0; filter:brightness(0); }
+    30%  { opacity:1; filter:brightness(3) blur(4px); }
+    60%  { filter:brightness(1.5) blur(1px); }
+    100% { opacity:1; filter:brightness(1) blur(0); }
+  }
+  .screen-on { animation:screenPowerOn 1.2s ease forwards; }
+
+  @keyframes screenGlow {
+    0%,100% { box-shadow: 0 0 20px 4px rgba(94,234,212,0.4), 0 0 40px 8px rgba(94,234,212,0.2); }
+    50%      { box-shadow: 0 0 40px 12px rgba(94,234,212,0.7), 0 0 80px 20px rgba(94,234,212,0.35); }
+  }
+  .screen-glow { animation:screenGlow 2.5s ease-in-out infinite; }
+
+  @keyframes scanline {
+    0%   { transform:translateY(-100%); opacity:.06; }
+    100% { transform:translateY(100vh); opacity:.06; }
+  }
+  .scanline {
+    position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden;border-radius:inherit;
+  }
+  .scanline::after {
+    content:'';position:absolute;left:0;right:0;height:4px;
+    background:linear-gradient(transparent, rgba(255,255,255,.25), transparent);
+    animation:scanline 2.4s linear infinite;
+  }
+
+  @keyframes pixelFlicker { 0%,100%{opacity:1;} 92%{opacity:1;} 93%{opacity:.85;} 95%{opacity:1;} 97%{opacity:.9;} }
+  .screen-active { animation:pixelFlicker 4s ease-in-out infinite; }
+
+  @keyframes colorCycle {
+    0%  {background:linear-gradient(135deg,#0f172a,#1e3a5f);}
+    16% {background:linear-gradient(135deg,#14532d,#166534);}
+    33% {background:linear-gradient(135deg,#1e1b4b,#3730a3);}
+    50% {background:linear-gradient(135deg,#4a1942,#7c2d12);}
+    66% {background:linear-gradient(135deg,#0c4a6e,#075985);}
+    83% {background:linear-gradient(135deg,#3f3f46,#18181b);}
+    100%{background:linear-gradient(135deg,#0f172a,#1e3a5f);}
+  }
+
+  @keyframes slideScene { 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
+
+  /* ── Info card ── */
+  .info-card { transition:all .25s cubic-bezier(.34,1.56,.64,1); }
+  .info-card:hover { transform:translateY(-5px) scale(1.02); }
+  .sec-title { font-family:'Fredoka One',cursive; letter-spacing:.5px; }
+
+  /* ── Badge ── */
+  .badge-pill { display:inline-block;padding:.2rem .8rem;border-radius:50px;font-size:.78rem;font-weight:800; }
+
+  /* ── Buttons ── */
+  .btn-magic {
+    background:linear-gradient(135deg,#ff6b9d,#ff8c42);color:white;border:none;
+    border-radius:50px;padding:1rem 2.5rem;font-family:'Fredoka One',cursive;font-size:1.25rem;
+    cursor:pointer;box-shadow:0 6px 0 #c74a6a,0 8px 20px rgba(255,107,157,.4);transition:all .15s ease;
+  }
+  .btn-magic:hover { transform:translateY(-3px);box-shadow:0 9px 0 #c74a6a,0 12px 28px rgba(255,107,157,.5); }
+  .btn-magic:active{ transform:translateY(3px);box-shadow:0 3px 0 #c74a6a; }
+
+  .btn-teal {
+    background:linear-gradient(135deg,#14b8a6,#0d9488);color:white;border:none;
+    border-radius:50px;padding:.85rem 2rem;font-family:'Fredoka One',cursive;font-size:1.1rem;
+    cursor:pointer;box-shadow:0 5px 0 #0f766e,0 7px 16px rgba(20,184,166,.4);transition:all .15s ease;
+  }
+  .btn-teal:hover { transform:translateY(-3px);box-shadow:0 8px 0 #0f766e; }
+  .btn-teal:active{ transform:translateY(3px);box-shadow:0 2px 0 #0f766e; }
+
+  .btn-purple {
+    background:linear-gradient(135deg,#a78bfa,#7c3aed);color:white;border:none;
+    border-radius:50px;padding:.85rem 2rem;font-family:'Fredoka One',cursive;font-size:1.1rem;
+    cursor:pointer;box-shadow:0 5px 0 #6d28d9,0 7px 16px rgba(124,58,237,.4);transition:all .15s ease;
+  }
+  .btn-purple:hover { transform:translateY(-3px);box-shadow:0 8px 0 #6d28d9; }
+  .btn-purple:active{ transform:translateY(3px);box-shadow:0 2px 0 #6d28d9; }
+
+  .btn-yellow {
+    background:linear-gradient(135deg,#fbbf24,#f59e0b);color:white;border:none;
+    border-radius:50px;padding:.85rem 2rem;font-family:'Fredoka One',cursive;font-size:1.1rem;
+    cursor:pointer;box-shadow:0 5px 0 #d97706,0 7px 16px rgba(251,191,36,.4);transition:all .15s ease;
+  }
+  .btn-yellow:hover { transform:translateY(-3px);box-shadow:0 8px 0 #d97706; }
+  .btn-yellow:active{ transform:translateY(3px);box-shadow:0 2px 0 #d97706; }
+
+  /* ── Monitor screen area ── */
+  #monitorScreen {
+    transition:all .4s ease;
+    position:relative;
+    overflow:hidden;
+  }
+
+  /* ── Scene content transitions ── */
+  .scene-enter { animation:popIn .5s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+  /* ── Hz bars comparison ── */
+  .hz-bar { transition:width 1.4s cubic-bezier(.22,1,.36,1); }
+
+  /* ── Drawing canvas ── */
+  #drawCanvas { cursor:crosshair; touch-action:none; border-radius:8px; }
+
+  /* ── Footer dots ── */
+  @keyframes footDot { 0%,100%{opacity:.3;transform:scale(.8);} 50%{opacity:1;transform:scale(1.2);} }
+  .foot-dot:nth-child(1){animation:footDot 1.2s ease-in-out infinite 0s;}
+  .foot-dot:nth-child(2){animation:footDot 1.2s ease-in-out infinite .2s;}
+  .foot-dot:nth-child(3){animation:footDot 1.2s ease-in-out infinite .4s;}
+
+  /* ── Monitor face blink ── */
+  @keyframes blink { 0%,90%,100%{transform:scaleY(1);} 93%,97%{transform:scaleY(.08);} }
+  .eye-blink { animation:blink 4s ease-in-out infinite; transform-origin:center; }
+  .eye-blink2 { animation:blink 4s ease-in-out infinite .2s; transform-origin:center; }
+
+  /* ── RGB glow border for gaming monitor ── */
+  @keyframes rgbBorder {
+    0%   { box-shadow:0 0 16px 4px #ef4444, 0 0 32px 8px rgba(239,68,68,.3); }
+    16%  { box-shadow:0 0 16px 4px #f97316, 0 0 32px 8px rgba(249,115,22,.3); }
+    33%  { box-shadow:0 0 16px 4px #eab308, 0 0 32px 8px rgba(234,179,8,.3); }
+    50%  { box-shadow:0 0 16px 4px #22c55e, 0 0 32px 8px rgba(34,197,94,.3); }
+    66%  { box-shadow:0 0 16px 4px #3b82f6, 0 0 32px 8px rgba(59,130,246,.3); }
+    83%  { box-shadow:0 0 16px 4px #a78bfa, 0 0 32px 8px rgba(167,139,250,.3); }
+    100% { box-shadow:0 0 16px 4px #ef4444, 0 0 32px 8px rgba(239,68,68,.3); }
+  }
+  .rgb-glow { animation:rgbBorder 2s linear infinite; }
+
+  /* ── Pixel art deco ── */
+  @keyframes pixelRain {
+    0%  { transform:translateY(-20px); opacity:0; }
+    10% { opacity:1; }
+    90% { opacity:1; }
+    100%{ transform:translateY(200px); opacity:0; }
+  }
+
+  /* ── Bubble speech ── */
+  .bubble {
+    position:relative;background:white;border-radius:20px;
+    border:3px solid #14b8a6;box-shadow:4px 4px 0 #14b8a6;
+  }
+  .bubble::before { content:'';position:absolute;bottom:-22px;left:30px;border:12px solid transparent;border-top-color:#14b8a6; }
+  .bubble::after  { content:'';position:absolute;bottom:-15px;left:33px;border:10px solid transparent;border-top-color:white; }
+
+  @keyframes pulseTeal { 0%,100%{box-shadow:0 0 0 0 rgba(20,184,166,.6);} 50%{box-shadow:0 0 0 14px rgba(20,184,166,0);} }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ══════════════════════════════════════
+     HEADER
+══════════════════════════════════════ -->
+<header class="header-grad text-white py-6 px-4 shadow-2xl" style="position:relative;">
+  <div style="position:absolute;top:10px;left:4%;font-size:2.5rem;opacity:.18;animation:bounceAslan 10s ease-in-out infinite;">👁️</div>
+  <div style="position:absolute;top:12px;right:6%;font-size:2rem;opacity:.2;animation:bounceAslan 14s ease-in-out infinite .5s;">🖥️</div>
+  <div style="position:absolute;bottom:6px;left:28%;font-size:1.8rem;opacity:.15;animation:bounceAslan 12s ease-in-out infinite 1s;">✨</div>
+  <div style="position:absolute;bottom:8px;right:20%;font-size:1.6rem;opacity:.15;animation:bounceAslan 9s ease-in-out infinite .8s;">🌈</div>
+
+  <div class="max-w-4xl mx-auto text-center relative z-10">
+    <div class="inline-flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur rounded-full px-4 py-1.5 mb-3 text-sm font-bold tracking-wide">
+      <span>🚀</span><span>Petualangan Aslan di Dalam Komputer Ajaib</span><span>🚀</span>
+    </div>
+    <h1 class="text-3xl sm:text-5xl font-black mb-2 drop-shadow-lg" style="font-family:'Fredoka One',cursive;text-shadow:3px 3px 0 rgba(0,0,0,.25);">
+      Hari 16: Monitor
+    </h1>
+    <p class="text-xl sm:text-2xl font-bold opacity-90" style="font-family:'Fredoka One',cursive;">
+      👁️ Mata Besar Komputer! 🖥️
+    </p>
+    <!-- Day progress dots -->
+    <div class="flex items-center justify-center gap-1.5 mt-4 flex-wrap">
+      <span class="text-xs font-bold opacity-80 mr-1">Hari:</span>
+      <div class="flex gap-1 flex-wrap justify-center">
+        <!-- Days 1-15 completed -->
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <!-- Day 16 current -->
+        <div class="w-5 h-5 rounded-full bg-white ring-2 ring-teal-200 shadow-lg" style="animation:pulseTeal 2s ease-in-out infinite;"></div>
+        <!-- upcoming -->
+        <div class="w-3 h-3 rounded-full bg-white opacity-30"></div>
+        <div class="w-3 h-3 rounded-full bg-white opacity-30"></div>
+        <div class="w-3 h-3 rounded-full bg-white opacity-30"></div>
+      </div>
+      <span class="text-xs font-bold opacity-80 ml-1">...30</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════
+     INTRO – Aslan + Monitor Face
+══════════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 mt-8">
+  <div class="bg-white rounded-3xl shadow-xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 slide-up"
+       style="border:3px solid #99f6e4;">
+
+    <!-- Aslan standing next to a friendly monitor face -->
+    <div class="flex-shrink-0 flex justify-center" style="min-width:150px;">
+      <div style="position:relative;display:inline-block;">
+        <!-- Monitor face behind Aslan -->
+        <svg width="80" height="90" viewBox="0 0 80 90" style="position:absolute;right:-10px;top:10px;z-index:0;" fill="none">
+          <!-- Monitor body -->
+          <rect x="2" y="2" width="76" height="58" rx="10" fill="#134e4a"/>
+          <rect x="2" y="2" width="76" height="58" rx="10" fill="url(#monIntroGrad)" opacity=".8"/>
+          <!-- Screen glow -->
+          <rect x="6" y="6" width="68" height="50" rx="8" fill="#0f172a"/>
+          <rect x="6" y="6" width="68" height="50" rx="8" fill="#5eead4" opacity=".12"/>
+          <!-- Friendly eyes -->
+          <g class="eye-blink" style="transform-origin:27px 25px;">
+            <ellipse cx="27" cy="25" rx="8" ry="9" fill="white"/>
+            <ellipse cx="28" cy="26" rx="5" ry="6" fill="#14b8a6"/>
+            <ellipse cx="29" cy="25" rx="2.5" ry="3" fill="#0f172a"/>
+            <circle cx="30" cy="24" r="1" fill="white"/>
+          </g>
+          <g class="eye-blink2" style="transform-origin:53px 25px;">
+            <ellipse cx="53" cy="25" rx="8" ry="9" fill="white"/>
+            <ellipse cx="54" cy="26" rx="5" ry="6" fill="#14b8a6"/>
+            <ellipse cx="55" cy="25" rx="2.5" ry="3" fill="#0f172a"/>
+            <circle cx="56" cy="24" r="1" fill="white"/>
+          </g>
+          <!-- Smile -->
+          <path d="M28 40 Q40 50 52 40" stroke="#5eead4" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <!-- Blush -->
+          <ellipse cx="18" cy="38" rx="6" ry="4" fill="#f472b6" opacity=".5"/>
+          <ellipse cx="62" cy="38" rx="6" ry="4" fill="#f472b6" opacity=".5"/>
+          <!-- Stand -->
+          <rect x="32" y="60" width="16" height="12" rx="3" fill="#0f766e"/>
+          <rect x="22" y="70" width="36" height="6" rx="4" fill="#134e4a"/>
+          <defs>
+            <linearGradient id="monIntroGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#14b8a6"/>
+              <stop offset="100%" stop-color="#0f766e"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <!-- Aslan -->
+        <div class="aslan-bounce" style="position:relative;z-index:1;">
+          <svg width="115" height="165" viewBox="0 0 120 165" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="60" cy="160" rx="28" ry="6" fill="rgba(0,0,0,.1)"/>
+            <!-- body – teal shirt -->
+            <rect x="32" y="88" width="56" height="52" rx="14" fill="#14b8a6"/>
+            <rect x="32" y="102" width="56" height="6" rx="2" fill="#5eead4" opacity=".7"/>
+            <text x="39" y="124" font-size="10" font-family="Fredoka One,cursive" fill="white">MONITOR</text>
+            <!-- arms – left points at monitor -->
+            <rect x="10" y="90" width="22" height="36" rx="11" fill="#14b8a6" transform="rotate(18 10 90)"/>
+            <!-- right arm waving -->
+            <rect x="86" y="84" width="22" height="32" rx="11" fill="#14b8a6" transform="rotate(-22 86 84)"/>
+            <!-- legs -->
+            <rect x="36" y="132" width="18" height="26" rx="9" fill="#0d9488"/>
+            <rect x="66" y="132" width="18" height="26" rx="9" fill="#0d9488"/>
+            <ellipse cx="45" cy="156" rx="12" ry="6" fill="#0f766e"/>
+            <ellipse cx="75" cy="156" rx="12" ry="6" fill="#0f766e"/>
+            <!-- neck -->
+            <rect x="50" y="80" width="20" height="12" rx="7" fill="#f9a825"/>
+            <!-- head -->
+            <ellipse cx="60" cy="62" rx="32" ry="30" fill="#f9a825"/>
+            <!-- hair -->
+            <ellipse cx="60" cy="37" rx="30" ry="16" fill="#2d1b00"/>
+            <ellipse cx="35" cy="49" rx="9" ry="12" fill="#2d1b00"/>
+            <ellipse cx="85" cy="49" rx="9" ry="12" fill="#2d1b00"/>
+            <!-- eyes -->
+            <ellipse cx="48" cy="62" rx="7" ry="8" fill="white"/>
+            <ellipse cx="72" cy="62" rx="7" ry="8" fill="white"/>
+            <ellipse cx="49" cy="63" rx="4" ry="5" fill="#2d1b00"/>
+            <ellipse cx="73" cy="63" rx="4" ry="5" fill="#2d1b00"/>
+            <circle cx="51" cy="61" r="1.5" fill="white"/>
+            <circle cx="75" cy="61" r="1.5" fill="white"/>
+            <!-- smile -->
+            <path d="M44 74 Q60 88 76 74" stroke="#2d1b00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M48 77 Q60 86 72 77" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <ellipse cx="40" cy="70" rx="6" ry="4" fill="#ffb347" opacity=".5"/>
+            <ellipse cx="80" cy="70" rx="6" ry="4" fill="#ffb347" opacity=".5"/>
+            <!-- sparks -->
+            <text x="93" y="50" font-size="14">👁️</text>
+            <text x="5"  y="72" font-size="12">✨</text>
+            <text x="94" y="76" font-size="11">🌈</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bubble -->
+    <div class="flex-1">
+      <div class="bubble p-5">
+        <p class="text-sm text-teal-600 font-bold mb-1">Aslan berkata:</p>
+        <p class="text-gray-700 text-base sm:text-lg leading-relaxed font-semibold">
+          "Halo teman-teman! Hari ini kita belajar tentang <strong class="text-teal-600">Monitor</strong>! 🖥️<br>
+          Monitor itu seperti <strong class="text-orange-500">Mata Besar Komputer</strong> 👁️.
+          Dia yang menunjukkan semua gambar, video, dan tulisan supaya kita bisa <strong class="text-pink-500">melihatnya</strong>! 🌈✨"
+        </p>
+        <div class="flex gap-2 mt-3 flex-wrap">
+          <span class="badge-pill text-white" style="background:linear-gradient(135deg,#14b8a6,#0d9488);">👁️ Hari 16</span>
+          <span class="badge-pill text-white" style="background:linear-gradient(135deg,#f97316,#fbbf24);">🖥️ Monitor</span>
+          <span class="badge-pill text-white" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);">🌈 Warna Indah</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     MAIN – Big Monitor Illustration + Info
+══════════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 mt-8">
+  <div class="bg-white rounded-3xl shadow-xl overflow-hidden" style="border:3px solid #99f6e4;">
+    <div class="px-6 py-4" style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1);">
+      <h2 class="sec-title text-2xl sm:text-3xl text-teal-800">🖥️ Apa Itu Monitor?</h2>
+    </div>
+    <div class="p-6 sm:p-8">
+      <div class="flex flex-col lg:flex-row items-center gap-8">
+
+        <!-- Big Monitor SVG Illustration (with face) -->
+        <div class="flex-shrink-0 flex flex-col items-center">
+          <div class="float-gentle">
+            <svg width="260" height="290" viewBox="0 0 260 290" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Drop shadow -->
+              <ellipse cx="130" cy="285" rx="72" ry="10" fill="rgba(0,0,0,.12)"/>
+              <!-- Monitor outer bezel -->
+              <rect x="10" y="10" width="240" height="190" rx="22" fill="#134e4a"/>
+              <rect x="10" y="10" width="240" height="190" rx="22" fill="url(#bigMonGrad)"/>
+              <!-- Bezel highlight top -->
+              <rect x="16" y="14" width="228" height="8" rx="6" fill="white" opacity=".12"/>
+              <!-- Screen area -->
+              <rect x="18" y="18" width="224" height="174" rx="16" fill="#0f172a"/>
+              <!-- Screen glow overlay -->
+              <rect id="bigScreenGlow" x="18" y="18" width="224" height="174" rx="16" fill="#5eead4" opacity=".06"/>
+              <!-- BIG friendly monitor FACE -->
+              <!-- Left eye -->
+              <g class="eye-blink" style="transform-origin:82px 85px;">
+                <ellipse cx="82" cy="85" rx="20" ry="22" fill="white"/>
+                <ellipse cx="83" cy="87" rx="13" ry="14" fill="#14b8a6"/>
+                <ellipse cx="84" cy="86" rx="7" ry="8" fill="#0f172a"/>
+                <circle cx="87" cy="82" r="3" fill="white"/>
+                <!-- Eyelash -->
+                <line x1="66" y1="68" x2="62" y2="62" stroke="#5eead4" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="75" y1="63" x2="73" y2="56" stroke="#5eead4" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="84" y1="63" x2="84" y2="56" stroke="#5eead4" stroke-width="2.5" stroke-linecap="round"/>
+              </g>
+              <!-- Right eye -->
+              <g class="eye-blink2" style="transform-origin:178px 85px;">
+                <ellipse cx="178" cy="85" rx="20" ry="22" fill="white"/>
+                <ellipse cx="179" cy="87" rx="13" ry="14" fill="#14b8a6"/>
+                <ellipse cx="180" cy="86" rx="7" ry="8" fill="#0f172a"/>
+                <circle cx="183" cy="82" r="3" fill="white"/>
+                <!-- Eyelash -->
+                <line x1="162" y1="68" x2="158" y2="62" stroke="#5eead4" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="171" y1="63" x2="169" y2="56" stroke="#5eead4" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="180" y1="63" x2="180" y2="56" stroke="#5eead4" stroke-width="2.5" stroke-linecap="round"/>
+              </g>
+              <!-- Smile -->
+              <path d="M90 135 Q130 165 170 135" stroke="#5eead4" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <path d="M98 140 Q130 158 162 140" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <!-- Blush circles -->
+              <ellipse cx="55"  cy="120" rx="16" ry="10" fill="#f472b6" opacity=".45"/>
+              <ellipse cx="205" cy="120" rx="16" ry="10" fill="#f472b6" opacity=".45"/>
+              <!-- Pixel dots decoration in corners -->
+              <circle cx="28"  cy="28"  r="3" fill="#5eead4" opacity=".5"/>
+              <circle cx="232" cy="28"  r="3" fill="#5eead4" opacity=".5"/>
+              <circle cx="28"  cy="182" r="3" fill="#5eead4" opacity=".5"/>
+              <circle cx="232" cy="182" r="3" fill="#5eead4" opacity=".5"/>
+              <!-- Power LED indicator -->
+              <circle cx="130" cy="196" r="5" fill="#22c55e" style="filter:drop-shadow(0 0 4px #22c55e)"/>
+              <!-- Neck / Stand -->
+              <rect x="112" y="200" width="36" height="30" rx="6" fill="#0f766e"/>
+              <rect x="80"  y="228" width="100" height="14" rx="8" fill="#134e4a"/>
+              <!-- Inch label on bezel bottom -->
+              <text x="130" y="215" text-anchor="middle" font-size="9" font-family="Fredoka One,cursive" fill="#5eead4" opacity=".7">24 INCI</text>
+              <defs>
+                <linearGradient id="bigMonGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%"   stop-color="#0d9488"/>
+                  <stop offset="100%" stop-color="#134e4a"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <p class="text-center text-sm text-gray-500 font-bold mt-1">👆 Klik untuk kedip!</p>
+        </div>
+
+        <!-- Info cards -->
+        <div class="flex-1 flex flex-col gap-4">
+          <div class="info-card rounded-2xl p-4 flex items-center gap-4" style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border:2px solid #5eead4;">
+            <span style="font-size:2.5rem;">👁️</span>
+            <div>
+              <p class="font-black text-teal-800 text-lg sec-title">Monitor = Mata Komputer</p>
+              <p class="text-teal-700 font-semibold text-sm">Tanpa monitor, kita tidak bisa melihat apa pun! 😮</p>
+            </div>
+          </div>
+
+          <div class="info-card rounded-2xl p-4 flex items-center gap-4" style="background:linear-gradient(135deg,#fef9c3,#fde68a);border:2px solid #fcd34d;">
+            <span style="font-size:2.5rem;">📐</span>
+            <div>
+              <p class="font-black text-yellow-800 text-lg sec-title">Diukur dalam INCI</p>
+              <p class="text-yellow-700 font-semibold text-sm">Monitor 24", 27", 32" – diagonal layarnya! 📏</p>
+            </div>
+          </div>
+
+          <div class="info-card rounded-2xl p-4 flex items-center gap-4" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);border:2px solid #f9a8d4;">
+            <span style="font-size:2.5rem;">🌈</span>
+            <div>
+              <p class="font-black text-pink-800 text-lg sec-title">Jutaan Warna!</p>
+              <p class="text-pink-700 font-semibold text-sm">Satu pixel = titik warna kecil. Ribuan pixel = gambar indah! 🎨</p>
+            </div>
+          </div>
+
+          <div class="info-card rounded-2xl p-4 flex items-center gap-4" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:2px solid #c4b5fd;">
+            <span style="font-size:2.5rem;">🎮</span>
+            <div>
+              <p class="font-black text-purple-800 text-lg sec-title">Monitor Gaming!</p>
+              <p class="text-purple-700 font-semibold text-sm">Punya warna lebih hidup + kecepatan refresh lebih tinggi 🔥</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Types of monitor comparison -->
+      <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Normal monitor -->
+        <div class="rounded-2xl p-4 text-center" style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border:2px solid #5eead4;">
+          <svg width="80" height="70" viewBox="0 0 80 70" fill="none" class="mx-auto mb-2">
+            <rect x="5" y="4" width="70" height="50" rx="8" fill="#134e4a"/>
+            <rect x="9" y="8" width="62" height="42" rx="6" fill="#0f172a"/>
+            <rect x="9" y="8" width="62" height="42" rx="6" fill="#5eead4" opacity=".15"/>
+            <!-- Simple content lines -->
+            <rect x="14" y="16" width="50" height="5" rx="2" fill="#5eead4" opacity=".5"/>
+            <rect x="14" y="24" width="35" height="4" rx="2" fill="#5eead4" opacity=".35"/>
+            <rect x="14" y="31" width="42" height="4" rx="2" fill="#5eead4" opacity=".35"/>
+            <circle cx="40" cy="46" r="3" fill="#22c55e" opacity=".8"/>
+            <rect x="33" y="54" width="14" height="8" rx="3" fill="#0f766e"/>
+            <rect x="24" y="60" width="32" height="5" rx="3" fill="#134e4a"/>
+          </svg>
+          <p class="font-black text-teal-800 sec-title text-base">Monitor Biasa</p>
+          <p class="text-teal-600 text-xs font-bold mt-1">60-75 Hz · Kerja & Belajar</p>
+        </div>
+
+        <!-- Gaming monitor -->
+        <div class="rounded-2xl p-4 text-center rgb-glow" style="background:linear-gradient(135deg,#1e1b4b,#312e81);border:2px solid #818cf8;">
+          <svg width="80" height="70" viewBox="0 0 80 70" fill="none" class="mx-auto mb-2">
+            <!-- Gaming monitor curved stand -->
+            <rect x="3" y="4" width="74" height="50" rx="10" fill="#1e1b4b"/>
+            <!-- RGB strip -->
+            <rect x="3" y="50" width="74" height="4" rx="2" fill="url(#rgbStrip)"/>
+            <rect x="7" y="8" width="66" height="42" rx="6" fill="#0f172a"/>
+            <!-- Game content -->
+            <rect x="7" y="8" width="66" height="42" rx="6" fill="url(#gameScreen)"/>
+            <text x="40" y="26" text-anchor="middle" font-size="14">🎮</text>
+            <text x="40" y="40" text-anchor="middle" font-size="9" fill="#a78bfa" font-family="Fredoka One,cursive">GAME ON!</text>
+            <circle cx="40" cy="47" r="3" fill="#ef4444" style="filter:drop-shadow(0 0 3px #ef4444)"/>
+            <rect x="33" y="54" width="14" height="8" rx="3" fill="#312e81"/>
+            <rect x="22" y="60" width="36" height="5" rx="3" fill="#1e1b4b"/>
+            <defs>
+              <linearGradient id="rgbStrip" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%"   stop-color="#ef4444"/>
+                <stop offset="33%"  stop-color="#22c55e"/>
+                <stop offset="66%"  stop-color="#3b82f6"/>
+                <stop offset="100%" stop-color="#a78bfa"/>
+              </linearGradient>
+              <linearGradient id="gameScreen" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%"   stop-color="#312e81" stop-opacity=".8"/>
+                <stop offset="100%" stop-color="#0f172a" stop-opacity=".8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <p class="font-black text-purple-200 sec-title text-base">Monitor Gaming</p>
+          <p class="text-purple-300 text-xs font-bold mt-1">144-360 Hz · RGB Glow 🔥</p>
+        </div>
+
+        <!-- Touch monitor -->
+        <div class="rounded-2xl p-4 text-center" style="background:linear-gradient(135deg,#fff7ed,#fed7aa);border:2px solid #fdba74;">
+          <svg width="80" height="70" viewBox="0 0 80 70" fill="none" class="mx-auto mb-2">
+            <rect x="5" y="4" width="70" height="50" rx="8" fill="#7c2d12"/>
+            <rect x="9" y="8" width="62" height="42" rx="6" fill="#0f172a"/>
+            <!-- Touch content -->
+            <circle cx="40" cy="24" r="10" fill="#f97316" opacity=".3"/>
+            <text x="40" y="29" text-anchor="middle" font-size="14">👆</text>
+            <text x="40" y="42" text-anchor="middle" font-size="9" fill="#fdba74" font-family="Fredoka One,cursive">TOUCH!</text>
+            <circle cx="40" cy="47" r="3" fill="#f97316" opacity=".8"/>
+            <rect x="33" y="54" width="14" height="8" rx="3" fill="#7c2d12"/>
+            <rect x="24" y="60" width="32" height="5" rx="3" fill="#7c2d12"/>
+          </svg>
+          <p class="font-black text-orange-800 sec-title text-base">Monitor Sentuh</p>
+          <p class="text-orange-600 text-xs font-bold mt-1">Bisa disentuh seperti HP! 📱</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     INTERACTIVE – Monitor Screen
+══════════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 mt-8">
+  <div class="bg-white rounded-3xl shadow-xl overflow-hidden" style="border:3px solid #fde68a;">
+    <div class="px-6 py-4" style="background:linear-gradient(135deg,#fef9c3,#fde68a);">
+      <h2 class="sec-title text-2xl sm:text-3xl text-yellow-800">🎮 Coba Nyalakan Monitor!</h2>
+    </div>
+
+    <div class="p-6 sm:p-8">
+      <p class="text-center text-gray-700 font-bold text-lg mb-6">
+        Klik tombolnya dan lihat apa yang ditampilkan monitormu! 👀✨
+      </p>
+
+      <!-- Interactive big monitor -->
+      <div class="flex flex-col items-center">
+        <!-- Monitor frame -->
+        <div style="position:relative;width:100%;max-width:500px;">
+          <!-- Outer bezel -->
+          <div id="monitorFrame" class="mx-auto rounded-2xl overflow-hidden shadow-2xl"
+               style="background:linear-gradient(145deg,#134e4a,#0f766e);padding:12px 12px 8px 12px;position:relative;transition:all .4s ease;">
+            <!-- Bezel top brand -->
+            <div class="flex justify-between items-center mb-1 px-1">
+              <span class="text-xs font-bold text-teal-300 opacity-60" style="font-family:'Fredoka One',cursive;">AslangPC</span>
+              <div class="flex gap-1">
+                <div class="w-2 h-2 rounded-full bg-teal-400 opacity-50"></div>
+                <div class="w-2 h-2 rounded-full bg-teal-400 opacity-50"></div>
+                <div class="w-2 h-2 rounded-full bg-teal-400 opacity-50"></div>
+              </div>
+              <span class="text-xs font-bold text-teal-300 opacity-60">27"</span>
+            </div>
+
+            <!-- SCREEN -->
+            <div id="monitorScreen" class="rounded-xl overflow-hidden" style="aspect-ratio:16/9;background:#0f172a;position:relative;min-height:200px;">
+              <!-- Off state -->
+              <div id="screenOff" class="absolute inset-0 flex flex-col items-center justify-center z-10"
+                   style="background:#111827;">
+                <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                  <circle cx="30" cy="30" r="26" stroke="#374151" stroke-width="3" fill="none"/>
+                  <path d="M30 12 L30 30" stroke="#374151" stroke-width="4" stroke-linecap="round"/>
+                  <path d="M20 17 Q8 24 8 34 Q8 52 30 52 Q52 52 52 34 Q52 24 40 17" stroke="#374151" stroke-width="3" fill="none" stroke-linecap="round"/>
+                </svg>
+                <p class="text-gray-600 font-bold mt-3 text-sm">Monitor Mati</p>
+                <p class="text-gray-700 text-xs mt-1">Klik "Nyalakan Monitor!" 👇</p>
+              </div>
+
+              <!-- Active screen content -->
+              <div id="screenContent" class="absolute inset-0 hidden">
+                <!-- Scene: Welcome -->
+                <div id="scene-welcome" class="absolute inset-0 flex flex-col items-center justify-center"
+                     style="background:linear-gradient(135deg,#0f172a,#1e3a5f);">
+                  <div class="scanline"></div>
+                  <div class="text-center scene-enter" style="z-index:2;position:relative;">
+                    <div style="font-size:3.5rem;animation:bounceAslan 1.8s ease-in-out infinite;">🖥️</div>
+                    <p style="font-family:'Fredoka One',cursive;font-size:1.6rem;color:#5eead4;" class="mt-2">Halo, Aslan!</p>
+                    <p style="color:#94a3b8;font-size:.85rem;font-weight:700;" class="mt-1">Monitor sudah menyala! ✨</p>
+                    <div class="flex gap-2 mt-3 justify-center flex-wrap">
+                      <span style="background:#14b8a6;color:white;padding:.2rem .7rem;border-radius:50px;font-size:.7rem;font-weight:800;font-family:'Fredoka One',cursive;">1920×1080</span>
+                      <span style="background:#a78bfa;color:white;padding:.2rem .7rem;border-radius:50px;font-size:.7rem;font-weight:800;font-family:'Fredoka One',cursive;">60Hz</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Scene: Game -->
+                <div id="scene-game" class="absolute inset-0 hidden flex-col items-center justify-center"
+                     style="background:linear-gradient(135deg,#1e1b4b,#312e81);">
+                  <div class="scanline"></div>
+                  <div id="gameContent" class="relative w-full h-full overflow-hidden">
+                    <!-- Stars background -->
+                    <div style="position:absolute;inset:0;overflow:hidden;">
+                      <div style="position:absolute;top:10%;left:8%;font-size:1rem;opacity:.6;animation:bounceAslan 3s ease-in-out infinite;">⭐</div>
+                      <div style="position:absolute;top:20%;right:12%;font-size:.8rem;opacity:.5;animation:bounceAslan 4s ease-in-out infinite .5s;">⭐</div>
+                      <div style="position:absolute;top:5%;left:50%;font-size:1.2rem;opacity:.5;animation:bounceAslan 2.5s ease-in-out infinite 1s;">🌟</div>
+                      <div style="position:absolute;top:60%;left:15%;font-size:.7rem;opacity:.4;animation:bounceAslan 3.5s ease-in-out infinite .3s;">✨</div>
+                      <div style="position:absolute;top:70%;right:20%;font-size:.9rem;opacity:.5;animation:bounceAslan 2.8s ease-in-out infinite .8s;">⭐</div>
+                    </div>
+                    <!-- Score bar -->
+                    <div style="position:absolute;top:8px;left:0;right:0;display:flex;justify-content:space-between;padding:0 12px;z-index:5;">
+                      <span style="background:rgba(255,255,255,.15);color:#fbbf24;padding:2px 8px;border-radius:20px;font-size:.65rem;font-weight:800;font-family:'Fredoka One',cursive;">❤️ ❤️ ❤️</span>
+                      <span id="gameScore" style="background:rgba(255,255,255,.15);color:white;padding:2px 8px;border-radius:20px;font-size:.65rem;font-weight:800;font-family:'Fredoka One',cursive;">SKOR: 0</span>
+                      <span style="background:rgba(255,255,255,.15);color:#5eead4;padding:2px 8px;border-radius:20px;font-size:.65rem;font-weight:800;font-family:'Fredoka One',cursive;">LVL 1</span>
+                    </div>
+                    <!-- Platform / ground -->
+                    <div style="position:absolute;bottom:28px;left:0;right:0;height:8px;background:linear-gradient(90deg,#7c3aed,#a78bfa);opacity:.8;"></div>
+                    <!-- Collectibles (coins) -->
+                    <div id="gameCoins" style="position:absolute;inset:0;pointer-events:none;"></div>
+                    <!-- Player character -->
+                    <div id="gamePlayer" style="position:absolute;bottom:36px;left:50%;transform:translateX(-50%);transition:left .15s ease;cursor:pointer;">
+                      <div style="animation:bounceAslan 0.6s ease-in-out infinite;font-size:2rem;">🧑</div>
+                    </div>
+                    <!-- Instructions -->
+                    <p style="position:absolute;bottom:6px;left:0;right:0;text-align:center;color:#a78bfa;font-size:.6rem;font-weight:800;font-family:'Fredoka One',cursive;">← Klik ← → Koin untuk kumpulkan!</p>
+                  </div>
+                </div>
+
+                <!-- Scene: Drawing / Art -->
+                <div id="scene-art" class="absolute inset-0 hidden"
+                     style="background:linear-gradient(135deg,#14532d,#166534);">
+                  <div class="scanline"></div>
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:2;">
+                    <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#4ade80;">🎨 Mode Melukis!</p>
+                    <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:3px;padding:8px;">
+                      <!-- Colorful pixel art grid -->
+                      <div id="pixelGrid"></div>
+                    </div>
+                    <p style="color:#86efac;font-size:.7rem;font-weight:800;">Klik piksel untuk mewarnai!</p>
+                  </div>
+                </div>
+
+                <!-- Scene: Learning -->
+                <div id="scene-learn" class="absolute inset-0 hidden"
+                     style="background:linear-gradient(135deg,#1e3a5f,#0c4a6e);">
+                  <div class="scanline"></div>
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;padding:12px;">
+                    <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#7dd3fc;margin-bottom:8px;">📚 Mode Belajar!</p>
+                    <div style="background:rgba(255,255,255,.08);border-radius:12px;padding:12px;width:100%;max-width:300px;">
+                      <p style="color:#e0f2fe;font-size:.75rem;font-weight:800;text-align:center;margin-bottom:6px;">💡 Fakta Sains Hari Ini:</p>
+                      <p id="learnFact" style="color:#bae6fd;font-size:.7rem;font-weight:700;text-align:center;line-height:1.5;"></p>
+                    </div>
+                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;justify-content:center;">
+                      <span style="background:#0369a1;color:white;padding:2px 8px;border-radius:20px;font-size:.6rem;font-weight:800;">📐 Matematika</span>
+                      <span style="background:#047857;color:white;padding:2px 8px;border-radius:20px;font-size:.6rem;font-weight:800;">🌿 IPA</span>
+                      <span style="background:#7c2d12;color:white;padding:2px 8px;border-radius:20px;font-size:.6rem;font-weight:800;">📖 B. Indonesia</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Scene: Video / Movie -->
+                <div id="scene-video" class="absolute inset-0 hidden"
+                     style="background:#000;">
+                  <div class="scanline"></div>
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;">
+                    <!-- Fake movie scene -->
+                    <div style="position:relative;width:100%;height:100%;overflow:hidden;">
+                      <div style="position:absolute;inset:0;background:linear-gradient(180deg,#0c4a6e,#0369a1,#0ea5e9);">
+                        <!-- Clouds -->
+                        <div style="position:absolute;top:20%;left:10%;font-size:2.5rem;opacity:.6;animation:floatGently 4s ease-in-out infinite;">☁️</div>
+                        <div style="position:absolute;top:25%;right:15%;font-size:2rem;opacity:.5;animation:floatGently 5s ease-in-out infinite .8s;">☁️</div>
+                        <!-- Sun -->
+                        <div style="position:absolute;top:12%;left:50%;transform:translateX(-50%);font-size:2.5rem;animation:bounceAslan 3s ease-in-out infinite;">☀️</div>
+                        <!-- Ground -->
+                        <div style="position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(180deg,#15803d,#166534);">
+                          <div style="font-size:2.5rem;position:absolute;bottom:10px;left:20%;">🌲</div>
+                          <div style="font-size:3rem;position:absolute;bottom:10px;right:20%;">🌳</div>
+                          <div style="font-size:1.5rem;position:absolute;bottom:14px;left:50%;transform:translateX(-50%);">🦋</div>
+                        </div>
+                        <!-- Movie bar black bars -->
+                        <div style="position:absolute;top:0;left:0;right:0;height:14%;background:black;opacity:.7;"></div>
+                        <div style="position:absolute;bottom:0;left:0;right:0;height:14%;background:black;opacity:.7;"></div>
+                      </div>
+                      <p style="position:absolute;bottom:10px;left:0;right:0;text-align:center;color:white;font-size:.65rem;font-weight:800;font-family:'Fredoka One',cursive;z-index:5;">🎬 Film Alam · Petualangan Aslan</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom bezel bar: buttons -->
+            <div class="flex items-center justify-between mt-2 px-1">
+              <div class="flex gap-1.5">
+                <div class="w-1.5 h-5 rounded bg-teal-800 opacity-70"></div>
+                <div class="w-1.5 h-5 rounded bg-teal-800 opacity-70"></div>
+                <div class="w-1.5 h-5 rounded bg-teal-800 opacity-70"></div>
+                <div class="w-1.5 h-5 rounded bg-teal-800 opacity-70"></div>
+              </div>
+              <div id="powerLED" class="w-3 h-3 rounded-full bg-gray-700 transition-all" style="box-shadow:none;"></div>
+            </div>
+          </div>
+
+          <!-- Stand -->
+          <div class="flex flex-col items-center mt-0">
+            <div style="width:40px;height:20px;background:linear-gradient(180deg,#0f766e,#134e4a);border-radius:0 0 6px 6px;"></div>
+            <div style="width:120px;height:10px;background:#134e4a;border-radius:6px;margin-top:0;"></div>
+          </div>
+        </div>
+
+        <!-- Control buttons below monitor -->
+        <div class="flex flex-wrap gap-3 justify-center mt-6">
+          <button onclick="powerMonitor()" id="powerBtn"
+            class="btn-magic text-sm px-6 py-3">⚡ Nyalakan Monitor!</button>
+          <button onclick="changeScene('game')" id="btnGame"
+            class="btn-purple text-sm px-5 py-3 opacity-50" disabled>🎮 Mode Game</button>
+          <button onclick="changeScene('art')" id="btnArt"
+            class="btn-teal text-sm px-5 py-3 opacity-50" disabled>🎨 Mode Melukis</button>
+          <button onclick="changeScene('learn')" id="btnLearn"
+            class="btn-yellow text-sm px-5 py-3 opacity-50" disabled>📚 Mode Belajar</button>
+          <button onclick="changeScene('video')" id="btnVideo"
+            class="btn-magic text-sm px-5 py-3 opacity-50" disabled>🎬 Mode Film</button>
+        </div>
+
+        <!-- Status label -->
+        <div id="monitorMsg" class="mt-4 rounded-2xl px-6 py-3 text-center font-bold text-sm max-w-md"
+             style="background:#f0fdfa;border:2px solid #5eead4;">
+          <p id="monitorMsgText" class="text-teal-700">💡 Klik "Nyalakan Monitor!" untuk memulai! 😊</p>
+        </div>
+      </div>
+
+      <!-- FUN FACT: Pixel explanation -->
+      <div class="mt-6 rounded-2xl p-4 flex items-start gap-3" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:2px solid #c4b5fd;">
+        <span style="font-size:2rem;">🔍</span>
+        <div>
+          <p class="font-black text-purple-800 sec-title text-base">Apa itu PIXEL? 🤔</p>
+          <p class="text-purple-700 text-sm font-semibold leading-relaxed">
+            Monitor Full HD punya <strong>1.920 × 1.080 = 2.073.600 pixel</strong> (lebih dari 2 juta titik warna!).
+            Setiap pixel bisa menampilkan ribuan warna berbeda. Semakin banyak pixel, gambar semakin <strong>tajam dan jelas</strong>! 🌟
+          </p>
+          <!-- Mini pixel demo -->
+          <div class="flex gap-1 mt-2 flex-wrap">
+            <div style="width:10px;height:10px;background:#ef4444;border-radius:1px;"></div>
+            <div style="width:10px;height:10px;background:#f97316;border-radius:1px;"></div>
+            <div style="width:10px;height:10px;background:#eab308;border-radius:1px;"></div>
+            <div style="width:10px;height:10px;background:#22c55e;border-radius:1px;"></div>
+            <div style="width:10px;height:10px;background:#3b82f6;border-radius:1px;"></div>
+            <div style="width:10px;height:10px;background:#6366f1;border-radius:1px;"></div>
+            <div style="width:10px;height:10px;background:#a78bfa;border-radius:1px;"></div>
+            <div style="width:10px;height:10px;background:#f472b6;border-radius:1px;"></div>
+            <span class="text-purple-600 font-black text-xs self-center ml-1">← Ini pixel-pixel! 🔍</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     REFRESH RATE COMPARISON
+══════════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 mt-8">
+  <div class="bg-white rounded-3xl shadow-xl overflow-hidden" style="border:3px solid #fbcfe8;">
+    <div class="px-6 py-4" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);">
+      <h2 class="sec-title text-2xl sm:text-3xl text-pink-800">⚡ Refresh Rate – Seberapa Mulus?</h2>
+    </div>
+    <div class="p-6 sm:p-8">
+      <p class="text-gray-700 font-bold mb-5 text-center">
+        Refresh rate = berapa kali gambar diperbarui dalam 1 detik. Makin tinggi = makin <strong class="text-pink-600">mulus</strong>! 🏃
+      </p>
+
+      <!-- Hz bars -->
+      <div class="flex flex-col gap-4 mb-5" id="hzBars">
+        <div class="flex items-center gap-3">
+          <div class="w-28 flex-shrink-0 text-right">
+            <span class="font-black text-gray-700 sec-title text-sm">📺 60 Hz</span>
+            <p class="text-xs text-gray-400">Monitor biasa</p>
+          </div>
+          <div class="flex-1 bg-gray-100 rounded-full h-10 overflow-hidden shadow-inner">
+            <div class="hz-bar h-full rounded-full flex items-center pl-3 text-white font-black text-xs"
+                 style="width:0%;background:linear-gradient(90deg,#22c55e,#4ade80);" data-w="22%">
+              <span class="bar-text opacity-0">Normal 😊</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-28 flex-shrink-0 text-right">
+            <span class="font-black text-blue-700 sec-title text-sm">🎮 144 Hz</span>
+            <p class="text-xs text-gray-400">Gaming standar</p>
+          </div>
+          <div class="flex-1 bg-gray-100 rounded-full h-10 overflow-hidden shadow-inner">
+            <div class="hz-bar h-full rounded-full flex items-center pl-3 text-white font-black text-xs"
+                 style="width:0%;background:linear-gradient(90deg,#3b82f6,#60a5fa);" data-w="50%">
+              <span class="bar-text opacity-0">Mulus! 🏃</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-28 flex-shrink-0 text-right">
+            <span class="font-black text-purple-700 sec-title text-sm">🚀 240 Hz</span>
+            <p class="text-xs text-gray-400">Gaming pro</p>
+          </div>
+          <div class="flex-1 bg-gray-100 rounded-full h-10 overflow-hidden shadow-inner">
+            <div class="hz-bar h-full rounded-full flex items-center pl-3 text-white font-black text-xs"
+                 style="width:0%;background:linear-gradient(90deg,#7c3aed,#a78bfa);" data-w="78%">
+              <span class="bar-text opacity-0">Super Mulus! 🔥</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-28 flex-shrink-0 text-right">
+            <span class="font-black text-red-700 sec-title text-sm">⚡ 360 Hz</span>
+            <p class="text-xs text-gray-400">E-Sports top</p>
+          </div>
+          <div class="flex-1 bg-gray-100 rounded-full h-10 overflow-hidden shadow-inner">
+            <div class="hz-bar h-full rounded-full flex items-center pl-3 text-white font-black text-xs"
+                 style="width:0%;background:linear-gradient(90deg,#ef4444,#f87171);" data-w="97%">
+              <span class="bar-text opacity-0">KILAT!! 🌩️</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-center">
+        <button onclick="animateHz()" class="btn-magic text-sm px-8 py-3">⚡ Lihat Perbandingannya!</button>
+      </div>
+
+      <!-- Resolution comparison -->
+      <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border:2px solid #5eead4;">
+          <p class="font-black text-teal-800 sec-title text-sm">HD</p>
+          <p class="text-teal-600 text-xs font-bold">1280×720</p>
+          <p class="text-gray-400 text-xs mt-1">Standar lama</p>
+        </div>
+        <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #93c5fd;">
+          <p class="font-black text-blue-800 sec-title text-sm">Full HD</p>
+          <p class="text-blue-600 text-xs font-bold">1920×1080</p>
+          <p class="text-gray-400 text-xs mt-1">Paling umum ✅</p>
+        </div>
+        <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:2px solid #c4b5fd;">
+          <p class="font-black text-purple-800 sec-title text-sm">2K / QHD</p>
+          <p class="text-purple-600 text-xs font-bold">2560×1440</p>
+          <p class="text-gray-400 text-xs mt-1">Gaming serius 🎮</p>
+        </div>
+        <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);border:2px solid #f9a8d4;">
+          <p class="font-black text-pink-800 sec-title text-sm">4K / UHD</p>
+          <p class="text-pink-600 text-xs font-bold">3840×2160</p>
+          <p class="text-gray-400 text-xs mt-1">Super tajam! 😍</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     ACTIVITY – Drawing Canvas
+══════════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 mt-8">
+  <div class="bg-white rounded-3xl shadow-xl overflow-hidden" style="border:3px solid #a5f3fc;">
+    <div class="px-6 py-4" style="background:linear-gradient(135deg,#cffafe,#a5f3fc);">
+      <h2 class="sec-title text-2xl sm:text-3xl text-cyan-800">✏️ Aktivitas Hari Ini!</h2>
+    </div>
+    <div class="p-6 sm:p-8">
+      <div class="flex flex-col lg:flex-row items-start gap-6">
+
+        <!-- Instructions -->
+        <div class="flex-1">
+          <div class="rounded-2xl p-5 mb-4" style="background:linear-gradient(135deg,#cffafe,#e0f2fe);border:2px dashed #38bdf8;">
+            <h3 class="sec-title text-xl text-cyan-800 mb-2">📋 Tugasmu:</h3>
+            <p class="text-gray-700 font-bold leading-relaxed">
+              🎨 <strong>Gambarlah monitor kesukaanmu!</strong><br>
+              Gambar apa saja yang ingin kamu lihat di layar!
+            </p>
+            <ul class="mt-3 flex flex-col gap-2">
+              <li class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                <span class="w-6 h-6 rounded-full bg-teal-400 flex items-center justify-center text-white font-black text-xs flex-shrink-0">1</span>
+                Gambar bingkai monitor dengan layar lebar
+              </li>
+              <li class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                <span class="w-6 h-6 rounded-full bg-blue-400 flex items-center justify-center text-white font-black text-xs flex-shrink-0">2</span>
+                Isi layarnya: game, kartun, atau gambar sains!
+              </li>
+              <li class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                <span class="w-6 h-6 rounded-full bg-pink-400 flex items-center justify-center text-white font-black text-xs flex-shrink-0">3</span>
+                Kasih nama monitormu di bagian bawah 😄
+              </li>
+            </ul>
+          </div>
+
+          <!-- Color picker -->
+          <p class="font-black text-gray-700 mb-2 text-sm">🎨 Pilih warna:</p>
+          <div class="flex gap-2 flex-wrap mb-3">
+            <button onclick="setColor('#0f172a')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#0f172a;"></button>
+            <button onclick="setColor('#ef4444')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#ef4444;"></button>
+            <button onclick="setColor('#f97316')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#f97316;"></button>
+            <button onclick="setColor('#eab308')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#eab308;"></button>
+            <button onclick="setColor('#22c55e')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#22c55e;"></button>
+            <button onclick="setColor('#14b8a6')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#14b8a6;"></button>
+            <button onclick="setColor('#3b82f6')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#3b82f6;"></button>
+            <button onclick="setColor('#6366f1')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#6366f1;"></button>
+            <button onclick="setColor('#a78bfa')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#a78bfa;"></button>
+            <button onclick="setColor('#ff6b9d')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#ff6b9d;"></button>
+            <button onclick="setColor('#ffffff')" class="w-8 h-8 rounded-full border-2 border-gray-300 shadow hover:scale-110 transition-transform" style="background:#ffffff;"></button>
+          </div>
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-sm font-bold text-gray-600">Kuas:</span>
+            <input type="range" id="brushSize" min="2" max="26" value="6"
+              class="flex-1 h-2 rounded-full cursor-pointer accent-teal-500">
+            <span id="brushPreview" class="rounded-full flex-shrink-0" style="width:24px;height:24px;background:#0f172a;border:2px solid white;transition:all .2s;"></span>
+          </div>
+          <div class="flex gap-3 flex-wrap">
+            <button onclick="clearCanvas()" class="btn-teal text-sm py-2 px-4">🗑️ Hapus</button>
+            <button onclick="downloadDrawing()" class="btn-magic text-sm py-2 px-4">💾 Simpan Gambar!</button>
+          </div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="flex-shrink-0 w-full lg:w-auto flex flex-col items-center">
+          <div style="position:relative;">
+            <canvas id="drawCanvas" width="300" height="300"
+              style="background:white;border:3px solid #38bdf8;box-shadow:6px 6px 0 #a5f3fc;display:block;">
+            </canvas>
+            <!-- Monitor template overlay -->
+            <svg class="absolute top-0 left-0 pointer-events-none" width="300" height="300"
+                 viewBox="0 0 300 300" fill="none" opacity="0.07">
+              <!-- Monitor bezel -->
+              <rect x="20" y="20" width="260" height="190" rx="18" stroke="#0f766e" stroke-width="6" fill="none"/>
+              <!-- Screen inner -->
+              <rect x="32" y="32" width="236" height="168" rx="10" stroke="#0f766e" stroke-width="3" fill="none"/>
+              <!-- Stand neck -->
+              <rect x="132" y="210" width="36" height="30" rx="6" stroke="#0f766e" stroke-width="4" fill="none"/>
+              <!-- Stand base -->
+              <rect x="90" y="238" width="120" height="14" rx="8" stroke="#0f766e" stroke-width="4" fill="none"/>
+              <!-- "MONITOR KU" text hint -->
+              <text x="150" y="270" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f766e">MONITOR KU</text>
+            </svg>
+          </div>
+          <p class="text-xs text-center text-gray-400 font-bold mt-2">👆 Gambar di sini!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     QUIZ
+══════════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 mt-8">
+  <div class="bg-white rounded-3xl shadow-xl overflow-hidden" style="border:3px solid #fde68a;">
+    <div class="px-6 py-4" style="background:linear-gradient(135deg,#fefce8,#fef9c3);">
+      <h2 class="sec-title text-2xl sm:text-3xl text-yellow-800">🧠 Quiz Kilat!</h2>
+    </div>
+    <div class="p-6 sm:p-8">
+
+      <div id="q1" class="quiz-q">
+        <p class="font-black text-gray-800 text-lg mb-4">❓ Pertanyaan 1: Monitor bertugas sebagai apa?</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button onclick="qa(1,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all" style="background:#f0fdfa;border:2px solid #5eead4;">
+            <span class="text-xl">🤔</span> <span class="text-teal-700">Otak komputer yang berpikir</span>
+          </button>
+          <button onclick="qa(1,true,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all" style="background:#eff6ff;border:2px solid #93c5fd;">
+            <span class="text-xl">✅</span> <span class="text-blue-700">Menampilkan gambar &amp; video supaya kita bisa melihat</span>
+          </button>
+          <button onclick="qa(1,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all" style="background:#fef9c3;border:2px solid #fcd34d;">
+            <span class="text-xl">🤔</span> <span class="text-yellow-700">Menyimpan semua data komputer</span>
+          </button>
+          <button onclick="qa(1,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all" style="background:#fce7f3;border:2px solid #f9a8d4;">
+            <span class="text-xl">🤔</span> <span class="text-pink-700">Mengisi daya baterai komputer</span>
+          </button>
+        </div>
+        <div id="fb1" class="mt-3 rounded-2xl p-3 text-center font-bold hidden"></div>
+      </div>
+
+      <div id="q2" class="quiz-q mt-6 hidden">
+        <p class="font-black text-gray-800 text-lg mb-4">❓ Pertanyaan 2: Satuan ukuran layar monitor adalah?</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button onclick="qa(2,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all" style="background:#fce7f3;border:2px solid #f9a8d4;">
+            <span class="text-xl">🤔</span> <span class="text-pink-700">Sentimeter (cm)</span>
+          </button>
+          <button onclick="qa(2,true,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all" style="background:#dcfce7;border:2px solid #86efac;">
+            <span class="text-xl">✅</span> <span class="text-green-700">Inci (inch)</span>
+          </button>
+          <button onclick="qa(2,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all" style="background:#fef9c3;border:2px solid #fcd34d;">
+            <span class="text-xl">🤔</span> <span class="text-yellow-700">Kilogram (kg)</span>
+          </button>
+          <button onclick="qa(2,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all" style="background:#ede9fe;border:2px solid #c4b5fd;">
+            <span class="text-xl">🤔</span> <span class="text-purple-700">Byte (B)</span>
+          </button>
+        </div>
+        <div id="fb2" class="mt-3 rounded-2xl p-3 text-center font-bold hidden"></div>
+      </div>
+
+      <div id="q3" class="quiz-q mt-6 hidden">
+        <p class="font-black text-gray-800 text-lg mb-4">❓ Pertanyaan 3: Monitor gaming berbeda dari monitor biasa karena…?</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button onclick="qa(3,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all" style="background:#eff6ff;border:2px solid #93c5fd;">
+            <span class="text-xl">🤔</span> <span class="text-blue-700">Ukurannya jauh lebih besar</span>
+          </button>
+          <button onclick="qa(3,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all" style="background:#fce7f3;border:2px solid #f9a8d4;">
+            <span class="text-xl">🤔</span> <span class="text-pink-700">Bisa menyimpan game</span>
+          </button>
+          <button onclick="qa(3,true,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all" style="background:#dcfce7;border:2px solid #86efac;">
+            <span class="text-xl">✅</span> <span class="text-green-700">Refresh rate lebih tinggi &amp; warna lebih hidup</span>
+          </button>
+          <button onclick="qa(3,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all" style="background:#fef9c3;border:2px solid #fcd34d;">
+            <span class="text-xl">🤔</span> <span class="text-yellow-700">Tidak perlu kabel listrik</span>
+          </button>
+        </div>
+        <div id="fb3" class="mt-3 rounded-2xl p-3 text-center font-bold hidden"></div>
+      </div>
+
+      <div id="quizScore" class="hidden mt-6 rounded-3xl p-6 text-center slide-up"
+           style="background:linear-gradient(135deg,#fefce8,#fef9c3);border:3px solid #fcd34d;">
+        <div class="text-5xl mb-3" id="scoreTrophy">🏆</div>
+        <p class="sec-title text-2xl text-yellow-800 mb-1">Skor Kamu:</p>
+        <p class="sec-title text-5xl text-teal-600 mb-3" id="scoreText">0/3</p>
+        <p id="scoreMsg" class="text-gray-700 font-bold text-lg"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     FOOTER
+══════════════════════════════════════ -->
+<footer class="max-w-4xl mx-auto px-4 mt-8 mb-8">
+  <div class="rounded-3xl p-6 sm:p-8 text-center"
+       style="background:linear-gradient(135deg,#134e4a,#0f766e,#14b8a6);border:4px solid #5eead4;">
+    <!-- Aslan celebrate -->
+    <div class="flex justify-center mb-4">
+      <div style="animation:bounceAslan 1.5s ease-in-out infinite;">
+        <svg width="90" height="115" viewBox="0 0 120 150" fill="none">
+          <ellipse cx="60" cy="145" rx="28" ry="6" fill="rgba(0,0,0,.15)"/>
+          <rect x="32" y="88" width="56" height="50" rx="14" fill="#14b8a6"/>
+          <text x="37" y="118" font-size="10" font-family="Fredoka One,cursive" fill="white">MONITOR!</text>
+          <rect x="6"  y="72" width="20" height="30" rx="10" fill="#14b8a6" transform="rotate(-40 6 72)"/>
+          <rect x="84" y="65" width="20" height="30" rx="10" fill="#14b8a6" transform="rotate(40 84 65)"/>
+          <rect x="36" y="130" width="18" height="22" rx="9" fill="#0d9488"/>
+          <rect x="66" y="130" width="18" height="22" rx="9" fill="#0d9488"/>
+          <ellipse cx="45" cy="150" rx="12" ry="6" fill="#0f766e"/>
+          <ellipse cx="75" cy="150" rx="12" ry="6" fill="#0f766e"/>
+          <rect x="50" y="78" width="20" height="14" rx="7" fill="#f9a825"/>
+          <ellipse cx="60" cy="60" rx="32" ry="30" fill="#f9a825"/>
+          <ellipse cx="60" cy="35" rx="30" ry="16" fill="#2d1b00"/>
+          <ellipse cx="35" cy="47" rx="9" ry="12" fill="#2d1b00"/>
+          <ellipse cx="85" cy="47" rx="9" ry="12" fill="#2d1b00"/>
+          <ellipse cx="48" cy="60" rx="7" ry="8" fill="white"/>
+          <ellipse cx="72" cy="60" rx="7" ry="8" fill="white"/>
+          <ellipse cx="49" cy="61" rx="4" ry="5" fill="#2d1b00"/>
+          <ellipse cx="73" cy="61" rx="4" ry="5" fill="#2d1b00"/>
+          <circle cx="51" cy="59" r="1.5" fill="white"/>
+          <circle cx="75" cy="59" r="1.5" fill="white"/>
+          <path d="M44 72 Q60 86 76 72" stroke="#2d1b00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <text x="-2" y="50" font-size="16">👁️</text>
+          <text x="100" y="45" font-size="14">🖥️</text>
+          <text x="46" y="16" font-size="14">🎉</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="inline-flex items-center gap-2 bg-white bg-opacity-20 rounded-full px-4 py-1.5 mb-3 text-white text-sm font-bold">
+      <div class="foot-dot w-2 h-2 rounded-full bg-yellow-300"></div>
+      <span>Hari 16 dari 30</span>
+      <div class="foot-dot w-2 h-2 rounded-full bg-yellow-300"></div>
+      <div class="foot-dot w-2 h-2 rounded-full bg-yellow-300"></div>
+    </div>
+
+    <h2 class="text-2xl sm:text-4xl font-black text-white mb-2 drop-shadow-lg"
+        style="font-family:'Fredoka One',cursive;text-shadow:3px 3px 0 rgba(0,0,0,.2);">
+      🌟 Bagus Sekali, Aslan! 🌟
+    </h2>
+    <p class="text-white text-lg font-bold mb-3 opacity-90" style="font-family:'Fredoka One',cursive;">
+      Kamu sekarang tahu bagian mana yang jadi mata komputer! 👀✨
+    </p>
+    <p class="text-white text-sm font-semibold opacity-80 mb-4">
+      Monitor = Mata Komputer 👁️ · Diukur dalam Inci 📐 · Pixel = Titik Warna Kecil 🌈
+    </p>
+    <div class="mt-3 bg-white bg-opacity-15 rounded-2xl px-4 py-3 inline-block">
+      <p class="text-white text-sm font-bold opacity-80">
+        🔜 Besok: <strong class="opacity-100">Hari 17 – Keyboard</strong> – Papan Ketik Ajaib! ⌨️
+      </p>
+    </div>
+    <p class="text-center text-white text-xs mt-5 opacity-60">Made with ❤️ for Aslan · Seri Komputer Ajaib · Hari 16/30</p>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+<script>
+// ─────────────────────────────────────
+// MONITOR POWER + SCENES
+// ─────────────────────────────────────
+let monitorOn = false;
+let currentScene = 'welcome';
+
+const scenes = ['welcome','game','art','learn','video'];
+const sceneNames = { welcome:'🖥️ Layar Utama', game:'🎮 Mode Game', art:'🎨 Mode Melukis', learn:'📚 Mode Belajar', video:'🎬 Mode Film' };
+const learnFacts = [
+  "Cahaya bergerak dengan kecepatan 300.000 km per detik! Kalau kamu naik cahaya, bisa keliling Bumi 7,5 kali dalam 1 detik! 🌍⚡",
+  "Tubuh kita punya sekitar 37 TRILIUN sel! Setiap sel bekerja seperti mesin kecil yang tak pernah istirahat! 🔬💪",
+  "Matahari jaraknya 150 juta km dari Bumi. Sinar mataharinya butuh 8 menit untuk sampai ke kita! ☀️🌍",
+  "Otak kita punya sekitar 86 miliar sel saraf yang selalu berkomunikasi satu sama lain seperti jaringan komputer raksasa! 🧠⚡",
+  "Air bisa berbentuk padat (es), cair (air), dan gas (uap). Semua itu adalah satu zat yang sama! 🧊💧🌫️",
+];
+let learnIdx = 0;
+
+function powerMonitor() {
+  if (monitorOn) return; // Already on
+  monitorOn = true;
+
+  // Power LED on
+  const led = document.getElementById('powerLED');
+  led.style.background = '#22c55e';
+  led.style.boxShadow = '0 0 8px #22c55e';
+
+  // Glow frame
+  document.getElementById('monitorFrame').style.boxShadow = '0 0 30px 8px rgba(94,234,212,.5)';
+
+  // Show screen content + power-on animation
+  document.getElementById('screenOff').style.display = 'none';
+  document.getElementById('screenContent').classList.remove('hidden');
+  document.getElementById('monitorScreen').classList.add('screen-on','screen-active');
+
+  showScene('welcome');
+
+  // Enable buttons
+  ['btnGame','btnArt','btnLearn','btnVideo'].forEach(id => {
+    const btn = document.getElementById(id);
+    btn.disabled = false; btn.style.opacity = '1';
+  });
+
+  const powerBtn = document.getElementById('powerBtn');
+  powerBtn.textContent = '😊 Monitor Menyala!';
+  powerBtn.disabled = true;
+  powerBtn.style.opacity = '.6';
+  powerBtn.style.cursor = 'default';
+
+  showMonitorMsg('🌟 Monitor menyala! Pilih mode untuk melihat sesuatu! 😍', '#f0fdfa','#5eead4','#0f766e');
+  fireConfetti();
+}
+
+function changeScene(name) {
+  if (!monitorOn) return;
+  showScene(name);
+}
+
+function showScene(name) {
+  currentScene = name;
+  scenes.forEach(s => {
+    const el = document.getElementById('scene-'+s);
+    if (el) { el.classList.add('hidden'); el.style.display=''; }
+  });
+  const active = document.getElementById('scene-'+name);
+  if (!active) return;
+  active.classList.remove('hidden');
+  active.style.display = 'flex';
+
+  // Scene-specific inits
+  if (name === 'game') initGame();
+  if (name === 'art')  initPixelArt();
+  if (name === 'learn') {
+    document.getElementById('learnFact').textContent = learnFacts[learnIdx % learnFacts.length];
+    learnIdx++;
+  }
+
+  showMonitorMsg('✅ ' + sceneNames[name] + ' aktif! Nikmati! 🎉', '#f0fdfa','#5eead4','#0f766e');
+}
+
+// ─────────────────────────────────────
+// MINI GAME (Coin Collector)
+// ─────────────────────────────────────
+let gameScore = 0;
+let gameInterval;
+let gameActive = false;
+
+function initGame() {
+  gameScore = 0;
+  gameActive = true;
+  document.getElementById('gameScore').textContent = 'SKOR: 0';
+  spawnCoins();
+}
+
+function spawnCoins() {
+  if (currentScene !== 'game') return;
+  const container = document.getElementById('gameCoins');
+  if (!container) return;
+  container.innerHTML = '';
+  const count = 4 + Math.floor(Math.random()*3);
+  for (let i = 0; i < count; i++) {
+    const coin = document.createElement('div');
+    const emojis = ['⭐','💎','🌟','💰','🪙'];
+    coin.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    coin.style.cssText = `
+      position:absolute;
+      left:${10+Math.random()*80}%;
+      top:${15+Math.random()*55}%;
+      font-size:1.3rem;
+      cursor:pointer;
+      transition:all .2s;
+      animation:bounceAslan ${1.5+Math.random()*1}s ease-in-out infinite;
+      z-index:4;
+    `;
+    coin.addEventListener('click', () => {
+      gameScore++;
+      document.getElementById('gameScore').textContent = 'SKOR: '+gameScore;
+      coin.style.transform = 'scale(0)';
+      coin.style.opacity = '0';
+      setTimeout(()=>coin.remove(), 200);
+      if (gameScore % 5 === 0) fireConfetti();
+    });
+    container.appendChild(coin);
+  }
+  setTimeout(spawnCoins, 4000);
+}
+
+// ─────────────────────────────────────
+// PIXEL ART GRID
+// ─────────────────────────────────────
+const pixelColors = ['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#3b82f6','#6366f1','#a78bfa','#f472b6','#fbbf24','#ffffff','#0f172a'];
+let selectedPixelColor = '#f97316';
+let pixelIdx = 0;
+
+function initPixelArt() {
+  const grid = document.getElementById('pixelGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(12,1fr);gap:2px;padding:4px;width:100%;max-width:260px;';
+  for (let i = 0; i < 84; i++) {
+    const cell = document.createElement('div');
+    cell.style.cssText = 'width:100%;aspect-ratio:1;border-radius:2px;cursor:pointer;background:#1a2e1a;transition:background .15s;border:1px solid rgba(255,255,255,.05);';
+    cell.addEventListener('click', function() {
+      this.style.background = selectedPixelColor;
+    });
+    cell.addEventListener('mouseover', function(e) {
+      if (e.buttons === 1) this.style.background = selectedPixelColor;
+    });
+    grid.appendChild(cell);
+  }
+  // Color picker for pixel art
+  const picker = document.createElement('div');
+  picker.style.cssText = 'display:flex;gap:3px;flex-wrap:wrap;justify-content:center;margin-top:6px;padding:0 4px;';
+  pixelColors.forEach(c => {
+    const btn = document.createElement('div');
+    btn.style.cssText = `width:18px;height:18px;border-radius:3px;cursor:pointer;background:${c};border:2px solid ${selectedPixelColor===c?'white':'transparent'};transition:all .15s;`;
+    btn.addEventListener('click', () => {
+      selectedPixelColor = c;
+      picker.querySelectorAll('div').forEach(b => b.style.border = '2px solid transparent');
+      btn.style.border = '2px solid white';
+    });
+    picker.appendChild(btn);
+  });
+  const artScene = document.getElementById('scene-art');
+  // Remove old picker if exists
+  const oldPicker = artScene.querySelector('.pixel-picker');
+  if (oldPicker) oldPicker.remove();
+  picker.classList.add('pixel-picker');
+  artScene.querySelector('[style*="flex-direction:column"]').appendChild(picker);
+}
+
+// ─────────────────────────────────────
+// Hz BARS ANIMATION
+// ─────────────────────────────────────
+let hzAnimated = false;
+function animateHz() {
+  const bars = document.querySelectorAll('.hz-bar');
+  bars.forEach((bar, i) => {
+    const w = bar.dataset.w;
+    setTimeout(() => {
+      bar.style.width = w;
+      setTimeout(() => { bar.querySelector('.bar-text').classList.remove('opacity-0'); }, 600);
+    }, i * 250);
+  });
+  hzAnimated = true;
+}
+
+// ─────────────────────────────────────
+// CONFETTI
+// ─────────────────────────────────────
+function fireConfetti() {
+  const colors = ['#14b8a6','#f97316','#fbbf24','#ff6b9d','#3b82f6','#a78bfa','#22c55e'];
+  for (let i = 0; i < 38; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-bit';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.left = (window.innerWidth/2)+'px';
+    el.style.top  = (window.innerHeight/2)+'px';
+    const a = Math.random()*Math.PI*2, d = 70+Math.random()*220;
+    el.style.setProperty('--cx',(Math.cos(a)*d)+'px');
+    el.style.setProperty('--cy',(Math.sin(a)*d)+'px');
+    el.style.animationDelay = (Math.random()*.35)+'s';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1400);
+  }
+}
+
+function showMonitorMsg(msg, bg, border, color) {
+  const box = document.getElementById('monitorMsg');
+  const txt = document.getElementById('monitorMsgText');
+  box.style.background = bg; box.style.borderColor = border;
+  txt.style.color = color; txt.innerHTML = msg;
+}
+
+// ─────────────────────────────────────
+// QUIZ
+// ─────────────────────────────────────
+let quizScore = {1:false,2:false,3:false}, qDone = 0;
+function qa(q, correct, btn) {
+  const all = btn.closest('.quiz-q').querySelectorAll('.qbtn');
+  all.forEach(b => { b.disabled=true; b.style.opacity='.6'; b.style.cursor='default'; });
+  const fb = document.getElementById('fb'+q);
+  fb.classList.remove('hidden');
+  if (correct) {
+    quizScore[q]=true;
+    btn.style.background='#dcfce7'; btn.style.borderColor='#22c55e'; btn.style.opacity='1';
+    fb.style.cssText='background:#dcfce7;border:2px solid #86efac;color:#166534;border-radius:1rem;padding:.75rem;text-align:center;font-weight:800;';
+    fb.innerHTML='🎉 Benar sekali! Kamu makin pintar! ⭐';
+    fireConfetti();
+  } else {
+    btn.style.background='#fef2f2'; btn.style.borderColor='#fca5a5'; btn.style.opacity='1';
+    fb.style.cssText='background:#fef2f2;border:2px solid #fca5a5;color:#991b1b;border-radius:1rem;padding:.75rem;text-align:center;font-weight:800;';
+    fb.innerHTML='😅 Belum tepat, lihat yang benar ya! ✨';
+    all.forEach(b => { if (b.getAttribute('onclick')&&b.getAttribute('onclick').includes('true')) { b.style.background='#dcfce7'; b.style.borderColor='#22c55e'; b.style.opacity='1'; } });
+  }
+  qDone++;
+  if (q < 3) setTimeout(() => { document.getElementById('q'+(q+1)).classList.remove('hidden'); document.getElementById('q'+(q+1)).classList.add('slide-up'); }, 1200);
+  else setTimeout(showScore, 1200);
+}
+function showScore() {
+  const s = Object.values(quizScore).filter(Boolean).length;
+  document.getElementById('quizScore').classList.remove('hidden');
+  document.getElementById('scoreText').textContent = s+'/3';
+  const msgs = ['📚 Terus semangat belajar!','⭐ Hampir sempurna, keren!','🏆 Sempurna!! Kamu jenius!'];
+  const trophies = ['📚','⭐','🏆'];
+  document.getElementById('scoreMsg').textContent = msgs[s-1]||msgs[0];
+  document.getElementById('scoreTrophy').textContent = trophies[s-1]||'📚';
+  if (s===3) { fireConfetti(); setTimeout(fireConfetti,500); }
+}
+
+// ─────────────────────────────────────
+// DRAWING CANVAS
+// ─────────────────────────────────────
+const canvas  = document.getElementById('drawCanvas');
+const ctx     = canvas.getContext('2d');
+let drawing   = false, curColor = '#0f172a', brushSz = 6, lastX, lastY;
+
+function drawTemplate() {
+  ctx.save();
+  ctx.globalAlpha = 0.07;
+  ctx.strokeStyle = '#0f766e'; ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.roundRect(20,20,260,190,18); ctx.stroke();
+  ctx.beginPath(); ctx.roundRect(32,32,236,168,10); ctx.stroke();
+  ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.roundRect(132,210,36,30,6); ctx.stroke();
+  ctx.beginPath(); ctx.roundRect(90,238,120,14,8); ctx.stroke();
+  ctx.globalAlpha = 0.1;
+  ctx.font = 'bold 13px Fredoka One, cursive';
+  ctx.fillStyle = '#0f766e'; ctx.textAlign = 'center';
+  ctx.fillText('MONITOR KU', 150, 270);
+  ctx.restore();
+}
+drawTemplate();
+
+function getPos(e) {
+  const r = canvas.getBoundingClientRect();
+  const cx = e.touches ? e.touches[0].clientX : e.clientX;
+  const cy = e.touches ? e.touches[0].clientY : e.clientY;
+  return [(cx-r.left)*(canvas.width/r.width), (cy-r.top)*(canvas.height/r.height)];
+}
+canvas.addEventListener('mousedown', e => { drawing=true; [lastX,lastY]=getPos(e); });
+canvas.addEventListener('mousemove', e => {
+  if(!drawing) return;
+  const [x,y]=getPos(e);
+  ctx.strokeStyle=curColor; ctx.lineWidth=brushSz; ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.beginPath(); ctx.moveTo(lastX,lastY); ctx.lineTo(x,y); ctx.stroke();
+  [lastX,lastY]=[x,y];
+});
+canvas.addEventListener('mouseup',    ()=>drawing=false);
+canvas.addEventListener('mouseleave', ()=>drawing=false);
+canvas.addEventListener('touchstart', e=>{ e.preventDefault(); drawing=true; [lastX,lastY]=getPos(e); });
+canvas.addEventListener('touchmove',  e=>{ e.preventDefault(); if(!drawing)return; const[x,y]=getPos(e); ctx.strokeStyle=curColor; ctx.lineWidth=brushSz; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.beginPath(); ctx.moveTo(lastX,lastY); ctx.lineTo(x,y); ctx.stroke(); [lastX,lastY]=[x,y]; });
+canvas.addEventListener('touchend',   ()=>drawing=false);
+
+function setColor(c) {
+  curColor=c;
+  const p=document.getElementById('brushPreview');
+  p.style.background=c;
+  p.style.border=c==='#ffffff'?'2px solid #ccc':'2px solid white';
+  p.style.width=Math.max(16,brushSz*2.5)+'px';
+  p.style.height=Math.max(16,brushSz*2.5)+'px';
+}
+document.getElementById('brushSize').addEventListener('input', function() {
+  brushSz=parseInt(this.value);
+  const p=document.getElementById('brushPreview');
+  p.style.width=Math.max(16,brushSz*2.5)+'px';
+  p.style.height=Math.max(16,brushSz*2.5)+'px';
+  p.style.background=curColor;
+});
+function clearCanvas() { ctx.clearRect(0,0,canvas.width,canvas.height); drawTemplate(); }
+function downloadDrawing() {
+  const link=document.createElement('a');
+  link.download='monitor-aslan.png'; link.href=canvas.toDataURL(); link.click();
+  fireConfetti();
+}
+setColor('#0f172a');
+
+// ─────────────────────────────────────
+// INTERSECTION OBSERVER for Hz bars
+// ─────────────────────────────────────
+const hzObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting && !hzAnimated) { setTimeout(animateHz,400); } });
+}, { threshold: 0.5 });
+const hzSection = document.getElementById('hzBars');
+if (hzSection) hzObs.observe(hzSection);
+</script>
+</body>
+</html>

@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 17: Penemuan Tulisan dan Roda – Kapten Cerdas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sand:      #e8c97a;
+  --sand-dark: #b8932a;
+  --earth:     #8b5e1a;
+  --earth-deep:#5c3a0a;
+  --clay:      #c4724a;
+  --clay-light:#e8956a;
+  --sky:       #5ba3d9;
+  --sky-light: #a8d4f0;
+  --gold:      #ffd700;
+  --gold2:     #f9a825;
+  --orange:    #ff8c42;
+  --brick:     #c0392b;
+  --brick-light:#e05540;
+  --cream:     #fdf6e3;
+  --parchment: #f5e6c8;
+  --ink:       #2c1810;
+  --white:     #ffffff;
+  --papyrus:   #e8d5a3;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:linear-gradient(160deg,#3d1f00 0%,#5c3a0a 30%,#8b5e1a 65%,#b8932a 100%);
+  min-height:100vh;overflow:hidden;position:relative;
+}
+
+/* ── BG canvas ── */
+#bgc{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.dust{position:absolute;border-radius:50%;background:rgba(232,201,122,.25);animation:dustFloat linear infinite;}
+@keyframes dustFloat{
+  0%{transform:translateY(110vh) rotate(0);opacity:0;}
+  8%{opacity:.7;}92%{opacity:.2;}
+  100%{transform:translateY(-10vh) rotate(180deg);opacity:0;}
+}
+.bg-glyph{position:absolute;font-size:clamp(20px,4vw,40px);opacity:.04;animation:glyphDrift 20s linear infinite;color:var(--sand);font-family:'Fredoka One',cursive;}
+@keyframes glyphDrift{0%{transform:translateY(0) rotate(0);}100%{transform:translateY(-30px) rotate(10deg);}}
+
+/* ── Progress ── */
+.prog-wrap{position:fixed;top:0;left:0;right:0;height:5px;background:rgba(255,255,255,.1);z-index:999;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#ffd700,#ff8c42,#c0392b);border-radius:0 3px 3px 0;transition:width .5s ease;box-shadow:0 0 12px rgba(255,215,0,.7);}
+
+/* ── Buttons ── */
+.back-btn{
+  position:fixed;top:16px;left:16px;z-index:1000;
+  background:rgba(255,255,255,.14);backdrop-filter:blur(12px);
+  border:1.5px solid rgba(255,255,255,.3);color:#fff;
+  padding:9px 18px;border-radius:50px;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;
+  text-decoration:none;display:flex;align-items:center;gap:6px;
+  transition:all .3s;box-shadow:0 4px 20px rgba(0,0,0,.3);
+}
+.back-btn:hover{background:rgba(255,255,255,.24);transform:translateX(-3px);}
+.page-ind{
+  position:fixed;top:16px;right:16px;z-index:1000;
+  background:rgba(255,255,255,.14);backdrop-filter:blur(12px);
+  border:1.5px solid rgba(255,255,255,.3);color:#fff;
+  padding:8px 16px;border-radius:50px;
+  font-family:'Fredoka One',cursive;font-size:14px;letter-spacing:1px;
+}
+
+/* ── Stage & Book ── */
+.stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:10;padding:66px 18px 74px;}
+.book{width:100%;max-width:760px;height:100%;position:relative;}
+
+.slide{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:translateX(70px) scale(.96);
+  transition:all .55s cubic-bezier(.4,0,.2,1);pointer-events:none;
+}
+.slide.active{opacity:1;transform:none;pointer-events:all;}
+
+/* ── Card ── */
+.card{
+  background:linear-gradient(148deg,var(--cream) 0%,var(--parchment) 100%);
+  border-radius:34px;padding:36px 34px;width:100%;
+  max-height:100%;overflow-y:auto;scrollbar-width:none;
+  box-shadow:0 32px 90px rgba(0,0,0,.5),0 0 0 1.5px rgba(255,215,0,.2),inset 0 1px 0 rgba(255,255,255,.9);
+  position:relative;
+}
+.card::-webkit-scrollbar{display:none;}
+
+/* ── COVER ── */
+.cover{
+  background:linear-gradient(160deg,#1a0a00 0%,#3d1f00 30%,#5c3a0a 60%,#8b5e1a 100%);
+  color:#fff;text-align:center;padding:44px 36px;overflow:hidden;border-radius:34px;
+}
+.cv-stars{position:absolute;inset:0;pointer-events:none;}
+.cv-star{position:absolute;border-radius:50%;background:rgba(255,215,0,.8);animation:twinkle 2.5s ease-in-out infinite alternate;}
+@keyframes twinkle{0%{opacity:.15;transform:scale(.6);}100%{opacity:1;transform:scale(1.3);}}
+
+/* Hero scene */
+.hero-scene{width:100%;max-width:340px;margin:0 auto 18px;position:relative;height:140px;}
+.hero-glow{position:absolute;inset:-20px;background:radial-gradient(ellipse,rgba(255,215,0,.35) 0%,transparent 70%);animation:heroGlow 3s ease-in-out infinite;border-radius:50%;}
+@keyframes heroGlow{0%,100%{opacity:.5;transform:scale(.9);}50%{opacity:1;transform:scale(1.1);}}
+
+.cover-badge{display:inline-block;background:linear-gradient(135deg,var(--gold),var(--orange));color:#1a1a1a;padding:6px 20px;border-radius:50px;font-weight:900;font-size:12px;letter-spacing:1.5px;margin-bottom:14px;text-transform:uppercase;}
+.cover-title{font-family:'Fredoka One',cursive;font-size:clamp(22px,5vw,36px);line-height:1.2;margin-bottom:8px;background:linear-gradient(135deg,#fff 0%,#ffd700 60%,#ff8c42 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.cover-sub{font-size:14px;opacity:.85;margin-bottom:16px;font-weight:600;}
+.cover-name{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);border:2px solid rgba(255,215,0,.5);padding:11px 26px;border-radius:60px;font-size:16px;font-weight:900;color:var(--gold);backdrop-filter:blur(10px);margin-bottom:14px;box-shadow:0 0 30px rgba(255,215,0,.25);}
+.cover-series{font-size:12px;opacity:.5;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+
+/* ── Spinning wheel ── */
+.wheel-wrap{display:inline-flex;align-items:center;justify-content:center;position:relative;}
+.wheel-svg{animation:spinWheel 6s linear infinite;}
+@keyframes spinWheel{0%{transform:rotate(0);}100%{transform:rotate(360deg);}}
+.wheel-svg-slow{animation:spinWheel 12s linear infinite;}
+.wheel-svg-paused{animation-play-state:paused;}
+
+/* ── Papyrus box ── */
+.papyrus{
+  background:linear-gradient(135deg,#f5e6c8,#e8d5a3);
+  border:3px solid #c8a45a;border-radius:16px;
+  padding:20px;margin:14px 0;position:relative;
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.08),0 4px 20px rgba(0,0,0,.1);
+}
+.papyrus::before,.papyrus::after{
+  content:'';position:absolute;top:8px;bottom:8px;width:12px;
+  background:linear-gradient(to right,rgba(184,147,42,.3),transparent);
+  border-radius:4px;
+}
+.papyrus::before{left:0;}
+.papyrus::after{right:0;background:linear-gradient(to left,rgba(184,147,42,.3),transparent);}
+.papyrus-title{font-family:'Fredoka One',cursive;font-size:17px;color:var(--earth-deep);margin-bottom:10px;text-align:center;}
+
+/* ── Section header ── */
+.sec-hdr{display:flex;align-items:center;gap:13px;margin-bottom:20px;}
+.sec-icon{width:50px;height:50px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;box-shadow:0 4px 15px rgba(0,0,0,.15);}
+.sec-title{font-family:'Fredoka One',cursive;font-size:clamp(18px,3.5vw,24px);color:var(--earth-deep);line-height:1.2;}
+.sec-title span{color:var(--brick);}
+
+/* ── Story ── */
+.story{font-size:15px;line-height:1.9;color:#3d1f05;font-weight:600;}
+.story p{margin-bottom:14px;}
+.story p:last-child{margin-bottom:0;}
+.hl{background:linear-gradient(135deg,#fff9c4,#ffe082);border-left:4px solid var(--gold);padding:13px 18px;border-radius:12px;margin:14px 0;font-weight:700;color:#6d4c00;}
+.quote{background:linear-gradient(135deg,#fdf6e3,#f5e6c8);border:2px solid #c8a45a;border-radius:18px;padding:18px 22px;margin:14px 0;position:relative;text-align:center;}
+.quote::before{content:'"';position:absolute;top:-10px;left:18px;font-size:52px;font-family:Georgia,serif;color:#c8a45a;line-height:1;}
+.quote-t{font-family:'Fredoka One',cursive;font-size:16px;color:var(--earth-deep);line-height:1.5;}
+.quote-a{font-size:12px;color:var(--earth);margin-top:6px;font-weight:700;}
+
+/* ── Info banner ── */
+.info-banner{background:linear-gradient(135deg,#5c3a0a,#8b5e1a);color:#fff;border-radius:14px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:800;border:1.5px solid rgba(255,215,0,.3);}
+
+/* ── Hieroglyph interactive ── */
+.glyph-board{
+  background:linear-gradient(135deg,#2c1810,#3d2010);
+  border-radius:22px;padding:24px;margin:14px 0;color:#fff;
+  border:2px solid rgba(255,215,0,.3);
+  position:relative;overflow:hidden;
+}
+.glyph-board::before{content:'📜';position:absolute;right:16px;top:10px;font-size:50px;opacity:.08;}
+.gb-title{font-family:'Fredoka One',cursive;font-size:18px;color:var(--gold);margin-bottom:14px;text-align:center;}
+.glyph-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px;}
+.glyph-cell{
+  aspect-ratio:1;background:rgba(255,255,255,.06);border-radius:10px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  cursor:pointer;transition:all .35s cubic-bezier(.34,1.56,.64,1);
+  border:1.5px solid rgba(255,215,0,.2);font-size:22px;
+  position:relative;
+}
+.glyph-cell:hover,.glyph-cell.lit{background:rgba(255,215,0,.18);border-color:rgba(255,215,0,.6);transform:scale(1.1);box-shadow:0 0 18px rgba(255,215,0,.3);}
+.glyph-cell .gl-meaning{font-size:10px;color:rgba(255,215,0,.85);font-weight:800;text-align:center;line-height:1.2;display:none;}
+.glyph-cell.lit .gl-meaning{display:block;}
+.glyph-hint{font-size:12px;color:rgba(255,255,255,.55);text-align:center;font-weight:700;}
+.glyph-result{
+  background:rgba(255,255,255,.08);border-radius:12px;padding:12px;
+  font-size:13px;font-weight:700;text-align:center;min-height:44px;
+  border:1px solid rgba(255,215,0,.2);transition:all .4s;
+  color:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;
+}
+
+/* ── Cuneiform demo ── */
+.cunei-demo{
+  background:linear-gradient(135deg,#c4724a,#8b5e1a);
+  border-radius:20px;padding:20px;color:#fff;margin:14px 0;
+}
+.cunei-title{font-family:'Fredoka One',cursive;font-size:17px;color:#fff9c4;margin-bottom:12px;text-align:center;}
+.cunei-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+.cunei-block{
+  background:rgba(255,255,255,.12);border-radius:10px;padding:10px 14px;
+  font-size:13px;font-weight:800;color:#fff;border:1.5px solid rgba(255,255,255,.2);
+  flex:1;min-width:80px;text-align:center;line-height:1.5;
+}
+.cunei-block .cl-label{font-size:11px;color:rgba(255,255,255,.6);display:block;margin-bottom:4px;}
+.cunei-block .cl-symbol{font-size:22px;}
+.cunei-arrow{font-size:20px;color:rgba(255,255,255,.5);flex-shrink:0;}
+
+/* ── Wheel interactive ── */
+.wheel-demo{
+  background:linear-gradient(135deg,#1a3a5c,#0d2f5e);
+  border-radius:24px;padding:24px;color:#fff;margin:14px 0;text-align:center;
+  border:2px solid rgba(91,163,217,.4);
+}
+.wd-title{font-family:'Fredoka One',cursive;font-size:18px;color:#a8d4f0;margin-bottom:16px;}
+.wheel-controls{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;}
+.wheel-stage{position:relative;width:120px;height:120px;flex-shrink:0;}
+.wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--gold);z-index:2;box-shadow:0 0 10px rgba(255,215,0,.6);}
+.wheel-speed-info{flex:1;min-width:120px;}
+.speed-label{font-family:'Fredoka One',cursive;font-size:15px;color:var(--gold);margin-bottom:10px;}
+.speed-btns{display:flex;flex-direction:column;gap:8px;}
+.sp-btn{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:10px;padding:9px 14px;color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all .3s;text-align:left;}
+.sp-btn:hover,.sp-btn.active{background:rgba(255,215,0,.2);border-color:rgba(255,215,0,.5);color:var(--gold);}
+.wheel-fact{background:rgba(255,255,255,.08);border-radius:12px;padding:11px;margin-top:14px;font-size:13px;font-weight:700;color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.1);line-height:1.6;min-height:52px;transition:all .4s;}
+
+/* ── Evolution slider ── */
+.evo-slider{
+  background:linear-gradient(135deg,#f5e6c8,#e8d5a3);
+  border:2px solid #c8a45a;border-radius:22px;padding:22px;margin:14px 0;
+}
+.es-title{font-family:'Fredoka One',cursive;font-size:17px;color:var(--earth-deep);margin-bottom:14px;text-align:center;}
+.slider-track{position:relative;margin-bottom:14px;}
+.evo-range{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;background:linear-gradient(to right,var(--brick),var(--gold),var(--sky));outline:none;cursor:pointer;}
+.evo-range::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);border:2px solid #fff;}
+.evo-stages{display:flex;justify-content:space-between;margin-top:6px;}
+.es-stage{font-size:11px;font-weight:800;color:var(--earth);text-align:center;flex:1;}
+.evo-display{
+  background:rgba(92,58,10,.1);border:2px solid rgba(92,58,10,.2);border-radius:16px;
+  padding:16px;text-align:center;min-height:100px;transition:all .5s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+}
+.evo-icon{font-size:44px;transition:all .5s;}
+.evo-name{font-family:'Fredoka One',cursive;font-size:17px;color:var(--earth-deep);}
+.evo-desc{font-size:13px;font-weight:700;color:var(--earth);line-height:1.5;}
+
+/* ── Impact cards ── */
+.impact-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;}
+.imp-card{border-radius:20px;padding:17px;transition:transform .3s;cursor:pointer;}
+.imp-card:hover{transform:translateY(-4px);}
+.imp-writing{background:linear-gradient(135deg,#fdf6e3,#f5e6c8);border:2px solid #c8a45a;}
+.imp-wheel{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:2px solid #64b5f6;}
+.imp-icon{font-size:34px;margin-bottom:10px;display:block;}
+.imp-title{font-family:'Fredoka One',cursive;font-size:15px;margin-bottom:6px;}
+.imp-writing .imp-title{color:var(--earth-deep);}
+.imp-wheel .imp-title{color:#1565c0;}
+.imp-desc{font-size:12px;font-weight:700;color:#555;line-height:1.5;}
+
+/* ── Key points ── */
+.key-pts{display:grid;gap:11px;margin:14px 0;}
+.key-pt{display:flex;align-items:flex-start;gap:13px;background:linear-gradient(135deg,#fdf6e3,#f5e6c8);border-radius:18px;padding:15px 17px;border:1.5px solid rgba(200,164,90,.5);transition:transform .2s;}
+.key-pt:hover{transform:translateX(5px);}
+.kp-icon{font-size:28px;flex-shrink:0;line-height:1;}
+.kp-body{font-size:14px;font-weight:700;color:var(--earth);line-height:1.5;}
+.kp-body strong{color:var(--earth-deep);font-size:15px;display:block;margin-bottom:2px;}
+
+/* ── Comparison row ── */
+.before-after{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:14px 0;}
+.ba-box{border-radius:18px;padding:16px;text-align:center;}
+.ba-before{background:linear-gradient(135deg,#f5f5f5,#e0e0e0);border:2px solid #bdbdbd;}
+.ba-after{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border:2px solid #81c784;}
+.ba-label{font-family:'Fredoka One',cursive;font-size:14px;margin-bottom:8px;}
+.ba-before .ba-label{color:#757575;}
+.ba-after .ba-label{color:#2e7d32;}
+.ba-content{font-size:12px;font-weight:700;color:#555;line-height:1.5;}
+.ba-emoji{font-size:32px;display:block;margin-bottom:8px;}
+.ba-arrow{font-size:28px;color:var(--gold);animation:pulseArrow 1.5s ease-in-out infinite;}
+@keyframes pulseArrow{0%,100%{transform:scale(1);}50%{transform:scale(1.3);}}
+
+/* ── Challenge ── */
+.challenge{background:linear-gradient(160deg,#1a0a00,#3d1f00,#5c3a0a);border-radius:28px;padding:26px;color:#fff;position:relative;overflow:hidden;}
+.challenge::before{content:'📜';position:absolute;right:16px;top:16px;font-size:64px;opacity:.08;}
+.ch-title{font-family:'Fredoka One',cursive;font-size:20px;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.ch-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;font-size:14px;font-weight:700;line-height:1.55;color:rgba(255,255,255,.92);}
+.ch-num{width:28px;height:28px;background:var(--gold);color:#1a1a1a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:15px;flex-shrink:0;}
+.reward-box{background:rgba(255,215,0,.1);border:1.5px solid rgba(255,215,0,.35);border-radius:16px;padding:14px;margin-top:14px;text-align:center;}
+.reward-title{font-family:'Fredoka One',cursive;font-size:16px;color:var(--gold);margin-bottom:5px;}
+.reward-desc{font-size:13px;font-weight:700;color:rgba(255,255,255,.8);}
+
+/* ── Closing ── */
+.closing{background:linear-gradient(160deg,#1a0a00 0%,#3d1f00 40%,#5c3a0a 100%);color:#fff;text-align:center;padding:44px 34px;overflow:hidden;border-radius:34px;}
+.cl-stars{position:absolute;inset:0;pointer-events:none;}
+.cl-title{font-family:'Fredoka One',cursive;font-size:26px;color:var(--gold);margin:14px 0 12px;text-shadow:0 0 30px rgba(255,215,0,.5);}
+.cl-body{font-size:14px;opacity:.9;font-weight:600;line-height:1.8;max-width:460px;margin:0 auto 20px;}
+.medal-row{display:flex;justify-content:center;gap:11px;flex-wrap:wrap;margin:14px 0;}
+.medal{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,215,0,.4);border-radius:14px;padding:10px 15px;font-size:12px;font-weight:800;color:var(--gold);display:flex;align-items:center;gap:7px;}
+.badge-big{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--gold2),var(--orange));color:#1a1a1a;padding:13px 26px;border-radius:60px;font-family:'Fredoka One',cursive;font-size:17px;margin:12px 0;box-shadow:0 8px 30px rgba(255,215,0,.5);animation:glowBadge 2.5s ease-in-out infinite;}
+@keyframes glowBadge{0%,100%{box-shadow:0 8px 30px rgba(255,215,0,.4);}50%{box-shadow:0 8px 50px rgba(255,215,0,.8),0 0 60px rgba(255,140,66,.4);}}
+.next-box{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:18px;padding:14px 20px;margin-top:16px;font-size:13px;font-weight:700;color:rgba(255,255,255,.85);}
+@keyframes coinSpin{0%{transform:rotateY(0);}100%{transform:rotateY(360deg);}}
+.spin{animation:coinSpin 3s linear infinite;display:inline-block;}
+
+/* ── Writing demo ── */
+.write-demo{
+  background:linear-gradient(135deg,#fdf6e3,#f0e0b8);
+  border:2.5px solid #c8a45a;border-radius:20px;padding:20px;margin:14px 0;
+  position:relative;overflow:hidden;
+}
+.wd-title2{font-family:'Fredoka One',cursive;font-size:16px;color:var(--earth-deep);margin-bottom:14px;text-align:center;}
+.clay-tablet{
+  background:linear-gradient(135deg,#c4724a,#a0522d);
+  border-radius:16px;padding:18px;color:#fff;
+  position:relative;overflow:hidden;margin-bottom:12px;
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.3),0 4px 15px rgba(0,0,0,.2);
+}
+.ct-title{font-family:'Fredoka One',cursive;font-size:14px;color:#ffd700;margin-bottom:10px;}
+.ct-symbols{display:flex;flex-wrap:wrap;gap:8px;}
+.ct-sym{
+  background:rgba(0,0,0,.2);border-radius:8px;padding:8px 10px;
+  font-size:18px;cursor:pointer;transition:all .3s;
+  border:1px solid rgba(255,255,255,.15);
+}
+.ct-sym:hover{background:rgba(255,215,0,.25);transform:scale(1.1);border-color:rgba(255,215,0,.5);}
+.ct-sym.revealed{animation:symReveal .4s ease;}
+@keyframes symReveal{0%{transform:scale(.8);opacity:.5;}100%{transform:scale(1);opacity:1;}}
+.sym-result{background:rgba(255,255,255,.1);border-radius:10px;padding:10px;margin-top:10px;font-size:12px;font-weight:700;color:rgba(255,255,255,.85);min-height:36px;text-align:center;border:1px solid rgba(255,255,255,.15);}
+
+/* ── Tag ── */
+.tag{display:inline-block;background:rgba(200,164,90,.2);color:var(--earth-deep);padding:4px 12px;border-radius:50px;font-size:12px;font-weight:800;margin:3px 2px;border:1px solid rgba(200,164,90,.4);}
+
+/* ── Fact card ── */
+.fact-card{background:linear-gradient(135deg,#3d1f00,#5c3a0a);border-radius:20px;padding:18px;color:#fff;margin:12px 0;border:1.5px solid rgba(255,215,0,.2);}
+.fc-icon{font-size:32px;margin-bottom:8px;}
+.fc-body{font-size:13px;font-weight:700;line-height:1.6;color:rgba(255,255,255,.9);}
+.fc-stat{font-family:'Fredoka One',cursive;font-size:20px;color:var(--gold);margin:6px 0;}
+
+/* ── Nav ── */
+.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:100;display:flex;align-items:center;gap:11px;}
+.nav-btn{width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 6px 20px rgba(0,0,0,.4);color:#fff;}
+.nav-btn.prev{background:linear-gradient(135deg,#5d4037,#795548);}
+.nav-btn.next{background:linear-gradient(135deg,var(--gold2),var(--orange));width:60px;height:60px;font-size:22px;color:#1a1a1a;}
+.nav-btn:hover{transform:scale(1.15);}
+.nav-btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important;}
+.dots{display:flex;gap:5px;align-items:center;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s;}
+.dot.on{background:var(--gold);width:22px;border-radius:3px;box-shadow:0 0 10px rgba(255,215,0,.6);}
+
+@media(max-width:600px){
+  .card{padding:20px 16px;border-radius:24px;}
+  .impact-grid,.before-after{grid-template-columns:1fr;}
+  .ba-arrow{transform:rotate(90deg);}
+  .glyph-grid{grid-template-columns:repeat(4,1fr);}
+  .wheel-controls{flex-direction:column;}
+  .cunei-row{flex-direction:column;}
+  .cover-title{font-size:20px;}
+}
+</style>
+</head>
+<body>
+
+<div id="bgc"></div>
+<div class="prog-wrap"><div class="prog-fill" id="prog"></div></div>
+<a href="../perpustakaan.html" class="back-btn">← Kembali ke Perpustakaan</a>
+<div class="page-ind" id="pageInd">1 / 14</div>
+
+<div class="stage">
+ <div class="book" id="book">
+
+  <!-- ═══ SLIDE 1: COVER ═══ -->
+  <div class="slide active" id="s0">
+   <div class="card cover">
+    <div class="cv-stars" id="cvStars"></div>
+    <div class="cover-badge">📅 Hari 17 · Minggu 3</div>
+
+    <!-- Hero scene: scroll + wheel -->
+    <div class="hero-scene">
+      <div class="hero-glow"></div>
+      <svg width="340" height="140" viewBox="0 0 340 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Scroll/papyrus -->
+        <rect x="20" y="20" width="120" height="90" rx="8" fill="#e8d5a3" stroke="#c8a45a" stroke-width="3"/>
+        <rect x="15" y="15" width="14" height="100" rx="7" fill="#c8a45a"/>
+        <rect x="131" y="15" width="14" height="100" rx="7" fill="#c8a45a"/>
+        <!-- Writing lines on scroll -->
+        <line x1="40" y1="40" x2="120" y2="40" stroke="#8b5e1a" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="40" y1="55" x2="110" y2="55" stroke="#8b5e1a" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="40" y1="70" x2="120" y2="70" stroke="#8b5e1a" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="40" y1="85" x2="100" y2="85" stroke="#8b5e1a" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Mini glyphs on scroll -->
+        <text x="40" y="38" font-size="11" fill="#c0392b">𓂀 𓅃 𓇳 𓊪</text>
+        <text x="40" y="53" font-size="11" fill="#c0392b">𓏏 𓈖 𓂧 𓌙</text>
+        <text x="40" y="68" font-size="11" fill="#c0392b">𓆑 𓃀 𓄿 𓇋</text>
+        <!-- Sparkle from scroll -->
+        <text x="135" y="25" font-size="16">✨</text>
+        <text x="130" y="110" font-size="12">⭐</text>
+
+        <!-- Wheel on right -->
+        <g transform="translate(220,70)">
+          <!-- Outer rim -->
+          <circle cx="0" cy="0" r="55" fill="none" stroke="#8b5e1a" stroke-width="8"/>
+          <!-- Hub -->
+          <circle cx="0" cy="0" r="10" fill="#c8a45a"/>
+          <!-- Spokes -->
+          <line x1="0" y1="-55" x2="0" y2="-10" stroke="#5c3a0a" stroke-width="5" stroke-linecap="round"/>
+          <line x1="0" y1="55" x2="0" y2="10" stroke="#5c3a0a" stroke-width="5" stroke-linecap="round"/>
+          <line x1="-55" y1="0" x2="-10" y2="0" stroke="#5c3a0a" stroke-width="5" stroke-linecap="round"/>
+          <line x1="55" y1="0" x2="10" y2="0" stroke="#5c3a0a" stroke-width="5" stroke-linecap="round"/>
+          <line x1="-39" y1="-39" x2="-7" y2="-7" stroke="#5c3a0a" stroke-width="4" stroke-linecap="round"/>
+          <line x1="39" y1="39" x2="7" y2="7" stroke="#5c3a0a" stroke-width="4" stroke-linecap="round"/>
+          <line x1="39" y1="-39" x2="7" y2="-7" stroke="#5c3a0a" stroke-width="4" stroke-linecap="round"/>
+          <line x1="-39" y1="39" x2="-7" y2="7" stroke="#5c3a0a" stroke-width="4" stroke-linecap="round"/>
+          <!-- Glow -->
+          <circle cx="0" cy="0" r="55" fill="none" stroke="rgba(255,215,0,0.4)" stroke-width="3"/>
+        </g>
+        <!-- Sparkle from wheel -->
+        <text x="285" y="20" font-size="14">✨</text>
+        <text x="288" y="125" font-size="12">⭐</text>
+        <!-- Ground line -->
+        <line x1="160" y1="128" x2="290" y2="128" stroke="#c8a45a" stroke-width="3" stroke-dasharray="8,4" opacity=".5"/>
+      </svg>
+    </div>
+
+    <div class="cover-title">✍️ Penemuan Tulisan dan Roda</div>
+    <div class="cover-sub">Dua Sihir yang Mengubah Dunia Selamanya!</div>
+    <div class="cover-name">🏺 Kapten Aslan</div>
+    <div class="cover-series">✦ Petualangan Kapten Cerdas: Jejak Manusia di Bumi · Hari 17 dari 30 ✦</div>
+   </div>
+  </div>
+
+  <!-- ═══ SLIDE 2: PENGANTAR ═══ -->
+  <div class="slide" id="s1">
+   <div class="card">
+    <div class="info-banner">📖 Minggu 3 · Peradaban Awal & Penemuan Besar · Hari 17</div>
+    <div class="sec-hdr">
+      <div class="sec-icon" style="background:linear-gradient(135deg,#ffd700,#ff8c42);">🌅</div>
+      <div class="sec-title">Perjalanan yang <span>Makin Seru!</span></div>
+    </div>
+    <div class="story">
+      <p>Kapten Aslan memacu mesin waktunya menyusuri peradaban-peradaban awal yang mulai bermunculan di muka Bumi! Dari revolusi pertanian yang mengubah cara manusia hidup, hingga lahirnya desa dan kota-kota pertama...</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:14px 0;">
+      <div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:14px;padding:12px;text-align:center;">
+        <div style="font-size:22px;">🌾</div>
+        <div style="font-family:'Fredoka One',cursive;color:#2e7d32;font-size:12px;margin-top:5px;">Hari 15</div>
+        <div style="font-size:11px;color:#555;font-weight:700;">Revolusi Pertanian</div>
+      </div>
+      <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border-radius:14px;padding:12px;text-align:center;">
+        <div style="font-size:22px;">🏘️</div>
+        <div style="font-family:'Fredoka One',cursive;color:#e65100;font-size:12px;margin-top:5px;">Hari 16</div>
+        <div style="font-size:11px;color:#555;font-weight:700;">Desa & Kota Pertama</div>
+      </div>
+      <div style="background:linear-gradient(135deg,#ffd700,#ff8c42);border-radius:14px;padding:12px;text-align:center;box-shadow:0 4px 15px rgba(255,215,0,.3);">
+        <div style="font-size:22px;">✍️</div>
+        <div style="font-family:'Fredoka One',cursive;color:#1a1a1a;font-size:12px;margin-top:5px;">Hari 17 ⬅</div>
+        <div style="font-size:11px;color:#333;font-weight:700;"><strong>HARI INI!</strong></div>
+      </div>
+    </div>
+    <div class="hl">
+      🔮 Hari ini, Aslan akan menyaksikan dua penemuan yang mengubah jalannya sejarah manusia SELAMANYA — penemuan yang membuat manusia benar-benar berbeda dari semua makhluk lain di Bumi!
+    </div>
+    <div class="story">
+      <p>Mesin waktu mendengung, dan koordinat tertuju pada sebuah tempat di tepi Sungai Eufrat, sekitar <strong>5.000 tahun yang lalu</strong>...</p>
+    </div>
+   </div>
+  </div>
+
+  <!-- ═══ SLIDE 3: CERITA UTAMA ═══ -->
+  <div class="slide" id="s2">
+   <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-icon" style="background:linear-gradient(135deg,#c0392b,#8b1a10);">🏺</div>
+      <div class="sec-title">Di Tepi Sungai Eufrat, <span>3.000 SM...</span></div>
+    </div>
+    <div class="story">
+      <p>Angin hangat membawa aroma tanah basah saat Aslan mendarat di lembah yang subur. Di sekelilingnya berdiri bangunan-bangunan dari batu bata merah. Ini adalah <strong>Sumer</strong> — salah satu peradaban pertama manusia!</p>
+      <p>Tiba-tiba, suara gemuruh mendekat. Aslan menoleh dan melihat sesuatu yang belum pernah dilihatnya di perjalanan waktu mana pun...</p>
+    </div>
+    <div style="background:linear-gradient(135deg,#3d1f00,#5c3a0a);border-radius:22px;padding:22px;color:#fff;margin:14px 0;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(255,215,0,.15),transparent 60%);pointer-events:none;"></div>
+      <div style="font-size:50px;margin-bottom:10px;">🏺🌊🛞📜</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:16px;color:var(--gold);margin-bottom:10px;">Kota Ur, Mesopotamia · 3.000 SM</div>
+      <div style="font-size:13px;font-weight:700;opacity:.85;line-height:1.7;">
+        "Sebuah gerobak kayu besar ditarik lembu, dengan <strong>roda bundar</strong> yang menggelinding di tanah! Di sisi jalan, seorang penulis menggoreskan simbol-simbol di atas lempengan tanah liat..."
+      </div>
+    </div>
+    <div class="story">
+      <p>Aslan mendekati si penulis. Dengan sebatang alat kecil berbentuk baji, sang penulis menggores-goreskan simbol ke tanah liat basah yang datar. Mata Aslan terbelalak — <strong>inilah tulisan pertama manusia!</strong></p>
+    </div>
+    <div class="quote">
+      <div class="quote-t">"Kapten! Kamu sedang menyaksikan dua keajaiban terbesar manusia — Tulisan dan Roda! Hari ini, dunia berubah selamanya!"</div>
+      <div class="quote-a">— Penjaga Waktu, pemandu perjalanan Kapten Aslan 🕰️</div>
+    </div>
+   </div>
+  </div>
+
+  <!-- ═══ SLIDE 4: PENEMUAN TULISAN ═══ -->
+  <div class="slide" id="s3">
+   <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-icon" style="background:linear-gradient(135deg,#c8a45a,#8b5e1a);">✍️</div>
+      <div class="sec-title">Sihir Pertama: <span>Penemuan Tulisan!</span></div>
+    </div>
+    <div class="story">
+      <p>Sebelum ada tulisan, bayangkan bagaimana sulitnya kehidupan manusia. Tidak ada buku, tidak ada surat, tidak ada catatan. Semua informasi harus dihafal dan diceritakan dari mulut ke mulut!</p>
+    </div>
+    <div class="evo-slider">
+      <div class="es-title">🖼️ Perjalanan Tulisan: Dari Gambar ke Huruf!</div>
+      <input class="evo-range" id="writingSlider" type="range" min="0" max="4" value="0" oninput="updateWritingSlider(this.value)"/>
+      <div class="evo-stages">
+        <div class="es-stage">Gambar<br>Nyata</div>
+        <div class="es-stage">Gambar<br>Sederhana</div>
+        <div class="es-stage">Simbol<br>Abstrak</div>
+        <div class="es-stage">Huruf<br>Baji</div>
+        <div class="es-stage">Alfabet<br>Modern</div>
+      </div>
+      <div class="evo-display" id="writingDisplay">
+        <div class="evo-icon" id="writingIcon">🦁</div>
+        <div class="evo-name" id="writingName">Gambar Nyata (30.000 SM)</div>
+        <div class="evo-desc" id="writingDesc">Manusia purba melukis singa di dinding gua persis seperti bentuk aslinya. Gambar realistis untuk menceritakan kisah berburu!</div>
+      </div>
+    </div>
+    <div class="story">
+      <p>Tulisan pertama yang dikenal manusia lahir di <strong>Mesopotamia sekitar 3.200 SM</strong> — namanya <strong>Cuneiform</strong> (tulisan baji). Di Mesir, lahir <strong>Hieroglif</strong>. Di Cina, lahir <strong>karakter Cina kuno</strong>.</p>
+    </div>
+   </div>
+  </div>
+
+  <!-- ═══ SLIDE 5: CUNEIFORM & HIEROGLIF ═══ -->
+  <div class="slide" id="s4">
+   <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-icon" style="background:linear-gradient(135deg,#c4724a,#8b3a1a);">🏺</div>
+      <div class="sec-title">Tulisan Kuno yang <span>Menakjubkan!</span></div>
+    </div>
+
+    <!-- Clay tablet demo -->
+    <div class="write-demo">
+      <div class="wd-title2">🧱 Lempengan Tanah Liat Sumeria · 2.800 SM</div>
+      <div class="clay-tablet">
+        <div class="ct-title">👆 Klik simbol untuk tahu artinya!</div>
+        <div class="ct-symbols">
+          <div class="ct-sym" onclick="revealSym(this,'𒀭','Dewa / Langit')">𒀭</div>
+          <div class="ct-sym" onclick="revealSym(this,'𒀀','Air / Sungai')">𒀀</div>
+          <div class="ct-sym" onclick="revealSym(this,'𒆳','Negeri / Tanah')">𒆳</div>
+          <div class="ct-sym" onclick="revealSym(this,'𒌷','Kota')">𒌷</div>
+          <div class="ct-sym" onclick="revealSym(this,'𒀭𒂗','Raja')">𒀭𒂗</div>
+          <div class="ct-sym" onclick="revealSym(this,'𒄑','Pohon / Kayu')">𒄑</div>
+          <div class="ct-sym" onclick="revealSym(this,'𒀭𒋀','Matahari')">𒀭𒋀</div>
+          <div class="ct-sym" onclick="revealSym(this,'𒁀','Sapi / Ternak')">𒁀</div>
+        </div>
+        <div class="sym-result" id="symResult">Sentuh simbol cuneiform di atas untuk membaca artinya! ✨</div>
+      </div>
+    </div>
+
+    <!-- Hieroglyph board -->
+    <div class="glyph-board">
+      <div class="gb-title">🌺 Hieroglif Mesir · 3.200 SM</div>
+      <div class="glyph-grid">
+        <div class="glyph-cell" onclick="lightGlyph(this)">𓂀<span class="gl-meaning">Mata / Melihat</span></div>
+        <div class="glyph-cell" onclick="lightGlyph(this)">𓅃<span class="gl-meaning">Burung Rajawali / Matahari</span></div>
+        <div class="glyph-cell" onclick="lightGlyph(this)">𓇳<span class="gl-meaning">Matahari / Ra (Dewa)</span></div>
+        <div class="glyph-cell" onclick="lightGlyph(this)">𓈖<span class="gl-meaning">Air / N</span></div>
+        <div class="glyph-cell" onclick="lightGlyph(this)">𓂧<span class="gl-meaning">Tangan / D</span></div>
+        <div class="glyph-cell" onclick="lightGlyph(this)">𓃀<span class="gl-meaning">Kaki / B</span></div>
+        <div class="glyph-cell" onclick="lightGlyph(this)">𓆑<span class="gl-meaning">Ular Horned / F</span></div>
+        <div class="glyph-cell" onclick="lightGlyph(this)">𓏏<span class="gl-meaning">Roti / T</span></div>
+        <div class="glyph-cell" onclick="lightGlyph(this)">𓌙<span class="gl-meaning">Tangan Buka / A</span></div>
+        <div class="glyph-cell" onclick="lightGlyph(this)">𓊪<span class="gl-meaning">Tikar / P</span></div>
+        <div class="glyph-cell" onclick="lightGlyph(this)">𓄿<span class="gl-meaning">Elang / Kekuatan</span></div>
+        <div class="glyph-cell" onclick="lightGlyph(this)">𓇋<span class="gl-meaning">Buluh / I</span></div>
+      </div>
+      <div class="glyph-hint">👆 Klik setiap hieroglif untuk melihat artinya!</div>
+    </div>
+   </div>
+  </div>
+
+  <!-- ═══ SLIDE 6: PENEMUAN RODA ═══ -->
+  <div class="slide" id="s5">
+   <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-icon" style="background:linear-gradient(135deg,#5ba3d9,#1a6fa8);">🛞</div>
+      <div class="sec-title">Sihir Kedua: <span>Penemuan Roda!</span></div>
+    </div>
+    <div class="story">
+      <p>Sementara Aslan masih terpesona dengan tulisan, suara gemuruh makin keras. Seekor lembu besar menarik sebuah gerobak kayu dengan <strong>empat roda bulat</strong> yang menggelinding mulus di atas tanah!</p>
+    </div>
+
+    <div class="wheel-demo">
+      <div class="wd-title">🛞 Roda Ajaib yang Mengubah Segalanya!</div>
+      <div class="wheel-controls">
+        <div class="wheel-stage">
+          <svg id="wheelSvg" class="wheel-svg" width="120" height="120" viewBox="0 0 120 120">
+            <defs>
+              <radialGradient id="wg"><stop offset="0%" stop-color="#c8a45a"/><stop offset="40%" stop-color="#8b5e1a"/><stop offset="100%" stop-color="#5c3a0a"/></radialGradient>
+              <filter id="wf"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.5)"/></filter>
+            </defs>
+            <circle cx="60" cy="60" r="55" fill="none" stroke="#5c3a0a" stroke-width="10" filter="url(#wf)"/>
+            <circle cx="60" cy="60" r="45" fill="none" stroke="#8b5e1a" stroke-width="3"/>
+            <circle cx="60" cy="60" r="12" fill="url(#wg)" filter="url(#wf)"/>
+            <line x1="60" y1="5" x2="60" y2="48" stroke="#5c3a0a" stroke-width="6" stroke-linecap="round"/>
+            <line x1="60" y1="72" x2="60" y2="115" stroke="#5c3a0a" stroke-width="6" stroke-linecap="round"/>
+            <line x1="5" y1="60" x2="48" y2="60" stroke="#5c3a0a" stroke-width="6" stroke-linecap="round"/>
+            <line x1="72" y1="60" x2="115" y2="60" stroke="#5c3a0a" stroke-width="6" stroke-linecap="round"/>
+            <line x1="21" y1="21" x2="51" y2="51" stroke="#5c3a0a" stroke-width="5" stroke-linecap="round"/>
+            <line x1="69" y1="69" x2="99" y2="99" stroke="#5c3a0a" stroke-width="5" stroke-linecap="round"/>
+            <line x1="99" y1="21" x2="69" y2="51" stroke="#5c3a0a" stroke-width="5" stroke-linecap="round"/>
+            <line x1="21" y1="99" x2="51" y2="69" stroke="#5c3a0a" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="60" cy="60" r="55" fill="none" stroke="rgba(255,215,0,0.3)" stroke-width="2"/>
+          </svg>
+          <div class="wheel-center"></div>
+        </div>
+        <div class="wheel-speed-info">
+          <div class="speed-label">⚙️ Pilih Kegunaan Roda:</div>
+          <div class="speed-btns">
+            <button class="sp-btn active" onclick="setWheelMode('transport',this)">🐂 Gerobak Angkutan</button>
+            <button class="sp-btn" onclick="setWheelMode('pottery',this)">🏺 Roda Tembikar</button>
+            <button class="sp-btn" onclick="setWheelMode('water',this)">💧 Kincir Air</button>
+            <button class="sp-btn" onclick="setWheelMode('war',this)">⚔️ Kereta Perang</button>
+          </div>
+        </div>
+      </div>
+      <div class="wheel-fact" id="wheelFact">🐂 <strong>Gerobak Angkutan:</strong> Sebelum roda, manusia hanya bisa membawa barang di punggung atau menyeret di tanah. Dengan roda, satu lembu bisa menarik beban 10x lebih berat dengan mudah!</div>
+    </div>
+
+    <div class="story">
+      <p>Roda pertama ditemukan di <strong>Mesopotamia sekitar 3.500 SM</strong> — bahkan <em>lebih tua</em> dari piramida Mesir! Awalnya bukan untuk kendaraan, tapi untuk membuat tembikar (gerabah)!</p>
+    </div>
+   </div>
+  </div>
+
+  <!-- ═══ SLIDE 7: MENGAPA PENTING ═══ -->
+  <div class="slide" id="s6">
+   <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-icon" style="background:linear-gradient(135deg,#ffd700,#ff8c42);">💥</div>
+      <div class="sec-title">Mengapa Dua Penemuan Ini <span>Mengubah Dunia?</span></div>
+    </div>
+    <div class="story" style="margin-bottom:14px;">
+      <p>Penjaga Waktu menjelaskan betapa revolusionernya kedua penemuan ini:</p>
+    </div>
+
+    <div class="before-after">
+      <div class="ba-box ba-before">
+        <span class="ba-emoji">😰</span>
+        <div class="ba-label">Sebelum Tulisan</div>
+        <div class="ba-content">Semua ilmu harus dihafal. Jika pencerita meninggal, ilmunya ikut hilang! Perdagangan hanya bisa diingat, bukan dicatat.</div>
+      </div>
+      <div class="ba-arrow">→</div>
+      <div class="ba-box ba-after">
+        <span class="ba-emoji">📜</span>
+        <div class="ba-label">Setelah Tulisan</div>
+        <div class="ba-content">Ilmu bisa disimpan SELAMANYA! Ribuan tahun kemudian kita masih bisa membaca pikiran orang 5.000 tahun lalu!</div>
+      </div>
+    </div>
+
+    <div class="before-after" style="margin-top:10px;">
+      <div class="ba-box ba-before">
+        <span class="ba-emoji">😓</span>
+        <div class="ba-label">Sebelum Roda</div>
+        <div class="ba-content">Barang berat harus dipikul atau diseret. Perjalanan jauh sangat melelahkan. Perdagangan antar kota hampir mustahil!</div>
+      </div>
+      <div class="ba-arrow">→</div>
+      <div class="ba-box ba-after">
+        <span class="ba-emoji">🛞</span>
+        <div class="ba-label">Setelah Roda</div>
+        <div class="ba-content">Barang bisa diangkut berlipat ganda! Kota-kota bisa berdagang satu sama lain. Peradaban saling terhubung!</div>
+      </div>
+    </div>
+   </div>
+  </div>
+
+  <!-- ═══ SLIDE 8: DAMPAK BESAR ═══ -->
+  <div class="slide" id="s7">
+   <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-icon" style="background:linear-gradient(135deg,#c0392b,#8b1a10);">🌍</div>
+      <div class="sec-title">Dampak Besar bagi <span>Peradaban!</span></div>
+    </div>
+    <div class="impact-grid">
+      <div class="imp-card imp-writing" onclick="this.style.transform='scale(0.98)'">
+        <span class="imp-icon">📚</span>
+        <div class="imp-title">Ilmu Tersimpan Abadi</div>
+        <div class="imp-desc">Resep obat, hukum, matematika, cerita — semua bisa ditulis dan diwariskan ke generasi berikutnya tanpa batas!</div>
+      </div>
+      <div class="imp-card imp-wheel" onclick="this.style.transform='scale(0.98)'">
+        <span class="imp-icon">🚚</span>
+        <div class="imp-title">Perdagangan Meledak!</div>
+        <div class="imp-desc">Roda memungkinkan kota-kota bertukar barang dalam jumlah besar. Perdagangan lintas jarak jauh menjadi mungkin!</div>
+      </div>
+      <div class="imp-card imp-writing" onclick="this.style.transform='scale(0.98)'">
+        <span class="imp-icon">⚖️</span>
+        <div class="imp-title">Hukum & Pemerintahan</div>
+        <div class="imp-desc">Hukum pertama dunia (Kode Hammurabi) bisa dibuat karena ada tulisan! Raja bisa mengatur rakyat banyak!</div>
+      </div>
+      <div class="imp-card imp-wheel" onclick="this.style.transform='scale(0.98)'">
+        <span class="imp-icon">⚔️</span>
+        <div class="imp-title">Kereta Perang!</div>
+        <div class="imp-desc">Roda + kuda = kereta perang yang kencang! Kerajaan-kerajaan bisa memperluas wilayah dengan lebih efisien.</div>
+      </div>
+      <div class="imp-card imp-writing" onclick="this.style.transform='scale(0.98)'">
+        <span class="imp-icon">🔢</span>
+        <div class="imp-title">Matematika & Sains</div>
+        <div class="imp-desc">Tanpa tulisan, tidak ada matematika yang bisa berkembang! Tulisan memungkinkan orang menghitung, mencatat, dan berbagi rumus!</div>
+      </div>
+      <div class="imp-card imp-wheel" onclick="this.style.transform='scale(0.98)'">
+        <span class="imp-icon">🏭</span>
+        <div class="imp-title">Lahirnya Industri</div>
+        <div class="imp-desc">Roda adalah dasar dari semua mesin! Ribuan tahun kemudian, prinsip roda masih dipakai di mesin uap, mobil, dan pesawat!</div>
+      </div>
+    </div>
+   </div>
+  </div>
+
+  <!-- ═══ SLIDE 9: FAKTA MENAKJUBKAN ═══ -->
+  <div class="slide" id="s8">
+   <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-icon" style="background:linear-gradient(135deg,#ffd700,#ff8c42);">🤩</div>
+      <div class="sec-title">Fakta Menakjubkan yang <span>Bikin Melongo!</span></div>
+    </div>
+    <div style="display:grid;gap:12px;margin:14px 0;">
+      <div class="fact-card">
+        <div class="fc-icon">📜</div>
+        <div class="fc-stat">3.200 SM = Usia Tulisan Cuneiform</div>
+        <div class="fc-body">Tulisan tertua yang diketahui manusia ditemukan di kota Uruk (Iraq) berumur lebih dari 5.200 tahun! Isinya... catatan penjualan biji-bijian dan ternak. Manusia pertama kali menulis untuk urusan <em>bisnis</em>!</div>
+      </div>
+      <div class="fact-card">
+        <div class="fc-icon">🛞</div>
+        <div class="fc-stat">3.500 SM = Roda Pertama di Mesopotamia</div>
+        <div class="fc-body">Yang menarik, <strong>Australia dan Amerika</strong> tidak mengenal roda sampai orang Eropa datang — padahal mereka punya peradaban maju! Ini menunjukkan bahwa penemuan besar tidak terjadi di semua tempat secara bersamaan.</div>
+      </div>
+      <div class="fact-card">
+        <div class="fc-icon">🌍</div>
+        <div class="fc-stat">4 Tempat Berbeda, 4 Tulisan Berbeda!</div>
+        <div class="fc-body">Tulisan ditemukan <strong>secara independen</strong> di Mesopotamia (Cuneiform), Mesir (Hieroglif), Cina (karakter kuno), dan Mesoamerika (Olmek/Maya) — tanpa saling tahu! Ini membuktikan manusia memang <em>butuh</em> menulis!</div>
+      </div>
+    </div>
+    <div class="hl">
+      ✍️ Kamu sedang membaca ini sekarang karena seseorang 5.000 tahun lalu menemukan cara menggores simbol di tanah liat! Tulisan yang kamu baca hari ini adalah warisan penemuan terhebat manusia!
+    </div>
+   </div>
+  </div>
+
+  <!-- ═══ SLIDE 10: SCRIBE & RODA ═══ -->
+  <div class="slide" id="s9">
+   <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-icon" style="background:linear-gradient(135deg,#8b5e1a,#5c3a0a);">👨‍🎓</div>
+      <div class="sec-title">Orang-Orang Hebat di <span>Balik Penemuan!</span></div>
+    </div>
+    <div style="background:linear-gradient(135deg,#f5e6c8,#e8d5a3);border-radius:22px;padding:22px;margin:14px 0;border:2px solid #c8a45a;">
+      <div style="font-family:'Fredoka One',cursive;font-size:18px;color:var(--earth-deep);margin-bottom:16px;text-align:center;">👥 Siapa yang Membuat Ini Semua?</div>
+      <div style="display:grid;gap:12px;">
+        <div style="display:flex;align-items:flex-start;gap:13px;background:rgba(255,255,255,.7);border-radius:16px;padding:14px;border:1.5px solid rgba(200,164,90,.4);">
+          <div style="font-size:36px;flex-shrink:0;">✍️</div>
+          <div>
+            <div style="font-family:'Fredoka One',cursive;font-size:15px;color:var(--earth-deep);margin-bottom:4px;">Para Juru Tulis (Scribe)</div>
+            <div style="font-size:13px;font-weight:700;color:var(--earth);line-height:1.5;">Mereka adalah orang-orang terpelajar di zaman purba. Belajar selama 12 tahun hanya untuk menguasai tulisan cuneiform! Di Mesir kuno, menjadi juru tulis sama prestiusenya seperti jadi dokter atau pengacara sekarang!</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:13px;background:rgba(255,255,255,.7);border-radius:16px;padding:14px;border:1.5px solid rgba(200,164,90,.4);">
+          <div style="font-size:36px;flex-shrink:0;">🪵</div>
+          <div>
+            <div style="font-family:'Fredoka One',cursive;font-size:15px;color:var(--earth-deep);margin-bottom:4px;">Para Tukang Kayu & Pengrajin</div>
+            <div style="font-size:13px;font-weight:700;color:var(--earth);line-height:1.5;">Roda pertama dibuat dari kayu tebal yang dipotong bulat. Butuh keahlian tinggi! Kemudian ditambahkan jari-jari (spoke) untuk membuat roda lebih ringan tapi tetap kuat. Ini adalah "teknologi tinggi" di zamannya!</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:13px;background:rgba(255,255,255,.7);border-radius:16px;padding:14px;border:1.5px solid rgba(200,164,90,.4);">
+          <div style="font-size:36px;flex-shrink:0;">🧑‍🤝‍🧑</div>
+          <div>
+            <div style="font-family:'Fredoka One',cursive;font-size:15px;color:var(--earth-deep);margin-bottom:4px;">Rakyat Biasa yang Penasaran!</div>
+            <div style="font-size:13px;font-weight:700;color:var(--earth);line-height:1.5;">Penemuan besar jarang lahir dari satu orang jenius. Biasanya dari ribuan orang yang mencoba, gagal, mencoba lagi! Rasa ingin tahu manusia biasa-lah yang mendorong semua inovasi!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+   </div>
+  </div>
+
+  <!-- ═══ SLIDE 11: TULISAN MENGHUBUNGKAN ZAMAN ═══ -->
+  <div class="slide" id="s10">
+   <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-icon" style="background:linear-gradient(135deg,#c0392b,#e05540);">⏳</div>
+      <div class="sec-title">Surat dari <span>5.000 Tahun Lalu!</span></div>
+    </div>
+    <div class="papyrus">
+      <div class="papyrus-title">📜 Pesan Nyata dari Tablet Cuneiform Tertua</div>
+      <div style="font-size:36px;text-align:center;margin:8px 0;letter-spacing:4px;">𒀭𒂗 𒌷 𒀀 𒁀</div>
+      <div style="text-align:center;font-size:13px;font-weight:800;color:var(--earth);margin-bottom:10px;">"Raja — Kota — Air — Ternak"</div>
+      <div style="font-size:13px;font-weight:700;color:var(--earth-deep);line-height:1.7;text-align:center;">
+        Ini adalah salah satu kalimat tertua yang pernah ditulis manusia — sebuah catatan sederhana dari gudang kerajaan Sumeria. Ribuan tahun kemudian, kita masih bisa membacanya! <strong>Inilah keajaiban tulisan!</strong>
+      </div>
+    </div>
+    <div class="story">
+      <p>Aslan terdiam sebentar. Ia memegang lempengan tanah liat yang telah mengeras ribuan tahun itu dengan hati-hati. Di ujung jarinya, ia merasakan goresan-goresan kecil yang ditinggalkan seseorang 5.000 tahun lalu...</p>
+    </div>
+    <div class="quote">
+      <div class="quote-t">"Tulisan adalah mesin waktu yang sesungguhnya, Kapten! Buku yang kamu baca hari ini menghubungkanmu langsung dengan pikiran manusia ribuan tahun yang lalu!"</div>
+      <div class="quote-a">— Penjaga Waktu 🕰️</div>
+    </div>
+    <div class="hl">
+      📖 Aslan, buku yang kamu baca sekarang — dan semua pelajaran yang kamu dapat — hanya bisa ada karena manusia 5.000 tahun lalu menemukan tulisan. Kamu adalah penerus warisan itu!
+    </div>
+   </div>
+  </div>
+
+  <!-- ═══ SLIDE 12: PELAJARAN ═══ -->
+  <div class="slide" id="s11">
+   <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-icon" style="background:linear-gradient(135deg,#ffd700,#ff8c42);">💡</div>
+      <div class="sec-title">Pelajaran <span>Hari Ini</span></div>
+    </div>
+    <div class="key-pts">
+      <div class="key-pt">
+        <div class="kp-icon">✍️</div>
+        <div class="kp-body"><strong>Tulisan: Mesin Waktu Manusia</strong>Tulisan pertama (Cuneiform) lahir di Mesopotamia ~3.200 SM. Kita bisa "berbicara" dengan orang yang hidup ribuan tahun lalu melalui tulisan mereka!</div>
+      </div>
+      <div class="key-pt">
+        <div class="kp-icon">🛞</div>
+        <div class="kp-body"><strong>Roda: Penggerak Peradaban</strong>Roda ditemukan ~3.500 SM, awalnya untuk tembikar bukan kendaraan! Roda mengubah cara manusia bekerja, berdagang, dan berperang selamanya.</div>
+      </div>
+      <div class="key-pt">
+        <div class="kp-icon">🌍</div>
+        <div class="kp-body"><strong>Dua Penemuan, Dampak Tak Terbatas</strong>Tanpa tulisan, tidak ada sekolah, buku, internet, atau ilmu pengetahuan. Tanpa roda, tidak ada mobil, pesawat, atau mesin apa pun!</div>
+      </div>
+      <div class="key-pt">
+        <div class="kp-icon">🧑‍🤝‍🧑</div>
+        <div class="kp-body"><strong>Inovasi Lahir dari Kebutuhan</strong>Manusia menemukan tulisan karena butuh mencatat perdagangan. Roda karena butuh mengangkut barang. Masalah melahirkan solusi!</div>
+      </div>
+      <div class="key-pt">
+        <div class="kp-icon">🌟</div>
+        <div class="kp-body"><strong>Kamu adalah Penerus Warisan Ini!</strong>Setiap kali kamu membaca, menulis, atau naik kendaraan — kamu menggunakan penemuan 5.000 tahun yang lalu. Terima kasih, nenek moyang!</div>
+      </div>
+    </div>
+   </div>
+  </div>
+
+  <!-- ═══ SLIDE 13: TANTANGAN ═══ -->
+  <div class="slide" id="s12">
+   <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-icon" style="background:linear-gradient(135deg,#ffd700,#ff8c42);">⚔️</div>
+      <div class="sec-title">Tantangan Harian <span>Kapten Aslan!</span></div>
+    </div>
+    <div class="challenge">
+      <div class="ch-title">🎯 Misi Hari Ini untuk Aslan</div>
+      <div class="ch-item">
+        <div class="ch-num">1</div>
+        <div>Buat <strong>"tulisan hieroglif"</strong> versimu sendiri! Ambil kertas, gambar 5 simbol gambar yang mewakili hal-hal pentingmu (misal: keluarga, sekolah, makanan favoritmu). Itulah sistem tulisanmu!</div>
+      </div>
+      <div class="ch-item">
+        <div class="ch-num">2</div>
+        <div>Coba hitung: <strong>berapa banyak roda</strong> yang ada di rumah dan sekitarmu? (ban sepeda, roda kursi, kipas angin, pulpen, dll). Kamu akan terkejut!</div>
+      </div>
+      <div class="ch-item">
+        <div class="ch-num">3</div>
+        <div>Tulis <strong>surat pendek kepada dirimu sendiri</strong> 10 tahun dari sekarang — seperti cara manusia purba meninggalkan pesan. Simpan di tempat aman!</div>
+      </div>
+      <div class="ch-item">
+        <div class="ch-num">4</div>
+        <div>Ceritakan kepada orang tua: <strong>"Mengapa tulisan lebih penting daripada smartphone?"</strong> — gunakan argumen dari apa yang kamu pelajari hari ini!</div>
+      </div>
+      <div class="reward-box">
+        <div class="reward-title">🏅 Hadiah Menyelesaikan Tantangan:</div>
+        <div class="reward-desc">Gelar <strong>ARKEOLOG AKSARA LEGENDARIS!</strong> — Ahli tulisan kuno dan roda sejarah!</div>
+      </div>
+    </div>
+   </div>
+  </div>
+
+  <!-- ═══ SLIDE 14: PENUTUP ═══ -->
+  <div class="slide" id="s13">
+   <div class="card closing">
+    <div class="cl-stars" id="clStars"></div>
+    <div style="font-size:60px;margin-bottom:10px;display:inline-flex;gap:10px;">
+      <span style="animation:heroGlow 3s ease-in-out infinite;display:inline-block;">✍️</span>
+      <span style="animation:heroGlow 3s ease-in-out infinite .5s;display:inline-block;">🛞</span>
+    </div>
+    <div class="cl-title">Selamat, Kapten Aslan!</div>
+    <div class="cl-body">
+      Kamu baru saja menyaksikan dua penemuan yang mengubah nasib seluruh umat manusia! <strong>Tulisan</strong> memberi manusia ingatan abadi, dan <strong>Roda</strong> memberi manusia kecepatan. Bersama, keduanya membangun peradaban yang kita nikmati hari ini!
+    </div>
+    <div class="medal-row">
+      <div class="medal">📜 Pembaca Aksara Purba</div>
+      <div class="medal">🛞 Insinyur Roda Pertama</div>
+      <div class="medal">🏺 Penjelajah Mesopotamia</div>
+    </div>
+    <div class="badge-big">
+      <span class="spin">🏆</span> HARI 17 SELESAI! <span class="spin">🏆</span>
+    </div>
+    <div class="next-box">
+      <div style="font-family:'Fredoka One',cursive;color:var(--gold);font-size:15px;margin-bottom:7px;">🚀 Besok: Hari 18!</div>
+      <div>Piramida, Kerajaan, dan Raja Pertama — Aslan akan mendaki piramida Mesir yang dibangun tanpa mesin modern, dan bertemu dengan Firaun pertama! Bagaimana manusia bisa membangun bangunan setinggi gedung 40 lantai? 🔺👑</div>
+    </div>
+    <div style="margin-top:16px;font-size:12px;opacity:.5;font-weight:700;">Petualangan Kapten Cerdas: Jejak Manusia di Bumi · Hari 17 dari 30</div>
+   </div>
+  </div>
+
+ </div>
+</div>
+
+<div class="nav">
+  <button class="nav-btn prev" id="prevBtn" onclick="go(-1)" disabled>◀</button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn next" id="nextBtn" onclick="go(1)">▶</button>
+</div>
+
+<script>
+const TOTAL=14;
+let cur=0,busy=false;
+
+// Dots
+const dotsEl=document.getElementById('dots');
+for(let i=0;i<TOTAL;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' on':'');
+  d.onclick=()=>goTo(i);dotsEl.appendChild(d);
+}
+function ui(){
+  document.getElementById('prog').style.width=((cur+1)/TOTAL*100)+'%';
+  document.getElementById('pageInd').textContent=(cur+1)+' / '+TOTAL;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===TOTAL-1;
+}
+function goTo(idx){
+  if(busy||idx===cur)return;busy=true;
+  const slides=document.querySelectorAll('.slide');
+  const dir=idx>cur?1:-1;
+  slides[cur].style.opacity='0';
+  slides[cur].style.transform=`translateX(${dir>0?'-70px':'70px'}) scale(.96)`;
+  setTimeout(()=>{
+    slides[cur].classList.remove('active');
+    slides[cur].style.opacity='';slides[cur].style.transform='';
+    cur=idx;slides[cur].classList.add('active');
+    ui();setTimeout(()=>{busy=false;},300);
+  },300);
+}
+function go(d){goTo(cur+d);}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>50)go(dx<0?1:-1);});
+
+// Stars
+function makeStars(id,n){
+  const c=document.getElementById(id);if(!c)return;
+  for(let i=0;i<n;i++){
+    const s=document.createElement('div');s.className='cv-star';
+    const sz=Math.random()*2.5+.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${Math.random()*2+1.5}s;`;
+    c.appendChild(s);
+  }
+}
+makeStars('cvStars',45);makeStars('clStars',40);
+
+// BG
+const bgc=document.getElementById('bgc');
+const glyphs=['𒀭','𒀀','𒆳','𒌷','𓂀','𓅃','𓇳','⊙','△','◯'];
+for(let i=0;i<8;i++){
+  const g=document.createElement('div');g.className='bg-glyph';
+  g.textContent=glyphs[Math.floor(Math.random()*glyphs.length)];
+  g.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*5}s;`;
+  bgc.appendChild(g);
+}
+for(let i=0;i<12;i++){
+  const d=document.createElement('div');d.className='dust';
+  const sz=Math.random()*25+8;
+  d.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;animation-duration:${Math.random()*14+8}s;animation-delay:${Math.random()*10}s;opacity:${Math.random()*.3+.1};`;
+  bgc.appendChild(d);
+}
+
+// Writing slider
+const writingData=[
+  {icon:'🦁',name:'Gambar Nyata (30.000 SM)',desc:'Manusia purba melukis singa di dinding gua persis seperti bentuk aslinya. Gambar realistis untuk menceritakan kisah berburu!'},
+  {icon:'🌞',name:'Gambar Sederhana (8.000 SM)',desc:'Gambar mulai disederhanakan — matahari jadi lingkaran dengan garis, manusia jadi tongkat, binatang jadi bentuk dasar.'},
+  {icon:'⊙',name:'Simbol Abstrak (5.000 SM)',desc:'Gambar berubah jadi simbol! Lingkaran = matahari, segitiga = gunung. Orang mulai mengerti "kode" visual ini!'},
+  {icon:'𒀭',name:'Cuneiform / Huruf Baji (3.200 SM)',desc:'Simbol digoreskan ke tanah liat dengan alat baji. Ini adalah sistem tulisan pertama di dunia — lahir di Mesopotamia!'},
+  {icon:'🔤',name:'Alfabet Modern (sekarang)',desc:'Dari piktograf ke Cuneiform ke Fenisia ke Yunani ke Latin... dan akhirnya menjadi huruf A-B-C yang kamu gunakan hari ini!'}
+];
+function updateWritingSlider(v){
+  const d=writingData[+v];
+  const icon=document.getElementById('writingIcon');
+  const name=document.getElementById('writingName');
+  const desc=document.getElementById('writingDesc');
+  const disp=document.getElementById('writingDisplay');
+  disp.style.opacity='0';
+  setTimeout(()=>{
+    icon.textContent=d.icon;name.textContent=d.name;desc.textContent=d.desc;
+    disp.style.opacity='1';
+  },250);
+}
+
+// Wheel modes
+const wheelModes={
+  transport:{fact:'🐂 <strong>Gerobak Angkutan:</strong> Sebelum roda, manusia hanya bisa membawa barang di punggung atau menyeret di tanah. Dengan roda, satu lembu bisa menarik beban 10x lebih berat dengan mudah!',dur:'6s'},
+  pottery:{fact:'🏺 <strong>Roda Tembikar:</strong> Ini kegunaan PERTAMA roda! Tukang gerabah memutar roda untuk membentuk tanah liat menjadi mangkuk dan pot yang sempurna — jauh lebih cepat dari tangan!',dur:'2s'},
+  water:{fact:'💧 <strong>Kincir Air:</strong> Dengan memasang roda di sungai, manusia bisa mengubah aliran air menjadi tenaga untuk menggiling gandum. Ini adalah "listrik" pertama manusia!',dur:'8s'},
+  war:{fact:'⚔️ <strong>Kereta Perang:</strong> Roda + kuda = kendaraan tempur yang menakutkan! Kereta perang Mesir dan Asiria membuat mereka menjadi kekuatan militer yang tak tertandingi di zamannya!',dur:'1.5s'}
+};
+function setWheelMode(mode,btn){
+  document.querySelectorAll('.sp-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const m=wheelModes[mode];
+  const wf=document.getElementById('wheelFact');
+  wf.style.opacity='0';
+  setTimeout(()=>{wf.innerHTML=m.fact;wf.style.opacity='1';},250);
+  document.getElementById('wheelSvg').style.animationDuration=m.dur;
+}
+
+// Glyph lighting
+function lightGlyph(el){
+  document.querySelectorAll('.glyph-cell').forEach(c=>c.classList.remove('lit'));
+  el.classList.add('lit');
+}
+
+// Cuneiform symbols
+const symMeanings={
+  '𒀭':'Dewa atau Langit — simbol ini selalu ditulis sebelum nama dewa!',
+  '𒀀':'Air atau Sungai — sangat penting di Mesopotamia yang bergantung pada sungai!',
+  '𒆳':'Negeri atau Tanah — digunakan untuk menyebut negara atau wilayah!',
+  '𒌷':'Kota — simbol untuk pemukiman manusia!',
+  '𒀭𒂗':'Raja — kombinasi simbol Dewa + Tuan = Raja!',
+  '𒄑':'Pohon atau Kayu — bahan bangunan dan alat penting!',
+  '𒀭𒋀':'Matahari — dewa paling penting di banyak kebudayaan kuno!',
+  '𒁀':'Sapi atau Ternak — kekayaan utama di zaman kuno!'
+};
+function revealSym(el,sym,meaning){
+  document.getElementById('symResult').innerHTML=`<strong>${sym}</strong> = ${meaning}`;
+  el.classList.add('revealed');
+}
+
+ui();
+</script>
+</body>
+</html>

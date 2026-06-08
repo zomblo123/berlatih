@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petualangan Aslan di Negeri AI – Hari 3</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --biru: #2196F3;
+      --biru-muda: #64B5F6;
+      --kuning: #FFD600;
+      --hijau: #43A047;
+      --oranye: #FF6F00;
+      --merah-muda: #FF4081;
+      --ungu: #7C4DFF;
+      --bg: #FFF9F0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      background-image:
+        radial-gradient(circle at 10% 10%, #E8F5E944 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, #FFF9C444 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, #E3F2FD44 0%, transparent 60%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .font-kartun { font-family: 'Fredoka One', cursive; }
+
+    /* ========== FLOATING SHAPES ========== */
+    .shapes-bg {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .shape {
+      position: absolute;
+      animation: floatShape linear infinite;
+      opacity: 0.15;
+    }
+    @keyframes floatShape {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.15; }
+      90%  { opacity: 0.15; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ========== HEADER ========== */
+    .header-bar {
+      background: linear-gradient(135deg, #43A047 0%, #66BB6A 40%, #A5D6A7 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .header-bar::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent 0px, transparent 18px,
+        rgba(255,255,255,0.06) 18px, rgba(255,255,255,0.06) 36px
+      );
+    }
+    .badge-hari {
+      background: var(--kuning);
+      color: #1A237E;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      padding: 4px 16px;
+      border-radius: 999px;
+      display: inline-block;
+      box-shadow: 0 4px 0 #F9A825;
+      animation: bounceIn 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes bounceIn {
+      0%   { transform: scale(0.3); opacity: 0; }
+      60%  { transform: scale(1.12); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .aslan-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2.6rem, 8vw, 5rem);
+      color: #fff;
+      text-shadow: 0 6px 0 #2E7D32, 0 8px 20px rgba(0,0,0,0.3);
+      letter-spacing: 2px;
+      animation: slideDown 0.7s ease both 0.2s;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-40px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .subtitle-header {
+      font-size: clamp(1rem, 3vw, 1.4rem);
+      color: #C8E6C9;
+      animation: slideDown 0.7s ease both 0.4s;
+    }
+
+    /* ========== CARD BASE ========== */
+    .card {
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 8px 32px rgba(67,160,71,0.10), 0 2px 8px rgba(0,0,0,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 5px;
+    }
+    .card-green::before  { background: linear-gradient(90deg, #43A047, #A5D6A7); }
+    .card-yellow::before { background: linear-gradient(90deg, #FFD600, #FFAB40); }
+    .card-blue::before   { background: linear-gradient(90deg, #2196F3, #64B5F6); }
+    .card-orange::before { background: linear-gradient(90deg, #FF6F00, #FFB300); }
+    .card-purple::before { background: linear-gradient(90deg, #7C4DFF, #B388FF); }
+    .card-red::before    { background: linear-gradient(90deg, #E53935, #EF9A9A); }
+
+    /* ========== MAIN IMAGE ========== */
+    .main-image-wrap {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 5px solid #fff;
+      box-shadow: 0 12px 40px rgba(67,160,71,0.2), 0 4px 0 #43A047;
+    }
+    .main-image-wrap img {
+      width: 100%; height: 420px; object-fit: cover;
+      transition: transform 0.5s ease;
+      display: block;
+    }
+    .main-image-wrap:hover img { transform: scale(1.03); }
+    .image-caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(46,125,50,0.92) 0%, transparent 100%);
+      color: #fff;
+      padding: 28px 20px 16px;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .image-label {
+      position: absolute; top: 14px; left: 14px;
+      background: var(--kuning);
+      color: #1A237E;
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.85rem;
+      padding: 4px 14px;
+      border-radius: 999px;
+      box-shadow: 0 3px 0 #F9A825;
+      z-index: 2;
+    }
+
+    /* ========== STORY ========== */
+    .story-paragraph {
+      font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+      line-height: 2;
+      color: #37474F;
+      font-weight: 600;
+    }
+    .story-paragraph span.highlight {
+      background: linear-gradient(120deg, #FFF176 0%, #FFD600 100%);
+      padding: 2px 8px;
+      border-radius: 8px;
+      color: #1A237E;
+      font-weight: 800;
+    }
+    .story-paragraph span.highlight-green {
+      background: linear-gradient(120deg, #C8E6C9 0%, #A5D6A7 100%);
+      padding: 2px 8px;
+      border-radius: 8px;
+      color: #1B5E20;
+      font-weight: 800;
+    }
+    .story-drop-cap::first-letter {
+      font-family: 'Fredoka One', cursive;
+      font-size: 4rem;
+      color: #43A047;
+      float: left;
+      line-height: 1;
+      margin-right: 8px;
+      margin-top: 4px;
+      text-shadow: 0 4px 0 #C8E6C9;
+    }
+
+    /* ========== KOMIK PANEL ========== */
+    .komik-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    @media (min-width: 640px) {
+      .komik-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .panel {
+      border-radius: 18px;
+      border: 4px solid #43A047;
+      overflow: hidden;
+      background: #fff;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 6px 0 #2E7D32;
+    }
+    .panel:hover {
+      transform: translateY(-6px) rotate(-1deg);
+      box-shadow: 0 12px 0 #2E7D32;
+    }
+    .panel:nth-child(2) { border-color: #FFD600; box-shadow: 0 6px 0 #F9A825; }
+    .panel:nth-child(2):hover { box-shadow: 0 12px 0 #F9A825; }
+    .panel:nth-child(3) { border-color: #2196F3; box-shadow: 0 6px 0 #1565C0; }
+    .panel:nth-child(3):hover { box-shadow: 0 12px 0 #1565C0; }
+    .panel:nth-child(4) { border-color: #FF6F00; box-shadow: 0 6px 0 #E65100; }
+    .panel:nth-child(4):hover { box-shadow: 0 12px 0 #E65100; }
+
+    .panel-img-bg {
+      width: 100%; height: 160px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel-num {
+      position: absolute; top: 8px; left: 8px;
+      width: 28px; height: 28px;
+      background: #43A047;
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 0 #2E7D32;
+      z-index: 2;
+    }
+    .panel:nth-child(2) .panel-num { background: #FFD600; color: #1A237E; box-shadow: 0 2px 0 #F9A825; }
+    .panel:nth-child(3) .panel-num { background: #2196F3; color:#fff; box-shadow: 0 2px 0 #1565C0; }
+    .panel:nth-child(4) .panel-num { background: #FF6F00; color:#fff; box-shadow: 0 2px 0 #E65100; }
+
+    .panel-dialog {
+      position: absolute; top: 8px; right: 8px;
+      background: #fff;
+      border: 2px solid currentColor;
+      border-radius: 12px 12px 12px 2px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 4px 8px;
+      max-width: 70%;
+      color: #1A237E;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+      z-index: 2;
+    }
+    .panel-text {
+      padding: 10px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #37474F;
+      text-align: center;
+      min-height: 52px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ========== TIMELINE ========== */
+    .timeline-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 2px dashed #C8E6C9;
+      animation: fadeSlide 0.5s ease both;
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    @keyframes fadeSlide {
+      from { opacity:0; transform: translateX(-20px); }
+      to   { opacity:1; transform: translateX(0); }
+    }
+    .timeline-dot {
+      min-width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 2px;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.15);
+    }
+    .timeline-year {
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.85rem;
+      margin-bottom: 2px;
+    }
+
+    /* ========== QUIZ ========== */
+    .quiz-option {
+      border: 3px solid #C8E6C9;
+      border-radius: 16px;
+      padding: 14px 20px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1A237E;
+      background: #fff;
+      transition: all 0.2s ease;
+      display: flex; align-items: center; gap: 12px;
+      text-align: left;
+    }
+    .quiz-option:hover {
+      border-color: #43A047;
+      background: #E8F5E9;
+      transform: translateX(6px);
+    }
+    .quiz-option.correct {
+      border-color: #43A047;
+      background: #E8F5E9;
+      animation: correctPop 0.4s ease;
+    }
+    .quiz-option.wrong {
+      border-color: #E53935;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    @keyframes correctPop {
+      0%  { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100%{ transform: scale(1); }
+    }
+    @keyframes shake {
+      0%,100%{ transform: translateX(0); }
+      25%    { transform: translateX(-8px); }
+      75%    { transform: translateX(8px); }
+    }
+    .quiz-result {
+      display: none;
+      border-radius: 16px;
+      padding: 16px 20px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-align: center;
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ========== PROGRESS BAR ========== */
+    .progress-track {
+      height: 10px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #fff, #C8E6C9);
+      border-radius: 999px;
+      width: 42.85%; /* 3/7 */
+      transition: width 1s ease;
+    }
+
+    /* ========== SPARKLE ========== */
+    .sparkle {
+      display: inline-block;
+      animation: sparkle 1.5s ease-in-out infinite;
+    }
+    @keyframes sparkle {
+      0%,100% { transform: scale(1) rotate(0deg); }
+      50%      { transform: scale(1.3) rotate(15deg); }
+    }
+
+    /* ========== SCROLL REVEAL ========== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ========== FLOATING MASCOT ========== */
+    .mascot-float {
+      animation: mascotFloat 3s ease-in-out infinite;
+      display: inline-block;
+    }
+    @keyframes mascotFloat {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-12px); }
+    }
+
+    /* ========== SECTION DIVIDER ========== */
+    .divider {
+      text-align: center;
+      font-size: 1.5rem;
+      letter-spacing: 6px;
+      color: #A5D6A7;
+      margin: 8px 0;
+    }
+
+    /* ========== FOUNDER CARDS ========== */
+    .founder-scroll {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: #A5D6A7 #E8F5E9;
+    }
+    .founder-card {
+      min-width: 160px;
+      border-radius: 20px;
+      padding: 16px 12px;
+      text-align: center;
+      flex-shrink: 0;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.12);
+    }
+    .founder-card:hover {
+      transform: translateY(-5px) rotate(1deg);
+    }
+    .founder-emoji {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 8px;
+      animation: ilmuBounce 2.5s ease-in-out infinite;
+    }
+    @keyframes ilmuBounce {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50%      { transform: translateY(-8px) rotate(3deg); }
+    }
+    .founder-card:nth-child(2) .founder-emoji { animation-delay: 0.4s; }
+    .founder-card:nth-child(3) .founder-emoji { animation-delay: 0.8s; }
+    .founder-card:nth-child(4) .founder-emoji { animation-delay: 1.2s; }
+
+    /* ========== BOHLAM IDEAS ========== */
+    .bohlam-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    @media (min-width: 480px) {
+      .bohlam-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .bohlam-item {
+      border-radius: 16px;
+      padding: 14px 10px;
+      text-align: center;
+      border: 2.5px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .bohlam-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .bohlam-icon {
+      font-size: 2.2rem;
+      display: block;
+      margin-bottom: 6px;
+      animation: pulseBright 2s ease-in-out infinite;
+    }
+    @keyframes pulseBright {
+      0%,100% { filter: brightness(1); }
+      50%      { filter: brightness(1.3) drop-shadow(0 0 6px #FFD600); }
+    }
+
+    /* ========== TOOLTIP ========== */
+    .has-tooltip { position: relative; }
+    .tooltip-box {
+      display: none;
+      position: absolute;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1A237E;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: 12px;
+      white-space: nowrap;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .tooltip-box::after {
+      content: '';
+      position: absolute;
+      top: 100%; left: 50%; transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: #1A237E;
+    }
+    .has-tooltip:hover .tooltip-box { display: block; }
+    .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+<base target="_blank">
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ========== FLOATING SHAPES BG ========== -->
+<div class="shapes-bg" id="shapesBg"></div>
+
+<div class="relative z-10 max-w-3xl mx-auto px-4 pb-16">
+
+  <!-- ========== HEADER ========== -->
+  <div class="header-bar rounded-b-[40px] mb-8 px-6 pt-10 pb-8 text-center relative">
+    <!-- deco dots -->
+    <div style="position:absolute;width:100px;height:60px;top:8px;left:-15px;border-radius:50%;background:rgba(255,255,255,0.15);"></div>
+    <div style="position:absolute;width:80px;height:50px;top:18px;right:5px;border-radius:50%;background:rgba(255,255,255,0.15);"></div>
+    <div style="position:absolute;width:50px;height:50px;bottom:20px;left:10%;border-radius:50%;background:rgba(255,255,255,0.12);"></div>
+
+    <!-- emoji dekorasi -->
+    <div style="position:absolute;top:14px;right:20px;font-size:2rem;opacity:0.3;">🧠</div>
+    <div style="position:absolute;top:8px;left:60px;font-size:1.4rem;opacity:0.25;">💻</div>
+    <div style="position:absolute;bottom:24px;right:40px;font-size:1.6rem;opacity:0.2;">🤖</div>
+
+    <div class="badge-hari mb-4">🧠 HARI 3 DARI 7</div>
+
+    <div class="aslan-name mb-2">
+      <span class="mascot-float">🧠</span> Petualangan Aslan
+    </div>
+    <div class="subtitle-header font-bold mb-1">di Negeri AI 🌟</div>
+    <div class="subtitle-header font-extrabold text-white mb-5" style="font-size:clamp(0.95rem,2.8vw,1.3rem);opacity:0.95;">
+      ✨ Mesin yang Bisa Berpikir? Lahirnya AI ✨
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="max-w-xs mx-auto">
+      <div class="flex justify-between text-xs font-bold mb-1" style="color:rgba(255,255,255,0.75);">
+        <span>Progres Petualangan</span>
+        <span>Hari 3/7</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== JUDUL HARI ========== -->
+  <div class="reveal card card-green p-6 mb-6 text-center">
+    <div class="font-kartun text-3xl md:text-4xl text-green-700 mb-2">
+      🧠 Hari 3: Mesin yang Bisa Berpikir? Lahirnya AI! 🎉
+    </div>
+    <p class="text-green-500 font-bold text-sm">Saatnya kita melihat kelahiran AI yang sesungguhnya! 🚀</p>
+  </div>
+
+  <!-- ========== GAMBAR UTAMA ========== -->
+  <div class="reveal mb-6">
+    <div class="card card-yellow p-4">
+      <div class="image-label">🎨 Gambar Utama</div>
+
+      <!--
+        🖼️ GANTI GAMBAR DI SINI!
+        Deskripsi untuk AI Image Generator:
+        "A cheerful 9-year-old Indonesian boy named Aslan with big curious eyes and backpack,
+         standing in awe inside a magical 1950s computer lab filled with glowing vintage computers
+         the size of wardrobes, with scientists in white lab coats pointing at a giant chalkboard
+         that says 'ARTIFICIAL INTELLIGENCE' in big colorful letters. Floating lightbulbs and
+         sparkles everywhere. Warm green and yellow tones, cartoon Pixar style, vibrant colors,
+         child-friendly illustration, magical atmosphere"
+
+        Untuk mengganti: ubah src di bawah dengan URL gambar dari AI generator kamu.
+      -->
+      <div class="main-image-wrap">
+        <img
+          src="https://images.theconversation.com/files/615669/original/file-20240827-16-7tme1u.png?ixlib=rb-4.1.0&q=45&auto=format&w=1000&fit=clip"
+          alt="Aslan di laboratorium ajaib tahun 1956 saat AI pertama kali dilahirkan"
+          loading="lazy"
+        />
+        <div class="image-caption">
+          🧠 Aslan menyaksikan momen ajaib kelahiran AI di laboratorium Dartmouth tahun 1956!
+        </div>
+      </div>
+
+      <p class="text-xs text-gray-400 font-semibold mt-2 text-center">
+        💡 <em>Ganti dengan gambar AI sesuai deskripsi di komentar HTML</em>
+      </p>
+    </div>
+  </div>
+
+  <!-- ========== CERITA PENDEK ========== -->
+  <div class="reveal card card-blue p-6 md:p-8 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-3xl sparkle">📚</span>
+      <h2 class="font-kartun text-2xl md:text-3xl text-blue-700">Cerita Aslan</h2>
+    </div>
+
+    <p class="story-paragraph story-drop-cap mb-4">
+      Setelah bertemu <span class="highlight">Unimate</span> si robot pertama dan para ilmuwan gokil tahun 1950-an,
+      <span class="highlight">Aslan</span> sekarang dibawa ke sebuah ruangan besar yang penuh dengan mesin-mesin
+      berdengung dan papan tulis hitam raksasa. Di dinding tertulis tulisan besar berwarna-warni:
+      <span class="highlight-green">"ARTIFICIAL INTELLIGENCE"</span>! 🧠✨
+    </p>
+    <p class="story-paragraph mb-4">
+      "Waaah... tulisan apa itu?" tanya Aslan sambil melongo. Mata birunya membelalak melihat
+      begitu banyak kabel, lampu yang berkedip-kedip, dan para ilmuwan yang sibuk berdiskusi sambil
+      menunjuk-nunjuk papan tulis. 💡
+    </p>
+    <p class="story-paragraph mb-4">
+      Tiba-tiba, seorang ilmuwan berambut acak-acakan mendekat sambil tersenyum lebar.
+      "Halo Aslan! Tahun ini <span class="highlight">1956</span>, dan kami baru saja menciptakan sesuatu yang luar biasa!"
+      serunya sambil melambaikan sebuah buku catatan tebal.
+    </p>
+    <p class="story-paragraph mb-4">
+      "Kami menyebutnya <span class="highlight-green">Kecerdasan Buatan</span> — atau <em>Artificial Intelligence</em> dalam bahasa Inggris,"
+      jelas ilmuwan itu. "Bayangkan, Aslan... mesin yang bisa <span class="highlight">berpikir</span>,
+      <span class="highlight">belajar</span>, dan <span class="highlight">mengingat</span> seperti manusia!" 🤯
+    </p>
+    <p class="story-paragraph mb-4">
+      Aslan terdiam sejenak. "Jadi... komputer bisa menjadi pintar?" tanyanya polos.
+      Ilmuwan itu tertawa terbahak-bahak. "Itulah yang akan kami buktikan! Hari ini,
+      <span class="highlight">AI resmi lahir</span> di kampus Dartmouth ini!" 🎉
+    </p>
+    <p class="story-paragraph">
+      Aslan pun merasa sangat beruntung. Ia baru saja menyaksikan kelahiran sesuatu yang akan
+      mengubah dunia selamanya! Dari hari itu, manusia mulai bermimpi bahwa suatu hari
+      mesin bisa menjadi sahabat terbaik manusia. 🌍🤖❤️
+    </p>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ========== KOMIK 4 PANEL ========== -->
+  <div class="reveal card card-orange p-6 mb-6 mt-4">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-3xl sparkle">🎭</span>
+      <h2 class="font-kartun text-2xl md:text-3xl text-orange-700">Komik: Lahirnya AI! 🎉</h2>
+    </div>
+    <div class="komik-grid">
+
+      <!-- PANEL 1 -->
+      <div class="panel">
+        <div class="panel-num">1</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">
+          <!-- SVG: Aslan melihat papan tulis besar -->
+          <svg viewBox="0 0 160 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <!-- Papan tulis -->
+            <rect x="15" y="15" width="100" height="70" rx="4" fill="#37474F" stroke="#263238" stroke-width="2"/>
+            <rect x="18" y="18" width="94" height="64" rx="2" fill="#455A64"/>
+            <!-- Tulisan ARTIFICIAL INTELLIGENCE -->
+            <text x="25" y="38" font-size="9" fill="#FFD600" font-family="Fredoka One,cursive" font-weight="bold">ARTIFICIAL</text>
+            <text x="25" y="52" font-size="9" fill="#64B5F6" font-family="Fredoka One,cursive" font-weight="bold">INTELLIGENCE</text>
+            <!-- Gambar otak kecil -->
+            <text x="80" y="68" font-size="16">🧠</text>
+            <!-- Aslan kecil melihat -->
+            <ellipse cx="135" cy="95" rx="14" ry="16" fill="#FFCC80"/>
+            <path d="M122 88 Q121 78 127 76 Q131 71 137 73 Q143 71 147 76" fill="#3E2723"/>
+            <circle cx="130" cy="93" r="4" fill="white"/>
+            <circle cx="140" cy="93" r="4" fill="white"/>
+            <circle cx="131" cy="94" r="2.5" fill="#1565C0"/>
+            <circle cx="141" cy="94" r="2.5" fill="#1565C0"/>
+            <ellipse cx="135" cy="102" rx="4" ry="3" fill="#E65100"/>
+            <!-- Tanda seru -->
+            <text x="148" y="78" font-size="14" fill="#FF6F00" font-weight="bold">!</text>
+          </svg>
+        </div>
+        <div class="panel-dialog" style="color:#2E7D32;border-color:#43A047;">Waaah, tulisan apa itu?!</div>
+        <div class="panel-text">Aslan melihat papan tulis raksasa bertuliskan AI! 😲</div>
+      </div>
+
+      <!-- PANEL 2 -->
+      <div class="panel">
+        <div class="panel-num">2</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#FFF9C4,#FFD600);">
+          <!-- SVG: Ilmuwan menjelaskan -->
+          <svg viewBox="0 0 160 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <!-- Ilmuwan -->
+            <ellipse cx="80" cy="65" rx="18" ry="22" fill="#FFCC80"/>
+            <!-- Rambut acak -->
+            <path d="M65 50 Q62 38 68 36 Q72 30 78 33 Q82 26 88 28 Q94 24 98 30 Q102 34 100 42 Q105 40 103 48 Q98 46 96 50 Q90 44 82 48 Q77 45 70 50" fill="#5D4037"/>
+            <!-- Kacamata -->
+            <circle cx="74" cy="62" r="6" fill="none" stroke="#37474F" stroke-width="2"/>
+            <circle cx="86" cy="62" r="6" fill="none" stroke="#37474F" stroke-width="2"/>
+            <line x1="80" y1="62" x2="80" y2="62" stroke="#37474F" stroke-width="2"/>
+            <!-- Jas putih -->
+            <rect x="62" y="84" width="36" height="32" rx="8" fill="#ECEFF1"/>
+            <!-- Tangan nunjuk -->
+            <line x1="62" y1="95" x2="40" y2="80" stroke="#FFCC80" stroke-width="3" stroke-linecap="round"/>
+            <!-- Speech bubble -->
+            <ellipse cx="45" cy="55" rx="28" ry="18" fill="#fff" stroke="#FFD600" stroke-width="2"/>
+            <text x="28" y="52" font-size="8" fill="#1A237E" font-family="Nunito,sans-serif" font-weight="bold">Ini namanya</text>
+            <text x="28" y="63" font-size="8" fill="#1A237E" font-family="Nunito,sans-serif" font-weight="bold">AI, Aslan!</text>
+            <!-- Bohlam -->
+            <text x="105" y="40" font-size="16">💡</text>
+          </svg>
+        </div>
+        <div class="panel-dialog" style="color:#F57F17;border-color:#FFD600;">Kecerdasan Buatan! 🧠</div>
+        <div class="panel-text">Ilmuwan dengan antusias menjelaskan tentang AI! 👨‍🔬</div>
+      </div>
+
+      <!-- PANEL 3 -->
+      <div class="panel">
+        <div class="panel-num">3</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);">
+          <!-- SVG: Komputer vintage besar -->
+          <svg viewBox="0 0 160 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <!-- Komputer raksasa -->
+            <rect x="30" y="25" width="80" height="60" rx="5" fill="#546E7A" stroke="#455A64" stroke-width="2"/>
+            <rect x="35" y="30" width="70" height="40" rx="3" fill="#37474F"/>
+            <!-- Lampu indikator -->
+            <circle cx="45" cy="80" r="4" fill="#EF5350"/>
+            <circle cx="58" cy="80" r="4" fill="#FFD600"/>
+            <circle cx="71" cy="80" r="4" fill="#66BB6A"/>
+            <circle cx="84" cy="80" r="4" fill="#42A5F5"/>
+            <!-- Kabel -->
+            <path d="M50 85 Q45 100 35 110" fill="none" stroke="#78909C" stroke-width="2"/>
+            <path d="M70 85 Q75 100 85 110" fill="none" stroke="#78909C" stroke-width="2"/>
+            <path d="M90 85 Q95 95 105 100" fill="none" stroke="#78909C" stroke-width="2"/>
+            <!-- Tulisan di layar -->
+            <text x="45" y="55" font-size="10" fill="#80CBC4" font-family="monospace">HELLO</text>
+            <text x="45" y="68" font-size="8" fill="#A5D6A7" font-family="monospace">WORLD!</text>
+            <!-- Sparkles -->
+            <text x="115" y="40" font-size="12">✨</text>
+            <text x="125" y="55" font-size="10">⭐</text>
+            <!-- Aslan kecil -->
+            <ellipse cx="130" cy="105" rx="12" ry="14" fill="#FFCC80"/>
+            <path d="M120 98 Q119 90 124 88" fill="#3E2723"/>
+            <circle cx="126" cy="103" r="3" fill="white"/>
+            <circle cx="134" cy="103" r="3" fill="white"/>
+            <circle cx="127" cy="104" r="2" fill="#1565C0"/>
+            <circle cx="135" cy="104" r="2" fill="#1565C0"/>
+          </svg>
+        </div>
+        <div class="panel-dialog" style="color:#1565C0;border-color:#2196F3;">Komputer bisa bicara?! 🤯</div>
+        <div class="panel-text">Komputer raksasa menampilkan kata "HELLO WORLD"! 💻</div>
+      </div>
+
+      <!-- PANEL 4 -->
+      <div class="panel">
+        <div class="panel-num">4</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#FBE9E7,#FFAB40);">
+          <!-- SVG: Perayaan kelahiran AI -->
+          <svg viewBox="0 0 160 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <!-- Aslan tengah -->
+            <ellipse cx="80" cy="85" rx="16" ry="18" fill="#FFCC80"/>
+            <path d="M65 78 Q64 68 70 66 Q74 61 80 63 Q86 61 90 66 Q96 68 95 78" fill="#3E2723"/>
+            <!-- Mata senang -->
+            <path d="M73 82 Q76 78 79 82" fill="none" stroke="#1565C0" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M82 82 Q85 78 88 82" fill="none" stroke="#1565C0" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Senyum lebar -->
+            <path d="M73 90 Q80 98 87 90" fill="#E65100"/>
+            <!-- Baju Aslan -->
+            <rect x="64" y="100" width="32" height="30" rx="8" fill="#43A047"/>
+            <!-- Ilmuwan kiri -->
+            <ellipse cx="35" cy="80" rx="13" ry="15" fill="#FFCC80"/>
+            <path d="M23 72 Q22 64 28 62" fill="#5D4037"/>
+            <path d="M28 78 Q31 74 34 78" fill="none" stroke="#37474F" stroke-width="2"/>
+            <path d="M34 78 Q37 74 40 78" fill="none" stroke="#37474F" stroke-width="2"/>
+            <rect x="22" y="94" width="26" height="24" rx="6" fill="#ECEFF1"/>
+            <!-- Ilmuwan kanan -->
+            <ellipse cx="125" cy="80" rx="13" ry="15" fill="#FFCC80"/>
+            <path d="M113 72 Q112 64 118 62" fill="#4E342E"/>
+            <path d="M118 78 Q121 74 124 78" fill="none" stroke="#37474F" stroke-width="2"/>
+            <path d="M124 78 Q127 74 130 78" fill="none" stroke="#37474F" stroke-width="2"/>
+            <rect x="112" y="94" width="26" height="24" rx="6" fill="#ECEFF1"/>
+            <!-- Confetti & stars -->
+            <text x="15" y="30" font-size="12">🎉</text>
+            <text x="140" y="25" font-size="10">✨</text>
+            <text x="75" y="20" font-size="14">⭐</text>
+            <text x="50" y="35" font-size="10">🎊</text>
+            <text x="110" y="35" font-size="10">🎊</text>
+            <!-- Tangan bersentuhan -->
+            <line x1="48" y1="105" x2="65" y2="110" stroke="#FFCC80" stroke-width="3" stroke-linecap="round"/>
+            <line x1="95" y1="110" x2="112" y2="105" stroke="#FFCC80" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="panel-dialog" style="color:#BF360C;border-color:#FF6F00;">AI resmi lahir! 🎂🎉</div>
+        <div class="panel-text">Semua orang merayakan kelahiran AI yang luar biasa! 🥳</div>
+      </div>
+
+    </div>
+    <p class="text-xs text-center text-gray-400 font-semibold mt-3">
+      💡 <em>Klik tiap panel untuk efek seru!</em>
+    </p>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ========== PENJELASAN KELAHIRAN AI ========== -->
+  <div class="reveal card card-purple p-6 mb-6 mt-4">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-4xl mascot-float">🧠</span>
+      <div>
+        <h2 class="font-kartun text-2xl md:text-3xl text-purple-700">Kelahiran AI yang Mengubah Dunia!</h2>
+        <p class="text-purple-400 font-bold text-sm">Fakta Seru untuk Aslan 🌟</p>
+      </div>
+    </div>
+
+    <div class="rounded-2xl p-4 mb-5" style="background:linear-gradient(135deg,#EDE7F6,#D1C4E9);">
+      <p class="text-purple-800 font-bold text-sm leading-relaxed">
+        🕰️ <strong>Tahun 1956</strong> adalah tahun yang sangat istimewa! Di sebuah kampus kecil di Amerika,
+        sekelompok ilmuwan berkumpul dan menciptakan sesuatu yang akan mengubah masa depan umat manusia!
+        Inilah awal mula <em>Artificial Intelligence</em>! 🌍
+      </p>
+    </div>
+
+    <!-- Timeline fakta -->
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:#43A047;color:#fff;">📅</div>
+      <div>
+        <div class="timeline-year text-green-600">Musim Panas 1956 — Konferensi Dartmouth</div>
+        <p class="text-purple-700 text-sm font-semibold">
+          Di kampus <strong>Dartmouth College</strong>, New Hampshire, Amerika Serikat, sekitar 20 ilmuwan terbaik berkumpul selama 8 minggu! Mereka punya mimpi besar: membuat mesin yang bisa berpikir! 🏫citeweb_search:1#0
+        </p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:#2196F3;color:#fff;">✏️</div>
+      <div>
+        <div class="timeline-year text-blue-600">John McCarthy Menemukan Nama "AI"</div>
+        <p class="text-purple-700 text-sm font-semibold">
+          <strong>John McCarthy</strong>, seorang profesor matematika muda, adalah orang yang pertama kali menyebut istilah <strong>"Artificial Intelligence"</strong>! Ia memilih nama itu karena terdengar keren dan netral. Sejak saat itu, dunia mengenal AI! citeweb_search:1#15
+        </p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:#FF6F00;color:#fff;">👨‍🔬</div>
+      <div>
+        <div class="timeline-year text-orange-600">Empat Pahlawan Pendiri AI</div>
+        <p class="text-purple-700 text-sm font-semibold">
+          Empat ilmuwan hebat yang mengorganisir konferensi: <strong>John McCarthy</strong> (Dartmouth), <strong>Marvin Minsky</strong> (Harvard), <strong>Nathaniel Rochester</strong> (IBM), dan <strong>Claude Shannon</strong> (Bell Labs). Mereka adalah "Bapak-Bapak Pendiri AI"! citeweb_search:1#13
+        </p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:#FFD600;color:#1A237E;">💰</div>
+      <div>
+        <div class="timeline-year text-yellow-700">Dana Hanya $7.500 — Setengah dari Permintaan!</div>
+        <p class="text-purple-700 text-sm font-semibold">
+          Mereka meminta dana $14.000 ke Yayasan Rockefeller, tapi hanya mendapat <strong>$7.500</strong> (sekitar setengahnya)! Tapi itu cukup untuk memulai revolusi! Kadang mimpi besar tidak butuh uang besar! 💪
+        </p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:#7C4DFF;color:#fff;">🎯</div>
+      <div>
+        <div class="timeline-year text-purple-600">Mimpi Mereka: Mesin Seperti Manusia!</div>
+        <p class="text-purple-700 text-sm font-semibold">
+          Tujuan mereka: membuat mesin yang bisa <strong>menggunakan bahasa</strong>, <strong>membentuk konsep</strong>, <strong>memecahkan masalah</strong>, dan <strong>belajar dari pengalaman</strong> — persis seperti manusia! Meski belum tercapai saat itu, mimpi itu terus hidup! citeweb_search:1#15
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ========== KENALAN PARA PENDIRI AI ========== -->
+  <div class="reveal card card-yellow p-6 mb-6 mt-4">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-3xl sparkle">👨‍🔬</span>
+      <h2 class="font-kartun text-2xl md:text-3xl text-yellow-700">Kenalan Para Pendiri AI!</h2>
+    </div>
+    <p class="text-yellow-600 font-bold text-sm mb-4">Geser ke kanan untuk lihat semuanya! 👉</p>
+
+    <div class="founder-scroll">
+      <!-- Founder 1 -->
+      <div class="founder-card has-tooltip" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-color:#2196F3;">
+        <span class="founder-emoji">🧓</span>
+        <div class="font-kartun text-blue-700 text-base">John McCarthy</div>
+        <div class="text-blue-500 font-bold text-xs mt-1">Penemu Nama "AI"</div>
+        <div class="text-blue-600 text-xs mt-2 font-semibold">"Kita sebut saja AI!" 🧠</div>
+        <div class="tooltip-box">Profesor Matematika di Dartmouth College</div>
+      </div>
+
+      <!-- Founder 2 -->
+      <div class="founder-card has-tooltip" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border-color:#FF6F00;">
+        <span class="founder-emoji">👨‍🎓</span>
+        <div class="font-kartun text-orange-700 text-base">Marvin Minsky</div>
+        <div class="text-orange-500 font-bold text-xs mt-1">Ahli Otak AI</div>
+        <div class="text-orange-600 text-xs mt-2 font-semibold">"Mesin bisa punya pikiran!" 🤯</div>
+        <div class="tooltip-box">Dari Harvard University, sang visioner</div>
+      </div>
+
+      <!-- Founder 3 -->
+      <div class="founder-card has-tooltip" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-color:#43A047;">
+        <span class="founder-emoji">👨‍💼</span>
+        <div class="font-kartun text-green-700 text-base">Nathaniel Rochester</div>
+        <div class="text-green-500 font-bold text-xs mt-1">Insinyur IBM</div>
+        <div class="text-green-600 text-xs mt-2 font-semibold">"Komputer bisa lebih pintar!" 💻</div>
+        <div class="tooltip-box">Kepala Desain IBM, sang praktisi</div>
+      </div>
+
+      <!-- Founder 4 -->
+      <div class="founder-card has-tooltip" style="background:linear-gradient(135deg,#EDE7F6,#D1C4E9);border-color:#7C4DFF;">
+        <span class="founder-emoji">👨‍🔬</span>
+        <div class="font-kartun text-purple-700 text-base">Claude Shannon</div>
+        <div class="text-purple-500 font-bold text-xs mt-1">Bapak Teori Informasi</div>
+        <div class="text-purple-600 text-xs mt-2 font-semibold">"0 dan 1 adalah segalanya!" 📊</div>
+        <div class="tooltip-box">Dari Bell Labs, ahli komunikasi</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== IDE-IDE BRILIAN ========== -->
+  <div class="reveal card card-blue p-6 mb-6">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-3xl sparkle">💡</span>
+      <h2 class="font-kartun text-2xl md:text-3xl text-blue-700">Mimpi Besar Mereka tentang AI!</h2>
+    </div>
+    <p class="text-blue-500 font-bold text-sm mb-4">Inilah yang diimpikan para ilmuwan di tahun 1956! ✨</p>
+    <div class="bohlam-grid">
+      <div class="bohlam-item" style="background:#E8F5E9;border-color:#43A047;">
+        <span class="bohlam-icon">🗣️</span>
+        <div class="font-kartun text-green-700 text-sm">Mesin Bicara</div>
+        <p class="text-green-600 text-xs font-semibold mt-1">Komputer yang bisa ngobrol seperti manusia!</p>
+      </div>
+      <div class="bohlam-item" style="background:#E3F2FD;border-color:#2196F3;">
+        <span class="bohlam-icon" style="animation-delay:0.3s;">🧩</span>
+        <div class="font-kartun text-blue-700 text-sm">Pecahkan Teka-teki</div>
+        <p class="text-blue-600 text-xs font-semibold mt-1">Mesin yang bisa memecahkan masalah sulit!</p>
+      </div>
+      <div class="bohlam-item" style="background:#FFF9C4;border-color:#FFD600;">
+        <span class="bohlam-icon" style="animation-delay:0.6s;">📚</span>
+        <div class="font-kartun text-yellow-700 text-sm">Belajar Sendiri</div>
+        <p class="text-yellow-600 text-xs font-semibold mt-1">Mesin yang bisa belajar dari pengalaman!</p>
+      </div>
+      <div class="bohlam-item" style="background:#FCE4EC;border-color:#FF4081;">
+        <span class="bohlam-icon" style="animation-delay:0.9s;">🎨</span>
+        <div class="font-kartun text-pink-700 text-sm">Kreatif & Imajinatif</div>
+        <p class="text-pink-600 text-xs font-semibold mt-1">Mesin yang bisa membuat konsep baru!</p>
+      </div>
+      <div class="bohlam-item" style="background:#EDE7F6;border-color:#7C4DFF;">
+        <span class="bohlam-icon" style="animation-delay:1.2s;">🧮</span>
+        <div class="font-kartun text-purple-700 text-sm">Hitung Cepat</div>
+        <p class="text-purple-600 text-xs font-semibold mt-1">Mesin yang menghitung jutaan kali lebih cepat!</p>
+      </div>
+      <div class="bohlam-item" style="background:#FFF3E0;border-color:#FF6F00;">
+        <span class="bohlam-icon" style="animation-delay:1.5s;">🤝</span>
+        <div class="font-kartun text-orange-700 text-sm">Jadi Sahabat</div>
+        <p class="text-orange-600 text-xs font-semibold mt-1">Mesin yang bisa jadi teman manusia!</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ========== PERTANYAAN INTERAKTIF ========== -->
+  <div class="reveal card card-yellow p-6 mb-6 mt-4">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-3xl sparkle">🧠</span>
+      <div>
+        <h2 class="font-kartun text-2xl md:text-3xl text-yellow-700">Pertanyaan untuk Aslan!</h2>
+        <p class="text-yellow-600 font-bold text-sm">Yuk buktikan Aslan sudah baca ceritanya! 💪</p>
+      </div>
+    </div>
+
+    <!-- KUIS 1 -->
+    <div class="bg-green-50 rounded-2xl p-5 mb-4 border-2 border-green-200 mt-4" id="quiz1">
+      <p class="font-bold text-green-700 text-lg mb-1">❓ Pertanyaan 1 dari 3</p>
+      <p class="font-extrabold text-green-900 text-base mb-4">
+        Pada tahun berapa AI resmi dilahirkan di Konferensi Dartmouth? 📅
+      </p>
+      <div class="flex flex-col gap-3" id="q1-options">
+        <button class="quiz-option" onclick="jawab(this,'q1',false)">
+          <span class="text-xl">🙅</span> <span>1950</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q1',false)">
+          <span class="text-xl">😅</span> <span>1952</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q1',true)">
+          <span class="text-xl">🤔</span> <span>1956</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q1',false)">
+          <span class="text-xl">🧐</span> <span>1961</span>
+        </button>
+      </div>
+      <div class="quiz-result mt-3" id="q1-result"></div>
+    </div>
+
+    <!-- KUIS 2 -->
+    <div class="bg-blue-50 rounded-2xl p-5 mb-4 border-2 border-blue-200" id="quiz2">
+      <p class="font-bold text-blue-700 text-lg mb-1">❓ Pertanyaan 2 dari 3</p>
+      <p class="font-extrabold text-blue-900 text-base mb-4">
+        Siapa ilmuwan yang menciptakan nama "Artificial Intelligence"? ✏️
+      </p>
+      <div class="flex flex-col gap-3" id="q2-options">
+        <button class="quiz-option" onclick="jawab(this,'q2',true)">
+          <span class="text-xl">🤔</span> <span>John McCarthy</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q2',false)">
+          <span class="text-xl">🙅</span> <span>Alan Turing</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q2',false)">
+          <span class="text-xl">😅</span> <span>Albert Einstein</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q2',false)">
+          <span class="text-xl">🧐</span> <span>Isaac Newton</span>
+        </button>
+      </div>
+      <div class="quiz-result mt-3" id="q2-result"></div>
+    </div>
+
+    <!-- KUIS 3 -->
+    <div class="bg-orange-50 rounded-2xl p-5 border-2 border-orange-200" id="quiz3">
+      <p class="font-bold text-orange-700 text-lg mb-1">❓ Pertanyaan 3 dari 3</p>
+      <p class="font-extrabold text-orange-900 text-base mb-4">
+        Di mana konferensi kelahiran AI diadakan? 🏫
+      </p>
+      <div class="flex flex-col gap-3" id="q3-options">
+        <button class="quiz-option" onclick="jawab(this,'q3',false)">
+          <span class="text-xl">🙅</span> <span>Harvard University</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q3',true)">
+          <span class="text-xl">🤔</span> <span>Dartmouth College</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q3',false)">
+          <span class="text-xl">😅</span> <span>MIT Boston</span>
+        </button>
+        <button class="quiz-option" onclick="jawab(this,'q3',false)">
+          <span class="text-xl">🧐</span> <span>Stanford University</span>
+        </button>
+      </div>
+      <div class="quiz-result mt-3" id="q3-result"></div>
+    </div>
+
+    <!-- Skor -->
+    <div id="skor-area" class="hidden mt-5 text-center">
+      <div class="rounded-2xl p-5 text-white" style="background:linear-gradient(135deg,#43A047,#66BB6A);">
+        <div class="font-kartun text-3xl mb-1">🏆 Hasil Kuis Aslan!</div>
+        <div id="skor-text" class="font-bold text-xl"></div>
+        <div id="skor-pesan" class="font-semibold text-sm mt-1 opacity-90"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PESAN MOTIVASI ========== -->
+  <div class="reveal card card-green p-6 mb-8 text-center" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">
+    <span class="text-5xl mascot-float block mb-3">🦁</span>
+    <h3 class="font-kartun text-2xl text-green-700 mb-2">Pesan dari John McCarthy untuk Aslan! 💌</h3>
+    <p class="text-green-800 font-bold text-base leading-relaxed">
+      "Hei Aslan! Tahun 1956, kami hanya punya mimpi dan sebuah nama: Artificial Intelligence.<br/>
+      Kami tidak tahu apakah akan berhasil, tapi kami <span style="color:#2E7D32">berani bermimpi besar</span>!<br/>
+      Kamu pun bisa — jangan pernah takut bermimpi, karena mimpi adalah awal dari segala keajaiban! 🧠✨"
+    </p>
+    <p class="text-3xl mt-3">👨‍🔬💡🧒</p>
+  </div>
+
+  <!-- ========== DOT NAVIGASI ========== -->
+  <div class="text-center flex-1">
+    <div class="font-kartun text-green-500 text-sm">Hari 3 dari 7</div>
+    <div class="flex justify-center gap-1 mt-1">
+      <span class="w-3 h-3 rounded-full inline-block" style="background:#43A047;"></span>
+      <span class="w-3 h-3 rounded-full inline-block" style="background:#43A047;"></span>
+      <span class="w-3 h-3 rounded-full inline-block" style="background:#43A047;"></span>
+      <span class="w-3 h-3 rounded-full bg-green-200 inline-block"></span>
+      <span class="w-3 h-3 rounded-full bg-green-200 inline-block"></span>
+      <span class="w-3 h-3 rounded-full bg-green-200 inline-block"></span>
+      <span class="w-3 h-3 rounded-full bg-green-200 inline-block"></span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="text-center mt-8 font-bold text-xs" style="color:#A5D6A7;">
+    🧠 Petualangan Aslan di Negeri AI • Hari 3 dari 7 🧠
+  </div>
+
+</div><!-- /main container -->
+
+<script>
+  /* ===== FLOATING SHAPES BG ===== */
+  (function(){
+    const emojis = ['🧠','💻','⭐','🤖','✨','💡','🎉','🔬'];
+    const colors  = ['#43A047','#FFD600','#2196F3','#FF6F00','#7C4DFF','#FF4081'];
+    const container = document.getElementById('shapesBg');
+    for(let i=0;i<24;i++){
+      const s = document.createElement('div');
+      s.className = 'shape';
+      const isEmoji = Math.random() > 0.5;
+      const size = Math.random()*28+12;
+      if(isEmoji){
+        s.style.cssText = `
+          left:${Math.random()*100}%;
+          font-size:${size}px;
+          animation-duration:${Math.random()*14+8}s;
+          animation-delay:${Math.random()*12}s;
+        `;
+        s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      } else {
+        s.style.cssText = `
+          width:${size}px;height:${size}px;
+          left:${Math.random()*100}%;
+          background:${colors[Math.floor(Math.random()*colors.length)]};
+          animation-duration:${Math.random()*14+8}s;
+          animation-delay:${Math.random()*12}s;
+          border-radius:${Math.random()>0.5?'50%':'30%'};
+        `;
+      }
+      container.appendChild(s);
+    }
+  })();
+
+  /* ===== SCROLL REVEAL ===== */
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('visible'); }
+    });
+  },{threshold:0.10});
+  reveals.forEach(r => observer.observe(r));
+
+  /* ===== PANEL CLICK EFFECT ===== */
+  document.querySelectorAll('.panel').forEach(panel => {
+    panel.addEventListener('click', function(){
+      this.style.transform = 'scale(1.04) rotate(0deg)';
+      setTimeout(()=>{ this.style.transform = ''; }, 300);
+    });
+  });
+
+  /* ===== QUIZ ===== */
+  const skor = {q1:null, q2:null, q3:null};
+
+  function jawab(btn, quizId, benar){
+    const opts = document.getElementById(quizId+'-options');
+    if(opts.querySelector('.correct')||opts.querySelector('.wrong')) return;
+
+    const resultEl = document.getElementById(quizId+'-result');
+    skor[quizId] = benar;
+
+    Array.from(opts.querySelectorAll('.quiz-option')).forEach(b=>{
+      b.style.pointerEvents='none';
+    });
+
+    if(benar){
+      btn.classList.add('correct');
+      btn.querySelector('span:first-child').textContent = '✅';
+      resultEl.style.display='block';
+      resultEl.style.background='#E8F5E9';
+      resultEl.style.color='#2E7D32';
+      resultEl.style.border='2px solid #43A047';
+      resultEl.innerHTML='🎉 Yeay, benar banget Aslan! Kamu memang pintar! 🌟';
+    } else {
+      btn.classList.add('wrong');
+      btn.querySelector('span:first-child').textContent = '❌';
+      resultEl.style.display='block';
+      resultEl.style.background='#FFEBEE';
+      resultEl.style.color='#C62828';
+      resultEl.style.border='2px solid #E53935';
+      resultEl.innerHTML='😅 Hmm, belum tepat nih. Coba baca ceritanya lagi ya! 📖';
+    }
+
+    if(skor.q1!==null && skor.q2!==null && skor.q3!==null){
+      tampilSkor();
+    }
+  }
+
+  function tampilSkor(){
+    const total = (skor.q1?1:0)+(skor.q2?1:0)+(skor.q3?1:0);
+    const area  = document.getElementById('skor-area');
+    const skorText  = document.getElementById('skor-text');
+    const skorPesan = document.getElementById('skor-pesan');
+    area.classList.remove('hidden');
+
+    const pesan = [
+      ['😔 Belum beruntung... Yuk baca ceritanya lagi! Pasti bisa! 💪','Nilai: 0/3'],
+      ['🙂 Lumayan! Masih ada yang bisa diperbaiki nih!','Nilai: 1/3'],
+      ['😊 Bagus! Hampir sempurna! Coba sekali lagi ya!','Nilai: 2/3'],
+      ['🏆 SEMPURNA! Aslan jenius sejati! 🎉🌟🚀','Nilai: 3/3'],
+    ];
+    skorText.textContent  = pesan[total][1];
+    skorPesan.textContent = pesan[total][0];
+  }
+
+  /* ===== FOUNDER CARD CLICK ===== */
+  document.querySelectorAll('.founder-card').forEach(card => {
+    card.addEventListener('click', function(){
+      const name = this.querySelector('.font-kartun').textContent;
+      const role = this.querySelector('.font-bold').textContent;
+      const quote = this.querySelector('.font-semibold').textContent;
+      const tooltip = this.querySelector('.tooltip-box').textContent;
+      alert(`👨‍🔬 ${name}\n\n${role}\n${quote}\n\n${tooltip}`);
+    });
+  });
+</script>
+</body>
+</html>

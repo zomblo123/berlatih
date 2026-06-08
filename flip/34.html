@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 4: Motherboard – Rumah Besar dan Jalan Tol Komputer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange:  #f97316;
+    --amber:   #fbbf24;
+    --green:   #10b981;
+    --sky:     #38bdf8;
+    --blue:    #3b82f6;
+    --purple:  #a78bfa;
+    --bg:      #fff7ed;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 8% 15%, rgba(249,115,22,.14) 0%, transparent 40%),
+      radial-gradient(circle at 88% 80%, rgba(251,191,36,.12) 0%, transparent 38%),
+      radial-gradient(circle at 50% 95%, rgba(56,189,248,.10) 0%, transparent 40%);
+    min-height: 100vh; overflow-x: hidden;
+  }
+  h1,h2,h3,.display { font-family:'Fredoka One',cursive; }
+
+  /* Header */
+  .header-grad {
+    background: linear-gradient(135deg,#7c2d12 0%,#c2410c 35%,#ea580c 65%,#fb923c 100%);
+    position:relative; overflow:hidden;
+  }
+  .header-grad::after {
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='10' cy='10' r='6'/%3E%3Ccircle cx='30' cy='30' r='6'/%3E%3Ccircle cx='50' cy='10' r='6'/%3E%3Ccircle cx='10' cy='50' r='6'/%3E%3Ccircle cx='50' cy='50' r='6'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Speech bubble */
+  .bubble {
+    position:relative; background:white;
+    border-radius:22px; border:3px solid #ea580c;
+    box-shadow:4px 4px 0 #ea580c;
+  }
+  .bubble::before { content:'';position:absolute;bottom:-22px;left:30px;border:12px solid transparent;border-top-color:#ea580c; }
+  .bubble::after  { content:'';position:absolute;bottom:-15px;left:33px;border:10px solid transparent;border-top-color:white; }
+
+  /* Aslan bounce */
+  @keyframes bounceAslan { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-10px);} }
+  .aslan-bounce { animation:bounceAslan 2.2s ease-in-out infinite; }
+
+  @keyframes walkAslan {
+    0%   { transform: translateX(0) scaleX(1); }
+    48%  { transform: translateX(80px) scaleX(1); }
+    50%  { transform: translateX(80px) scaleX(-1); }
+    98%  { transform: translateX(0) scaleX(-1); }
+    100% { transform: translateX(0) scaleX(1); }
+  }
+  .aslan-walk { animation: walkAslan 4s ease-in-out infinite; }
+
+  /* Data flow animation */
+  @keyframes dataFlow {
+    0%   { stroke-dashoffset: 200; opacity: 1; }
+    100% { stroke-dashoffset: -200; opacity: 0.3; }
+  }
+  .data-line { stroke-dasharray: 12 8; animation: dataFlow 1.2s linear infinite; }
+  .data-line-2 { stroke-dasharray: 12 8; animation: dataFlow 1.6s linear infinite .3s; }
+  .data-line-3 { stroke-dasharray: 12 8; animation: dataFlow 1s linear infinite .6s; }
+
+  @keyframes glowPulse {
+    0%,100% { filter: drop-shadow(0 0 4px rgba(251,191,36,.3)); }
+    50%      { filter: drop-shadow(0 0 14px rgba(251,191,36,.9)); }
+  }
+  .mb-glow { animation: glowPulse 2s ease-in-out infinite; }
+
+  @keyframes trackFlow {
+    0%   { stroke-dashoffset: 300; }
+    100% { stroke-dashoffset: 0; }
+  }
+  .track-active { stroke-dasharray: 8 4; animation: trackFlow 0.8s linear infinite; }
+
+  /* Pop animations */
+  @keyframes popIn {
+    0%  { transform:scale(0) rotate(-15deg); opacity:0; }
+    70% { transform:scale(1.15) rotate(5deg); }
+    100%{ transform:scale(1) rotate(0deg); opacity:1; }
+  }
+  .pop-in { animation: popIn .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+  @keyframes floatEmoji {
+    0%  { transform:translateY(0) scale(1); opacity:1; }
+    100%{ transform:translateY(-90px) scale(.5); opacity:0; }
+  }
+  .float-emoji {
+    position:absolute; pointer-events:none;
+    animation: floatEmoji 1s ease-out forwards;
+    font-size:1.4rem;
+  }
+
+  /* Slot highlight */
+  @keyframes slotPulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(251,191,36,0); }
+    50%      { box-shadow: 0 0 0 6px rgba(251,191,36,.45); }
+  }
+  .slot-pulse { animation: slotPulse 1.5s ease-in-out infinite; }
+
+  /* Confetti */
+  @keyframes confettiFly {
+    0%  { transform:translate(0,0) rotate(0deg); opacity:1; }
+    100%{ transform:translate(var(--tx),var(--ty)) rotate(720deg); opacity:0; }
+  }
+  .confetti-piece {
+    position:fixed;width:10px;height:10px;border-radius:2px;
+    pointer-events:none;z-index:100;
+    animation:confettiFly 1.2s ease-out forwards;
+  }
+
+  /* Buttons */
+  .btn-orange {
+    background:linear-gradient(135deg,#ea580c,#f97316);
+    color:white; border:none; border-radius:50px;
+    padding:1rem 2.6rem; font-family:'Fredoka One',cursive;
+    font-size:1.3rem; cursor:pointer;
+    box-shadow:0 6px 0 #c2410c, 0 8px 22px rgba(234,88,12,.4);
+    transition:all .15s ease;
+  }
+  .btn-orange:hover  { transform:translateY(-3px); box-shadow:0 9px 0 #c2410c,0 12px 28px rgba(234,88,12,.5); }
+  .btn-orange:active { transform:translateY(3px);  box-shadow:0 3px 0 #c2410c; }
+  .btn-orange:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+
+  .btn-green {
+    background:linear-gradient(135deg,#059669,#10b981);
+    color:white; border:none; border-radius:50px;
+    padding:1rem 2.6rem; font-family:'Fredoka One',cursive;
+    font-size:1.3rem; cursor:pointer;
+    box-shadow:0 6px 0 #047857, 0 8px 22px rgba(5,150,105,.4);
+    transition:all .15s ease;
+  }
+  .btn-green:hover  { transform:translateY(-3px); }
+  .btn-green:active { transform:translateY(3px); box-shadow:0 3px 0 #047857; }
+
+  .btn-nav {
+    border-radius:50px; padding:.75rem 1.8rem;
+    font-family:'Fredoka One',cursive; font-size:1.05rem;
+    cursor:pointer; transition:all .15s ease; border:3px solid transparent;
+  }
+  .btn-back { background:white; color:#ea580c; border-color:#ea580c; box-shadow:3px 3px 0 #ea580c; }
+  .btn-back:hover { transform:translateY(-2px); box-shadow:5px 5px 0 #ea580c; }
+  .btn-fwd  { background:linear-gradient(135deg,#a78bfa,#818cf8); color:white; box-shadow:0 4px 0 #5b21b6; }
+  .btn-fwd:hover  { transform:translateY(-2px); }
+
+  .sec-title { position:relative;display:inline-block; }
+  .sec-title::after {
+    content:'';position:absolute;bottom:-6px;left:0;right:0;height:5px;
+    border-radius:10px;background:linear-gradient(90deg,#ea580c,#fbbf24);
+  }
+
+  /* Component card */
+  .comp-card {
+    background:white; border-radius:20px; border:3px solid #fed7aa;
+    box-shadow:4px 4px 0 #fed7aa;
+    cursor:pointer; transition:all .2s ease;
+    position:relative; overflow:hidden;
+  }
+  .comp-card:hover { transform:translateY(-4px) scale(1.02); box-shadow:6px 8px 0 #fdba74; }
+  .comp-card.active { border-color:#ea580c; box-shadow:4px 4px 0 #ea580c; }
+
+  /* MB slot */
+  .mb-slot {
+    cursor:pointer; transition:all .2s ease;
+  }
+  .mb-slot:hover rect, .mb-slot:hover .slot-rect { filter:brightness(1.3); }
+
+  /* Info popup */
+  .info-popup {
+    display:none; position:absolute;
+    background:white; border-radius:16px; border:3px solid #ea580c;
+    box-shadow:6px 6px 0 #ea580c;
+    padding:1rem 1.2rem; z-index:20;
+    min-width:180px; max-width:230px;
+    font-family:'Nunito',sans-serif;
+  }
+  .info-popup.show { display:block; animation:popIn .35s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+  /* Quiz */
+  .qbtn {
+    background:white; border:2.5px solid #fed7aa; border-radius:14px;
+    padding:.6rem 1rem; font-family:'Nunito',sans-serif; font-weight:700;
+    font-size:.95rem; cursor:pointer; transition:all .15s ease; text-align:left;
+  }
+  .qbtn:hover:not(:disabled) { border-color:#ea580c; background:#fff7ed; transform:translateX(4px); }
+
+  /* Progress dots */
+  .prog-dot {
+    width:14px; height:14px; border-radius:50%; display:inline-block;
+    border:2px solid white;
+  }
+
+  /* Motherboard glow toggle */
+  .mb-track-off { opacity: 0; transition: opacity .4s; }
+  .mb-track-on  { opacity: 1; transition: opacity .4s; }
+
+  @keyframes sparkle {
+    0%,100% { transform:scale(0); opacity:0; }
+    50%      { transform:scale(1); opacity:1; }
+  }
+  .sparkle { animation:sparkle .8s ease-in-out infinite; }
+  .sparkle-2 { animation:sparkle .8s ease-in-out infinite .2s; }
+  .sparkle-3 { animation:sparkle .8s ease-in-out infinite .4s; }
+
+  @keyframes slideIn {
+    from { transform:translateX(-30px); opacity:0; }
+    to   { transform:translateX(0); opacity:1; }
+  }
+  .slide-in { animation:slideIn .4s ease-out forwards; }
+
+  .tooltip {
+    visibility:hidden; opacity:0;
+    position:absolute; bottom:110%; left:50%; transform:translateX(-50%);
+    background:#1c1917; color:white; border-radius:10px;
+    padding:.4rem .8rem; font-size:.8rem; white-space:nowrap;
+    transition:opacity .2s;
+    pointer-events:none; z-index:30;
+  }
+  .has-tooltip:hover .tooltip { visibility:visible; opacity:1; }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ══════ HEADER ══════ -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <div style="position:absolute;top:10px;left:4%;font-size:2.5rem;opacity:.18;animation:bounceAslan 9s ease-in-out infinite;">🖥️</div>
+  <div style="position:absolute;top:14px;right:6%;font-size:2rem;opacity:.2;animation:bounceAslan 12s ease-in-out infinite .5s;">⚡</div>
+  <div style="position:absolute;bottom:6px;left:28%;font-size:1.8rem;opacity:.15;animation:bounceAslan 11s ease-in-out infinite 1s;">🔌</div>
+  <div style="position:absolute;bottom:8px;right:20%;font-size:1.6rem;opacity:.15;animation:bounceAslan 14s ease-in-out infinite .8s;">🔧</div>
+
+  <div class="max-w-3xl mx-auto relative z-10 text-center">
+    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-3 border border-white/30">
+      <span class="text-xl">🖥️</span>
+      <span style="font-family:'Fredoka One',cursive;font-size:.9rem;letter-spacing:.5px;">Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span class="text-xl">🚀</span>
+    </div>
+    <h1 style="font-family:'Fredoka One',cursive;font-size:clamp(1.6rem,5vw,2.4rem);line-height:1.2;text-shadow:3px 3px 0 rgba(0,0,0,.2);">
+      Hari 4: Motherboard 🏠
+    </h1>
+    <p style="font-family:'Fredoka One',cursive;font-size:clamp(1rem,3vw,1.3rem);opacity:.9;margin-top:.4rem;">
+      Rumah Besar dan Jalan Tol Komputer!
+    </p>
+    <!-- Progress bar -->
+    <div class="mt-4 flex items-center justify-center gap-2 flex-wrap">
+      <span style="font-size:.85rem;opacity:.8;">Progres:</span>
+      <div class="flex gap-1.5">
+        <div class="prog-dot" style="background:#34d399;" title="Hari 1 ✓"></div>
+        <div class="prog-dot" style="background:#34d399;" title="Hari 2 ✓"></div>
+        <div class="prog-dot" style="background:#34d399;" title="Hari 3 ✓"></div>
+        <div class="prog-dot" style="background:#fbbf24;border-color:#fbbf24;" title="Hari 4 – Sekarang!"></div>
+        <div class="prog-dot" style="background:rgba(255,255,255,.3);" title="Hari 5"></div>
+        <span style="font-size:.8rem;opacity:.6;">... 30</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════ INTRO ══════ -->
+<section class="max-w-3xl mx-auto px-4 pt-8 pb-2">
+  <div class="flex flex-col sm:flex-row items-center gap-6">
+
+    <!-- Aslan SVG walking on motherboard -->
+    <div class="relative flex-shrink-0" style="width:180px;height:180px;">
+      <!-- Motherboard mini bg -->
+      <svg viewBox="0 0 160 140" width="160" height="140" style="position:absolute;left:0;top:20px;">
+        <rect x="5" y="20" width="150" height="110" rx="10" fill="#1a2e05" stroke="#4ade80" stroke-width="2"/>
+        <!-- Tracks -->
+        <line x1="20" y1="40" x2="140" y2="40" stroke="#22c55e" stroke-width="1.5" opacity=".5"/>
+        <line x1="20" y1="60" x2="140" y2="60" stroke="#22c55e" stroke-width="1.5" opacity=".5"/>
+        <line x1="20" y1="80" x2="140" y2="80" stroke="#22c55e" stroke-width="1.5" opacity=".5"/>
+        <line x1="20" y1="100" x2="140" y2="100" stroke="#22c55e" stroke-width="1.5" opacity=".5"/>
+        <line x1="40" y1="30" x2="40" y2="120" stroke="#22c55e" stroke-width="1.5" opacity=".5"/>
+        <line x1="80" y1="30" x2="80" y2="120" stroke="#22c55e" stroke-width="1.5" opacity=".5"/>
+        <line x1="120" y1="30" x2="120" y2="120" stroke="#22c55e" stroke-width="1.5" opacity=".5"/>
+        <!-- Animated data lines -->
+        <line x1="20" y1="40" x2="140" y2="40" stroke="#86efac" stroke-width="2.5" class="data-line"/>
+        <line x1="40" y1="30" x2="40" y2="120" stroke="#fde68a" stroke-width="2" class="data-line-2"/>
+        <line x1="80" y1="30" x2="80" y2="120" stroke="#7dd3fc" stroke-width="2" class="data-line-3"/>
+        <!-- Mini chips -->
+        <rect x="50" y="45" width="20" height="14" rx="3" fill="#374151" stroke="#6ee7b7" stroke-width="1"/>
+        <rect x="90" y="65" width="16" height="12" rx="3" fill="#374151" stroke="#93c5fd" stroke-width="1"/>
+        <rect x="30" y="85" width="24" height="10" rx="3" fill="#374151" stroke="#fca5a5" stroke-width="1"/>
+      </svg>
+      <!-- Aslan walking -->
+      <div class="aslan-walk" style="position:absolute;bottom:8px;left:10px;z-index:10;">
+        <svg viewBox="0 0 52 72" width="52" height="72">
+          <!-- Body -->
+          <ellipse cx="26" cy="46" rx="16" ry="18" fill="#FBBF24"/>
+          <!-- Shirt blue -->
+          <ellipse cx="26" cy="52" rx="14" ry="13" fill="#3B82F6"/>
+          <!-- Head -->
+          <circle cx="26" cy="26" r="18" fill="#FBBF24"/>
+          <!-- Hair -->
+          <ellipse cx="26" cy="11" rx="18" ry="9" fill="#1C1917"/>
+          <ellipse cx="14" cy="16" rx="7" ry="6" fill="#1C1917"/>
+          <ellipse cx="38" cy="16" rx="7" ry="6" fill="#1C1917"/>
+          <!-- Eyes -->
+          <circle cx="19" cy="26" r="3.5" fill="white"/>
+          <circle cx="33" cy="26" r="3.5" fill="white"/>
+          <circle cx="20" cy="27" r="2" fill="#1C1917"/>
+          <circle cx="34" cy="27" r="2" fill="#1C1917"/>
+          <circle cx="20.8" cy="26.3" r=".8" fill="white"/>
+          <circle cx="34.8" cy="26.3" r=".8" fill="white"/>
+          <!-- Smile -->
+          <path d="M19 33 Q26 39 33 33" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round"/>
+          <!-- Cheeks -->
+          <circle cx="14" cy="31" r="4" fill="#FCA5A5" opacity=".6"/>
+          <circle cx="38" cy="31" r="4" fill="#FCA5A5" opacity=".6"/>
+          <!-- Legs walking -->
+          <rect x="16" y="62" width="8" height="9" rx="3" fill="#1D4ED8" transform="rotate(-10 20 62)"/>
+          <rect x="28" y="62" width="8" height="9" rx="3" fill="#1D4ED8" transform="rotate(10 32 62)"/>
+          <!-- Arms -->
+          <rect x="4" y="44" width="7" height="16" rx="3" fill="#FBBF24" transform="rotate(20 7 44)"/>
+          <rect x="41" y="44" width="7" height="16" rx="3" fill="#FBBF24" transform="rotate(-20 45 44)"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Bubble + text -->
+    <div>
+      <div class="bubble p-4 mb-6">
+        <p style="font-size:1.1rem;font-weight:800;color:#1c1917;line-height:1.6;">
+          Hai! Aku <span style="color:#ea580c;">Aslan</span> 👋<br>
+          Hari ini kita lihat <strong style="color:#ea580c;">Motherboard!</strong> 🏠<br>
+          Motherboard itu seperti <strong>rumah besar</strong> sekaligus <strong>jalan tol</strong> di dalam komputer. Semua bagian komputer tinggal di sini dan saling terhubung! ⚡
+        </p>
+      </div>
+      <!-- Fun fact badge -->
+      <div class="flex items-center gap-2 bg-amber-50 border-2 border-amber-300 rounded-xl p-3 mt-4">
+        <span class="text-2xl">💡</span>
+        <p style="font-size:.9rem;font-weight:700;color:#92400e;">
+          <strong>Fakta Seru:</strong> Nama "motherboard" artinya "papan ibu" karena dia menghubungkan semua komponen seperti seorang ibu yang menyatukan keluarga! 👨‍👩‍👧‍👦
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ MOTHERBOARD INTERAKTIF ══════ -->
+<section class="max-w-3xl mx-auto px-4 py-8">
+  <div class="text-center mb-6">
+    <h2 class="sec-title text-2xl md:text-3xl" style="color:#1c1917;">🖥️ Jelajahi Motherboard!</h2>
+    <p class="mt-4 text-gray-600 font-semibold">Klik setiap komponen untuk belajar tentangnya 👆</p>
+  </div>
+
+  <!-- SVG Motherboard -->
+  <div class="relative bg-gradient-to-br from-green-950 to-green-900 rounded-3xl border-4 border-green-700 shadow-2xl p-4 overflow-visible" id="mbBoard">
+
+    <!-- Glow overlay (hidden until activated) -->
+    <div id="mbGlowOverlay" class="mb-track-off absolute inset-0 rounded-3xl pointer-events-none" style="background:radial-gradient(circle at 50% 50%, rgba(74,222,128,.08) 0%, transparent 70%);"></div>
+
+    <svg id="mbSvg" viewBox="0 0 700 450" width="100%" style="display:block;max-height:420px;">
+      <!-- Board base -->
+      <rect x="10" y="10" width="680" height="430" rx="18" fill="#14532d" stroke="#22c55e" stroke-width="3"/>
+
+      <!-- PCB texture grid (faint) -->
+      <g opacity=".08">
+        <line x1="70" y1="10" x2="70" y2="440" stroke="#86efac" stroke-width="1"/>
+        <line x1="140" y1="10" x2="140" y2="440" stroke="#86efac" stroke-width="1"/>
+        <line x1="210" y1="10" x2="210" y2="440" stroke="#86efac" stroke-width="1"/>
+        <line x1="280" y1="10" x2="280" y2="440" stroke="#86efac" stroke-width="1"/>
+        <line x1="350" y1="10" x2="350" y2="440" stroke="#86efac" stroke-width="1"/>
+        <line x1="420" y1="10" x2="420" y2="440" stroke="#86efac" stroke-width="1"/>
+        <line x1="490" y1="10" x2="490" y2="440" stroke="#86efac" stroke-width="1"/>
+        <line x1="560" y1="10" x2="560" y2="440" stroke="#86efac" stroke-width="1"/>
+        <line x1="630" y1="10" x2="630" y2="440" stroke="#86efac" stroke-width="1"/>
+        <line x1="10" y1="60" x2="690" y2="60" stroke="#86efac" stroke-width="1"/>
+        <line x1="10" y1="120" x2="690" y2="120" stroke="#86efac" stroke-width="1"/>
+        <line x1="10" y1="180" x2="690" y2="180" stroke="#86efac" stroke-width="1"/>
+        <line x1="10" y1="240" x2="690" y2="240" stroke="#86efac" stroke-width="1"/>
+        <line x1="10" y1="300" x2="690" y2="300" stroke="#86efac" stroke-width="1"/>
+        <line x1="10" y1="360" x2="690" y2="360" stroke="#86efac" stroke-width="1"/>
+        <line x1="10" y1="420" x2="690" y2="420" stroke="#86efac" stroke-width="1"/>
+      </g>
+
+      <!-- Tracks (static - always visible) -->
+      <g stroke="#22c55e" stroke-width="2" opacity=".4" fill="none">
+        <path d="M200 80 L350 80 L350 130 L440 130"/>
+        <path d="M200 90 L200 200 L350 200"/>
+        <path d="M440 80 L440 200 L550 200 L550 260"/>
+        <path d="M350 130 L350 280 L200 280"/>
+        <path d="M550 260 L550 360 L200 360"/>
+        <path d="M80 80 L80 180 L200 180"/>
+        <path d="M80 200 L80 360"/>
+        <path d="M600 80 L600 200 L550 200"/>
+      </g>
+
+      <!-- Animated data tracks (hidden until jalan tol button pressed) -->
+      <g id="activeTracks" opacity="0" style="transition:opacity .4s;">
+        <path d="M200 80 L350 80 L350 130 L440 130" stroke="#fbbf24" stroke-width="3" fill="none" class="track-active" stroke-dasharray="8 4"/>
+        <path d="M200 90 L200 200 L350 200" stroke="#86efac" stroke-width="3" fill="none" class="track-active" stroke-dasharray="8 4" style="animation-delay:.2s"/>
+        <path d="M440 80 L440 200 L550 200 L550 260" stroke="#7dd3fc" stroke-width="3" fill="none" class="track-active" stroke-dasharray="8 4" style="animation-delay:.4s"/>
+        <path d="M350 130 L350 280 L200 280" stroke="#f9a8d4" stroke-width="3" fill="none" class="track-active" stroke-dasharray="8 4" style="animation-delay:.1s"/>
+        <path d="M550 260 L550 360 L200 360" stroke="#fbbf24" stroke-width="3" fill="none" class="track-active" stroke-dasharray="8 4" style="animation-delay:.3s"/>
+        <path d="M80 80 L80 180 L200 180" stroke="#86efac" stroke-width="3" fill="none" class="track-active" stroke-dasharray="8 4" style="animation-delay:.5s"/>
+        <path d="M600 80 L600 200 L550 200" stroke="#c4b5fd" stroke-width="3" fill="none" class="track-active" stroke-dasharray="8 4" style="animation-delay:.15s"/>
+      </g>
+
+      <!-- ── CPU Socket ── -->
+      <g id="cpuSlot" class="mb-slot" onclick="showComponent('cpu')" style="cursor:pointer;">
+        <rect x="150" y="50" width="110" height="110" rx="10" fill="#1a4731" stroke="#4ade80" stroke-width="2.5"/>
+        <rect x="162" y="62" width="86" height="86" rx="6" fill="#0f2e1c" stroke="#22c55e" stroke-width="1.5"/>
+        <!-- Pin grid -->
+        <g fill="#6ee7b7" opacity=".6">
+          <circle cx="175" cy="75" r="2"/><circle cx="187" cy="75" r="2"/><circle cx="199" cy="75" r="2"/>
+          <circle cx="211" cy="75" r="2"/><circle cx="223" cy="75" r="2"/><circle cx="235" cy="75" r="2"/>
+          <circle cx="175" cy="87" r="2"/><circle cx="187" cy="87" r="2"/><circle cx="199" cy="87" r="2"/>
+          <circle cx="211" cy="87" r="2"/><circle cx="223" cy="87" r="2"/><circle cx="235" cy="87" r="2"/>
+          <circle cx="175" cy="99" r="2"/><circle cx="199" cy="99" r="2"/><circle cx="223" cy="99" r="2"/><circle cx="235" cy="99" r="2"/>
+          <circle cx="175" cy="111" r="2"/><circle cx="187" cy="111" r="2"/><circle cx="199" cy="111" r="2"/>
+          <circle cx="211" cy="111" r="2"/><circle cx="223" cy="111" r="2"/><circle cx="235" cy="111" r="2"/>
+          <circle cx="175" cy="123" r="2"/><circle cx="187" cy="123" r="2"/><circle cx="199" cy="123" r="2"/>
+          <circle cx="211" cy="123" r="2"/><circle cx="223" cy="123" r="2"/><circle cx="235" cy="123" r="2"/>
+          <circle cx="175" cy="135" r="2"/><circle cx="187" cy="135" r="2"/><circle cx="199" cy="135" r="2"/>
+          <circle cx="211" cy="135" r="2"/><circle cx="223" cy="135" r="2"/><circle cx="235" cy="135" r="2"/>
+        </g>
+        <!-- Label -->
+        <text x="205" y="164" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="13" font-weight="bold">CPU Socket</text>
+      </g>
+      <!-- CPU chip placed -->
+      <g id="cpuChip" opacity="0" style="transition:opacity .3s;pointer-events:none;">
+        <rect x="166" y="66" width="78" height="78" rx="5" fill="#374151" stroke="#fbbf24" stroke-width="2.5"/>
+        <rect x="176" y="76" width="58" height="58" rx="4" fill="#1f2937"/>
+        <text x="205" y="106" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="14">CPU</text>
+        <text x="205" y="124" text-anchor="middle" fill="#86efac" font-family="Nunito,sans-serif" font-size="10">🧠 Otak</text>
+      </g>
+
+      <!-- ── RAM Slots ── -->
+      <g id="ramSlot" class="mb-slot" onclick="showComponent('ram')" style="cursor:pointer;">
+        <rect x="300" y="50" width="30" height="120" rx="5" fill="#1a3a5c" stroke="#7dd3fc" stroke-width="2"/>
+        <rect x="340" y="50" width="30" height="120" rx="5" fill="#1a3a5c" stroke="#7dd3fc" stroke-width="2"/>
+        <rect x="380" y="50" width="30" height="120" rx="5" fill="#1e3a5c" stroke="#93c5fd" stroke-width="2" opacity=".5"/>
+        <rect x="420" y="50" width="30" height="120" rx="5" fill="#1e3a5c" stroke="#93c5fd" stroke-width="2" opacity=".5"/>
+        <!-- Notches -->
+        <rect x="300" y="155" width="30" height="6" rx="2" fill="#0c4a6e"/>
+        <rect x="340" y="155" width="30" height="6" rx="2" fill="#0c4a6e"/>
+        <text x="375" y="186" text-anchor="middle" fill="#7dd3fc" font-family="Fredoka One,cursive" font-size="12">RAM Slots</text>
+      </g>
+      <!-- RAM chips placed -->
+      <g id="ramChips" opacity="0" style="transition:opacity .3s;pointer-events:none;">
+        <rect x="302" y="52" width="26" height="116" rx="4" fill="#1e40af" stroke="#7dd3fc" stroke-width="1.5"/>
+        <text x="315" y="108" text-anchor="middle" fill="white" font-family="Fredoka One,cursive" font-size="9" transform="rotate(-90 315 108)">RAM</text>
+        <rect x="342" y="52" width="26" height="116" rx="4" fill="#1e40af" stroke="#7dd3fc" stroke-width="1.5"/>
+        <text x="355" y="108" text-anchor="middle" fill="white" font-family="Fredoka One,cursive" font-size="9" transform="rotate(-90 355 108)">RAM</text>
+      </g>
+
+      <!-- ── PCIe / GPU Slot ── -->
+      <g id="gpuSlot" class="mb-slot" onclick="showComponent('gpu')" style="cursor:pointer;">
+        <rect x="60" y="200" width="400" height="28" rx="5" fill="#2d1b4e" stroke="#c084fc" stroke-width="2"/>
+        <rect x="60" y="200" width="40" height="28" rx="3" fill="#1e0b3e"/>
+        <text x="270" y="252" text-anchor="middle" fill="#c084fc" font-family="Fredoka One,cursive" font-size="12">PCIe Slot (GPU / Kartu Grafis)</text>
+      </g>
+
+      <!-- ── SATA Ports (HDD/SSD) ── -->
+      <g id="sataSlot" class="mb-slot" onclick="showComponent('hdd')" style="cursor:pointer;">
+        <rect x="530" y="200" width="28" height="36" rx="4" fill="#422006" stroke="#fb923c" stroke-width="2"/>
+        <rect x="565" y="200" width="28" height="36" rx="4" fill="#422006" stroke="#fb923c" stroke-width="2"/>
+        <rect x="600" y="200" width="28" height="36" rx="4" fill="#422006" stroke="#fdba74" stroke-width="2" opacity=".6"/>
+        <text x="580" y="256" text-anchor="middle" fill="#fb923c" font-family="Fredoka One,cursive" font-size="11">SATA Ports</text>
+        <text x="580" y="270" text-anchor="middle" fill="#fdba74" font-family="Fredoka One,cursive" font-size="10">(HDD/SSD)</text>
+      </g>
+
+      <!-- ── Power Connectors ── -->
+      <g id="pwrSlot" class="mb-slot" onclick="showComponent('psu')" style="cursor:pointer;">
+        <rect x="530" y="50" width="50" height="80" rx="6" fill="#1a1a1a" stroke="#fbbf24" stroke-width="2.5"/>
+        <g fill="#fbbf24" opacity=".7">
+          <rect x="538" y="60" width="8" height="14" rx="2"/>
+          <rect x="550" y="60" width="8" height="14" rx="2"/>
+          <rect x="562" y="60" width="8" height="14" rx="2"/>
+          <rect x="538" y="80" width="8" height="14" rx="2"/>
+          <rect x="550" y="80" width="8" height="14" rx="2"/>
+          <rect x="562" y="80" width="8" height="14" rx="2"/>
+          <rect x="538" y="100" width="8" height="14" rx="2"/>
+          <rect x="550" y="100" width="8" height="14" rx="2"/>
+          <rect x="562" y="100" width="8" height="14" rx="2"/>
+        </g>
+        <text x="555" y="148" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="11">Power</text>
+        <text x="555" y="162" text-anchor="middle" fill="#fde68a" font-family="Fredoka One,cursive" font-size="10">Connector</text>
+      </g>
+
+      <!-- ── Chipset ── -->
+      <g onclick="showComponent('chipset')" style="cursor:pointer;">
+        <rect x="60" y="280" width="80" height="80" rx="8" fill="#1c1917" stroke="#f97316" stroke-width="2.5"/>
+        <rect x="70" y="290" width="60" height="60" rx="5" fill="#292524"/>
+        <text x="100" y="324" text-anchor="middle" fill="#f97316" font-family="Fredoka One,cursive" font-size="12">Chipset</text>
+        <text x="100" y="342" text-anchor="middle" fill="#fed7aa" font-family="Nunito,sans-serif" font-size="10">🔗 Hub</text>
+      </g>
+
+      <!-- ── USB Ports ── -->
+      <g onclick="showComponent('usb')" style="cursor:pointer;">
+        <rect x="60" y="380" width="380" height="40" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+        <g fill="#38bdf8" opacity=".8">
+          <rect x="72" y="388" width="18" height="24" rx="3"/>
+          <rect x="96" y="388" width="18" height="24" rx="3"/>
+          <rect x="120" y="388" width="18" height="24" rx="3"/>
+          <rect x="144" y="388" width="18" height="24" rx="3"/>
+          <rect x="180" y="390" width="14" height="12" rx="2"/>
+          <rect x="198" y="390" width="14" height="12" rx="2"/>
+          <rect x="240" y="390" width="24" height="20" rx="3" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+          <rect x="270" y="390" width="24" height="20" rx="3" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+        </g>
+        <text x="360" y="405" text-anchor="middle" fill="#38bdf8" font-family="Fredoka One,cursive" font-size="11">USB &amp; Port I/O</text>
+      </g>
+
+      <!-- ── M.2 SSD Slot ── -->
+      <g onclick="showComponent('m2')" style="cursor:pointer;">
+        <rect x="530" y="290" width="140" height="16" rx="4" fill="#1c2e1c" stroke="#86efac" stroke-width="1.5"/>
+        <text x="600" y="324" text-anchor="middle" fill="#86efac" font-family="Fredoka One,cursive" font-size="11">M.2 SSD Slot</text>
+      </g>
+
+      <!-- ── BIOS Chip ── -->
+      <g onclick="showComponent('bios')" style="cursor:pointer;">
+        <rect x="530" y="350" width="60" height="40" rx="5" fill="#1c1917" stroke="#fca5a5" stroke-width="2"/>
+        <text x="560" y="374" text-anchor="middle" fill="#fca5a5" font-family="Fredoka One,cursive" font-size="12">BIOS</text>
+      </g>
+
+      <!-- ── Capacitors decoration ── -->
+      <g fill="none">
+        <ellipse cx="470" cy="70" rx="8" ry="18" fill="#1e3a1e" stroke="#4ade80" stroke-width="1.5"/>
+        <ellipse cx="490" cy="70" rx="8" ry="18" fill="#1e3a1e" stroke="#4ade80" stroke-width="1.5"/>
+        <ellipse cx="470" cy="108" rx="8" ry="18" fill="#1e3a1e" stroke="#4ade80" stroke-width="1.5"/>
+        <ellipse cx="490" cy="108" rx="8" ry="18" fill="#1e3a1e" stroke="#4ade80" stroke-width="1.5"/>
+        <line x1="470" y1="52" x2="470" y2="58" stroke="#4ade80" stroke-width="1.5"/>
+        <line x1="490" y1="52" x2="490" y2="58" stroke="#4ade80" stroke-width="1.5"/>
+        <line x1="470" y1="90" x2="470" y2="96" stroke="#4ade80" stroke-width="1.5"/>
+        <line x1="490" y1="90" x2="490" y2="96" stroke="#4ade80" stroke-width="1.5"/>
+      </g>
+
+      <!-- Click hint text -->
+      <text x="350" y="435" text-anchor="middle" fill="#6ee7b7" font-family="Nunito,sans-serif" font-size="11" opacity=".7">👆 Klik komponen untuk belajar!</text>
+    </svg>
+
+    <!-- Info popup overlay -->
+    <div id="infoBox" class="info-popup" style="top:10px;right:10px;">
+      <button onclick="closeInfo()" style="position:absolute;top:6px;right:10px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#ea580c;">✕</button>
+      <p id="infoTitle" style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#ea580c;margin-bottom:.4rem;padding-right:1.5rem;"></p>
+      <p id="infoText" style="font-size:.88rem;font-weight:700;color:#44403c;line-height:1.5;"></p>
+      <p id="infoEmoji" style="font-size:1.6rem;margin-top:.4rem;"></p>
+    </div>
+  </div>
+
+  <!-- Jalan Tol Button -->
+  <div class="text-center mt-6">
+    <button class="btn-orange" id="jalTolBtn" onclick="activateJalanTol()">
+      ⚡ Hidupkan Jalan Tol!
+    </button>
+    <p class="text-gray-500 font-semibold text-sm mt-2" id="jalTolHint">Klik untuk lihat data mengalir di motherboard! 🏎️💨</p>
+  </div>
+</section>
+
+<!-- ══════ KOMPONEN CARDS ══════ -->
+<section class="max-w-3xl mx-auto px-4 py-6">
+  <div class="text-center mb-5">
+    <h2 class="sec-title text-2xl" style="color:#1c1917;">🔍 Kenali Komponennya!</h2>
+  </div>
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+
+    <div class="comp-card p-4 text-center" onclick="highlightComp('cpu')">
+      <div class="text-4xl mb-2">🧠</div>
+      <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#ea580c;">CPU</p>
+      <p class="text-xs font-bold text-gray-500 mt-1">Otak Komputer</p>
+      <p class="text-xs text-gray-400 mt-1">"Berpikir cepat!"</p>
+    </div>
+
+    <div class="comp-card p-4 text-center" onclick="highlightComp('ram')">
+      <div class="text-4xl mb-2">📋</div>
+      <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#3b82f6;">RAM</p>
+      <p class="text-xs font-bold text-gray-500 mt-1">Meja Kerja</p>
+      <p class="text-xs text-gray-400 mt-1">"Ingatan sementara!"</p>
+    </div>
+
+    <div class="comp-card p-4 text-center" onclick="highlightComp('hdd')">
+      <div class="text-4xl mb-2">💾</div>
+      <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#f97316;">HDD/SSD</p>
+      <p class="text-xs font-bold text-gray-500 mt-1">Lemari Penyimpanan</p>
+      <p class="text-xs text-gray-400 mt-1">"Simpan selamanya!"</p>
+    </div>
+
+    <div class="comp-card p-4 text-center" onclick="highlightComp('psu')">
+      <div class="text-4xl mb-2">⚡</div>
+      <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#fbbf24;">Power Supply</p>
+      <p class="text-xs font-bold text-gray-500 mt-1">Jantung Listrik</p>
+      <p class="text-xs text-gray-400 mt-1">"Sumber energi!"</p>
+    </div>
+  </div>
+
+  <!-- Penjelasan Motherboard -->
+  <div class="mt-6 bg-gradient-to-r from-orange-50 to-amber-50 border-3 border-orange-200 rounded-2xl p-5" style="border:3px solid #fed7aa;">
+    <h3 style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#ea580c;margin-bottom:.8rem;">🏠 Mengapa Motherboard Penting?</h3>
+    <div class="grid sm:grid-cols-2 gap-3">
+      <div class="flex items-start gap-3 bg-white rounded-xl p-3 border-2 border-orange-100">
+        <span class="text-2xl flex-shrink-0">🔗</span>
+        <div>
+          <p class="font-extrabold text-sm text-gray-800">Menghubungkan Semua</p>
+          <p class="text-xs text-gray-500 mt-1">Seperti jalan besar yang menghubungkan semua kota — CPU, RAM, HDD, dan GPU semua terhubung lewat motherboard!</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3 bg-white rounded-xl p-3 border-2 border-amber-100">
+        <span class="text-2xl flex-shrink-0">🏎️</span>
+        <div>
+          <p class="font-extrabold text-sm text-gray-800">Jalan Tol Data</p>
+          <p class="text-xs text-gray-500 mt-1">Data berjalan super cepat lewat "jalur" di motherboard, seperti mobil di jalan tol tanpa lampu merah!</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3 bg-white rounded-xl p-3 border-2 border-green-100">
+        <span class="text-2xl flex-shrink-0">🏠</span>
+        <div>
+          <p class="font-extrabold text-sm text-gray-800">Rumah untuk Semua</p>
+          <p class="text-xs text-gray-500 mt-1">Setiap komponen punya "kamar" sendiri — CPU punya socket-nya, RAM punya slot-nya!</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3 bg-white rounded-xl p-3 border-2 border-blue-100">
+        <span class="text-2xl flex-shrink-0">⚡</span>
+        <div>
+          <p class="font-extrabold text-sm text-gray-800">Membagi Listrik</p>
+          <p class="text-xs text-gray-500 mt-1">Motherboard juga membagikan listrik dari Power Supply ke semua komponen yang membutuhkan!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ ANALOGI SERU ══════ -->
+<section class="max-w-3xl mx-auto px-4 py-4">
+  <div class="bg-gradient-to-br from-sky-50 to-blue-50 rounded-3xl p-6 border-3 border-sky-200" style="border:3px solid #bae6fd;">
+    <div class="text-center mb-4">
+      <h2 class="sec-title text-xl" style="color:#0284c7;">🏙️ Bayangkan Seperti Kota!</h2>
+    </div>
+    <div class="flex flex-col sm:flex-row items-center gap-4">
+      <!-- City SVG analogy -->
+      <svg viewBox="0 0 240 160" width="220" height="160" style="flex-shrink:0;border-radius:16px;overflow:hidden;">
+        <!-- Sky -->
+        <rect width="240" height="160" fill="#e0f2fe"/>
+        <!-- Ground -->
+        <rect x="0" y="120" width="240" height="40" fill="#d4edda"/>
+        <!-- Roads -->
+        <rect x="0" y="110" width="240" height="12" fill="#94a3b8"/>
+        <rect x="90" y="0" width="12" height="160" fill="#94a3b8"/>
+        <!-- Road markings -->
+        <line x1="0" y1="116" x2="240" y2="116" stroke="white" stroke-width="1.5" stroke-dasharray="12 8"/>
+        <line x1="96" y1="0" x2="96" y2="160" stroke="white" stroke-width="1.5" stroke-dasharray="12 8"/>
+        <!-- CPU building -->
+        <rect x="10" y="60" width="60" height="52" rx="4" fill="#f59e0b"/>
+        <rect x="20" y="70" width="14" height="14" rx="2" fill="#fef3c7"/>
+        <rect x="38" y="70" width="14" height="14" rx="2" fill="#fef3c7"/>
+        <rect x="20" y="90" width="14" height="14" rx="2" fill="#fef3c7"/>
+        <rect x="38" y="90" width="14" height="14" rx="2" fill="#fef3c7"/>
+        <text x="40" y="55" text-anchor="middle" font-family="Fredoka One,cursive" font-size="9" fill="#92400e">CPU 🧠</text>
+        <!-- RAM building -->
+        <rect x="115" y="50" width="50" height="62" rx="4" fill="#3b82f6"/>
+        <rect x="120" y="60" width="10" height="10" rx="2" fill="#bfdbfe"/>
+        <rect x="134" y="60" width="10" height="10" rx="2" fill="#bfdbfe"/>
+        <rect x="148" y="60" width="10" height="10" rx="2" fill="#bfdbfe"/>
+        <rect x="120" y="75" width="10" height="10" rx="2" fill="#bfdbfe"/>
+        <rect x="134" y="75" width="10" height="10" rx="2" fill="#bfdbfe"/>
+        <rect x="120" y="90" width="10" height="10" rx="2" fill="#bfdbfe"/>
+        <text x="140" y="44" text-anchor="middle" font-family="Fredoka One,cursive" font-size="9" fill="#1e40af">RAM 📋</text>
+        <!-- HDD building -->
+        <rect x="175" y="70" width="45" height="42" rx="4" fill="#10b981"/>
+        <text x="197" y="65" text-anchor="middle" font-family="Fredoka One,cursive" font-size="9" fill="#065f46">HDD 💾</text>
+        <!-- Cars on road -->
+        <rect x="30" y="112" width="18" height="8" rx="3" fill="#ef4444"/>
+        <rect x="140" y="112" width="18" height="8" rx="3" fill="#fbbf24"/>
+        <rect x="92" y="40" width="8" height="18" rx="3" fill="#8b5cf6" transform="rotate(90 96 50)"/>
+      </svg>
+      <div>
+        <p class="font-extrabold text-gray-700 text-sm leading-relaxed">
+          Bayangkan motherboard itu seperti <strong style="color:#0284c7;">sebuah kota!</strong> 🏙️
+        </p>
+        <ul class="mt-3 space-y-2 text-sm text-gray-600 font-semibold">
+          <li>🏛️ <strong>CPU</strong> = Kantor walikota (pusat keputusan)</li>
+          <li>📚 <strong>RAM</strong> = Perpustakaan kota (info sementara)</li>
+          <li>🏪 <strong>HDD/SSD</strong> = Gudang besar (simpan barang)</li>
+          <li>⚡ <strong>Power Supply</strong> = Pembangkit listrik kota</li>
+          <li>🛣️ <strong>Jalur motherboard</strong> = Jalan raya kota!</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ KUIS MINI ══════ -->
+<section class="max-w-3xl mx-auto px-4 py-8">
+  <div class="text-center mb-5">
+    <h2 class="sec-title text-2xl" style="color:#1c1917;">🎯 Kuis Singkat!</h2>
+    <p class="mt-3 text-gray-500 font-semibold">Jawab 3 pertanyaan yuk! 🤔</p>
+  </div>
+
+  <div class="space-y-5">
+    <!-- Q1 -->
+    <div id="q1" class="bg-white rounded-2xl p-5 border-3 border-orange-100 shadow-md" style="border:3px solid #fed7aa;">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#1c1917;" class="mb-3">
+        1. Apa fungsi utama Motherboard? 🤔
+      </p>
+      <div class="space-y-2">
+        <button class="qbtn w-full" onclick="ans(1,'a',this)">A. Menghubungkan semua komponen komputer</button>
+        <button class="qbtn w-full" onclick="ans(1,'b',this)">B. Menyimpan data permanen</button>
+        <button class="qbtn w-full" onclick="ans(1,'c',this)">C. Menampilkan gambar ke layar</button>
+      </div>
+      <p id="q1r" class="hidden mt-2 font-bold text-sm"></p>
+    </div>
+
+    <!-- Q2 -->
+    <div id="q2" class="bg-white rounded-2xl p-5 border-3 border-orange-100 shadow-md" style="border:3px solid #fed7aa;">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#1c1917;" class="mb-3">
+        2. Jalur di motherboard berguna untuk apa? 🛣️
+      </p>
+      <div class="space-y-2">
+        <button class="qbtn w-full" onclick="ans(2,'b',this)">A. Menghias motherboard supaya cantik</button>
+        <button class="qbtn w-full" onclick="ans(2,'a',this)">B. Mengalirkan data dengan cepat antar komponen</button>
+        <button class="qbtn w-full" onclick="ans(2,'b',this)">C. Memperkeras suara komputer</button>
+      </div>
+      <p id="q2r" class="hidden mt-2 font-bold text-sm"></p>
+    </div>
+
+    <!-- Q3 -->
+    <div id="q3" class="bg-white rounded-2xl p-5 border-3 border-orange-100 shadow-md" style="border:3px solid #fed7aa;">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#1c1917;" class="mb-3">
+        3. Komponen mana yang dipasang di "Socket CPU" di motherboard? 🔌
+      </p>
+      <div class="space-y-2">
+        <button class="qbtn w-full" onclick="ans(3,'b',this)">A. RAM</button>
+        <button class="qbtn w-full" onclick="ans(3,'b',this)">B. Hard Disk</button>
+        <button class="qbtn w-full" onclick="ans(3,'a',this)">C. CPU (Processor)</button>
+      </div>
+      <p id="q3r" class="hidden mt-2 font-bold text-sm"></p>
+    </div>
+  </div>
+
+  <!-- Quiz Result -->
+  <div id="quizFinal" class="hidden mt-6 text-center bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl p-6 border-3 border-amber-200" style="border:3px solid #fde68a;">
+    <div id="qfEmoji" class="text-5xl mb-2"></div>
+    <p id="qfText" style="font-family:'Fredoka One',cursive;font-size:1.4rem;"></p>
+    <p id="qfSub" class="text-gray-500 font-semibold mt-1 text-sm"></p>
+  </div>
+</section>
+
+<!-- ══════ AKTIVITAS ══════ -->
+<section class="max-w-3xl mx-auto px-4 py-6">
+  <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-6 border-3 border-green-200" style="border:3px solid #bbf7d0;">
+    <div class="text-center mb-4">
+      <h2 class="sec-title text-xl" style="color:#059669;">✏️ Tugas Hari Ini!</h2>
+    </div>
+    <div class="flex items-start gap-3 mb-5">
+      <span class="text-3xl flex-shrink-0">🎨</span>
+      <p class="font-bold text-gray-700 text-sm leading-relaxed">
+        <strong style="color:#059669;">Gambarlah</strong> rumah besar Motherboard kamu sendiri dan taruh <strong>CPU, RAM, HDD, dan Power Supply</strong> di tempat yang benar! Lihat gambar motherboard di atas sebagai panduan ya! 🏠
+      </p>
+    </div>
+
+    <!-- Template Motherboard kosong -->
+    <div class="bg-white rounded-2xl p-4 border-2 border-dashed border-green-300 mb-5">
+      <p class="text-center font-bold text-green-600 text-sm mb-3">📝 Template Motherboard (Gambarlah di sini!)</p>
+      <svg viewBox="0 0 600 350" width="100%" style="max-height:280px;border-radius:12px;background:#1a2e1a;border:2px solid #4ade80;">
+        <!-- Board outline -->
+        <rect x="10" y="10" width="580" height="330" rx="14" fill="none" stroke="#4ade80" stroke-width="3" stroke-dasharray="10 5"/>
+
+        <!-- CPU socket kosong -->
+        <rect x="80" y="40" width="100" height="100" rx="8" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="8 4"/>
+        <text x="130" y="90" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="13" opacity=".7">CPU</text>
+        <text x="130" y="110" text-anchor="middle" fill="#fde68a" font-family="Nunito,sans-serif" font-size="10" opacity=".5">Socket</text>
+        <text x="130" y="158" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="11">↑ Taruh CPU di sini</text>
+
+        <!-- RAM slots kosong -->
+        <rect x="240" y="40" width="24" height="100" rx="4" fill="none" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="6 3"/>
+        <rect x="272" y="40" width="24" height="100" rx="4" fill="none" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="6 3"/>
+        <rect x="304" y="40" width="24" height="100" rx="4" fill="none" stroke="#93c5fd" stroke-width="2" stroke-dasharray="6 3" opacity=".5"/>
+        <rect x="336" y="40" width="24" height="100" rx="4" fill="none" stroke="#93c5fd" stroke-width="2" stroke-dasharray="6 3" opacity=".5"/>
+        <text x="292" y="162" text-anchor="middle" fill="#7dd3fc" font-family="Fredoka One,cursive" font-size="11">↑ RAM di sini</text>
+
+        <!-- HDD/SATA kosong -->
+        <rect x="460" y="40" width="26" height="34" rx="4" fill="none" stroke="#fb923c" stroke-width="2" stroke-dasharray="6 3"/>
+        <rect x="494" y="40" width="26" height="34" rx="4" fill="none" stroke="#fb923c" stroke-width="2" stroke-dasharray="6 3" opacity=".7"/>
+        <text x="480" y="96" text-anchor="middle" fill="#fb923c" font-family="Fredoka One,cursive" font-size="11">↑ SATA/HDD</text>
+
+        <!-- Power connector kosong -->
+        <rect x="460" y="130" width="100" height="80" rx="6" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="8 4"/>
+        <text x="510" y="176" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="11">Power</text>
+        <text x="510" y="194" text-anchor="middle" fill="#fde68a" font-family="Fredoka One,cursive" font-size="10">Connector</text>
+
+        <!-- PCIe kosong -->
+        <rect x="50" y="180" width="360" height="22" rx="4" fill="none" stroke="#c084fc" stroke-width="2" stroke-dasharray="8 4"/>
+        <text x="240" y="222" text-anchor="middle" fill="#c084fc" font-family="Fredoka One,cursive" font-size="11">↑ PCIe Slot (GPU)</text>
+
+        <!-- USB kosong -->
+        <rect x="50" y="260" width="320" height="32" rx="5" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="8 4"/>
+        <text x="210" y="310" text-anchor="middle" fill="#38bdf8" font-family="Fredoka One,cursive" font-size="11">↑ USB &amp; Port I/O</text>
+
+        <!-- Helpful labels -->
+        <text x="300" y="336" text-anchor="middle" fill="#4ade80" font-family="Nunito,sans-serif" font-size="10" opacity=".6">✏️ Gambarlah komponen di kotak-kotak yang ada!</text>
+      </svg>
+    </div>
+
+    <!-- Checklist aktivitas -->
+    <p class="font-bold text-gray-700 mb-3 text-sm">✅ Checklist setelah menggambar:</p>
+    <div class="space-y-2" id="actList">
+      <div id="ac1" class="flex items-center gap-3 bg-white rounded-xl p-3 border-2 border-green-100 cursor-pointer" onclick="actCheck(1)">
+        <input type="checkbox" id="cb1" class="w-5 h-5 accent-green-500" onclick="event.stopPropagation();actCheck(1)">
+        <span class="font-bold text-gray-700 text-sm">Aku sudah menggambar CPU di socket-nya ✓</span>
+      </div>
+      <div id="ac2" class="flex items-center gap-3 bg-white rounded-xl p-3 border-2 border-green-100 cursor-pointer" onclick="actCheck(2)">
+        <input type="checkbox" id="cb2" class="w-5 h-5 accent-green-500" onclick="event.stopPropagation();actCheck(2)">
+        <span class="font-bold text-gray-700 text-sm">Aku sudah menggambar RAM di slotnya ✓</span>
+      </div>
+      <div id="ac3" class="flex items-center gap-3 bg-white rounded-xl p-3 border-2 border-green-100 cursor-pointer" onclick="actCheck(3)">
+        <input type="checkbox" id="cb3" class="w-5 h-5 accent-green-500" onclick="event.stopPropagation();actCheck(3)">
+        <span class="font-bold text-gray-700 text-sm">Aku sudah menggambar HDD/SSD di SATA port ✓</span>
+      </div>
+      <div id="ac4" class="flex items-center gap-3 bg-white rounded-xl p-3 border-2 border-green-100 cursor-pointer" onclick="actCheck(4)">
+        <input type="checkbox" id="cb4" class="w-5 h-5 accent-green-500" onclick="event.stopPropagation();actCheck(4)">
+        <span class="font-bold text-gray-700 text-sm">Aku sudah menggambar jalur-jalur jalan tol ✓</span>
+      </div>
+    </div>
+    <div id="actDone" class="hidden mt-4 text-center bg-green-100 rounded-xl p-4 border-2 border-green-300">
+      <p class="text-3xl mb-1">🎉</p>
+      <p style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#059669;">Aktivitas selesai! Kamu luar biasa, Aslan! 🌟</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ RANGKUMAN ══════ -->
+<section class="max-w-3xl mx-auto px-4 py-6">
+  <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 border-3 border-amber-200" style="border:3px solid #fde68a;">
+    <h2 class="text-center mb-4" style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:#d97706;">📚 Rangkuman Hari Ini</h2>
+    <div class="grid sm:grid-cols-3 gap-3 text-center">
+      <div class="bg-white rounded-xl p-4 border-2 border-amber-100">
+        <div class="text-3xl mb-2">🏠</div>
+        <p class="font-extrabold text-sm text-gray-700">Motherboard = Rumah</p>
+        <p class="text-xs text-gray-500 mt-1">Tempat semua komponen tinggal</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 border-2 border-amber-100">
+        <div class="text-3xl mb-2">🛣️</div>
+        <p class="font-extrabold text-sm text-gray-700">Jalur = Jalan Tol</p>
+        <p class="text-xs text-gray-500 mt-1">Data mengalir super cepat</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 border-2 border-amber-100">
+        <div class="text-3xl mb-2">🔗</div>
+        <p class="font-extrabold text-sm text-gray-700">Motherboard = Penghubung</p>
+        <p class="text-xs text-gray-500 mt-1">CPU+RAM+HDD+PSU terhubung di sini</p>
+      </div>
+    </div>
+    <div class="mt-4 text-center bg-orange-100 rounded-xl p-3">
+      <p class="font-bold text-orange-700 text-sm">
+        💬 <em>"Tanpa motherboard, CPU, RAM, dan HDD tidak bisa ngobrol satu sama lain!"</em> – Aslan 😄
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="max-w-3xl mx-auto px-4 pb-10 text-center">
+  <div class="bg-gradient-to-r from-orange-100 to-amber-100 rounded-3xl p-6 border-2 border-orange-200">
+    <!-- Progress visual -->
+    <div class="flex justify-center gap-1 mb-4 flex-wrap">
+      <div class="w-7 h-7 rounded-full bg-green-400 border-2 border-white flex items-center justify-center text-white font-bold text-xs shadow">1</div>
+      <div class="w-7 h-7 rounded-full bg-green-400 border-2 border-white flex items-center justify-center text-white font-bold text-xs shadow">2</div>
+      <div class="w-7 h-7 rounded-full bg-green-400 border-2 border-white flex items-center justify-center text-white font-bold text-xs shadow">3</div>
+      <div class="w-7 h-7 rounded-full bg-orange-400 border-3 border-orange-600 flex items-center justify-center text-white font-bold text-xs shadow-lg" style="border:3px solid #c2410c;">4</div>
+      <div class="w-7 h-7 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center text-gray-400 font-bold text-xs">5</div>
+      <span class="w-7 h-7 flex items-center justify-center text-gray-400 text-xs font-bold">···</span>
+      <div class="w-7 h-7 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center text-gray-400 font-bold text-xs">30</div>
+    </div>
+
+    <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#ea580c;">Hari 4 dari 30 🎓</p>
+
+    <!-- Aslan kecil -->
+    <div class="flex justify-center my-3">
+      <svg viewBox="0 0 60 60" width="64" height="64" class="aslan-bounce">
+        <circle cx="30" cy="22" r="16" fill="#FBBF24"/>
+        <ellipse cx="30" cy="10" rx="16" ry="8" fill="#1C1917"/>
+        <ellipse cx="18" cy="14" rx="6" ry="5" fill="#1C1917"/>
+        <ellipse cx="42" cy="14" rx="6" ry="5" fill="#1C1917"/>
+        <circle cx="23" cy="22" r="3" fill="white"/>
+        <circle cx="37" cy="22" r="3" fill="white"/>
+        <circle cx="24" cy="23" r="1.5" fill="#1C1917"/>
+        <circle cx="38" cy="23" r="1.5" fill="#1C1917"/>
+        <path d="M22 30 Q30 36 38 30" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="18" cy="27" r="3" fill="#FCA5A5" opacity=".6"/>
+        <circle cx="42" cy="27" r="3" fill="#FCA5A5" opacity=".6"/>
+        <ellipse cx="30" cy="48" rx="14" ry="14" fill="#3B82F6"/>
+      </svg>
+    </div>
+
+    <p style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#1c1917;">
+      Kamu sudah mengenal <span style="color:#ea580c;">4 bagian penting</span> dalam komputer, Aslan!
+    </p>
+    <p class="font-bold text-gray-600 mt-1">CPU 🧠 + RAM 📋 + HDD 💾 + Motherboard 🏠 = <span style="color:#f97316;">Luar Biasa!</span> 🌟</p>
+
+    <div class="mt-4 flex justify-center gap-2 flex-wrap text-xs text-gray-400 font-semibold">
+      <span>📅 Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span>·</span>
+      <span>Seri 30 Hari Belajar Komputer</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Component info data ──
+const compData = {
+  cpu: {
+    title: '🧠 CPU – Otak Komputer',
+    text: 'CPU adalah otak komputer! Semua perhitungan dan keputusan dilakukan di sini. CPU dipasang di "socket" khusus di motherboard.',
+    emoji: '💻⚡'
+  },
+  ram: {
+    title: '📋 RAM – Meja Kerja',
+    text: 'RAM adalah memori sementara. Data yang sedang dipakai disimpan di sini. Makin besar RAM, makin banyak program yang bisa dibuka!',
+    emoji: '🚀✨'
+  },
+  hdd: {
+    title: '💾 HDD/SSD – Lemari Besar',
+    text: 'Tempat menyimpan semua file, foto, video, dan game! HDD pakai piringan berputar, SSD pakai chip (lebih cepat!).',
+    emoji: '📁🗄️'
+  },
+  psu: {
+    title: '⚡ Power Supply – Sumber Listrik',
+    text: 'Power Supply mengubah listrik dari stopkontak menjadi listrik yang bisa dipakai komputer. Tanpanya, komputer tidak bisa nyala!',
+    emoji: '🔋💡'
+  },
+  gpu: {
+    title: '🎮 GPU – Kartu Grafis',
+    text: 'GPU memproses gambar dan video. Penting banget buat game dan desain grafis! Dipasang di slot PCIe di motherboard.',
+    emoji: '🖼️🎯'
+  },
+  chipset: {
+    title: '🔗 Chipset – Manajer Lalu Lintas',
+    text: 'Chipset mengatur aliran data antara CPU, RAM, dan komponen lain. Seperti polisi lalu lintas di persimpangan jalan!',
+    emoji: '🚦🔧'
+  },
+  usb: {
+    title: '🔌 Port USB & I/O',
+    text: 'Port ini untuk menghubungkan perangkat luar seperti mouse, keyboard, flashdisk, dan monitor ke komputer!',
+    emoji: '🖱️⌨️'
+  },
+  m2: {
+    title: '💨 M.2 SSD – Super Cepat!',
+    text: 'Slot M.2 untuk SSD generasi terbaru yang sangat cepat! Lebih kecil dari HDD biasa tapi bisa simpan banyak data.',
+    emoji: '⚡📦'
+  },
+  bios: {
+    title: '🔧 BIOS Chip',
+    text: 'BIOS adalah program pertama yang berjalan saat komputer dinyalakan. Dia "membangunkan" semua komponen dan menyiapkan sistem!',
+    emoji: '🌅🔑'
+  }
+};
+
+function showComponent(id) {
+  const d = compData[id];
+  if (!d) return;
+  const box = document.getElementById('infoBox');
+  document.getElementById('infoTitle').textContent = d.title;
+  document.getElementById('infoText').textContent = d.text;
+  document.getElementById('infoEmoji').textContent = d.emoji;
+  box.classList.add('show');
+
+  // Show chip if cpu or ram
+  if (id === 'cpu') {
+    document.getElementById('cpuChip').style.opacity = '1';
+  }
+  if (id === 'ram') {
+    document.getElementById('ramChips').style.opacity = '1';
+  }
+
+  // Float emoji near board
+  const stage = document.getElementById('mbBoard');
+  const emojis = ['✨','⚡','💡','🎉'];
+  emojis.forEach((e, i) => {
+    const fl = document.createElement('div');
+    fl.className = 'float-emoji';
+    fl.textContent = e;
+    fl.style.cssText = `left:${20+Math.random()*60}%;top:${30+Math.random()*40}%;animation-delay:${i*.15}s;z-index:30;`;
+    stage.appendChild(fl);
+    setTimeout(()=>fl.remove(), 1100);
+  });
+}
+
+function closeInfo() {
+  document.getElementById('infoBox').classList.remove('show');
+}
+
+// ── Jalan Tol activation ──
+let jalActive = false;
+function activateJalanTol() {
+  jalActive = !jalActive;
+  const overlay = document.getElementById('activeTracks');
+  const glowO = document.getElementById('mbGlowOverlay');
+  const btn = document.getElementById('jalTolBtn');
+  const hint = document.getElementById('jalTolHint');
+
+  if (jalActive) {
+    overlay.style.opacity = '1';
+    glowO.style.opacity = '1';
+    glowO.className = 'mb-track-on absolute inset-0 rounded-3xl pointer-events-none';
+    btn.textContent = '🔴 Matikan Jalan Tol';
+    hint.textContent = '🏎️ Data sedang mengalir! Keren banget ya! ✨';
+    // Confetti
+    spawnConfetti();
+  } else {
+    overlay.style.opacity = '0';
+    glowO.style.opacity = '0';
+    btn.textContent = '⚡ Hidupkan Jalan Tol!';
+    hint.textContent = 'Klik untuk lihat data mengalir di motherboard! 🏎️💨';
+  }
+}
+
+function spawnConfetti() {
+  const colors = ['#f97316','#fbbf24','#10b981','#38bdf8','#a78bfa','#34d399'];
+  for (let i = 0; i < 24; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `
+      left:${20+Math.random()*60}%;
+      top:${30+Math.random()*30}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --tx:${(Math.random()-.5)*260}px;
+      --ty:${-60-Math.random()*160}px;
+      animation-delay:${Math.random()*.4}s;
+      border-radius:${Math.random()>.5?'50%':'3px'};
+    `;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(), 1500);
+  }
+}
+
+// ── Highlight comp card ──
+function highlightComp(id) {
+  showComponent(id);
+  // Also scroll to MB
+  document.getElementById('mbBoard').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+// ── Quiz ──
+let qAnswered = {1:false,2:false,3:false};
+let qScore = 0;
+
+function ans(n, correct, btn) {
+  if (qAnswered[n]) return;
+  qAnswered[n] = true;
+
+  const btns = btn.closest('#q'+n).querySelectorAll('.qbtn');
+  btns.forEach(b=>b.disabled=true);
+
+  const r = document.getElementById('q'+n+'r');
+  r.classList.remove('hidden');
+
+  if (correct === 'a') {
+    qScore++;
+    btn.style.background='#dcfce7'; btn.style.borderColor='#16a34a';
+    r.textContent='✅ Betul banget! Kamu pintar! 🌟'; r.style.color='#16a34a';
+    spawnConfettiSmall(btn);
+  } else {
+    btn.style.background='#fee2e2'; btn.style.borderColor='#dc2626';
+    r.style.color='#dc2626';
+    if (n===1) r.textContent='❌ Jawabannya A – Motherboard menghubungkan semua komponen! 🔗';
+    if (n===2) r.textContent='❌ Jawabannya B – Jalur = mengalirkan data antar komponen! 🛣️';
+    if (n===3) r.textContent='❌ Jawabannya C – CPU dipasang di socket CPU! 🧠';
+  }
+
+  if (Object.values(qAnswered).every(v=>v)) {
+    setTimeout(()=>{
+      const f = document.getElementById('quizFinal');
+      f.classList.remove('hidden');
+      f.scrollIntoView({behavior:'smooth',block:'center'});
+      const e=document.getElementById('qfEmoji'), t=document.getElementById('qfText'), s=document.getElementById('qfSub');
+      if (qScore===3){ e.textContent='🏆'; t.textContent='Sempurna! 3/3 – Kamu ahli Motherboard!'; t.style.color='#ea580c'; s.textContent='Motherboard rumah yang rapi banget! 🏠✨'; spawnConfetti(); }
+      else if(qScore===2){ e.textContent='⭐'; t.textContent=`Bagus! 2/3 Benar!`; t.style.color='#f97316'; s.textContent='Hampir sempurna! Baca ulang sekali lagi ya!'; }
+      else { e.textContent='💪'; t.textContent=`${qScore}/3 – Ayo coba lagi!`; t.style.color='#7c3aed'; s.textContent='Scroll ke atas dan pelajari lagi, kamu pasti bisa!'; }
+    }, 400);
+  }
+}
+
+function spawnConfettiSmall(el) {
+  const colors = ['#f97316','#fbbf24','#10b981','#38bdf8'];
+  const rect = el.getBoundingClientRect();
+  for (let i=0;i<10;i++) {
+    const p=document.createElement('div');
+    p.className='confetti-piece';
+    p.style.cssText=`left:${rect.left+rect.width*.5}px;top:${rect.top+rect.height*.3+window.scrollY}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --tx:${(Math.random()-.5)*150}px;--ty:${-30-Math.random()*100}px;
+      animation-delay:${Math.random()*.25}s;position:fixed;`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),1300);
+  }
+}
+
+// ── Activity checklist ──
+let actDone = 0;
+function actCheck(n) {
+  const el = document.getElementById('ac'+n);
+  const cb = document.getElementById('cb'+n);
+  cb.checked = !cb.checked;
+  const span = el.querySelector('span');
+  if (cb.checked) {
+    actDone++;
+    span.style.textDecoration='line-through';
+    span.style.opacity='.5';
+  } else {
+    actDone--;
+    span.style.textDecoration='';
+    span.style.opacity='';
+  }
+  if (actDone >= 4) {
+    document.getElementById('actDone').classList.remove('hidden');
+    spawnConfetti();
+  } else {
+    document.getElementById('actDone').classList.add('hidden');
+  }
+}
+</script>
+</body>
+</html>

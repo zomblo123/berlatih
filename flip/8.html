@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Urut-urutan Itu Penting! — Flipbook Seri 8</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Nunito:wght@400;700;800;900&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --logic-blue:#1A6CF6;
+  --logic-blue-dark:#0F4DB8;
+  --logic-blue-pale:#E8F0FF;
+  --logic-blue-mid:#C0D4FF;
+  --step-green:#16A34A;
+  --step-green-dark:#0F7035;
+  --step-green-pale:#E6F7EE;
+  --step-green-mid:#A3DBBE;
+  --block-yellow:#F59E0B;
+  --block-yellow-pale:#FEF3C7;
+  --block-red:#EF4444;
+  --block-red-pale:#FEE2E2;
+  --bg:#F0F4FF;
+  --bg-dark:#0D1B2A;
+  --surface:#FFFFFF;
+  --surface-dark:#132035;
+  --text:#0D1B2A;
+  --text-muted:#4B5563;
+  --border:#CBD5E1;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Sora',sans-serif;
+  --body:'Nunito',sans-serif;
+  --block-shadow:3px 4px 0px rgba(0,0,0,0.18);
+  --block-shadow-active:1px 2px 0px rgba(0,0,0,0.18);
+}
+
+body{
+  font-family:var(--body);
+  background:var(--bg);
+  min-height:100vh;
+  padding:16px;
+  color:var(--text);
+}
+
+/* Grid background pattern */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(26,108,246,0.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(26,108,246,0.05) 1px,transparent 1px);
+  background-size:32px 32px;
+  pointer-events:none;
+  z-index:0;
+}
+
+.wrapper{
+  position:relative;
+  z-index:1;
+  max-width:780px;
+  margin:0 auto;
+}
+
+/* ── TOP BAR ── */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.brand-pill{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--logic-blue);
+  color:#fff;
+  font-family:var(--sans);
+  font-weight:700;
+  font-size:13px;
+  padding:6px 14px;
+  border-radius:6px;
+  box-shadow:var(--block-shadow);
+  border-bottom:3px solid var(--logic-blue-dark);
+}
+.back-lib-btn{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:var(--surface);
+  border:2px solid var(--border);
+  border-bottom:3px solid var(--border);
+  color:var(--text);
+  font-family:var(--sans);
+  font-weight:700;
+  font-size:13px;
+  padding:6px 14px;
+  border-radius:6px;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all .12s;
+  box-shadow:var(--block-shadow);
+}
+.back-lib-btn:hover{
+  background:var(--logic-blue-pale);
+  border-color:var(--logic-blue);
+  color:var(--logic-blue);
+  transform:translateY(-2px);
+}
+.back-lib-btn:active{
+  transform:translateY(1px);
+  box-shadow:var(--block-shadow-active);
+  border-bottom-width:2px;
+}
+.series-badge{
+  background:var(--block-yellow-pale);
+  border:2px solid var(--block-yellow);
+  color:#92400E;
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:600;
+  padding:4px 12px;
+  border-radius:4px;
+}
+
+/* ── ROADMAP NAV ── */
+.roadmap-wrap{
+  margin-bottom:16px;
+  overflow-x:auto;
+  padding-bottom:6px;
+}
+.roadmap{
+  display:flex;
+  align-items:center;
+  gap:0;
+  min-width:max-content;
+  padding:4px 2px;
+}
+.rm-node{
+  width:32px;height:32px;
+  border-radius:6px;
+  background:var(--surface);
+  border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:700;
+  color:var(--text-muted);
+  cursor:pointer;
+  transition:all .15s;
+  flex-shrink:0;
+  box-shadow:var(--block-shadow);
+  border-bottom-width:3px;
+}
+.rm-node:hover{background:var(--logic-blue-pale);border-color:var(--logic-blue);color:var(--logic-blue)}
+.rm-node.active{background:var(--logic-blue);border-color:var(--logic-blue-dark);color:#fff;transform:translateY(-2px);box-shadow:var(--block-shadow)}
+.rm-node.done{background:var(--step-green-pale);border-color:var(--step-green);color:var(--step-green)}
+.rm-connector{
+  width:20px;height:4px;
+  background:var(--border);
+  flex-shrink:0;
+  position:relative;
+}
+.rm-connector.done{background:var(--step-green)}
+.rm-connector::after{
+  content:'';
+  position:absolute;
+  right:-4px;top:-2px;
+  border:4px solid transparent;
+  border-left-color:var(--border);
+}
+.rm-connector.done::after{border-left-color:var(--step-green)}
+
+/* ── PAGE CARD ── */
+.page-card{
+  background:var(--surface);
+  border-radius:12px;
+  border:2px solid var(--border);
+  border-bottom:5px solid var(--border);
+  overflow:hidden;
+  min-height:460px;
+  box-shadow:4px 6px 0px rgba(0,0,0,0.1);
+}
+
+/* Page color strip */
+.page-strip{
+  height:8px;
+}
+
+/* ── TWO COLUMN LAYOUT ── */
+.page-layout{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:0;
+}
+@media(min-width:600px){
+  .page-layout{
+    grid-template-columns:1fr 1fr;
+  }
+  .page-layout .illus-col{
+    border-right:2px solid var(--border);
+  }
+}
+
+.illus-col{
+  padding:28px 24px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:var(--bg);
+  min-height:220px;
+}
+.text-col{
+  padding:28px 26px 24px;
+}
+
+/* Cover layout override */
+.cover-layout{
+  grid-template-columns:1fr!important;
+  text-align:center;
+}
+.cover-layout .illus-col{
+  border-right:none!important;
+  background:linear-gradient(160deg,#0F4DB8 0%,#1A6CF6 50%,#2D85FF 100%);
+  padding:40px 24px 32px;
+}
+
+/* ── PAGE META ── */
+.page-tag{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:var(--logic-blue-pale);
+  border:1.5px solid var(--logic-blue-mid);
+  color:var(--logic-blue-dark);
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:600;
+  padding:3px 10px;
+  border-radius:4px;
+  margin-bottom:12px;
+}
+.page-title{
+  font-family:var(--sans);
+  font-size:22px;
+  font-weight:800;
+  color:var(--text);
+  line-height:1.25;
+  margin-bottom:14px;
+}
+.page-title .accent{color:var(--logic-blue)}
+.page-body{
+  font-family:var(--body);
+  font-size:14.5px;
+  line-height:1.75;
+  color:var(--text-muted);
+}
+.page-body strong{color:var(--text);font-weight:800}
+.page-body em{color:var(--logic-blue);font-style:normal;font-weight:700}
+
+/* ── BLOCK ELEMENTS (LEGO style) ── */
+.code-block{
+  background:#0D1B2A;
+  border-radius:8px;
+  border:2px solid #1E3A5F;
+  border-bottom:4px solid #0A1220;
+  padding:14px 16px;
+  margin-top:14px;
+  font-family:var(--mono);
+  font-size:12.5px;
+  line-height:1.8;
+}
+.code-line{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  opacity:0;
+  transform:translateY(-12px);
+  animation:slideDown .3s ease forwards;
+}
+.code-line.step-num{
+  color:#94A3B8;
+  font-size:11px;
+  min-width:20px;
+}
+.code-line .kw{color:#60A5FA}
+.code-line .fn{color:#34D399}
+.code-line .str{color:#FCD34D}
+.code-line .cmt{color:#4B5563;font-style:italic}
+.code-line .op{color:#F472B6}
+
+@keyframes slideDown{
+  to{opacity:1;transform:translateY(0)}
+}
+
+.lego-block{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:var(--logic-blue);
+  color:#fff;
+  font-family:var(--mono);
+  font-size:12px;
+  font-weight:600;
+  padding:8px 14px;
+  border-radius:6px;
+  border-bottom:3px solid var(--logic-blue-dark);
+  margin:6px 0;
+  position:relative;
+  box-shadow:var(--block-shadow);
+  opacity:0;
+  transform:translateY(-10px);
+  animation:slideDown .3s ease forwards;
+}
+.lego-block.green{background:var(--step-green);border-bottom-color:var(--step-green-dark)}
+.lego-block.amber{background:var(--block-yellow);border-bottom-color:#D97706;color:#1A1A1A}
+.lego-block.red{background:var(--block-red);border-bottom-color:#B91C1C}
+.lego-block::before{
+  content:'';
+  position:absolute;
+  left:-4px;top:50%;transform:translateY(-50%);
+  width:8px;height:14px;
+  background:inherit;
+  border-radius:3px 0 0 3px;
+  opacity:.7;
+}
+
+.fun-box{
+  background:var(--step-green-pale);
+  border:2px solid var(--step-green-mid);
+  border-left:5px solid var(--step-green);
+  border-radius:0 8px 8px 0;
+  padding:12px 14px;
+  margin-top:14px;
+  font-size:13px;
+  font-weight:700;
+  color:#065F46;
+  line-height:1.6;
+}
+.warn-box{
+  background:var(--block-red-pale);
+  border:2px solid #FCA5A5;
+  border-left:5px solid var(--block-red);
+  border-radius:0 8px 8px 0;
+  padding:12px 14px;
+  margin-top:14px;
+  font-size:13px;
+  font-weight:700;
+  color:#991B1B;
+  line-height:1.6;
+}
+
+/* ── ILLUSTRATIONS SVG ── */
+.illus-svg{
+  width:100%;
+  max-width:260px;
+  height:auto;
+}
+
+/* ── NAV BUTTONS ── */
+.nav-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:16px;
+  gap:10px;
+}
+.nav-btn{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--surface);
+  border:2px solid var(--border);
+  border-bottom:4px solid var(--border);
+  color:var(--text);
+  font-family:var(--sans);
+  font-weight:700;
+  font-size:14px;
+  padding:10px 20px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:all .12s;
+  flex:1;
+  justify-content:center;
+  box-shadow:var(--block-shadow);
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.nav-btn:hover:not(:disabled){
+  background:var(--logic-blue-pale);
+  border-color:var(--logic-blue);
+  color:var(--logic-blue);
+  transform:translateY(-2px);
+}
+.nav-btn:active:not(:disabled){
+  transform:translateY(1px);
+  box-shadow:var(--block-shadow-active);
+  border-bottom-width:2px;
+}
+.nav-btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+.nav-btn.primary{
+  background:var(--logic-blue);
+  border-color:var(--logic-blue-dark);
+  color:#fff;
+  flex:1.6;
+}
+.nav-btn.primary:hover:not(:disabled){
+  background:var(--logic-blue-dark);
+  border-color:#0A3C9A;
+  color:#fff;
+}
+.nav-btn.reset{
+  background:var(--block-yellow-pale);
+  border-color:var(--block-yellow);
+  color:#78350F;
+}
+.nav-btn.reset:hover{
+  background:#FEF3C7;
+  border-color:#D97706;
+}
+
+/* ── PROGRESS ── */
+.progress-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
+.progress-bar{
+  flex:1;
+  height:6px;
+  background:var(--border);
+  border-radius:3px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--logic-blue),var(--step-green));
+  border-radius:3px;
+  transition:width .4s ease;
+}
+.progress-label{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--text-muted);
+  white-space:nowrap;
+}
+
+/* ── COVER STYLES ── */
+.cover-title{
+  font-family:var(--sans);
+  font-size:28px;
+  font-weight:800;
+  color:#fff;
+  line-height:1.2;
+  margin-bottom:8px;
+}
+.cover-sub{
+  font-family:var(--body);
+  font-size:15px;
+  color:rgba(255,255,255,0.8);
+  margin-bottom:14px;
+}
+.cover-name{
+  font-family:var(--sans);
+  font-size:20px;
+  font-weight:800;
+  color:#FFD700;
+  margin-bottom:6px;
+}
+.cover-badge{
+  display:inline-block;
+  background:rgba(255,255,255,0.15);
+  border:2px solid rgba(255,255,255,0.3);
+  color:#fff;
+  font-family:var(--mono);
+  font-size:12px;
+  padding:4px 14px;
+  border-radius:6px;
+}
+
+/* ── SEQUENCE STEPPER ── */
+.seq-step{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:10px 12px;
+  background:var(--bg);
+  border-radius:8px;
+  border:1.5px solid var(--border);
+  margin:6px 0;
+  opacity:0;
+  transform:translateY(-10px);
+  animation:slideDown .35s ease forwards;
+}
+.seq-num{
+  width:26px;height:26px;
+  border-radius:5px;
+  background:var(--logic-blue);
+  color:#fff;
+  font-family:var(--mono);
+  font-size:12px;
+  font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  border-bottom:2.5px solid var(--logic-blue-dark);
+}
+.seq-text{
+  font-family:var(--body);
+  font-size:13.5px;
+  font-weight:700;
+  color:var(--text);
+  line-height:1.5;
+  padding-top:2px;
+}
+
+/* ── COMPARE TABLE ── */
+.compare-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 10px;
+  border-radius:6px;
+  margin:5px 0;
+  font-family:var(--body);
+  font-size:13px;
+  font-weight:700;
+  opacity:0;
+  transform:translateY(-8px);
+  animation:slideDown .3s ease forwards;
+}
+.compare-row.correct{background:var(--step-green-pale);color:#065F46}
+.compare-row.wrong{background:var(--block-red-pale);color:#991B1B}
+.cmp-icon{font-size:16px;flex-shrink:0}
+
+/* ── END PAGE ── */
+.end-card{
+  background:linear-gradient(135deg,var(--logic-blue),var(--logic-blue-dark));
+  border-radius:10px;
+  padding:20px;
+  text-align:center;
+  margin:14px 0;
+  border:2px solid var(--logic-blue-dark);
+  border-bottom:5px solid #0A3C9A;
+}
+.end-title{
+  font-family:var(--sans);
+  font-size:20px;
+  font-weight:800;
+  color:#fff;
+  margin-bottom:8px;
+}
+.end-text{
+  font-size:13px;
+  color:rgba(255,255,255,.9);
+  font-weight:700;
+  line-height:1.65;
+}
+.next-book{
+  background:var(--step-green-pale);
+  border:2px solid var(--step-green-mid);
+  border-left:5px solid var(--step-green);
+  border-radius:0 10px 10px 0;
+  padding:14px 16px;
+  margin-top:12px;
+}
+.next-label{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--step-green-dark);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:4px;
+}
+.next-title{
+  font-family:var(--sans);
+  font-weight:700;
+  font-size:14px;
+  color:var(--step-green-dark);
+}
+
+/* ── ROBOT ILLUSTRATION HELPERS ── */
+.robot-wrap{font-size:14px}
+
+/* ── STAGGER DELAYS ── */
+.code-line:nth-child(1),.lego-block:nth-child(1),.seq-step:nth-child(1),.compare-row:nth-child(1){animation-delay:.05s}
+.code-line:nth-child(2),.lego-block:nth-child(2),.seq-step:nth-child(2),.compare-row:nth-child(2){animation-delay:.18s}
+.code-line:nth-child(3),.lego-block:nth-child(3),.seq-step:nth-child(3),.compare-row:nth-child(3){animation-delay:.31s}
+.code-line:nth-child(4),.lego-block:nth-child(4),.seq-step:nth-child(4),.compare-row:nth-child(4){animation-delay:.44s}
+.code-line:nth-child(5),.lego-block:nth-child(5),.seq-step:nth-child(5),.compare-row:nth-child(5){animation-delay:.57s}
+.code-line:nth-child(6),.lego-block:nth-child(6),.seq-step:nth-child(6){animation-delay:.70s}
+
+@media(max-width:420px){
+  .cover-title{font-size:22px}
+  .page-title{font-size:18px}
+  .nav-btn{font-size:13px;padding:9px 14px}
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <a class="back-lib-btn" href="..\/perpustakaan.html">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Perpustakaan
+    </a>
+    <div class="brand-pill">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/><rect x="3.5" y="3.5" width="3" height="3" rx=".5" fill="rgba(255,255,255,.8)"/><rect x="7.5" y="3.5" width="3" height="3" rx=".5" fill="rgba(255,255,255,.8)"/><rect x="3.5" y="7.5" width="3" height="3" rx=".5" fill="rgba(255,255,255,.8)"/><rect x="7.5" y="7.5" width="3" height="3" rx=".5" fill="rgba(255,255,255,.8)"/></svg>
+      Flipbook Edukasi
+    </div>
+    <div class="series-badge">SERI #08</div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-row">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:7.7%"></div></div>
+    <div class="progress-label" id="progressLabel">01 / 13</div>
+  </div>
+
+  <!-- ROADMAP NAV -->
+  <div class="roadmap-wrap">
+    <div class="roadmap" id="roadmap"></div>
+  </div>
+
+  <!-- PAGE CONTAINER -->
+  <div class="page-card" id="pageCard">
+    <div id="pageContent"></div>
+  </div>
+
+  <!-- NAV BUTTONS -->
+  <div class="nav-bar">
+    <button class="nav-btn" id="prevBtn" onclick="go(-1)">← Sebelumnya</button>
+    <button class="nav-btn primary" id="nextBtn" onclick="go(1)">Selanjutnya →</button>
+  </div>
+
+</div>
+
+<script>
+const TOTAL = 13;
+let cur = 1;
+
+/* ── PAGE DATA ── */
+const pages = [
+  /* 1 COVER */
+  {
+    strip:'background:linear-gradient(90deg,#1A6CF6,#16A34A)',
+    layout:'cover',
+    illus: `<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Robot body -->
+      <rect x="80" y="110" width="80" height="70" rx="8" fill="#C0D4FF" stroke="#1A6CF6" stroke-width="2.5"/>
+      <rect x="88" y="120" width="64" height="38" rx="5" fill="#E8F0FF" stroke="#A0B8F0" stroke-width="1.5"/>
+      <!-- Robot screen lines -->
+      <rect x="95" y="127" width="20" height="5" rx="2" fill="#1A6CF6" opacity=".6"/>
+      <rect x="95" y="137" width="30" height="5" rx="2" fill="#16A34A" opacity=".7"/>
+      <rect x="95" y="147" width="15" height="5" rx="2" fill="#F59E0B" opacity=".8"/>
+      <!-- Lights -->
+      <circle cx="136" cy="129" r="4" fill="#34D399"/>
+      <circle cx="148" cy="129" r="4" fill="#F87171" opacity=".8"/>
+      <!-- Robot head -->
+      <rect x="90" y="72" width="60" height="44" rx="10" fill="#C0D4FF" stroke="#1A6CF6" stroke-width="2.5"/>
+      <rect x="100" y="82" width="18" height="12" rx="4" fill="#1A6CF6"/>
+      <rect x="122" y="82" width="18" height="12" rx="4" fill="#1A6CF6"/>
+      <circle cx="109" cy="88" r="4" fill="#60A5FA"/>
+      <circle cx="131" cy="88" r="4" fill="#60A5FA"/>
+      <rect x="105" y="100" width="30" height="6" rx="3" fill="#A0B8F0"/>
+      <!-- Antenna -->
+      <rect x="118" y="58" width="4" height="16" rx="2" fill="#1A6CF6"/>
+      <circle cx="120" cy="55" r="6" fill="#F59E0B" stroke="#D97706" stroke-width="1.5"/>
+      <!-- Arms -->
+      <rect x="48" y="118" width="34" height="12" rx="6" fill="#A0B8F0" stroke="#1A6CF6" stroke-width="1.5"/>
+      <rect x="158" y="118" width="34" height="12" rx="6" fill="#A0B8F0" stroke="#1A6CF6" stroke-width="1.5"/>
+      <!-- Legs -->
+      <rect x="95" y="180" width="18" height="16" rx="4" fill="#A0B8F0" stroke="#1A6CF6" stroke-width="1.5"/>
+      <rect x="127" y="180" width="18" height="16" rx="4" fill="#A0B8F0" stroke="#1A6CF6" stroke-width="1.5"/>
+      <!-- Aslan (captain) -->
+      <circle cx="170" cy="90" r="24" fill="#FFCC80"/>
+      <path d="M148,80 Q156,62 170,59 Q184,62 192,80" fill="#5D4037"/>
+      <ellipse cx="162" cy="88" rx="4" ry="5" fill="#1A237E"/>
+      <ellipse cx="178" cy="88" rx="4" ry="5" fill="#1A237E"/>
+      <path d="M163,101 Q170,107 177,101" stroke="#E64A19" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <rect x="156" y="114" width="28" height="36" rx="5" fill="#1A6CF6"/>
+      <text x="170" y="138" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="11" font-weight="700">&lt;/&gt;</text>
+      <!-- Remote control -->
+      <rect x="30" y="95" width="30" height="42" rx="5" fill="#0F4DB8" stroke="#1A6CF6" stroke-width="1.5"/>
+      <circle cx="45" cy="108" r="5" fill="#EF4444"/>
+      <circle cx="45" cy="120" r="5" fill="#34D399"/>
+      <circle cx="45" cy="132" r="5" fill="#F59E0B"/>
+      <!-- Command arrows -->
+      <text x="66" y="120" fill="#FFD700" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">→</text>
+      <!-- Sequence blocks -->
+      <rect x="10" y="160" width="52" height="14" rx="4" fill="#1A6CF6" stroke="#0F4DB8" stroke-width="1"/>
+      <text x="36" y="171" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">step_1()</text>
+      <rect x="72" y="160" width="52" height="14" rx="4" fill="#16A34A" stroke="#0F7035" stroke-width="1"/>
+      <text x="98" y="171" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">step_2()</text>
+      <rect x="138" y="160" width="52" height="14" rx="4" fill="#F59E0B" stroke="#D97706" stroke-width="1"/>
+      <text x="164" y="171" text-anchor="middle" fill="#1A1A1A" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">step_3()</text>
+      <line x1="62" y1="167" x2="72" y2="167" stroke="#94A3B8" stroke-width="1.5"/>
+      <line x1="124" y1="167" x2="138" y2="167" stroke="#94A3B8" stroke-width="1.5"/>
+      <polygon points="70,163 72,167 70,171" fill="#94A3B8"/>
+      <polygon points="136,163 138,167 136,171" fill="#94A3B8"/>
+    </svg>`,
+    html:`<div class="cover-layout page-layout">
+      <div class="illus-col">
+        <div class="cover-title">Urut-urutan<br>Itu Penting!</div>
+        <div class="cover-sub">Petualangan Perintah Coding</div>
+        <div class="cover-name">✨ Aslan ✨</div>
+        <div class="cover-badge">FLIPBOOK EDUKASI · SERI 8</div>
+      </div>
+    </div>`
+  },
+
+  /* 2 */
+  {
+    strip:'background:linear-gradient(90deg,#F59E0B,#FBBF24)',
+    illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Bed with Aslan -->
+      <rect x="20" y="90" width="100" height="55" rx="6" fill="#C0D4FF" stroke="#1A6CF6" stroke-width="2"/>
+      <rect x="20" y="90" width="100" height="20" rx="6" fill="#E8F0FF" stroke="#A0B8F0" stroke-width="1.5"/>
+      <circle cx="70" cy="95" r="14" fill="#FFCC80"/>
+      <!-- Sequence arrows -->
+      <rect x="140" y="40" width="90" height="36" rx="6" fill="#E8F0FF" stroke="#1A6CF6" stroke-width="2"/>
+      <text x="155" y="57" fill="#1A6CF6" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">1. Cuci muka</text>
+      <text x="155" y="69" fill="#1A6CF6" font-family="JetBrains Mono,monospace" font-size="9">💧</text>
+      <rect x="140" y="84" width="90" height="36" rx="6" fill="#E6F7EE" stroke="#16A34A" stroke-width="2"/>
+      <text x="155" y="101" fill="#16A34A" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">2. Sikat gigi</text>
+      <text x="155" y="113" fill="#16A34A" font-family="JetBrains Mono,monospace" font-size="9">🪥</text>
+      <rect x="140" y="128" width="90" height="36" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2"/>
+      <text x="155" y="145" fill="#92400E" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">3. Sarapan</text>
+      <text x="155" y="157" fill="#92400E" font-family="JetBrains Mono,monospace" font-size="9">🍳</text>
+      <!-- Connectors -->
+      <line x1="185" y1="76" x2="185" y2="84" stroke="#94A3B8" stroke-width="2"/>
+      <polygon points="182,82 185,84 188,82" fill="#94A3B8"/>
+      <line x1="185" y1="120" x2="185" y2="128" stroke="#94A3B8" stroke-width="2"/>
+      <polygon points="182,126 185,128 188,126" fill="#94A3B8"/>
+      <!-- Wrong way example -->
+      <rect x="20" y="155" width="110" height="28" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="2" stroke-dasharray="5,3"/>
+      <text x="30" y="167" fill="#991B1B" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">❌ Mandi → baju</text>
+      <text x="30" y="178" fill="#991B1B" font-family="JetBrains Mono,monospace" font-size="9">baju basah!</text>
+    </svg>`,
+    html:`<div class="page-tag"><span>01</span> INTRO</div>
+      <div class="page-title">Urutan Sehari-hari <span class="accent">Aslan!</span></div>
+      <div class="page-body">Setiap hari kita melakukan banyak hal. Kalau urutannya salah, jadi berantakan kan?</div>
+      <div class="warn-box">❌ Contoh salah: kalau kamu <strong>pakai baju dulu baru mandi</strong> — bajumu basah semua!</div>
+      <div class="page-body" style="margin-top:12px">Begitu juga di dunia <em>coding</em>. Urutan perintah sangat penting!</div>`
+  },
+
+  /* 3 */
+  {
+    strip:'background:linear-gradient(90deg,#F59E0B,#EF4444)',
+    illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Recipe card -->
+      <rect x="20" y="20" width="200" height="160" rx="10" fill="white" stroke="#CBD5E1" stroke-width="2"/>
+      <rect x="20" y="20" width="200" height="32" rx="10 10 0 0" fill="#F59E0B"/>
+      <text x="120" y="41" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="13" font-weight="700">Masak Mie 🍜</text>
+      <!-- Steps -->
+      <rect x="34" y="62" width="172" height="24" rx="5" fill="#E8F0FF" stroke="#1A6CF6" stroke-width="1.5"/>
+      <text x="44" y="78" fill="#0F4DB8" font-family="JetBrains Mono,monospace" font-size="11" font-weight="700">1. Rebus air</text>
+      <rect x="34" y="92" width="172" height="24" rx="5" fill="#E6F7EE" stroke="#16A34A" stroke-width="1.5"/>
+      <text x="44" y="108" fill="#065F46" font-family="JetBrains Mono,monospace" font-size="11" font-weight="700">2. Masukkan mie</text>
+      <rect x="34" y="122" width="172" height="24" rx="5" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+      <text x="44" y="138" fill="#92400E" font-family="JetBrains Mono,monospace" font-size="11" font-weight="700">3. Tunggu 3 menit</text>
+      <rect x="34" y="152" width="172" height="24" rx="5" fill="#F3F4F6" stroke="#94A3B8" stroke-width="1.5"/>
+      <text x="44" y="168" fill="#374151" font-family="JetBrains Mono,monospace" font-size="11" font-weight="700">4. Tambah bumbu</text>
+      <!-- Arrow connectors -->
+      <line x1="120" y1="86" x2="120" y2="92" stroke="#94A3B8" stroke-width="1.5"/>
+      <line x1="120" y1="116" x2="120" y2="122" stroke="#94A3B8" stroke-width="1.5"/>
+      <line x1="120" y1="146" x2="120" y2="152" stroke="#94A3B8" stroke-width="1.5"/>
+      <polygon points="117,90 120,92 123,90" fill="#94A3B8"/>
+      <polygon points="117,120 120,122 123,120" fill="#94A3B8"/>
+      <polygon points="117,150 120,152 123,150" fill="#94A3B8"/>
+    </svg>`,
+    html:`<div class="page-tag"><span>02</span> ANALOGI</div>
+      <div class="page-title">Resep <span class="accent">Selalu Berurutan!</span></div>
+      <div class="page-body">Bayangkan kamu mau masak mie. Urutannya harus benar:</div>
+      <div style="margin-top:10px">
+        <div class="seq-step"><div class="seq-num">1</div><div class="seq-text">Rebus air sampai mendidih</div></div>
+        <div class="seq-step"><div class="seq-num">2</div><div class="seq-text">Masukkan mie</div></div>
+        <div class="seq-step"><div class="seq-num">3</div><div class="seq-text">Tunggu 3 menit</div></div>
+        <div class="seq-step"><div class="seq-num">4</div><div class="seq-text">Tambah bumbu — lezat!</div></div>
+      </div>
+      <div class="warn-box" style="margin-top:10px">❌ Kalau bumbu dimasukkan dulu baru rebus air… ya jadi aneh!</div>`
+  },
+
+  /* 4 */
+  {
+    strip:'background:linear-gradient(90deg,#1A6CF6,#7C3AED)',
+    illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Confused robot -->
+      <rect x="80" y="100" width="80" height="80" rx="8" fill="#FEE2E2" stroke="#EF4444" stroke-width="2.5"/>
+      <rect x="90" y="112" width="60" height="36" rx="4" fill="#FECACA" stroke="#FCA5A5" stroke-width="1.5"/>
+      <!-- Chaotic screen lines -->
+      <line x1="94" y1="120" x2="145" y2="137" stroke="#EF4444" stroke-width="2"/>
+      <line x1="94" y1="135" x2="125" y2="120" stroke="#EF4444" stroke-width="2"/>
+      <line x1="110" y1="140" x2="145" y2="125" stroke="#EF4444" stroke-width="1.5"/>
+      <!-- Error symbol -->
+      <text x="120" y="163" text-anchor="middle" fill="#EF4444" font-family="JetBrains Mono,monospace" font-size="14" font-weight="700">ERR!</text>
+      <!-- Robot head confused -->
+      <rect x="90" y="62" width="60" height="44" rx="10" fill="#FEE2E2" stroke="#EF4444" stroke-width="2.5"/>
+      <text x="120" y="90" text-anchor="middle" fill="#EF4444" font-family="sans-serif" font-size="22">?</text>
+      <!-- Antenna wavy -->
+      <path d="M118,48 Q120,42 122,48 Q124,54 126,48" stroke="#EF4444" stroke-width="2" fill="none"/>
+      <!-- Chaotic command blocks -->
+      <rect x="10" y="20" width="70" height="18" rx="4" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1" transform="rotate(15,45,29)"/>
+      <text x="20" y="35" fill="#92400E" font-family="JetBrains Mono,monospace" font-size="8">step_3()</text>
+      <rect x="160" y="30" width="70" height="18" rx="4" fill="#E8F0FF" stroke="#1A6CF6" stroke-width="1" transform="rotate(-12,195,39)"/>
+      <text x="165" y="45" fill="#1A6CF6" font-family="JetBrains Mono,monospace" font-size="8">step_1()</text>
+      <rect x="10" y="155" width="70" height="18" rx="4" fill="#E6F7EE" stroke="#16A34A" stroke-width="1" transform="rotate(-8,45,164)"/>
+      <text x="18" y="168" fill="#065F46" font-family="JetBrains Mono,monospace" font-size="8">step_2()</text>
+      <!-- X marks -->
+      <text x="20" y="15" fill="#EF4444" font-family="sans-serif" font-size="16">✗</text>
+      <text x="200" y="20" fill="#EF4444" font-family="sans-serif" font-size="16">✗</text>
+      <text x="200" y="185" fill="#EF4444" font-family="sans-serif" font-size="16">✗</text>
+    </svg>`,
+    html:`<div class="page-tag"><span>03</span> KONSEP</div>
+      <div class="page-title">Robot Butuh <span class="accent">Urutan Yang Benar!</span></div>
+      <div class="page-body">Komputer itu seperti robot yang sangat patuh. Dia hanya menuruti perintah yang kita berikan.</div>
+      <div class="page-body" style="margin-top:10px">Tapi kalau urutannya salah, hasilnya juga salah!</div>
+      <div class="fun-box" style="margin-top:12px">
+        💡 Konsep ini disebut <strong>SEQUENCE (Urutan)</strong> — salah satu fondasi terpenting dalam coding!
+      </div>
+      <div class="code-block" style="margin-top:14px">
+        <div class="code-line"><span class="cmt">// Salah:</span></div>
+        <div class="code-line"><span class="kw">run</span>(<span class="str">"step_3"</span>); <span class="cmt">// ❌</span></div>
+        <div class="code-line"><span class="kw">run</span>(<span class="str">"step_1"</span>); <span class="cmt">// ❌</span></div>
+        <div class="code-line"><span class="cmt">// Benar ↓</span></div>
+        <div class="code-line"><span class="kw">run</span>(<span class="str">"step_1"</span>); <span class="cmt">// ✅</span></div>
+        <div class="code-line"><span class="kw">run</span>(<span class="str">"step_2"</span>); <span class="cmt">// ✅</span></div>
+      </div>`
+  },
+
+  /* 5 */
+  {
+    strip:'background:linear-gradient(90deg,#16A34A,#0F7035)',
+    illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Aslan with remote -->
+      <circle cx="50" cy="65" r="22" fill="#FFCC80"/>
+      <path d="M30,56 Q36,40 50,37 Q64,40 70,56" fill="#5D4037"/>
+      <circle cx="43" cy="62" r="3.5" fill="#1A237E"/>
+      <circle cx="57" cy="62" r="3.5" fill="#1A237E"/>
+      <path d="M44,74 Q50,79 56,74" stroke="#E64A19" stroke-width="2" fill="none"/>
+      <rect x="33" y="87" width="34" height="40" rx="5" fill="#1A6CF6"/>
+      <!-- Command sequence blocks -->
+      <rect x="90" y="30" width="140" height="22" rx="6" fill="#1A6CF6" stroke="#0F4DB8" stroke-width="2"/>
+      <text x="160" y="45" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">① Ambil bola</text>
+      <line x1="160" y1="52" x2="160" y2="62" stroke="#94A3B8" stroke-width="2"/>
+      <polygon points="157,60 160,62 163,60" fill="#94A3B8"/>
+      <rect x="90" y="62" width="140" height="22" rx="6" fill="#16A34A" stroke="#0F7035" stroke-width="2"/>
+      <text x="160" y="77" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">② Lempar ke keranjang</text>
+      <line x1="160" y1="84" x2="160" y2="94" stroke="#94A3B8" stroke-width="2"/>
+      <polygon points="157,92 160,94 163,92" fill="#94A3B8"/>
+      <rect x="90" y="94" width="140" height="22" rx="6" fill="#F59E0B" stroke="#D97706" stroke-width="2"/>
+      <text x="160" y="109" text-anchor="middle" fill="#1A1A1A" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">③ Tepuk tangan 🎉</text>
+      <!-- Robot doing it correctly -->
+      <rect x="100" y="128" width="50" height="55" rx="8" fill="#C0D4FF" stroke="#1A6CF6" stroke-width="2"/>
+      <rect x="108" y="136" width="34" height="20" rx="4" fill="#E8F0FF"/>
+      <circle cx="118" cy="146" r="3" fill="#34D399"/>
+      <circle cx="130" cy="146" r="3" fill="#34D399"/>
+      <rect x="110" y="160" width="10" height="20" rx="3" fill="#A0B8F0"/>
+      <rect x="130" y="160" width="10" height="20" rx="3" fill="#A0B8F0"/>
+      <rect x="110" y="118" width="30" height="12" rx="5" fill="#C0D4FF" stroke="#1A6CF6" stroke-width="1.5"/>
+      <circle cx="125" cy="124" r="3.5" fill="#1A6CF6"/>
+      <!-- Success check -->
+      <circle cx="175" cy="165" r="16" fill="#16A34A"/>
+      <text x="175" y="171" text-anchor="middle" fill="white" font-family="sans-serif" font-size="16">✓</text>
+    </svg>`,
+    html:`<div class="page-tag"><span>04</span> SCRATCH</div>
+      <div class="page-title">Perintah di <span class="accent">Scratch!</span></div>
+      <div class="page-body">Di coding, kita kasih perintah <em>satu per satu</em>. Contoh di Scratch:</div>
+      <div style="margin-top:12px">
+        <div class="lego-block">① Gerak ke depan 10 langkah</div>
+        <div class="lego-block green">② Putar 90 derajat</div>
+        <div class="lego-block amber">③ Katakan "Halo!"</div>
+      </div>
+      <div class="fun-box" style="margin-top:12px">✅ Urutannya harus benar supaya robot (atau karakter game) melakukan yang kita mau!</div>`
+  },
+
+  /* 6 */
+  {
+    strip:'background:linear-gradient(90deg,#EF4444,#F59E0B)',
+    illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left: correct -->
+      <rect x="10" y="20" width="100" height="160" rx="8" fill="#E6F7EE" stroke="#16A34A" stroke-width="2"/>
+      <rect x="10" y="20" width="100" height="24" rx="8 8 0 0" fill="#16A34A"/>
+      <text x="60" y="36" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">✅ BENAR</text>
+      <rect x="18" y="52" width="84" height="20" rx="4" fill="#1A6CF6"/>
+      <text x="60" y="66" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">1. Makan()</text>
+      <line x1="60" y1="72" x2="60" y2="82" stroke="#94A3B8" stroke-width="1.5"/>
+      <polygon points="57,80 60,82 63,80" fill="#94A3B8"/>
+      <rect x="18" y="82" width="84" height="20" rx="4" fill="#16A34A"/>
+      <text x="60" y="96" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">2. Mandi()</text>
+      <line x1="60" y1="102" x2="60" y2="112" stroke="#94A3B8" stroke-width="1.5"/>
+      <polygon points="57,110 60,112 63,110" fill="#94A3B8"/>
+      <rect x="18" y="112" width="84" height="20" rx="4" fill="#F59E0B"/>
+      <text x="60" y="126" text-anchor="middle" fill="#1A1A1A" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">3. Tidur()</text>
+      <text x="60" y="165" text-anchor="middle" fill="#065F46" font-family="JetBrains Mono,monospace" font-size="20">😊</text>
+      <!-- Right: wrong -->
+      <rect x="130" y="20" width="100" height="160" rx="8" fill="#FEE2E2" stroke="#EF4444" stroke-width="2"/>
+      <rect x="130" y="20" width="100" height="24" rx="8 8 0 0" fill="#EF4444"/>
+      <text x="180" y="36" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">❌ SALAH</text>
+      <rect x="138" y="52" width="84" height="20" rx="4" fill="#16A34A" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <text x="180" y="66" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">2. Mandi()</text>
+      <line x1="180" y1="72" x2="180" y2="82" stroke="#EF4444" stroke-width="1.5"/>
+      <polygon points="177,80 180,82 183,80" fill="#EF4444"/>
+      <rect x="138" y="82" width="84" height="20" rx="4" fill="#1A6CF6" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <text x="180" y="96" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">1. Makan()</text>
+      <line x1="180" y1="102" x2="180" y2="112" stroke="#EF4444" stroke-width="1.5"/>
+      <polygon points="177,110 180,112 183,110" fill="#EF4444"/>
+      <rect x="138" y="112" width="84" height="20" rx="4" fill="#F59E0B" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <text x="180" y="126" text-anchor="middle" fill="#1A1A1A" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">3. Tidur()</text>
+      <text x="180" y="162" text-anchor="middle" fill="#991B1B" font-family="JetBrains Mono,monospace" font-size="10">makan basah!</text>
+      <text x="180" y="178" text-anchor="middle" fill="#991B1B" font-family="JetBrains Mono,monospace" font-size="20">😵</text>
+    </svg>`,
+    html:`<div class="page-tag"><span>05</span> BENAR vs SALAH</div>
+      <div class="page-title">Urutan <span class="accent">Menentukan Hasil!</span></div>
+      <div class="page-body">Lihat perbedaannya:</div>
+      <div style="margin-top:12px">
+        <div class="compare-row correct"><span class="cmp-icon">✅</span><span>Makan dulu → Mandi → Tidur = normal!</span></div>
+        <div class="compare-row wrong"><span class="cmp-icon">❌</span><span>Mandi dulu → Makan = makan sambil basah!</span></div>
+      </div>
+      <div class="code-block" style="margin-top:12px">
+        <div class="code-line"><span class="cmt">// Robot menjalankan urutan ini:</span></div>
+        <div class="code-line"><span class="fn">makan</span>(); <span class="cmt">// ✅ benar</span></div>
+        <div class="code-line"><span class="fn">mandi</span>(); <span class="cmt">// ✅ setelah makan</span></div>
+        <div class="code-line"><span class="fn">tidur</span>(); <span class="cmt">// ✅ terakhir</span></div>
+      </div>`
+  },
+
+  /* 7 */
+  {
+    strip:'background:linear-gradient(90deg,#1A6CF6,#0F4DB8)',
+    illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Aslan stacking blocks like Scratch -->
+      <circle cx="55" cy="50" r="22" fill="#FFCC80"/>
+      <path d="M35,42 Q42,26 55,23 Q68,26 75,42" fill="#5D4037"/>
+      <circle cx="48" cy="47" r="3" fill="#1A237E"/>
+      <circle cx="62" cy="47" r="3" fill="#1A237E"/>
+      <path d="M49,59 Q55,64 61,59" stroke="#E64A19" stroke-width="2" fill="none"/>
+      <rect x="37" y="72" width="36" height="40" rx="5" fill="#1A6CF6"/>
+      <!-- Block pile (Scratch style) -->
+      <!-- Block connectors (puzzle notch style) -->
+      <rect x="100" y="30" width="128" height="26" rx="5" fill="#1A6CF6"/>
+      <rect x="112" y="24" width="14" height="8" rx="3" fill="#0F4DB8"/>
+      <rect x="112" y="56" width="14" height="8" rx="3" fill="#0F4DB8"/>
+      <text x="164" y="47" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">Langkah 1 ▶</text>
+
+      <rect x="100" y="64" width="128" height="26" rx="5" fill="#16A34A"/>
+      <rect x="112" y="90" width="14" height="8" rx="3" fill="#0F7035"/>
+      <text x="164" y="81" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">Langkah 2 ▶</text>
+
+      <rect x="100" y="98" width="128" height="26" rx="5" fill="#F59E0B"/>
+      <rect x="112" y="124" width="14" height="8" rx="3" fill="#D97706"/>
+      <text x="164" y="115" text-anchor="middle" fill="#1A1A1A" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">Langkah 3 ▶</text>
+
+      <rect x="100" y="132" width="128" height="26" rx="5" fill="#7C3AED"/>
+      <text x="164" y="149" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">Langkah 4 ▶</text>
+
+      <!-- Arrow showing top to bottom -->
+      <line x1="84" y1="30" x2="84" y2="155" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="4,3"/>
+      <polygon points="81,152 84,155 87,152" fill="#CBD5E1"/>
+      <text x="84" y="22" text-anchor="middle" fill="#94A3B8" font-family="JetBrains Mono,monospace" font-size="8">TOP</text>
+
+      <rect x="100" y="165" width="128" height="22" rx="5" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="164" y="180" text-anchor="middle" fill="#94A3B8" font-family="JetBrains Mono,monospace" font-size="9">▼ atas ke bawah</text>
+    </svg>`,
+    html:`<div class="page-tag"><span>06</span> SCRATCH</div>
+      <div class="page-title">Coding Seperti <span class="accent">Menyusun Balok!</span></div>
+      <div class="page-body">Di Scratch, coding itu seperti <em>menyusun balok mainan</em>.</div>
+      <div class="page-body" style="margin-top:8px">Kamu taruh balok perintah <strong>satu per satu dari atas ke bawah</strong>. Urutannya menentukan apa yang terjadi di layar!</div>
+      <div style="margin-top:14px">
+        <div class="lego-block">📦 Langkah 1 — ditaruh paling atas</div>
+        <div class="lego-block green">📦 Langkah 2 — di bawah langkah 1</div>
+        <div class="lego-block amber">📦 Langkah 3 — urutan ketiga</div>
+      </div>
+      <div class="fun-box" style="margin-top:10px">💡 Seperti balok LEGO — kamu susun dari bawah ke atas, tapi komputer baca dari atas ke bawah!</div>`
+  },
+
+  /* 8 */
+  {
+    strip:'background:linear-gradient(90deg,#7C3AED,#1A6CF6)',
+    illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Game screen -->
+      <rect x="20" y="20" width="200" height="160" rx="10" fill="#0D1B2A" stroke="#1A6CF6" stroke-width="2.5"/>
+      <rect x="20" y="20" width="200" height="24" rx="10 10 0 0" fill="#1A6CF6"/>
+      <text x="120" y="36" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">GAME ASLAN v1.0</text>
+      <!-- Character (correct sequence) -->
+      <circle cx="70" cy="100" r="16" fill="#FFCC80"/>
+      <circle cx="64" cy="96" r="2.5" fill="#1A237E"/>
+      <circle cx="76" cy="96" r="2.5" fill="#1A237E"/>
+      <path d="M65,107 Q70,112 75,107" stroke="#E64A19" stroke-width="1.5" fill="none"/>
+      <rect x="59" y="116" width="22" height="28" rx="4" fill="#1A6CF6"/>
+      <!-- Ground -->
+      <rect x="30" y="145" width="180" height="6" rx="2" fill="#1E3A5F"/>
+      <!-- Step labels -->
+      <rect x="30" y="158" width="58" height="16" rx="4" fill="#1A6CF6"/>
+      <text x="59" y="170" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">1.muncul()</text>
+      <rect x="94" y="158" width="58" height="16" rx="4" fill="#16A34A"/>
+      <text x="123" y="170" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">2.gerak()</text>
+      <rect x="158" y="158" width="52" height="16" rx="4" fill="#F59E0B"/>
+      <text x="184" y="170" text-anchor="middle" fill="#1A1A1A" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">3.lompat()</text>
+      <!-- Arrow from character to right -->
+      <line x1="86" y1="130" x2="120" y2="130" stroke="#34D399" stroke-width="2"/>
+      <polygon points="118,127 120,130 118,133" fill="#34D399"/>
+      <!-- Jump position -->
+      <circle cx="160" cy="88" r="16" fill="#FFCC80" opacity=".6"/>
+      <rect x="149" y="104" width="22" height="28" rx="4" fill="#1A6CF6" opacity=".6"/>
+      <!-- Jump arrow -->
+      <line x1="155" y1="100" x2="150" y2="80" stroke="#F59E0B" stroke-width="2"/>
+      <polygon points="147,82 150,80 153,83" fill="#F59E0B"/>
+      <!-- Wrong version -->
+      <rect x="30" y="50" width="140" height="28" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="40" y="63" fill="#991B1B" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">❌ Lompat dulu → baru muncul</text>
+      <text x="40" y="73" fill="#991B1B" font-family="JetBrains Mono,monospace" font-size="8">= aneh!</text>
+    </svg>`,
+    html:`<div class="page-tag"><span>07</span> GAME</div>
+      <div class="page-title">Game Pun Butuh <span class="accent">Urutan!</span></div>
+      <div class="page-body">Bayangkan membuat game sederhana:</div>
+      <div style="margin-top:10px">
+        <div class="seq-step"><div class="seq-num">1</div><div class="seq-text">Karakter muncul di layar</div></div>
+        <div class="seq-step"><div class="seq-num">2</div><div class="seq-text">Gerak ke kanan</div></div>
+        <div class="seq-step"><div class="seq-num">3</div><div class="seq-text">Lompat kalau tombol ditekan</div></div>
+      </div>
+      <div class="warn-box" style="margin-top:10px">❌ Kalau urutannya dibalik, karakternya <strong>lompat dulu baru muncul</strong> — aneh kan?</div>`
+  },
+
+  /* 9 */
+  {
+    strip:'background:linear-gradient(90deg,#16A34A,#059669)',
+    illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Aslan happy with code -->
+      <circle cx="80" cy="80" r="30" fill="#FFCC80"/>
+      <path d="M53,68 Q62,44 80,41 Q98,44 107,68" fill="#5D4037"/>
+      <circle cx="70" cy="74" r="4.5" fill="#1A237E"/>
+      <circle cx="90" cy="74" r="4.5" fill="#1A237E"/>
+      <path d="M71,92 Q80,100 89,92" stroke="#E64A19" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <rect x="62" y="110" width="36" height="44" rx="5" fill="#16A34A"/>
+      <rect x="50" y="116" width="12" height="28" rx="6" fill="#FFCC80"/>
+      <rect x="98" y="116" width="12" height="28" rx="6" fill="#FFCC80"/>
+      <!-- Code scroll success -->
+      <rect x="130" y="30" width="100" height="150" rx="8" fill="white" stroke="#16A34A" stroke-width="2.5"/>
+      <rect x="130" y="30" width="100" height="24" rx="8 8 0 0" fill="#16A34A"/>
+      <text x="180" y="46" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">hasil.txt</text>
+      <rect x="140" y="62" width="80" height="16" rx="4" fill="#E6F7EE" stroke="#16A34A" stroke-width="1"/>
+      <text x="180" y="74" text-anchor="middle" fill="#065F46" font-family="JetBrains Mono,monospace" font-size="9">✅ step_1 OK</text>
+      <rect x="140" y="83" width="80" height="16" rx="4" fill="#E6F7EE" stroke="#16A34A" stroke-width="1"/>
+      <text x="180" y="95" text-anchor="middle" fill="#065F46" font-family="JetBrains Mono,monospace" font-size="9">✅ step_2 OK</text>
+      <rect x="140" y="104" width="80" height="16" rx="4" fill="#E6F7EE" stroke="#16A34A" stroke-width="1"/>
+      <text x="180" y="116" text-anchor="middle" fill="#065F46" font-family="JetBrains Mono,monospace" font-size="9">✅ step_3 OK</text>
+      <rect x="140" y="125" width="80" height="16" rx="4" fill="#E6F7EE" stroke="#16A34A" stroke-width="1"/>
+      <text x="180" y="137" text-anchor="middle" fill="#065F46" font-family="JetBrains Mono,monospace" font-size="9">✅ step_4 OK</text>
+      <!-- Big success check -->
+      <circle cx="180" cy="165" r="14" fill="#16A34A" stroke="#0F7035" stroke-width="2"/>
+      <text x="180" y="171" text-anchor="middle" fill="white" font-family="sans-serif" font-size="16">✓</text>
+    </svg>`,
+    html:`<div class="page-tag"><span>08</span> BERHASIL!</div>
+      <div class="page-title">Urutan Benar, <span class="accent">Semua Lancar!</span></div>
+      <div class="page-body">Urut-urutan yang benar membuat semuanya berjalan <em>lancar</em>.</div>
+      <div class="page-body" style="margin-top:8px">Ini adalah salah satu dasar <strong>paling penting</strong> dalam coding.</div>
+      <div class="fun-box" style="margin-top:14px">
+        🏅 Kalau kamu bisa mengatur urutan dengan baik, kamu sudah jadi <strong>programmer kecil yang hebat!</strong> Aslan bisa!
+      </div>
+      <div class="code-block" style="margin-top:14px">
+        <div class="code-line"><span class="cmt">// Program Aslan berhasil! 🎉</span></div>
+        <div class="code-line"><span class="fn">program</span>.<span class="kw">run</span>() {</div>
+        <div class="code-line">&nbsp;&nbsp;<span class="fn">step_1</span>(); <span class="op">// ✅</span></div>
+        <div class="code-line">&nbsp;&nbsp;<span class="fn">step_2</span>(); <span class="op">// ✅</span></div>
+        <div class="code-line">&nbsp;&nbsp;<span class="fn">step_3</span>(); <span class="op">// ✅</span></div>
+        <div class="code-line">}</div>
+      </div>`
+  },
+
+  /* 10 */
+  {
+    strip:'background:linear-gradient(90deg,#F59E0B,#16A34A)',
+    illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- House layout -->
+      <rect x="10" y="60" width="220" height="130" rx="8" fill="#F0F4FF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <!-- Robot helper -->
+      <rect x="95" y="90" width="50" height="60" rx="6" fill="#C0D4FF" stroke="#1A6CF6" stroke-width="2"/>
+      <rect x="102" y="98" width="36" height="22" rx="4" fill="#E8F0FF"/>
+      <circle cx="113" cy="109" r="3.5" fill="#34D399"/>
+      <circle cx="127" cy="109" r="3.5" fill="#34D399"/>
+      <rect x="102" y="123" width="36" height="8" rx="3" fill="#A0B8F0"/>
+      <rect x="95" y="80" width="50" height="12" rx="5" fill="#C0D4FF" stroke="#1A6CF6" stroke-width="1.5"/>
+      <circle cx="120" cy="86" r="4" fill="#1A6CF6"/>
+      <!-- Task 1: sweep -->
+      <rect x="20" y="70" width="65" height="44" rx="6" fill="#E8F0FF" stroke="#1A6CF6" stroke-width="2"/>
+      <text x="52" y="90" text-anchor="middle" fill="#1A6CF6" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">1. Sapu</text>
+      <text x="52" y="106" text-anchor="middle" font-family="sans-serif" font-size="18">🧹</text>
+      <!-- Arrow 1 -->
+      <line x1="85" y1="112" x2="95" y2="112" stroke="#16A34A" stroke-width="2"/>
+      <polygon points="93,109 95,112 93,115" fill="#16A34A"/>
+      <!-- Task 2: mop -->
+      <rect x="155" y="70" width="65" height="44" rx="6" fill="#E6F7EE" stroke="#16A34A" stroke-width="2"/>
+      <text x="187" y="90" text-anchor="middle" fill="#16A34A" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">2. Pel</text>
+      <text x="187" y="106" text-anchor="middle" font-family="sans-serif" font-size="18">🫧</text>
+      <!-- Arrow 2 -->
+      <line x1="145" y1="112" x2="155" y2="112" stroke="#16A34A" stroke-width="2"/>
+      <polygon points="153,109 155,112 153,115" fill="#16A34A"/>
+      <!-- Task 3: toys -->
+      <rect x="85" y="160" width="70" height="22" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2"/>
+      <text x="120" y="171" text-anchor="middle" fill="#92400E" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">3. Rapikan mainan 🧸</text>
+      <!-- Arrow down -->
+      <line x1="120" y1="150" x2="120" y2="160" stroke="#F59E0B" stroke-width="2"/>
+      <polygon points="117,158 120,160 123,158" fill="#F59E0B"/>
+      <!-- Bunda smiling -->
+      <circle cx="30" cy="150" r="16" fill="#FFCC80"/>
+      <circle cx="24" cy="146" r="2" fill="#1A237E"/>
+      <circle cx="36" cy="146" r="2" fill="#1A237E"/>
+      <path d="M25,157 Q30,162 35,157" stroke="#E64A19" stroke-width="1.5" fill="none"/>
+      <text x="30" y="182" text-anchor="middle" fill="#16A34A" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">Bunda 😊</text>
+    </svg>`,
+    html:`<div class="page-tag"><span>09</span> APLIKASI</div>
+      <div class="page-title">Robot Bantu <span class="accent">Bunda!</span></div>
+      <div class="page-body">Bayangkan suatu hari kamu bikin <em>robot rumah</em>. Kamu harus kasih perintah dengan urutan yang benar supaya robot membantu Bunda dengan rapi:</div>
+      <div style="margin-top:12px">
+        <div class="lego-block">🧹 1. Menyapu lantai</div>
+        <div class="lego-block green">🫧 2. Mengepel lantai</div>
+        <div class="lego-block amber">🧸 3. Menaruh mainan di tempatnya</div>
+      </div>
+      <div class="fun-box" style="margin-top:12px">💡 Kalau pel dulu baru sapu — kotoran tersebar lagi ke lantai yang sudah bersih! Urutan = kunci!</div>`
+  },
+
+  /* 11 */
+  {
+    strip:'background:linear-gradient(90deg,#7C3AED,#1A6CF6)',
+    illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Learning path visualization -->
+      <rect x="20" y="20" width="200" height="165" rx="10" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+      <rect x="20" y="20" width="200" height="24" rx="10 10 0 0" fill="#7C3AED"/>
+      <text x="120" y="36" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">Belajar Coding 🗺️</text>
+      <!-- Step blocks with icons -->
+      <rect x="34" y="54" width="172" height="28" rx="6" fill="#E8F0FF" stroke="#1A6CF6" stroke-width="2"/>
+      <text x="54" y="66" fill="#1A6CF6" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">1. Perintah Dasar</text>
+      <text x="54" y="76" fill="#0F4DB8" font-family="JetBrains Mono,monospace" font-size="8">&gt; print, move, turn</text>
+      <circle cx="190" cy="68" r="7" fill="#1A6CF6"/>
+      <text x="190" y="72" text-anchor="middle" fill="white" font-family="sans-serif" font-size="10">✓</text>
+      <line x1="120" y1="82" x2="120" y2="92" stroke="#94A3B8" stroke-width="1.5"/>
+      <polygon points="117,90 120,92 123,90" fill="#94A3B8"/>
+      <rect x="34" y="92" width="172" height="28" rx="6" fill="#E6F7EE" stroke="#16A34A" stroke-width="2"/>
+      <text x="54" y="104" fill="#16A34A" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">2. Latihan Urutan ← kamu disini</text>
+      <circle cx="190" cy="106" r="7" fill="#FFD700" stroke="#D97706" stroke-width="1.5"/>
+      <text x="190" y="110" text-anchor="middle" fill="#92400E" font-family="sans-serif" font-size="9">★</text>
+      <line x1="120" y1="120" x2="120" y2="130" stroke="#94A3B8" stroke-width="1.5"/>
+      <polygon points="117,128 120,130 123,128" fill="#94A3B8"/>
+      <rect x="34" y="130" width="172" height="28" rx="6" fill="#F3F4F6" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <text x="54" y="142" fill="#6B7280" font-family="JetBrains Mono,monospace" font-size="9">3. Keputusan (if)</text>
+      <text x="54" y="153" fill="#9CA3AF" font-family="JetBrains Mono,monospace" font-size="8">kalau begini → begitu</text>
+      <line x1="120" y1="158" x2="120" y2="165" stroke="#94A3B8" stroke-width="1.5"/>
+      <polygon points="117,163 120,165 123,163" fill="#94A3B8"/>
+      <rect x="34" y="165" width="172" height="16" rx="4" fill="#F3F4F6" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <text x="120" y="177" text-anchor="middle" fill="#9CA3AF" font-family="JetBrains Mono,monospace" font-size="9">4. Pengulangan (loop)</text>
+    </svg>`,
+    html:`<div class="page-tag"><span>10</span> BELAJAR</div>
+      <div class="page-title">Urutan Belajar <span class="accent">Juga Penting!</span></div>
+      <div class="page-body">Begitu juga belajar coding — ada urutannya:</div>
+      <div style="margin-top:10px">
+        <div class="seq-step"><div class="seq-num">1</div><div class="seq-text">Belajar perintah dasar — print, move</div></div>
+        <div class="seq-step"><div class="seq-num" style="background:var(--step-green)">2</div><div class="seq-text"><strong>Latihan urutan</strong> — seperti yang kamu lakukan sekarang!</div></div>
+        <div class="seq-step"><div class="seq-num" style="background:#7C3AED">3</div><div class="seq-text">Tambah keputusan — <em>if</em></div></div>
+        <div class="seq-step"><div class="seq-num" style="background:var(--block-yellow);color:#1A1A1A">4</div><div class="seq-text">Tambah pengulangan — <em>loop</em></div></div>
+      </div>`
+  },
+
+  /* 12 */
+  {
+    strip:'background:linear-gradient(90deg,#1A6CF6,#7C3AED)',
+    illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Captain Aslan on ship deck -->
+      <rect x="30" y="140" width="180" height="50" rx="6" fill="#1A6CF6"/>
+      <rect x="60" y="128" width="120" height="20" rx="4" fill="#0F4DB8"/>
+      <!-- Ship mast -->
+      <rect x="118" y="30" width="4" height="100" fill="#8D6E63"/>
+      <polygon points="122,30 170,60 122,90" fill="#ECEFF1" opacity=".9"/>
+      <polygon points="122,30 75,55 122,80" fill="#C0D4FF" opacity=".8"/>
+      <!-- Waves -->
+      <path d="M10,160 Q40,152 70,160 Q100,168 130,160 Q160,152 190,160 Q220,168 240,160" stroke="#60A5FA" stroke-width="2" fill="none" opacity=".6"/>
+      <!-- Captain Aslan -->
+      <circle cx="120" cy="90" r="22" fill="#FFCC80"/>
+      <!-- Captain hat -->
+      <rect x="101" y="70" width="38" height="8" rx="2" fill="#0D1B2A"/>
+      <rect x="107" y="58" width="26" height="14" rx="3" fill="#0D1B2A"/>
+      <!-- Face -->
+      <circle cx="113" cy="88" r="3.5" fill="#1A237E"/>
+      <circle cx="127" cy="88" r="3.5" fill="#1A237E"/>
+      <path d="M114,99 Q120,104 126,99" stroke="#E64A19" stroke-width="2" fill="none"/>
+      <rect x="108" y="112" width="24" height="32" rx="4" fill="#1A6CF6"/>
+      <!-- Telescope -->
+      <rect x="98" y="103" width="28" height="6" rx="3" fill="#FFD700" stroke="#D97706" stroke-width="1"/>
+      <!-- Command flags -->
+      <rect x="145" y="80" width="55" height="18" rx="4" fill="#16A34A" stroke="#0F7035" stroke-width="1.5"/>
+      <text x="172" y="93" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">step_1()</text>
+      <rect x="150" y="104" width="50" height="18" rx="4" fill="#F59E0B" stroke="#D97706" stroke-width="1.5"/>
+      <text x="175" y="117" text-anchor="middle" fill="#1A1A1A" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">step_2()</text>
+      <rect x="155" y="128" width="45" height="18" rx="4" fill="#7C3AED" stroke="#5B21B6" stroke-width="1.5"/>
+      <text x="177" y="141" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">step_3()</text>
+    </svg>`,
+    html:`<div class="page-tag"><span>11</span> KAPTEN</div>
+      <div class="page-title">Kamu Adalah <span class="accent">Kapten Program!</span></div>
+      <div class="page-body">Urut-urutan itu seperti memberi instruksi pada pasukan kapal.</div>
+      <div class="page-body" style="margin-top:8px">Kalau urutannya benar, pasukan (komputer) akan menang!</div>
+      <div class="fun-box" style="margin-top:12px">
+        ⚓ <strong>Kamu adalah kapten dari programmu sendiri.</strong> Setiap baris kode yang kamu tulis adalah perintah kapten — komputer akan mengikutinya dengan tepat!
+      </div>
+      <div class="code-block" style="margin-top:14px">
+        <div class="code-line"><span class="cmt">// Kapten Aslan memberi perintah:</span></div>
+        <div class="code-line"><span class="fn">kapal</span>.<span class="kw">maju</span>(<span class="str">10</span>);</div>
+        <div class="code-line"><span class="fn">kapal</span>.<span class="kw">belok</span>(<span class="str">"kanan"</span>);</div>
+        <div class="code-line"><span class="fn">kapal</span>.<span class="kw">berlabuh</span>();</div>
+        <div class="code-line"><span class="cmt">// ✅ Sampai tujuan!</span></div>
+      </div>`
+  },
+
+  /* 13 ENDING */
+  {
+    strip:'background:linear-gradient(90deg,#16A34A,#1A6CF6,#7C3AED)',
+    illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Background code rain -->
+      <text x="10" y="30" fill="#1A6CF6" font-family="JetBrains Mono,monospace" font-size="9" opacity=".2">01001</text>
+      <text x="80" y="20" fill="#16A34A" font-family="JetBrains Mono,monospace" font-size="9" opacity=".2">if(){}</text>
+      <text x="160" y="35" fill="#7C3AED" font-family="JetBrains Mono,monospace" font-size="9" opacity=".2">loop()</text>
+      <text x="10" y="175" fill="#1A6CF6" font-family="JetBrains Mono,monospace" font-size="9" opacity=".2">fn(x)</text>
+      <text x="180" y="180" fill="#16A34A" font-family="JetBrains Mono,monospace" font-size="9" opacity=".2">true</text>
+      <!-- Aslan and Robot shaking hands -->
+      <!-- Aslan -->
+      <circle cx="65" cy="70" r="24" fill="#FFCC80"/>
+      <path d="M44,60 Q52,40 65,37 Q78,40 86,60" fill="#5D4037"/>
+      <circle cx="57" cy="66" r="3.5" fill="#1A237E"/>
+      <circle cx="73" cy="66" r="3.5" fill="#1A237E"/>
+      <path d="M58,80 Q65,87 72,80" stroke="#E64A19" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <rect x="50" y="94" width="30" height="40" rx="5" fill="#1A6CF6"/>
+      <rect x="38" y="100" width="12" height="28" rx="6" fill="#FFCC80"/>
+      <rect x="80" y="100" width="12" height="28" rx="6" fill="#FFCC80"/>
+      <!-- Robot -->
+      <rect x="145" y="80" width="60" height="60" rx="8" fill="#C0D4FF" stroke="#1A6CF6" stroke-width="2"/>
+      <rect x="153" y="88" width="44" height="26" rx="4" fill="#E8F0FF"/>
+      <circle cx="166" cy="101" r="5" fill="#34D399"/>
+      <circle cx="182" cy="101" r="5" fill="#34D399"/>
+      <rect x="153" y="116" width="44" height="12" rx="4" fill="#A0B8F0"/>
+      <text x="175" y="126" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="8">OK!</text>
+      <rect x="145" y="70" width="60" height="12" rx="5" fill="#C0D4FF" stroke="#1A6CF6" stroke-width="1.5"/>
+      <circle cx="175" cy="76" r="4" fill="#1A6CF6"/>
+      <rect x="133" y="100" width="12" height="28" rx="6" fill="#A0B8F0"/>
+      <!-- Handshake -->
+      <rect x="88" y="118" width="48" height="12" rx="6" fill="#FFD700" stroke="#D97706" stroke-width="2"/>
+      <!-- Sequence below them -->
+      <rect x="20" y="152" width="58" height="14" rx="4" fill="#1A6CF6"/>
+      <text x="49" y="163" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="7" font-weight="700">urutan ✓</text>
+      <line x1="78" y1="159" x2="88" y2="159" stroke="#94A3B8" stroke-width="1.5"/>
+      <rect x="88" y="152" width="64" height="14" rx="4" fill="#16A34A"/>
+      <text x="120" y="163" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="7" font-weight="700">sequence ✓</text>
+      <line x1="152" y1="159" x2="162" y2="159" stroke="#94A3B8" stroke-width="1.5"/>
+      <rect x="162" y="152" width="58" height="14" rx="4" fill="#7C3AED"/>
+      <text x="191" y="163" text-anchor="middle" fill="white" font-family="JetBrains Mono,monospace" font-size="7" font-weight="700">coding ✓</text>
+      <!-- Stars -->
+      <text x="15" y="55" fill="#FFD700" font-family="sans-serif" font-size="14">★</text>
+      <text x="210" y="62" fill="#FFD700" font-family="sans-serif" font-size="14">★</text>
+      <text x="115" y="48" fill="#FFD700" font-family="sans-serif" font-size="18">★</text>
+    </svg>`,
+    html:`<div class="end-card">
+        <div class="end-title">🎉 Luar Biasa, Aslan!</div>
+        <div class="end-text">Kamu sudah memahami <strong style="color:#FFD700">Sequence</strong> — salah satu konsep terpenting dalam coding.<br><br>Ingat selalu: <em style="color:#80DEEA">urutan yang benar membuat segalanya berhasil!</em></div>
+      </div>
+      <div style="margin-top:12px">
+        <div class="compare-row correct"><span class="cmp-icon">✅</span><span>Sequence = urutan perintah yang benar</span></div>
+        <div class="compare-row correct"><span class="cmp-icon">✅</span><span>Komputer mengikuti urutan dari atas ke bawah</span></div>
+        <div class="compare-row correct"><span class="cmp-icon">✅</span><span>Urutan salah = hasil salah</span></div>
+      </div>
+      <div class="next-book">
+        <div class="next-label">📚 Flipbook Selanjutnya — Seri 9</div>
+        <div class="next-title">🔀 "Keputusan Komputer: Kalau Begini, Maka Begitu!"</div>
+      </div>
+      <div style="text-align:center;margin-top:14px">
+        <button class="nav-btn reset" onclick="reset()">↺ Reset ke Halaman 1</button>
+      </div>
+      <div style="text-align:center;margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--text-muted)">❤️ Dari Ayah &amp; Bunda — Kami bangga padamu!</div>`
+  }
+];
+
+/* ── ROADMAP ── */
+function buildRoadmap(){
+  const rm = document.getElementById('roadmap');
+  rm.innerHTML='';
+  for(let i=1;i<=TOTAL;i++){
+    const n=document.createElement('div');
+    n.className='rm-node'+(i===cur?' active':i<cur?' done':'');
+    n.textContent=String(i).padStart(2,'0');
+    n.onclick=()=>goTo(i);
+    rm.appendChild(n);
+    if(i<TOTAL){
+      const c=document.createElement('div');
+      c.className='rm-connector'+(i<cur?' done':'');
+      rm.appendChild(c);
+    }
+  }
+  /* scroll active into view */
+  const active=rm.querySelector('.active');
+  if(active)active.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
+}
+
+/* ── RENDER ── */
+function render(){
+  const p=pages[cur-1];
+  const card=document.getElementById('pageCard');
+
+  /* strip */
+  let html=`<div class="page-strip" style="${p.strip}"></div>`;
+
+  if(p.layout==='cover'){
+    html+=p.html;
+    /* inject illus into cover illus-col */
+  } else {
+    html+=`<div class="page-layout">
+      <div class="illus-col">${p.illus||''}</div>
+      <div class="text-col">${p.html}</div>
+    </div>`;
+  }
+
+  /* For cover, we want illus inside the blue column - handled via cover html */
+  if(p.layout==='cover'){
+    card.innerHTML=`<div class="page-strip" style="${p.strip}"></div>
+    <div class="page-layout cover-layout">
+      <div class="illus-col">
+        <div class="cover-title">Urut-urutan<br>Itu Penting!</div>
+        <div class="cover-sub">Petualangan Perintah Coding</div>
+        ${p.illus||''}
+        <div class="cover-name">✨ Aslan ✨</div>
+        <div class="cover-badge">FLIPBOOK EDUKASI · SERI 8</div>
+      </div>
+    </div>`;
+  } else {
+    card.innerHTML=html;
+  }
+
+  /* progress */
+  document.getElementById('progressFill').style.width=(cur/TOTAL*100)+'%';
+  document.getElementById('progressLabel').textContent=String(cur).padStart(2,'0')+' / '+String(TOTAL).padStart(2,'0');
+
+  /* nav */
+  document.getElementById('prevBtn').disabled=cur===1;
+  document.getElementById('nextBtn').disabled=cur===TOTAL;
+  document.getElementById('nextBtn').textContent=cur===TOTAL?'🎉 Selesai!':'Selanjutnya →';
+
+  buildRoadmap();
+
+  /* scroll to top */
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function go(d){
+  const n=cur+d;
+  if(n>=1&&n<=TOTAL){cur=n;render();}
+}
+function goTo(n){cur=n;render();}
+function reset(){cur=1;render();}
+
+render();
+</script>
+</body>
+</html>
+

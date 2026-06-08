@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Aslan's English Adventure — Day 12: The Clock That Stopped Time</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #08090f;
+    --deep:    #0d1020;
+    --blue:    #1a56db;
+    --sky:     #3b82f6;
+    --amber:   #f59e0b;
+    --gold:    #fbbf24;
+    --teal:    #0d9488;
+    --emerald: #10b981;
+    --coral:   #f97316;
+    --purple:  #8b5cf6;
+    --rose:    #f43f5e;
+    --white:   #ffffff;
+    --clock-gold: #d4a843;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star {
+    position: absolute; border-radius: 50%; background: white;
+    animation: twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:.15;transform:scale(1);}50%{opacity:.9;transform:scale(1.4);} }
+
+  /* Frozen sparkles */
+  .sparkle {
+    position: fixed; pointer-events: none; z-index: 0;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: radial-gradient(circle, #e0d9ff 0%, #a78bfa50 70%, transparent 100%);
+    animation: sparkle-drift var(--sd,8s) ease-in-out infinite var(--sdelay,0s);
+  }
+  @keyframes sparkle-drift {
+    0%{transform:translate(0,0) scale(1) rotate(0deg);opacity:0;}
+    20%{opacity:.9;}
+    60%{transform:translate(var(--sx,20px),var(--sy,-50px)) scale(1.3) rotate(180deg);opacity:.5;}
+    100%{transform:translate(var(--sx2,-15px),var(--sy2,-100px)) scale(.5) rotate(360deg);opacity:0;}
+  }
+
+  .shoot {
+    position: fixed; top: 10%; left: -10%;
+    width: 160px; height: 2px;
+    background: linear-gradient(90deg, transparent, #e0d9ff, transparent);
+    animation: shoot 10s linear infinite 3s; z-index: 0;
+  }
+  @keyframes shoot {
+    0%{left:-10%;top:10%;opacity:0;}5%{opacity:1;}38%{left:110%;top:28%;opacity:0;}100%{left:110%;top:28%;opacity:0;}
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 36px 20px 60px; }
+
+  /* ===== HERO ===== */
+  .hero { text-align: center; margin-bottom: 44px; animation: fadeDown .8s ease both; }
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
+  .hero-badge {
+    display: inline-flex; gap: 8px;
+    background: rgba(212,168,67,.13); border: 1px solid rgba(212,168,67,.35);
+    color: #fcd34d; padding: 7px 22px; border-radius: 100px;
+    font-size: .8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Baloo 2', cursive; font-size: clamp(2rem,6vw,3.2rem);
+    font-weight: 800; color: var(--white); line-height: 1.15; margin-bottom: 12px;
+  }
+  .hero h1 .accent { background: linear-gradient(135deg,#fcd34d,#fb923c); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero-sub { color: rgba(255,255,255,.55); font-size: 1rem; max-width: 500px; margin: 0 auto 28px; line-height: 1.6; }
+  .hero-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .tag { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.7); padding:6px 16px; border-radius:100px; font-size:.78rem; font-weight:600; backdrop-filter:blur(8px); }
+
+  .progress-wrap { background:rgba(255,255,255,.07); border-radius:100px; height:8px; margin-bottom:40px; overflow:hidden; border:1px solid rgba(255,255,255,.08); }
+  .progress-bar { height:100%; background:linear-gradient(90deg,#fcd34d,#fb923c); border-radius:100px; width:0%; transition:width .6s ease; }
+  .progress-label { text-align:right; font-size:.75rem; color:rgba(255,255,255,.4); margin-top:6px; font-weight:600; }
+
+  /* ===== ILLUSTRATION ===== */
+  .illustration-card {
+    background: linear-gradient(135deg,#0c0a1a 0%,#14102a 50%,#08090f 100%);
+    border-radius: 32px; padding: 32px 24px 24px; margin-bottom: 40px;
+    text-align: center; position: relative; overflow: hidden; animation: fadeUp .9s ease .1s both;
+    border: 1px solid rgba(212,168,67,.2);
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+  .illus-svg { max-width: 290px; width: 100%; position: relative; z-index: 1; }
+  .illus-quote { color:rgba(255,255,255,.75); font-size:.95rem; font-weight:600; margin-top:16px; font-style:italic; }
+  .illus-quote strong { color:#fcd34d; font-style:normal; }
+
+  /* ===== SPEED CONTROLS ===== */
+  .speed-controls {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 16px; animation: fadeUp .9s ease .15s both;
+  }
+  .speed-label { color: rgba(255,255,255,.5); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .speed-btn {
+    padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06); color: rgba(255,255,255,.6);
+    font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s;
+    backdrop-filter: blur(8px); font-family: 'Nunito', sans-serif;
+  }
+  .speed-btn:hover { background: rgba(255,255,255,.12); color: white; }
+  .speed-btn.active {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    color: white; border-color: transparent;
+    box-shadow: 0 4px 16px rgba(217,119,6,.4);
+  }
+
+  .master-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:40px; animation:fadeUp .9s ease .2s both; }
+  .btn-master { display:inline-flex; align-items:center; gap:10px; padding:13px 28px; border-radius:100px; border:none; cursor:pointer; font-weight:700; transition:transform .15s; font-family:'Nunito',sans-serif; font-size:.95rem; }
+  .btn-master:active { transform:scale(.97); }
+  .btn-play-all { background:linear-gradient(135deg,#d97706,#92400e); color:white; box-shadow:0 6px 24px rgba(217,119,6,.4); }
+  .btn-stop { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:rgba(255,255,255,.75); backdrop-filter:blur(8px); }
+
+  /* ===== CHAPTERS ===== */
+  .chapter {
+    background: linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.09); border-radius: 28px;
+    margin-bottom: 24px; overflow: hidden; backdrop-filter: blur(12px);
+    transition: transform .2s; animation: fadeUp .7s ease both;
+  }
+  .chapter:hover { transform: translateY(-3px); }
+  .chapter:nth-child(1){animation-delay:.1s;}.chapter:nth-child(2){animation-delay:.2s;}
+  .chapter:nth-child(3){animation-delay:.3s;}.chapter:nth-child(4){animation-delay:.4s;}
+  .chapter:nth-child(5){animation-delay:.5s;}
+  .chapter-accent { height: 4px; }
+  .ch1 .chapter-accent{background:linear-gradient(90deg,#fcd34d,#d97706);}
+  .ch2 .chapter-accent{background:linear-gradient(90deg,#a78bfa,#7c3aed);}
+  .ch3 .chapter-accent{background:linear-gradient(90deg,#38bdf8,#0284c7);}
+  .ch4 .chapter-accent{background:linear-gradient(90deg,var(--emerald),#059669);}
+  .ch5 .chapter-accent{background:linear-gradient(90deg,var(--coral),#c2410c);}
+  .chapter-inner { padding: 28px 28px 24px; }
+  .chapter-head { display:flex; align-items:center; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+  .chapter-num {
+    width:52px; height:52px; border-radius:16px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2',cursive; font-size:1.3rem; font-weight:800; color:white;
+  }
+  .ch1 .chapter-num{background:linear-gradient(135deg,#fcd34d,#d97706);}
+  .ch2 .chapter-num{background:linear-gradient(135deg,#a78bfa,#7c3aed);}
+  .ch3 .chapter-num{background:linear-gradient(135deg,#38bdf8,#0284c7);}
+  .ch4 .chapter-num{background:linear-gradient(135deg,var(--emerald),#059669);}
+  .ch5 .chapter-num{background:linear-gradient(135deg,var(--coral),#c2410c);}
+  .chapter-meta { flex:1; min-width:0; }
+  .chapter-tag { font-size:.7rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.35); margin-bottom:4px; }
+  .chapter-title { font-family:'Baloo 2',cursive; font-size:1.05rem; font-weight:700; color:var(--white); line-height:1.3; }
+  .btn-listen {
+    flex-shrink:0; display:inline-flex; align-items:center; gap:8px;
+    padding:10px 20px; border-radius:100px; border:none; cursor:pointer;
+    font-size:.82rem; font-weight:700; transition:all .2s; font-family:'Nunito',sans-serif;
+  }
+  .ch1 .btn-listen{background:rgba(252,211,77,.15);color:#fde68a;border:1px solid rgba(252,211,77,.3);}
+  .ch2 .btn-listen{background:rgba(167,139,250,.15);color:#c4b5fd;border:1px solid rgba(167,139,250,.3);}
+  .ch3 .btn-listen{background:rgba(56,189,248,.15);color:#7dd3fc;border:1px solid rgba(56,189,248,.3);}
+  .ch4 .btn-listen{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.3);}
+  .ch5 .btn-listen{background:rgba(249,115,22,.15);color:#fdba74;border:1px solid rgba(249,115,22,.3);}
+  .btn-listen:hover{filter:brightness(1.15);transform:scale(1.04);}
+  .btn-listen.playing::before{content:'⏸';margin-right:4px;}
+  .wave-bars{display:none;align-items:center;gap:2px;height:16px;}
+  .btn-listen.playing .wave-bars{display:flex;}
+  .wave-bar{width:3px;border-radius:2px;background:currentColor;animation:wave var(--dur,.5s) infinite alternate;}
+  @keyframes wave{from{height:3px;}to{height:14px;}}
+
+  .chapter-text {
+    font-size: 1rem; line-height: 1.95; color: rgba(255,255,255,.85);
+    padding: 20px 22px; background: rgba(0,0,0,.25);
+    border-radius: 16px; border: 1px solid rgba(255,255,255,.05);
+    position: relative; word-spacing: 2px;
+  }
+  .chapter-text .read-marker {
+    position:absolute; top:12px; right:14px;
+    font-size:.75rem; font-weight:700; color:#fcd34d;
+    opacity:0; transition:opacity .4s;
+  }
+  .chapter.done .chapter-text .read-marker { opacity:1; }
+
+  .w {
+    display: inline; border-radius: 5px; padding: 1px 2px;
+    cursor: pointer; transition: background 0.08s; white-space: normal;
+  }
+  .w:hover { background: rgba(252,211,77,0.2); }
+  .hl { color: #fcd34d; font-weight: 700; }
+
+  .vocab-box { margin-top:16px; padding:16px 20px; background:rgba(255,255,255,.04); border-radius:14px; border:1px solid rgba(255,255,255,.07); }
+  .vocab-title { font-size:.72rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:10px; }
+  .vocab-pills { display:flex; flex-wrap:wrap; gap:8px; }
+  .vocab-pill {
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
+    border-radius:100px; padding:5px 14px; font-size:.8rem; font-weight:600;
+    color:rgba(255,255,255,.65); cursor:pointer; transition:all .18s;
+  }
+  .vocab-pill:hover{background:rgba(255,255,255,.14);color:var(--white);transform:scale(1.06);}
+
+  .motivation-card {
+    background: linear-gradient(135deg,#0c0a1a 0%,#16100a 60%,#08090f 100%);
+    border: 1px solid rgba(212,168,67,.22); border-radius:28px;
+    padding:36px 32px; text-align:center; margin-top:40px;
+    position:relative; overflow:hidden; animation:fadeUp .7s ease .6s both;
+  }
+  .motivation-card .star-icon{font-size:2.8rem;margin-bottom:16px;display:block;animation:spin 6s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);}50%{transform:rotate(180deg);}to{transform:rotate(360deg);}}
+  .motivation-card h2{font-family:'Baloo 2',cursive;font-size:clamp(1.2rem,4vw,1.7rem);font-weight:800;color:#fcd34d;margin-bottom:14px;}
+  .motivation-card p{color:rgba(255,255,255,.7);font-size:.97rem;line-height:1.7;max-width:520px;margin:0 auto;}
+  .challenge-box{margin-top:24px;background:rgba(212,168,67,.08);border:1px solid rgba(212,168,67,.2);border-radius:16px;padding:18px 22px;}
+  .challenge-box p{font-size:.9rem;font-weight:600;color:rgba(255,255,255,.75);}
+  .challenge-box strong{color:#fcd34d;}
+  .footer{text-align:center;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.3);font-size:.82rem;font-weight:600;}
+
+  .word-toast {
+    position:fixed; bottom:28px; left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:rgba(0,0,0,.92); backdrop-filter:blur(12px);
+    color:#fcd34d; padding:12px 28px; border-radius:100px;
+    font-size:.9rem; font-weight:600;
+    box-shadow:0 8px 32px rgba(0,0,0,.4);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    z-index:9999; white-space:nowrap;
+    border:1px solid rgba(252,211,77,.3); font-family:monospace;
+  }
+  .word-toast.show{transform:translateX(-50%) translateY(0);}
+  .word-toast small{color:#aaa;font-size:0.7rem;margin-left:8px;}
+
+  @media(max-width:600px){
+    .chapter-inner{padding:20px 18px 18px;}
+    .btn-listen span{display:none;}
+    .chapter-num{width:44px;height:44px;font-size:1.1rem;}
+    .word-toast{white-space:normal;max-width:90vw;text-align:center;}
+    .speed-controls{gap:6px;}
+    .speed-btn{padding:7px 14px;font-size:.75rem;}
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<div class="stars" id="stars"></div>
+<div class="shoot"></div>
+
+<div class="wrapper">
+  <header class="hero">
+    <div class="hero-badge">⏰ Day 12 – Late Beginner | ✨ Click ANY word for Indonesian meaning</div>
+    <h1>The Clock That Stopped<br><span class="accent">Time</span></h1>
+    <p class="hero-sub">A story about <strong style="color:#fcd34d">Aslan</strong> who discovers a magical old clock that can freeze time — and learns that every second is more precious than gold. ⏰✨🌟</p>
+    <div class="hero-tags">
+      <span class="tag">⭐ Late Beginner</span>
+      <span class="tag">🎧 Listen & Learn</span>
+      <span class="tag">📚 5 Chapters</span>
+      <span class="tag">🏆 Vocabulary</span>
+      <span class="tag">🔍 Click words for meaning</span>
+    </div>
+  </header>
+
+  <div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-label" id="progressLabel">0 of 5 chapters read</div>
+  </div>
+
+  <!-- ILLUSTRATION -->
+  <div class="illustration-card">
+    <svg class="illus-svg" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Deep night background -->
+      <rect x="0" y="0" width="300" height="200" fill="#06050e" rx="14"/>
+
+      <!-- Stars -->
+      <circle cx="18" cy="22" r="1.2" fill="white" opacity=".7"><animate attributeName="opacity" values=".2;.9;.2" dur="2.4s" repeatCount="indefinite"/></circle>
+      <circle cx="48" cy="14" r="1" fill="white" opacity=".6"><animate attributeName="opacity" values=".1;.8;.1" dur="1.9s" repeatCount="indefinite" begin=".5s"/></circle>
+      <circle cx="90" cy="25" r="1.4" fill="white" opacity=".8"><animate attributeName="opacity" values=".3;1;.3" dur="2.7s" repeatCount="indefinite" begin=".9s"/></circle>
+      <circle cx="135" cy="12" r="1" fill="white" opacity=".6"><animate attributeName="opacity" values=".2;.7;.2" dur="2.1s" repeatCount="indefinite" begin="1.3s"/></circle>
+      <circle cx="210" cy="20" r="1.3" fill="white" opacity=".7"><animate attributeName="opacity" values=".3;.9;.3" dur="2.5s" repeatCount="indefinite" begin=".6s"/></circle>
+      <circle cx="258" cy="30" r="1" fill="white" opacity=".5"><animate attributeName="opacity" values=".1;.7;.1" dur="3.1s" repeatCount="indefinite" begin="1.7s"/></circle>
+      <circle cx="278" cy="14" r="1.5" fill="white" opacity=".8"><animate attributeName="opacity" values=".2;.9;.2" dur="2.2s" repeatCount="indefinite" begin=".4s"/></circle>
+      <circle cx="30" cy="55" r="1" fill="#fcd34d" opacity=".4"><animate attributeName="opacity" values=".1;.6;.1" dur="2.8s" repeatCount="indefinite" begin=".2s"/></circle>
+      <circle cx="270" cy="55" r="1.1" fill="#fcd34d" opacity=".4"><animate attributeName="opacity" values=".2;.7;.2" dur="2.3s" repeatCount="indefinite" begin="1s"/></circle>
+
+      <!-- Moon -->
+      <circle cx="255" cy="42" r="22" fill="#fef3c7" opacity=".9"/>
+      <circle cx="263" cy="37" r="17" fill="#06050e" opacity=".28"/>
+
+      <!-- Frozen birds mid-flight (time stopped effect) -->
+      <path d="M40 70 Q46 64 52 70" stroke="rgba(255,255,255,.35)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M220 55 Q226 49 232 55" stroke="rgba(255,255,255,.3)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <!-- Frozen leaf mid-air -->
+      <ellipse cx="190" cy="85" rx="5" ry="3" fill="#86efac" opacity=".3" transform="rotate(-30 190 85)"/>
+      <ellipse cx="55" cy="95" rx="4" ry="2.5" fill="#fcd34d" opacity=".25" transform="rotate(20 55 95)"/>
+
+      <!-- GRANDFATHER CLOCK body -->
+      <!-- Base / feet -->
+      <rect x="108" y="182" width="64" height="10" rx="3" fill="#6b3a12"/>
+      <rect x="112" y="178" width="56" height="6" rx="2" fill="#7c4a18"/>
+      <!-- Main case lower -->
+      <rect x="115" y="105" width="50" height="75" rx="4" fill="#6b3a12"/>
+      <rect x="118" y="108" width="44" height="69" rx="3" fill="#7c4a18"/>
+      <!-- Pendulum window -->
+      <rect x="124" y="118" width="32" height="48" rx="4" fill="#0d0b1a"/>
+      <rect x="125" y="119" width="30" height="46" rx="3" fill="#0f0d22"/>
+      <!-- Pendulum rod -->
+      <rect x="139" y="119" width="2" height="36" rx="1" fill="#d4a843" opacity=".7"/>
+      <!-- Pendulum bob -->
+      <ellipse cx="140" cy="158" rx="8" ry="8" fill="#d4a843"/>
+      <ellipse cx="140" cy="158" rx="5" ry="5" fill="#fcd34d" opacity=".7"/>
+      <ellipse cx="140" cy="158" rx="2.5" ry="2.5" fill="#fff8e0" opacity=".6"/>
+      <!-- Pendulum bob frozen sparkle -->
+      <circle cx="150" cy="153" r="2" fill="#fcd34d" opacity=".8"><animate attributeName="opacity" values=".3;1;.3" dur="1.5s" repeatCount="indefinite"/></circle>
+
+      <!-- Waist moulding -->
+      <rect x="112" y="102" width="56" height="6" rx="2" fill="#92510a"/>
+
+      <!-- Upper case / hood -->
+      <rect x="110" y="42" width="60" height="64" rx="4" fill="#6b3a12"/>
+      <rect x="113" y="45" width="54" height="58" rx="3" fill="#7c4a18"/>
+
+      <!-- Clock face -->
+      <circle cx="140" cy="72" r="24" fill="#fef3c7"/>
+      <circle cx="140" cy="72" r="22" fill="#fffbe8"/>
+      <circle cx="140" cy="72" r="20" fill="#fef9c3"/>
+      <!-- Magic glow ring -->
+      <circle cx="140" cy="72" r="25" fill="none" stroke="#d4a843" stroke-width="2.5" opacity=".8"/>
+      <circle cx="140" cy="72" r="28" fill="none" stroke="#fcd34d" stroke-width="1" opacity=".4"/>
+      <circle cx="140" cy="72" r="32" fill="none" stroke="#fcd34d" stroke-width=".5" opacity=".2"/>
+
+      <!-- Hour markers -->
+      <line x1="140" y1="54" x2="140" y2="57" stroke="#6b3a12" stroke-width="2" stroke-linecap="round"/>
+      <line x1="140" y1="87" x2="140" y2="90" stroke="#6b3a12" stroke-width="2" stroke-linecap="round"/>
+      <line x1="123" y1="72" x2="126" y2="72" stroke="#6b3a12" stroke-width="2" stroke-linecap="round"/>
+      <line x1="154" y1="72" x2="157" y2="72" stroke="#6b3a12" stroke-width="2" stroke-linecap="round"/>
+      <!-- Diagonal markers -->
+      <line x1="129" y1="58" x2="131" y2="61" stroke="#6b3a12" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="151" y1="58" x2="149" y2="61" stroke="#6b3a12" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="129" y1="86" x2="131" y2="83" stroke="#6b3a12" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="151" y1="86" x2="149" y2="83" stroke="#6b3a12" stroke-width="1.5" stroke-linecap="round"/>
+
+      <!-- Roman numerals hints (small lines for XII, III, VI, IX) -->
+      <text x="136" y="60" fill="#6b3a12" font-size="5" font-family="serif" font-weight="bold">XII</text>
+      <text x="153" y="75" fill="#6b3a12" font-size="5" font-family="serif" font-weight="bold">III</text>
+      <text x="138" y="89" fill="#6b3a12" font-size="5" font-family="serif" font-weight="bold">VI</text>
+      <text x="124" y="75" fill="#6b3a12" font-size="5" font-family="serif" font-weight="bold">IX</text>
+
+      <!-- FROZEN clock hands (stopped at dramatic angle) -->
+      <!-- Hour hand -->
+      <line x1="140" y1="72" x2="140" y2="57" stroke="#2d1a08" stroke-width="3" stroke-linecap="round"/>
+      <!-- Minute hand (pointing roughly to frozen 7:22 position) -->
+      <line x1="140" y1="72" x2="152" y2="62" stroke="#2d1a08" stroke-width="2" stroke-linecap="round"/>
+      <!-- Second hand (frozen — thin red) -->
+      <line x1="140" y1="72" x2="128" y2="83" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Center cap -->
+      <circle cx="140" cy="72" r="3" fill="#d4a843"/>
+      <circle cx="140" cy="72" r="1.5" fill="#fef9c3"/>
+
+      <!-- Magic golden sparkles frozen around clock face -->
+      <text x="164" y="54" fill="#fcd34d" font-size="10" opacity=".9">✦</text>
+      <text x="108" y="54" fill="#fcd34d" font-size="8" opacity=".7">✦</text>
+      <text x="166" y="80" fill="#fbbf24" font-size="7" opacity=".6">✦</text>
+      <text x="104" y="85" fill="#fbbf24" font-size="9" opacity=".7">✦</text>
+      <text x="138" y="42" fill="#fcd34d" font-size="7" opacity=".5">✦</text>
+
+      <!-- Golden magic rays from clock -->
+      <line x1="140" y1="47" x2="140" y2="38" stroke="#fcd34d" stroke-width="1.5" opacity=".4" stroke-linecap="round"/>
+      <line x1="163" y1="55" x2="170" y2="48" stroke="#fcd34d" stroke-width="1.5" opacity=".35" stroke-linecap="round"/>
+      <line x1="117" y1="55" x2="110" y2="48" stroke="#fcd34d" stroke-width="1.5" opacity=".35" stroke-linecap="round"/>
+      <line x1="164" y1="72" x2="174" y2="72" stroke="#fcd34d" stroke-width="1.5" opacity=".3" stroke-linecap="round"/>
+      <line x1="116" y1="72" x2="106" y2="72" stroke="#fcd34d" stroke-width="1.5" opacity=".3" stroke-linecap="round"/>
+
+      <!-- Fancy hood top / pediment -->
+      <path d="M110 42 L140 22 L170 42Z" fill="#6b3a12"/>
+      <path d="M114 42 L140 26 L166 42Z" fill="#7c4a18"/>
+      <!-- Finial on top -->
+      <rect x="136" y="16" width="8" height="10" rx="2" fill="#92510a"/>
+      <ellipse cx="140" cy="14" rx="5" ry="5" fill="#d4a843"/>
+      <ellipse cx="140" cy="14" rx="3" ry="3" fill="#fcd34d" opacity=".8"/>
+      <!-- Hood side columns -->
+      <rect x="110" y="42" width="6" height="64" rx="2" fill="#92510a"/>
+      <rect x="164" y="42" width="6" height="64" rx="2" fill="#92510a"/>
+
+      <!-- ASLAN standing to the right, looking at clock in wonder -->
+      <circle cx="228" cy="130" r="9" fill="#c8956c"/>
+      <!-- Hair -->
+      <path d="M219 126 Q228 120 237 126 Q237 122 228 121 Q219 122 219 126Z" fill="#5c3a1e"/>
+      <!-- Body -->
+      <rect x="221" y="139" width="14" height="22" rx="4" fill="#0d9488"/>
+      <!-- Arms raised in wonder -->
+      <line x1="220" y1="143" x2="210" y2="132" stroke="#0d9488" stroke-width="4" stroke-linecap="round"/>
+      <line x1="235" y1="143" x2="245" y2="133" stroke="#0d9488" stroke-width="4" stroke-linecap="round"/>
+      <!-- Legs -->
+      <line x1="223" y1="161" x2="221" y2="174" stroke="#1e3a5f" stroke-width="4" stroke-linecap="round"/>
+      <line x1="233" y1="161" x2="235" y2="174" stroke="#1e3a5f" stroke-width="4" stroke-linecap="round"/>
+      <!-- Open mouth / amazement -->
+      <circle cx="228" cy="133" r="2.5" fill="#5c3a1e" opacity=".45"/>
+      <!-- Sparkles near Aslan's hands -->
+      <circle cx="209" cy="130" r="2" fill="#fcd34d" opacity=".8"><animate attributeName="opacity" values=".3;1;.3" dur="1.3s" repeatCount="indefinite" begin=".2s"/></circle>
+      <circle cx="246" cy="131" r="2" fill="#fcd34d" opacity=".8"><animate attributeName="opacity" values=".2;.9;.2" dur="1.6s" repeatCount="indefinite" begin=".5s"/></circle>
+
+      <!-- Frozen water drops from overturned glass on shelf (time stopped effect) -->
+      <ellipse cx="58" cy="138" rx="6" ry="5" fill="#1e3a5f" opacity=".7"/>
+      <ellipse cx="58" cy="138" rx="4" ry="3" fill="#38bdf8" opacity=".5"/>
+      <!-- Drops mid-air -->
+      <circle cx="55" cy="148" r="2.5" fill="#7dd3fc" opacity=".7"/>
+      <circle cx="61" cy="152" r="2" fill="#7dd3fc" opacity=".6"/>
+      <circle cx="57" cy="156" r="1.5" fill="#7dd3fc" opacity=".5"/>
+      <!-- Label: frozen -->
+      <text x="40" y="134" fill="rgba(125,211,252,.5)" font-size="7" font-family="sans-serif">frozen</text>
+
+      <!-- Ground / floor line -->
+      <rect x="0" y="178" width="300" height="22" rx="0" fill="#0a0810" opacity=".8"/>
+      <line x1="0" y1="178" x2="300" y2="178" stroke="rgba(212,168,67,.15)" stroke-width="1"/>
+
+      <!-- Small sparkle texts -->
+      <text x="72" y="75" fill="#fcd34d" font-size="8" opacity=".5">✦</text>
+      <text x="196" y="110" fill="#a78bfa" font-size="8" opacity=".4">✦</text>
+    </svg>
+    <p class="illus-quote">The clock <strong>glowed gold</strong> — and the whole world held its breath. ⏰✨</p>
+  </div>
+
+  <!-- SPEED CONTROLS -->
+  <div class="speed-controls">
+    <span class="speed-label">🎚️ Speed:</span>
+    <button class="speed-btn" data-rate="0.65">🐢 Slow</button>
+    <button class="speed-btn active" data-rate="0.88">🚶 Normal</button>
+    <button class="speed-btn" data-rate="1.15">🚀 Fast</button>
+  </div>
+
+  <div class="master-controls">
+    <button class="btn-master btn-play-all" id="playAllBtn">🎧 <span>Listen to Whole Story</span></button>
+    <button class="btn-master btn-stop" id="stopBtn">⏹ <span>Stop Reading</span></button>
+  </div>
+
+  <div id="chapters">
+
+    <!-- CHAPTER 1 -->
+    <div class="chapter ch1" id="ch1">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">01</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter One</div>
+            <div class="chapter-title">🕰️ The Old Grandfather Clock</div>
+          </div>
+          <button class="btn-listen" data-ch="1">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.5s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text1">
+          <span class="read-marker">✅ Read!</span>
+          One rainy Saturday, Aslan was helping his grandmother clean her old house. Most of the rooms were tidy, but there was one room at the end of the hallway that was always kept locked. That day, his grandmother handed him a heavy iron key. "I think it is time you saw what is inside," she said with a mysterious smile. Aslan turned the key and pushed the door open. The room smelled of dust and old wood. In the center stood a tall grandfather clock made of dark brown wood with <span class="hl">carvings</span> of leaves and stars. The clock was silent. Its hands had not moved in many years. But as soon as Aslan stepped closer, the clock face began to <span class="hl">glow</span> with a soft golden light.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="carvings">carvings</span><span class="vocab-pill" data-word="glow">glow</span><span class="vocab-pill" data-word="hallway">hallway</span><span class="vocab-pill" data-word="mysterious">mysterious</span><span class="vocab-pill" data-word="tidy">tidy</span><span class="vocab-pill" data-word="silent">silent</span><span class="vocab-pill" data-word="locked">locked</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 2 -->
+    <div class="chapter ch2" id="ch2">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">02</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Two</div>
+            <div class="chapter-title">✨ The Magic Tick</div>
+          </div>
+          <button class="btn-listen" data-ch="2">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text2">
+          <span class="read-marker">✅ Read!</span>
+          Aslan reached out and touched the clock's golden pendulum. The moment his fingers touched the cold metal, the clock gave one loud tick. The golden glow grew brighter and filled the whole room. A voice came from inside the clock — deep and gentle, like the sound of an old bell. "You have been chosen," the voice said. "This clock has one special power. When you turn the hands backward, time will stop for everyone except you. Only one hour. Use it wisely." Aslan's heart was <span class="hl">pounding</span>. He looked at the clock hands and carefully turned them back by one hour. There was a flash of golden light. Then everything went <span class="hl">still</span>. He ran to the window. Outside, the rain had stopped in the air. Every drop was <span class="hl">frozen</span> like tiny glass beads.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="pounding">pounding</span><span class="vocab-pill" data-word="still">still</span><span class="vocab-pill" data-word="frozen">frozen</span><span class="vocab-pill" data-word="pendulum">pendulum</span><span class="vocab-pill" data-word="chosen">chosen</span><span class="vocab-pill" data-word="wisely">wisely</span><span class="vocab-pill" data-word="flash">flash</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 3 -->
+    <div class="chapter ch3" id="ch3">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">03</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Three</div>
+            <div class="chapter-title">⏸️ Time Stops</div>
+          </div>
+          <button class="btn-listen" data-ch="3">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text3">
+          <span class="read-marker">✅ Read!</span>
+          Aslan stepped outside into the frozen world. It was the most <span class="hl">extraordinary</span> sight he had ever seen. A cat was frozen in mid-jump near the gate. A boy on a bicycle was frozen in the middle of the street, leaning to one side. Even a butterfly had stopped with its wings open wide. Aslan walked past them all, laughing with wonder. He ran to the bakery down the road. The baker was frozen with his arms raised, pulling a tray of hot bread from the oven. Aslan took one warm bread roll from the tray and left a coin on the counter as payment. He climbed to the top of the frozen <span class="hl">fountain</span> in the square and looked out at the perfectly still city. Not a sound. Not a breath. Just the golden glow of stopped time all around him.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="extraordinary">extraordinary</span><span class="vocab-pill" data-word="fountain">fountain</span><span class="vocab-pill" data-word="frozen">frozen</span><span class="vocab-pill" data-word="butterfly">butterfly</span><span class="vocab-pill" data-word="counter">counter</span><span class="vocab-pill" data-word="leaning">leaning</span><span class="vocab-pill" data-word="payment">payment</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 4 -->
+    <div class="chapter ch4" id="ch4">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">04</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Four</div>
+            <div class="chapter-title">🌅 A Day Without Time</div>
+          </div>
+          <button class="btn-listen" data-ch="4">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.15s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text4">
+          <span class="read-marker">✅ Read!</span>
+          As Aslan explored the frozen city, a strange feeling slowly crept into his chest. At first it was fun — he could do anything without rushing. But after a while, everything began to feel <span class="hl">lonely</span>. There were no voices. No laughter. No footsteps. Even the birds were silent and still in the trees above him. Aslan sat on a bench and ate his bread roll alone. He missed the sound of his grandmother calling his name. He missed the noise of the busy street. He looked at his watch and realized the one hour was nearly over. He ran back to the old house as fast as he could. When he stepped back into the locked room, the golden glow of the clock was <span class="hl">fading</span>. He pressed his hand to the pendulum once more. With a soft chime, time began to move again.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="lonely">lonely</span><span class="vocab-pill" data-word="fading">fading</span><span class="vocab-pill" data-word="crept">crept</span><span class="vocab-pill" data-word="rushing">rushing</span><span class="vocab-pill" data-word="footsteps">footsteps</span><span class="vocab-pill" data-word="chime">chime</span><span class="vocab-pill" data-word="realized">realized</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 5 -->
+    <div class="chapter ch5" id="ch5">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">05</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Five</div>
+            <div class="chapter-title">🌟 Learning to Cherish Time</div>
+          </div>
+          <button class="btn-listen" data-ch="5">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text5">
+          <span class="read-marker">✅ Read!</span>
+          The rain began to fall again. The cat finished its jump. The boy on the bicycle kept riding. The world moved on as if nothing had happened. Aslan walked back to his grandmother, who was in the kitchen making tea. "Did you enjoy the room?" she asked. "Yes," said Aslan quietly. He sat down and thought hard about what he had experienced. "Grandmother," he said, "the clock showed me something important. When time stopped, I was free to do anything — but it felt empty without the people I love." His grandmother smiled and poured him a warm cup of tea. "That is the secret of time, Aslan," she said. "It is not something to stop or <span class="hl">waste</span>. It is something to fill — with kindness, with effort, and with the people who matter to you." Aslan looked back toward the locked room. He understood now. He decided that from that day on, he would never <span class="hl">procrastinate</span> again. He would do his homework on time. He would call his friends. He would sit with his grandmother every evening — because time, once gone, never comes back.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="waste">waste</span><span class="vocab-pill" data-word="procrastinate">procrastinate</span><span class="vocab-pill" data-word="cherish">cherish</span><span class="vocab-pill" data-word="experienced">experienced</span><span class="vocab-pill" data-word="effort">effort</span><span class="vocab-pill" data-word="kindness">kindness</span><span class="vocab-pill" data-word="empty">empty</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="motivation-card">
+    <span class="star-icon">⏰</span>
+    <h2>Kamu luar biasa, Aslan! Time well spent! 🌟</h2>
+    <p>Just like Aslan discovered, time is the most precious thing we have. You used YOUR time today to learn something new, read in English, and grow a little wiser. That is exactly what the magic clock would have wanted. Remember: <strong style="color:#fcd34d">every minute you spend learning is a gift to your future self!</strong> 📚✨</p>
+    <div class="challenge-box"><p>💪 <strong>Today's Challenge:</strong> Write down THREE things you want to do this week — and give each one a specific time and day. Share your plan with someone in your family. Good use of time starts with a good plan! ⏰📝</p></div>
+  </div>
+
+  <footer class="footer">Made with ❤️ for <span style="color:#fcd34d">Aslan</span> • Day 12 complete • Click any word for Indonesian meaning 🖱️</footer>
+</div>
+
+<div id="wordToast" class="word-toast">📖</div>
+
+<script>
+// ===== STARS + SPARKLES =====
+(function(){
+  const wrap = document.getElementById('stars');
+  for(let i=0;i<88;i++){
+    const s=document.createElement('div'); s.className='star';
+    const size=Math.random()*2.4+0.7;
+    s.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--delay:-${(Math.random()*5).toFixed(1)}s;`;
+    wrap.appendChild(s);
+  }
+  for(let i=0;i<14;i++){
+    const sp=document.createElement('div'); sp.className='sparkle';
+    const sx=(Math.random()*40-20).toFixed(0);
+    const sy=-(Math.random()*40+20);
+    const sx2=(Math.random()*30-15).toFixed(0);
+    const sy2=-(Math.random()*80+50);
+    sp.style.cssText=`top:${Math.random()*85}%;left:${Math.random()*100}%;--sd:${(Math.random()*5+5).toFixed(1)}s;--sdelay:-${(Math.random()*7).toFixed(1)}s;--sx:${sx}px;--sy:${sy}px;--sx2:${sx2}px;--sy2:${sy2}px;`;
+    wrap.appendChild(sp);
+  }
+})();
+
+// ===== DICTIONARY =====
+const dictionary = {
+  "aslan":"Aslan (nama tokoh utama kita)","one":"satu / suatu","rainy":"hujan / hari hujan","saturday":"hari Sabtu","was":"adalah / sedang (masa lalu)","helping":"membantu (sedang)","his":"miliknya (laki-laki)","grandmother":"nenek","clean":"membersihkan / bersih","old":"tua / lama","house":"rumah","most":"sebagian besar","rooms":"kamar-kamar / ruangan-ruangan","were":"adalah (jamak, masa lalu)","tidy":"rapi / teratur","but":"tetapi","there":"di sana","end":"ujung / akhir","hallway":"lorong / koridor","always":"selalu","kept":"tetap (masa lalu keep)","locked":"terkunci","that":"itu / bahwa","day":"hari","handed":"menyerahkan (masa lalu hand)","heavy":"berat","iron":"besi","key":"kunci","think":"berpikir","time":"waktu","saw":"melihat (masa lalu see)","inside":"di dalam","said":"berkata (masa lalu say)","mysterious":"misterius / penuh misteri","smile":"senyum","turned":"memutar / membalik (masa lalu turn)","pushed":"mendorong (masa lalu push)","door":"pintu","open":"terbuka / membuka","room":"kamar / ruangan","smelled":"berbau (masa lalu smell)","dust":"debu","wood":"kayu","center":"tengah","stood":"berdiri (masa lalu stand)","tall":"tinggi","grandfather":"kakek / jam berdiri besar","clock":"jam","made":"terbuat (masa lalu make)","dark":"gelap","brown":"cokelat","carvings":"ukiran-ukiran","leaves":"daun-daun","stars":"bintang-bintang","silent":"hening / diam","hands":"jarum jam / tangan-tangan","moved":"bergerak (masa lalu move)","many":"banyak","years":"tahun","soon":"segera","stepped":"melangkah (masa lalu step)","closer":"lebih dekat","face":"permukaan / wajah","began":"mulai (masa lalu begin)","glow":"bercahaya / sinar","soft":"lembut","golden":"keemasan / berwarna emas","light":"cahaya","reached":"meraih (masa lalu reach)","out":"ke luar","touched":"menyentuh (masa lalu touch)","pendulum":"bandul / pendulum jam","moment":"saat / sebentar","fingers":"jari-jari","cold":"dingin","metal":"logam","gave":"memberikan (masa lalu give)","loud":"keras","tick":"bunyi tik-tok","grew":"tumbuh / menjadi (masa lalu grow)","brighter":"lebih terang","filled":"memenuhi (masa lalu fill)","whole":"seluruh","voice":"suara","came":"datang (masa lalu come)","deep":"dalam / rendah (suara)","gentle":"lembut","bell":"lonceng / bel","chosen":"dipilih (past participle choose)","special":"istimewa","power":"kekuatan","when":"ketika","backward":"ke belakang","stop":"berhenti / menghentikan","everyone":"semua orang","except":"kecuali","only":"hanya","hour":"jam (waktu)","use":"gunakan / menggunakan","wisely":"dengan bijaksana","heart":"jantung / hati","pounding":"berdegup kencang","looked":"melihat (masa lalu look)","carefully":"dengan hati-hati","back":"ke belakang","flash":"kilatan","everything":"segalanya","still":"diam / tidak bergerak","window":"jendela","outside":"di luar","rain":"hujan","stopped":"berhenti (masa lalu stop)","air":"udara","every":"setiap","drop":"tetes","frozen":"beku / terpaku","tiny":"sangat kecil","glass":"kaca / kacamata","beads":"manik-manik","extraordinary":"luar biasa","sight":"pemandangan / penglihatan","ever":"pernah","cat":"kucing","mid":"tengah","jump":"lompatan","gate":"gerbang","boy":"anak laki-laki","bicycle":"sepeda","middle":"tengah","street":"jalan","leaning":"condong / bersandar","side":"sisi","even":"bahkan","butterfly":"kupu-kupu","wings":"sayap-sayap","open":"terbuka","wide":"lebar","walked":"berjalan (masa lalu walk)","past":"melewati","laughing":"tertawa (sedang)","wonder":"kekaguman / keheranan","ran":"berlari (masa lalu run)","bakery":"toko roti","road":"jalan","baker":"pembuat roti / tukang roti","raised":"mengangkat (masa lalu raise)","arms":"lengan-lengan","pulling":"menarik (sedang)","tray":"nampan","hot":"panas","bread":"roti","oven":"oven / tungku","took":"mengambil (masa lalu take)","warm":"hangat","roll":"roti gulung","left":"meninggalkan (masa lalu leave)","coin":"koin","counter":"meja kasir / konter","payment":"pembayaran","climbed":"memanjat (masa lalu climb)","top":"puncak / bagian atas","fountain":"air mancur","square":"alun-alun / lapangan","perfectly":"dengan sempurna","breath":"napas","explored":"menjelajahi (masa lalu explore)","strange":"aneh","feeling":"perasaan","slowly":"perlahan-lahan","crept":"merayap (masa lalu creep)","chest":"dada","first":"pertama","fun":"menyenangkan","anything":"apapun","rushing":"terburu-buru (sedang)","while":"sementara / sebentar","feel":"merasa","lonely":"kesepian","voices":"suara-suara","laughter":"tawa / gelak tawa","footsteps":"langkah kaki","birds":"burung-burung","trees":"pohon-pohon","above":"di atas","sat":"duduk (masa lalu sit)","bench":"bangku","ate":"makan (masa lalu eat)","alone":"sendiri / sendirian","missed":"merindukan (masa lalu miss)","sound":"suara / bunyi","calling":"memanggil (sedang)","name":"nama","noise":"kebisingan","busy":"sibuk / ramai","watch":"jam tangan","realized":"menyadari (masa lalu realize)","nearly":"hampir","over":"selesai / habis","fast":"cepat","could":"bisa (masa lalu can)","pressed":"menekan (masa lalu press)","once":"sekali","more":"lagi / lebih","chime":"suara lonceng / genta","again":"lagi","fell":"turun / jatuh (masa lalu fall)","finished":"menyelesaikan / selesai (masa lalu finish)","kept":"terus (masa lalu keep)","riding":"mengendarai (sedang)","world":"dunia","moved":"bergerak (masa lalu move)","nothing":"tidak ada","happened":"terjadi (masa lalu happen)","kitchen":"dapur","making":"membuat (sedang)","tea":"teh","enjoy":"menikmati","quietly":"dengan diam-diam","thought":"berpikir (masa lalu think)","hard":"keras / sungguh-sungguh","experienced":"mengalami (masa lalu experience)","showed":"menunjukkan (masa lalu show)","important":"penting","free":"bebas","empty":"kosong / hampa","people":"orang-orang","love":"cinta / sayang","poured":"menuangkan (masa lalu pour)","cup":"cangkir","secret":"rahasia","waste":"menyia-nyiakan / membuang-buang","fill":"mengisi","kindness":"kebaikan / keramahan","effort":"usaha / upaya","matter":"penting / berarti","understood":"memahami (masa lalu understand)","decided":"memutuskan (masa lalu decide)","procrastinate":"menunda-nunda pekerjaan","homework":"pekerjaan rumah","call":"menelepon / memanggil","friends":"teman-teman","sit":"duduk","evening":"sore / petang","gone":"pergi / berlalu","back":"kembali","cherish":"menghargai / menyayangi","fading":"memudar (sedang)","realized":"menyadari","crept":"merayap perlahan","rushing":"terburu-buru"
+};
+
+function showMeaning(word) {
+  let clean = word.toLowerCase().replace(/[.,!?;:()'"«»""''—–\-]/g,'');
+  let meaning = dictionary[clean];
+  if(!meaning){
+    if(clean.endsWith('s') && dictionary[clean.slice(0,-1)]) meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ed') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('d') && dictionary[clean.slice(0,-1)]) meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ing') && dictionary[clean.slice(0,-3)]) meaning=dictionary[clean.slice(0,-3)];
+    else if(clean.endsWith('ly') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('er') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('est') && dictionary[clean.slice(0,-3)]) meaning=dictionary[clean.slice(0,-3)];
+    else meaning="❓ arti belum tersedia, coba cek kamus";
+  }
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `📖 <strong>${clean}</strong> → ${meaning} <small>🇮🇩</small>`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>toast.classList.remove('show'), 2800);
+}
+
+// ===== WORD WRAPPING =====
+function wrapWords(div) {
+  if(div.dataset.wrapped) return;
+  div.dataset.wrapped = "1";
+
+  function processNode(node) {
+    if(node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      if(!text.trim()) return;
+      const frag = document.createDocumentFragment();
+      const parts = text.split(/(\s+)/);
+      parts.forEach(part => {
+        if(/^\s+$/.test(part)) {
+          frag.appendChild(document.createTextNode(part));
+        } else if(part.length > 0) {
+          const match = part.match(/^([^a-zA-Z0-9']*)([a-zA-Z0-9'][a-zA-Z0-9']*)([^a-zA-Z0-9']*)$/);
+          if(match) {
+            if(match[1]) frag.appendChild(document.createTextNode(match[1]));
+            const span = document.createElement('span');
+            span.className = 'w';
+            span.textContent = match[2];
+            span.addEventListener('click', (e)=>{ e.stopPropagation(); showMeaning(match[2]); });
+            frag.appendChild(span);
+            if(match[3]) frag.appendChild(document.createTextNode(match[3]));
+          } else {
+            frag.appendChild(document.createTextNode(part));
+          }
+        }
+      });
+      node.parentNode.replaceChild(frag, node);
+    } else if(node.nodeType === Node.ELEMENT_NODE) {
+      if(node.classList && (node.classList.contains('read-marker') || node.classList.contains('w'))) return;
+      if(node.tagName === 'SCRIPT' || node.tagName === 'STYLE') return;
+      Array.from(node.childNodes).forEach(child => processNode(child));
+    }
+  }
+
+  const marker = div.querySelector('.read-marker');
+  const markerEl = marker ? marker.cloneNode(true) : null;
+  if(marker) marker.remove();
+  processNode(div);
+  if(markerEl) div.insertAdjacentElement('afterbegin', markerEl);
+}
+
+function wrapAllChapters() {
+  document.querySelectorAll('.chapter-text').forEach(div => wrapWords(div));
+}
+
+// ===== SPEED CONTROL =====
+let speechRate = 0.88;
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    speechRate = parseFloat(btn.dataset.rate);
+    if(currentUtt) { showSpeedChangeTip(); }
+  });
+});
+
+function showSpeedChangeTip() {
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `⚡ Speed changed! Press Stop then Listen again to apply.`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>toast.classList.remove('show'), 2500);
+}
+
+// ===== SPEECH =====
+let currentUtt = null;
+let isPlayingAll = false;
+let readChapters = new Set();
+
+const stories = {
+  1: "One rainy Saturday, Aslan was helping his grandmother clean her old house. Most of the rooms were tidy, but there was one room at the end of the hallway that was always kept locked. That day, his grandmother handed him a heavy iron key. I think it is time you saw what is inside, she said with a mysterious smile. Aslan turned the key and pushed the door open. The room smelled of dust and old wood. In the center stood a tall grandfather clock made of dark brown wood with carvings of leaves and stars. The clock was silent. Its hands had not moved in many years. But as soon as Aslan stepped closer, the clock face began to glow with a soft golden light.",
+  2: "Aslan reached out and touched the clock's golden pendulum. The moment his fingers touched the cold metal, the clock gave one loud tick. The golden glow grew brighter and filled the whole room. A voice came from inside the clock, deep and gentle, like the sound of an old bell. You have been chosen, the voice said. This clock has one special power. When you turn the hands backward, time will stop for everyone except you. Only one hour. Use it wisely. Aslan's heart was pounding. He looked at the clock hands and carefully turned them back by one hour. There was a flash of golden light. Then everything went still. He ran to the window. Outside, the rain had stopped in the air. Every drop was frozen like tiny glass beads.",
+  3: "Aslan stepped outside into the frozen world. It was the most extraordinary sight he had ever seen. A cat was frozen in mid-jump near the gate. A boy on a bicycle was frozen in the middle of the street, leaning to one side. Even a butterfly had stopped with its wings open wide. Aslan walked past them all, laughing with wonder. He ran to the bakery down the road. The baker was frozen with his arms raised, pulling a tray of hot bread from the oven. Aslan took one warm bread roll from the tray and left a coin on the counter as payment. He climbed to the top of the frozen fountain in the square and looked out at the perfectly still city. Not a sound. Not a breath. Just the golden glow of stopped time all around him.",
+  4: "As Aslan explored the frozen city, a strange feeling slowly crept into his chest. At first it was fun, he could do anything without rushing. But after a while, everything began to feel lonely. There were no voices. No laughter. No footsteps. Even the birds were silent and still in the trees above him. Aslan sat on a bench and ate his bread roll alone. He missed the sound of his grandmother calling his name. He missed the noise of the busy street. He looked at his watch and realized the one hour was nearly over. He ran back to the old house as fast as he could. When he stepped back into the locked room, the golden glow of the clock was fading. He pressed his hand to the pendulum once more. With a soft chime, time began to move again.",
+  5: "The rain began to fall again. The cat finished its jump. The boy on the bicycle kept riding. The world moved on as if nothing had happened. Aslan walked back to his grandmother, who was in the kitchen making tea. Did you enjoy the room? she asked. Yes, said Aslan quietly. He sat down and thought hard about what he had experienced. Grandmother, he said, the clock showed me something important. When time stopped, I was free to do anything, but it felt empty without the people I love. His grandmother smiled and poured him a warm cup of tea. That is the secret of time, Aslan, she said. It is not something to stop or waste. It is something to fill, with kindness, with effort, and with the people who matter to you. Aslan looked back toward the locked room. He understood now. He decided that from that day on, he would never procrastinate again. He would do his homework on time. He would call his friends. He would sit with his grandmother every evening, because time, once gone, never comes back."
+};
+
+function pickVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v=>v.lang==='en-US'&&(v.name.includes('Google')||v.name.includes('Samantha')||v.name.includes('Microsoft')))
+    || voices.find(v=>v.lang.startsWith('en'))
+    || null;
+}
+
+function stopAll() {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  currentUtt = null;
+  isPlayingAll = false;
+  document.querySelectorAll('.btn-listen.playing').forEach(b=>b.classList.remove('playing'));
+}
+
+function speak(chId, btn, onEnd) {
+  if(!window.speechSynthesis) return;
+  stopAll();
+  const text = stories[chId];
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'en-US';
+  utt.rate = speechRate;
+  utt.pitch = 1.05;
+  const v = pickVoice();
+  if(v) utt.voice = v;
+  if(btn) btn.classList.add('playing');
+  utt.onend = () => {
+    if(btn) btn.classList.remove('playing');
+    currentUtt = null;
+    if(onEnd) onEnd();
+  };
+  utt.onerror = () => {
+    if(btn) btn.classList.remove('playing');
+    currentUtt = null;
+  };
+  currentUtt = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+// ===== LISTEN BUTTONS =====
+document.querySelectorAll('.btn-listen').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ch = btn.getAttribute('data-ch');
+    if(btn.classList.contains('playing')) { stopAll(); return; }
+    isPlayingAll = false;
+    speak(ch, btn, () => {
+      if(!readChapters.has(ch)) {
+        readChapters.add(ch);
+        document.getElementById('ch'+ch).classList.add('done');
+        updateProgress();
+      }
+    });
+  });
+});
+
+// ===== PLAY ALL =====
+document.getElementById('playAllBtn').addEventListener('click', () => {
+  stopAll();
+  isPlayingAll = true;
+  let keys = ['1','2','3','4','5'];
+  let idx = 0;
+  function next() {
+    if(!isPlayingAll || idx >= keys.length) { isPlayingAll=false; return; }
+    const k = keys[idx];
+    const btn = document.querySelector(`[data-ch="${k}"]`);
+    document.getElementById('ch'+k).scrollIntoView({behavior:'smooth',block:'center'});
+    speak(k, btn, () => {
+      if(!readChapters.has(k)) {
+        readChapters.add(k);
+        document.getElementById('ch'+k).classList.add('done');
+        updateProgress();
+      }
+      idx++;
+      setTimeout(next, 700);
+    });
+  }
+  next();
+});
+
+document.getElementById('stopBtn').addEventListener('click', stopAll);
+
+// ===== PROGRESS =====
+function updateProgress() {
+  const pct = (readChapters.size/5)*100;
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = readChapters.size+' of 5 chapters read'+(readChapters.size===5?' — Time well used! 🏆':'');
+}
+
+// ===== VOCAB PILLS =====
+document.querySelectorAll('.vocab-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const word = pill.getAttribute('data-word');
+    showMeaning(word);
+    if(window.speechSynthesis) {
+      const utt = new SpeechSynthesisUtterance(word);
+      utt.lang='en-US'; utt.rate=0.8;
+      const v=pickVoice(); if(v) utt.voice=v;
+      window.speechSynthesis.speak(utt);
+    }
+  });
+});
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', () => {
+  wrapAllChapters();
+  if(window.speechSynthesis) window.speechSynthesis.getVoices();
+  if(window.speechSynthesis) {
+    window.speechSynthesis.addEventListener('voiceschanged', () => {});
+  }
+});
+window.addEventListener('beforeunload', () => {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+});
+</script>
+</body>
+</html>

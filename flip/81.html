@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petualangan Aslan di Negeri AI – Hari 21</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --biru-tua:   #0D1B4B;
+      --biru:       #1A237E;
+      --biru-mid:   #283593;
+      --indigo:     #3949AB;
+      --ungu-tua:   #4A148C;
+      --ungu:       #7B1FA2;
+      --ungu-muda:  #CE93D8;
+      --pink-tua:   #880E4F;
+      --pink:       #E91E63;
+      --pink-muda:  #F48FB1;
+      --cyan:       #00E5FF;
+      --kuning:     #FFD600;
+      --oranye:     #FF6F00;
+      --hijau:      #00E676;
+      --bg:         #0A0E2A;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #0A0E2A;
+      background-image:
+        radial-gradient(ellipse at 15% 20%, #1A237E55 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 75%, #4A148C44 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 50%, #E91E6311 0%, transparent 60%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #E8EAF6;
+    }
+
+    h1, h2, h3, .font-kartun { font-family: 'Fredoka One', cursive; }
+
+    /* ======= STARS CANVAS ======= */
+    #starsCanvas {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ======= TOP BACK LINK ======= */
+    .top-back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.1);
+      color: #E8EAF6;
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.95rem;
+      padding: 8px 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      border: 2px solid rgba(255,255,255,0.25);
+      backdrop-filter: blur(8px);
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 16px rgba(0,229,255,0.2);
+    }
+    .top-back-link:hover {
+      background: rgba(0,229,255,0.18);
+      transform: translateX(-4px);
+      box-shadow: 0 0 24px rgba(0,229,255,0.4);
+    }
+
+    /* ======= HEADER ======= */
+    .header-bar {
+      background: linear-gradient(135deg, #0D1B4B 0%, #1A237E 25%, #4A148C 60%, #880E4F 100%);
+      position: relative; overflow: hidden;
+    }
+    .header-bar::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        60deg, transparent 0px, transparent 28px,
+        rgba(255,255,255,0.03) 28px, rgba(255,255,255,0.03) 56px
+      );
+    }
+    /* Scan line shimmer */
+    .header-bar::after {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0,229,255,0.08), transparent);
+      animation: scanHeader 4s linear infinite;
+    }
+    @keyframes scanHeader {
+      0%   { left: -100%; }
+      100% { left: 200%; }
+    }
+
+    .badge-hari {
+      background: linear-gradient(135deg, #00E5FF, #7B1FA2);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem; letter-spacing: 1px;
+      padding: 5px 20px; border-radius: 999px;
+      display: inline-block;
+      box-shadow: 0 0 20px rgba(0,229,255,0.5), 0 4px 0 #0D1B4B;
+      animation: bounceIn 0.7s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes bounceIn {
+      0%   { transform: scale(0.3); opacity: 0; }
+      60%  { transform: scale(1.12); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .aslan-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2.4rem, 7.5vw, 4.6rem);
+      color: #fff;
+      text-shadow: 0 0 30px rgba(0,229,255,0.6), 0 6px 0 #0D1B4B;
+      letter-spacing: 2px;
+      animation: slideDown 0.7s ease both 0.2s;
+    }
+    .subtitle-header {
+      font-size: clamp(0.9rem, 2.8vw, 1.25rem);
+      color: #B0BEC5;
+      animation: slideDown 0.7s ease both 0.4s;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-40px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+
+    /* ======= PROGRESS BAR ======= */
+    .progress-track {
+      height: 10px; background: rgba(255,255,255,0.12);
+      border-radius: 999px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00E5FF, #E91E63, #FFD600);
+      border-radius: 999px;
+      width: 70%; /* 21/30 */
+      transition: width 1.2s ease;
+      box-shadow: 0 0 10px rgba(0,229,255,0.5);
+    }
+
+    /* ======= CARDS ======= */
+    .card {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      position: relative; overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    }
+    .card-cyber::before   { background: linear-gradient(90deg, #00E5FF, #3949AB); }
+    .card-purple::before  { background: linear-gradient(90deg, #7B1FA2, #E91E63); }
+    .card-pink::before    { background: linear-gradient(90deg, #E91E63, #FF6F00); }
+    .card-yellow::before  { background: linear-gradient(90deg, #FFD600, #00E676); }
+    .card-green::before   { background: linear-gradient(90deg, #00E676, #00E5FF); }
+    .card-orange::before  { background: linear-gradient(90deg, #FF6F00, #E91E63); }
+    .card-gold::before    { background: linear-gradient(90deg, #FFD600, #FF8F00); }
+
+    /* ======= GLOW TEXT ======= */
+    .glow-cyan  { text-shadow: 0 0 12px rgba(0,229,255,0.8); color: #00E5FF; }
+    .glow-pink  { text-shadow: 0 0 12px rgba(233,30,99,0.8);  color: #FF80AB; }
+    .glow-gold  { text-shadow: 0 0 12px rgba(255,214,0,0.8);  color: #FFD600; }
+    .glow-green { text-shadow: 0 0 12px rgba(0,230,118,0.8);  color: #00E676; }
+
+    /* ======= STORY TEXT ======= */
+    .story-paragraph {
+      font-size: clamp(1.05rem, 2.5vw, 1.18rem);
+      line-height: 2; color: #CFD8DC; font-weight: 600;
+    }
+    .hl-cyan {
+      background: linear-gradient(120deg, rgba(0,229,255,0.15), rgba(0,229,255,0.3));
+      padding: 2px 8px; border-radius: 8px; color: #00E5FF; font-weight: 800;
+      border: 1px solid rgba(0,229,255,0.3);
+    }
+    .hl-pink {
+      background: linear-gradient(120deg, rgba(233,30,99,0.15), rgba(233,30,99,0.3));
+      padding: 2px 8px; border-radius: 8px; color: #FF80AB; font-weight: 800;
+      border: 1px solid rgba(233,30,99,0.3);
+    }
+    .hl-gold {
+      background: linear-gradient(120deg, rgba(255,214,0,0.15), rgba(255,214,0,0.3));
+      padding: 2px 8px; border-radius: 8px; color: #FFD600; font-weight: 800;
+      border: 1px solid rgba(255,214,0,0.3);
+    }
+    .hl-green {
+      background: linear-gradient(120deg, rgba(0,230,118,0.15), rgba(0,230,118,0.3));
+      padding: 2px 8px; border-radius: 8px; color: #00E676; font-weight: 800;
+      border: 1px solid rgba(0,230,118,0.3);
+    }
+
+    /* ======= TIER CARDS ======= */
+    .tier-card {
+      border-radius: 22px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: default;
+    }
+    .tier-card:hover {
+      transform: translateY(-6px);
+    }
+    .tier-card::after {
+      content: '';
+      position: absolute; inset: 0; border-radius: 22px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .tier-card:hover::after { opacity: 1; }
+
+    .tier-4 {
+      background: linear-gradient(135deg, rgba(57,73,171,0.4), rgba(26,35,126,0.6));
+      border: 2px solid rgba(57,73,171,0.6);
+      box-shadow: 0 8px 32px rgba(57,73,171,0.3);
+    }
+    .tier-4:hover { box-shadow: 0 16px 40px rgba(57,73,171,0.5); }
+
+    .tier-5 {
+      background: linear-gradient(135deg, rgba(123,31,162,0.4), rgba(74,20,140,0.6));
+      border: 2px solid rgba(123,31,162,0.6);
+      box-shadow: 0 8px 32px rgba(123,31,162,0.3);
+    }
+    .tier-5:hover { box-shadow: 0 16px 40px rgba(123,31,162,0.5); }
+
+    .tier-6 {
+      background: linear-gradient(135deg, rgba(233,30,99,0.3), rgba(136,14,79,0.5));
+      border: 2px solid rgba(233,30,99,0.5);
+      box-shadow: 0 8px 32px rgba(233,30,99,0.25);
+    }
+    .tier-6:hover { box-shadow: 0 16px 40px rgba(233,30,99,0.45); }
+    .tier-6 .tier-glow {
+      position: absolute; top: -30px; right: -30px;
+      width: 120px; height: 120px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(233,30,99,0.3), transparent);
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+    @keyframes pulseGlow {
+      0%,100% { transform: scale(1); opacity: 0.6; }
+      50%     { transform: scale(1.4); opacity: 1; }
+    }
+
+    /* ======= KOMIK PANELS ======= */
+    .komik-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (min-width: 640px) {
+      .komik-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .panel {
+      border-radius: 18px;
+      border: 3px solid rgba(0,229,255,0.4);
+      overflow: hidden;
+      background: rgba(13,27,75,0.7);
+      position: relative; cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 6px 0 rgba(0,229,255,0.3), 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .panel:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 12px 0 rgba(0,229,255,0.4), 0 16px 32px rgba(0,0,0,0.5); }
+    .panel:nth-child(2) { border-color: rgba(123,31,162,0.6); box-shadow: 0 6px 0 rgba(123,31,162,0.4), 0 8px 24px rgba(0,0,0,0.4); }
+    .panel:nth-child(2):hover { box-shadow: 0 12px 0 rgba(123,31,162,0.5); }
+    .panel:nth-child(3) { border-color: rgba(233,30,99,0.5); box-shadow: 0 6px 0 rgba(233,30,99,0.35), 0 8px 24px rgba(0,0,0,0.4); }
+    .panel:nth-child(3):hover { box-shadow: 0 12px 0 rgba(233,30,99,0.5); }
+    .panel:nth-child(4) { border-color: rgba(255,214,0,0.5); box-shadow: 0 6px 0 rgba(255,214,0,0.3), 0 8px 24px rgba(0,0,0,0.4); }
+    .panel:nth-child(4):hover { box-shadow: 0 12px 0 rgba(255,214,0,0.5); }
+
+    .panel-img-bg { width:100%; height:165px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+    .panel-num {
+      position:absolute; top:8px; left:8px; width:28px; height:28px;
+      background: rgba(0,229,255,0.8); color: #0D1B4B;
+      font-family:'Fredoka One',cursive; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.9rem; z-index:2; box-shadow: 0 0 10px rgba(0,229,255,0.6);
+    }
+    .panel:nth-child(2) .panel-num { background: rgba(206,147,216,0.9); color: #4A148C; }
+    .panel:nth-child(3) .panel-num { background: rgba(233,30,99,0.9); color: #fff; }
+    .panel:nth-child(4) .panel-num { background: rgba(255,214,0,0.9); color: #0D1B4B; }
+
+    .panel-dialog {
+      position:absolute; top:8px; right:8px;
+      background: rgba(13,27,75,0.9);
+      border: 2px solid rgba(0,229,255,0.5);
+      border-radius: 12px 12px 12px 2px;
+      font-size: 0.68rem; font-weight: 800;
+      padding: 3px 7px; max-width: 68%;
+      color: #00E5FF; z-index: 2;
+    }
+    .panel:nth-child(2) .panel-dialog { border-color: rgba(206,147,216,0.6); color: #CE93D8; }
+    .panel:nth-child(3) .panel-dialog { border-color: rgba(233,30,99,0.6); color: #FF80AB; }
+    .panel:nth-child(4) .panel-dialog { border-color: rgba(255,214,0,0.6); color: #FFD600; }
+
+    .panel-text { padding: 10px 12px; font-size: 0.8rem; font-weight: 700; color: #B0BEC5; text-align: center; min-height: 52px; display: flex; align-items: center; justify-content: center; }
+
+    /* ======= TIMELINE ======= */
+    .timeline-item {
+      display: flex; align-items: flex-start; gap: 16px;
+      padding: 14px 0; border-bottom: 1px dashed rgba(255,255,255,0.1);
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .tl-dot {
+      min-width: 42px; height: 42px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    /* ======= QUIZ ======= */
+    .quiz-option {
+      border: 2px solid rgba(255,255,255,0.15);
+      border-radius: 16px; padding: 14px 20px;
+      cursor: pointer; font-size: 1rem; font-weight: 700;
+      color: #E8EAF6; background: rgba(255,255,255,0.05);
+      transition: all 0.2s ease;
+      display: flex; align-items: center; gap: 12px;
+      text-align: left; width: 100%;
+      backdrop-filter: blur(4px);
+    }
+    .quiz-option:hover { border-color: rgba(0,229,255,0.5); background: rgba(0,229,255,0.08); transform: translateX(6px); }
+    .quiz-option.correct { border-color: #00E676; background: rgba(0,230,118,0.12); animation: correctPop 0.4s ease; }
+    .quiz-option.wrong   { border-color: #E91E63; background: rgba(233,30,99,0.12);  animation: shake 0.4s ease; }
+    @keyframes correctPop { 0%{transform:scale(1)} 50%{transform:scale(1.03)} 100%{transform:scale(1)} }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+    .quiz-result {
+      display: none; border-radius: 16px; padding: 16px 20px;
+      font-size: 1.05rem; font-weight: 800; text-align: center;
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ======= FLIP CARD ======= */
+    .flip-card { perspective: 700px; cursor: pointer; }
+    .flip-inner { position: relative; transition: transform 0.65s cubic-bezier(.47,1.64,.41,.8); transform-style: preserve-3d; min-height: 120px; }
+    .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+    .flip-front, .flip-back {
+      border-radius: 18px; padding: 16px;
+      backface-visibility: hidden;
+    }
+    .flip-back { position: absolute; inset: 0; transform: rotateY(180deg); display: flex; align-items: center; justify-content: center; border-radius: 18px; }
+
+    /* ======= SPARKLE & FLOAT ======= */
+    .sparkle { display:inline-block; animation: sparkle 1.5s ease-in-out infinite; }
+    @keyframes sparkle { 0%,100%{transform:scale(1) rotate(0deg)} 50%{transform:scale(1.3) rotate(15deg)} }
+    .mascot-float { animation: mascotFloat 3s ease-in-out infinite; display:inline-block; }
+    @keyframes mascotFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    .pulse-ring { animation: pulseRing 2.5s ease-in-out infinite; }
+    @keyframes pulseRing { 0%,100%{transform:scale(1);opacity:0.7} 50%{transform:scale(1.15);opacity:1} }
+    .cyber-blink { animation: cyberBlink 2s step-end infinite; }
+    @keyframes cyberBlink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+    /* ======= REVEAL ======= */
+    .reveal { opacity:0; transform:translateY(30px); transition:opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity:1; transform:none; }
+
+    /* ======= DIVIDER ======= */
+    .divider { text-align:center; font-size:1.4rem; letter-spacing:6px; color: rgba(0,229,255,0.3); margin: 8px 0; }
+
+    /* ======= NEON BORDER ======= */
+    .neon-border-cyan { border: 2px solid rgba(0,229,255,0.5); box-shadow: 0 0 16px rgba(0,229,255,0.2), inset 0 0 16px rgba(0,229,255,0.05); }
+    .neon-border-pink { border: 2px solid rgba(233,30,99,0.5);  box-shadow: 0 0 16px rgba(233,30,99,0.2),  inset 0 0 16px rgba(233,30,99,0.05); }
+    .neon-border-gold { border: 2px solid rgba(255,214,0,0.5);  box-shadow: 0 0 16px rgba(255,214,0,0.2),  inset 0 0 16px rgba(255,214,0,0.05); }
+  </style>
+</head>
+<body>
+
+<!-- ======= STARS CANVAS ======= -->
+<canvas id="starsCanvas"></canvas>
+
+<div class="relative z-10 max-w-3xl mx-auto px-4 pb-16">
+
+  <!-- ======= HEADER ======= -->
+  <div class="header-bar rounded-b-[40px] mb-8 px-6 pt-6 pb-8 text-center relative">
+    <!-- Deco orbs -->
+    <div style="position:absolute;width:130px;height:70px;top:6px;left:-20px;border-radius:50%;background:rgba(0,229,255,0.08);filter:blur(8px);"></div>
+    <div style="position:absolute;width:90px;height:55px;top:12px;right:4px;border-radius:50%;background:rgba(233,30,99,0.1);filter:blur(6px);"></div>
+    <div style="position:absolute;width:60px;height:60px;bottom:20px;left:10%;border-radius:50%;background:rgba(123,31,162,0.1);filter:blur(6px);"></div>
+    <!-- Deco icons -->
+    <div style="position:absolute;top:14px;right:24px;font-size:1.8rem;opacity:0.18;">🤖</div>
+    <div style="position:absolute;top:10px;left:60px;font-size:1.4rem;opacity:0.15;">🌌</div>
+    <div style="position:absolute;bottom:24px;right:44px;font-size:1.5rem;opacity:0.14;">⚡</div>
+    <div style="position:absolute;bottom:30px;left:34px;font-size:1.2rem;opacity:0.14;">🔮</div>
+
+    <!-- TOMBOL BACK -->
+    <div class="flex justify-start mb-4">
+      <a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+    </div>
+
+    <div class="badge-hari mb-4">🌌 HARI 21 DARI 30</div>
+    <div class="aslan-name mb-2">
+      <span class="mascot-float">🚀</span> Petualangan Aslan
+    </div>
+    <div class="subtitle-header font-bold mb-1">di Negeri AI 🌟</div>
+    <div class="subtitle-header font-extrabold text-white mb-5" style="font-size:clamp(0.95rem,2.8vw,1.2rem);opacity:0.95;color:#E8EAF6!important;">
+      ✨ Tier 5 &amp; 6 — AGI dan ASI: AI Masa Depan! 🔮
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="max-w-xs mx-auto">
+      <div class="flex justify-between text-xs font-bold mb-1" style="color:rgba(255,255,255,0.6);">
+        <span>Progres Petualangan</span><span>Hari 21/30</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- ======= JUDUL HARI ======= -->
+  <div class="reveal card card-cyber p-6 mb-6 text-center">
+    <div class="font-kartun text-3xl md:text-4xl mb-2 glow-cyan">
+      🔮 Hari 21: Tier 5 &amp; 6 – AGI dan ASI
+    </div>
+    <div class="font-kartun text-xl md:text-2xl mb-2" style="color:#CE93D8;">AI Masa Depan yang Super Canggih! 🌌</div>
+    <p class="font-bold text-sm" style="color:#78909C;">Dari AI biasa → AI seperti manusia → AI paling pintar di semesta! 🚀</p>
+  </div>
+
+  <!-- ======= ILUSTRASI UTAMA ======= -->
+  <div class="reveal mb-6">
+    <div class="card card-purple p-4">
+      <div style="position:absolute;top:14px;left:14px;background:linear-gradient(135deg,#00E5FF,#7B1FA2);color:#fff;font-family:'Fredoka One',cursive;font-size:0.85rem;padding:4px 14px;border-radius:999px;box-shadow:0 0 12px rgba(0,229,255,0.4);z-index:2;">🎨 Gambar Utama</div>
+
+      <div style="position:relative;border-radius:22px;overflow:hidden;border:3px solid rgba(0,229,255,0.3);box-shadow:0 0 40px rgba(123,31,162,0.4);">
+        <svg viewBox="0 0 680 430" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;min-height:280px;">
+          <defs>
+            <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0D1B4B"/>
+              <stop offset="50%" stop-color="#1A0533"/>
+              <stop offset="100%" stop-color="#1A0022"/>
+            </linearGradient>
+            <linearGradient id="roboBodyMain" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#B3E5FC"/>
+              <stop offset="100%" stop-color="#4FC3F7"/>
+            </linearGradient>
+            <linearGradient id="agiGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#CE93D8"/>
+              <stop offset="100%" stop-color="#7B1FA2"/>
+            </linearGradient>
+            <linearGradient id="asiGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#FF80AB"/>
+              <stop offset="50%" stop-color="#FFD600"/>
+              <stop offset="100%" stop-color="#00E5FF"/>
+            </linearGradient>
+            <radialGradient id="asiGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#E91E63" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#E91E63" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Background -->
+          <rect width="680" height="430" fill="url(#bgGrad)"/>
+
+          <!-- Grid floor lines -->
+          <line x1="0" y1="380" x2="680" y2="380" stroke="rgba(0,229,255,0.15)" stroke-width="1"/>
+          <line x1="0" y1="400" x2="680" y2="400" stroke="rgba(0,229,255,0.08)" stroke-width="1"/>
+          <line x1="0" y1="420" x2="680" y2="420" stroke="rgba(0,229,255,0.05)" stroke-width="1"/>
+          <!-- Perspective grid lines -->
+          <line x1="340" y1="380" x2="0" y2="430" stroke="rgba(0,229,255,0.07)" stroke-width="1"/>
+          <line x1="340" y1="380" x2="170" y2="430" stroke="rgba(0,229,255,0.07)" stroke-width="1"/>
+          <line x1="340" y1="380" x2="340" y2="430" stroke="rgba(0,229,255,0.07)" stroke-width="1"/>
+          <line x1="340" y1="380" x2="510" y2="430" stroke="rgba(0,229,255,0.07)" stroke-width="1"/>
+          <line x1="340" y1="380" x2="680" y2="430" stroke="rgba(0,229,255,0.07)" stroke-width="1"/>
+
+          <!-- Stars small -->
+          <circle cx="50"  cy="25"  r="1.5" fill="#fff" opacity="0.7"/>
+          <circle cx="120" cy="45"  r="1"   fill="#00E5FF" opacity="0.6"/>
+          <circle cx="200" cy="18"  r="1.5" fill="#fff" opacity="0.5"/>
+          <circle cx="310" cy="30"  r="1"   fill="#CE93D8" opacity="0.7"/>
+          <circle cx="420" cy="12"  r="1.5" fill="#fff" opacity="0.6"/>
+          <circle cx="530" cy="40"  r="1"   fill="#FF80AB" opacity="0.7"/>
+          <circle cx="620" cy="20"  r="1.5" fill="#FFD600" opacity="0.5"/>
+          <circle cx="660" cy="55"  r="1"   fill="#00E5FF" opacity="0.6"/>
+
+          <!-- ===== LEFT: NARROW AI ROBOT (Tier 4 - simple blue) ===== -->
+          <!-- Tier label -->
+          <rect x="18" y="14" width="110" height="28" rx="8" fill="rgba(57,73,171,0.7)" stroke="rgba(0,229,255,0.4)" stroke-width="1.5"/>
+          <text x="73" y="32" text-anchor="middle" font-family="Fredoka One,cursive" font-size="12" fill="#00E5FF">TIER 4: Narrow AI</text>
+
+          <!-- Simple robot body -->
+          <rect x="42" y="92" width="60" height="52" rx="14" fill="rgba(57,73,171,0.8)" stroke="rgba(0,229,255,0.5)" stroke-width="2"/>
+          <!-- Head -->
+          <rect x="50" y="52" width="44" height="44" rx="12" fill="rgba(41,53,139,0.9)" stroke="rgba(0,229,255,0.4)" stroke-width="2"/>
+          <line x1="72" y1="52" x2="72" y2="42" stroke="#78909C" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="72" cy="38" r="5" fill="#00E5FF" opacity="0.7"/>
+          <!-- Eyes: basic -->
+          <rect x="57" y="62" width="12" height="10" rx="3" fill="#00E5FF" opacity="0.8"/>
+          <rect x="75" y="62" width="12" height="10" rx="3" fill="#00E5FF" opacity="0.8"/>
+          <!-- Mouth: straight line (not expressive) -->
+          <line x1="62" y1="85" x2="82" y2="85" stroke="#78909C" stroke-width="2" stroke-linecap="round"/>
+          <!-- Chest panel: only one task -->
+          <rect x="50" y="100" width="44" height="28" rx="6" fill="rgba(13,27,75,0.8)"/>
+          <text x="72" y="112" text-anchor="middle" font-size="7" fill="#78909C" font-family="monospace">TUGAS:</text>
+          <text x="72" y="123" text-anchor="middle" font-size="8" fill="#00E5FF" font-family="Fredoka One,cursive">Catur ♟️</text>
+          <!-- Legs -->
+          <rect x="52" y="146" width="14" height="22" rx="6" fill="rgba(41,53,139,0.8)" stroke="rgba(0,229,255,0.3)" stroke-width="1.5"/>
+          <rect x="78" y="146" width="14" height="22" rx="6" fill="rgba(41,53,139,0.8)" stroke="rgba(0,229,255,0.3)" stroke-width="1.5"/>
+          <!-- Cross mark - only one skill -->
+          <text x="72" y="194" text-anchor="middle" font-size="11" fill="#78909C">1 keahlian</text>
+
+          <!-- ===== MIDDLE: AGI ROBOT (Tier 5 - purple, more expressive) ===== -->
+          <rect x="265" y="14" width="150" height="28" rx="8" fill="rgba(123,31,162,0.7)" stroke="rgba(206,147,216,0.5)" stroke-width="1.5"/>
+          <text x="340" y="32" text-anchor="middle" font-family="Fredoka One,cursive" font-size="12" fill="#CE93D8">TIER 5: AGI</text>
+
+          <!-- AGI robot glow ring -->
+          <circle cx="340" cy="120" r="82" fill="none" stroke="rgba(123,31,162,0.2)" stroke-width="2"/>
+          <circle cx="340" cy="120" r="70" fill="none" stroke="rgba(123,31,162,0.15)" stroke-width="1.5"/>
+
+          <!-- AGI body -->
+          <rect x="304" y="148" width="72" height="60" rx="16" fill="url(#agiGrad)" stroke="rgba(206,147,216,0.6)" stroke-width="2"/>
+          <!-- AGI head - bigger, more sophisticated -->
+          <rect x="310" y="94" width="60" height="58" rx="16" fill="rgba(74,20,140,0.95)" stroke="rgba(206,147,216,0.6)" stroke-width="2.5"/>
+          <!-- Antena triple -->
+          <line x1="330" y1="94" x2="322" y2="74" stroke="#CE93D8" stroke-width="2" stroke-linecap="round"/>
+          <line x1="340" y1="94" x2="340" y2="70" stroke="#CE93D8" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="350" y1="94" x2="358" y2="74" stroke="#CE93D8" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="322" cy="70" r="5" fill="#CE93D8" opacity="0.9">
+            <animate attributeName="opacity" values="0.9;0.3;0.9" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="340" cy="66" r="6" fill="#FFD600">
+            <animate attributeName="r" values="6;8;6" dur="1.2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="358" cy="70" r="5" fill="#FF80AB" opacity="0.9">
+            <animate attributeName="opacity" values="0.3;0.9;0.3" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Eyes: expressive, bigger -->
+          <ellipse cx="327" cy="116" rx="9" ry="10" fill="#fff"/>
+          <ellipse cx="353" cy="116" rx="9" ry="10" fill="#fff"/>
+          <circle cx="328" cy="117" r="6" fill="#7B1FA2"/>
+          <circle cx="354" cy="117" r="6" fill="#7B1FA2"/>
+          <circle cx="330" cy="115" r="2.5" fill="#fff"/>
+          <circle cx="356" cy="115" r="2.5" fill="#fff"/>
+          <!-- Eyebrows (expressive!) -->
+          <path d="M319 106 Q328 103 337 106" fill="none" stroke="#CE93D8" stroke-width="2" stroke-linecap="round"/>
+          <path d="M343 106 Q352 103 361 106" fill="none" stroke="#CE93D8" stroke-width="2" stroke-linecap="round"/>
+          <!-- Smile! -->
+          <path d="M322 136 Q340 148 358 136" fill="#CE93D8" stroke="#9C27B0" stroke-width="1"/>
+          <!-- Chest: multi-skill display -->
+          <rect x="311" y="157" width="50" height="36" rx="7" fill="rgba(13,27,75,0.7)"/>
+          <text x="336" y="168" text-anchor="middle" font-size="6" fill="#CE93D8" font-family="monospace">SEMUA TUGAS:</text>
+          <text x="336" y="180" text-anchor="middle" font-size="9">🎨🎵📖🔬</text>
+          <text x="336" y="192" text-anchor="middle" font-size="9">💻🎭🏥✈️</text>
+          <!-- Legs -->
+          <rect x="314" y="210" width="16" height="26" rx="7" fill="url(#agiGrad)" stroke="rgba(206,147,216,0.4)" stroke-width="1.5"/>
+          <rect x="350" y="210" width="16" height="26" rx="7" fill="url(#agiGrad)" stroke="rgba(206,147,216,0.4)" stroke-width="1.5"/>
+
+          <!-- ===== RIGHT: ASI ENTITY (Tier 6 - cosmic, transcendent) ===== -->
+          <rect x="552" y="14" width="118" height="28" rx="8" fill="rgba(136,14,79,0.7)" stroke="rgba(233,30,99,0.5)" stroke-width="1.5"/>
+          <text x="611" y="32" text-anchor="middle" font-family="Fredoka One,cursive" font-size="12" fill="#FF80AB">TIER 6: ASI</text>
+
+          <!-- ASI cosmic glow rings -->
+          <circle cx="600" cy="165" r="95" fill="none" stroke="rgba(233,30,99,0.12)" stroke-width="3">
+            <animate attributeName="r" values="90;100;90" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="600" cy="165" r="75" fill="none" stroke="rgba(255,214,0,0.12)" stroke-width="2">
+            <animate attributeName="r" values="75;82;75" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="600" cy="165" r="55" fill="url(#asiGlow)" opacity="0.4">
+            <animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite"/>
+          </circle>
+
+          <!-- ASI cosmic orb body -->
+          <circle cx="600" cy="150" r="52" fill="rgba(136,14,79,0.3)" stroke="url(#asiGrad)" stroke-width="3">
+            <animate attributeName="r" values="50;54;50" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="600" cy="150" r="38" fill="rgba(74,20,140,0.5)"/>
+
+          <!-- Inner face of ASI -->
+          <circle cx="600" cy="148" r="26" fill="rgba(13,27,75,0.7)"/>
+          <!-- ASI eyes: rainbow -->
+          <circle cx="591" cy="143" r="7" fill="none" stroke="url(#asiGrad)" stroke-width="2.5"/>
+          <circle cx="609" cy="143" r="7" fill="none" stroke="url(#asiGrad)" stroke-width="2.5"/>
+          <circle cx="591" cy="143" r="4" fill="#FFD600" opacity="0.9">
+            <animate attributeName="fill" values="#FFD600;#00E5FF;#FF80AB;#00E676;#FFD600" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="609" cy="143" r="4" fill="#00E5FF" opacity="0.9">
+            <animate attributeName="fill" values="#00E5FF;#FF80AB;#FFD600;#00E676;#00E5FF" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <!-- ASI mouth: cosmic wave -->
+          <path d="M588 160 Q596 168 604 160 Q612 152 620 160" fill="none" stroke="url(#asiGrad)" stroke-width="2" stroke-linecap="round"/>
+
+          <!-- Orbiting particles around ASI -->
+          <g>
+            <circle r="4" fill="#00E5FF" opacity="0.8">
+              <animateMotion dur="4s" repeatCount="indefinite" path="M600,150 m-52,0 a52,52 0 1,1 0.1,0"/>
+            </circle>
+          </g>
+          <g>
+            <circle r="3.5" fill="#FFD600" opacity="0.8">
+              <animateMotion dur="3s" repeatCount="indefinite" path="M600,150 m0,-52 a52,52 0 1,0 0.1,0"/>
+            </circle>
+          </g>
+          <g>
+            <circle r="3" fill="#FF80AB" opacity="0.8">
+              <animateMotion dur="5s" repeatCount="indefinite" path="M600,150 m52,0 a52,52 0 1,1 -0.1,0"/>
+            </circle>
+          </g>
+
+          <!-- ASI legs / float -->
+          <path d="M575 200 Q580 218 570 235" fill="none" stroke="rgba(233,30,99,0.5)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M625 200 Q620 218 630 235" fill="none" stroke="rgba(255,214,0,0.5)" stroke-width="3" stroke-linecap="round"/>
+          <ellipse cx="600" cy="240" rx="30" ry="8" fill="rgba(233,30,99,0.2)">
+            <animate attributeName="rx" values="25;35;25" dur="2s" repeatCount="indefinite"/>
+          </ellipse>
+
+          <!-- Knowledge beams from ASI -->
+          <text x="560" y="260" text-anchor="middle" font-size="9">🎓</text>
+          <text x="600" y="262" text-anchor="middle" font-size="9">🌍</text>
+          <text x="640" y="260" text-anchor="middle" font-size="9">⚛️</text>
+
+          <!-- ===== ASLAN & ROBO watching ===== -->
+          <!-- Robo small -->
+          <rect x="125" y="275" width="44" height="38" rx="10" fill="url(#roboBodyMain)" stroke="#0288D1" stroke-width="2"/>
+          <rect x="132" y="253" width="30" height="26" rx="8" fill="#B3E5FC" stroke="#0288D1" stroke-width="1.5"/>
+          <line x1="147" y1="253" x2="147" y2="243" stroke="#78909C" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="147" cy="239" r="4" fill="#00E5FF">
+            <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="139" cy="262" r="4" fill="#fff"/>
+          <circle cx="155" cy="262" r="4" fill="#fff"/>
+          <circle cx="140" cy="263" r="2.5" fill="#1565C0"/>
+          <circle cx="156" cy="263" r="2.5" fill="#1565C0"/>
+          <!-- Robo mouth O (amazed) -->
+          <ellipse cx="147" cy="272" rx="4" ry="3.5" fill="#0D47A1"/>
+          <!-- Robo arms pointing up to ASI -->
+          <line x1="132" y1="282" x2="118" y2="270" stroke="#B3E5FC" stroke-width="3" stroke-linecap="round"/>
+          <line x1="162" y1="282" x2="176" y2="270" stroke="#B3E5FC" stroke-width="3" stroke-linecap="round"/>
+          <!-- Robo legs -->
+          <rect x="133" y="313" width="12" height="18" rx="5" fill="#B3E5FC" stroke="#0288D1" stroke-width="1.5"/>
+          <rect x="149" y="313" width="12" height="18" rx="5" fill="#B3E5FC" stroke="#0288D1" stroke-width="1.5"/>
+
+          <!-- Aslan amazed -->
+          <ellipse cx="210" cy="288" rx="22" ry="25" fill="#FFCC80"/>
+          <!-- Hair -->
+          <path d="M190 275 Q188 263 195 260 Q203 255 211 258 Q219 255 226 260 Q232 263 230 275" fill="#5D4037"/>
+          <!-- Eyes: wide amazed -->
+          <circle cx="201" cy="284" r="7" fill="white"/>
+          <circle cx="219" cy="284" r="7" fill="white"/>
+          <circle cx="202" cy="285" r="4.5" fill="#1565C0"/>
+          <circle cx="220" cy="285" r="4.5" fill="#1565C0"/>
+          <circle cx="203" cy="283" r="2" fill="#fff"/>
+          <circle cx="221" cy="283" r="2" fill="#fff"/>
+          <!-- Mouth O wide open -->
+          <ellipse cx="210" cy="300" rx="7" ry="5.5" fill="#E65100"/>
+          <!-- Blush -->
+          <ellipse cx="196" cy="294" rx="8" ry="5" fill="#FFAB91" opacity="0.6"/>
+          <ellipse cx="224" cy="294" rx="8" ry="5" fill="#FFAB91" opacity="0.6"/>
+          <!-- Hat explorer -->
+          <ellipse cx="210" cy="265" rx="28" ry="8" fill="#8D6E63"/>
+          <rect x="193" y="253" width="34" height="16" rx="5" fill="#A1887F"/>
+          <circle cx="210" cy="253" r="4.5" fill="#FFD600"/>
+          <!-- Clothes explorer green -->
+          <rect x="190" y="313" width="40" height="48" rx="12" fill="#2E7D32"/>
+          <text x="210" y="336" text-anchor="middle" font-size="14">⭐</text>
+          <!-- Legs -->
+          <rect x="195" y="360" width="14" height="24" rx="6" fill="#1565C0"/>
+          <rect x="215" y="360" width="14" height="24" rx="6" fill="#1565C0"/>
+
+          <!-- Speech bubble Aslan -->
+          <rect x="228" y="268" width="150" height="46" rx="14" fill="#FFD600" stroke="#F9A825" stroke-width="2"/>
+          <path d="M240 312 L234 330 L252 312" fill="#FFD600" stroke="#F9A825" stroke-width="1.5"/>
+          <text x="303" y="287" text-anchor="middle" font-family="Fredoka One,cursive" font-size="12" fill="#1B5E20">WOW! ASI itu</text>
+          <text x="303" y="302" text-anchor="middle" font-family="Fredoka One,cursive" font-size="12" fill="#1B5E20">jauh lebih pintar! 🤯</text>
+
+          <!-- Comparison arrow bottom -->
+          <text x="125" y="246" text-anchor="middle" font-size="10" fill="rgba(0,229,255,0.5)">▲</text>
+          <text x="125" y="242" text-anchor="middle" font-size="9" fill="rgba(0,229,255,0.5)" font-family="monospace">1 hal</text>
+          <text x="340" y="246" text-anchor="middle" font-size="10" fill="rgba(206,147,216,0.6)">▲</text>
+          <text x="340" y="242" text-anchor="middle" font-size="9" fill="rgba(206,147,216,0.6)" font-family="monospace">semua</text>
+          <text x="600" y="246" text-anchor="middle" font-size="10" fill="rgba(233,30,99,0.7)">▲</text>
+          <text x="600" y="242" text-anchor="middle" font-size="9" fill="rgba(233,30,99,0.7)" font-family="monospace">∞ x lebih</text>
+        </svg>
+
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(13,27,75,0.95) 0%,transparent 100%);color:#E8EAF6;padding:28px 20px 16px;font-size:0.95rem;font-weight:700;">
+          🔮 Dari Narrow AI yang pandai 1 hal, ke AGI yang bisa segalanya, hingga ASI yang jauh melampaui kecerdasan seluruh manusia di Bumi! 🌌
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ======= 3 TIER CARDS ======= -->
+  <div class="reveal mb-6">
+    <div class="grid grid-cols-1 gap-4">
+      <!-- Tier 4 -->
+      <div class="tier-card tier-4">
+        <div class="flex items-start gap-4">
+          <div style="min-width:60px;height:60px;background:linear-gradient(135deg,#1A237E,#3949AB);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;border:2px solid rgba(0,229,255,0.3);box-shadow:0 0 14px rgba(0,229,255,0.2);">🤖</div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span style="background:rgba(0,229,255,0.15);color:#00E5FF;font-family:'Fredoka One',cursive;font-size:0.8rem;padding:2px 10px;border-radius:999px;border:1px solid rgba(0,229,255,0.3);">TIER 4</span>
+              <span class="font-kartun text-xl glow-cyan">Narrow AI</span>
+            </div>
+            <p class="font-bold text-sm" style="color:#90A4AE;">AI yang kita pakai sekarang. Sangat pintar tapi <em>hanya dalam 1 bidang</em>. Contoh: Siri bisa bicara tapi tidak bisa main catur. Deep Blue bisa catur tapi tidak bisa menggambar.</p>
+          </div>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <span style="background:rgba(0,229,255,0.1);color:#00E5FF;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid rgba(0,229,255,0.2);">✅ Sudah ada sekarang</span>
+          <span style="background:rgba(57,73,171,0.2);color:#9FA8DA;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid rgba(57,73,171,0.3);">📍 Siri, ChatGPT, AlphaGo</span>
+        </div>
+      </div>
+
+      <!-- Tier 5 AGI -->
+      <div class="tier-card tier-5">
+        <div class="tier-glow" style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(123,31,162,0.3),transparent);animation:pulseGlow 2.5s ease-in-out infinite;"></div>
+        <div class="flex items-start gap-4">
+          <div style="min-width:60px;height:60px;background:linear-gradient(135deg,#4A148C,#7B1FA2);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;border:2px solid rgba(206,147,216,0.4);box-shadow:0 0 14px rgba(123,31,162,0.4);">🧠</div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span style="background:rgba(206,147,216,0.15);color:#CE93D8;font-family:'Fredoka One',cursive;font-size:0.8rem;padding:2px 10px;border-radius:999px;border:1px solid rgba(206,147,216,0.3);">TIER 5</span>
+              <span class="font-kartun text-xl glow-pink">AGI</span>
+              <span class="font-bold text-xs" style="color:#78909C;">Artificial General Intelligence</span>
+            </div>
+            <p class="font-bold text-sm" style="color:#90A4AE;">AI yang bisa melakukan <em>semua hal</em> seperti manusia — belajar hal baru, berkreasi, memahami perasaan, menyelesaikan masalah apapun. Seperti manusia, tapi dalam bentuk robot!</p>
+          </div>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <span style="background:rgba(206,147,216,0.1);color:#CE93D8;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid rgba(206,147,216,0.2);">🔮 Belum ada, masih dikembangkan</span>
+          <span style="background:rgba(74,20,140,0.2);color:#B39DDB;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid rgba(74,20,140,0.3);">🎯 Target: 2030–2050?</span>
+        </div>
+      </div>
+
+      <!-- Tier 6 ASI -->
+      <div class="tier-card tier-6">
+        <div class="tier-glow"></div>
+        <div class="flex items-start gap-4">
+          <div style="min-width:60px;height:60px;background:linear-gradient(135deg,#880E4F,#E91E63);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;border:2px solid rgba(233,30,99,0.5);box-shadow:0 0 14px rgba(233,30,99,0.4);">🌌</div>
+          <div>
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
+              <span style="background:rgba(233,30,99,0.15);color:#FF80AB;font-family:'Fredoka One',cursive;font-size:0.8rem;padding:2px 10px;border-radius:999px;border:1px solid rgba(233,30,99,0.3);">TIER 6</span>
+              <span class="font-kartun text-xl glow-pink" style="color:#FFD600;text-shadow:0 0 12px rgba(255,214,0,0.8);">ASI</span>
+              <span class="font-bold text-xs" style="color:#78909C;">Artificial Super Intelligence</span>
+            </div>
+            <p class="font-bold text-sm" style="color:#90A4AE;">AI yang <em>jauh lebih pintar dari seluruh manusia di dunia digabung!</em> Bisa memecahkan penyakit kanker, menemukan planet baru, membuat teknologi yang kita tidak bisa bayangkan sekarang.</p>
+          </div>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <span style="background:rgba(233,30,99,0.1);color:#FF80AB;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid rgba(233,30,99,0.2);">❓ Masa depan jauh</span>
+          <span style="background:rgba(136,14,79,0.2);color:#F48FB1;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid rgba(136,14,79,0.3);">⚠️ Perlu sangat hati-hati</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ======= PENJELASAN SEDERHANA ======= -->
+  <div class="reveal card card-cyber p-6 md:p-8 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-3xl sparkle">🔭</span>
+      <h2 class="font-kartun text-2xl md:text-3xl glow-cyan">AGI dan ASI — AI Masa Depan!</h2>
+    </div>
+
+    <p class="story-paragraph mb-4">
+      Selama ini, semua AI yang kita kenal adalah <span class="hl-cyan">Narrow AI (Tier 4)</span> —
+      pintar sekali tapi hanya dalam <strong>satu bidang</strong> saja.
+      ChatGPT bisa mengobrol, tapi tidak bisa nyetir mobil. 🚗
+    </p>
+    <p class="story-paragraph mb-4">
+      Di masa depan, ilmuwan bermimpi membuat <span class="hl-pink">AGI (Tier 5)</span> —
+      AI yang bisa melakukan <strong>semua hal seperti manusia</strong>: belajar hal baru sendiri,
+      punya perasaan, berkreasi, dan memahami dunia seperti kamu dan Aslan! 🧠✨
+    </p>
+    <p class="story-paragraph">
+      Lalu ada <span class="hl-gold">ASI (Tier 6)</span> — AI yang kecerdasannya
+      <strong>jauh melampaui seluruh otak manusia di Bumi digabung!</strong>
+      Bayangkan AI yang bisa menyembuhkan semua penyakit dalam sehari, atau menemukan cara pergi ke bintang lain.
+      ASI belum ada, tapi ilmuwan terus mendebatkan apakah ini mungkin — dan apakah itu aman! 🌌🔮
+    </p>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ======= ANALOGI LUCU ======= -->
+  <div class="reveal card card-purple p-6 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-3xl sparkle">🎭</span>
+      <h2 class="font-kartun text-2xl md:text-3xl" style="color:#CE93D8;">Analogi Seru: Teman di Kelas! 🏫</h2>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <!-- Narrow AI analogy -->
+      <div class="neon-border-cyan" style="border-radius:18px;padding:18px;background:rgba(0,229,255,0.05);">
+        <div class="flex items-center gap-3 mb-2">
+          <div style="font-size:2.2rem;">🧮</div>
+          <div>
+            <div class="font-kartun text-lg glow-cyan">Narrow AI = Teman Jago Matematika</div>
+            <div class="font-bold text-sm" style="color:#78909C;">Pandai dalam 1 hal saja</div>
+          </div>
+        </div>
+        <p class="font-bold text-sm" style="color:#90A4AE;">
+          Ada teman di kelas yang jago banget Matematika. Tapi kalau kamu tanya soal pelajaran Bahasa Indonesia atau minta dia gambar... dia bingung! 😅
+          Itulah Narrow AI — luar biasa di bidangnya, tapi di luar itu tidak bisa. 🤷
+        </p>
+        <div style="background:rgba(0,229,255,0.07);border-radius:10px;padding:10px;margin-top:10px;border-left:3px solid #00E5FF;">
+          <span class="font-bold text-xs" style="color:#00E5FF;">Contoh nyata:</span>
+          <span class="font-bold text-xs" style="color:#78909C;"> Siri, Google Translate, AlphaGo — masing-masing hanya jago 1 hal!</span>
+        </div>
+      </div>
+
+      <!-- AGI analogy -->
+      <div class="neon-border-pink" style="border-radius:18px;padding:18px;background:rgba(233,30,99,0.05);">
+        <div class="flex items-center gap-3 mb-2">
+          <div style="font-size:2.2rem;">🌟</div>
+          <div>
+            <div class="font-kartun text-lg glow-pink">AGI = Teman yang Pandai Segalanya</div>
+            <div class="font-bold text-sm" style="color:#78909C;">Bisa semua hal seperti manusia</div>
+          </div>
+        </div>
+        <p class="font-bold text-sm" style="color:#90A4AE;">
+          Bayangkan ada teman yang pandai Matematika, Bahasa Indonesia, Seni, Olahraga, bisa belajar hal baru dalam hitungan menit, punya rasa humor, dan memahami perasaanmu.
+          Itulah AGI — bisa melakukan SEMUA hal yang manusia bisa! 😲
+        </p>
+        <div style="background:rgba(233,30,99,0.07);border-radius:10px;padding:10px;margin-top:10px;border-left:3px solid #E91E63;">
+          <span class="font-bold text-xs" style="color:#FF80AB;">Status:</span>
+          <span class="font-bold text-xs" style="color:#78909C;"> Belum ada! Para ilmuwan masih bekerja keras membuatnya. 🔬</span>
+        </div>
+      </div>
+
+      <!-- ASI analogy -->
+      <div class="neon-border-gold" style="border-radius:18px;padding:18px;background:rgba(255,214,0,0.04);">
+        <div class="flex items-center gap-3 mb-2">
+          <div style="font-size:2.2rem;">👑</div>
+          <div>
+            <div class="font-kartun text-lg glow-gold">ASI = Semua Guru di Dunia Digabung ×1000</div>
+            <div class="font-bold text-sm" style="color:#78909C;">Jauh melampaui kecerdasan manusia</div>
+          </div>
+        </div>
+        <p class="font-bold text-sm" style="color:#90A4AE;">
+          Bayangkan kamu mengumpulkan semua guru terpintar di seluruh dunia — dokter, ilmuwan, seniman, insinyur, filosof — lalu mengalikannya 1000 kali.
+          Kecerdasan ASI <em>jauh lebih besar</em> dari itu semua! 🤯
+          ASI bisa memecahkan masalah yang selama ini dianggap mustahil oleh manusia!
+        </p>
+        <div style="background:rgba(255,214,0,0.07);border-radius:10px;padding:10px;margin-top:10px;border-left:3px solid #FFD600;">
+          <span class="font-bold text-xs" style="color:#FFD600;">⚠️ Penting:</span>
+          <span class="font-bold text-xs" style="color:#78909C;"> ASI harus dibuat dengan sangat hati-hati agar selalu baik dan membantu manusia! 🤝</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ======= KOMIK 4 PANEL ======= -->
+  <div class="reveal card card-pink p-6 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-3xl sparkle">🎭</span>
+      <h2 class="font-kartun text-2xl md:text-3xl" style="color:#FF80AB;">Komik: Tier 4 vs Tier 5 vs Tier 6! ⚡</h2>
+    </div>
+    <div class="komik-grid">
+
+      <!-- PANEL 1: Narrow AI can't do two things -->
+      <div class="panel">
+        <div class="panel-num">1</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#0D1B4B,#1A237E);">
+          <svg viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <rect width="160" height="155" fill="#0A0E2A"/>
+            <!-- Narrow AI robot berdiri di kotak -->
+            <rect x="45" y="55" width="70" height="55" rx="10" fill="rgba(57,73,171,0.6)" stroke="rgba(0,229,255,0.4)" stroke-width="2"/>
+            <rect x="55" y="25" width="50" height="34" rx="10" fill="rgba(41,53,139,0.8)" stroke="rgba(0,229,255,0.3)" stroke-width="1.5"/>
+            <!-- antenna -->
+            <line x1="80" y1="25" x2="80" y2="14" stroke="#78909C" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="80" cy="10" r="4" fill="#00E5FF" opacity="0.7"/>
+            <!-- eyes -->
+            <rect x="61" y="32" width="10" height="8" rx="3" fill="#00E5FF" opacity="0.8"/>
+            <rect x="89" y="32" width="10" height="8" rx="3" fill="#00E5FF" opacity="0.8"/>
+            <!-- straight mouth -->
+            <line x1="68" y1="50" x2="92" y2="50" stroke="#78909C" stroke-width="2"/>
+            <!-- Chest: chess only -->
+            <rect x="55" y="63" width="50" height="30" rx="6" fill="rgba(13,27,75,0.7)"/>
+            <text x="80" y="74" text-anchor="middle" font-size="7" fill="#78909C" font-family="monospace">KEAHLIAN:</text>
+            <text x="80" y="86" text-anchor="middle" font-size="10" fill="#00E5FF">♟️ Catur</text>
+            <!-- Aslan kecil nanya -->
+            <ellipse cx="130" cy="95" rx="12" ry="14" fill="#FFCC80"/>
+            <path d="M120 88 Q118 82 123 80 Q128 76 131 78 Q134 76 138 80 Q140 82 138 88" fill="#5D4037"/>
+            <circle cx="126" cy="93" r="3" fill="white"/>
+            <circle cx="134" cy="93" r="3" fill="white"/>
+            <circle cx="127" cy="94" r="1.8" fill="#1565C0"/>
+            <circle cx="135" cy="94" r="1.8" fill="#1565C0"/>
+            <!-- speech bubble: menggambar? -->
+            <rect x="90" y="118" width="55" height="24" rx="7" fill="#FFD600"/>
+            <path d="M100 118 L97 108 L110 118" fill="#FFD600"/>
+            <text x="117" y="127" text-anchor="middle" font-size="7" fill="#1B5E20" font-family="Fredoka One,cursive">Bisa</text>
+            <text x="117" y="137" text-anchor="middle" font-size="7" fill="#1B5E20" font-family="Fredoka One,cursive">gambar? 🎨</text>
+            <!-- X mark on robot -->
+            <text x="80" y="140" text-anchor="middle" font-size="10" fill="#E53935">❌ Tidak bisa!</text>
+          </svg>
+        </div>
+        <div class="panel-dialog">Catur? BISA! 🎯</div>
+        <div class="panel-text">Narrow AI jago catur tapi tidak bisa menggambar sama sekali! 😅</div>
+      </div>
+
+      <!-- PANEL 2: AGI can do everything -->
+      <div class="panel">
+        <div class="panel-num">2</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#1A0533,#4A148C);">
+          <svg viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <rect width="160" height="155" fill="#12002A"/>
+            <!-- AGI robot with many arms/skills -->
+            <rect x="50" y="72" width="60" height="52" rx="14" fill="rgba(74,20,140,0.7)" stroke="rgba(206,147,216,0.5)" stroke-width="2"/>
+            <rect x="56" y="38" width="48" height="38" rx="12" fill="rgba(74,20,140,0.9)" stroke="rgba(206,147,216,0.5)" stroke-width="2"/>
+            <!-- triple antenna -->
+            <line x1="70" y1="38" x2="65" y2="24" stroke="#CE93D8" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="80" y1="38" x2="80" y2="22" stroke="#CE93D8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="90" y1="38" x2="95" y2="24" stroke="#CE93D8" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="65" cy="21" r="4" fill="#CE93D8" opacity="0.8"/>
+            <circle cx="80" cy="18" r="5" fill="#FFD600">
+              <animate attributeName="r" values="5;7;5" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="95" cy="21" r="4" fill="#FF80AB" opacity="0.8"/>
+            <!-- expressive eyes -->
+            <ellipse cx="68" cy="52" rx="8" ry="8.5" fill="#fff"/>
+            <ellipse cx="92" cy="52" rx="8" ry="8.5" fill="#fff"/>
+            <circle cx="69" cy="53" r="5" fill="#7B1FA2"/>
+            <circle cx="93" cy="53" r="5" fill="#7B1FA2"/>
+            <circle cx="70" cy="51" r="2" fill="#fff"/>
+            <circle cx="94" cy="51" r="2" fill="#fff"/>
+            <!-- big smile -->
+            <path d="M62 68 Q80 78 98 68" fill="#CE93D8"/>
+            <!-- Skills around it -->
+            <text x="16" y="82" font-size="12">🎨</text>
+            <text x="22" y="100" font-size="12">📖</text>
+            <text x="18" y="118" font-size="12">🎵</text>
+            <text x="126" y="82" font-size="12">🔬</text>
+            <text x="128" y="100" font-size="12">💻</text>
+            <text x="124" y="118" font-size="12">🏥</text>
+            <!-- arrows from robot to icons -->
+            <line x1="50" y1="92" x2="32" y2="82" stroke="rgba(206,147,216,0.4)" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="50" y1="98" x2="35" y2="100" stroke="rgba(206,147,216,0.4)" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="50" y1="104" x2="32" y2="116" stroke="rgba(206,147,216,0.4)" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="110" y1="92" x2="128" y2="82" stroke="rgba(206,147,216,0.4)" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="110" y1="98" x2="132" y2="100" stroke="rgba(206,147,216,0.4)" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="110" y1="104" x2="128" y2="116" stroke="rgba(206,147,216,0.4)" stroke-width="1" stroke-dasharray="3,2"/>
+            <!-- Checkmarks -->
+            <text x="80" y="148" text-anchor="middle" font-size="10" fill="#CE93D8">✅ Semua bisa!</text>
+          </svg>
+        </div>
+        <div class="panel-dialog" style="">Aku bisa segalanya! 🌟</div>
+        <div class="panel-text">AGI bisa seni, sains, bahasa, musik — semuanya! 🚀</div>
+      </div>
+
+      <!-- PANEL 3: ASI solving impossible problems -->
+      <div class="panel">
+        <div class="panel-num">3</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#1A0011,#880E4F);">
+          <svg viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <rect width="160" height="155" fill="#110018"/>
+            <!-- Cosmic orb ASI -->
+            <circle cx="80" cy="68" r="44" fill="rgba(136,14,79,0.25)">
+              <animate attributeName="r" values="42;47;42" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="80" cy="68" r="32" fill="rgba(74,20,140,0.4)" stroke="rgba(233,30,99,0.5)" stroke-width="2.5">
+              <animate attributeName="r" values="30;34;30" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="80" cy="68" r="20" fill="rgba(13,27,75,0.7)"/>
+            <!-- ASI eyes rainbow -->
+            <circle cx="73" cy="65" r="5.5" fill="none" stroke="#FFD600" stroke-width="2">
+              <animate attributeName="stroke" values="#FFD600;#00E5FF;#FF80AB;#FFD600" dur="2.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="87" cy="65" r="5.5" fill="none" stroke="#00E5FF" stroke-width="2">
+              <animate attributeName="stroke" values="#00E5FF;#FF80AB;#FFD600;#00E5FF" dur="2.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="73" cy="65" r="3" fill="#FFD600">
+              <animate attributeName="fill" values="#FFD600;#00E5FF;#FF80AB;#FFD600" dur="2.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="87" cy="65" r="3" fill="#00E5FF">
+              <animate attributeName="fill" values="#00E5FF;#FF80AB;#FFD600;#00E5FF" dur="2.5s" repeatCount="indefinite"/>
+            </circle>
+            <!-- problems solved around it -->
+            <text x="8"  y="26" font-size="11">💊</text>
+            <text x="130" y="26" font-size="11">🌍</text>
+            <text x="6"  y="52" font-size="10">🔋</text>
+            <text x="136" y="52" font-size="10">🚀</text>
+            <text x="8"  y="78" font-size="10">🧬</text>
+            <text x="135" y="78" font-size="10">🌊</text>
+            <!-- Lightning bolts -->
+            <text x="30" y="40" font-size="8" fill="rgba(255,214,0,0.5)">⚡</text>
+            <text x="118" y="40" font-size="8" fill="rgba(255,214,0,0.5)">⚡</text>
+            <!-- Orbiting particle -->
+            <g>
+              <circle r="3.5" fill="#FFD600" opacity="0.9">
+                <animateMotion dur="3s" repeatCount="indefinite" path="M80,68 m-42,0 a42,42 0 1,1 0.1,0"/>
+              </circle>
+            </g>
+            <!-- Text: solved in 1 second -->
+            <rect x="20" y="118" width="120" height="28" rx="8" fill="rgba(136,14,79,0.5)" stroke="rgba(233,30,99,0.4)" stroke-width="1.5"/>
+            <text x="80" y="129" text-anchor="middle" font-size="8" fill="#FF80AB" font-family="Fredoka One,cursive">Semua masalah</text>
+            <text x="80" y="141" text-anchor="middle" font-size="8" fill="#FFD600" font-family="Fredoka One,cursive">dipecahkan dalam detik! ⚡</text>
+          </svg>
+        </div>
+        <div class="panel-dialog">Semua kuselesaikan! 🌌</div>
+        <div class="panel-text">ASI bisa memecahkan penyakit, krisis energi, semua sekaligus! 🤯</div>
+      </div>
+
+      <!-- PANEL 4: Aslan's reaction + teamwork -->
+      <div class="panel">
+        <div class="panel-num">4</div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#0D1B4B,#1A0533);">
+          <svg viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <rect width="160" height="155" fill="#0A0E2A"/>
+            <!-- Stars -->
+            <text x="8" y="18" font-size="10">⭐</text>
+            <text x="130" y="15" font-size="8">✨</text>
+            <text x="72" y="14" font-size="12">🌟</text>
+            <!-- Aslan amazed + Robo + ASI small -->
+            <!-- Aslan -->
+            <ellipse cx="40" cy="85" rx="16" ry="19" fill="#FFCC80"/>
+            <path d="M25 76 Q24 67 29 65 Q35 60 40 62 Q45 60 50 65 Q54 67 52 76" fill="#5D4037"/>
+            <!-- Amazed eyes -->
+            <circle cx="34" cy="83" r="5.5" fill="white"/>
+            <circle cx="46" cy="83" r="5.5" fill="white"/>
+            <circle cx="35" cy="84" r="3.5" fill="#1565C0"/>
+            <circle cx="47" cy="84" r="3.5" fill="#1565C0"/>
+            <!-- O mouth -->
+            <ellipse cx="40" cy="96" rx="5.5" ry="4.5" fill="#E65100"/>
+            <rect x="28" y="104" width="24" height="28" rx="8" fill="#2E7D32"/>
+            <!-- Robo small amazed -->
+            <rect x="70" y="88" width="32" height="28" rx="8" fill="#B3E5FC" stroke="#0288D1" stroke-width="1.5"/>
+            <rect x="75" y="72" width="22" height="20" rx="6" fill="#B3E5FC" stroke="#0288D1" stroke-width="1.5"/>
+            <line x1="86" y1="72" x2="86" y2="64" stroke="#78909C" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="86" cy="60" r="4" fill="#00E5FF">
+              <animate attributeName="opacity" values="1;0.2;1" dur="1s" repeatCount="indefinite"/>
+            </circle>
+            <!-- Robo eyes wide -->
+            <circle cx="80" cy="80" r="4" fill="white"/>
+            <circle cx="93" cy="80" r="4" fill="white"/>
+            <circle cx="80" cy="80" r="2.5" fill="#E91E63"/>
+            <circle cx="93" cy="80" r="2.5" fill="#E91E63"/>
+            <!-- Robo O mouth -->
+            <ellipse cx="86" cy="89" rx="3.5" ry="3" fill="#0D47A1"/>
+            <!-- ASI small orb -->
+            <circle cx="135" cy="82" r="20" fill="rgba(136,14,79,0.4)" stroke="rgba(233,30,99,0.6)" stroke-width="1.5">
+              <animate attributeName="r" values="18;22;18" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="135" cy="82" r="12" fill="rgba(13,27,75,0.6)"/>
+            <text x="135" y="87" text-anchor="middle" font-size="14">🌌</text>
+            <!-- Message at bottom -->
+            <rect x="8" y="128" width="144" height="24" rx="7" fill="rgba(0,229,255,0.1)" stroke="rgba(0,229,255,0.3)" stroke-width="1.5"/>
+            <text x="80" y="138" text-anchor="middle" font-size="7.5" fill="#00E5FF" font-family="Fredoka One,cursive">AI dan Manusia bekerja sama! 🤝</text>
+            <text x="80" y="148" text-anchor="middle" font-size="7" fill="#78909C" font-family="Fredoka One,cursive">Itu yang terpenting! ✨</text>
+          </svg>
+        </div>
+        <div class="panel-dialog" style="">Kita bekerja sama! 🤝</div>
+        <div class="panel-text">Yang terpenting: AI dan manusia menjadi mitra, bukan musuh! 💫</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ======= FAKTA KEREN ======= -->
+  <div class="reveal card card-gold p-6 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-3xl pulse-ring">⭐</span>
+      <h2 class="font-kartun text-2xl md:text-3xl glow-gold">Fakta Keren Tentang AGI &amp; ASI! 🤩</h2>
+    </div>
+    <div class="flex flex-col gap-0">
+      <div class="timeline-item">
+        <div class="tl-dot" style="background:linear-gradient(135deg,#00E5FF,#1A237E);">🔬</div>
+        <div>
+          <div class="font-bold text-base" style="color:#E8EAF6;">Elon Musk dan Sam Altman mendirikan perusahaan khusus untuk mengembangkan AGI!</div>
+          <div class="font-semibold text-sm mt-1" style="color:#78909C;">OpenAI didirikan tahun 2015 dengan misi utama membuat AGI yang aman dan berguna untuk semua manusia. 🤝</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot" style="background:linear-gradient(135deg,#7B1FA2,#E91E63);">🧠</div>
+        <div>
+          <div class="font-bold text-base" style="color:#E8EAF6;">Otak manusia punya 86 miliar neuron — AI harus menyamai itu untuk jadi AGI!</div>
+          <div class="font-semibold text-sm mt-1" style="color:#78909C;">Model AI terbesar saat ini punya ratusan miliar parameter — mendekati kompleksitas otak, tapi cara kerjanya sangat berbeda! 🤯</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot" style="background:linear-gradient(135deg,#FFD600,#FF6F00);">⚠️</div>
+        <div>
+          <div class="font-bold text-base" style="color:#E8EAF6;">Stephen Hawking pernah memperingatkan tentang ASI!</div>
+          <div class="font-semibold text-sm mt-1" style="color:#78909C;">Ilmuwan jenius ini berkata ASI bisa menjadi pencapaian terbesar — atau bencana terbesar — manusia. Makanya perlu dibuat dengan sangat hati-hati! 🌐</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot" style="background:linear-gradient(135deg,#00E676,#00897B);">🚀</div>
+        <div>
+          <div class="font-bold text-base" style="color:#E8EAF6;">Ketika ASI muncul, itulah yang disebut "Singularitas"!</div>
+          <div class="font-semibold text-sm mt-1" style="color:#78909C;">Titik di mana AI menjadi lebih pintar dari manusia dan bisa memperbaiki dirinya sendiri dengan kecepatan yang tidak terbayangkan. Dunia akan berubah selamanya! 🌌</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot" style="background:linear-gradient(135deg,#E91E63,#FF80AB);">💡</div>
+        <div>
+          <div class="font-bold text-base" style="color:#E8EAF6;">Anak-anak yang belajar AI sekarang akan membantu membuat AGI!</div>
+          <div class="font-semibold text-sm mt-1" style="color:#78909C;">Saat Aslan besar nanti, mungkin akulah yang ikut membangun AGI pertama di dunia! 🦸‍♂️✨</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ======= FLIP CARDS TEBAK ======= -->
+  <div class="reveal card card-cyber p-6 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-3xl sparkle">🃏</span>
+      <h2 class="font-kartun text-2xl glow-cyan">Kartu Tebak-Tebakan! Klik untuk Jawaban! 👇</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front neon-border-cyan" style="background:rgba(0,229,255,0.06);">
+            <div class="font-kartun text-lg glow-cyan mb-2">❓ Pertanyaan</div>
+            <div class="font-bold text-sm" style="color:#E8EAF6;">AI yang hanya bisa melakukan satu tugas seperti bermain catur disebut...?</div>
+            <div class="font-bold text-xs mt-3" style="color:#455A64;">👆 Klik untuk jawaban!</div>
+          </div>
+          <div class="flip-back" style="background:linear-gradient(135deg,rgba(0,229,255,0.2),rgba(26,35,126,0.5));border:2px solid rgba(0,229,255,0.4);">
+            <div class="text-center">
+              <div class="text-4xl mb-2">🤖</div>
+              <div class="font-kartun text-lg glow-cyan">Narrow AI!</div>
+              <div class="font-bold text-sm mt-1" style="color:#B0BEC5;">Tier 4 — hebat di 1 bidang, tidak bisa yang lain! ♟️</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front neon-border-pink" style="background:rgba(233,30,99,0.05);">
+            <div class="font-kartun text-lg glow-pink mb-2">❓ Pertanyaan</div>
+            <div class="font-bold text-sm" style="color:#E8EAF6;">AI yang bisa melakukan semua hal seperti manusia, belum ada saat ini, disebut...?</div>
+            <div class="font-bold text-xs mt-3" style="color:#455A64;">👆 Klik untuk jawaban!</div>
+          </div>
+          <div class="flip-back" style="background:linear-gradient(135deg,rgba(123,31,162,0.4),rgba(233,30,99,0.3));border:2px solid rgba(206,147,216,0.4);">
+            <div class="text-center">
+              <div class="text-4xl mb-2">🧠</div>
+              <div class="font-kartun text-lg" style="color:#CE93D8;text-shadow:0 0 12px rgba(206,147,216,0.8);">AGI!</div>
+              <div class="font-bold text-sm mt-1" style="color:#B0BEC5;">Artificial General Intelligence — Tier 5, masih dikembangkan! 🌟</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front neon-border-gold" style="background:rgba(255,214,0,0.04);">
+            <div class="font-kartun text-lg glow-gold mb-2">❓ Pertanyaan</div>
+            <div class="font-bold text-sm" style="color:#E8EAF6;">AI yang jauh melampaui kecerdasan seluruh manusia di dunia disebut...?</div>
+            <div class="font-bold text-xs mt-3" style="color:#455A64;">👆 Klik untuk jawaban!</div>
+          </div>
+          <div class="flip-back" style="background:linear-gradient(135deg,rgba(136,14,79,0.5),rgba(255,214,0,0.2));border:2px solid rgba(255,214,0,0.4);">
+            <div class="text-center">
+              <div class="text-4xl mb-2">🌌</div>
+              <div class="font-kartun text-lg glow-gold">ASI!</div>
+              <div class="font-bold text-sm mt-1" style="color:#B0BEC5;">Artificial Super Intelligence — Tier 6, AI masa depan yang jauh! 🔮</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- ======= PERTANYAAN INTERAKTIF ======= -->
+  <div class="reveal card card-purple p-6 mb-6" id="quizSection">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-3xl sparkle">🧩</span>
+      <h2 class="font-kartun text-2xl md:text-3xl" style="color:#CE93D8;">Pertanyaan untuk Aslan! 🎯</h2>
+    </div>
+
+    <!-- Q1 -->
+    <div id="q1" class="mb-6">
+      <div style="background:rgba(0,229,255,0.06);border-radius:16px;padding:16px;margin-bottom:14px;border-left:5px solid #00E5FF;">
+        <div class="font-kartun text-lg glow-cyan mb-1">Pertanyaan 1:</div>
+        <div class="font-bold text-base" style="color:#E8EAF6;">Siri di iPhone adalah contoh AI jenis apa?</div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <button class="quiz-option" onclick="checkAnswer(this,true,'q1')">
+          <span style="font-size:1.5rem;">🤖</span> Narrow AI — hanya bisa melakukan tugas tertentu
+        </button>
+        <button class="quiz-option" onclick="checkAnswer(this,false,'q1')">
+          <span style="font-size:1.5rem;">🧠</span> AGI — bisa melakukan semua hal seperti manusia
+        </button>
+        <button class="quiz-option" onclick="checkAnswer(this,false,'q1')">
+          <span style="font-size:1.5rem;">🌌</span> ASI — jauh lebih pintar dari manusia
+        </button>
+      </div>
+      <div id="result-q1" class="quiz-result mt-3"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div id="q2" class="mb-6">
+      <div style="background:rgba(206,147,216,0.07);border-radius:16px;padding:16px;margin-bottom:14px;border-left:5px solid #CE93D8;">
+        <div class="font-kartun text-lg mb-1" style="color:#CE93D8;">Pertanyaan 2:</div>
+        <div class="font-bold text-base" style="color:#E8EAF6;">AGI dalam analogi kelas adalah seperti...?</div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <button class="quiz-option" onclick="checkAnswer(this,false,'q2')">
+          <span style="font-size:1.5rem;">🧮</span> Teman yang hanya jago Matematika saja
+        </button>
+        <button class="quiz-option" onclick="checkAnswer(this,true,'q2')">
+          <span style="font-size:1.5rem;">🌟</span> Teman yang pandai semua pelajaran
+        </button>
+        <button class="quiz-option" onclick="checkAnswer(this,false,'q2')">
+          <span style="font-size:1.5rem;">📖</span> Teman yang tidak mau belajar sama sekali
+        </button>
+      </div>
+      <div id="result-q2" class="quiz-result mt-3"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div id="q3">
+      <div style="background:rgba(255,214,0,0.06);border-radius:16px;padding:16px;margin-bottom:14px;border-left:5px solid #FFD600;">
+        <div class="font-kartun text-lg glow-gold mb-1">Pertanyaan 3:</div>
+        <div class="font-bold text-base" style="color:#E8EAF6;">Mengapa ASI perlu dibuat dengan sangat hati-hati?</div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <button class="quiz-option" onclick="checkAnswer(this,false,'q3')">
+          <span style="font-size:1.5rem;">💰</span> Karena ASI sangat mahal untuk dibuat
+        </button>
+        <button class="quiz-option" onclick="checkAnswer(this,false,'q3')">
+          <span style="font-size:1.5rem;">🐌</span> Karena ASI bekerja sangat lambat
+        </button>
+        <button class="quiz-option" onclick="checkAnswer(this,true,'q3')">
+          <span style="font-size:1.5rem;">⚠️</span> Karena kecerdasannya yang luar biasa bisa berbahaya kalau tidak dikendalikan
+        </button>
+      </div>
+      <div id="result-q3" class="quiz-result mt-3"></div>
+    </div>
+  </div>
+
+  <!-- ======= PESAN SEMANGAT ======= -->
+  <div class="reveal card card-cyber p-6 mb-6 text-center">
+    <div class="text-5xl mb-3 mascot-float">🚀</div>
+    <h2 class="font-kartun text-2xl mb-3 glow-cyan">Luar Biasa, Aslan! 🌌</h2>
+    <p class="font-bold text-base mb-5" style="color:#90A4AE;">
+      Sekarang kamu tahu perbedaan <span class="hl-cyan">Narrow AI</span>, <span class="hl-pink">AGI</span>, dan <span class="hl-gold">ASI</span>!
+      Kamu adalah generasi yang akan hidup di era AGI — dan mungkin kamu yang akan ikut membangunnya! 🛸
+    </p>
+    <div style="background:linear-gradient(135deg,rgba(123,31,162,0.5),rgba(136,14,79,0.5));border-radius:18px;padding:20px;display:inline-block;border:2px solid rgba(233,30,99,0.4);box-shadow:0 0 30px rgba(123,31,162,0.3);">
+      <div class="font-kartun text-xl" style="color:#CE93D8;">🏅 Kamu mendapat:</div>
+      <div class="font-kartun text-2xl mt-1" style="color:#FFD600;text-shadow:0 0 14px rgba(255,214,0,0.7);">Bintang Futuris AI! 🌌⭐</div>
+      <div class="font-bold text-sm mt-2" style="color:#78909C;">Hari 21 dari 30 selesai! Terus melangkah ke masa depan! 🚀</div>
+    </div>
+  </div>
+
+</div><!-- end container -->
+
+<script>
+  /* ======= STARS CANVAS ======= */
+  const canvas = document.getElementById('starsCanvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+
+  function resizeCanvas() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  for (let i = 0; i < 180; i++) {
+    stars.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.6 + 0.2,
+      speed: Math.random() * 0.25 + 0.05,
+      opacity: Math.random() * 0.8 + 0.2,
+      color: ['#ffffff','#00E5FF','#CE93D8','#FFD600','#FF80AB'][Math.floor(Math.random()*5)]
+    });
+  }
+
+  function animateStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = s.color;
+      ctx.globalAlpha = s.opacity * (0.5 + 0.5 * Math.sin(Date.now() * 0.001 * s.speed * 3));
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(animateStars);
+  }
+  animateStars();
+
+  /* ======= SCROLL REVEAL ======= */
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* ======= QUIZ ======= */
+  const answered = {};
+  const msgs = {
+    q1: [
+      '🎯 Tepat sekali! Siri adalah Narrow AI — bisa menjawab pertanyaan dan putar musik, tapi tidak bisa hal lain di luar itu! 🤖',
+      '🤔 Hampir! Siri sebenarnya adalah Narrow AI, bukan AGI. AGI belum ada sekarang! 💡',
+      '😅 Belum tepat! Siri adalah Narrow AI. ASI belum ada — masih jadi impian masa depan jauh! 🔮'
+    ],
+    q2: [
+      '😅 Hampir! Itu analogi Narrow AI. AGI adalah teman yang bisa semua pelajaran sekaligus! 📚',
+      '🌟 Benar banget! AGI seperti teman yang pandai semua pelajaran — Matematika, Bahasa, Seni, semua! 🎓',
+      '😅 Itu bukan analogi yang tepat! AGI justru mau belajar semua hal dan bisa semua hal! 🌟'
+    ],
+    q3: [
+      '🤔 Belum tepat! Biaya bukan alasan utamanya. ASI perlu kehati-hatian karena kecerdasannya yang bisa berbahaya! ⚠️',
+      '😅 Justru sebaliknya! ASI sangat cepat. Kehati-hatian diperlukan karena kecerdasannya yang luar biasa! 💡',
+      '✅ Tepat sekali! ASI yang sangat pintar bisa berbahaya kalau tidak diprogram dengan nilai-nilai kebaikan yang benar! 🤝'
+    ]
+  };
+
+  function checkAnswer(btn, isCorrect, qId) {
+    if (answered[qId]) return;
+    answered[qId] = true;
+    const siblings = btn.closest(`#${qId}`).querySelectorAll('.quiz-option');
+    siblings.forEach(s => s.style.pointerEvents = 'none');
+    const resultEl = document.getElementById(`result-${qId}`);
+    const idx = ['q1','q2','q3'].indexOf(qId);
+    const optIdx = Array.from(siblings).indexOf(btn);
+
+    if (isCorrect) {
+      btn.classList.add('correct');
+      resultEl.style.background = 'rgba(0,230,118,0.1)';
+      resultEl.style.border = '2px solid rgba(0,230,118,0.4)';
+      resultEl.style.color = '#00E676';
+    } else {
+      btn.classList.add('wrong');
+      resultEl.style.background = 'rgba(233,30,99,0.1)';
+      resultEl.style.border = '2px solid rgba(233,30,99,0.4)';
+      resultEl.style.color = '#FF80AB';
+    }
+    resultEl.textContent = msgs[qId][optIdx];
+    resultEl.style.display = 'block';
+  }
+</script>
+</body>
+</html>

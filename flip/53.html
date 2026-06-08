@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 23: Bagaimana CPU, RAM, dan Storage Bekerja Sama?</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #a855f7;
+    --violet: #7c3aed;
+    --pink:   #ec4899;
+    --blue:   #3b82f6;
+    --sky:    #38bdf8;
+    --mint:   #34d399;
+    --yellow: #fbbf24;
+    --orange: #f97316;
+    --bg:     #faf5ff;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    font-family:'Nunito',sans-serif;
+    background:var(--bg);
+    background-image:
+      radial-gradient(circle at 8% 15%,  rgba(168,85,247,.13) 0%,transparent 45%),
+      radial-gradient(circle at 90% 70%, rgba(236,72,153,.10) 0%,transparent 40%),
+      radial-gradient(circle at 50% 95%, rgba(59,130,246,.10) 0%,transparent 40%);
+    min-height:100vh; overflow-x:hidden;
+  }
+  h1,h2,h3{ font-family:'Fredoka One',cursive; }
+
+  /* ── Header ── */
+  .header-grad {
+    background:linear-gradient(135deg,#3b0764 0%,#6d28d9 35%,#a855f7 70%,#e879f9 100%);
+    position:relative; overflow:hidden;
+  }
+  .header-grad::after {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,.03) 20px,rgba(255,255,255,.03) 40px);
+  }
+
+  /* ── Speech bubble ── */
+  .bubble {
+    position:relative; background:white;
+    border-radius:22px; border:3px solid #a855f7;
+    box-shadow:4px 4px 0 #a855f7;
+  }
+  .bubble::before{ content:''; position:absolute; bottom:-22px; left:30px; border:12px solid transparent; border-top-color:#a855f7; }
+  .bubble::after { content:''; position:absolute; bottom:-15px; left:33px; border:10px solid transparent; border-top-color:white; }
+
+  /* ── Aslan bounce ── */
+  @keyframes bounceAslan{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  .aslan-bounce{ animation:bounceAslan 2.2s ease-in-out infinite; }
+
+  /* ── Component pulse ── */
+  @keyframes pulseGlow{ 0%,100%{filter:drop-shadow(0 0 4px rgba(168,85,247,0));} 50%{filter:drop-shadow(0 0 18px rgba(168,85,247,.8));} }
+  .comp-pulse{ animation:pulseGlow 2s ease-in-out infinite; }
+
+  /* ── Data packet travel ── */
+  @keyframes travelRight{ 0%{left:-20px;opacity:0;} 10%{opacity:1;} 90%{opacity:1;} 100%{left:calc(100% + 20px);opacity:0;} }
+  @keyframes travelLeft { 0%{right:-20px;opacity:0;} 10%{opacity:1;} 90%{opacity:1;} 100%{right:calc(100% + 20px);opacity:0;} }
+  .packet-right{ position:absolute; top:50%; transform:translateY(-50%); animation:travelRight var(--dur,1s) ease-in-out var(--delay,0s) forwards; }
+  .packet-left { position:absolute; top:50%; transform:translateY(-50%); animation:travelLeft  var(--dur,1s) ease-in-out var(--delay,0s) forwards; }
+
+  /* ── Glow on active component ── */
+  @keyframes activeGlow{
+    0%,100%{ box-shadow:0 0 0 0 transparent; transform:scale(1); }
+    50%    { box-shadow:0 0 30px 10px var(--gcolor,rgba(168,85,247,.5)); transform:scale(1.06); }
+  }
+  .comp-active{ animation:activeGlow .8s ease-in-out var(--rep,3) forwards; }
+
+  /* ── Arrow bounce ── */
+  @keyframes arrowBounce{ 0%,100%{transform:translateX(0);} 50%{transform:translateX(6px);} }
+  .arrow-anim{ animation:arrowBounce 1s ease-in-out infinite; }
+
+  /* ── Floating stars ── */
+  @keyframes floatStar{ 0%,100%{transform:translateY(0) rotate(0deg);opacity:.7;} 50%{transform:translateY(-12px) rotate(20deg);opacity:1;} }
+  .float-star{ animation:floatStar var(--d,3s) ease-in-out infinite; }
+
+  /* ── Screen blink ── */
+  @keyframes screenBlink{ 0%,100%{opacity:1;} 50%{opacity:.4;} }
+  .screen-wait{ animation:screenBlink 1.5s ease-in-out infinite; }
+
+  /* ── Confetti ── */
+  @keyframes confettiFly{
+    0%  {transform:translate(0,0) rotate(0deg);opacity:1;}
+    100%{transform:translate(var(--tx),var(--ty)) rotate(720deg);opacity:0;}
+  }
+  .confetti-piece{
+    position:fixed; width:10px; height:10px; border-radius:2px;
+    pointer-events:none; z-index:100;
+    animation:confettiFly 1.4s ease-out forwards;
+  }
+
+  /* ── Buttons ── */
+  .btn-main{
+    background:linear-gradient(135deg,#7c3aed,#a855f7);
+    color:white; border:none; border-radius:50px;
+    padding:.9rem 2.4rem; font-family:'Fredoka One',cursive;
+    font-size:1.25rem; cursor:pointer;
+    box-shadow:0 6px 0 #5b21b6,0 8px 20px rgba(168,85,247,.4);
+    transition:all .15s ease;
+  }
+  .btn-main:hover { transform:translateY(-3px); box-shadow:0 9px 0 #5b21b6,0 12px 26px rgba(168,85,247,.5); }
+  .btn-main:active{ transform:translateY(3px);  box-shadow:0 3px 0 #5b21b6; }
+  .btn-main:disabled{ opacity:.55; cursor:not-allowed; transform:none; box-shadow:0 4px 0 #5b21b6; }
+
+  /* ── Section title ── */
+  .sec-title{ position:relative; display:inline-block; }
+  .sec-title::after{
+    content:''; position:absolute; bottom:-6px; left:0; right:0; height:5px;
+    border-radius:10px; background:linear-gradient(90deg,#a855f7,#ec4899);
+  }
+
+  /* ── Component card ── */
+  .comp-card{
+    border-radius:24px; border:3px solid transparent;
+    transition:all .3s cubic-bezier(.34,1.56,.64,1);
+    cursor:pointer; position:relative; overflow:hidden;
+  }
+  .comp-card:hover{ transform:scale(1.04) translateY(-5px); }
+  .comp-card.clicked{ transform:scale(.97); }
+
+  /* ── Info popup ── */
+  .info-popup{
+    position:fixed; inset:0; z-index:200;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.45); backdrop-filter:blur(4px);
+    opacity:0; pointer-events:none; transition:opacity .25s;
+  }
+  .info-popup.show{ opacity:1; pointer-events:all; }
+  .popup-box{
+    background:white; border-radius:28px; padding:2rem;
+    max-width:420px; width:90%; position:relative;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);
+    transform:scale(.8); transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .info-popup.show .popup-box{ transform:scale(1); }
+
+  /* ── Draw area ── */
+  .draw-area{
+    background:
+      repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(168,85,247,.15) 28px,rgba(168,85,247,.15) 30px),
+      repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(168,85,247,.08) 28px,rgba(168,85,247,.08) 30px);
+    border:3px dashed #a855f7; border-radius:20px; min-height:200px;
+  }
+
+  /* ── Workflow step ── */
+  .step-box{
+    border-radius:20px; padding:1rem 1.2rem;
+    border:3px solid transparent;
+    transition:all .4s cubic-bezier(.34,1.56,.64,1);
+    opacity:.4;
+  }
+  .step-box.active-step{
+    opacity:1; transform:scale(1.05);
+  }
+
+  /* ── Progress bar ── */
+  #flowBar{ transition:width .5s ease; }
+
+  @media(max-width:640px){ .comp-grid{ grid-template-columns:1fr!important; } }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ══════ HEADER ══════ -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <!-- Decorative stars -->
+  <span class="float-star absolute text-3xl" style="--d:2.8s;top:10px;left:12%;">⭐</span>
+  <span class="float-star absolute text-2xl" style="--d:3.4s;top:18px;right:14%;">💫</span>
+  <span class="float-star absolute text-xl" style="--d:2.1s;bottom:14px;left:30%;">✨</span>
+  <span class="float-star absolute text-2xl" style="--d:3.8s;bottom:10px;right:22%;">🌟</span>
+
+  <div class="relative z-10 max-w-3xl mx-auto text-center">
+    <!-- Series badge -->
+    <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 mb-3 text-sm font-bold">
+      <span>🖥️</span>
+      <span>Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span class="bg-white/30 rounded-full px-2 py-0.5 text-xs">Hari 23 dari 30</span>
+    </div>
+
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight mb-1" style="font-family:'Fredoka One',cursive; text-shadow:2px 3px 0 rgba(0,0,0,.2);">
+      Hari 23: Bagaimana CPU, RAM,<br class="hidden sm:block"> dan Storage Bekerja Sama? 🤝
+    </h1>
+    <p class="text-white/80 text-sm sm:text-base mt-2 font-semibold">
+      Tim Superhero di Dalam Komputer! 🦸‍♂️💪
+    </p>
+  </div>
+</header>
+
+<!-- ══════ MAIN CONTENT ══════ -->
+<main class="max-w-3xl mx-auto px-4 py-8 space-y-10">
+
+  <!-- ── 1. INTRO ── -->
+  <section>
+    <div class="flex flex-col sm:flex-row items-center gap-6">
+
+      <!-- Aslan + bubble -->
+      <div class="flex-1 order-2 sm:order-1">
+        <div class="bubble p-4 mb-6">
+          <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+            <strong class="text-purple-600">Halo Aslan!</strong> 👋 Hari ini kita akan belajar sesuatu yang
+            super keren! CPU, RAM, dan Storage itu bukan kerja sendiri-sendiri lho —
+            mereka bertiga adalah <strong class="text-pink-500">tim terbaik</strong> yang selalu
+            bantu-bantuan di dalam komputer! 🤝🌟
+          </p>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#7c3aed,#a855f7);">🧠 Hari 23</span>
+          <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#a855f7,#ec4899);">🤝 Topik: Teamwork Komputer</span>
+        </div>
+      </div>
+
+      <!-- Aslan SVG -->
+      <div class="order-1 sm:order-2 flex-shrink-0">
+        <div class="aslan-bounce">
+          <svg width="160" height="200" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
+            <!-- Body -->
+            <ellipse cx="80" cy="148" rx="38" ry="42" fill="#4ade80"/>
+            <!-- Shirt detail -->
+            <ellipse cx="80" cy="155" rx="30" ry="32" fill="#22c55e"/>
+            <!-- Arms -->
+            <ellipse cx="38" cy="145" rx="14" ry="9" fill="#4ade80" transform="rotate(-20 38 145)"/>
+            <ellipse cx="122" cy="145" rx="14" ry="9" fill="#4ade80" transform="rotate(20 122 145)"/>
+            <!-- Legs -->
+            <rect x="58" y="180" width="16" height="22" rx="8" fill="#1d4ed8"/>
+            <rect x="86" y="180" width="16" height="22" rx="8" fill="#1d4ed8"/>
+            <!-- Shoes -->
+            <ellipse cx="66" cy="201" rx="11" ry="6" fill="#1e293b"/>
+            <ellipse cx="94" cy="201" rx="11" ry="6" fill="#1e293b"/>
+            <!-- Neck -->
+            <rect x="70" y="100" width="20" height="16" rx="6" fill="#f9a87c"/>
+            <!-- Head -->
+            <ellipse cx="80" cy="82" rx="36" ry="34" fill="#f9a87c"/>
+            <!-- Hair -->
+            <ellipse cx="80" cy="52" rx="34" ry="18" fill="#1a1a2e"/>
+            <ellipse cx="58" cy="60" rx="12" ry="14" fill="#1a1a2e"/>
+            <ellipse cx="102" cy="60" rx="12" ry="14" fill="#1a1a2e"/>
+            <!-- Eyes -->
+            <ellipse cx="68" cy="80" rx="7" ry="8" fill="white"/>
+            <ellipse cx="92" cy="80" rx="7" ry="8" fill="white"/>
+            <circle cx="70" cy="81" r="4" fill="#1a1a2e"/>
+            <circle cx="94" cy="81" r="4" fill="#1a1a2e"/>
+            <circle cx="71.5" cy="79.5" r="1.5" fill="white"/>
+            <circle cx="95.5" cy="79.5" r="1.5" fill="white"/>
+            <!-- Smile -->
+            <path d="M67 94 Q80 106 93 94" stroke="#e07040" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <!-- Cheeks -->
+            <ellipse cx="58" cy="90" rx="7" ry="5" fill="#ffb3a7" opacity=".7"/>
+            <ellipse cx="102" cy="90" rx="7" ry="5" fill="#ffb3a7" opacity=".7"/>
+            <!-- Stars around -->
+            <text x="10" y="55" font-size="18" opacity=".8">⭐</text>
+            <text x="128" y="70" font-size="16" opacity=".8">✨</text>
+            <text x="125" y="130" font-size="14" opacity=".6">💫</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 2. KOMPONEN TRIO ── -->
+  <section>
+    <div class="text-center mb-6">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#3b0764;">🦸 Kenalan Sama Tim Superhero!</h2>
+      <p class="text-gray-500 mt-4 text-sm">Klik setiap karakter untuk tahu lebih lanjut! 👆</p>
+    </div>
+
+    <!-- 3 component cards -->
+    <div class="grid grid-cols-3 gap-3 sm:gap-5 comp-grid">
+
+      <!-- CPU -->
+      <div class="comp-card" id="cardCPU"
+           style="background:linear-gradient(135deg,#ede9fe,#ddd6fe); border-color:#7c3aed;"
+           onclick="showInfo('cpu')">
+        <div class="p-3 sm:p-5 text-center">
+          <div class="mb-2">
+            <svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg" class="mx-auto">
+              <!-- CPU body -->
+              <rect x="12" y="12" width="46" height="46" rx="6" fill="#7c3aed" stroke="#5b21b6" stroke-width="2"/>
+              <rect x="18" y="18" width="34" height="34" rx="4" fill="#6d28d9"/>
+              <!-- Chip pattern -->
+              <rect x="22" y="22" width="10" height="10" rx="2" fill="#a78bfa"/>
+              <rect x="38" y="22" width="10" height="10" rx="2" fill="#a78bfa"/>
+              <rect x="22" y="38" width="10" height="10" rx="2" fill="#a78bfa"/>
+              <rect x="38" y="38" width="10" height="10" rx="2" fill="#a78bfa"/>
+              <rect x="30" y="30" width="10" height="10" rx="2" fill="#c4b5fd"/>
+              <!-- Pins top -->
+              <rect x="20" y="5"  width="4" height="7" rx="2" fill="#5b21b6"/>
+              <rect x="33" y="5"  width="4" height="7" rx="2" fill="#5b21b6"/>
+              <rect x="46" y="5"  width="4" height="7" rx="2" fill="#5b21b6"/>
+              <!-- Pins bottom -->
+              <rect x="20" y="58" width="4" height="7" rx="2" fill="#5b21b6"/>
+              <rect x="33" y="58" width="4" height="7" rx="2" fill="#5b21b6"/>
+              <rect x="46" y="58" width="4" height="7" rx="2" fill="#5b21b6"/>
+              <!-- Pins left -->
+              <rect x="5"  y="20" width="7" height="4" rx="2" fill="#5b21b6"/>
+              <rect x="5"  y="33" width="7" height="4" rx="2" fill="#5b21b6"/>
+              <rect x="5"  y="46" width="7" height="4" rx="2" fill="#5b21b6"/>
+              <!-- Pins right -->
+              <rect x="58" y="20" width="7" height="4" rx="2" fill="#5b21b6"/>
+              <rect x="58" y="33" width="7" height="4" rx="2" fill="#5b21b6"/>
+              <rect x="58" y="46" width="7" height="4" rx="2" fill="#5b21b6"/>
+              <!-- Eyes -->
+              <circle cx="27" cy="27" r="4" fill="white"/>
+              <circle cx="43" cy="27" r="4" fill="white"/>
+              <circle cx="28" cy="27" r="2" fill="#1a1a2e"/>
+              <circle cx="44" cy="27" r="2" fill="#1a1a2e"/>
+              <!-- Smile -->
+              <path d="M26 45 Q35 52 44 45" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="text-base sm:text-lg font-bold" style="color:#5b21b6;">CPU</h3>
+          <p class="text-xs text-purple-600 font-bold">🧠 Otak</p>
+          <p class="text-xs text-gray-500 mt-1 hidden sm:block">Berpikir & Memproses</p>
+        </div>
+        <!-- Hover effect overlay -->
+        <div class="absolute inset-0 rounded-3xl opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
+             style="background:rgba(124,58,237,.08);">
+          <span class="text-2xl">👆 Klik!</span>
+        </div>
+      </div>
+
+      <!-- RAM -->
+      <div class="comp-card" id="cardRAM"
+           style="background:linear-gradient(135deg,#fdf2f8,#fce7f3); border-color:#ec4899;"
+           onclick="showInfo('ram')">
+        <div class="p-3 sm:p-5 text-center">
+          <div class="mb-2">
+            <svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg" class="mx-auto">
+              <!-- RAM stick body -->
+              <rect x="5" y="20" width="60" height="32" rx="5" fill="#db2777" stroke="#9d174d" stroke-width="2"/>
+              <!-- PCB detail -->
+              <rect x="8" y="24" width="54" height="24" rx="3" fill="#be185d"/>
+              <!-- RAM chips -->
+              <rect x="11" y="27" width="10" height="10" rx="2" fill="#f472b6"/>
+              <rect x="25" y="27" width="10" height="10" rx="2" fill="#f472b6"/>
+              <rect x="39" y="27" width="10" height="10" rx="2" fill="#f472b6"/>
+              <rect x="11" y="38" width="10" height="5"  rx="2" fill="#ec4899"/>
+              <rect x="25" y="38" width="10" height="5"  rx="2" fill="#ec4899"/>
+              <rect x="39" y="38" width="10" height="5"  rx="2" fill="#ec4899"/>
+              <!-- Notch -->
+              <rect x="53" y="40" width="8" height="12" rx="2" fill="#9d174d"/>
+              <!-- Pins bottom -->
+              <rect x="10"  y="52" width="3" height="8" rx="1.5" fill="#9d174d"/>
+              <rect x="17"  y="52" width="3" height="8" rx="1.5" fill="#9d174d"/>
+              <rect x="24"  y="52" width="3" height="8" rx="1.5" fill="#9d174d"/>
+              <rect x="31"  y="52" width="3" height="8" rx="1.5" fill="#9d174d"/>
+              <rect x="38"  y="52" width="3" height="8" rx="1.5" fill="#9d174d"/>
+              <rect x="45"  y="52" width="3" height="8" rx="1.5" fill="#9d174d"/>
+              <rect x="52"  y="52" width="3" height="8" rx="1.5" fill="#9d174d"/>
+              <!-- Eyes on chip -->
+              <circle cx="16" cy="32" r="3" fill="white"/>
+              <circle cx="30" cy="32" r="3" fill="white"/>
+              <circle cx="16.8" cy="32" r="1.5" fill="#1a1a2e"/>
+              <circle cx="30.8" cy="32" r="1.5" fill="#1a1a2e"/>
+              <!-- Smile -->
+              <path d="M13 41 Q23 46 33 41" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="text-base sm:text-lg font-bold" style="color:#9d174d;">RAM</h3>
+          <p class="text-xs text-pink-600 font-bold">📋 Meja Kerja</p>
+          <p class="text-xs text-gray-500 mt-1 hidden sm:block">Data Sementara</p>
+        </div>
+        <div class="absolute inset-0 rounded-3xl opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
+             style="background:rgba(236,72,153,.08);">
+          <span class="text-2xl">👆 Klik!</span>
+        </div>
+      </div>
+
+      <!-- Storage -->
+      <div class="comp-card" id="cardStorage"
+           style="background:linear-gradient(135deg,#eff6ff,#dbeafe); border-color:#3b82f6;"
+           onclick="showInfo('storage')">
+        <div class="p-3 sm:p-5 text-center">
+          <div class="mb-2">
+            <svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg" class="mx-auto">
+              <!-- Drive body -->
+              <rect x="8" y="14" width="54" height="42" rx="8" fill="#2563eb" stroke="#1d4ed8" stroke-width="2"/>
+              <!-- Drive face -->
+              <rect x="12" y="18" width="46" height="34" rx="6" fill="#1d4ed8"/>
+              <!-- Platter circles -->
+              <circle cx="30" cy="35" r="14" fill="#3b82f6" stroke="#60a5fa" stroke-width="1.5"/>
+              <circle cx="30" cy="35" r="9"  fill="#2563eb" stroke="#60a5fa" stroke-width="1"/>
+              <circle cx="30" cy="35" r="4"  fill="#93c5fd"/>
+              <circle cx="30" cy="35" r="2"  fill="#bfdbfe"/>
+              <!-- Arm -->
+              <rect x="40" y="21" width="14" height="4" rx="2" fill="#60a5fa" transform="rotate(25 40 21)"/>
+              <!-- Connector -->
+              <rect x="46" y="42" width="10" height="6" rx="2" fill="#1e40af"/>
+              <rect x="47" y="43" width="2" height="4" rx="1" fill="#60a5fa"/>
+              <rect x="50" y="43" width="2" height="4" rx="1" fill="#60a5fa"/>
+              <rect x="53" y="43" width="2" height="4" rx="1" fill="#60a5fa"/>
+              <!-- Eyes on drive -->
+              <circle cx="44" cy="24" r="3.5" fill="white"/>
+              <circle cx="54" cy="24" r="3.5" fill="white"/>
+              <circle cx="44.8" cy="24" r="1.8" fill="#1a1a2e"/>
+              <circle cx="54.8" cy="24" r="1.8" fill="#1a1a2e"/>
+              <!-- Smile -->
+              <path d="M40 31 Q49 37 58 31" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="text-base sm:text-lg font-bold" style="color:#1d4ed8;">Storage</h3>
+          <p class="text-xs text-blue-600 font-bold">🗄️ Lemari</p>
+          <p class="text-xs text-gray-500 mt-1 hidden sm:block">Simpan Selamanya</p>
+        </div>
+        <div class="absolute inset-0 rounded-3xl opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
+             style="background:rgba(59,130,246,.08);">
+          <span class="text-2xl">👆 Klik!</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 3. WORKFLOW ANIMATION ── -->
+  <section>
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#3b0764;">🎬 Bagaimana Mereka Bekerja Sama?</h2>
+    </div>
+
+    <!-- Flow diagram card -->
+    <div class="rounded-3xl p-5 sm:p-7 border-3 relative overflow-hidden"
+         style="background:linear-gradient(135deg,#1e1b4b,#312e81); border:3px solid #6d28d9;">
+
+      <!-- Stars bg -->
+      <div class="absolute inset-0 pointer-events-none overflow-hidden">
+        <span class="absolute text-sm opacity-20" style="top:8%;left:5%;">⭐</span>
+        <span class="absolute text-sm opacity-20" style="top:20%;right:7%;">⭐</span>
+        <span class="absolute text-sm opacity-20" style="bottom:15%;left:12%;">✨</span>
+        <span class="absolute text-sm opacity-20" style="bottom:8%;right:10%;">💫</span>
+      </div>
+
+      <!-- Flow description steps -->
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-5 relative z-10" id="flowSteps">
+
+        <!-- Storage step -->
+        <div class="step-box text-center" id="step1" style="background:rgba(59,130,246,.2); border-color:#3b82f6;">
+          <div class="text-3xl mb-1">🗄️</div>
+          <div class="text-white font-bold text-sm">Storage</div>
+          <div class="text-blue-300 text-xs mt-1">Kirim data ke RAM</div>
+          <div class="text-xl mt-1" id="step1Arrow">→</div>
+        </div>
+
+        <!-- RAM step -->
+        <div class="step-box text-center" id="step2" style="background:rgba(236,72,153,.2); border-color:#ec4899;">
+          <div class="text-3xl mb-1">📋</div>
+          <div class="text-white font-bold text-sm">RAM</div>
+          <div class="text-pink-300 text-xs mt-1">Tampung data sementara</div>
+          <div class="text-xl mt-1" id="step2Arrow">→</div>
+        </div>
+
+        <!-- CPU step -->
+        <div class="step-box text-center" id="step3" style="background:rgba(168,85,247,.2); border-color:#a855f7;">
+          <div class="text-3xl mb-1">🧠</div>
+          <div class="text-white font-bold text-sm">CPU</div>
+          <div class="text-purple-300 text-xs mt-1">Proses & olah data</div>
+          <div class="text-xl mt-1" id="step3Arrow">→</div>
+        </div>
+
+        <!-- Screen step -->
+        <div class="step-box text-center" id="step4" style="background:rgba(52,211,153,.2); border-color:#34d399;">
+          <div class="text-3xl mb-1">🖥️</div>
+          <div class="text-white font-bold text-sm">Layar</div>
+          <div class="text-green-300 text-xs mt-1">Tampilkan hasilnya!</div>
+          <div class="text-xl mt-1" id="step4Check">✅</div>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="relative z-10 bg-white/10 rounded-full h-3 mb-4 overflow-hidden">
+        <div id="flowBar" class="h-full rounded-full w-0"
+             style="background:linear-gradient(90deg,#3b82f6,#ec4899,#a855f7,#34d399);"></div>
+      </div>
+
+      <!-- Status text -->
+      <p class="text-white/70 text-center text-sm mb-4 relative z-10" id="flowStatus">
+        Tekan tombol untuk lihat cara mereka bekerja sama! 🚀
+      </p>
+
+      <!-- Button -->
+      <div class="text-center relative z-10">
+        <button class="btn-main" id="btnFlow" onclick="startFlow()">
+          🎬 Lihat Kerja Sama Mereka!
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 4. ANALOGI SERU ── -->
+  <section>
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#3b0764;">🎨 Analoginya Seru Lho!</h2>
+      <p class="text-gray-500 mt-4 text-sm">Bayangkan seperti ini...</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+      <!-- CPU analogy -->
+      <div class="rounded-2xl p-5 text-center border-3 hover:scale-105 transition-transform duration-300"
+           style="background:linear-gradient(135deg,#ede9fe,#f5f3ff); border:3px solid #7c3aed;">
+        <div class="text-5xl mb-3">🧠</div>
+        <div class="text-4xl mb-2">👩‍🍳</div>
+        <h3 class="font-bold text-lg mb-1" style="color:#5b21b6;">CPU = Koki Pintar</h3>
+        <p class="text-gray-600 text-sm">
+          Koki yang memasak dan mengolah semua bahan menjadi makanan lezat. 
+          Tanpa koki, bahan-bahan hanya diam saja!
+        </p>
+      </div>
+
+      <!-- RAM analogy -->
+      <div class="rounded-2xl p-5 text-center border-3 hover:scale-105 transition-transform duration-300"
+           style="background:linear-gradient(135deg,#fdf2f8,#fce7f3); border:3px solid #ec4899;">
+        <div class="text-5xl mb-3">📋</div>
+        <div class="text-4xl mb-2">🍽️</div>
+        <h3 class="font-bold text-lg mb-1" style="color:#9d174d;">RAM = Meja Makan</h3>
+        <p class="text-gray-600 text-sm">
+          Meja tempat koki menaruh bahan-bahan yang sedang dipakai. 
+          Kalau mejanya kecil, tidak bisa masak banyak sekaligus!
+        </p>
+      </div>
+
+      <!-- Storage analogy -->
+      <div class="rounded-2xl p-5 text-center border-3 hover:scale-105 transition-transform duration-300"
+           style="background:linear-gradient(135deg,#eff6ff,#dbeafe); border:3px solid #3b82f6;">
+        <div class="text-5xl mb-3">🗄️</div>
+        <div class="text-4xl mb-2">🧺</div>
+        <h3 class="font-bold text-lg mb-1" style="color:#1d4ed8;">Storage = Kulkas Besar</h3>
+        <p class="text-gray-600 text-sm">
+          Kulkas besar tempat menyimpan semua bahan makanan. 
+          Walaupun listrik mati, bahan di kulkas tetap ada!
+        </p>
+      </div>
+    </div>
+
+    <!-- Aslan quote -->
+    <div class="mt-5 rounded-2xl p-4 flex items-start gap-3"
+         style="background:linear-gradient(135deg,#faf5ff,#ede9fe); border:2px solid #c4b5fd;">
+      <span class="text-3xl flex-shrink-0">😄</span>
+      <p class="text-purple-800 font-semibold text-sm sm:text-base">
+        <strong>Aslan bilang:</strong> "Keren ya! Mereka bertiga selalu bantu-bantu seperti teman baik! 
+        CPU yang memasak, RAM yang menaruh di meja, dan Storage yang simpan di kulkas. 
+        Komputer jadi pinter karena mereka kompak! 🍳🍽️🧺"
+      </p>
+    </div>
+  </section>
+
+  <!-- ── 5. PERBANDINGAN TABEL ── -->
+  <section>
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#3b0764;">📊 Tabel Perbandingan</h2>
+    </div>
+
+    <div class="rounded-2xl overflow-hidden border-3 shadow-lg" style="border:3px solid #7c3aed;">
+      <!-- Header -->
+      <div class="grid grid-cols-4 text-white text-center text-sm font-bold py-3"
+           style="background:linear-gradient(135deg,#5b21b6,#7c3aed);">
+        <div class="py-1">🔍 Ciri-Ciri</div>
+        <div class="py-1" style="background:rgba(255,255,255,.1);">🧠 CPU</div>
+        <div class="py-1" style="background:rgba(255,255,255,.15);">📋 RAM</div>
+        <div class="py-1" style="background:rgba(255,255,255,.1);">🗄️ Storage</div>
+      </div>
+
+      <!-- Row 1 -->
+      <div class="grid grid-cols-4 text-center text-xs sm:text-sm border-b" style="border-color:#ede9fe;">
+        <div class="py-3 px-2 font-bold text-purple-700 bg-purple-50">⚡ Kecepatan</div>
+        <div class="py-3 px-2 bg-white">🚀🚀🚀 Super cepat!</div>
+        <div class="py-3 px-2 bg-pink-50">🚀🚀 Cepat</div>
+        <div class="py-3 px-2 bg-blue-50">🚶 Lebih lambat</div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="grid grid-cols-4 text-center text-xs sm:text-sm border-b" style="border-color:#ede9fe;">
+        <div class="py-3 px-2 font-bold text-purple-700 bg-purple-50">💾 Simpan</div>
+        <div class="py-3 px-2 bg-white">❌ Tidak simpan</div>
+        <div class="py-3 px-2 bg-pink-50">⏱️ Sementara</div>
+        <div class="py-3 px-2 bg-blue-50">✅ Selamanya!</div>
+      </div>
+
+      <!-- Row 3 -->
+      <div class="grid grid-cols-4 text-center text-xs sm:text-sm border-b" style="border-color:#ede9fe;">
+        <div class="py-3 px-2 font-bold text-purple-700 bg-purple-50">💡 Kegunaan</div>
+        <div class="py-3 px-2 bg-white">Berpikir & hitung</div>
+        <div class="py-3 px-2 bg-pink-50">Taruh data pakai</div>
+        <div class="py-3 px-2 bg-blue-50">Simpan file & game</div>
+      </div>
+
+      <!-- Row 4 -->
+      <div class="grid grid-cols-4 text-center text-xs sm:text-sm">
+        <div class="py-3 px-2 font-bold text-purple-700 bg-purple-50">🔌 Kalau mati</div>
+        <div class="py-3 px-2 bg-white">Berhenti proses</div>
+        <div class="py-3 px-2 bg-pink-50">❌ Data hilang!</div>
+        <div class="py-3 px-2 bg-blue-50">✅ Data tetap ada</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 6. MINI QUIZ ── -->
+  <section>
+    <div class="rounded-3xl p-5 sm:p-7 border-3"
+         style="background:linear-gradient(135deg,#fdf4ff,#fae8ff); border:3px solid #d946ef;">
+      <div class="text-center mb-5">
+        <h2 class="text-2xl sm:text-3xl sec-title" style="color:#7e22ce;">🧩 Yuk Jawab Kuis!</h2>
+        <p class="text-gray-500 mt-4 text-sm">Pilih jawaban yang benar ya! 😊</p>
+      </div>
+
+      <div class="space-y-5" id="quizContainer">
+
+        <!-- Q1 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm" id="q1Block">
+          <p class="font-bold text-gray-800 mb-3 text-sm sm:text-base">
+            1️⃣ Mana komponen yang bertugas MENYIMPAN data selamanya?
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button class="qbtn" onclick="checkQ(1,'cpu','storage')">🧠 CPU</button>
+            <button class="qbtn" onclick="checkQ(1,'ram','storage')">📋 RAM</button>
+            <button class="qbtn" onclick="checkQ(1,'storage','storage')">🗄️ Storage</button>
+          </div>
+          <div id="q1Msg" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm" id="q2Block">
+          <p class="font-bold text-gray-800 mb-3 text-sm sm:text-base">
+            2️⃣ CPU itu diumpamakan seperti apa dalam komputer?
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button class="qbtn" onclick="checkQ(2,'otak','otak')">🧠 Otak / Pikiran</button>
+            <button class="qbtn" onclick="checkQ(2,'meja','otak')">🪑 Meja belajar</button>
+            <button class="qbtn" onclick="checkQ(2,'lemari','otak')">🗄️ Lemari baju</button>
+          </div>
+          <div id="q2Msg" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm" id="q3Block">
+          <p class="font-bold text-gray-800 mb-3 text-sm sm:text-base">
+            3️⃣ Kalau komputer dimatikan, data di RAM akan...?
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button class="qbtn" onclick="checkQ(3,'hilang','hilang')">❌ Hilang!</button>
+            <button class="qbtn" onclick="checkQ(3,'tetap','hilang')">✅ Tetap tersimpan</button>
+            <button class="qbtn" onclick="checkQ(3,'pindah','hilang')">📤 Pindah ke CPU</button>
+          </div>
+          <div id="q3Msg" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+      </div>
+
+      <!-- Score display -->
+      <div id="quizScore" class="hidden mt-5 text-center bg-white rounded-2xl p-4 shadow-sm">
+        <div class="text-4xl mb-2" id="scoreStar">⭐</div>
+        <p class="font-bold text-lg text-purple-700" id="scoreText"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 7. AKTIVITAS ── -->
+  <section>
+    <div class="rounded-3xl p-5 sm:p-7 border-3"
+         style="background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:3px solid #22c55e;">
+
+      <div class="flex items-start gap-3 mb-4">
+        <span class="text-4xl">✏️</span>
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold" style="color:#15803d;">Tugas Hari Ini! 🎨</h2>
+          <p class="text-green-700 font-semibold mt-1 text-sm sm:text-base">
+            <strong>Gambarlah</strong> CPU, RAM, dan Storage sedang bekerja sama seperti
+            <strong>tim superhero!</strong> 🦸‍♂️🦸‍♀️🦸
+          </p>
+          <p class="text-green-600 text-sm mt-2">
+            Beri nama masing-masing superhero dan tuliskan kekuatan spesialnya!
+            Contoh: "CPU-Man: Super Berpikir Cepat!" ⚡
+          </p>
+        </div>
+      </div>
+
+      <!-- Helpful hints -->
+      <div class="grid grid-cols-3 gap-2 mb-4 text-center text-xs">
+        <div class="bg-white rounded-xl p-2 shadow-sm border-2" style="border-color:#a855f7;">
+          <div class="text-2xl">🧠</div>
+          <div class="font-bold text-purple-600">CPU-Man</div>
+          <div class="text-gray-500">Kekuatan: Berpikir!</div>
+        </div>
+        <div class="bg-white rounded-xl p-2 shadow-sm border-2" style="border-color:#ec4899;">
+          <div class="text-2xl">📋</div>
+          <div class="font-bold text-pink-600">RAM-Girl</div>
+          <div class="text-gray-500">Kekuatan: Ingatan!</div>
+        </div>
+        <div class="bg-white rounded-xl p-2 shadow-sm border-2" style="border-color:#3b82f6;">
+          <div class="text-2xl">🗄️</div>
+          <div class="font-bold text-blue-600">Storage-Bot</div>
+          <div class="text-gray-500">Kekuatan: Simpan!</div>
+        </div>
+      </div>
+
+      <!-- Drawing area -->
+      <div class="draw-area flex flex-col items-center justify-center text-center p-6">
+        <span class="text-5xl mb-3">🖊️</span>
+        <p class="text-purple-400 font-bold text-lg">Area Menggambar</p>
+        <p class="text-purple-300 text-sm mt-1">Cetak halaman ini dan gambarlah tim superhero komputer kamu!</p>
+        <p class="text-purple-200 text-xs mt-3">( Kosong untuk kamu isi dengan gambar seru! )</p>
+      </div>
+
+      <p class="text-green-600 text-sm text-center mt-3 font-semibold">
+        💡 Tip: Kamu bisa tempel stiker bintang untuk setiap komponen yang kamu gambar! ⭐
+      </p>
+    </div>
+  </section>
+
+  <!-- ── 8. RANGKUMAN ── -->
+  <section>
+    <div class="rounded-3xl p-5 sm:p-7 border-3"
+         style="background:linear-gradient(135deg,#1e1b4b,#312e81); border:3px solid #6d28d9;">
+      <h2 class="text-xl sm:text-2xl font-bold text-white text-center mb-5" style="font-family:'Fredoka One',cursive;">
+        ✨ Rangkuman Hari Ini!
+      </h2>
+      <div class="space-y-3">
+        <div class="flex items-start gap-3 bg-white/10 rounded-xl p-3">
+          <span class="text-2xl flex-shrink-0">🧠</span>
+          <p class="text-white text-sm"><strong class="text-purple-300">CPU</strong> = Otak komputer yang memproses semua perintah. Cepat sekali tapi tidak menyimpan data.</p>
+        </div>
+        <div class="flex items-start gap-3 bg-white/10 rounded-xl p-3">
+          <span class="text-2xl flex-shrink-0">📋</span>
+          <p class="text-white text-sm"><strong class="text-pink-300">RAM</strong> = Meja kerja sementara. Menyimpan data yang sedang dipakai CPU. Kalau komputer mati, datanya hilang.</p>
+        </div>
+        <div class="flex items-start gap-3 bg-white/10 rounded-xl p-3">
+          <span class="text-2xl flex-shrink-0">🗄️</span>
+          <p class="text-white text-sm"><strong class="text-blue-300">Storage</strong> = Lemari besar untuk menyimpan data selamanya. Foto, video, game — semua di sini!</p>
+        </div>
+        <div class="flex items-start gap-3 bg-white/10 rounded-xl p-3">
+          <span class="text-2xl flex-shrink-0">🤝</span>
+          <p class="text-white text-sm"><strong class="text-green-300">Kerja sama:</strong> Storage kirim data → RAM tampung → CPU proses → Hasil tampil di layar! 🎉</p>
+        </div>
+      </div>
+
+      <!-- Aslan closing -->
+      <div class="mt-5 bg-white/10 rounded-2xl p-4 text-center">
+        <div class="text-3xl mb-2">🦸‍♂️</div>
+        <p class="text-white font-semibold text-sm sm:text-base">
+          <strong class="text-yellow-300">Aslan berteriak:</strong><br>
+          "WOW! Sekarang aku tahu kenapa komputerku bisa kerja dengan baik —
+          karena CPU, RAM, dan Storage itu KOMPAK! Mereka adalah
+          <span class="text-pink-300">tim superhero</span> terbaik! 🦸⚡🌟"
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="mt-10 py-6 px-4 text-center"
+        style="background:linear-gradient(135deg,#3b0764,#5b21b6);">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex items-center justify-center gap-3 mb-3">
+      <!-- Progress dots -->
+      <div class="flex gap-1.5 flex-wrap justify-center">
+        <span id="fd1"  class="day-dot" style="background:#34d399;"></span>
+        <span id="fd2"  class="day-dot" style="background:#34d399;"></span>
+        <span id="fd3"  class="day-dot" style="background:#34d399;"></span>
+        <span id="fd4"  class="day-dot" style="background:#34d399;"></span>
+        <span id="fd5"  class="day-dot" style="background:#34d399;"></span>
+        <span id="fd6"  class="day-dot" style="background:#34d399;"></span>
+        <span id="fd7"  class="day-dot" style="background:#34d399;"></span>
+        <span id="fd8"  class="day-dot" style="background:#34d399;"></span>
+        <span id="fd9"  class="day-dot" style="background:#34d399;"></span>
+        <span id="fd10" class="day-dot" style="background:#34d399;"></span>
+        <span id="fd11" class="day-dot" style="background:#34d399;"></span>
+        <span id="fd12" class="day-dot" style="background:#34d399;"></span>
+        <span id="fd13" class="day-dot" style="background:#34d399;"></span>
+        <span id="fd14" class="day-dot" style="background:#34d399;"></span>
+        <span id="fd15" class="day-dot" style="background:#34d399;"></span>
+        <span id="fd16" class="day-dot" style="background:#34d399;"></span>
+        <span id="fd17" class="day-dot" style="background:#34d399;"></span>
+        <span id="fd18" class="day-dot" style="background:#34d399;"></span>
+        <span id="fd19" class="day-dot" style="background:#34d399;"></span>
+        <span id="fd20" class="day-dot" style="background:#34d399;"></span>
+        <span id="fd21" class="day-dot" style="background:#34d399;"></span>
+        <span id="fd22" class="day-dot" style="background:#34d399;"></span>
+        <span id="fd23" class="day-dot" style="background:#fbbf24; box-shadow:0 0 0 3px rgba(251,191,36,.4);"></span>
+        <span id="fd24" class="day-dot" style="background:rgba(255,255,255,.25);"></span>
+        <span id="fd25" class="day-dot" style="background:rgba(255,255,255,.25);"></span>
+        <span id="fd26" class="day-dot" style="background:rgba(255,255,255,.25);"></span>
+        <span id="fd27" class="day-dot" style="background:rgba(255,255,255,.25);"></span>
+        <span id="fd28" class="day-dot" style="background:rgba(255,255,255,.25);"></span>
+        <span id="fd29" class="day-dot" style="background:rgba(255,255,255,.25);"></span>
+        <span id="fd30" class="day-dot" style="background:rgba(255,255,255,.25);"></span>
+      </div>
+    </div>
+    <p class="text-white/80 font-bold text-base" style="font-family:'Fredoka One',cursive;">
+      ⭐ Hari 23 dari 30 ⭐
+    </p>
+    <p class="text-white/50 text-xs mt-1">Petualangan Aslan di Dalam Komputer Ajaib</p>
+  </div>
+</footer>
+
+<!-- Style for day-dot -->
+<style>.day-dot{ width:12px; height:12px; border-radius:50%; display:inline-block; }</style>
+
+<!-- ══════ INFO POPUP ══════ -->
+<div class="info-popup" id="infoPopup" onclick="closePopup(event)">
+  <div class="popup-box" id="popupBox">
+    <button onclick="closePopup(null,true)"
+            class="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors text-xl font-bold">✕</button>
+    <div class="text-center mb-3" id="popupIcon"></div>
+    <h3 class="text-xl font-bold text-center mb-2" id="popupTitle" style="font-family:'Fredoka One',cursive;"></h3>
+    <div id="popupContent" class="text-gray-700 text-sm leading-relaxed space-y-2"></div>
+  </div>
+</div>
+
+<!-- ══════ JAVASCRIPT ══════ -->
+<script>
+/* ── Info data ── */
+const infoData = {
+  cpu: {
+    icon: '🧠',
+    color: '#7c3aed',
+    title: 'CPU – Si Otak Komputer!',
+    facts: [
+      '⚡ CPU itu kepanjangan dari <strong>Central Processing Unit</strong>.',
+      '🧮 Semua perhitungan dan perintah di komputer diproses oleh CPU.',
+      '🚀 CPU modern bisa melakukan <strong>miliaran</strong> operasi dalam satu detik!',
+      '🌡️ CPU bisa sangat panas karena bekerja keras, makanya ada kipas pendinginnya.',
+      '🏆 CPU yang bagus membuat komputer kamu lebih cepat dan tidak lemot!'
+    ]
+  },
+  ram: {
+    icon: '📋',
+    color: '#ec4899',
+    title: 'RAM – Si Meja Kerja Sementara!',
+    facts: [
+      '💾 RAM itu kepanjangan dari <strong>Random Access Memory</strong>.',
+      '⚡ RAM sangat cepat dibaca, tapi tidak bisa menyimpan data kalau listrik mati.',
+      '📱 HP-mu biasanya punya RAM 4GB-12GB, makin besar makin banyak yang bisa dibuka!',
+      '🎮 Kalau RAM penuh, game kamu bisa nge-lag atau macet.',
+      '🔄 CPU selalu ambil data dari RAM — bukan langsung dari Storage!'
+    ]
+  },
+  storage: {
+    icon: '🗄️',
+    color: '#3b82f6',
+    title: 'Storage – Si Lemari Besar!',
+    facts: [
+      '📂 Storage adalah tempat menyimpan semua file: foto, video, game, dokumen.',
+      '💡 Ada 2 jenis: <strong>HDD</strong> (ada piringan berputar) dan <strong>SSD</strong> (lebih cepat, pakai chip).',
+      '📦 Storage bisa menyimpan data walaupun komputer dimatikan.',
+      '🐢 Storage lebih lambat dari RAM, makanya data harus "dipinjam" ke RAM dulu.',
+      '💾 Komputer modern bisa punya Storage 256GB sampai beberapa Terabyte!'
+    ]
+  }
+};
+
+function showInfo(type) {
+  const d = infoData[type];
+  document.getElementById('popupIcon').textContent = d.icon;
+  document.getElementById('popupIcon').style.fontSize = '4rem';
+  document.getElementById('popupTitle').textContent = d.title;
+  document.getElementById('popupTitle').style.color = d.color;
+  document.getElementById('popupBox').style.borderTop = `5px solid ${d.color}`;
+  document.getElementById('popupContent').innerHTML = d.facts.map(f =>
+    `<p class="flex gap-2"><span>${f}</span></p>`
+  ).join('');
+  document.getElementById('infoPopup').classList.add('show');
+}
+
+function closePopup(e, force=false) {
+  if (force || e.target === document.getElementById('infoPopup')) {
+    document.getElementById('infoPopup').classList.remove('show');
+  }
+}
+
+/* ── Workflow animation ── */
+let flowing = false;
+
+function startFlow() {
+  if (flowing) return;
+  flowing = true;
+  const btn = document.getElementById('btnFlow');
+  btn.disabled = true;
+
+  const steps = ['step1','step2','step3','step4'];
+  const colors = ['#3b82f6','#ec4899','#a855f7','#34d399'];
+  const pcts   = [25,50,75,100];
+  const msgs   = [
+    '🗄️ Storage mengirim data ke RAM... tunggu ya!',
+    '📋 RAM menerima data dan menyimpannya sementara...',
+    '🧠 CPU mengambil data dari RAM dan memprosesnya...',
+    '🖥️ Selesai! Hasilnya tampil di layar! 🎉'
+  ];
+
+  // Reset
+  steps.forEach(s => {
+    document.getElementById(s).classList.remove('active-step');
+  });
+  document.getElementById('flowBar').style.width = '0%';
+  document.getElementById('flowStatus').textContent = '🚀 Memulai proses...';
+
+  let i = 0;
+  function doStep() {
+    if (i > 0) document.getElementById(steps[i-1]).classList.remove('active-step');
+    if (i < steps.length) {
+      document.getElementById(steps[i]).classList.add('active-step');
+      document.getElementById('flowBar').style.width = pcts[i] + '%';
+      document.getElementById('flowStatus').textContent = msgs[i];
+      i++;
+      setTimeout(doStep, 1400);
+    } else {
+      // Done
+      setTimeout(() => {
+        document.getElementById('flowStatus').textContent = '✅ Kerja sama selesai! Luar biasa! 🎉';
+        spawnConfetti();
+        flowing = false;
+        btn.disabled = false;
+        btn.textContent = '🔄 Ulangi Animasi!';
+      }, 400);
+    }
+  }
+  doStep();
+}
+
+/* ── Quiz logic ── */
+const qAnswered = {1:false, 2:false, 3:false};
+let qScore = 0;
+
+function checkQ(num, chosen, correct) {
+  if (qAnswered[num]) return;
+  qAnswered[num] = true;
+
+  const block = document.getElementById(`q${num}Block`);
+  const msg   = document.getElementById(`q${num}Msg`);
+  const btns  = block.querySelectorAll('.qbtn');
+  btns.forEach(b => b.disabled = true);
+
+  if (chosen === correct) {
+    qScore++;
+    msg.textContent = '🎉 Benar! Kamu hebat!';
+    msg.style.color = '#16a34a';
+    block.style.background = '#f0fdf4';
+    block.style.borderLeft = '4px solid #22c55e';
+  } else {
+    msg.innerHTML = '😅 Belum tepat, tapi tidak apa-apa! Jawaban yang benar sudah diwarnai. 💪';
+    msg.style.color = '#dc2626';
+    block.style.background = '#fff1f2';
+    block.style.borderLeft = '4px solid #f43f5e';
+    // Highlight correct
+    btns.forEach(b => {
+      if (b.onclick.toString().includes(`'${correct}'`)) {
+        b.style.background = '#dcfce7';
+        b.style.borderColor = '#22c55e';
+        b.style.color = '#15803d';
+      }
+    });
+  }
+  msg.classList.remove('hidden');
+
+  // Check if all answered
+  if (Object.values(qAnswered).every(v=>v)) {
+    showScore();
+  }
+}
+
+function showScore() {
+  const sd = document.getElementById('quizScore');
+  sd.classList.remove('hidden');
+  let star, text;
+  if (qScore === 3) {
+    star = '🌟🌟🌟'; text = 'Sempurna! 3/3! Kamu jenius komputer!';
+    spawnConfetti();
+  } else if (qScore === 2) {
+    star = '⭐⭐'; text = 'Bagus! 2/3! Hampir sempurna!';
+  } else {
+    star = '⭐'; text = 'Tetap semangat! 1/3. Coba baca lagi ya!';
+  }
+  document.getElementById('scoreStar').textContent = star;
+  document.getElementById('scoreText').textContent = text;
+}
+
+/* ── Confetti ── */
+function spawnConfetti() {
+  const colors = ['#a855f7','#ec4899','#3b82f6','#fbbf24','#34d399','#f97316'];
+  for (let i = 0; i < 28; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `
+      left:${20+Math.random()*60}vw;
+      top:${10+Math.random()*40}vh;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random()>.5?'50%':'2px'};
+      --tx:${(Math.random()-.5)*200}px;
+      --ty:${80+Math.random()*200}px;
+      animation-delay:${Math.random()*.4}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 1800);
+  }
+}
+</script>
+</body>
+</html>

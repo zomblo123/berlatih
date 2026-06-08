@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petualangan Aslan di Negeri AI – Hari 26</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --hijau:    #00C853;
+      --hijau-tua:#1B5E20;
+      --hijau-mid:#2E7D32;
+      --biru:     #1E88E5;
+      --biru-muda:#64B5F6;
+      --biru-tua: #0D47A1;
+      --kuning:   #FFD600;
+      --oranye:   #FF6D00;
+      --merah:    #E53935;
+      --merah-muda:#FF4081;
+      --ungu:     #7C4DFF;
+      --teal:     #00897B;
+      --bg:       #F0FFF4;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      background-image:
+        radial-gradient(circle at 8% 12%, #B2DFDB55 0%, transparent 38%),
+        radial-gradient(circle at 92% 85%, #FFCDD255 0%, transparent 38%),
+        radial-gradient(circle at 50% 50%, #E8F5E944 0%, transparent 55%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .font-kartun { font-family: 'Fredoka One', cursive; }
+
+    /* ===== FLOATING SHAPES ===== */
+    .shapes-bg { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .shape { position:absolute; animation: floatShape linear infinite; opacity:0.12; }
+    @keyframes floatShape {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity:0; }
+      10%  { opacity:0.12; }
+      90%  { opacity:0.12; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity:0; }
+    }
+
+    /* ===== TOP BACK LINK ===== */
+    .top-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      color: #fff;
+      background: rgba(255,255,255,0.18);
+      border: 2px solid rgba(255,255,255,0.4);
+      border-radius: 999px;
+      padding: 6px 18px;
+      text-decoration: none;
+      backdrop-filter: blur(6px);
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .top-back-link:hover {
+      background: rgba(255,255,255,0.32);
+      transform: translateX(-4px);
+    }
+
+    /* ===== HEADER ===== */
+    .header-bar {
+      background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 30%, #00C853 70%, #1E88E5 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .header-bar::before {
+      content: '';
+      position:absolute; inset:0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent 0px, transparent 20px,
+        rgba(255,255,255,0.04) 20px, rgba(255,255,255,0.04) 40px
+      );
+    }
+    .header-bar::after {
+      content: '✅ ⚠️ ✅ ⚠️ ✅ ⚠️ ✅ ⚠️';
+      position:absolute;
+      bottom:8px; right:12px;
+      font-size:1rem;
+      opacity:0.12;
+      letter-spacing:4px;
+    }
+
+    .badge-hari {
+      background: var(--kuning);
+      color: #1B5E20;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      padding: 4px 16px;
+      border-radius: 999px;
+      display: inline-block;
+      box-shadow: 0 4px 0 #F9A825;
+      animation: bounceIn 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes bounceIn {
+      0%   { transform: scale(0.3); opacity:0; }
+      60%  { transform: scale(1.12); }
+      100% { transform: scale(1); opacity:1; }
+    }
+    .aslan-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2.2rem, 6.5vw, 4.2rem);
+      color: #fff;
+      text-shadow: 0 5px 0 #1B5E20, 0 7px 18px rgba(0,0,0,0.3);
+      letter-spacing: 1px;
+      animation: slideDown 0.7s ease both 0.2s;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-40px); opacity:0; }
+      to   { transform: translateY(0); opacity:1; }
+    }
+    .subtitle-header {
+      font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+      color: #A5D6A7;
+      animation: slideDown 0.7s ease both 0.4s;
+    }
+
+    /* ===== PROGRESS ===== */
+    .progress-track {
+      height: 10px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FFD600, #FFAB40);
+      border-radius: 999px;
+      width: 86.67%;
+      transition: width 1.2s ease;
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 8px 32px rgba(0,200,83,0.10), 0 2px 8px rgba(0,0,0,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content:'';
+      position:absolute;
+      top:0; left:0; right:0; height:5px;
+    }
+    .card-green::before  { background: linear-gradient(90deg, #00C853, #69F0AE); }
+    .card-yellow::before { background: linear-gradient(90deg, #FFD600, #FFAB40); }
+    .card-blue::before   { background: linear-gradient(90deg, #1E88E5, #64B5F6); }
+    .card-red::before    { background: linear-gradient(90deg, #E53935, #EF9A9A); }
+    .card-purple::before { background: linear-gradient(90deg, #7C4DFF, #B388FF); }
+    .card-teal::before   { background: linear-gradient(90deg, #00897B, #4DB6AC); }
+
+    /* ===== SPLIT ILLUSTRATION ===== */
+    .split-wrap {
+      border-radius: 24px;
+      overflow: hidden;
+      border: 5px solid #fff;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.18), 0 4px 0 #00C853;
+    }
+
+    /* ===== KOMIK ===== */
+    .komik-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (min-width: 640px) {
+      .komik-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .panel {
+      border-radius: 18px;
+      border: 4px solid #00C853;
+      overflow: hidden;
+      background: #fff;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+      box-shadow: 0 6px 0 #00701A;
+    }
+    .panel:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 12px 0 #00701A; }
+    .panel:nth-child(2) { border-color: #FFD600; box-shadow: 0 6px 0 #F9A825; }
+    .panel:nth-child(2):hover { box-shadow: 0 12px 0 #F9A825; }
+    .panel:nth-child(3) { border-color: #E53935; box-shadow: 0 6px 0 #B71C1C; }
+    .panel:nth-child(3):hover { box-shadow: 0 12px 0 #B71C1C; }
+    .panel:nth-child(4) { border-color: #7C4DFF; box-shadow: 0 6px 0 #4527A0; }
+    .panel:nth-child(4):hover { box-shadow: 0 12px 0 #4527A0; }
+
+    .panel-img-bg {
+      width:100%; height:160px;
+      display: flex; align-items: center; justify-content: center;
+      position:relative; overflow:hidden;
+    }
+    .panel-num {
+      position:absolute; top:8px; left:8px;
+      width:28px; height:28px;
+      background: #00C853; color:#fff;
+      font-family:'Fredoka One',cursive;
+      border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.9rem;
+      box-shadow: 0 2px 0 #00701A;
+      z-index:2;
+    }
+    .panel:nth-child(2) .panel-num { background:#FFD600; color:#1B5E20; box-shadow:0 2px 0 #F9A825; }
+    .panel:nth-child(3) .panel-num { background:#E53935; color:#fff; box-shadow:0 2px 0 #B71C1C; }
+    .panel:nth-child(4) .panel-num { background:#7C4DFF; color:#fff; box-shadow:0 2px 0 #4527A0; }
+
+    .panel-dialog {
+      position:absolute; top:8px; right:8px;
+      background:#fff;
+      border:2px solid #00C853;
+      border-radius:12px 12px 12px 2px;
+      font-size:0.68rem; font-weight:800;
+      padding:3px 7px;
+      max-width:68%;
+      color:#1B5E20;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+      z-index:2;
+    }
+    .panel:nth-child(2) .panel-dialog { border-color:#FFD600; color:#FF6D00; }
+    .panel:nth-child(3) .panel-dialog { border-color:#E53935; color:#B71C1C; }
+    .panel:nth-child(4) .panel-dialog { border-color:#7C4DFF; color:#4527A0; }
+    .panel-text {
+      padding:10px 12px;
+      font-size:0.78rem; font-weight:700;
+      color:#37474F;
+      text-align:center;
+      min-height:50px;
+      display:flex; align-items:center; justify-content:center;
+    }
+
+    /* ===== FAKTA CARDS ===== */
+    .fakta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (min-width: 480px) {
+      .fakta-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .fakta-card {
+      border-radius: 20px;
+      padding: 18px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .fakta-card:hover { transform: translateY(-5px) rotate(1deg); }
+    .fakta-emoji {
+      font-size: 2.6rem;
+      display: block;
+      margin-bottom: 8px;
+      animation: faktaBounce 2.5s ease-in-out infinite;
+    }
+    @keyframes faktaBounce {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50%      { transform: translateY(-8px) rotate(3deg); }
+    }
+    .fakta-card:nth-child(2) .fakta-emoji { animation-delay:0.4s; }
+    .fakta-card:nth-child(3) .fakta-emoji { animation-delay:0.8s; }
+    .fakta-card:nth-child(4) .fakta-emoji { animation-delay:1.2s; }
+    .fakta-card:nth-child(5) .fakta-emoji { animation-delay:1.6s; }
+    .fakta-card:nth-child(6) .fakta-emoji { animation-delay:2.0s; }
+
+    /* ===== QUIZ ===== */
+    .quiz-option {
+      border: 3px solid #A5D6A7;
+      border-radius: 16px;
+      padding: 14px 20px;
+      cursor: pointer;
+      font-size: 1rem; font-weight: 700;
+      color: #1B5E20;
+      background: #fff;
+      transition: all 0.2s;
+      display: flex; align-items: center; gap: 12px;
+      text-align: left; width: 100%;
+    }
+    .quiz-option:hover {
+      border-color: #00C853;
+      background: #E8F5E9;
+      transform: translateX(6px);
+    }
+    .quiz-option.correct {
+      border-color: #00C853;
+      background: #E8F5E9;
+      animation: correctPop 0.4s ease;
+    }
+    .quiz-option.wrong {
+      border-color: #E53935;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    @keyframes correctPop {
+      0%  { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100%{ transform: scale(1); }
+    }
+    @keyframes shake {
+      0%,100%{ transform: translateX(0); }
+      25%    { transform: translateX(-8px); }
+      75%    { transform: translateX(8px); }
+    }
+    .quiz-result {
+      display:none;
+      border-radius:16px;
+      padding:16px 20px;
+      font-size:1.05rem; font-weight:800;
+      text-align:center;
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity:0; transform:translateY(10px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ===== SCALE BALANCE ANIMATION ===== */
+    .scale-anim { animation: scaleTilt 3s ease-in-out infinite; }
+    @keyframes scaleTilt {
+      0%,100% { transform: rotate(-3deg); }
+      50%     { transform: rotate(3deg); }
+    }
+
+    /* ===== SPARKLE / REVEAL ===== */
+    .sparkle { display:inline-block; animation: sparkle 1.5s ease-in-out infinite; }
+    @keyframes sparkle {
+      0%,100% { transform: scale(1) rotate(0); }
+      50%      { transform: scale(1.3) rotate(15deg); }
+    }
+    .reveal {
+      opacity:0; transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* ===== TWO-COLUMN PROS/CONS ===== */
+    .pros-cons-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 480px) {
+      .pros-cons-grid { grid-template-columns: 1fr; }
+    }
+    .pc-card {
+      border-radius: 20px;
+      padding: 20px 16px;
+      text-align: center;
+      border: 3px solid transparent;
+    }
+    .pc-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 0;
+      border-bottom: 2px dashed rgba(0,0,0,0.08);
+      font-size: 0.9rem; font-weight: 700;
+      text-align: left;
+    }
+    .pc-item:last-child { border-bottom: none; }
+    .pc-dot { font-size: 1.3rem; flex-shrink:0; }
+
+    /* ===== HEADER SPARKLES ===== */
+    .header-sparkles span {
+      position: absolute;
+      font-size: 1.5rem;
+      animation: floatSpark 4s ease-in-out infinite;
+      opacity: 0.6;
+    }
+    @keyframes floatSpark {
+      0%,100% { transform: translateY(0) scale(1); opacity:0.6; }
+      50%      { transform: translateY(-12px) scale(1.2); opacity:1; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Floating BG Shapes -->
+<div class="shapes-bg" aria-hidden="true">
+  <div class="shape" style="left:5%;width:40px;height:40px;background:#00C85322;border-radius:50%;animation-duration:18s;animation-delay:0s;">✅</div>
+  <div class="shape" style="left:20%;font-size:28px;animation-duration:22s;animation-delay:3s;">⚠️</div>
+  <div class="shape" style="left:40%;font-size:22px;animation-duration:16s;animation-delay:6s;">🤖</div>
+  <div class="shape" style="left:65%;font-size:30px;animation-duration:20s;animation-delay:2s;">⭐</div>
+  <div class="shape" style="left:80%;font-size:26px;animation-duration:25s;animation-delay:9s;">💡</div>
+  <div class="shape" style="left:90%;font-size:24px;animation-duration:19s;animation-delay:4s;">🧠</div>
+  <div class="shape" style="left:50%;font-size:28px;animation-duration:17s;animation-delay:11s;">❤️</div>
+</div>
+
+<!-- ======== MAIN WRAPPER ======== -->
+<div class="relative z-10 max-w-3xl mx-auto px-4 pb-16">
+
+  <!-- ===== HEADER ===== -->
+  <header class="header-bar rounded-b-3xl pt-5 pb-8 px-5 mb-6 relative">
+    <!-- Back Button TOP -->
+    <div class="mb-4">
+      <a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+    </div>
+
+    <!-- Floating emojis -->
+    <div class="header-sparkles" aria-hidden="true">
+      <span style="top:20px;right:60px;animation-delay:0s;">✅</span>
+      <span style="top:15px;right:120px;animation-delay:0.8s;">⚠️</span>
+      <span style="top:35px;right:30px;animation-delay:1.4s;">🤖</span>
+    </div>
+
+    <!-- Badge + Title -->
+    <div class="text-center">
+      <div class="badge-hari mb-3">📅 HARI 26 dari 30</div>
+      <h1 class="aslan-name leading-tight mb-2">
+        Kebaikan AI<br>dan Bahayanya
+      </h1>
+      <p class="subtitle-header">Petualangan Aslan di Negeri AI – 30 Hari Menjadi Pintar AI</p>
+
+      <!-- Progress -->
+      <div class="mt-5 max-w-xs mx-auto">
+        <div class="flex justify-between text-xs text-green-200 font-bold mb-1">
+          <span>Kemajuan Aslan</span>
+          <span>26/30 🏆</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== ILUSTRASI UTAMA (SVG Split) ===== -->
+  <div class="card card-green p-4 mb-6 reveal">
+    <div class="text-center mb-3">
+      <span class="badge-hari text-sm">🎨 Ilustrasi Hari Ini</span>
+    </div>
+
+    <div class="split-wrap">
+      <svg viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block;">
+        <defs>
+          <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#E8F5E9"/>
+            <stop offset="50%" style="stop-color:#F5F5F5"/>
+            <stop offset="100%" style="stop-color:#FFEBEE"/>
+          </linearGradient>
+          <linearGradient id="skyGood" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#B2DFDB"/>
+            <stop offset="100%" style="stop-color:#E8F5E9"/>
+          </linearGradient>
+          <linearGradient id="skyBad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#FFCDD2"/>
+            <stop offset="100%" style="stop-color:#FFEBEE"/>
+          </linearGradient>
+          <radialGradient id="robotBody" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" style="stop-color:#E3F2FD"/>
+            <stop offset="100%" style="stop-color:#90CAF9"/>
+          </radialGradient>
+          <radialGradient id="robotBodyBad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" style="stop-color:#FFCCBC"/>
+            <stop offset="100%" style="stop-color:#EF9A9A"/>
+          </radialGradient>
+          <!-- Glow filters -->
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glowRed">
+            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- ===== BACKGROUND ===== -->
+        <!-- Left half -->
+        <rect x="0" y="0" width="350" height="380" fill="url(#skyGood)"/>
+        <!-- Right half -->
+        <rect x="350" y="0" width="350" height="380" fill="url(#skyBad)"/>
+
+        <!-- Floor -->
+        <rect x="0" y="310" width="350" height="70" fill="#C8E6C9" opacity="0.6"/>
+        <rect x="350" y="310" width="350" height="70" fill="#FFCDD2" opacity="0.6"/>
+
+        <!-- Center divider with scale -->
+        <rect x="345" y="0" width="10" height="380" fill="#BDBDBD" opacity="0.4"/>
+
+        <!-- ===== LEFT SIDE: BAIK ===== -->
+        <!-- Sun -->
+        <circle cx="60" cy="55" r="32" fill="#FFD600" opacity="0.85"/>
+        <circle cx="60" cy="55" r="24" fill="#FFE57F"/>
+        <!-- Sun rays -->
+        <line x1="60" y1="14" x2="60" y2="6" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+        <line x1="60" y1="96" x2="60" y2="104" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+        <line x1="19" y1="55" x2="11" y2="55" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+        <line x1="101" y1="55" x2="109" y2="55" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+        <line x1="32" y1="27" x2="26" y2="21" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+        <line x1="88" y1="83" x2="94" y2="89" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+        <line x1="88" y1="27" x2="94" y2="21" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+        <line x1="32" y1="83" x2="26" y2="89" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+
+        <!-- Clouds left -->
+        <ellipse cx="230" cy="50" rx="40" ry="18" fill="#fff" opacity="0.8"/>
+        <ellipse cx="210" cy="48" rx="25" ry="16" fill="#fff" opacity="0.8"/>
+        <ellipse cx="250" cy="46" rx="22" ry="14" fill="#fff" opacity="0.8"/>
+
+        <!-- ❤️ helper icons floating -->
+        <text x="130" y="85" font-size="22" opacity="0.9">🏥</text>
+        <text x="190" y="75" font-size="20" opacity="0.9">📚</text>
+        <text x="265" y="90" font-size="20" opacity="0.85">🌱</text>
+
+        <!-- GOOD ROBOT (Robo) -->
+        <!-- Body -->
+        <rect x="110" y="170" width="72" height="68" rx="14" fill="url(#robotBody)" stroke="#42A5F5" stroke-width="3"/>
+        <!-- Head -->
+        <rect x="118" y="135" width="56" height="48" rx="12" fill="#E3F2FD" stroke="#42A5F5" stroke-width="3"/>
+        <!-- Eyes -->
+        <circle cx="134" cy="153" r="8" fill="#1E88E5"/>
+        <circle cx="158" cy="153" r="8" fill="#1E88E5"/>
+        <circle cx="136" cy="151" r="3" fill="#fff"/>
+        <circle cx="160" cy="151" r="3" fill="#fff"/>
+        <!-- Smile -->
+        <path d="M 133 166 Q 146 175 159 166" stroke="#1E88E5" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <!-- Antenna -->
+        <line x1="146" y1="135" x2="146" y2="120" stroke="#42A5F5" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="146" cy="116" r="6" fill="#00C853"/>
+        <!-- Ears -->
+        <rect x="104" y="143" width="14" height="10" rx="5" fill="#90CAF9"/>
+        <rect x="174" y="143" width="14" height="10" rx="5" fill="#90CAF9"/>
+        <!-- Arms up giving heart -->
+        <line x1="110" y1="185" x2="90" y2="162" stroke="#42A5F5" stroke-width="6" stroke-linecap="round"/>
+        <line x1="182" y1="185" x2="200" y2="162" stroke="#42A5F5" stroke-width="6" stroke-linecap="round"/>
+        <!-- Heart in hand -->
+        <text x="84" y="158" font-size="22" filter="url(#glow)">❤️</text>
+        <!-- Legs -->
+        <rect x="120" y="236" width="18" height="28" rx="8" fill="#90CAF9"/>
+        <rect x="154" y="236" width="18" height="28" rx="8" fill="#90CAF9"/>
+        <!-- Label -->
+        <rect x="95" y="278" width="102" height="22" rx="11" fill="#00C853"/>
+        <text x="146" y="293" font-size="11" font-family="Fredoka One,cursive" fill="#fff" text-anchor="middle">✅ AI BAIK</text>
+
+        <!-- Checkmarks floating -->
+        <text x="50" y="180" font-size="28" opacity="0.85" filter="url(#glow)">✅</text>
+        <text x="290" y="165" font-size="24" opacity="0.8">🎉</text>
+
+        <!-- ASLAN (left side, looking happy) -->
+        <!-- Body -->
+        <rect x="240" y="200" width="52" height="56" rx="14" fill="#FF8F00"/>
+        <!-- Shirt detail -->
+        <rect x="248" y="208" width="36" height="40" rx="10" fill="#FF6D00"/>
+        <!-- Head -->
+        <circle cx="266" cy="182" r="28" fill="#FFCC80"/>
+        <!-- Hair -->
+        <ellipse cx="266" cy="158" rx="26" ry="12" fill="#5D4037"/>
+        <!-- Eyes happy -->
+        <circle cx="257" cy="178" r="5" fill="#37474F"/>
+        <circle cx="275" cy="178" r="5" fill="#37474F"/>
+        <circle cx="258" cy="176" r="2" fill="#fff"/>
+        <circle cx="276" cy="176" r="2" fill="#fff"/>
+        <!-- Happy smile -->
+        <path d="M 254 190 Q 266 200 278 190" stroke="#E65100" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Cheeks -->
+        <circle cx="250" cy="186" r="6" fill="#FF8A65" opacity="0.6"/>
+        <circle cx="282" cy="186" r="6" fill="#FF8A65" opacity="0.6"/>
+        <!-- Arm pointing at robot -->
+        <line x1="240" y1="220" x2="210" y2="210" stroke="#FFCC80" stroke-width="8" stroke-linecap="round"/>
+        <line x1="292" y1="220" x2="310" y2="230" stroke="#FFCC80" stroke-width="8" stroke-linecap="round"/>
+        <!-- Legs -->
+        <rect x="245" y="254" width="16" height="22" rx="8" fill="#1565C0"/>
+        <rect x="271" y="254" width="16" height="22" rx="8" fill="#1565C0"/>
+        <!-- Hat -->
+        <rect x="248" y="150" width="36" height="12" rx="6" fill="#1B5E20"/>
+        <rect x="252" y="138" width="28" height="16" rx="6" fill="#2E7D32"/>
+
+        <!-- Thought bubble (left side) -->
+        <ellipse cx="310" cy="100" rx="55" ry="32" fill="#fff" opacity="0.95" stroke="#00C853" stroke-width="2"/>
+        <circle cx="272" cy="126" r="5" fill="#fff" stroke="#00C853" stroke-width="1.5"/>
+        <circle cx="264" cy="137" r="3" fill="#fff" stroke="#00C853" stroke-width="1.5"/>
+        <text x="310" y="96" font-size="11" font-family="Fredoka One,cursive" fill="#00C853" text-anchor="middle">AI bisa</text>
+        <text x="310" y="110" font-size="11" font-family="Fredoka One,cursive" fill="#00C853" text-anchor="middle">membantu! 🎓</text>
+
+        <!-- ===== RIGHT SIDE: BAHAYA ===== -->
+        <!-- Dark cloud -->
+        <ellipse cx="500" cy="55" rx="50" ry="22" fill="#9E9E9E" opacity="0.5"/>
+        <ellipse cx="480" cy="52" rx="30" ry="19" fill="#BDBDBD" opacity="0.5"/>
+        <ellipse cx="525" cy="50" rx="28" ry="17" fill="#9E9E9E" opacity="0.5"/>
+        <!-- Lightning -->
+        <polygon points="495,72 488,95 497,95 490,118" fill="#FFD600" opacity="0.85"/>
+
+        <!-- Warning signs -->
+        <text x="395" y="90" font-size="24" opacity="0.85">⚠️</text>
+        <text x="610" y="80" font-size="22" opacity="0.8">🚫</text>
+
+        <!-- BAD ROBOT (spooky red version) -->
+        <rect x="458" y="170" width="72" height="68" rx="14" fill="url(#robotBodyBad)" stroke="#E53935" stroke-width="3"/>
+        <rect x="466" y="135" width="56" height="48" rx="12" fill="#FFCDD2" stroke="#E53935" stroke-width="3"/>
+        <!-- Angry eyes -->
+        <ellipse cx="482" cy="151" rx="9" ry="8" fill="#E53935"/>
+        <ellipse cx="506" cy="151" rx="9" ry="8" fill="#E53935"/>
+        <!-- Eye pupils moving -->
+        <circle cx="483" cy="150" r="3.5" fill="#fff"/>
+        <circle cx="507" cy="150" r="3.5" fill="#fff"/>
+        <!-- Angry eyebrows -->
+        <line x1="472" y1="140" x2="493" y2="145" stroke="#B71C1C" stroke-width="3" stroke-linecap="round"/>
+        <line x1="519" y1="140" x2="498" y2="145" stroke="#B71C1C" stroke-width="3" stroke-linecap="round"/>
+        <!-- Frown -->
+        <path d="M 478 168 Q 492 160 506 168" stroke="#E53935" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <!-- Antenna with X -->
+        <line x1="494" y1="135" x2="494" y2="120" stroke="#E53935" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="494" cy="116" r="6" fill="#E53935"/>
+        <text x="489" y="120" font-size="9" fill="#fff" font-weight="bold">✕</text>
+        <!-- Ears -->
+        <rect x="452" y="143" width="14" height="10" rx="5" fill="#EF9A9A"/>
+        <rect x="522" y="143" width="14" height="10" rx="5" fill="#EF9A9A"/>
+        <!-- Arms -->
+        <line x1="458" y1="185" x2="435" y2="168" stroke="#E53935" stroke-width="6" stroke-linecap="round"/>
+        <line x1="530" y1="185" x2="550" y2="165" stroke="#E53935" stroke-width="6" stroke-linecap="round"/>
+        <!-- Bug/virus in hand -->
+        <text x="427" y="164" font-size="22">🦠</text>
+        <!-- Legs -->
+        <rect x="468" y="236" width="18" height="28" rx="8" fill="#EF9A9A"/>
+        <rect x="502" y="236" width="18" height="28" rx="8" fill="#EF9A9A"/>
+        <!-- Label -->
+        <rect x="448" y="278" width="102" height="22" rx="11" fill="#E53935"/>
+        <text x="499" y="293" font-size="11" font-family="Fredoka One,cursive" fill="#fff" text-anchor="middle">⚠️ AI BAHAYA</text>
+
+        <!-- ASLAN right side (concerned) -->
+        <rect x="590" y="200" width="52" height="56" rx="14" fill="#FF8F00"/>
+        <rect x="598" y="208" width="36" height="40" rx="10" fill="#FF6D00"/>
+        <circle cx="616" cy="182" r="28" fill="#FFCC80"/>
+        <ellipse cx="616" cy="158" rx="26" ry="12" fill="#5D4037"/>
+        <!-- Worried eyes -->
+        <circle cx="607" cy="178" r="5" fill="#37474F"/>
+        <circle cx="625" cy="178" r="5" fill="#37474F"/>
+        <circle cx="608" cy="176" r="2" fill="#fff"/>
+        <circle cx="626" cy="176" r="2" fill="#fff"/>
+        <!-- Worried brows -->
+        <line x1="602" y1="170" x2="612" y2="173" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+        <line x1="620" y1="173" x2="630" y2="170" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+        <!-- Worried mouth -->
+        <path d="M 607 192 Q 616 188 625 192" stroke="#E65100" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Cheeks (blushing scared) -->
+        <circle cx="600" cy="186" r="6" fill="#FF8A65" opacity="0.5"/>
+        <circle cx="632" cy="186" r="6" fill="#FF8A65" opacity="0.5"/>
+        <!-- Hand near face (scared gesture) -->
+        <line x1="590" y1="218" x2="574" y2="206" stroke="#FFCC80" stroke-width="8" stroke-linecap="round"/>
+        <line x1="642" y1="218" x2="655" y2="228" stroke="#FFCC80" stroke-width="8" stroke-linecap="round"/>
+        <!-- Legs -->
+        <rect x="595" y="254" width="16" height="22" rx="8" fill="#1565C0"/>
+        <rect x="621" y="254" width="16" height="22" rx="8" fill="#1565C0"/>
+        <!-- Hat -->
+        <rect x="598" y="150" width="36" height="12" rx="6" fill="#1B5E20"/>
+        <rect x="602" y="138" width="28" height="16" rx="6" fill="#2E7D32"/>
+
+        <!-- Thought bubble (right side) -->
+        <ellipse cx="555" cy="108" rx="55" ry="32" fill="#fff" opacity="0.95" stroke="#E53935" stroke-width="2"/>
+        <circle cx="580" cy="133" r="5" fill="#fff" stroke="#E53935" stroke-width="1.5"/>
+        <circle cx="587" cy="144" r="3" fill="#fff" stroke="#E53935" stroke-width="1.5"/>
+        <text x="555" y="104" font-size="11" font-family="Fredoka One,cursive" fill="#E53935" text-anchor="middle">Hati-hati</text>
+        <text x="555" y="118" font-size="11" font-family="Fredoka One,cursive" fill="#E53935" text-anchor="middle">bisa tipu! 😟</text>
+
+        <!-- ===== CENTER: Scale of Balance ===== -->
+        <!-- Scale pole -->
+        <line x1="350" y1="100" x2="350" y2="310" stroke="#757575" stroke-width="5" stroke-linecap="round"/>
+        <!-- Scale base -->
+        <rect x="320" y="305" width="60" height="10" rx="5" fill="#757575"/>
+        <!-- Tilted beam -->
+        <line x1="220" y1="140" x2="480" y2="155" stroke="#BDBDBD" stroke-width="5" stroke-linecap="round" class="scale-anim" style="transform-origin:350px 147px"/>
+        <!-- Left pan (good) -->
+        <ellipse cx="225" cy="175" rx="38" ry="12" fill="#A5D6A7" stroke="#2E7D32" stroke-width="2"/>
+        <line x1="200" y1="140" x2="200" y2="174" stroke="#4CAF50" stroke-width="2"/>
+        <line x1="250" y1="140" x2="250" y2="174" stroke="#4CAF50" stroke-width="2"/>
+        <!-- Right pan (danger) -->
+        <ellipse cx="475" cy="190" rx="38" ry="12" fill="#EF9A9A" stroke="#C62828" stroke-width="2"/>
+        <line x1="450" y1="155" x2="450" y2="189" stroke="#E53935" stroke-width="2"/>
+        <line x1="500" y1="155" x2="500" y2="189" stroke="#E53935" stroke-width="2"/>
+        <!-- Items on pans -->
+        <text x="210" y="167" font-size="20">❤️</text>
+        <text x="235" y="168" font-size="18">📚</text>
+        <text x="456" y="182" font-size="20">⚠️</text>
+        <text x="480" y="183" font-size="18">🚫</text>
+        <!-- Top pivot -->
+        <circle cx="350" cy="100" r="8" fill="#616161"/>
+
+        <!-- Labels -->
+        <text x="175" y="205" font-size="13" font-family="Fredoka One,cursive" fill="#2E7D32" text-anchor="middle">KEBAIKAN</text>
+        <text x="527" y="218" font-size="13" font-family="Fredoka One,cursive" fill="#C62828" text-anchor="middle">BAHAYA</text>
+
+      </svg>
+    </div>
+
+    <p class="text-center text-sm font-bold mt-3" style="color:#546E7A;">
+      🤔 <em>Aslan dan Robo sedang menimbang: AI bisa sangat membantu, tapi juga bisa berbahaya kalau tidak hati-hati!</em>
+    </p>
+  </div>
+
+  <!-- ===== PENJELASAN SEDERHANA ===== -->
+  <div class="card card-green p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="text-4xl">📖</div>
+      <h2 class="font-kartun text-2xl" style="color:#1B5E20;">Cerita Aslan & Robo</h2>
+    </div>
+
+    <div class="space-y-4 story-paragraph" style="font-size:clamp(1rem,2.4vw,1.15rem);line-height:1.9;color:#37474F;font-weight:600;">
+      <p>
+        "Robo," tanya Aslan sambil garuk kepala, <span style="background:linear-gradient(120deg,#B2DFDB,#69F0AE);padding:2px 8px;border-radius:8px;color:#1B5E20;font-weight:800;">"AI itu baik atau jahat sih?"</span>
+      </p>
+      <p>
+        Robo tersenyum. <strong>AI bisa melakukan banyak hal baik!</strong> AI membantu dokter mendeteksi penyakit lebih cepat 🏥, membantu anak-anak belajar 📚, dan bahkan membantu petani merawat tanaman 🌱.
+      </p>
+      <p>
+        Tapi Robo juga berkata serius: <span style="background:linear-gradient(120deg,#FFCDD2,#EF9A9A);padding:2px 8px;border-radius:8px;color:#B71C1C;font-weight:800;">AI juga bisa berbahaya!</span> AI bisa membuat berita palsu ❌, bisa membuat orang jadi malas berpikir 😴, dan bisa disalahgunakan oleh orang jahat.
+      </p>
+      <p>
+        <strong>Yang paling penting adalah:</strong> AI hanyalah alat 🔧. Seperti pisau di dapur — bisa dipakai untuk memasak makanan lezat, tapi bisa juga melukai kalau tidak hati-hati. <span style="background:linear-gradient(120deg,#FFF176,#FFD600);padding:2px 8px;border-radius:8px;color:#1B5E20;font-weight:800;">Manusialah yang harus bijak menggunakannya!</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- ===== PROS & CONS ===== -->
+  <div class="card card-yellow p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="text-4xl scale-anim">⚖️</div>
+      <h2 class="font-kartun text-2xl" style="color:#E65100;">Timbangan AI</h2>
+    </div>
+
+    <div class="pros-cons-grid">
+      <!-- LEFT: GOOD -->
+      <div class="pc-card" style="background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border-color:#81C784;">
+        <div class="text-4xl mb-2">✅</div>
+        <h3 class="font-kartun text-lg mb-3" style="color:#2E7D32;">Kebaikan AI</h3>
+        <div class="pc-item"><span class="pc-dot">🏥</span><span style="color:#1B5E20;">Mendeteksi penyakit lebih cepat</span></div>
+        <div class="pc-item"><span class="pc-dot">📚</span><span style="color:#1B5E20;">Membantu belajar & mengerjakan PR</span></div>
+        <div class="pc-item"><span class="pc-dot">🌾</span><span style="color:#1B5E20;">Membantu petani tanam & panen</span></div>
+        <div class="pc-item"><span class="pc-dot">🚗</span><span style="color:#1B5E20;">Mobil bisa nyetir sendiri (aman)</span></div>
+        <div class="pc-item"><span class="pc-dot">🌍</span><span style="color:#1B5E20;">Menerjemahkan bahasa sedunia</span></div>
+      </div>
+
+      <!-- RIGHT: DANGER -->
+      <div class="pc-card" style="background:linear-gradient(135deg,#FFEBEE,#FCE4EC);border-color:#EF9A9A;">
+        <div class="text-4xl mb-2">⚠️</div>
+        <h3 class="font-kartun text-lg mb-3" style="color:#B71C1C;">Bahaya AI</h3>
+        <div class="pc-item"><span class="pc-dot">📰</span><span style="color:#C62828;">Bisa membuat berita palsu/hoaks</span></div>
+        <div class="pc-item"><span class="pc-dot">😴</span><span style="color:#C62828;">Bisa membuat orang malas berpikir</span></div>
+        <div class="pc-item"><span class="pc-dot">🔓</span><span style="color:#C62828;">Bisa mencuri data pribadi kita</span></div>
+        <div class="pc-item"><span class="pc-dot">🤥</span><span style="color:#C62828;">Kadang AI bisa jawab dengan salah</span></div>
+        <div class="pc-item"><span class="pc-dot">🎭</span><span style="color:#C62828;">Bisa tirukan wajah/suara orang</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ANALOGI LUCU ===== -->
+  <div class="card card-blue p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="text-4xl sparkle">🍕</div>
+      <h2 class="font-kartun text-2xl" style="color:#0D47A1;">Analogi Lucu Robo!</h2>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#E3F2FD,#EDE7F6);border-radius:20px;padding:20px;border:3px dashed #90CAF9;">
+      <p style="font-size:1.1rem;font-weight:700;color:#1565C0;line-height:1.9;">
+        🤖 Robo bilang: <em>"AI itu seperti <strong>api</strong>! 🔥"</em>
+      </p>
+      <p style="font-size:1rem;font-weight:600;color:#37474F;margin-top:8px;line-height:1.8;">
+        Api bisa dipakai untuk <strong style="color:#00C853;">masak makanan enak 🍳</strong>, 
+        <strong style="color:#00C853;">menghangatkan tubuh di musim dingin 🧥</strong>,  
+        dan <strong style="color:#00C853;">menerangi jalan yang gelap 🏕️</strong>.
+      </p>
+      <p style="font-size:1rem;font-weight:600;color:#37474F;margin-top:8px;line-height:1.8;">
+        Tapi api juga bisa <strong style="color:#E53935;">membakar rumah 🏠💥</strong> kalau tidak dijaga dengan benar!
+      </p>
+      <div style="background:#fff;border-radius:14px;padding:14px 16px;margin-top:14px;border:2px solid #FFD600;">
+        <p style="font-size:1rem;font-weight:800;color:#FF6D00;text-align:center;">
+          🌟 Kuncinya: <strong style="color:#1B5E20;">pakai dengan bijak, jangan dipakai untuk hal jahat, dan selalu minta bantuan orang dewasa!</strong> 🌟
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== KOMIK STRIP ===== -->
+  <div class="card card-purple p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="text-4xl">🎭</div>
+      <h2 class="font-kartun text-2xl" style="color:#4527A0;">Komik Aslan & Robo</h2>
+    </div>
+
+    <div class="komik-grid">
+      <!-- Panel 1: AI membantu PR -->
+      <div class="panel">
+        <div class="panel-num">1</div>
+        <div class="panel-dialog" style="color:#1B5E20;">
+          "Bantu PR-ku, Robo!"
+        </div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">
+          <svg viewBox="0 0 160 160" width="130">
+            <!-- Desk -->
+            <rect x="20" y="105" width="120" height="10" rx="5" fill="#8D6E63"/>
+            <!-- Book -->
+            <rect x="40" y="75" width="35" height="32" rx="4" fill="#1E88E5"/>
+            <rect x="42" y="77" width="31" height="28" rx="3" fill="#E3F2FD"/>
+            <line x1="46" y1="83" x2="69" y2="83" stroke="#90CAF9" stroke-width="2"/>
+            <line x1="46" y1="89" x2="69" y2="89" stroke="#90CAF9" stroke-width="2"/>
+            <line x1="46" y1="95" x2="60" y2="95" stroke="#90CAF9" stroke-width="2"/>
+            <!-- Robo small -->
+            <rect x="88" y="68" width="34" height="30" rx="8" fill="#90CAF9" stroke="#42A5F5" stroke-width="2"/>
+            <rect x="93" y="52" width="24" height="20" rx="6" fill="#E3F2FD" stroke="#42A5F5" stroke-width="2"/>
+            <circle cx="100" cy="60" r="4" fill="#1E88E5"/>
+            <circle cx="110" cy="60" r="4" fill="#1E88E5"/>
+            <path d="M 97 70 Q 105 75 113 70" stroke="#42A5F5" stroke-width="2" fill="none"/>
+            <!-- Lightbulb above robo -->
+            <text x="108" y="46" font-size="18">💡</text>
+            <!-- Aslan head -->
+            <circle cx="58" cy="58" r="18" fill="#FFCC80"/>
+            <ellipse cx="58" cy="44" rx="16" ry="7" fill="#5D4037"/>
+            <circle cx="52" cy="56" r="3" fill="#37474F"/>
+            <circle cx="64" cy="56" r="3" fill="#37474F"/>
+            <path d="M 52 65 Q 58 70 64 65" stroke="#E65100" stroke-width="2" fill="none"/>
+            <text x="42" y="135" font-size="11" font-weight="bold" fill="#2E7D32">Aslan belajar bareng Robo!</text>
+          </svg>
+        </div>
+        <div class="panel-text">Aslan minta Robo bantu menjelaskan pelajaran matematika yang susah 📐</div>
+      </div>
+
+      <!-- Panel 2: AI berikan jawaban langsung tanpa mikir -->
+      <div class="panel">
+        <div class="panel-num">2</div>
+        <div class="panel-dialog" style="color:#FF6D00;">
+          "Nih jawabannya langsung!"
+        </div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#FFF9C4,#FFF3E0);">
+          <svg viewBox="0 0 160 160" width="130">
+            <!-- Aslan bored, not thinking -->
+            <circle cx="65" cy="68" r="22" fill="#FFCC80"/>
+            <ellipse cx="65" cy="50" rx="20" ry="8" fill="#5D4037"/>
+            <!-- Drowsy eyes -->
+            <path d="M 55 66 Q 60 64 65 66" stroke="#37474F" stroke-width="2.5" fill="none"/>
+            <path d="M 65 66 Q 70 64 75 66" stroke="#37474F" stroke-width="2.5" fill="none"/>
+            <!-- Flat mouth -->
+            <line x1="57" y1="77" x2="73" y2="77" stroke="#E65100" stroke-width="2" stroke-linecap="round"/>
+            <!-- ZZZ -->
+            <text x="82" y="55" font-size="14" fill="#BDBDBD" font-weight="bold">z</text>
+            <text x="88" y="46" font-size="16" fill="#BDBDBD" font-weight="bold">z</text>
+            <text x="95" y="36" font-size="18" fill="#BDBDBD" font-weight="bold">Z</text>
+            <!-- Tablet with answers -->
+            <rect x="35" y="92" width="90" height="50" rx="8" fill="#37474F"/>
+            <rect x="38" y="95" width="84" height="44" rx="6" fill="#E8F5E9"/>
+            <text x="80" y="112" font-size="10" font-family="monospace" fill="#1B5E20" text-anchor="middle">Jawaban = 42</text>
+            <text x="80" y="124" font-size="10" font-family="monospace" fill="#1B5E20" text-anchor="middle">langsung copy!</text>
+            <text x="80" y="136" font-size="8" fill="#E53935" text-anchor="middle">⚠️ Tidak belajar!</text>
+          </svg>
+        </div>
+        <div class="panel-text">Aslan langsung copy jawaban Robo tanpa berpikir sendiri 😴 Ini tidak baik!</div>
+      </div>
+
+      <!-- Panel 3: AI buat berita palsu -->
+      <div class="panel">
+        <div class="panel-num">3</div>
+        <div class="panel-dialog" style="color:#B71C1C;">
+          "Awas berita palsu!"
+        </div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#FFEBEE,#FCE4EC);">
+          <svg viewBox="0 0 160 160" width="130">
+            <!-- Phone with fake news -->
+            <rect x="52" y="30" width="56" height="90" rx="10" fill="#263238"/>
+            <rect x="55" y="35" width="50" height="80" rx="7" fill="#fff"/>
+            <!-- Fake news article -->
+            <rect x="58" y="38" width="44" height="20" rx="3" fill="#FFCDD2"/>
+            <text x="80" y="50" font-size="7" fill="#C62828" text-anchor="middle" font-weight="bold">🔴 BERITA PALSU!</text>
+            <text x="80" y="59" font-size="6" fill="#C62828" text-anchor="middle">"Alien Datang!"</text>
+            <!-- Image placeholder (fake) -->
+            <rect x="58" y="62" width="44" height="25" rx="3" fill="#FFECB3"/>
+            <text x="80" y="78" font-size="14" text-anchor="middle">🛸</text>
+            <text x="80" y="95" font-size="6" fill="#E53935" text-anchor="middle">Gambar palsu dibuat AI</text>
+            <text x="80" y="105" font-size="6" fill="#E53935" text-anchor="middle">Jangan percaya!</text>
+            <!-- Aslan shocked -->
+            <circle cx="105" cy="110" r="20" fill="#FFCC80"/>
+            <circle cx="99" cy="107" r="4" fill="#37474F"/>
+            <circle cx="111" cy="107" r="4" fill="#37474F"/>
+            <!-- O mouth (shocked) -->
+            <circle cx="105" cy="118" r="4" fill="#E65100" stroke="#BF360C" stroke-width="1.5"/>
+            <!-- Hands on cheeks -->
+            <text x="90" y="88" font-size="18">😱</text>
+          </svg>
+        </div>
+        <div class="panel-text">AI bisa bikin berita palsu yang kelihatan nyata! Aslan kaget melihatnya 😱</div>
+      </div>
+
+      <!-- Panel 4: Aslan jadi bijak -->
+      <div class="panel">
+        <div class="panel-num">4</div>
+        <div class="panel-dialog" style="color:#4527A0;">
+          "Aku pakai AI dengan bijak!"
+        </div>
+        <div class="panel-img-bg" style="background:linear-gradient(135deg,#EDE7F6,#F3E5F5);">
+          <svg viewBox="0 0 160 160" width="130">
+            <!-- Trophy/Shield -->
+            <text x="75" y="45" font-size="36" text-anchor="middle">🛡️</text>
+            <!-- Aslan with cape (hero) -->
+            <circle cx="80" cy="80" r="20" fill="#FFCC80"/>
+            <ellipse cx="80" cy="63" rx="18" ry="7" fill="#5D4037"/>
+            <!-- Happy eyes star-shaped -->
+            <text x="70" y="79" font-size="10">⭐</text>
+            <text x="82" y="79" font-size="10">⭐</text>
+            <!-- Big smile -->
+            <path d="M 68 88 Q 80 98 92 88" stroke="#E65100" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- Cape -->
+            <path d="M 62 95 Q 50 120 60 135 Q 80 125 100 135 Q 110 120 98 95" fill="#7C4DFF" opacity="0.8"/>
+            <!-- Star sparkles -->
+            <text x="30" y="85" font-size="16">✨</text>
+            <text x="115" y="90" font-size="16">✨</text>
+            <text x="70" y="140" font-size="10" font-weight="bold" fill="#4527A0" text-anchor="middle">Pahlawan AI Bijak!</text>
+            <!-- Robo tiny -->
+            <rect x="114" y="105" width="24" height="22" rx="6" fill="#90CAF9" stroke="#42A5F5" stroke-width="1.5"/>
+            <rect x="118" y="95" width="16" height="14" rx="4" fill="#E3F2FD" stroke="#42A5F5" stroke-width="1.5"/>
+            <circle cx="123" cy="100" r="2.5" fill="#1E88E5"/>
+            <circle cx="130" cy="100" r="2.5" fill="#1E88E5"/>
+            <path d="M 121 108 Q 126 111 131 108" stroke="#42A5F5" stroke-width="1.5" fill="none"/>
+          </svg>
+        </div>
+        <div class="panel-text">Aslan belajar pakai AI dengan bijak — untuk belajar, bukan mencontek! 🛡️✨</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FAKTA KEREN ===== -->
+  <div class="card card-teal p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="text-4xl sparkle">🌟</div>
+      <h2 class="font-kartun text-2xl" style="color:#00695C;">Fakta Keren!</h2>
+    </div>
+
+    <div class="fakta-grid">
+      <div class="fakta-card" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:3px solid #81C784;box-shadow:0 5px 0 #2E7D32;">
+        <span class="fakta-emoji">🏥</span>
+        <p style="font-size:0.82rem;font-weight:800;color:#1B5E20;line-height:1.5;">AI bisa mendeteksi kanker lebih akurat daripada dokter dalam beberapa kasus!</p>
+      </div>
+      <div class="fakta-card" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border:3px solid #FFB74D;box-shadow:0 5px 0 #E65100;">
+        <span class="fakta-emoji">🤥</span>
+        <p style="font-size:0.82rem;font-weight:800;color:#E65100;line-height:1.5;">90% berita palsu di internet dibuat atau disebarkan dengan bantuan AI!</p>
+      </div>
+      <div class="fakta-card" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border:3px solid #64B5F6;box-shadow:0 5px 0 #1565C0;">
+        <span class="fakta-emoji">🌍</span>
+        <p style="font-size:0.82rem;font-weight:800;color:#0D47A1;line-height:1.5;">AI sudah menerjemahkan lebih dari 100 bahasa secara otomatis & gratis!</p>
+      </div>
+      <div class="fakta-card" style="background:linear-gradient(135deg,#FCE4EC,#F8BBD9);border:3px solid #F48FB1;box-shadow:0 5px 0 #880E4F;">
+        <span class="fakta-emoji">🔋</span>
+        <p style="font-size:0.82rem;font-weight:800;color:#880E4F;line-height:1.5;">Satu pertanyaan ke AI besar butuh energi sebanyak 10× mengisi baterai HP!</p>
+      </div>
+      <div class="fakta-card" style="background:linear-gradient(135deg,#EDE7F6,#D1C4E9);border:3px solid #B39DDB;box-shadow:0 5px 0 #4527A0;">
+        <span class="fakta-emoji">🎨</span>
+        <p style="font-size:0.82rem;font-weight:800;color:#4527A0;line-height:1.5;">AI bisa membuat lukisan palsu yang terlihat seperti karya pelukis terkenal!</p>
+      </div>
+      <div class="fakta-card" style="background:linear-gradient(135deg,#E0F7FA,#B2EBF2);border:3px solid #4DD0E1;box-shadow:0 5px 0 #006064;">
+        <span class="fakta-emoji">🌱</span>
+        <p style="font-size:0.82rem;font-weight:800;color:#006064;line-height:1.5;">AI membantu ilmuwan menemukan obat baru 100× lebih cepat dari cara biasa!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TIPS BIJAK ===== -->
+  <div class="card card-yellow p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="text-4xl">🦸</div>
+      <h2 class="font-kartun text-2xl" style="color:#E65100;">Cara Aslan Pakai AI dengan Bijak!</h2>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+      <div style="background:#E8F5E9;border-radius:16px;padding:14px;border:2px solid #81C784;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:6px;">✅</div>
+        <p style="font-size:0.85rem;font-weight:800;color:#1B5E20;">Pakai AI untuk <strong>belajar</strong>, bukan mencontek</p>
+      </div>
+      <div style="background:#E8F5E9;border-radius:16px;padding:14px;border:2px solid #81C784;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:6px;">🔍</div>
+        <p style="font-size:0.85rem;font-weight:800;color:#1B5E20;">Selalu <strong>cek ulang</strong> jawaban AI dari sumber lain</p>
+      </div>
+      <div style="background:#FFEBEE;border-radius:16px;padding:14px;border:2px solid #EF9A9A;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:6px;">🚫</div>
+        <p style="font-size:0.85rem;font-weight:800;color:#C62828;">Jangan <strong>share info pribadi</strong> ke AI (nama, alamat, dll)</p>
+      </div>
+      <div style="background:#FFEBEE;border-radius:16px;padding:14px;border:2px solid #EF9A9A;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:6px;">👨‍👩‍👧</div>
+        <p style="font-size:0.85rem;font-weight:800;color:#C62828;">Selalu <strong>tanya orang dewasa</strong> saat bingung dengan AI</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PERTANYAAN INTERAKTIF ===== -->
+  <div class="card card-green p-6 mb-6 reveal">
+    <div class="flex items-center gap-3 mb-2">
+      <div class="text-4xl sparkle">🤔</div>
+      <h2 class="font-kartun text-2xl" style="color:#1B5E20;">Tantangan Aslan!</h2>
+    </div>
+    <p style="font-size:0.95rem;color:#546E7A;font-weight:600;margin-bottom:20px;">
+      Robo bertanya kepada Aslan. Kamu tahu jawabannya? 🤖
+    </p>
+
+    <!-- Q1 -->
+    <div class="mb-6" id="q1-wrap">
+      <div style="background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border-radius:16px;padding:16px 18px;border:3px solid #A5D6A7;margin-bottom:12px;">
+        <p style="font-size:1rem;font-weight:800;color:#1B5E20;margin-bottom:4px;">❓ Pertanyaan 1</p>
+        <p style="font-size:1.05rem;font-weight:700;color:#37474F;">AI memberikan jawaban yang salah tentang sejarah Indonesia. Apa yang sebaiknya kamu lakukan?</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;" id="q1-opts">
+        <button class="quiz-option" onclick="checkQ('q1','a','b')">
+          <span style="background:#BBDEFB;color:#0D47A1;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">A</span>
+          Langsung percaya dan menyebarkannya ke teman-teman 📢
+        </button>
+        <button class="quiz-option" onclick="checkQ('q1','b','b')">
+          <span style="background:#BBDEFB;color:#0D47A1;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">B</span>
+          Cek ulang di buku atau bertanya ke guru 📚
+        </button>
+        <button class="quiz-option" onclick="checkQ('q1','c','b')">
+          <span style="background:#BBDEFB;color:#0D47A1;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">C</span>
+          Marah ke AI karena salah 😤
+        </button>
+        <button class="quiz-option" onclick="checkQ('q1','d','b')">
+          <span style="background:#BBDEFB;color:#0D47A1;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">D</span>
+          Tidak peduli, AI pasti benar 🤷
+        </button>
+      </div>
+      <div class="quiz-result" id="q1-res"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="mb-6" id="q2-wrap">
+      <div style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border-radius:16px;padding:16px 18px;border:3px solid #FFB74D;margin-bottom:12px;">
+        <p style="font-size:1rem;font-weight:800;color:#E65100;margin-bottom:4px;">❓ Pertanyaan 2</p>
+        <p style="font-size:1.05rem;font-weight:700;color:#37474F;">Mana contoh penggunaan AI yang BAIK dan BIJAK?</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;" id="q2-opts">
+        <button class="quiz-option" style="border-color:#FFB74D;color:#E65100;" onclick="checkQ('q2','a','c')">
+          <span style="background:#FFE0B2;color:#E65100;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">A</span>
+          Meminta AI membuat semua PR tanpa kamu berpikir sama sekali 😴
+        </button>
+        <button class="quiz-option" style="border-color:#FFB74D;color:#E65100;" onclick="checkQ('q2','b','c')">
+          <span style="background:#FFE0B2;color:#E65100;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">B</span>
+          Memaksa AI untuk membuat berita bohong tentang teman 🤥
+        </button>
+        <button class="quiz-option" style="border-color:#FFB74D;color:#E65100;" onclick="checkQ('q2','c','c')">
+          <span style="background:#FFE0B2;color:#E65100;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">C</span>
+          Meminta AI menjelaskan konsep fisika yang sulit, lalu kamu pelajari sendiri 🔬
+        </button>
+        <button class="quiz-option" style="border-color:#FFB74D;color:#E65100;" onclick="checkQ('q2','d','c')">
+          <span style="background:#FFE0B2;color:#E65100;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">D</span>
+          Menghabiskan waktu chat dengan AI sepanjang hari tanpa batas 📱
+        </button>
+      </div>
+      <div class="quiz-result" id="q2-res"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div id="q3-wrap">
+      <div style="background:linear-gradient(135deg,#EDE7F6,#D1C4E9);border-radius:16px;padding:16px 18px;border:3px solid #B39DDB;margin-bottom:12px;">
+        <p style="font-size:1rem;font-weight:800;color:#4527A0;margin-bottom:4px;">❓ Pertanyaan 3</p>
+        <p style="font-size:1.05rem;font-weight:700;color:#37474F;">AI seperti apa yang paling menggambarkan 'bahaya'?</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;" id="q3-opts">
+        <button class="quiz-option" style="border-color:#B39DDB;color:#4527A0;" onclick="checkQ('q3','a','b')">
+          <span style="background:#EDE7F6;color:#4527A0;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">A</span>
+          AI yang membantu dokter mendeteksi penyakit 🏥
+        </button>
+        <button class="quiz-option" style="border-color:#B39DDB;color:#4527A0;" onclick="checkQ('q3','b','b')">
+          <span style="background:#EDE7F6;color:#4527A0;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">B</span>
+          AI yang membuat video palsu wajah orang untuk menipu 🎭
+        </button>
+        <button class="quiz-option" style="border-color:#B39DDB;color:#4527A0;" onclick="checkQ('q3','c','b')">
+          <span style="background:#EDE7F6;color:#4527A0;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">C</span>
+          AI yang menerjemahkan buku cerita ke banyak bahasa 🌍
+        </button>
+        <button class="quiz-option" style="border-color:#B39DDB;color:#4527A0;" onclick="checkQ('q3','d','b')">
+          <span style="background:#EDE7F6;color:#4527A0;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;">D</span>
+          AI yang membantu petani mengetahui cuaca besok 🌾
+        </button>
+      </div>
+      <div class="quiz-result" id="q3-res"></div>
+    </div>
+  </div>
+
+  <!-- ===== PESAN PENUTUP ===== -->
+  <div class="card card-green p-6 mb-4 reveal" style="background:linear-gradient(135deg,#E8F5E9,#E3F2FD);">
+    <div class="text-center">
+      <div style="font-size:3.5rem;margin-bottom:10px;" class="sparkle">🏆</div>
+      <h2 class="font-kartun text-3xl mb-3" style="color:#1B5E20;">Aslan Sekarang Tahu!</h2>
+      <div style="background:#fff;border-radius:20px;padding:18px;border:3px dashed #00C853;margin-bottom:16px;">
+        <p style="font-size:1rem;font-weight:800;color:#37474F;line-height:1.8;">
+          🌟 AI adalah alat yang <strong style="color:#00C853;">sangat canggih dan berguna</strong>, 
+          tapi seperti semua alat, harus dipakai dengan <strong style="color:#1B5E20;">bijak dan bertanggung jawab</strong>!
+        </p>
+        <p style="font-size:1rem;font-weight:800;color:#37474F;line-height:1.8;margin-top:8px;">
+          🛡️ Dengan memahami sisi baik <strong>dan</strong> bahaya AI, 
+          kamu bisa menjadi <strong style="color:#0D47A1;">pengguna AI yang cerdas dan bertanggung jawab</strong>!
+        </p>
+      </div>
+      <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+        <span style="background:#E8F5E9;border:2px solid #00C853;border-radius:999px;padding:6px 16px;font-weight:800;color:#1B5E20;font-size:0.9rem;">✅ AI untuk Kebaikan</span>
+        <span style="background:#FFEBEE;border:2px solid #E53935;border-radius:999px;padding:6px 16px;font-weight:800;color:#C62828;font-size:0.9rem;">⚠️ Waspada Bahaya</span>
+        <span style="background:#E3F2FD;border:2px solid #1E88E5;border-radius:999px;padding:6px 16px;font-weight:800;color:#0D47A1;font-size:0.9rem;">🧠 Berpikir Kritis</span>
+      </div>
+      <p style="font-size:0.95rem;color:#78909C;font-weight:700;">
+        🚀 Besok: <strong style="color:#0D47A1;">Hari 27 — Apakah AI Bisa Menjadi Manusia?</strong> 🤖❓
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+  // Quiz logic
+  function checkQ(qId, chosen, correct) {
+    const opts = document.querySelectorAll(`#${qId}-opts button`);
+    const res = document.getElementById(`${qId}-res`);
+    opts.forEach(btn => { btn.disabled = true; btn.style.cursor = 'default'; });
+
+    opts.forEach((btn, i) => {
+      const letter = ['a','b','c','d'][i];
+      if (letter === correct) {
+        btn.classList.add('correct');
+        btn.style.background = '#E8F5E9';
+        btn.style.borderColor = '#00C853';
+      } else if (letter === chosen && chosen !== correct) {
+        btn.classList.add('wrong');
+      }
+    });
+
+    res.style.display = 'block';
+    if (chosen === correct) {
+      res.style.background = '#E8F5E9';
+      res.style.border = '3px solid #00C853';
+      res.style.color = '#1B5E20';
+      const messages = [
+        '🎉 Luar biasa! Kamu benar! Aslan sangat bangga! ⭐',
+        '✅ Betul sekali! Kamu sudah paham cara menggunakan AI dengan bijak!',
+        '🏆 Jawaban tepat! Robo senang kamu bisa menjawab dengan benar!'
+      ];
+      res.innerHTML = messages[Math.floor(Math.random() * messages.length)];
+    } else {
+      res.style.background = '#FFEBEE';
+      res.style.border = '3px solid #E53935';
+      res.style.color = '#C62828';
+      const wrongs = [
+        '😅 Belum tepat! Coba baca lagi penjelasan di atas ya, Aslan!',
+        '🤔 Hampir! Yuk baca lagi bagian "Cara Bijak" tadi!',
+        '💪 Coba lagi! Ingat: AI adalah alat, kita yang harus bijak menggunakannya!'
+      ];
+      res.innerHTML = wrongs[Math.floor(Math.random() * wrongs.length)];
+    }
+  }
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  // Animate progress bar on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.querySelector('.progress-fill').style.width = '86.67%';
+    }, 300);
+  });
+</script>
+
+</body>
+</html>

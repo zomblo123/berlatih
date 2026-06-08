@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 15: Revolusi Pertanian | Kapten Cerdas: Jejak Manusia di Bumi</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Bubblegum+Sans&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ROOT & RESET
+   ============================================================ */
+:root {
+  --soil:       #5d3a1a;
+  --soil2:      #7d4e1f;
+  --grass:      #2d7a2d;
+  --grass2:     #4caf50;
+  --wheat:      #f5c842;
+  --wheat2:     #e8a415;
+  --sky:        #6ec6f0;
+  --sky2:       #b3e5fc;
+  --sun:        #ffca28;
+  --sun2:       #ff8f00;
+  --cream:      #fffde7;
+  --brown:      #795548;
+  --orange:     #ff6f00;
+  --green-dark: #1b5e20;
+  --leaf:       #8bc34a;
+  --stone:      #9e9e9e;
+  --gold:       #ffd600;
+  --shadow:     rgba(0,0,0,0.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body {
+  font-family:'Nunito',sans-serif;
+  background: linear-gradient(170deg,#1b5e20 0%,#2e7d32 30%,#795548 65%,#5d3a1a 100%);
+  min-height:100vh;
+  overflow:hidden;
+  position:relative;
+}
+
+/* ============================================================
+   ANIMATED BACKGROUND
+   ============================================================ */
+.bg-layer {
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+}
+/* Rolling hills */
+.hill {
+  position:absolute;bottom:0;width:150%;border-radius:50% 50% 0 0;
+}
+.hill1{height:220px;background:linear-gradient(180deg,#388e3c,#2e7d32);left:-25%;bottom:0;}
+.hill2{height:160px;background:linear-gradient(180deg,#1b5e20,#1a3a1a);left:10%;bottom:0;width:120%;}
+/* Soil strip */
+.soil-strip{
+  position:absolute;bottom:0;left:0;right:0;height:90px;
+  background:linear-gradient(180deg,#6d4c2a 0%,#4a2c0a 100%);
+}
+/* Floating seeds/sparkles */
+@keyframes seedFloat {
+  0%{transform:translateY(0) rotate(0deg);opacity:0.5;}
+  50%{transform:translateY(-30px) rotate(180deg);opacity:1;}
+  100%{transform:translateY(0) rotate(360deg);opacity:0.5;}
+}
+.seed-particle{
+  position:fixed;font-size:1.2rem;pointer-events:none;z-index:1;
+  animation:seedFloat ease-in-out infinite;opacity:0.4;
+}
+/* Sun rays */
+@keyframes sunPulse{0%,100%{opacity:.7;transform:scale(1);}50%{opacity:1;transform:scale(1.08);}}
+.sun-glow{
+  position:fixed;top:-80px;right:-80px;width:260px;height:260px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,202,40,0.6) 0%,rgba(255,143,0,0.1) 60%,transparent 80%);
+  animation:sunPulse 4s ease-in-out infinite;
+  pointer-events:none;z-index:1;
+}
+/* Cloud drift */
+@keyframes cloudDrift{0%{transform:translateX(-60px);}100%{transform:translateX(60px);}}
+.cloud{
+  position:fixed;pointer-events:none;z-index:1;
+  font-size:2.8rem;opacity:0.25;
+  animation:cloudDrift 12s ease-in-out infinite alternate;
+}
+
+/* ============================================================
+   TOP CONTROLS
+   ============================================================ */
+.back-btn{
+  position:fixed;top:14px;left:14px;z-index:1000;
+  background:rgba(255,255,255,0.18);backdrop-filter:blur(12px);
+  border:2px solid rgba(255,255,255,0.35);color:white;
+  padding:8px 18px;border-radius:28px;text-decoration:none;
+  font-family:'Fredoka One',cursive;font-size:14px;
+  display:flex;align-items:center;gap:6px;
+  transition:all .3s;box-shadow:0 4px 16px rgba(0,0,0,0.22);
+}
+.back-btn:hover{background:rgba(255,255,255,0.3);transform:translateX(-4px);}
+
+.sound-btn{
+  position:fixed;top:14px;right:14px;z-index:1000;
+  background:rgba(255,255,255,0.18);backdrop-filter:blur(12px);
+  border:2px solid rgba(255,255,255,0.35);color:white;
+  width:44px;height:44px;border-radius:50%;cursor:pointer;
+  font-size:19px;display:flex;align-items:center;justify-content:center;transition:all .3s;
+}
+.sound-btn:hover{transform:scale(1.12);}
+
+/* Progress */
+.prog-wrap{position:fixed;top:0;left:0;right:0;height:5px;background:rgba(0,0,0,0.12);z-index:999;}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--wheat),var(--sun2));transition:width .5s ease;box-shadow:0 0 10px var(--wheat);}
+
+/* Page num */
+.page-num{
+  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,0.28);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.22);color:rgba(255,255,255,0.9);
+  padding:5px 18px;border-radius:20px;
+  font-family:'Fredoka One',cursive;font-size:13px;z-index:999;letter-spacing:1px;
+}
+
+/* ============================================================
+   BOOK CONTAINER & SLIDES
+   ============================================================ */
+.book-wrap{
+  position:relative;z-index:10;
+  width:100%;height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:56px 14px 86px;
+}
+.slide{display:none;width:100%;max-width:820px;animation:slideIn .45s cubic-bezier(.34,1.4,.64,1);}
+.slide.active{display:block;}
+@keyframes slideIn{
+  from{opacity:0;transform:translateY(28px) scale(.95);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+.card{
+  background:rgba(255,253,240,0.97);
+  border-radius:30px;
+  padding:38px 46px;
+  box-shadow:0 30px 70px rgba(0,0,0,0.4),0 0 0 1px rgba(255,255,255,0.12),inset 0 1px 0 rgba(255,255,255,0.9);
+  max-height:76vh;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:var(--grass2) transparent;
+  position:relative;overflow:hidden;
+}
+.card::-webkit-scrollbar{width:5px;}
+.card::-webkit-scrollbar-thumb{background:var(--grass2);border-radius:10px;}
+
+/* Cover card */
+.cover-card{
+  background:linear-gradient(145deg,#1b4001 0%,#2e7d32 40%,#795548 80%,#5d3a1a 100%);
+  color:white;text-align:center;overflow:visible;
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+.day-badge{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--wheat),var(--sun2));
+  color:#3e2000;font-family:'Fredoka One',cursive;
+  font-size:15px;padding:7px 24px;border-radius:28px;
+  margin-bottom:16px;box-shadow:0 4px 16px rgba(245,200,66,0.5);letter-spacing:1px;
+}
+.main-title{
+  font-family:'Fredoka One',cursive;font-size:2.3rem;line-height:1.18;
+  color:var(--wheat);text-shadow:0 3px 14px rgba(0,0,0,0.4);margin:12px 0;
+}
+.sub-title{font-size:1.05rem;color:rgba(255,255,255,0.82);margin-bottom:16px;}
+.capt-badge{
+  display:inline-block;background:rgba(255,255,255,0.12);
+  border:2px solid var(--wheat);border-radius:22px;
+  padding:10px 28px;font-family:'Fredoka One',cursive;
+  font-size:1.05rem;color:var(--cream);
+}
+.sec-head{display:flex;align-items:center;gap:13px;margin-bottom:20px;padding-bottom:13px;border-bottom:3px solid;}
+.sec-emoji{font-size:2.2rem;}
+.sec-title{font-family:'Fredoka One',cursive;font-size:1.6rem;line-height:1.2;}
+.story{font-size:1.04rem;line-height:1.84;color:#3d2800;margin-bottom:14px;}
+
+/* ============================================================
+   BOXES
+   ============================================================ */
+.box-green{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-left:5px solid var(--grass2);border-radius:13px;padding:15px 20px;margin:13px 0;font-size:.99rem;color:#1b5e20;font-weight:700;}
+.box-wheat{background:linear-gradient(135deg,#fff8e1,#ffecb3);border-left:5px solid var(--wheat2);border-radius:13px;padding:15px 20px;margin:13px 0;font-size:.99rem;color:#6d3b00;font-weight:700;}
+.box-brown{background:linear-gradient(135deg,#efebe9,#d7ccc8);border-left:5px solid var(--brown);border-radius:13px;padding:15px 20px;margin:13px 0;font-size:.99rem;color:#3e2723;font-weight:700;}
+.box-sky{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-left:5px solid #1e88e5;border-radius:13px;padding:15px 20px;margin:13px 0;font-size:.99rem;color:#0d47a1;font-weight:700;}
+.box-danger{background:linear-gradient(135deg,#ffebee,#ffcdd2);border-left:5px solid #ef5350;border-radius:13px;padding:15px 20px;margin:13px 0;font-size:.99rem;color:#b71c1c;font-weight:700;}
+
+/* Speech bubble */
+.speech{
+  background:white;border:3px solid var(--grass2);
+  border-radius:18px;padding:13px 17px;position:relative;
+  margin:13px 0;font-size:.99rem;color:#2d3748;font-weight:700;
+}
+.speech::after{content:'';position:absolute;bottom:-14px;left:28px;
+  width:0;height:0;border-left:13px solid transparent;
+  border-right:13px solid transparent;border-top:14px solid var(--grass2);}
+.char-row{display:flex;align-items:flex-end;gap:12px;margin:13px 0;}
+.char-emoji{font-size:3.4rem;flex-shrink:0;}
+
+/* ============================================================
+   COVER ILLUSTRATION — SVG farm scene
+   ============================================================ */
+.cover-scene{margin:16px auto;display:block;width:100%;max-width:480px;}
+
+/* ============================================================
+   SEED GROW INTERACTIVE
+   ============================================================ */
+.seed-stage-wrap{
+  display:flex;justify-content:center;gap:24px;margin:20px 0;flex-wrap:wrap;
+}
+.seed-stage{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  cursor:pointer;transition:transform .3s;
+}
+.seed-stage:hover{transform:scale(1.08);}
+.seed-stage .plant{
+  font-size:3.2rem;
+  transition:all .5s cubic-bezier(.34,1.56,.64,1);
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+.seed-stage .label{
+  font-family:'Fredoka One',cursive;font-size:.88rem;
+  color:#1b5e20;background:rgba(200,230,180,0.7);
+  padding:4px 12px;border-radius:20px;text-align:center;
+}
+.seed-stage.active .plant{transform:scale(1.22);}
+.grow-bar-wrap{margin:12px 0;}
+.grow-bar-label{font-size:.85rem;font-weight:800;color:#1b5e20;margin-bottom:4px;}
+.grow-bar{height:14px;background:#e0e0e0;border-radius:10px;overflow:hidden;}
+.grow-fill{height:100%;background:linear-gradient(90deg,var(--leaf),var(--grass));border-radius:10px;transition:width 1s ease;width:0%;}
+
+/* ============================================================
+   BEFORE vs AFTER SLIDER
+   ============================================================ */
+.compare-wrap{margin:18px 0;border-radius:18px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.15);}
+.compare-tabs{display:flex;}
+.comp-tab{
+  flex:1;padding:12px;text-align:center;cursor:pointer;
+  font-family:'Fredoka One',cursive;font-size:1rem;
+  transition:all .3s;border:none;outline:none;
+}
+.comp-tab.before{background:linear-gradient(135deg,#4a2c0a,#795548);color:white;}
+.comp-tab.after{background:linear-gradient(135deg,#1b5e20,#4caf50);color:white;}
+.comp-tab.active{transform:scale(1.03);box-shadow:0 4px 14px rgba(0,0,0,0.22);}
+.comp-content{padding:20px;background:white;display:none;}
+.comp-content.active{display:block;}
+.life-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:11px 13px;margin-bottom:8px;border-radius:12px;
+  transition:transform .2s;
+}
+.life-item:hover{transform:translateX(5px);}
+.life-icon{font-size:1.8rem;flex-shrink:0;}
+.life-txt{font-size:.93rem;font-weight:700;color:#3d2800;line-height:1.5;}
+
+/* ============================================================
+   BENEFIT CARDS
+   ============================================================ */
+.benefit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:16px 0;}
+.benefit-card{
+  background:white;border-radius:16px;padding:16px 12px;
+  text-align:center;border:2px solid #e0e0e0;
+  transition:all .3s;cursor:pointer;
+}
+.benefit-card:hover{transform:translateY(-6px);box-shadow:0 12px 28px rgba(0,0,0,0.13);}
+.benefit-card.lit{border-color:var(--grass2);background:linear-gradient(135deg,#e8f5e9,#f1f8e9);}
+.benefit-icon{font-size:2.4rem;display:block;margin-bottom:7px;}
+.benefit-title{font-family:'Fredoka One',cursive;font-size:.95rem;color:#1b5e20;}
+.benefit-desc{font-size:.78rem;color:#555;margin-top:5px;line-height:1.4;display:none;}
+.benefit-card.lit .benefit-desc{display:block;}
+
+/* ============================================================
+   FARM SCENE INTERACTIVE
+   ============================================================ */
+.farm-scene{
+  background:linear-gradient(180deg,#87ceeb 0%,#b3e5fc 35%,#c8e6c9 55%,#a5d6a7 70%,#795548 85%,#5d3a1a 100%);
+  border-radius:18px;padding:20px;margin:16px 0;
+  position:relative;min-height:200px;overflow:hidden;
+  cursor:pointer;border:3px solid var(--grass2);
+  box-shadow:0 8px 24px rgba(0,0,0,0.15);
+}
+.farm-title{
+  font-family:'Fredoka One',cursive;font-size:1rem;color:white;
+  text-shadow:0 2px 6px rgba(0,0,0,0.5);margin-bottom:10px;
+}
+.farm-chars{
+  display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+  padding:10px 0;
+}
+.farm-char{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  transition:all .4s;
+}
+.farm-char:hover{transform:scale(1.18);}
+.farm-char .icon{font-size:2.8rem;display:block;}
+.farm-char .name{font-size:.75rem;font-weight:800;color:white;text-shadow:0 1px 4px rgba(0,0,0,0.6);text-align:center;}
+
+/* ============================================================
+   TIMELINE
+   ============================================================ */
+.timeline{position:relative;margin:16px 0;}
+.timeline::before{
+  content:'';position:absolute;left:24px;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--soil),var(--grass2));border-radius:3px;
+}
+.tl-item{
+  display:flex;align-items:flex-start;gap:16px;margin-bottom:16px;
+  padding-left:8px;
+}
+.tl-dot{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  background:white;border:3px solid var(--grass2);
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:2;
+}
+.tl-body{background:linear-gradient(135deg,#f8fff8,#e8f5e9);border-radius:14px;padding:13px 16px;border-left:4px solid var(--grass2);flex:1;}
+.tl-year{font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--grass);margin-bottom:3px;}
+.tl-text{font-size:.88rem;font-weight:700;color:#3d2800;line-height:1.5;}
+
+/* ============================================================
+   LESSONS
+   ============================================================ */
+.lesson{
+  display:flex;align-items:flex-start;gap:13px;padding:13px;
+  background:linear-gradient(135deg,#f9f6f0,#fff8e1);
+  border-radius:13px;margin-bottom:9px;border-left:4px solid var(--wheat2);
+  transition:transform .2s;
+}
+.lesson:hover{transform:translateX(5px);}
+.lesson-ic{font-size:1.8rem;flex-shrink:0;}
+.lesson-txt{font-size:.95rem;font-weight:700;color:#3d2800;line-height:1.5;}
+
+/* ============================================================
+   CHALLENGE
+   ============================================================ */
+.challenge-wrap{
+  background:linear-gradient(145deg,#1b4001,#2e7d32);
+  border-radius:22px;padding:28px;color:white;text-align:center;
+  border:3px solid var(--wheat);box-shadow:0 0 32px rgba(245,200,66,0.2);
+}
+.ch-title{font-family:'Fredoka One',cursive;font-size:1.55rem;color:var(--wheat);margin-bottom:14px;}
+.task-row{display:flex;align-items:flex-start;gap:11px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.12);font-size:.93rem;text-align:left;}
+.cb{
+  width:26px;height:26px;border:2px solid var(--wheat);border-radius:6px;flex-shrink:0;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .3s;background:transparent;font-size:15px;
+}
+.cb.done{background:var(--wheat);color:#3e2000;}
+
+/* ============================================================
+   CLOSING
+   ============================================================ */
+.close-card{
+  background:linear-gradient(145deg,#1b4001,#2e7d32 50%,#795548 100%);
+  color:white;text-align:center;border-radius:30px;padding:46px 38px;
+}
+@keyframes wheatSway{0%,100%{transform:rotate(-4deg);}50%{transform:rotate(4deg);}}
+.wheat-icon{font-size:5rem;display:block;animation:wheatSway 2.5s ease-in-out infinite;}
+.close-title{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--wheat);margin:16px 0 8px;}
+@keyframes starPulse{0%,100%{opacity:1;letter-spacing:4px}50%{opacity:.6;letter-spacing:7px}}
+.stars{font-size:1.9rem;animation:starPulse 2s ease-in-out infinite;}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+.nav-wrap{
+  position:fixed;bottom:46px;left:50%;transform:translateX(-50%);
+  display:flex;gap:14px;z-index:999;
+}
+.nav-btn{
+  background:rgba(255,255,255,0.18);backdrop-filter:blur(14px);
+  border:2px solid rgba(255,255,255,0.3);color:white;
+  padding:11px 26px;border-radius:28px;
+  font-family:'Fredoka One',cursive;font-size:15px;cursor:pointer;
+  transition:all .3s;display:flex;align-items:center;gap:7px;
+  box-shadow:0 8px 22px rgba(0,0,0,0.22);
+}
+.nav-btn:hover{background:rgba(255,255,255,0.3);transform:translateY(-3px);}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.nav-next{background:linear-gradient(135deg,var(--wheat),var(--sun2));color:#3e2000;border-color:var(--wheat);}
+.nav-next:hover{filter:brightness(1.08);}
+
+/* Dot indicators */
+.dot-wrap{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:999;}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);transition:all .3s;cursor:pointer;}
+.dot.active{background:var(--wheat);transform:scale(1.4);box-shadow:0 0 8px var(--wheat);}
+
+/* Popup */
+.popup{
+  position:fixed;top:68px;left:50%;transform:translateX(-50%) translateY(-80px);
+  background:linear-gradient(135deg,#1b5e20,#388e3c);
+  color:white;border-radius:22px;padding:12px 24px;
+  font-family:'Fredoka One',cursive;font-size:1rem;z-index:2000;
+  box-shadow:0 8px 24px rgba(0,0,0,0.3);opacity:0;
+  transition:all .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
+}
+.popup.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Responsive */
+@media(max-width:600px){
+  .card{padding:22px 18px;}
+  .main-title{font-size:1.72rem;}
+  .sec-title{font-size:1.28rem;}
+  .benefit-grid{grid-template-columns:1fr 1fr;}
+  .char-row{flex-direction:column;}
+  .seed-stage-wrap{gap:14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Background layers -->
+<div class="bg-layer">
+  <div class="hill hill1"></div>
+  <div class="hill hill2"></div>
+  <div class="soil-strip"></div>
+</div>
+<div class="sun-glow"></div>
+<div class="cloud" style="top:60px;left:8%;">☁️</div>
+<div class="cloud" style="top:100px;right:12%;animation-delay:-4s;">☁️</div>
+
+<!-- Seed particles -->
+<div class="seed-particle" style="left:5%;top:25%;animation-duration:5s;animation-delay:0s;">🌾</div>
+<div class="seed-particle" style="left:88%;top:40%;animation-duration:7s;animation-delay:2s;">🌱</div>
+<div class="seed-particle" style="left:3%;top:65%;animation-duration:6s;animation-delay:1s;">🌻</div>
+<div class="seed-particle" style="left:91%;top:70%;animation-duration:8s;animation-delay:3s;">🌿</div>
+<div class="seed-particle" style="left:45%;top:6%;animation-duration:5.5s;animation-delay:1.5s;">✨</div>
+
+<!-- Progress -->
+<div class="prog-wrap"><div class="prog-bar" id="pb"></div></div>
+<!-- Back -->
+<a href="../perpustakaan.html" class="back-btn">← Kembali ke Perpustakaan</a>
+<!-- Sound -->
+<button class="sound-btn" id="sndBtn" onclick="toggleSnd()">🔊</button>
+<!-- Popup -->
+<div class="popup" id="popup"></div>
+
+<!-- ================================================================
+     BOOK
+     ================================================================ -->
+<div class="book-wrap">
+
+  <!-- ═══ SLIDE 1: COVER ═══ -->
+  <div class="slide active" id="s1">
+    <div class="card cover-card">
+      <div class="day-badge">🌾 Hari ke-15 dari 30 Hari 🌾</div>
+
+      <!-- Farm SVG illustration -->
+      <svg class="cover-scene" viewBox="0 0 480 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Sky -->
+        <rect x="0" y="0" width="480" height="130" fill="#87ceeb"/>
+        <!-- Sun -->
+        <circle cx="420" cy="35" r="32" fill="#ffca28"/>
+        <circle cx="420" cy="35" r="24" fill="#ffee58"/>
+        <!-- Ground -->
+        <rect x="0" y="130" width="480" height="70" fill="#795548"/>
+        <!-- Furrows -->
+        <ellipse cx="80" cy="150" rx="70" ry="8" fill="#6d4c2a"/>
+        <ellipse cx="240" cy="155" rx="80" ry="8" fill="#6d4c2a"/>
+        <ellipse cx="400" cy="150" rx="70" ry="8" fill="#6d4c2a"/>
+        <!-- Wheat stalks row -->
+        <g transform="translate(30,80)">
+          <rect x="0" y="30" width="4" height="20" fill="#8d6e63" rx="2"/>
+          <text x="-6" y="28" font-size="22">🌾</text>
+        </g>
+        <g transform="translate(70,75)">
+          <rect x="0" y="30" width="4" height="25" fill="#8d6e63" rx="2"/>
+          <text x="-6" y="28" font-size="24">🌾</text>
+        </g>
+        <g transform="translate(110,78)">
+          <rect x="0" y="30" width="4" height="22" fill="#8d6e63" rx="2"/>
+          <text x="-6" y="28" font-size="22">🌾</text>
+        </g>
+        <!-- Hut -->
+        <rect x="190" y="85" width="80" height="50" fill="#d7ccc8" rx="4"/>
+        <polygon points="185,85 230,50 275,85" fill="#795548"/>
+        <rect x="215" y="105" width="20" height="30" fill="#5d3a1a" rx="2"/>
+        <!-- Tree -->
+        <rect x="300" y="100" width="8" height="32" fill="#6d4c2a"/>
+        <circle cx="304" cy="88" r="20" fill="#388e3c"/>
+        <!-- Goat / sheep -->
+        <text x="350" y="140" font-size="32">🐑</text>
+        <!-- Farmer -->
+        <text x="155" y="136" font-size="36">👨‍🌾</text>
+        <!-- Seeds/sprout -->
+        <text x="410" y="128" font-size="28">🌱</text>
+        <!-- River -->
+        <path d="M0,120 Q60,115 120,122 Q180,128 240,120 Q300,113 360,122 Q420,130 480,118" stroke="#64b5f6" stroke-width="4" fill="none" opacity="0.6"/>
+      </svg>
+
+      <div class="main-title">Revolusi Pertanian<br>— Dari Berburu ke Bertani!</div>
+      <div class="sub-title">Petualangan Kapten Cerdas: Jejak Manusia di Bumi</div>
+      <div style="font-size:1.1rem;margin:10px 0;opacity:.8;">🌱 Perubahan Terbesar dalam Sejarah Manusia! 🏡</div>
+      <div class="capt-badge">🧢 Kapten Aslan ⚓</div>
+
+      <div style="margin-top:20px;background:rgba(255,255,255,0.1);border-radius:16px;padding:14px;font-size:.9rem;color:rgba(255,255,255,0.85);line-height:1.8;">
+        📅 Kemarin (Hari 14): Aslan menjelajahi Afrika Purba dan bertemu nenek moyang <em>Homo Sapiens</em>!<br>
+        🌾 Hari ini: Aslan menyaksikan momen luar biasa — ketika manusia berhenti mengembara dan mulai <strong style="color:var(--wheat);">MENANAM BENIH MASA DEPAN!</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 2: PENGANTAR ═══ -->
+  <div class="slide" id="s2">
+    <div class="card">
+      <div class="sec-head" style="border-color:#795548;">
+        <span class="sec-emoji">🗺️</span>
+        <div class="sec-title" style="color:#4a2c0a;">Mesin Waktu Aslan Berputar!</div>
+      </div>
+
+      <div class="story">
+        <em>Brrrrrr... VROOM!</em> Mesin waktu Kapten <strong>Aslan</strong> berputar kencang dan mendarat dengan mulus. Aslan membuka pintu mesin waktunya... dan langsung terpana!
+      </div>
+
+      <div style="text-align:center;font-size:4.5rem;margin:16px 0;animation:wheatSway 2.5s ease-in-out infinite;display:block;">🌾</div>
+
+      <div class="story">
+        Di hadapan Aslan terbentang <strong>padang yang menakjubkan</strong>. Bukan hutan lebat seperti di petualangan sebelumnya, bukan pula sabana Afrika yang gersang. Ini adalah sesuatu yang <em>belum pernah ada sebelumnya</em> dalam sejarah bumi — sebuah <strong>ladang hijau subur</strong> yang penuh tanaman berjejer rapi!
+      </div>
+
+      <div class="char-row">
+        <div class="char-emoji">🧢</div>
+        <div>
+          <div class="speech">
+            "Woah...! Aku pernah lihat hutan, padang rumput, dan savana Afrika... tapi ini berbeda! Tanaman ini ditanam oleh manusia — SENGAJA ditanam! Ini luar biasa! 🌱"
+          </div>
+        </div>
+      </div>
+
+      <div class="story">
+        Kapten Bijak — teman perjalanan Aslan — mengangguk sambil tersenyum. Aslan baru saja mendarat tepat di salah satu <strong>momen paling revolusioner dalam sejarah manusia</strong>. Sebuah perubahan yang terjadi sekitar <strong>12.000 tahun yang lalu</strong>... dan mengubah segalanya selamanya!
+      </div>
+
+      <div class="box-wheat">
+        🕰️ <strong>Di mana kita?</strong> Kita berada di wilayah yang kini disebut "Bulan Sabit Subur" — kawasan antara Timur Tengah dan Mediterania — sekitar 10.000 SM (Sebelum Masehi). Inilah tempat di mana Revolusi Pertanian pertama kali dimulai!
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 3: CERITA UTAMA ═══ -->
+  <div class="slide" id="s3">
+    <div class="card">
+      <div class="sec-head" style="border-color:var(--grass2);">
+        <span class="sec-emoji">⚓</span>
+        <div class="sec-title" style="color:var(--green-dark);">Aslan Melihat Keajaiban Itu!</div>
+      </div>
+
+      <div class="story">
+        Aslan berjalan mendekati ladang. Di sana, ia melihat seorang perempuan muda menanam benih-benih kecil ke dalam tanah yang sudah dicangkul rapi. Tangannya penuh tanah, tapi matanya berbinar-binar.
+      </div>
+
+      <div class="char-row">
+        <div class="char-emoji">👩</div>
+        <div>
+          <div class="speech" style="border-color:#795548;">
+            "Aku menanam biji gandum ini sekarang... dan dalam beberapa bulan, akan tumbuh ratusan batang! Keluargaku tidak perlu lagi berjalan jauh setiap hari mencari makan!" 🌾
+          </div>
+        </div>
+      </div>
+
+      <div class="story">
+        Aslan terkagum-kagum. Lalu ia melihat hal lain yang juga menakjubkan: di dekat ladang itu, ada sekelompok <strong>kambing dan domba</strong> yang tidak liar — mereka jinak, tinggal berdekatan dengan manusia!
+      </div>
+
+      <div class="farm-scene" onclick="animateFarm()">
+        <div class="farm-title">🖱️ Klik untuk hidupkan ladang Aslan! ✨</div>
+        <div class="farm-chars" id="farmChars">
+          <div class="farm-char">
+            <span class="icon" id="fc1">👨‍🌾</span>
+            <span class="name">Petani<br>Pertama</span>
+          </div>
+          <div class="farm-char">
+            <span class="icon" id="fc2">🌱</span>
+            <span class="name">Benih<br>Ditanam</span>
+          </div>
+          <div class="farm-char">
+            <span class="icon" id="fc3">🐐</span>
+            <span class="name">Kambing<br>Jinak</span>
+          </div>
+          <div class="farm-char">
+            <span class="icon" id="fc4">🌾</span>
+            <span class="name">Panen<br>Gandum</span>
+          </div>
+          <div class="farm-char">
+            <span class="icon" id="fc5">🏠</span>
+            <span class="name">Rumah<br>Pertama</span>
+          </div>
+        </div>
+        <div id="farmMsg" style="text-align:center;font-size:.88rem;color:rgba(255,255,255,0.8);margin-top:8px;min-height:24px;"></div>
+      </div>
+
+      <div class="char-row">
+        <div class="char-emoji">🧢</div>
+        <div>
+          <div class="speech">
+            "Jadi ini yang namanya Revolusi Pertanian? Manusia belajar menanam sendiri — dan itu mengubah SEGALANYA! Mereka tidak perlu lagi berlari mengejar makanan!" 🤩
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 4: APA ITU REVOLUSI PERTANIAN ═══ -->
+  <div class="slide" id="s4">
+    <div class="card">
+      <div class="sec-head" style="border-color:var(--wheat2);">
+        <span class="sec-emoji">🌿</span>
+        <div class="sec-title" style="color:#6d3b00;">Apa Itu Revolusi Pertanian?</div>
+      </div>
+
+      <div class="story">
+        Bayangkan selama jutaan tahun, manusia hidup seperti petualang sejati — setiap hari berpindah tempat, berburu binatang, dan memungut buah-buahan liar. Tidak ada rumah permanen, tidak ada persediaan makanan yang pasti...
+      </div>
+
+      <div class="box-danger">
+        😰 <strong>Tantangan hidup nomaden (pengembara):</strong> Harus berjalan 20-30 km per hari mencari makan! Kalau badai datang, kalau binatang buruan pergi, kalau buah habis — manusia bisa kelaparan!
+      </div>
+
+      <div class="story">
+        Lalu sekitar <strong>12.000 tahun yang lalu</strong>, ada manusia yang melakukan sesuatu yang mengubah sejarah: mereka mulai <strong>menanam biji-bijian secara sengaja</strong> dan <strong>menjinakkan hewan liar</strong>.
+      </div>
+
+      <!-- Seed grow interactive -->
+      <div style="background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border-radius:18px;padding:20px;margin:16px 0;border:2px solid var(--leaf);">
+        <div style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:var(--green-dark);margin-bottom:14px;text-align:center;">🌱 Klik benih untuk lihat tumbuh! (Klik berurutan)</div>
+        <div class="seed-stage-wrap">
+          <div class="seed-stage" onclick="growSeed(0)" id="ss0">
+            <span class="plant">🌰</span>
+            <span class="label">Benih</span>
+          </div>
+          <div class="seed-stage" onclick="growSeed(1)" id="ss1">
+            <span class="plant" style="opacity:.4;transform:scale(.7)">🌱</span>
+            <span class="label">Kecambah</span>
+          </div>
+          <div class="seed-stage" onclick="growSeed(2)" id="ss2">
+            <span class="plant" style="opacity:.4;transform:scale(.7)">🌿</span>
+            <span class="label">Tanaman Muda</span>
+          </div>
+          <div class="seed-stage" onclick="growSeed(3)" id="ss3">
+            <span class="plant" style="opacity:.4;transform:scale(.7)">🌾</span>
+            <span class="label">Siap Panen!</span>
+          </div>
+          <div class="seed-stage" onclick="growSeed(4)" id="ss4">
+            <span class="plant" style="opacity:.4;transform:scale(.7)">🍞</span>
+            <span class="label">Jadi Makanan!</span>
+          </div>
+        </div>
+        <div class="grow-bar-wrap">
+          <div class="grow-bar-label" id="growLabel">Klik benih untuk mulai! 🌰</div>
+          <div class="grow-bar"><div class="grow-fill" id="growFill"></div></div>
+        </div>
+      </div>
+
+      <div class="box-green">
+        🌾 <strong>Revolusi Pertanian</strong> adalah perubahan besar ketika manusia beralih dari <em>mengembara mencari makan</em> menjadi <em>menetap dan memproduksi makanan sendiri</em>. Para ilmuwan menyebutnya <strong>Neolithic Revolution</strong>!
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 5: MENGAPA INI SANGAT PENTING ═══ -->
+  <div class="slide" id="s5">
+    <div class="card">
+      <div class="sec-head" style="border-color:var(--sun2);">
+        <span class="sec-emoji">💫</span>
+        <div class="sec-title" style="color:#6d3b00;">Mengapa Ini Mengubah Dunia?</div>
+      </div>
+
+      <div class="story">
+        Kapten Bijak mengajak Aslan duduk di tepi ladang dan menjelaskan mengapa Revolusi Pertanian adalah salah satu <strong>peristiwa paling penting</strong> yang pernah terjadi dalam sejarah manusia:
+      </div>
+
+      <div style="background:linear-gradient(135deg,#fff8e1,#fff3e0);border-radius:18px;padding:20px;margin:14px 0;border:2px solid var(--wheat2);">
+        <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#6d3b00;margin-bottom:14px;text-align:center;">🌍 Efek Domino Revolusi Pertanian</div>
+
+        <div style="position:relative;padding-left:20px;">
+          <div style="background:white;border-radius:14px;padding:12px 15px;margin-bottom:10px;border-left:5px solid var(--grass2);display:flex;align-items:center;gap:10px;">
+            <span style="font-size:1.5rem;">🌾</span>
+            <div>
+              <div style="font-weight:800;color:#1b5e20;font-size:.93rem;">Manusia Menanam → Makanan Berlimpah</div>
+              <div style="font-size:.8rem;color:#555;">Tidak perlu mengembara lagi!</div>
+            </div>
+            <span style="margin-left:auto;font-size:1.5rem;">↓</span>
+          </div>
+          <div style="background:white;border-radius:14px;padding:12px 15px;margin-bottom:10px;border-left:5px solid var(--sky);display:flex;align-items:center;gap:10px;">
+            <span style="font-size:1.5rem;">🏠</span>
+            <div>
+              <div style="font-weight:800;color:#0d47a1;font-size:.93rem;">Makanan Berlimpah → Manusia Menetap</div>
+              <div style="font-size:.8rem;color:#555;">Mulai membangun rumah permanen!</div>
+            </div>
+            <span style="margin-left:auto;font-size:1.5rem;">↓</span>
+          </div>
+          <div style="background:white;border-radius:14px;padding:12px 15px;margin-bottom:10px;border-left:5px solid #9c27b0;display:flex;align-items:center;gap:10px;">
+            <span style="font-size:1.5rem;">👨‍👩‍👧‍👦</span>
+            <div>
+              <div style="font-weight:800;color:#6a1b9a;font-size:.93rem;">Menetap → Populasi Bertambah</div>
+              <div style="font-size:.8rem;color:#555;">Bayi bisa tumbuh sehat, keluarga jadi besar!</div>
+            </div>
+            <span style="margin-left:auto;font-size:1.5rem;">↓</span>
+          </div>
+          <div style="background:white;border-radius:14px;padding:12px 15px;margin-bottom:10px;border-left:5px solid var(--orange);display:flex;align-items:center;gap:10px;">
+            <span style="font-size:1.5rem;">🏘️</span>
+            <div>
+              <div style="font-weight:800;color:#e65100;font-size:.93rem;">Populasi Besar → Desa & Kota Lahir</div>
+              <div style="font-size:.8rem;color:#555;">Inilah awal peradaban manusia!</div>
+            </div>
+            <span style="margin-left:auto;font-size:1.5rem;">↓</span>
+          </div>
+          <div style="background:linear-gradient(135deg,#1b5e20,#2e7d32);border-radius:14px;padding:12px 15px;border-left:5px solid var(--wheat);display:flex;align-items:center;gap:10px;">
+            <span style="font-size:1.5rem;">🌍</span>
+            <div>
+              <div style="font-weight:800;color:white;font-size:.93rem;">Peradaban → Dunia Kita Sekarang!</div>
+              <div style="font-size:.8rem;color:rgba(255,255,255,0.8);">Semua dimulai dari satu benih kecil...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="char-row">
+        <div class="char-emoji">🧓</div>
+        <div>
+          <div class="speech" style="border-color:#795548;">
+            "Aslan, smartphone-mu, sekolahmu, kota tempat tinggalmu — semua itu ada karena nenek moyang kita memutuskan untuk menanam benih 12.000 tahun lalu! Sungguh luar biasa!" 🤯
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 6: SEBELUM vs SESUDAH ═══ -->
+  <div class="slide" id="s6">
+    <div class="card">
+      <div class="sec-head" style="border-color:#795548;">
+        <span class="sec-emoji">⚖️</span>
+        <div class="sec-title" style="color:#4a2c0a;">Kehidupan Sebelum vs Sesudah</div>
+      </div>
+
+      <div class="story">
+        Klik tab di bawah untuk membandingkan kehidupan manusia sebelum dan sesudah Revolusi Pertanian!
+      </div>
+
+      <div class="compare-wrap">
+        <div class="compare-tabs">
+          <button class="comp-tab before active" onclick="switchTab('before')">
+            🏹 Sebelum: Berburu & Meramu
+          </button>
+          <button class="comp-tab after" onclick="switchTab('after')">
+            🌾 Sesudah: Bertani & Menetap
+          </button>
+        </div>
+
+        <div class="comp-content active" id="tab-before">
+          <div class="life-item" style="background:linear-gradient(135deg,#efebe9,#d7ccc8);">
+            <span class="life-icon">🦶</span>
+            <div class="life-txt"><strong>Selalu berpindah tempat</strong> — berjalan 20-30 km per hari mengikuti hewan buruan dan musim buah.</div>
+          </div>
+          <div class="life-item" style="background:linear-gradient(135deg,#efebe9,#d7ccc8);">
+            <span class="life-icon">🍖</span>
+            <div class="life-txt"><strong>Makanan tidak pasti</strong> — kalau buruannya pergi atau buah habis, manusia bisa kelaparan!</div>
+          </div>
+          <div class="life-item" style="background:linear-gradient(135deg,#efebe9,#d7ccc8);">
+            <span class="life-icon">⛺</span>
+            <div class="life-txt"><strong>Tempat tinggal sementara</strong> — gua, tenda dari kulit binatang, atau gubuk kayu yang mudah dibongkar.</div>
+          </div>
+          <div class="life-item" style="background:linear-gradient(135deg,#efebe9,#d7ccc8);">
+            <span class="life-icon">👪</span>
+            <div class="life-txt"><strong>Kelompok kecil</strong> — sekitar 20-50 orang per kelompok. Tidak bisa terlalu besar karena makanan terbatas.</div>
+          </div>
+          <div class="life-item" style="background:linear-gradient(135deg,#efebe9,#d7ccc8);">
+            <span class="life-icon">🔪</span>
+            <div class="life-txt"><strong>Alat sederhana</strong> — tombak, kapak batu, dan busur panah adalah teknologi terhebat saat itu.</div>
+          </div>
+        </div>
+
+        <div class="comp-content" id="tab-after">
+          <div class="life-item" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);">
+            <span class="life-icon">🏠</span>
+            <div class="life-txt"><strong>Tinggal menetap</strong> — membangun rumah permanen dari batu dan tanah liat! Aman dari hujan dan angin!</div>
+          </div>
+          <div class="life-item" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);">
+            <span class="life-icon">🌾</span>
+            <div class="life-txt"><strong>Makanan berlimpah dan terencana</strong> — bisa menyimpan biji-bijian berbulan-bulan, bahkan bertahun-tahun!</div>
+          </div>
+          <div class="life-item" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);">
+            <span class="life-icon">🐄</span>
+            <div class="life-txt"><strong>Hewan peliharaan</strong> — sapi, kambing, domba, dan ayam memberikan susu, wol, telur, dan daging tanpa perlu berburu!</div>
+          </div>
+          <div class="life-item" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);">
+            <span class="life-icon">🏘️</span>
+            <div class="life-txt"><strong>Komunitas besar</strong> — ratusan bahkan ribuan orang bisa tinggal bersama, membantu satu sama lain!</div>
+          </div>
+          <div class="life-item" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);">
+            <span class="life-icon">🏺</span>
+            <div class="life-txt"><strong>Teknologi berkembang</strong> — pot tembikar untuk menyimpan makanan, bajak untuk membajak sawah, sistem irigasi untuk mengairi ladang!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="box-green">
+        💡 <strong>Fakta Menarik:</strong> Para arkeolog menemukan bahwa manusia pemburu-pengumpul sebenarnya bekerja LEBIH SEDIKIT (4-5 jam/hari) dibanding petani awal (8-10 jam/hari). Tapi pertanian memberi STABILITAS yang mengubah dunia!
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 7: MANFAAT BESAR ═══ -->
+  <div class="slide" id="s7">
+    <div class="card">
+      <div class="sec-head" style="border-color:var(--grass2);">
+        <span class="sec-emoji">🎁</span>
+        <div class="sec-title" style="color:var(--green-dark);">Manfaat Besar Revolusi Pertanian</div>
+      </div>
+
+      <div class="story">
+        Klik setiap kartu untuk menemukan manfaat luar biasa dari Revolusi Pertanian!
+      </div>
+
+      <div class="benefit-grid">
+
+        <div class="benefit-card" onclick="lightCard(this)">
+          <span class="benefit-icon">🍞</span>
+          <div class="benefit-title">Makanan Tersedia</div>
+          <div class="benefit-desc">Untuk pertama kalinya dalam sejarah, manusia bisa makan TANPA harus berburu setiap hari! Lumbung padi menyimpan makanan untuk musim dingin.</div>
+        </div>
+
+        <div class="benefit-card" onclick="lightCard(this)">
+          <span class="benefit-icon">👶</span>
+          <div class="benefit-title">Bayi Lebih Sehat</div>
+          <div class="benefit-desc">Ibu yang menetap bisa merawat bayi lebih baik. Populasi manusia mulai tumbuh pesat dari jutaan menjadi ratusan juta dalam ribuan tahun!</div>
+        </div>
+
+        <div class="benefit-card" onclick="lightCard(this)">
+          <span class="benefit-icon">🏘️</span>
+          <div class="benefit-title">Desa Lahir</div>
+          <div class="benefit-desc">Kelompok kecil 20 orang tumbuh menjadi desa 500 orang! Inilah cikal bakal kota dan peradaban besar seperti Mesir dan Mesopotamia!</div>
+        </div>
+
+        <div class="benefit-card" onclick="lightCard(this)">
+          <span class="benefit-icon">💼</span>
+          <div class="benefit-title">Pembagian Kerja</div>
+          <div class="benefit-desc">Tidak semua orang harus mencari makan! Ada yang jadi pandai besi, pedagang, pemimpin, pengrajin — spesialisasi pekerjaan dimulai!</div>
+        </div>
+
+        <div class="benefit-card" onclick="lightCard(this)">
+          <span class="benefit-icon">🏺</span>
+          <div class="benefit-title">Inovasi Teknologi</div>
+          <div class="benefit-desc">Kebutuhan bertani melahirkan alat baru: bajak sawah, ember, sistem saluran air (irigasi), dan pot keramik untuk menyimpan makanan!</div>
+        </div>
+
+        <div class="benefit-card" onclick="lightCard(this)">
+          <span class="benefit-icon">📚</span>
+          <div class="benefit-title">Waktu untuk Berpikir</div>
+          <div class="benefit-desc">Karena makanan sudah tersedia, manusia punya waktu luang untuk berpikir, berdiskusi, dan akhirnya... menciptakan TULISAN dan ILMU PENGETAHUAN!</div>
+        </div>
+
+      </div>
+
+      <div class="box-wheat">
+        🌟 <strong>Tahukah kamu?</strong> Tanaman pertama yang dibudidayakan manusia adalah <strong>gandum, barley, dan biji-bijian</strong> di kawasan Timur Tengah, diikuti <strong>padi</strong> di Asia, dan <strong>jagung</strong> di Amerika!
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 8: TANAMAN & HEWAN ═══ -->
+  <div class="slide" id="s8">
+    <div class="card">
+      <div class="sec-head" style="border-color:var(--leaf);">
+        <span class="sec-emoji">🐄</span>
+        <div class="sec-title" style="color:var(--green-dark);">Tanaman & Hewan Sahabat Manusia</div>
+      </div>
+
+      <div class="story">
+        Revolusi Pertanian bukan hanya soal menanam — manusia juga belajar <strong>menjinakkan hewan liar</strong>! Ini membutuhkan kesabaran dan kecerdasan luar biasa dari nenek moyang kita.
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;">
+
+        <div style="background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border-radius:16px;padding:16px;border:2px solid var(--leaf);">
+          <div style="font-family:'Fredoka One',cursive;font-size:1rem;color:var(--green-dark);margin-bottom:12px;">🌱 Tanaman yang Dibudidayakan Pertama:</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;color:#2d5016;">🌾 Gandum — Timur Tengah (10.000 SM)</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;color:#2d5016;">🌿 Barley — Lembah Subur (9.000 SM)</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;color:#2d5016;">🍚 Padi — China (7.000 SM)</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;color:#2d5016;">🌽 Jagung — Meksiko (7.000 SM)</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;color:#2d5016;">🥜 Kacang — Wilayah Asia (8.000 SM)</div>
+          </div>
+        </div>
+
+        <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border-radius:16px;padding:16px;border:2px solid var(--wheat2);">
+          <div style="font-family:'Fredoka One',cursive;font-size:1rem;color:#6d3b00;margin-bottom:12px;">🐑 Hewan yang Dijinakkan Pertama:</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;color:#4a2000;">🐑 Domba — Asia Barat (11.000 SM)</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;color:#4a2000;">🐐 Kambing — Asia Barat (10.000 SM)</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;color:#4a2000;">🐄 Sapi — Afrika/Asia (8.000 SM)</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;color:#4a2000;">🐖 Babi — Timur Tengah (9.000 SM)</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;color:#4a2000;">🐔 Ayam — Asia Tenggara (6.000 SM)</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="story">
+        Menjinakkan hewan bukan hal mudah! Bayangkan mencoba mendekati sapi liar atau domba gunung yang takut manusia. Nenek moyang kita membutuhkan <strong>generasi demi generasi</strong> — ribuan tahun! — untuk berhasil memelihara hewan-hewan ini.
+      </div>
+
+      <div class="box-green">
+        🐕 <strong>Fakta Unik:</strong> Anjing adalah hewan pertama yang dijinakkan manusia — bahkan sebelum revolusi pertanian! Sekitar 15.000 tahun lalu, serigala liar mulai mendekati kelompok manusia dan perlahan menjadi "anjing penjaga" pertama di dunia!
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 9: TIMELINE ═══ -->
+  <div class="slide" id="s9">
+    <div class="card">
+      <div class="sec-head" style="border-color:var(--brown);">
+        <span class="sec-emoji">⏰</span>
+        <div class="sec-title" style="color:#4a2c0a;">Perjalanan 10.000 Tahun Pertanian</div>
+      </div>
+
+      <div class="story">
+        Revolusi Pertanian tidak terjadi dalam semalam — ini adalah perjalanan panjang ribuan tahun! Mari ikuti jejaknya:
+      </div>
+
+      <div class="timeline">
+
+        <div class="tl-item">
+          <div class="tl-dot">🌱</div>
+          <div class="tl-body">
+            <div class="tl-year">~12.000 SM — Bulan Sabit Subur (Timur Tengah)</div>
+            <div class="tl-text">Manusia pertama kali mulai menanam gandum dan barley liar secara sengaja. Mereka mulai berhenti mengembara!</div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot">🐑</div>
+          <div class="tl-body">
+            <div class="tl-year">~11.000 SM — Asia Barat</div>
+            <div class="tl-text">Domba dan kambing mulai dijinakkan! Manusia kini bisa mendapatkan susu, wol, dan daging tanpa berburu.</div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot">🏠</div>
+          <div class="tl-body">
+            <div class="tl-year">~10.000 SM — Çatalhöyük (Turki)</div>
+            <div class="tl-text">Desa pertama dalam sejarah berdiri! Ribuan orang tinggal bersama dalam rumah-rumah bata yang saling berdempetan.</div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot">🍚</div>
+          <div class="tl-body">
+            <div class="tl-year">~7.000 SM — China & Asia Tenggara</div>
+            <div class="tl-text">Padi mulai dibudidayakan di lembah sungai Yangtze. Pertanian menyebar ke seluruh Asia dan dunia!</div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot">🌽</div>
+          <div class="tl-body">
+            <div class="tl-year">~7.000 SM — Amerika Tengah</div>
+            <div class="tl-text">Secara terpisah di benua Amerika, manusia mulai menanam jagung, kentang, dan kacang. Pertanian muncul secara mandiri di berbagai penjuru bumi!</div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot">🌍</div>
+          <div class="tl-body">
+            <div class="tl-year">~5.000 SM — Seluruh Dunia</div>
+            <div class="tl-text">Pertanian sudah menyebar ke hampir seluruh benua. Populasi manusia tumbuh dari ~5 juta menjadi >50 juta! Peradaban besar mulai berdiri.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 10: HUBUNGAN DENGAN INDONESIA ═══ -->
+  <div class="slide" id="s10">
+    <div class="card">
+      <div class="sec-head" style="border-color:var(--grass2);">
+        <span class="sec-emoji">🇮🇩</span>
+        <div class="sec-title" style="color:var(--green-dark);">Dan di Nusantara Kita?</div>
+      </div>
+
+      <div class="story">
+        Kapten Aslan tiba-tiba penasaran: "Bagaimana dengan leluhur orang Indonesia? Kapan mereka mulai bertani?"
+      </div>
+
+      <div class="char-row">
+        <div class="char-emoji">🧓</div>
+        <div>
+          <div class="speech" style="border-color:#795548;">
+            "Pertanyaan yang bagus, Kapten! Kepulauan Nusantara punya cerita pertanian yang sangat menarik! 🌿"
+          </div>
+        </div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:18px;padding:20px;margin:14px 0;border:2px solid var(--grass2);">
+        <div style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:var(--green-dark);margin-bottom:14px;">🌴 Pertanian di Nusantara:</div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="background:white;border-radius:12px;padding:12px;border-left:4px solid var(--grass2);display:flex;gap:10px;align-items:flex-start;">
+            <span style="font-size:1.5rem;">🍚</span>
+            <div style="font-size:.9rem;font-weight:700;color:#2d3748;line-height:1.5;">Sekitar <strong>4.000 SM</strong>, leluhur bangsa Austronesia mulai bertani padi di wilayah Asia Tenggara — termasuk kawasan Nusantara!</div>
+          </div>
+          <div style="background:white;border-radius:12px;padding:12px;border-left:4px solid var(--wheat2);display:flex;gap:10px;align-items:flex-start;">
+            <span style="font-size:1.5rem;">🌿</span>
+            <div style="font-size:.9rem;font-weight:700;color:#2d3748;line-height:1.5;">Mereka juga menanam <strong>ubi, talas, sagu, dan pisang</strong> — tanaman asli kawasan tropis Nusantara yang sampai sekarang masih kita makan!</div>
+          </div>
+          <div style="background:white;border-radius:12px;padding:12px;border-left:4px solid #1e88e5;display:flex;gap:10px;align-items:flex-start;">
+            <span style="font-size:1.5rem;">🌾</span>
+            <div style="font-size:.9rem;font-weight:700;color:#2d3748;line-height:1.5;">Sistem <strong>sawah terasering</strong> (berundak di lereng gunung) yang cantik di Bali dan Toraja sudah ada ribuan tahun dan diakui UNESCO sebagai warisan dunia!</div>
+          </div>
+          <div style="background:white;border-radius:12px;padding:12px;border-left:4px solid #7c4dff;display:flex;gap:10px;align-items:flex-start;">
+            <span style="font-size:1.5rem;">🐃</span>
+            <div style="font-size:.9rem;font-weight:700;color:#2d3748;line-height:1.5;">Nenek moyang kita juga menjinakkan <strong>kerbau</strong> untuk membajak sawah — hewan yang sampai sekarang masih jadi simbol Sumatera Barat!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="char-row">
+        <div class="char-emoji">🧢</div>
+        <div>
+          <div class="speech">
+            "Jadi nasi yang aku makan setiap hari... adalah warisan dari revolusi yang dimulai ribuan tahun lalu! Leluhur kita sungguh luar biasa! 🍚✨"
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 11: PELAJARAN HARI INI ═══ -->
+  <div class="slide" id="s11">
+    <div class="card">
+      <div class="sec-head" style="border-color:var(--wheat2);">
+        <span class="sec-emoji">⭐</span>
+        <div class="sec-title" style="color:#6d3b00;">Pelajaran Hari ke-15</div>
+      </div>
+
+      <div class="lesson">
+        <span class="lesson-ic">🌾</span>
+        <div class="lesson-txt">Revolusi Pertanian adalah perubahan terbesar dalam sejarah manusia: dari pengembara berburu, manusia menjadi petani yang menetap sekitar 12.000 tahun lalu.</div>
+      </div>
+
+      <div class="lesson">
+        <span class="lesson-ic">🌱</span>
+        <div class="lesson-txt">Pertanian dimulai di "Bulan Sabit Subur" (Timur Tengah), lalu menyebar ke seluruh dunia — termasuk Asia Tenggara dan Nusantara!</div>
+      </div>
+
+      <div class="lesson">
+        <span class="lesson-ic">🐄</span>
+        <div class="lesson-txt">Selain bertanam, manusia juga belajar menjinakkan hewan: domba, kambing, sapi, babi, dan ayam — memberi makanan tanpa berburu setiap hari.</div>
+      </div>
+
+      <div class="lesson">
+        <span class="lesson-ic">🏘️</span>
+        <div class="lesson-txt">Makanan yang berlimpah membuat manusia bisa menetap, membangun desa, lalu kota — inilah awal dari peradaban besar di seluruh dunia!</div>
+      </div>
+
+      <div class="lesson">
+        <span class="lesson-ic">💼</span>
+        <div class="lesson-txt">Karena tidak semua orang harus mencari makan, lahirlah berbagai pekerjaan: pandai besi, pedagang, pemimpin, dan pengrajin — dunia jadi lebih kompleks!</div>
+      </div>
+
+      <div class="lesson">
+        <span class="lesson-ic">🍚</span>
+        <div class="lesson-txt">Setiap kali kamu makan nasi atau roti, ingatlah: ini adalah hadiah dari ribuan tahun perjuangan dan kecerdasan nenek moyang kita! Mereka luar biasa!</div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#1b4001,#2e7d32);border-radius:16px;padding:18px;margin-top:14px;text-align:center;color:white;">
+        <div style="font-size:2rem;margin-bottom:8px;">🌾</div>
+        <div style="font-family:'Fredoka One',cursive;font-size:1.15rem;color:var(--wheat);">Kata Mutiara Kapten Aslan:</div>
+        <div style="font-size:1rem;font-weight:700;margin-top:8px;font-style:italic;line-height:1.6;">"Dari satu benih kecil, tumbuh peradaban besar.<br>Dari satu tindakan berani, lahir dunia yang baru!" 🌱🌍</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 12: TANTANGAN ═══ -->
+  <div class="slide" id="s12">
+    <div class="card">
+      <div class="challenge-wrap">
+        <div style="font-size:2.8rem;display:block;animation:wheatSway 2.5s ease-in-out infinite;">🌾</div>
+        <div class="ch-title">Tantangan Kapten Aslan<br>Hari ke-15!</div>
+        <div style="font-size:.9rem;opacity:.8;margin-bottom:16px;">Selesaikan tantangan ini hari ini! Klik ✓ setelah selesai:</div>
+
+        <div style="text-align:left;">
+
+          <div class="task-row">
+            <div class="cb" onclick="doTask(this)">✓</div>
+            <div>🌱 Tanam satu benih (kacang, biji cabai, atau apa saja) di pot atau tanah, dan amati pertumbuhannya selama seminggu! Dokumentasikan dengan foto setiap hari.</div>
+          </div>
+
+          <div class="task-row">
+            <div class="cb" onclick="doTask(this)">✓</div>
+            <div>🍚 Saat makan nasi hari ini, ceritakan ke keluargamu tentang Revolusi Pertanian — dari mana nasi itu berasal dalam perjalanan panjang sejarah manusia!</div>
+          </div>
+
+          <div class="task-row">
+            <div class="cb" onclick="doTask(this)">✓</div>
+            <div>🎨 Gambar perbedaan kehidupan manusia sebelum bertani (berburu di hutan) vs sesudah bertani (di desa dengan ladang)! Tunjukkan ke orang tuamu.</div>
+          </div>
+
+          <div class="task-row">
+            <div class="cb" onclick="doTask(this)">✓</div>
+            <div>🔍 Cari tahu 3 makanan yang ada di rumahmu — berasal dari tanaman apa, dan kira-kira sudah dibudidayakan manusia sejak kapan? (Contoh: beras dari padi, roti dari gandum)</div>
+          </div>
+
+          <div class="task-row">
+            <div class="cb" onclick="doTask(this)">✓</div>
+            <div>✍️ Tulis di buku catatanmu: "Kalau kamu hidup 12.000 tahun lalu, tanaman apa yang pertama kali akan kamu tanam dan mengapa?" Beri alasanmu!</div>
+          </div>
+
+        </div>
+
+        <div id="chScore" style="margin-top:16px;padding:12px;background:rgba(255,255,255,0.1);border-radius:12px;font-family:'Fredoka One',cursive;font-size:1rem;">
+          Progress: <span id="taskNum">0</span>/5 tantangan selesai! 🌾
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 13: PENUTUP ═══ -->
+  <div class="slide" id="s13">
+    <div class="close-card card">
+      <span class="wheat-icon">🏆</span>
+      <div class="close-title">Hebat, Kapten Aslan!</div>
+      <div class="stars">⭐⭐⭐⭐⭐</div>
+
+      <div style="font-size:1rem;color:rgba(255,255,255,0.87);margin:16px 0;line-height:1.85;">
+        Hari ini <strong style="color:var(--wheat);">Kapten Aslan</strong> telah menyaksikan salah satu momen paling ajaib dalam sejarah — ketika manusia untuk pertama kalinya <strong style="color:var(--wheat);">menanam masa depan mereka sendiri</strong> dengan tangan mereka sendiri!
+      </div>
+
+      <div style="font-size:3rem;margin:14px 0;animation:seedFloat 4s ease-in-out infinite;">🌱</div>
+
+      <div style="background:rgba(255,255,255,0.1);border-radius:16px;padding:18px;margin:16px 0;border:2px solid rgba(245,200,66,0.3);">
+        <div style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:var(--wheat);margin-bottom:10px;">🗺️ Perjalanan Minggu 3 — Peradaban Awal:</div>
+        <div style="font-size:.88rem;color:rgba(255,255,255,0.82);line-height:2.1;">
+          ✅ Hari 15: Revolusi Pertanian ← Hari ini!<br>
+          🔜 Hari 16: Lahirnya Desa dan Kota Pertama<br>
+          🔜 Hari 17: Sungai Nil, Mesopotamia, dan Indus<br>
+          🔜 Hari 18: Penemuan Tulisan dan Roda<br>
+          🔜 Hari 19: Piramida, Kerajaan, dan Raja Pertama
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.13);border:2px solid var(--wheat);border-radius:16px;padding:18px;margin-top:16px;">
+        <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--wheat);margin-bottom:8px;">🏘️ Teaser Hari ke-16!</div>
+        <div style="font-size:.92rem;color:rgba(255,255,255,0.82);line-height:1.7;">
+          Setelah manusia mulai bertani dan menetap, apa yang terjadi selanjutnya? Kumpul beberapa keluarga menjadi desa... beberapa desa menjadi kota! Di <strong>Hari ke-16</strong>, Aslan akan mengunjungi <strong>Çatalhöyük</strong> — desa-kota pertama dalam sejarah manusia yang dihuni lebih dari 8.000 orang! 🏙️✨
+        </div>
+      </div>
+
+      <div style="margin-top:20px;font-size:2.2rem;animation:starPulse 2s ease-in-out infinite;">🌾🏠🌍🏺🌱</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Dot indicators -->
+<div class="dot-wrap" id="dots"></div>
+<!-- Nav -->
+<div class="nav-wrap">
+  <button class="nav-btn" id="prevBtn" onclick="goPage(-1)" disabled>← Sebelumnya</button>
+  <button class="nav-btn nav-next" id="nextBtn" onclick="goPage(1)">Selanjutnya →</button>
+</div>
+<!-- Page counter -->
+<div class="page-num" id="pgNum">Halaman 1 dari 13</div>
+
+<script>
+const TOTAL = 13;
+let cur = 1;
+let doneTasks = new Set();
+let seedStep = -1;
+let farmAnim = false;
+
+/* Build dots */
+const dw = document.getElementById('dots');
+for(let i=1;i<=TOTAL;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===1?' active':'');
+  d.onclick=()=>gotoPage(i);
+  dw.appendChild(d);
+}
+
+function gotoPage(n){
+  if(n<1||n>TOTAL)return;
+  document.getElementById('s'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('s'+cur).classList.add('active');
+  update();
+  window.scrollTo(0,0);
+}
+function goPage(d){gotoPage(cur+d);}
+
+function update(){
+  document.getElementById('pb').style.width=((cur-1)/(TOTAL-1)*100)+'%';
+  document.getElementById('pgNum').textContent='Halaman '+cur+' dari '+TOTAL;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur-1));
+  document.getElementById('prevBtn').disabled=cur===1;
+  const nb=document.getElementById('nextBtn');
+  nb.disabled=cur===TOTAL;
+  nb.textContent=cur===TOTAL?'🏁 Selesai!':'Selanjutnya →';
+}
+
+/* Seed grow */
+const seedLabels=['🌰 Menanam benih ke tanah...','🌱 Kecambah mulai muncul! (2 minggu)','🌿 Tanaman tumbuh tinggi! (1 bulan)','🌾 PANEN TIBA! Gandum berisi! (3-4 bulan)','🍞 Jadi roti dan makanan untuk semua!'];
+const seedPcts=[20,40,60,80,100];
+function growSeed(idx){
+  if(idx!==seedStep+1&&seedStep!==-1&&idx>0)return;
+  seedStep=idx;
+  for(let i=0;i<=4;i++){
+    const el=document.getElementById('ss'+i);
+    if(i<=idx){
+      el.classList.add('active');
+      el.querySelector('.plant').style.opacity='1';
+      el.querySelector('.plant').style.transform='scale(1)';
+    }
+  }
+  document.getElementById('growLabel').textContent=seedLabels[idx];
+  document.getElementById('growFill').style.width=seedPcts[idx]+'%';
+  showPopup(seedLabels[idx]);
+}
+
+/* Farm animation */
+const farmMsgs=[
+  '👨‍🌾 Petani mencangkul tanah yang subur!',
+  '🌱 Benih ditanam satu per satu dengan penuh harapan!',
+  '🐐 Kambing jinak dirawat dan diberi makan!',
+  '🌾 Gandum tumbuh dan siap dipanen — rezeki berlimpah!',
+  '🏠 Rumah pertama dibangun — keluarga punya tempat berlindung!'
+];
+function animateFarm(){
+  const chars=['fc1','fc2','fc3','fc4','fc5'];
+  let i=0;
+  const doc=document.getElementById('farmMsg');
+  farmAnim=true;
+  function nextChar(){
+    if(i>=chars.length){farmAnim=false;return;}
+    const el=document.getElementById(chars[i]);
+    el.style.transform='scale(1.4)';
+    el.style.filter='drop-shadow(0 0 12px gold)';
+    doc.textContent=farmMsgs[i];
+    setTimeout(()=>{
+      el.style.transform='scale(1)';
+      el.style.filter='none';
+      i++;
+      setTimeout(nextChar,300);
+    },700);
+  }
+  nextChar();
+  showPopup('🌾 Ladang Aslan dihidupkan!');
+}
+
+/* Before/After */
+function switchTab(which){
+  document.querySelectorAll('.comp-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.comp-content').forEach(c=>c.classList.remove('active'));
+  document.querySelector('.comp-tab.'+which).classList.add('active');
+  document.getElementById('tab-'+which).classList.add('active');
+}
+
+/* Benefit cards */
+function lightCard(el){
+  document.querySelectorAll('.benefit-card').forEach(c=>c.classList.remove('lit'));
+  el.classList.add('lit');
+}
+
+/* Tasks */
+function doTask(el){
+  const id=el.parentNode;
+  const idx=Array.from(id.parentNode.children).indexOf(id);
+  if(doneTasks.has(idx)){
+    doneTasks.delete(idx);
+    el.classList.remove('done');
+    el.textContent='✓';
+  } else {
+    doneTasks.add(idx);
+    el.classList.add('done');
+    el.textContent='✔';
+    showPopup('✅ Tantangan selesai! '+doneTasks.size+'/5');
+  }
+  document.getElementById('taskNum').textContent=doneTasks.size;
+  const sc=document.getElementById('chScore');
+  if(doneTasks.size===5){
+    sc.style.background='rgba(139,195,74,0.3)';
+    sc.innerHTML='🎉 SEMUA SELESAI! Kapten Aslan Luar Biasa! 🏆🌾';
+  }
+}
+
+/* Sound */
+let sndOn=false;
+function toggleSnd(){
+  sndOn=!sndOn;
+  document.getElementById('sndBtn').textContent=sndOn?'🔇':'🔊';
+  showPopup(sndOn?'🌾 Suara sawah menyala!':'🔇 Suara dimatikan');
+}
+
+/* Popup */
+function showPopup(msg){
+  const p=document.getElementById('popup');
+  p.textContent=msg;
+  p.classList.add('show');
+  setTimeout(()=>p.classList.remove('show'),2200);
+}
+
+/* Keyboard */
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')goPage(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')goPage(-1);
+});
+
+/* Touch swipe */
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>55)goPage(dx<0?1:-1);
+});
+
+update();
+</script>
+</body>
+</html>

@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Flip 19 – Aplikasi Cuaca</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --sky-light: #c8e8ff;
+    --sky-mid: #87ceeb;
+    --sky-deep: #4a90d9;
+    --cloud-white: #f0f8ff;
+    --rain-blue: #2c6fa8;
+    --storm-grey: #6b7f9a;
+    --accent-sun: #f9c74f;
+    --accent-orange: #f8961e;
+    --accent-teal: #43c6ac;
+    --text-dark: #1a2a3a;
+    --text-mid: #2d4a6a;
+    --text-light: #f0f8ff;
+    --glass-bg: rgba(255,255,255,0.18);
+    --glass-border: rgba(255,255,255,0.35);
+    --card-shadow: 0 8px 32px rgba(44, 111, 168, 0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: linear-gradient(135deg, #a8d8f0 0%, #c8e8ff 30%, #daeeff 55%, #b8d4e8 80%, #8fb8d8 100%);
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Animated cloud background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 600px 300px at 20% 30%, rgba(255,255,255,0.5) 0%, transparent 70%),
+      radial-gradient(ellipse 400px 200px at 80% 60%, rgba(255,255,255,0.3) 0%, transparent 70%),
+      radial-gradient(ellipse 300px 150px at 50% 80%, rgba(135,206,235,0.4) 0%, transparent 70%);
+    pointer-events: none;
+    animation: cloudShift 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes cloudShift {
+    0% { transform: translateX(0) translateY(0); opacity: 0.8; }
+    50% { transform: translateX(20px) translateY(-10px); opacity: 1; }
+    100% { transform: translateX(-15px) translateY(10px); opacity: 0.9; }
+  }
+
+  /* Rain particles */
+  .rain-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 0.25;
+  }
+  .raindrop {
+    position: absolute;
+    width: 1.5px;
+    background: linear-gradient(to bottom, transparent, #4a90d9);
+    border-radius: 2px;
+    animation: fall linear infinite;
+  }
+
+  @keyframes fall {
+    0% { transform: translateY(-100px) rotate(15deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(110vh) rotate(15deg); opacity: 0; }
+  }
+
+  /* Progress bar */
+  #progress-bar-wrap {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: rgba(255,255,255,0.3);
+    z-index: 1000;
+  }
+  #progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-sun), var(--accent-orange), var(--accent-teal));
+    border-radius: 0 3px 3px 0;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 0 8px rgba(249,199,79,0.7);
+  }
+  #progress-dots {
+    position: fixed;
+    top: 10px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 5px; z-index: 1000;
+    align-items: center;
+  }
+  .progress-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    transition: all 0.3s ease;
+  }
+  .progress-dot.active {
+    background: var(--accent-sun);
+    box-shadow: 0 0 6px var(--accent-sun);
+    width: 18px;
+    border-radius: 3px;
+  }
+  .progress-dot.done {
+    background: rgba(255,255,255,0.7);
+  }
+
+  /* Back button */
+  #back-btn {
+    position: fixed;
+    top: 18px; left: 16px;
+    z-index: 1000;
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: var(--text-dark);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600; font-size: 12px;
+    padding: 7px 14px 7px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 12px rgba(44,111,168,0.15);
+  }
+  #back-btn:hover {
+    background: rgba(255,255,255,0.4);
+    transform: translateX(-2px);
+    box-shadow: 0 4px 18px rgba(44,111,168,0.25);
+  }
+
+  /* Page counter */
+  #page-counter {
+    position: fixed;
+    top: 18px; right: 16px;
+    z-index: 1000;
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: var(--text-dark);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700; font-size: 13px;
+    padding: 7px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 12px rgba(44,111,168,0.15);
+  }
+
+  /* Main container */
+  #flipbook {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 16px 90px;
+  }
+
+  /* Page wrapper */
+  .page {
+    display: none;
+    width: 100%;
+    max-width: 900px;
+    height: 100%;
+    max-height: 580px;
+    animation: fadeInUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .page.active { display: flex; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes fadeOutDown {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(-18px) scale(0.98); }
+  }
+
+  /* Glass card base */
+  .glass {
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 24px;
+    box-shadow: var(--card-shadow);
+  }
+
+  /* ===================== PAGE 1: COVER ===================== */
+  .cover-page {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 32px;
+    box-shadow: 0 20px 60px rgba(44,111,168,0.22);
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 20%, rgba(249,199,79,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(67,198,172,0.1) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .cover-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent-sun), var(--accent-orange));
+    color: white;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 16px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(249,199,79,0.4);
+  }
+  .cover-icon-ring {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+    border: 2px solid rgba(255,255,255,0.5);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(44,111,168,0.2), inset 0 1px 0 rgba(255,255,255,0.6);
+    animation: floatIcon 4s ease-in-out infinite;
+  }
+  @keyframes floatIcon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .cover-icon-ring::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255,255,255,0.4);
+    animation: spin 20s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .cover-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+    font-size: clamp(22px, 4vw, 36px);
+    color: var(--text-dark);
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .cover-title span { color: var(--rain-blue); }
+  .cover-subtitle {
+    font-size: 14px;
+    color: var(--text-mid);
+    font-weight: 400;
+    margin-bottom: 28px;
+    opacity: 0.85;
+  }
+  .cover-tags {
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  }
+  .cover-tag {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,0.35);
+    border: 1px solid rgba(255,255,255,0.5);
+    color: var(--text-mid);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+
+  /* ===================== SPLIT LAYOUT (tablet) ===================== */
+  .split-page {
+    flex-direction: row;
+    gap: 14px;
+    width: 100%;
+  }
+  .split-left {
+    flex: 0 0 42%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 20px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.25), rgba(200,232,255,0.2));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 24px;
+    box-shadow: var(--card-shadow);
+    position: relative;
+    overflow: hidden;
+    gap: 16px;
+  }
+  .split-left::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(249,199,79,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .split-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 28px 26px;
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 24px;
+    box-shadow: var(--card-shadow);
+    overflow-y: auto;
+    gap: 14px;
+  }
+  .split-right::-webkit-scrollbar { width: 4px; }
+  .split-right::-webkit-scrollbar-track { background: transparent; }
+  .split-right::-webkit-scrollbar-thumb { background: rgba(44,111,168,0.3); border-radius: 2px; }
+
+  /* Page label */
+  .page-label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700; font-size: 10px;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--rain-blue);
+    opacity: 0.7;
+  }
+  .page-heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: clamp(18px, 2.8vw, 26px);
+    color: var(--text-dark);
+    line-height: 1.25;
+  }
+  .page-heading .highlight {
+    background: linear-gradient(90deg, var(--rain-blue), var(--accent-teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .page-body {
+    font-size: clamp(13px, 1.7vw, 15px);
+    color: var(--text-mid);
+    line-height: 1.75;
+    font-weight: 400;
+  }
+
+  /* Bento grid items */
+  .bento-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+  .bento-item {
+    background: rgba(255,255,255,0.28);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 16px;
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 2px 12px rgba(44,111,168,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .bento-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(44,111,168,0.15);
+  }
+  .bento-item.wide { grid-column: 1 / -1; }
+  .bento-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--storm-grey);
+  }
+  .bento-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px; font-weight: 700;
+    color: var(--text-dark);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .bento-desc {
+    font-size: 11px;
+    color: var(--text-mid);
+    line-height: 1.5;
+    opacity: 0.85;
+  }
+  .bento-icon {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--sky-deep), var(--accent-teal));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Bullet list styled */
+  .edu-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .edu-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13.5px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+  .edu-list li .bullet {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--sky-deep), var(--accent-teal));
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+
+  /* Fun fact card */
+  .fun-fact {
+    background: linear-gradient(135deg, rgba(249,199,79,0.15), rgba(248,150,30,0.1));
+    border: 1px solid rgba(249,199,79,0.3);
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+  .fun-fact-icon {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--accent-sun), var(--accent-orange));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(249,199,79,0.4);
+  }
+
+  /* Visual SVG elements for left panel */
+  .visual-icon-main {
+    animation: floatIcon 3.5s ease-in-out infinite;
+  }
+  .visual-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700; font-size: 13px;
+    color: var(--text-mid);
+    text-align: center;
+    opacity: 0.8;
+  }
+  .visual-sub {
+    font-size: 11px;
+    color: var(--text-mid);
+    text-align: center;
+    opacity: 0.6;
+    line-height: 1.5;
+  }
+
+  /* Metric pills */
+  .metric-row {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .metric-pill {
+    background: rgba(255,255,255,0.35);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600; font-size: 12px;
+    color: var(--text-dark);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .metric-pill.blue { border-color: rgba(74,144,217,0.3); background: rgba(74,144,217,0.1); color: var(--rain-blue); }
+  .metric-pill.sun { border-color: rgba(249,199,79,0.3); background: rgba(249,199,79,0.1); color: #a06800; }
+  .metric-pill.teal { border-color: rgba(67,198,172,0.3); background: rgba(67,198,172,0.1); color: #1a7a6a; }
+
+  /* Ending page */
+  .ending-page {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 32px;
+    box-shadow: 0 20px 60px rgba(44,111,168,0.22);
+    padding: 36px 32px;
+    gap: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ending-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(67,198,172,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 100%, rgba(249,199,79,0.08) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .next-preview {
+    background: linear-gradient(135deg, rgba(67,198,172,0.12), rgba(74,144,217,0.1));
+    border: 1px solid rgba(67,198,172,0.25);
+    border-radius: 16px;
+    padding: 14px 20px;
+    font-size: 13px;
+    color: var(--text-mid);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ayah-note {
+    background: linear-gradient(135deg, rgba(249,199,79,0.12), rgba(248,150,30,0.08));
+    border: 1px solid rgba(249,199,79,0.25);
+    border-radius: 16px;
+    padding: 14px 20px;
+    font-size: 12.5px;
+    color: var(--text-mid);
+    line-height: 1.65;
+    font-style: italic;
+    display: flex; align-items: flex-start; gap: 10px;
+    text-align: left;
+  }
+
+  /* Navigation */
+  #nav-prev, #nav-next {
+    position: fixed;
+    bottom: 24px;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 8px 24px rgba(44,111,168,0.25);
+    z-index: 100;
+  }
+  #nav-prev {
+    left: 50%;
+    transform: translateX(calc(-50% - 36px));
+    background: rgba(255,255,255,0.3);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.5);
+    color: var(--text-dark);
+  }
+  #nav-next {
+    left: 50%;
+    transform: translateX(calc(-50% + 36px));
+    background: linear-gradient(135deg, var(--sky-deep), var(--rain-blue));
+    color: white;
+  }
+  #nav-prev:hover { transform: translateX(calc(-50% - 36px)) scale(1.1); background: rgba(255,255,255,0.5); }
+  #nav-next:hover { transform: translateX(calc(-50% + 36px)) scale(1.12); box-shadow: 0 12px 30px rgba(44,111,168,0.4); }
+  #nav-prev:disabled { opacity: 0.3; pointer-events: none; }
+  #nav-next:disabled { opacity: 0.3; pointer-events: none; }
+
+  /* Mobile adjustments */
+  @media (max-width: 600px) {
+    .split-page { flex-direction: column; }
+    .split-left { flex: none; height: 180px; padding: 16px; }
+    .split-right { padding: 18px 16px; }
+    .bento-grid { grid-template-columns: 1fr; }
+    .bento-item.wide { grid-column: 1; }
+    #flipbook { padding: 55px 10px 80px; }
+    .cover-page { padding: 28px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Rain particles -->
+<div class="rain-container" id="rainContainer"></div>
+
+<!-- Progress bar -->
+<div id="progress-bar-wrap"><div id="progress-bar" style="width:8.33%"></div></div>
+<div id="progress-dots"></div>
+
+<!-- Back button -->
+<a href="..\/perpustakaan.html" id="back-btn">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+  Perpustakaan
+</a>
+
+<!-- Page counter -->
+<div id="page-counter">1 / 12</div>
+
+<!-- Main flipbook -->
+<div id="flipbook">
+
+  <!-- PAGE 1: COVER -->
+  <div class="page active cover-page" id="page-1">
+    <div class="cover-badge">📚 Seri Edukasi #19 · Aslan's World</div>
+    <div class="cover-icon-ring">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#2c6fa8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="8" y1="20" x2="8.01" y2="20"/><line x1="12" y1="18" x2="12.01" y2="18"/><line x1="12" y1="22" x2="12.01" y2="22"/><line x1="16" y1="16" x2="16.01" y2="16"/><line x1="16" y1="20" x2="16.01" y2="20"/>
+      </svg>
+    </div>
+    <h1 class="cover-title">Aplikasi Cuaca:<br/><span>Bagaimana Dia Tahu<br/>Hari Ini Hujan?</span></h1>
+    <p class="cover-subtitle">Rahasia di balik ramalan cuaca di HP kamu</p>
+    <div class="cover-tags">
+      <span class="cover-tag">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        Sains &amp; Teknologi
+      </span>
+      <span class="cover-tag">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Meteorologi
+      </span>
+      <span class="cover-tag">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        12 Halaman
+      </span>
+    </div>
+  </div>
+
+  <!-- PAGE 2 -->
+  <div class="page split-page" id="page-2">
+    <div class="split-left">
+      <div class="visual-icon-main">
+        <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#2c6fa8" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+        </svg>
+      </div>
+      <div>
+        <svg width="110" height="60" viewBox="0 0 110 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="110" height="60" rx="12" fill="rgba(74,144,217,0.12)" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+          <rect x="8" y="8" width="94" height="12" rx="4" fill="rgba(74,144,217,0.2)"/>
+          <rect x="8" y="26" width="44" height="26" rx="6" fill="rgba(249,199,79,0.2)"/>
+          <rect x="58" y="26" width="44" height="12" rx="4" fill="rgba(67,198,172,0.2)"/>
+          <rect x="58" y="42" width="44" height="10" rx="4" fill="rgba(74,144,217,0.15)"/>
+          <circle cx="18" cy="14" r="3" fill="rgba(249,199,79,0.6)"/>
+          <text x="26" y="17" font-size="6" fill="rgba(44,111,168,0.7)" font-family="Outfit">Aplikasi Cuaca</text>
+        </svg>
+      </div>
+      <p class="visual-title">📱 Setiap Pagi</p>
+      <p class="visual-sub">Kamu membuka aplikasi cuaca<br/>di HP untuk cek hari ini</p>
+    </div>
+    <div class="split-right">
+      <div class="page-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="8" y1="20" x2="8.01" y2="20"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        Halaman 2 · Pengenalan
+      </div>
+      <h2 class="page-heading">Hei, <span class="highlight">Aslan!</span><br/>Pernah Penasaran?</h2>
+      <p class="page-body">Setiap pagi kamu pasti buka <strong>aplikasi cuaca</strong> di HP untuk lihat hari ini hujan atau cerah.</p>
+      <div class="fun-fact">
+        <div class="fun-fact-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <span>Tapi… <strong>bagaimana</strong> aplikasi itu bisa tahu cuaca besok atau lusa? Apa dia punya ilmu sihir? 🤔</span>
+      </div>
+      <div class="bento-grid">
+        <div class="bento-item">
+          <div class="bento-label">Pertanyaan Besar</div>
+          <div class="bento-value">🌧️ Hujan Besok?</div>
+          <div class="bento-desc">Bagaimana cara dia tahu?</div>
+        </div>
+        <div class="bento-item">
+          <div class="bento-label">Jawabannya</div>
+          <div class="bento-value">🔬 Sains!</div>
+          <div class="bento-desc">Bukan sulap, ini teknologi</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 3 -->
+  <div class="page split-page" id="page-3">
+    <div class="split-left">
+      <div class="visual-icon-main">
+        <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#2c6fa8" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <svg width="130" height="80" viewBox="0 0 130 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="130" height="80" rx="14" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+        <!-- VS comparison -->
+        <rect x="8" y="10" width="52" height="60" rx="8" fill="rgba(255,100,100,0.1)" stroke="rgba(255,100,100,0.2)" stroke-width="1"/>
+        <rect x="70" y="10" width="52" height="60" rx="8" fill="rgba(67,198,172,0.12)" stroke="rgba(67,198,172,0.25)" stroke-width="1"/>
+        <text x="34" y="30" font-size="18" text-anchor="middle" fill="rgba(180,60,60,0.7)">🧙</text>
+        <text x="96" y="30" font-size="18" text-anchor="middle" fill="rgba(44,111,168,0.8)">💻</text>
+        <text x="34" y="48" font-size="7" text-anchor="middle" fill="rgba(150,50,50,0.8)" font-family="Outfit" font-weight="bold">TEBAK-TEBAKAN</text>
+        <text x="96" y="48" font-size="7" text-anchor="middle" fill="rgba(44,111,168,0.8)" font-family="Outfit" font-weight="bold">SAINS</text>
+        <text x="34" y="62" font-size="6" text-anchor="middle" fill="rgba(120,120,120,0.8)" font-family="Outfit">❌ Tidak akurat</text>
+        <text x="96" y="62" font-size="6" text-anchor="middle" fill="rgba(44,111,168,0.8)" font-family="Outfit">✓ Akurat!</text>
+        <text x="65" y="44" font-size="10" text-anchor="middle" fill="rgba(44,111,168,0.5)" font-family="Outfit" font-weight="bold">VS</text>
+      </svg>
+      <p class="visual-title">Sains vs Tebak-tebakan</p>
+    </div>
+    <div class="split-right">
+      <div class="page-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Halaman 3 · Bukan Ramalan Biasa
+      </div>
+      <h2 class="page-heading">Ini <span class="highlight">Bukan Sihir,</span><br/>Ini Sains!</h2>
+      <p class="page-body">Aplikasi cuaca <strong>tidak menebak-nebak</strong> seperti dukun. Ia menggunakan sains dan teknologi yang sangat canggih untuk memprediksi cuaca.</p>
+      <div class="bento-grid">
+        <div class="bento-item">
+          <div class="bento-label">❌ Bukan</div>
+          <div class="bento-value">🧙 Ilmu Gaib</div>
+          <div class="bento-desc">Tidak ada ramalan mistik di sini</div>
+        </div>
+        <div class="bento-item">
+          <div class="bento-label">✅ Yang Dipakai</div>
+          <div class="bento-value">🔭 Sains</div>
+          <div class="bento-desc">Fisika, matematika, dan data</div>
+        </div>
+        <div class="bento-item wide">
+          <div class="bento-label">Kata Kuncinya</div>
+          <div class="bento-value">⚗️ Meteorologi — Ilmu tentang cuaca dan atmosfer bumi</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 4 -->
+  <div class="page split-page" id="page-4">
+    <div class="split-left">
+      <div class="visual-icon-main">
+        <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#2c6fa8" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Satellite icon -->
+          <path d="M2 12 C2 6.477 6.477 2 12 2 S22 6.477 22 12 17.523 22 12 22 2 17.523 2 12z"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/>
+        </svg>
+      </div>
+      <svg width="130" height="90" viewBox="0 0 130 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Earth -->
+        <circle cx="65" cy="65" r="20" fill="rgba(74,144,217,0.25)" stroke="rgba(74,144,217,0.4)" stroke-width="1.5"/>
+        <ellipse cx="65" cy="65" rx="20" ry="8" fill="none" stroke="rgba(74,144,217,0.3)" stroke-width="1" stroke-dasharray="3 3"/>
+        <!-- Satellite -->
+        <rect x="20" y="12" width="18" height="10" rx="3" fill="rgba(249,199,79,0.3)" stroke="rgba(249,199,79,0.6)" stroke-width="1.5"/>
+        <rect x="12" y="15" width="8" height="4" rx="1" fill="rgba(67,198,172,0.4)" stroke="rgba(67,198,172,0.6)" stroke-width="1"/>
+        <rect x="30" y="15" width="8" height="4" rx="1" fill="rgba(67,198,172,0.4)" stroke="rgba(67,198,172,0.6)" stroke-width="1"/>
+        <!-- Signal lines -->
+        <line x1="29" y1="22" x2="55" y2="50" stroke="rgba(249,199,79,0.5)" stroke-width="1" stroke-dasharray="3 3"/>
+        <!-- Station -->
+        <rect x="85" y="55" width="12" height="8" rx="2" fill="rgba(248,150,30,0.25)" stroke="rgba(248,150,30,0.5)" stroke-width="1"/>
+        <line x1="91" y1="55" x2="91" y2="48" stroke="rgba(248,150,30,0.5)" stroke-width="1.5"/>
+        <circle cx="91" cy="46" r="2" fill="rgba(248,150,30,0.5)"/>
+        <!-- Labels -->
+        <text x="29" y="10" font-size="6" fill="rgba(44,111,168,0.7)" font-family="Outfit">🛰 Satelit</text>
+        <text x="83" y="72" font-size="6" fill="rgba(44,111,168,0.7)" font-family="Outfit">📡 Stasiun</text>
+      </svg>
+      <p class="visual-title">Mata di Langit &amp; Darat</p>
+    </div>
+    <div class="split-right">
+      <div class="page-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Halaman 4 · Mata di Langit
+      </div>
+      <h2 class="page-heading">Siapa yang <span class="highlight">Mengumpulkan</span><br/>Data Cuaca?</h2>
+      <p class="page-body">Aplikasi cuaca mendapatkan data dari banyak sumber yang bekerja sama 24 jam sehari!</p>
+      <ul class="edu-list">
+        <li>
+          <div class="bullet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 C2 6.477 6.477 2 12 2 S22 6.477 22 12 17.523 22 12 22 2 17.523 2 12z"/><circle cx="12" cy="12" r="4"/></svg>
+          </div>
+          <span><strong>Satelit</strong> — mengambil foto bumi dari angkasa luar setiap beberapa menit</span>
+        </li>
+        <li>
+          <div class="bullet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.68 11.7a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.77 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6z"/></svg>
+          </div>
+          <span><strong>Stasiun cuaca di darat</strong> — mengukur suhu, angin, dan kelembaban</span>
+        </li>
+        <li>
+          <div class="bullet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </div>
+          <span><strong>Balon cuaca dan pesawat</strong> — terbang tinggi untuk ukur atmosfer</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PAGE 5 -->
+  <div class="page split-page" id="page-5">
+    <div class="split-left">
+      <div class="visual-icon-main">
+        <svg width="95" height="95" viewBox="0 0 24 24" fill="none" stroke="#2c6fa8" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>
+        </svg>
+      </div>
+      <svg width="130" height="75" viewBox="0 0 130 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Server rack -->
+        <rect x="25" y="5" width="80" height="65" rx="6" fill="rgba(44,111,168,0.1)" stroke="rgba(44,111,168,0.3)" stroke-width="1.5"/>
+        <rect x="30" y="12" width="70" height="10" rx="3" fill="rgba(74,144,217,0.2)" stroke="rgba(74,144,217,0.4)" stroke-width="1"/>
+        <rect x="30" y="26" width="70" height="10" rx="3" fill="rgba(74,144,217,0.2)" stroke="rgba(74,144,217,0.4)" stroke-width="1"/>
+        <rect x="30" y="40" width="70" height="10" rx="3" fill="rgba(74,144,217,0.2)" stroke="rgba(74,144,217,0.4)" stroke-width="1"/>
+        <rect x="30" y="54" width="70" height="10" rx="3" fill="rgba(74,144,217,0.2)" stroke="rgba(74,144,217,0.4)" stroke-width="1"/>
+        <circle cx="93" cy="17" r="3" fill="rgba(67,198,172,0.8)"><animate attributeName="opacity" values="0.4;1;0.4" dur="1.5s" repeatCount="indefinite"/></circle>
+        <circle cx="93" cy="31" r="3" fill="rgba(67,198,172,0.8)"><animate attributeName="opacity" values="1;0.4;1" dur="1.5s" repeatCount="indefinite"/></circle>
+        <circle cx="93" cy="45" r="3" fill="rgba(249,199,79,0.9)"><animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/></circle>
+        <circle cx="93" cy="59" r="3" fill="rgba(67,198,172,0.8)"><animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite"/></circle>
+        <text x="65" y="80" font-size="7" text-anchor="middle" fill="rgba(44,111,168,0.7)" font-family="Outfit">Supercomputer Cuaca</text>
+      </svg>
+      <p class="visual-sub">Miliaran kalkulasi per detik!</p>
+    </div>
+    <div class="split-right">
+      <div class="page-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+        Halaman 5 · Komputer Super Pintar
+      </div>
+      <h2 class="page-heading">Komputer <span class="highlight">Raksasa</span><br/>yang Bekerja Keras</h2>
+      <p class="page-body">Data dari seluruh dunia dikirim ke <strong>komputer super besar</strong>. Komputer ini bisa menghitung jutaan perhitungan dalam waktu yang sangat singkat!</p>
+      <div class="bento-grid">
+        <div class="bento-item">
+          <div class="bento-label">Kecepatan Hitung</div>
+          <div class="bento-value">⚡ Petaflop</div>
+          <div class="bento-desc">Miliaran kalkulasi per detik</div>
+        </div>
+        <div class="bento-item">
+          <div class="bento-label">Ukurannya</div>
+          <div class="bento-value">🏢 Segedung</div>
+          <div class="bento-desc">Besar sekali seperti gedung!</div>
+        </div>
+        <div class="bento-item wide">
+          <div class="bento-label">Nama Kerennya</div>
+          <div class="bento-value">🖥️ High-Performance Computing (HPC) — Digunakan khusus untuk prediksi cuaca global</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 6 -->
+  <div class="page split-page" id="page-6">
+    <div class="split-left">
+      <div class="visual-icon-main">
+        <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#2c6fa8" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <svg width="130" height="80" viewBox="0 0 130 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Flow chart -->
+        <rect x="5" y="5" width="36" height="18" rx="6" fill="rgba(74,144,217,0.2)" stroke="rgba(74,144,217,0.4)" stroke-width="1"/>
+        <text x="23" y="17" font-size="6.5" text-anchor="middle" fill="rgba(44,111,168,0.8)" font-family="Outfit" font-weight="600">Data Kini</text>
+        <line x1="41" y1="14" x2="52" y2="14" stroke="rgba(44,111,168,0.4)" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <rect x="52" y="5" width="36" height="18" rx="6" fill="rgba(67,198,172,0.15)" stroke="rgba(67,198,172,0.35)" stroke-width="1"/>
+        <text x="70" y="17" font-size="6.5" text-anchor="middle" fill="rgba(22,100,88,0.8)" font-family="Outfit" font-weight="600">Data Lama</text>
+        <line x1="88" y1="14" x2="99" y2="14" stroke="rgba(44,111,168,0.4)" stroke-width="1.5"/>
+        <rect x="99" y="5" width="28" height="18" rx="6" fill="rgba(249,199,79,0.18)" stroke="rgba(249,199,79,0.4)" stroke-width="1"/>
+        <text x="113" y="17" font-size="6.5" text-anchor="middle" fill="rgba(160,104,0,0.8)" font-family="Outfit" font-weight="600">Hitung</text>
+        <!-- Arrow down -->
+        <line x1="113" y1="23" x2="113" y2="35" stroke="rgba(44,111,168,0.4)" stroke-width="1.5"/>
+        <rect x="87" y="35" width="52" height="18" rx="6" fill="rgba(248,150,30,0.15)" stroke="rgba(248,150,30,0.35)" stroke-width="1"/>
+        <text x="113" y="47" font-size="6.5" text-anchor="middle" fill="rgba(160,80,0,0.8)" font-family="Outfit" font-weight="700">MODEL CUACA!</text>
+        <!-- Connecting to result -->
+        <line x1="87" y1="44" x2="74" y2="44" stroke="rgba(44,111,168,0.4)" stroke-width="1.5"/>
+        <rect x="10" y="35" width="64" height="18" rx="6" fill="rgba(44,111,168,0.12)" stroke="rgba(44,111,168,0.3)" stroke-width="1"/>
+        <text x="42" y="45" font-size="6" text-anchor="middle" fill="rgba(44,111,168,0.8)" font-family="Outfit">📱 Hasil Prediksi Cuaca</text>
+        <text x="42" y="53" font-size="5.5" text-anchor="middle" fill="rgba(44,111,168,0.6)" font-family="Outfit">di aplikasi HP kamu!</text>
+      </svg>
+      <p class="visual-title">Alur Prediksi Cuaca</p>
+    </div>
+    <div class="split-right">
+      <div class="page-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Halaman 6 · Cara Kerja Prediksi
+      </div>
+      <h2 class="page-heading">Begini <span class="highlight">Cara Kerja</span><br/>Prediksi Cuaca!</h2>
+      <p class="page-body">Ada tiga langkah utama yang dilakukan komputer untuk membuat prediksi cuaca:</p>
+      <ul class="edu-list">
+        <li>
+          <div class="bullet"><span style="font-size:11px;color:white;font-weight:700">1</span></div>
+          <span><strong>Mengumpulkan data cuaca saat ini</strong> dari satelit, stasiun, dan sensor</span>
+        </li>
+        <li>
+          <div class="bullet"><span style="font-size:11px;color:white;font-weight:700">2</span></div>
+          <span><strong>Membandingkan</strong> dengan data cuaca masa lalu yang sudah tersimpan</span>
+        </li>
+        <li>
+          <div class="bullet"><span style="font-size:11px;color:white;font-weight:700">3</span></div>
+          <span><strong>Menggunakan matematika &amp; fisika</strong> untuk prediksi ke depan</span>
+        </li>
+      </ul>
+      <div class="fun-fact">
+        <div class="fun-fact-icon">⚗️</div>
+        <span>Hasilnya disebut <strong>Model Cuaca</strong> — formula matematika yang menggambarkan perilaku atmosfer bumi!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 7 -->
+  <div class="page split-page" id="page-7">
+    <div class="split-left">
+      <div class="visual-icon-main">
+        <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#f9c74f" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;width:100%">
+        <div style="background:rgba(249,199,79,0.12);border:1px solid rgba(249,199,79,0.3);border-radius:12px;padding:8px 12px;font-size:11px;color:#a06800;font-family:'Outfit',sans-serif;font-weight:600;display:flex;align-items:center;gap:6px">
+          <span>🛰️</span> Satelit mengelilingi bumi setiap hari
+        </div>
+        <div style="background:rgba(74,144,217,0.1);border:1px solid rgba(74,144,217,0.25);border-radius:12px;padding:8px 12px;font-size:11px;color:#2c6fa8;font-family:'Outfit',sans-serif;font-weight:600;display:flex;align-items:center;gap:6px">
+          <span>💻</span> 1 komputer = ribuan laptop
+        </div>
+        <div style="background:rgba(67,198,172,0.1);border:1px solid rgba(67,198,172,0.25);border-radius:12px;padding:8px 12px;font-size:11px;color:#1a7a6a;font-family:'Outfit',sans-serif;font-weight:600;display:flex;align-items:center;gap:6px">
+          <span>📈</span> Makin akurat setiap tahunnya!
+        </div>
+      </div>
+    </div>
+    <div class="split-right">
+      <div class="page-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Halaman 7 · Fakta Keren
+      </div>
+      <h2 class="page-heading">🌟 Fakta Keren<br/>yang <span class="highlight">Bikin Takjub!</span></h2>
+      <p class="page-body">Tahukah Aslan? Di balik aplikasi cuaca ada fakta-fakta super seru yang jarang diketahui orang:</p>
+      <ul class="edu-list">
+        <li>
+          <div class="bullet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 C2 6.477 6.477 2 12 2 S22 6.477 22 12 17.523 22 12 22 2 17.523 2 12z"/><circle cx="12" cy="12" r="4"/></svg>
+          </div>
+          <span>Satelit cuaca mengelilingi bumi <strong>setiap hari</strong> tanpa henti selama bertahun-tahun</span>
+        </li>
+        <li>
+          <div class="bullet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+          </div>
+          <span>Satu komputer cuaca bisa <strong>sekuat ribuan laptop</strong> biasa yang digabung!</span>
+        </li>
+        <li>
+          <div class="bullet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <span>Ramalan cuaca sekarang <strong>jauh lebih akurat</strong> dibanding 10 tahun lalu berkat AI!</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PAGE 8 -->
+  <div class="page split-page" id="page-8">
+    <div class="split-left">
+      <div class="visual-icon-main">
+        <svg width="85" height="85" viewBox="0 0 24 24" fill="none" stroke="#2c6fa8" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="8" y1="20" x2="8.01" y2="20"/><line x1="12" y1="18" x2="12.01" y2="18"/><line x1="12" y1="22" x2="12.01" y2="22"/><line x1="16" y1="16" x2="16.01" y2="16"/><line x1="16" y1="20" x2="16.01" y2="20"/>
+        </svg>
+      </div>
+      <svg width="120" height="85" viewBox="0 0 120 85" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Weather app mockup -->
+        <rect x="20" y="0" width="80" height="85" rx="12" fill="rgba(44,111,168,0.1)" stroke="rgba(44,111,168,0.25)" stroke-width="1.5"/>
+        <rect x="27" y="8" width="66" height="20" rx="6" fill="rgba(249,199,79,0.15)" stroke="rgba(249,199,79,0.3)" stroke-width="1"/>
+        <text x="60" y="16" font-size="7" text-anchor="middle" fill="rgba(44,111,168,0.7)" font-family="Outfit">☀️ 28°C · Bandung</text>
+        <text x="60" y="24" font-size="6" text-anchor="middle" fill="rgba(44,111,168,0.5)" font-family="Outfit">Cerah berawan</text>
+        <rect x="27" y="32" width="30" height="18" rx="5" fill="rgba(74,144,217,0.15)" stroke="rgba(74,144,217,0.3)" stroke-width="1"/>
+        <text x="42" y="40" font-size="6" text-anchor="middle" fill="rgba(44,111,168,0.7)" font-family="Outfit">💧 80%</text>
+        <text x="42" y="46" font-size="5.5" text-anchor="middle" fill="rgba(44,111,168,0.55)" font-family="Outfit">Kelembaban</text>
+        <rect x="62" y="32" width="30" height="18" rx="5" fill="rgba(67,198,172,0.12)" stroke="rgba(67,198,172,0.3)" stroke-width="1"/>
+        <text x="77" y="40" font-size="6" text-anchor="middle" fill="rgba(22,100,88,0.7)" font-family="Outfit">💨 12km/h</text>
+        <text x="77" y="46" font-size="5.5" text-anchor="middle" fill="rgba(22,100,88,0.55)" font-family="Outfit">Angin</text>
+        <rect x="27" y="54" width="66" height="24" rx="6" fill="rgba(248,150,30,0.08)" stroke="rgba(248,150,30,0.2)" stroke-width="1"/>
+        <text x="60" y="62" font-size="6" text-anchor="middle" fill="rgba(44,111,168,0.6)" font-family="Outfit">Kualitas Udara: Baik 😊</text>
+        <text x="60" y="72" font-size="5.5" text-anchor="middle" fill="rgba(44,111,168,0.5)" font-family="Outfit">AQI: 45 · Aman beraktivitas</text>
+      </svg>
+    </div>
+    <div class="split-right">
+      <div class="page-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/></svg>
+        Halaman 8 · Apa yang Diprediksi?
+      </div>
+      <h2 class="page-heading">Apa Saja yang Bisa<br/><span class="highlight">Diprediksi Aplikasi?</span></h2>
+      <div class="bento-grid">
+        <div class="bento-item">
+          <div class="bento-label">🌡️ Suhu</div>
+          <div class="bento-value">Panas / Dingin</div>
+          <div class="bento-desc">Dalam satuan Celsius atau Fahrenheit</div>
+        </div>
+        <div class="bento-item">
+          <div class="bento-label">🌧️ Presipitasi</div>
+          <div class="bento-value">Hujan / Salju</div>
+          <div class="bento-desc">Termasuk petir dan badai</div>
+        </div>
+        <div class="bento-item">
+          <div class="bento-label">💨 Angin</div>
+          <div class="bento-value">Kecepatan + Arah</div>
+          <div class="bento-desc">Dalam km/jam atau knot</div>
+        </div>
+        <div class="bento-item">
+          <div class="bento-label">💧 Kelembaban</div>
+          <div class="bento-value">% Uap Air</div>
+          <div class="bento-desc">Seberapa lembab udaranya</div>
+        </div>
+        <div class="bento-item wide">
+          <div class="bento-label">🌫️ Kualitas Udara</div>
+          <div class="bento-value">AQI · Bahkan polusi udara pun bisa diprediksi sekarang!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 9 -->
+  <div class="page split-page" id="page-9">
+    <div class="split-left">
+      <div class="visual-icon-main">
+        <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#f8961e" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <svg width="130" height="80" viewBox="0 0 130 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Accuracy graph -->
+        <rect width="130" height="80" rx="10" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+        <!-- Grid lines -->
+        <line x1="15" y1="15" x2="15" y2="65" stroke="rgba(44,111,168,0.2)" stroke-width="1"/>
+        <line x1="15" y1="65" x2="120" y2="65" stroke="rgba(44,111,168,0.2)" stroke-width="1"/>
+        <!-- Predicted line -->
+        <polyline points="15,50 40,45 65,35 90,30 115,22" stroke="rgba(74,144,217,0.6)" stroke-width="2" fill="none" stroke-dasharray="4 2"/>
+        <!-- Actual line (chaos) -->
+        <polyline points="15,50 40,55 65,38 90,42 115,28" stroke="rgba(248,150,30,0.8)" stroke-width="2" fill="none"/>
+        <!-- Labels -->
+        <text x="30" y="13" font-size="6" fill="rgba(74,144,217,0.8)" font-family="Outfit">- - Prediksi</text>
+        <text x="75" y="13" font-size="6" fill="rgba(248,150,30,0.9)" font-family="Outfit">—— Nyata</text>
+        <text x="65" y="75" font-size="6" text-anchor="middle" fill="rgba(44,111,168,0.6)" font-family="Outfit">Alam kadang tidak terduga!</text>
+      </svg>
+      <p class="visual-title">Prediksi vs Kenyataan</p>
+    </div>
+    <div class="split-right">
+      <div class="page-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Halaman 9 · Kenapa Bisa Salah?
+      </div>
+      <h2 class="page-heading">Kenapa <span class="highlight">Kadang</span><br/>Ramalannya Salah?</h2>
+      <p class="page-body">Cuaca itu sangat <strong>kompleks</strong> dan bisa berubah sangat cepat. Meski menggunakan komputer super canggih, kadang alam lebih kuat dan tidak terduga.</p>
+      <ul class="edu-list">
+        <li>
+          <div class="bullet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+          </div>
+          <span>Atmosfer bumi adalah sistem yang sangat <strong>kompleks</strong> dengan banyak variabel</span>
+        </li>
+        <li>
+          <div class="bullet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <span>Perubahan kecil di satu tempat bisa menyebabkan <strong>dampak besar</strong> di tempat lain</span>
+        </li>
+        <li>
+          <div class="bullet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>
+          </div>
+          <span>Ramalan <strong>1-2 hari ke depan</strong> lebih akurat dibanding 7 hari ke depan</span>
+        </li>
+      </ul>
+      <div class="fun-fact">
+        <div class="fun-fact-icon">💡</div>
+        <span>Para ilmuwan terus <strong>memperbaiki model cuaca</strong> agar semakin akurat setiap harinya!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 10 -->
+  <div class="page split-page" id="page-10">
+    <div class="split-left">
+      <div class="visual-icon-main">
+        <svg width="88" height="88" viewBox="0 0 24 24" fill="none" stroke="#43c6ac" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;width:100%">
+        <div class="metric-pill blue"><span>👕</span> Pilih Baju Tepat</div>
+        <div class="metric-pill sun"><span>🌾</span> Bantu Petani</div>
+        <div class="metric-pill teal"><span>✈️</span> Navigasi Pilot</div>
+        <div class="metric-pill blue"><span>🌊</span> Keselamatan Laut</div>
+        <div class="metric-pill sun"><span>🚨</span> Cegah Bencana</div>
+      </div>
+    </div>
+    <div class="split-right">
+      <div class="page-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Halaman 10 · Manfaat Aplikasi Cuaca
+      </div>
+      <h2 class="page-heading">Aplikasi Cuaca <span class="highlight">Sangat Berguna</span><br/>untuk Banyak Orang!</h2>
+      <ul class="edu-list">
+        <li>
+          <div class="bullet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <span><strong>Kamu &amp; Keluarga</strong> — tahu baju apa yang harus dipakai hari ini</span>
+        </li>
+        <li>
+          <div class="bullet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          </div>
+          <span><strong>Petani</strong> — tahu kapan saatnya menanam, menyiram, atau memanen</span>
+        </li>
+        <li>
+          <div class="bullet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </div>
+          <span><strong>Pilot &amp; Kapal</strong> — mengetahui cuaca di jalur perjalanan agar aman</span>
+        </li>
+        <li>
+          <div class="bullet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <span><strong>Tim Bencana</strong> — mengurangi risiko dari banjir, badai, dan tsunami</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PAGE 11 -->
+  <div class="page split-page" id="page-11">
+    <div class="split-left">
+      <div class="visual-icon-main">
+        <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#2c6fa8" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <svg width="130" height="80" viewBox="0 0 130 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Team illustration -->
+        <circle cx="30" cy="35" r="12" fill="rgba(74,144,217,0.15)" stroke="rgba(74,144,217,0.3)" stroke-width="1.5"/>
+        <circle cx="65" cy="25" r="14" fill="rgba(249,199,79,0.15)" stroke="rgba(249,199,79,0.4)" stroke-width="1.5"/>
+        <circle cx="100" cy="35" r="12" fill="rgba(67,198,172,0.15)" stroke="rgba(67,198,172,0.35)" stroke-width="1.5"/>
+        <text x="30" y="39" font-size="14" text-anchor="middle">👩‍💻</text>
+        <text x="65" y="30" font-size="16" text-anchor="middle">🧑‍🔬</text>
+        <text x="100" y="39" font-size="14" text-anchor="middle">👨‍🏫</text>
+        <text x="30" y="55" font-size="6" text-anchor="middle" fill="rgba(44,111,168,0.7)" font-family="Outfit" font-weight="600">Coder</text>
+        <text x="65" y="48" font-size="6" text-anchor="middle" fill="rgba(160,104,0,0.8)" font-family="Outfit" font-weight="600">Ilmuwan</text>
+        <text x="100" y="55" font-size="6" text-anchor="middle" fill="rgba(22,100,88,0.7)" font-family="Outfit" font-weight="600">Matematikawan</text>
+        <!-- Connection lines -->
+        <line x1="42" y1="35" x2="51" y2="28" stroke="rgba(44,111,168,0.25)" stroke-width="1" stroke-dasharray="2 2"/>
+        <line x1="79" y1="28" x2="88" y2="33" stroke="rgba(44,111,168,0.25)" stroke-width="1" stroke-dasharray="2 2"/>
+        <!-- Result -->
+        <rect x="40" y="62" width="50" height="14" rx="5" fill="rgba(44,111,168,0.1)" stroke="rgba(44,111,168,0.25)" stroke-width="1"/>
+        <text x="65" y="72" font-size="7" text-anchor="middle" fill="rgba(44,111,168,0.8)" font-family="Outfit" font-weight="700">📱 Aplikasi Cuaca!</text>
+      </svg>
+      <p class="visual-title">Tim Kerja Keras di Baliknya</p>
+    </div>
+    <div class="split-right">
+      <div class="page-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Halaman 11 · Pesan Penting
+      </div>
+      <h2 class="page-heading">Di Balik Layar<br/>Ada <span class="highlight">Tim Luar Biasa!</span></h2>
+      <p class="page-body">Aplikasi cuaca yang kelihatannya sederhana itu <strong>dibuat oleh banyak orang hebat</strong> yang bekerja keras bertahun-tahun.</p>
+      <div class="bento-grid">
+        <div class="bento-item">
+          <div class="bento-label">👩‍💻 Programmer</div>
+          <div class="bento-value">Coding</div>
+          <div class="bento-desc">Menulis kode aplikasinya</div>
+        </div>
+        <div class="bento-item">
+          <div class="bento-label">🧑‍🔬 Ilmuwan</div>
+          <div class="bento-value">Fisika & Sains</div>
+          <div class="bento-desc">Memahami cara kerja cuaca</div>
+        </div>
+        <div class="bento-item">
+          <div class="bento-label">📐 Matematikawan</div>
+          <div class="bento-value">Rumus & Model</div>
+          <div class="bento-desc">Membuat formula prediksi</div>
+        </div>
+        <div class="bento-item">
+          <div class="bento-label">🌐 Data Engineer</div>
+          <div class="bento-value">Data Pipeline</div>
+          <div class="bento-desc">Mengalirkan data dari dunia</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 12: ENDING -->
+  <div class="page ending-page" id="page-12">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:4px">
+      <div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#4a90d9,#43c6ac);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(67,198,172,0.4);animation:floatIcon 3s ease-in-out infinite;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div>
+        <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:20px;color:#1a2a3a">Selamat, Aslan! 🎉</div>
+        <div style="font-size:12px;color:#2d4a6a;opacity:0.7">Kamu sudah selesai Flip #19</div>
+      </div>
+    </div>
+    <p style="font-size:14px;color:#2d4a6a;line-height:1.7;text-align:center;max-width:480px">
+      Sekarang kamu sudah tahu <strong>rahasia aplikasi cuaca!</strong><br/>
+      Makin banyak ilmu yang kamu pelajari, semakin kamu paham dunia di sekitarmu. 🌍
+    </p>
+    <div class="metric-row" style="justify-content:center">
+      <span class="metric-pill blue">🛰️ Satelit</span>
+      <span class="metric-pill sun">💻 Supercomputer</span>
+      <span class="metric-pill teal">📡 Stasiun Cuaca</span>
+    </div>
+    <div class="next-preview">
+      <div style="font-size:22px">🛍️</div>
+      <div>
+        <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:12px;color:#1a7a6a">Flipbook Selanjutnya → Bab 20</div>
+        <div style="font-size:12px;color:#2d4a6a;opacity:0.8">Belanja Online – Siapa yang Mengatur Toko di HP?</div>
+      </div>
+    </div>
+    <div class="ayah-note">
+      <div style="font-size:20px;flex-shrink:0">👨‍💼</div>
+      <div>Kalau ada yang ingin ditanyakan tentang cuaca, aplikasi, coding, atau hal lainnya — <strong>tanya saja ke Ayah Sigit ya!</strong> Ayah senang sekali menjelaskan. 😊</div>
+    </div>
+    <a href="..\/perpustakaan.html" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#4a90d9,#2c6fa8);color:white;font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;padding:12px 28px;border-radius:50px;text-decoration:none;box-shadow:0 6px 20px rgba(44,111,168,0.35);transition:all 0.25s ease;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      Kembali ke Perpustakaan
+    </a>
+  </div>
+
+</div>
+
+<!-- Navigation buttons -->
+<button id="nav-prev" onclick="goPage(-1)" disabled aria-label="Halaman sebelumnya">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+</button>
+<button id="nav-next" onclick="goPage(1)" aria-label="Halaman berikutnya">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+</button>
+
+<script>
+  const TOTAL = 12;
+  let current = 1;
+  let isAnimating = false;
+
+  // Generate rain drops
+  const rainContainer = document.getElementById('rainContainer');
+  for (let i = 0; i < 35; i++) {
+    const drop = document.createElement('div');
+    drop.className = 'raindrop';
+    drop.style.left = Math.random() * 100 + '%';
+    drop.style.height = (Math.random() * 30 + 15) + 'px';
+    drop.style.animationDuration = (Math.random() * 1.5 + 0.8) + 's';
+    drop.style.animationDelay = Math.random() * 3 + 's';
+    drop.style.opacity = Math.random() * 0.6 + 0.2;
+    rainContainer.appendChild(drop);
+  }
+
+  // Generate progress dots
+  const dotsContainer = document.getElementById('progress-dots');
+  for (let i = 1; i <= TOTAL; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'progress-dot' + (i === 1 ? ' active' : '');
+    dot.id = 'dot-' + i;
+    dotsContainer.appendChild(dot);
+  }
+
+  function updateUI() {
+    document.getElementById('progress-bar').style.width = (current / TOTAL * 100) + '%';
+    document.getElementById('page-counter').textContent = current + ' / ' + TOTAL;
+    document.getElementById('nav-prev').disabled = current === 1;
+    document.getElementById('nav-next').disabled = current === TOTAL;
+    for (let i = 1; i <= TOTAL; i++) {
+      const dot = document.getElementById('dot-' + i);
+      dot.className = 'progress-dot' + (i === current ? ' active' : i < current ? ' done' : '');
+    }
+  }
+
+  function goPage(dir) {
+    if (isAnimating) return;
+    const next = current + dir;
+    if (next < 1 || next > TOTAL) return;
+    isAnimating = true;
+
+    const curEl = document.getElementById('page-' + current);
+    const nextEl = document.getElementById('page-' + next);
+
+    curEl.style.animation = 'fadeOutDown 0.3s ease forwards';
+    setTimeout(() => {
+      curEl.classList.remove('active');
+      curEl.style.animation = '';
+      current = next;
+      nextEl.style.animation = '';
+      nextEl.classList.add('active');
+      void nextEl.offsetWidth;
+      nextEl.style.animation = 'fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards';
+      updateUI();
+      setTimeout(() => { isAnimating = false; }, 500);
+    }, 280);
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goPage(-1);
+  });
+
+  // Touch/swipe support
+  let touchStartX = 0, touchStartY = 0;
+  document.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      goPage(dx < 0 ? 1 : -1);
+    }
+  }, { passive: true });
+
+  updateUI();
+</script>
+</body>
+</html>

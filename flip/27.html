@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Flip 27 – Anak Seumuranku yang Sudah Bisa Coding</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--cyan:#00D4FF;--neon:#39FF14;--yellow:#FFE11A;--pink:#FF4DB8;--purple:#7C3AED;--navy:#0A1628}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Plus Jakarta Sans',sans-serif;background:var(--navy);display:flex;flex-direction:column;overflow:hidden}
+
+/* TOP BAR */
+#topbar{flex-shrink:0;height:52px;background:linear-gradient(90deg,#0A1628,#0F2040);border-bottom:2px solid rgba(0,212,255,.22);display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:10}
+#topbar a.back-btn{display:flex;align-items:center;gap:5px;color:var(--cyan);font-family:'Fredoka',sans-serif;font-weight:600;font-size:14px;text-decoration:none;background:rgba(0,212,255,.1);border:1.5px solid rgba(0,212,255,.3);border-radius:20px;padding:5px 13px 5px 9px;transition:.2s;white-space:nowrap}
+#topbar a.back-btn:hover{background:rgba(0,212,255,.2);border-color:var(--cyan)}
+.tbar-title{font-family:'Fredoka One',cursive;color:#fff;font-size:13px;flex:1;text-align:center;margin:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbar-pg{color:var(--cyan);font-family:'Fredoka',sans-serif;font-weight:700;font-size:13px;background:rgba(0,212,255,.1);border:1.5px solid rgba(0,212,255,.2);border-radius:20px;padding:4px 11px;white-space:nowrap}
+
+/* PROGRESS */
+#prog-wrap{flex-shrink:0;height:3px;background:rgba(255,255,255,.06)}
+#prog-bar{height:3px;background:linear-gradient(90deg,var(--cyan),var(--neon));border-radius:0 3px 3px 0;transition:width .4s ease}
+
+/* STAGE — scrollable */
+#stage{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(0,212,255,.25) transparent}
+#stage::-webkit-scrollbar{width:4px}
+#stage::-webkit-scrollbar-thumb{background:rgba(0,212,255,.25);border-radius:4px}
+
+/* PAGES */
+.page{display:none;flex-direction:column;align-items:center;padding:16px 16px 20px;min-height:100%}
+.page.active{display:flex;animation:slideIn .38s cubic-bezier(.4,0,.2,1) both}
+@keyframes slideIn{from{opacity:0;transform:translateX(var(--sdir,50px))}to{opacity:1;transform:translateX(0)}}
+
+/* INNER */
+.p-inner{width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px}
+
+/* CARD */
+.card{background:linear-gradient(145deg,#0F2040,#112244);border:1.5px solid rgba(0,212,255,.18);border-radius:22px;padding:20px;box-shadow:0 8px 40px rgba(0,0,0,.45);width:100%}
+
+/* HERO */
+.hero-card{background:linear-gradient(140deg,#0F2040 0%,#0A1628 60%,#080d1c 100%);border-radius:26px;border:2px solid rgba(0,212,255,.28);padding:26px 20px 22px;text-align:center;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.55),0 0 70px rgba(0,212,255,.07);position:relative;overflow:hidden}
+.hero-card::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(0,212,255,.13) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+
+/* STARS */
+.star{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;opacity:.35;animation:twinkle 3s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.12;transform:scale(1)}50%{opacity:.7;transform:scale(1.5)}}
+
+/* TYPE */
+.pg-label{font-family:'Fredoka',sans-serif;font-weight:700;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);opacity:.7;margin-bottom:6px}
+h1.pg-title{font-family:'Fredoka One',cursive;font-size:clamp(22px,6vw,32px);line-height:1.15;color:#fff;margin-bottom:6px}
+h2.sec-title{font-family:'Fredoka One',cursive;font-size:clamp(18px,5vw,26px);color:var(--cyan);margin-bottom:10px}
+p.body{font-size:14px;line-height:1.72;color:rgba(255,255,255,.85)}
+.hi{color:var(--yellow);font-weight:700}.ni{color:var(--neon);font-weight:700}.pi{color:var(--pink);font-weight:700}
+
+/* BADGE */
+.badge{display:inline-block;border-radius:99px;padding:3px 12px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:12px}
+.bc{background:rgba(0,212,255,.14);color:var(--cyan);border:1px solid rgba(0,212,255,.28)}
+.by{background:rgba(255,225,26,.13);color:var(--yellow);border:1px solid rgba(255,225,26,.28)}
+.bn{background:rgba(57,255,20,.11);color:var(--neon);border:1px solid rgba(57,255,20,.28)}
+.bp{background:rgba(255,77,184,.12);color:var(--pink);border:1px solid rgba(255,77,184,.28)}
+
+/* INFO ROW */
+.irow{display:flex;align-items:flex-start;gap:12px;background:rgba(0,212,255,.07);border-radius:13px;padding:11px 13px;border:1px solid rgba(0,212,255,.14);margin-bottom:8px;transition:.2s;cursor:default}
+.irow:hover{background:rgba(0,212,255,.13);border-color:rgba(0,212,255,.32)}
+.irow .ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
+.irow .txt p{font-size:13.5px;color:rgba(255,255,255,.85);line-height:1.5}
+.irow .txt strong{color:#fff;font-weight:700}
+
+/* FLIP CARDS */
+.fc-wrap{perspective:900px;cursor:pointer;margin-bottom:8px}
+.fc-inner{position:relative;width:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1);border-radius:14px}
+.fc-wrap.flipped .fc-inner{transform:rotateY(180deg)}
+.fc-front,.fc-back{backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:96px;text-align:center}
+.fc-front{background:rgba(0,212,255,.09);border:1.5px solid rgba(0,212,255,.22)}
+.fc-back{background:rgba(57,255,20,.08);border:1.5px solid rgba(57,255,20,.28);position:absolute;inset:0;transform:rotateY(180deg)}
+.fc-hint{font-size:11px;color:rgba(255,255,255,.3);font-style:italic;text-align:center;margin-top:2px}
+
+/* CHECKLIST */
+.citem{display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,.04);border-radius:12px;padding:10px 12px;margin-bottom:7px;cursor:pointer;transition:.2s;border:1.5px solid transparent}
+.citem:hover{background:rgba(255,255,255,.08)}
+.citem.checked{background:rgba(57,255,20,.08);border-color:rgba(57,255,20,.28)}
+.citem .cico{width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.28);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;transition:.2s;margin-top:1px;color:transparent}
+.citem.checked .cico{background:var(--neon);border-color:var(--neon);color:#000}
+.clabel{font-size:13.5px;color:rgba(255,255,255,.85);line-height:1.55}
+
+/* GRID CARDS */
+.gcards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.gcard{background:rgba(0,212,255,.07);border:1.5px solid rgba(0,212,255,.18);border-radius:14px;padding:14px;text-align:center;cursor:pointer;transition:.2s}
+.gcard:hover{background:rgba(0,212,255,.15);border-color:rgba(0,212,255,.4);transform:translateY(-2px)}
+.gcard .gico{font-size:28px;margin-bottom:4px}
+.gcard .glabel{font-family:'Fredoka',sans-serif;font-weight:700;font-size:13px;color:var(--cyan)}
+
+/* METER */
+.mbar{height:8px;background:rgba(255,255,255,.09);border-radius:99px;overflow:hidden;margin-top:5px}
+.mfill{height:100%;border-radius:99px;width:0;transition:width 1s ease .2s}
+
+/* STEP LIST */
+.steps{position:relative;padding-left:28px}
+.steps::before{content:'';position:absolute;left:13px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--cyan),var(--neon),var(--yellow));border-radius:1px;opacity:.35}
+.step{position:relative;margin-bottom:12px}
+.step-num{position:absolute;left:-22px;top:2px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#000;font-weight:800}
+.step p{font-size:13.5px;color:rgba(255,255,255,.85);line-height:1.55}
+
+/* ANIMATIONS */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.float{animation:float 3s ease-in-out infinite}
+@keyframes pglow{0%,100%{box-shadow:0 0 12px rgba(0,212,255,.25)}50%{box-shadow:0 0 30px rgba(0,212,255,.65),0 0 55px rgba(0,212,255,.15)}}
+.pglow{animation:pglow 2.8s ease-in-out infinite}
+@keyframes confetti-fall{0%{opacity:1;transform:translateY(-10px) rotate(0deg) scale(1)}100%{opacity:0;transform:translateY(130px) rotate(400deg) scale(.6)}}
+
+/* QBOX */
+.qbox{background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(57,255,20,.06));border:1.5px solid rgba(0,212,255,.22);border-radius:16px;padding:14px;text-align:center}
+
+/* BOTTOM NAV */
+#botnav{flex-shrink:0;background:linear-gradient(180deg,rgba(10,22,40,0) 0%,rgba(10,22,40,.97) 100%);padding:10px 14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.nbtn{font-family:'Fredoka',sans-serif;font-weight:700;font-size:15px;border:none;border-radius:50px;cursor:pointer;padding:12px 20px;transition:.2s;display:flex;align-items:center;gap:6px}
+.nbtn:active{transform:scale(.95)}
+#btn-prev{background:rgba(255,255,255,.09);color:rgba(255,255,255,.65);border:1.5px solid rgba(255,255,255,.13);flex:1}
+#btn-prev:hover:not(:disabled){background:rgba(255,255,255,.16);color:#fff}
+#btn-prev:disabled{opacity:.28;cursor:not-allowed}
+#btn-next{background:linear-gradient(135deg,var(--cyan),#0099cc);color:#0A1628;flex:1.8;box-shadow:0 4px 20px rgba(0,212,255,.38)}
+#btn-next:hover:not(:disabled){box-shadow:0 6px 28px rgba(0,212,255,.6);transform:translateY(-1px)}
+#btn-next:disabled{opacity:.35;cursor:not-allowed}
+#dots{display:flex;gap:5px;align-items:center;flex-shrink:0}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.18);transition:.3s;cursor:pointer}
+.dot.active{background:var(--cyan);width:18px;border-radius:3px;box-shadow:0 0 8px var(--cyan)}
+
+@media(max-height:640px){.page{padding:10px 12px 14px}.card,.hero-card{padding:14px}}
+@media(min-width:600px){.p-inner,.hero-card{max-width:520px}}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <a href="../perpustakaan.html" class="back-btn">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Kembali
+  </a>
+  <div class="tbar-title">✦ Flip 27 – Coding Kids</div>
+  <div class="tbar-pg"><span id="cpg">1</span>/12</div>
+</div>
+<div id="prog-wrap"><div id="prog-bar" style="width:8.33%"></div></div>
+
+<!-- STAGE -->
+<div id="stage">
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  PAGE 1 – COVER                 ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="page active" id="p1" style="justify-content:center">
+  <div class="hero-card pglow">
+    <div id="sc" style="position:absolute;inset:0;border-radius:26px;overflow:hidden;pointer-events:none"></div>
+    <div style="position:relative;z-index:1">
+      <div class="badge bc" style="margin-bottom:10px">✦ FLIP 27</div>
+      <div style="display:flex;justify-content:center;margin-bottom:8px" class="float">
+        <svg width="170" height="148" viewBox="0 0 170 148" fill="none">
+          <rect x="25" y="52" width="120" height="74" rx="11" fill="#112244" stroke="#00D4FF" stroke-width="2.2"/>
+          <rect x="35" y="61" width="100" height="55" rx="7" fill="#0A1628"/>
+          <text x="43" y="77" font-family="monospace" font-size="8.5" fill="#39FF14">function halo() {</text>
+          <text x="50" y="89" font-family="monospace" font-size="8.5" fill="#00D4FF">  return "Aslan!"</text>
+          <text x="43" y="101" font-family="monospace" font-size="8.5" fill="#39FF14">}</text>
+          <text x="43" y="109" font-family="monospace" font-size="8.5" fill="#FFE11A">// Ayo coding! 🚀</text>
+          <rect x="88" y="104" width="5" height="8" rx="1" fill="#FF4DB8"><animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/></rect>
+          <rect x="75" y="126" width="20" height="8" rx="3" fill="#0F2040" stroke="#00D4FF" stroke-width="1.5"/>
+          <rect x="60" y="132" width="50" height="7" rx="3.5" fill="#0F2040" stroke="#00D4FF" stroke-width="1.5"/>
+          <ellipse cx="85" cy="28" rx="17" ry="18" fill="#FFDBB5"/>
+          <path d="M68 23 Q69 10 85 11 Q101 10 102 23 Q96 16 85 16 Q74 16 68 23Z" fill="#1A0A00"/>
+          <circle cx="78.5" cy="24" r="2.3" fill="#1A0A00"/><circle cx="91.5" cy="24" r="2.3" fill="#1A0A00"/>
+          <circle cx="79.3" cy="23.2" r=".85" fill="white"/><circle cx="92.3" cy="23.2" r=".85" fill="white"/>
+          <path d="M78 31 Q85 37 92 31" stroke="#FF6B6B" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+          <circle cx="73" cy="30" r="4.5" fill="#FFB3B3" opacity=".45"/><circle cx="97" cy="30" r="4.5" fill="#FFB3B3" opacity=".45"/>
+          <text x="10" y="38" font-size="15" fill="#FFE11A">⭐</text>
+          <text x="143" y="32" font-size="13" fill="#39FF14">✦</text>
+          <text x="14" y="88" font-size="11" fill="#FF4DB8">★</text>
+          <text x="144" y="82" font-size="11" fill="#00D4FF">◆</text>
+        </svg>
+      </div>
+      <h1 class="pg-title" style="text-align:center;font-size:clamp(21px,5.5vw,30px)">Anak Seumuranku<br/>yang Sudah Bisa<br/><span style="color:var(--cyan)">Coding! 💻</span></h1>
+      <p style="font-size:13px;color:rgba(255,255,255,.6);text-align:center;margin-top:8px;line-height:1.6">Ternyata banyak anak seusia <strong style="color:var(--yellow)">Aslan</strong><br/>yang sudah hebat coding! 🚀</p>
+      <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:14px">
+        <span class="badge bc">12 Halaman</span>
+        <span class="badge bn">Motivasi</span>
+        <span class="badge by">Untuk Aslan</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  PAGE 2 – PENGENALAN            ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="page" id="p2">
+<div class="p-inner">
+  <div class="card">
+    <div class="pg-label">Halaman 2 – Pengenalan</div>
+    <h2 class="sec-title">Hai, <span style="color:var(--yellow)">Aslan!</span> 👋</h2>
+    <div style="display:flex;justify-content:center;margin:6px 0 12px">
+      <svg width="155" height="90" viewBox="0 0 155 90" fill="none">
+        <circle cx="77" cy="45" r="20" fill="#0F2040" stroke="#00D4FF" stroke-width="2"/>
+        <text x="77" y="50" text-anchor="middle" font-size="18">🧑‍💻</text>
+        <circle cx="20" cy="20" r="13" fill="#0F2040" stroke="#39FF14" stroke-width="1.5"/>
+        <text x="20" y="25" text-anchor="middle" font-size="13">👦</text>
+        <circle cx="134" cy="20" r="13" fill="#0F2040" stroke="#FF4DB8" stroke-width="1.5"/>
+        <text x="134" y="25" text-anchor="middle" font-size="13">👧</text>
+        <circle cx="20" cy="72" r="13" fill="#0F2040" stroke="#FFE11A" stroke-width="1.5"/>
+        <text x="20" y="77" text-anchor="middle" font-size="13">🧒</text>
+        <circle cx="134" cy="72" r="13" fill="#0F2040" stroke="#7C3AED" stroke-width="1.5"/>
+        <text x="134" y="77" text-anchor="middle" font-size="13">🧒</text>
+        <line x1="77" y1="26" x2="32" y2="26" stroke="#39FF14" stroke-width="1.4" stroke-dasharray="4,3" opacity=".6"/>
+        <line x1="77" y1="26" x2="122" y2="26" stroke="#FF4DB8" stroke-width="1.4" stroke-dasharray="4,3" opacity=".6"/>
+        <line x1="77" y1="63" x2="32" y2="65" stroke="#FFE11A" stroke-width="1.4" stroke-dasharray="4,3" opacity=".6"/>
+        <line x1="77" y1="63" x2="122" y2="65" stroke="#7C3AED" stroke-width="1.4" stroke-dasharray="4,3" opacity=".6"/>
+      </svg>
+    </div>
+    <p class="body"><span class="hi">Aslan</span>, kamu tidak sendirian loh! 🎉<br/><br/>Banyak anak <span class="ni">seusia kamu</span> yang sudah pintar coding dan membuat <span class="hi">aplikasi sendiri</span>. Keren banget, kan?</p>
+    <div class="qbox" style="margin-top:14px">
+      <div style="font-size:30px;margin-bottom:6px">💡</div>
+      <p style="font-size:14px;color:var(--cyan);font-weight:700;font-family:'Fredoka',sans-serif;line-height:1.5">"Setiap coder hebat<br/>pernah jadi pemula!"</p>
+    </div>
+    <div style="background:rgba(255,225,26,.07);border:1px solid rgba(255,225,26,.2);border-radius:12px;padding:10px 14px;margin-top:10px">
+      <p style="font-size:13px;color:rgba(255,255,255,.75);text-align:center;line-height:1.6">Anak-anak itu tidak lebih pintar dari kamu —<br/>mereka hanya <strong style="color:var(--yellow)">mulai lebih awal</strong>. Sekarang giliranmu! ✨</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  PAGE 3 – SIAPA MEREKA          ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="page" id="p3">
+<div class="p-inner">
+  <div class="card">
+    <div class="pg-label">Halaman 3 – Siapa Mereka?</div>
+    <h2 class="sec-title">Siapa Mereka? 🤔</h2>
+    <div style="display:flex;justify-content:center;margin:4px 0 14px">
+      <svg width="160" height="82" viewBox="0 0 160 82" fill="none">
+        <ellipse cx="25" cy="24" rx="13" ry="14" fill="#FFDBB5"/>
+        <path d="M12 20 Q13 9 25 10 Q37 9 38 20" fill="#1A0A00"/>
+        <circle cx="20" cy="20" r="2" fill="#1A0A00"/><circle cx="30" cy="20" r="2" fill="#1A0A00"/>
+        <path d="M20 27 Q25 31 30 27" stroke="#FF6B6B" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <rect x="13" y="37" width="24" height="22" rx="6" fill="#39FF14" opacity=".75"/>
+        <text x="25" y="52" text-anchor="middle" font-size="11" fill="#000" font-family="monospace">{}</text>
+        <ellipse cx="80" cy="22" rx="14" ry="15" fill="#FFD5AA"/>
+        <path d="M66 18 Q67 6 80 7 Q93 6 94 17" fill="#4A2800"/>
+        <circle cx="74" cy="19" r="2.2" fill="#1A0A00"/><circle cx="86" cy="19" r="2.2" fill="#1A0A00"/>
+        <path d="M74 26 Q80 31 86 26" stroke="#FF6B6B" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <rect x="67" y="36" width="26" height="22" rx="6" fill="#FF4DB8" opacity=".75"/>
+        <text x="80" y="51" text-anchor="middle" font-size="12" fill="#fff">✿</text>
+        <ellipse cx="135" cy="24" rx="13" ry="14" fill="#FFDBB5"/>
+        <path d="M122 20 Q123 9 135 10 Q147 9 148 20" fill="#1A0A00"/>
+        <circle cx="129" cy="20" r="2" fill="#1A0A00"/><circle cx="141" cy="20" r="2" fill="#1A0A00"/>
+        <path d="M129 27 Q135 31 141 27" stroke="#FF6B6B" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <rect x="123" y="37" width="24" height="22" rx="6" fill="#00D4FF" opacity=".75"/>
+        <text x="135" y="52" text-anchor="middle" font-size="11" fill="#000" font-family="monospace">&lt;/&gt;</text>
+      </svg>
+    </div>
+    <p class="body" style="margin-bottom:12px">Mereka adalah <span class="hi">anak-anak biasa</span> seperti kamu. Ada yang masih SD, ada yang SMP — tapi sudah bisa membuat hal keren:</p>
+    <div class="irow">
+      <div class="ico" style="background:rgba(0,212,255,.14)">🎮</div>
+      <div class="txt"><p><strong>Game</strong> seru yang bisa dimainkan teman-teman sekelas</p></div>
+    </div>
+    <div class="irow">
+      <div class="ico" style="background:rgba(57,255,20,.11)">🌐</div>
+      <div class="txt"><p><strong>Website</strong> yang bisa dilihat semua orang di internet</p></div>
+    </div>
+    <div class="irow" style="margin-bottom:0">
+      <div class="ico" style="background:rgba(255,77,184,.11)">📱</div>
+      <div class="txt"><p><strong>Aplikasi</strong> yang membantu kehidupan sehari-hari</p></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  PAGE 4 – CONTOH ANAK HEBAT     ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="page" id="p4">
+<div class="p-inner">
+  <div class="card">
+    <div class="pg-label">Halaman 4 – Contoh Anak Hebat</div>
+    <h2 class="sec-title">Anak-Anak Hebat 🌟</h2>
+    <p class="body" style="margin-bottom:12px">👆 <strong style="color:var(--yellow)">Klik kartu</strong> untuk lihat pencapaian mereka!</p>
+    <!-- Ravi -->
+    <div class="fc-wrap" onclick="this.classList.toggle('flipped')">
+      <div class="fc-inner">
+        <div class="fc-front">
+          <div style="font-size:34px">🧒</div>
+          <div style="font-family:'Fredoka One',cursive;color:var(--cyan);font-size:17px">Ravi – 11 tahun</div>
+          <span class="badge bc" style="font-size:11px">Klik untuk lihat!</span>
+        </div>
+        <div class="fc-back">
+          <div style="font-size:30px">🎮</div>
+          <p style="color:var(--neon);font-weight:700;font-family:'Fredoka',sans-serif;font-size:14px">Game Edukasi Matematika</p>
+          <p style="font-size:12.5px;color:rgba(255,255,255,.75)">Ravi membuat game yang bikin belajar matematika jadi menyenangkan!</p>
+        </div>
+      </div>
+    </div>
+    <div class="fc-hint">👆 Klik kartu untuk balik!</div>
+    <!-- Sinta -->
+    <div class="fc-wrap" onclick="this.classList.toggle('flipped')" style="margin-top:8px">
+      <div class="fc-inner">
+        <div class="fc-front" style="background:rgba(255,77,184,.09);border-color:rgba(255,77,184,.22)">
+          <div style="font-size:34px">👧</div>
+          <div style="font-family:'Fredoka One',cursive;color:var(--pink);font-size:17px">Sinta – 10 tahun</div>
+          <span class="badge bp" style="font-size:11px">Klik untuk lihat!</span>
+        </div>
+        <div class="fc-back" style="background:rgba(255,77,184,.08);border-color:rgba(255,77,184,.3)">
+          <div style="font-size:30px">📖</div>
+          <p style="color:var(--pink);font-weight:700;font-family:'Fredoka',sans-serif;font-size:14px">Aplikasi Cerita Anak</p>
+          <p style="font-size:12.5px;color:rgba(255,255,255,.75)">Dibuat pakai Scratch! Teman-temannya suka sekali baca ceritanya.</p>
+        </div>
+      </div>
+    </div>
+    <!-- Bima -->
+    <div class="fc-wrap" onclick="this.classList.toggle('flipped')" style="margin-top:8px">
+      <div class="fc-inner">
+        <div class="fc-front" style="background:rgba(255,225,26,.08);border-color:rgba(255,225,26,.22)">
+          <div style="font-size:34px">🧑</div>
+          <div style="font-family:'Fredoka One',cursive;color:var(--yellow);font-size:17px">Bima – 12 tahun</div>
+          <span class="badge by" style="font-size:11px">Klik untuk lihat!</span>
+        </div>
+        <div class="fc-back" style="background:rgba(255,225,26,.07);border-color:rgba(255,225,26,.3)">
+          <div style="font-size:30px">🛒</div>
+          <p style="color:var(--yellow);font-weight:700;font-family:'Fredoka',sans-serif;font-size:14px">Website Toko Online</p>
+          <p style="font-size:12.5px;color:rgba(255,255,255,.75)">Dibuat untuk toko orang tuanya — semua dibikin sendiri oleh Bima!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  PAGE 5 – DARI MANA BELAJAR     ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="page" id="p5">
+<div class="p-inner">
+  <div class="card">
+    <div class="pg-label">Halaman 5 – Dari Mana Belajar?</div>
+    <h2 class="sec-title">Dari Mana Belajar? 📚</h2>
+    <div style="display:flex;justify-content:center;margin:4px 0 12px">
+      <svg width="130" height="72" viewBox="0 0 130 72" fill="none">
+        <rect x="5" y="14" width="34" height="24" rx="7" fill="#FF0000" opacity=".8"/>
+        <polygon points="20,19 31,26 20,33" fill="white"/>
+        <text x="22" y="52" text-anchor="middle" fill="#FF6666" font-size="8" font-family="sans-serif">YouTube</text>
+        <rect x="48" y="14" width="30" height="24" rx="6" fill="#7C3AED" opacity=".82"/>
+        <line x1="63" y1="14" x2="63" y2="38" stroke="white" stroke-width="1.5"/>
+        <line x1="54" y1="20" x2="60" y2="20" stroke="white" stroke-width="1.2"/>
+        <line x1="54" y1="25" x2="60" y2="25" stroke="white" stroke-width="1.2"/>
+        <line x1="54" y1="30" x2="60" y2="30" stroke="white" stroke-width="1.2"/>
+        <text x="63" y="52" text-anchor="middle" fill="#A78BFA" font-size="8" font-family="sans-serif">Buku</text>
+        <rect x="91" y="14" width="34" height="24" rx="7" fill="#FF6600" opacity=".82"/>
+        <text x="108" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="bold" font-family="sans-serif">S</text>
+        <text x="108" y="52" text-anchor="middle" fill="#FFA066" font-size="8" font-family="sans-serif">Scratch</text>
+      </svg>
+    </div>
+    <p class="body" style="margin-bottom:10px">Centang cara yang mau <span class="hi">kamu coba</span>! 👇</p>
+    <div class="citem" onclick="toggleCheck(this)">
+      <div class="cico">✓</div>
+      <div class="clabel"><strong>YouTube</strong> – ratusan tutorial gratis dan mudah diikuti!</div>
+    </div>
+    <div class="citem" onclick="toggleCheck(this)">
+      <div class="cico">✓</div>
+      <div class="clabel"><strong>Scratch</strong> – coding pakai balok warna-warni, cocok banget buat pemula!</div>
+    </div>
+    <div class="citem" onclick="toggleCheck(this)">
+      <div class="cico">✓</div>
+      <div class="clabel"><strong>Kelas coding online</strong> – belajar bareng teman-teman dan mentor seru</div>
+    </div>
+    <div class="citem" onclick="toggleCheck(this)">
+      <div class="cico">✓</div>
+      <div class="clabel"><strong>Buku &amp; internet</strong> – belajar mandiri kapan saja, di mana saja!</div>
+    </div>
+    <div class="qbox" style="margin-top:6px">
+      <p style="font-size:13px;color:var(--cyan);font-weight:700;font-family:'Fredoka',sans-serif">💡 Tidak perlu semua sekaligus — pilih <span style="color:var(--yellow)">satu cara</span> dan mulai hari ini!</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  PAGE 6 – APA YANG MEREKA BUAT  ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="page" id="p6">
+<div class="p-inner">
+  <div class="card">
+    <div class="pg-label">Halaman 6 – Apa yang Mereka Buat?</div>
+    <h2 class="sec-title">Kreasi Mereka! 🎨</h2>
+    <p class="body" style="margin-bottom:14px">Lihat apa saja yang sudah dibuat anak-anak seusiamu! <span class="hi">Kamu mau buat yang mana?</span></p>
+    <div class="gcards">
+      <div class="gcard">
+        <div class="gico">🎮</div>
+        <div class="glabel">Game Sederhana</div>
+        <p style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">Tembak-tembakan, puzzle, balapan!</p>
+      </div>
+      <div class="gcard" style="background:rgba(57,255,20,.07);border-color:rgba(57,255,20,.18)">
+        <div class="gico">⛅</div>
+        <div class="glabel" style="color:var(--neon)">Aplikasi Cuaca</div>
+        <p style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">Info cuaca yang lucu!</p>
+      </div>
+      <div class="gcard" style="background:rgba(255,225,26,.07);border-color:rgba(255,225,26,.18)">
+        <div class="gico">🌐</div>
+        <div class="glabel" style="color:var(--yellow)">Website Sekolah</div>
+        <p style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">Jadwal, berita, profil!</p>
+      </div>
+      <div class="gcard" style="background:rgba(255,77,184,.07);border-color:rgba(255,77,184,.18)">
+        <div class="gico">🎬</div>
+        <div class="glabel" style="color:var(--pink)">Animasi Kartun</div>
+        <p style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">Karakter bergerak sendiri!</p>
+      </div>
+    </div>
+    <div style="background:rgba(124,58,237,.09);border:1.5px solid rgba(124,58,237,.22);border-radius:14px;padding:14px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:.2s" onmouseenter="this.style.background='rgba(124,58,237,.18)'" onmouseleave="this.style.background='rgba(124,58,237,.09)'">
+      <div style="font-size:36px">🤖</div>
+      <div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#A78BFA;font-size:14px">Robot dengan Arduino</div>
+        <p style="font-size:12px;color:rgba(255,255,255,.5);margin-top:2px">Sensor cahaya, gerak, suara — semua bisa!</p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  PAGE 7 – FAKTA KEREN           ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="page" id="p7">
+<div class="p-inner">
+  <div class="card">
+    <div class="pg-label">Halaman 7 – Fakta Keren</div>
+    <h2 class="sec-title">Fakta Keren! 🤩</h2>
+    <div style="display:flex;justify-content:center;margin:4px 0 14px">
+      <svg width="110" height="88" viewBox="0 0 110 88" fill="none">
+        <path d="M28 16 Q28 50 55 56 Q82 50 82 16 Z" fill="#FFE11A" opacity=".85"/>
+        <path d="M28 22 Q16 22 16 33 Q16 46 31 46" stroke="#FFE11A" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>
+        <path d="M82 22 Q94 22 94 33 Q94 46 79 46" stroke="#FFE11A" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>
+        <rect x="43" y="57" width="24" height="9" rx="4" fill="#FFE11A" opacity=".85"/>
+        <rect x="36" y="64" width="38" height="7" rx="3.5" fill="#FFE11A" opacity=".85"/>
+        <text x="55" y="44" text-anchor="middle" font-size="22">⭐</text>
+        <text x="90" y="20" font-size="13" fill="#FFE11A" opacity=".7">✦</text>
+        <text x="8" y="22" font-size="11" fill="#00D4FF" opacity=".6">◆</text>
+        <text x="94" y="60" font-size="9" fill="#39FF14" opacity=".6">●</text>
+      </svg>
+    </div>
+    <div class="irow">
+      <div class="ico" style="background:rgba(255,225,26,.14)">🌍</div>
+      <div class="txt"><p>Banyak anak Indonesia <strong>di bawah 13 tahun</strong> sudah ikut <span style="color:var(--yellow)">kompetisi coding internasional!</span></p></div>
+    </div>
+    <div class="irow">
+      <div class="ico" style="background:rgba(57,255,20,.11)">🥇</div>
+      <div class="txt"><p>Beberapa dari mereka sudah mendapat <span style="color:var(--neon)">penghargaan bergengsi</span> dari berbagai negara!</p></div>
+    </div>
+    <div class="irow" style="margin-bottom:12px">
+      <div class="ico" style="background:rgba(0,212,255,.11)">😄</div>
+      <div class="txt"><p>Mereka <strong>belajar sambil bermain</strong> — tidak merasa bosan sama sekali!</p></div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(255,225,26,.11),rgba(0,212,255,.07));border:1.5px solid rgba(255,225,26,.22);border-radius:14px;padding:12px;text-align:center">
+      <p style="font-family:'Fredoka',sans-serif;font-weight:700;font-size:14px;color:var(--yellow)">🇮🇩 Anak Indonesia bisa bersaing di dunia!</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  PAGE 8 – RAHASIA SUKSES        ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="page" id="p8">
+<div class="p-inner">
+  <div class="card">
+    <div class="pg-label">Halaman 8 – Rahasia Sukses</div>
+    <h2 class="sec-title">Rahasia Mereka! 🔑</h2>
+    <p class="body" style="margin-bottom:16px">Apa yang membuat mereka berhasil? Ini <span class="hi">3 rahasia utama</span>:</p>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:22px">⏱️</span><span style="font-family:'Fredoka',sans-serif;font-weight:700;color:#fff;font-size:14px">Rajin Latihan Tiap Hari</span></div>
+        <span style="font-size:11px;color:var(--cyan);font-weight:700;background:rgba(0,212,255,.1);padding:2px 8px;border-radius:99px">30 menit!</span>
+      </div>
+      <div class="mbar"><div class="mfill" style="background:linear-gradient(90deg,var(--cyan),#009bcc)" data-w="90"></div></div>
+      <p style="font-size:12px;color:rgba(255,255,255,.5);margin-top:5px">Konsisten setiap hari lebih penting dari belajar lama sekali seminggu.</p>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:22px">💪</span><span style="font-family:'Fredoka',sans-serif;font-weight:700;color:#fff;font-size:14px">Tidak Takut Salah</span></div>
+        <span style="font-size:11px;color:var(--neon);font-weight:700;background:rgba(57,255,20,.1);padding:2px 8px;border-radius:99px">Coba terus!</span>
+      </div>
+      <div class="mbar"><div class="mfill" style="background:linear-gradient(90deg,var(--neon),#00aa00)" data-w="85"></div></div>
+      <p style="font-size:12px;color:rgba(255,255,255,.5);margin-top:5px">Error itu bukan kegagalan — itu pelajaran berharga untuk coder!</p>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:22px">🌟</span><span style="font-family:'Fredoka',sans-serif;font-weight:700;color:#fff;font-size:14px">Punya Mimpi Besar</span></div>
+        <span style="font-size:11px;color:var(--yellow);font-weight:700;background:rgba(255,225,26,.1);padding:2px 8px;border-radius:99px">Bermimpi!</span>
+      </div>
+      <div class="mbar"><div class="mfill" style="background:linear-gradient(90deg,var(--yellow),#bb9900)" data-w="95"></div></div>
+      <p style="font-size:12px;color:rgba(255,255,255,.5);margin-top:5px">Mimpi besar memberi semangat untuk terus belajar hal baru.</p>
+    </div>
+    <div style="background:rgba(255,77,184,.08);border:1.5px solid rgba(255,77,184,.2);border-radius:14px;padding:12px;text-align:center">
+      <p style="font-size:13.5px;color:var(--pink);font-weight:700;font-family:'Fredoka',sans-serif">✨ Kamu juga punya semua ini, Aslan! ✨</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  PAGE 9 – KAMU JUGA BISA        ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="page" id="p9">
+<div class="p-inner">
+  <div class="card">
+    <div class="pg-label">Halaman 9 – Kamu Juga Bisa!</div>
+    <h2 class="sec-title">Kamu Juga Bisa! 🚀</h2>
+    <div style="display:flex;justify-content:center;margin:4px 0 12px">
+      <svg width="150" height="100" viewBox="0 0 150 100" fill="none" class="float">
+        <path d="M75 8 Q58 32 52 60 Q62 52 75 52 Q88 52 98 60 Q92 32 75 8Z" fill="#00D4FF" opacity=".85"/>
+        <ellipse cx="75" cy="62" rx="24" ry="32" fill="#0F2040" stroke="#00D4FF" stroke-width="2"/>
+        <circle cx="75" cy="46" r="9" fill="#0A1628" stroke="#00D4FF" stroke-width="1.5"/>
+        <circle cx="75" cy="46" r="5.5" fill="#39FF14" opacity=".8"/>
+        <path d="M52 60 L37 78 L55 70" fill="#0099CC" opacity=".75"/>
+        <path d="M98 60 L113 78 L95 70" fill="#0099CC" opacity=".75"/>
+        <ellipse cx="75" cy="86" rx="9" ry="14" fill="#FF6600" opacity=".7"><animate attributeName="ry" values="14;9;14" dur=".45s" repeatCount="indefinite"/></ellipse>
+        <ellipse cx="75" cy="86" rx="5" ry="9" fill="#FFE11A" opacity=".85"><animate attributeName="ry" values="9;5;9" dur=".35s" repeatCount="indefinite"/></ellipse>
+      </svg>
+    </div>
+    <p class="body" style="margin-bottom:14px">Kamu <span class="hi">tidak perlu langsung pandai</span>. Mulai dari yang kecil, perlahan naik level!</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" style="background:var(--cyan)">1</div>
+        <p><strong style="color:var(--cyan)">Mulai Scratch</strong> – drag &amp; drop balok kode yang seru dan colorful. Cocok banget buat pemula!</p>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--neon)">2</div>
+        <p><strong style="color:var(--neon)">Naik Level</strong> – coba Python atau JavaScript. Kode sungguhan tapi tetap seru!</p>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--yellow)">3</div>
+        <p><strong style="color:var(--yellow)">Buat Projekmu</strong> – game, website, atau aplikasi yang kamu impikan sendiri!</p>
+      </div>
+    </div>
+    <div class="qbox" style="margin-top:8px">
+      <p style="font-size:14px;color:var(--cyan);font-weight:700;font-family:'Fredoka',sans-serif">🎯 Mulai hari ini, <span style="color:var(--yellow)">Aslan</span>!</p>
+      <p style="font-size:12.5px;color:rgba(255,255,255,.65);margin-top:4px;line-height:1.5">Satu langkah kecil setiap hari = satu langkah besar menuju mimpimu.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  PAGE 10 – PESAN UNTUK ASLAN    ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="page" id="p10">
+<div class="p-inner">
+  <div class="card" style="text-align:center">
+    <div class="pg-label" style="text-align:center">Halaman 10 – Pesan Spesial</div>
+    <div style="font-size:52px;margin:8px 0 4px" class="float">🌟</div>
+    <h2 class="sec-title" style="text-align:center;line-height:1.3">Untuk<br/><span style="color:var(--yellow)">Aslan</span></h2>
+    <div style="background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(57,255,20,.06));border:2px solid rgba(0,212,255,.22);border-radius:18px;padding:18px;margin:12px 0;position:relative">
+      <div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:30px">💌</div>
+      <p style="font-size:14.5px;line-height:1.8;color:rgba(255,255,255,.9);margin-top:10px">
+        <span style="font-family:'Fredoka One',cursive;color:var(--cyan);font-size:18px">Aslan</span>,<br/><br/>
+        kamu <span class="hi">juga bisa</span> jadi anak yang hebat di coding!<br/><br/>
+        Mulai sekarang, belajar <span class="ni">sedikit demi sedikit</span> setiap hari.<br/><br/>
+        Setiap baris kode yang kamu tulis adalah <span class="pi">satu langkah maju</span> menuju mimpimu! 🚀
+      </p>
+    </div>
+    <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px">
+      <span class="badge bc">💙 Semangat!</span>
+      <span class="badge bn">💚 Kamu Bisa!</span>
+      <span class="badge by">💛 Percaya Diri!</span>
+    </div>
+    <div style="background:rgba(255,225,26,.07);border:1px solid rgba(255,225,26,.18);border-radius:12px;padding:10px">
+      <p style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.6">Anak-anak yang berhasil bukan yang paling pintar, tapi yang <strong style="color:var(--cyan)">paling mau mencoba</strong>! ✨</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  PAGE 11 – PESAN PENTING        ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="page" id="p11">
+<div class="p-inner">
+  <div class="card">
+    <div class="pg-label">Halaman 11 – Pesan Penting</div>
+    <h2 class="sec-title">Ingat Ini Selalu! 📌</h2>
+    <div style="display:flex;justify-content:center;margin:4px 0 14px">
+      <svg width="130" height="88" viewBox="0 0 130 88" fill="none">
+        <circle cx="35" cy="44" r="26" fill="#0F2040" stroke="#FFE11A" stroke-width="2"/>
+        <circle cx="35" cy="44" r="3.5" fill="#FFE11A"/>
+        <line x1="35" y1="44" x2="35" y2="24" stroke="#FFE11A" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="35" y1="44" x2="51" y2="53" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"/>
+        <text x="35" y="19" text-anchor="middle" font-size="7" fill="#FFE11A" opacity=".65">12</text>
+        <text x="35" y="75" text-anchor="middle" font-size="7" fill="#FFE11A" opacity=".65">6</text>
+        <text x="10" y="48" text-anchor="middle" font-size="7" fill="#FFE11A" opacity=".65">9</text>
+        <text x="61" y="48" text-anchor="middle" font-size="7" fill="#FFE11A" opacity=".65">3</text>
+        <rect x="84" y="38" width="36" height="30" rx="7" fill="#0F2040" stroke="#39FF14" stroke-width="2"/>
+        <path d="M93 38 Q93 26 102 26 Q111 26 111 34" stroke="#39FF14" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <circle cx="102" cy="52" r="4" fill="#39FF14" opacity=".85"/>
+        <rect x="100" y="52" width="4" height="8" rx="2" fill="#39FF14" opacity=".85"/>
+      </svg>
+    </div>
+    <div style="background:rgba(255,225,26,.08);border:2px solid rgba(255,225,26,.22);border-radius:16px;padding:16px;margin-bottom:12px;text-align:center">
+      <p style="font-family:'Fredoka One',cursive;font-size:18px;color:var(--yellow);line-height:1.4">"Umur bukan penghalang<br/>untuk belajar coding!"</p>
+    </div>
+    <div class="irow">
+      <div class="ico" style="background:rgba(0,212,255,.11)">👥</div>
+      <div class="txt"><p>Banyak anak seusiamu yang sudah <strong>berhasil membuat karya nyata</strong>. Kamu sudah baca kisah mereka di halaman sebelumnya!</p></div>
+    </div>
+    <div class="irow" style="margin-bottom:12px">
+      <div class="ico" style="background:rgba(57,255,20,.1)">🔓</div>
+      <div class="txt"><p>Coding bisa dipelajari siapa saja — tidak perlu bakat khusus, hanya <strong>kemauan dan konsistensi!</strong></p></div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(0,212,255,.12),rgba(57,255,20,.07));border:2px solid rgba(0,212,255,.28);border-radius:16px;padding:16px;text-align:center">
+      <p style="font-family:'Fredoka One',cursive;font-size:22px;color:var(--cyan);line-height:1.4">Kamu berikutnya,<br/><span style="color:var(--yellow)">Aslan! 🎯</span></p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  PAGE 12 – ENDING               ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="page" id="p12">
+<div class="p-inner">
+  <div style="position:relative;width:100%">
+    <div id="cb" style="position:absolute;inset:0;overflow:hidden;border-radius:22px;pointer-events:none;z-index:0"></div>
+    <div class="card" style="text-align:center;position:relative;z-index:1">
+      <div class="pg-label" style="text-align:center">Halaman 12 – Selamat!</div>
+      <div style="font-size:52px;margin:8px 0 4px" class="float">🎉</div>
+      <h1 class="pg-title" style="text-align:center;font-size:clamp(20px,5.5vw,28px)">Selamat, <span style="color:var(--yellow)">Aslan!</span></h1>
+      <p class="body" style="margin:10px 0 14px">Kamu sudah mengenal anak-anak seusia kamu yang <span class="hi">hebat coding!</span> Sekarang <span class="ni">giliran kamu</span> untuk mencoba dan berprestasi! 🚀</p>
+      <div style="background:linear-gradient(135deg,#0F2040,#112244);border:2px solid rgba(0,212,255,.28);border-radius:18px;padding:16px;margin-bottom:12px">
+        <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);font-family:'Fredoka',sans-serif;font-weight:700;opacity:.7;margin-bottom:4px">👀 Berikutnya</p>
+        <p style="font-family:'Fredoka One',cursive;font-size:17px;color:var(--yellow)">Bab 28: Coder Kecil 💻</p>
+        <p style="font-size:13px;color:rgba(255,255,255,.65);margin-top:4px">Cerita Anak yang Membuat Aplikasi</p>
+        <div style="margin-top:8px"><span class="badge bc">Tunggu ya! 🎈</span></div>
+      </div>
+      <div style="background:rgba(255,77,184,.08);border:2px solid rgba(255,77,184,.22);border-radius:16px;padding:15px;margin-bottom:12px">
+        <p style="font-size:15px;color:var(--pink);font-family:'Fredoka',sans-serif;font-weight:700;margin-bottom:5px">💬 Ada pertanyaan tentang coding?</p>
+        <p style="font-size:13.5px;color:rgba(255,255,255,.82);line-height:1.65">Tanya <strong style="color:#fff">Ayah Sigit</strong> ya!<br/>Ayah siap bantu kamu belajar Scratch,<br/>coding, dan cara mulai belajar! 🤗</p>
+      </div>
+      <p style="font-size:11px;color:rgba(255,255,255,.3);font-family:'Fredoka',sans-serif">— Flip 27 selesai ✦ Aslan —</p>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- #stage -->
+
+<!-- BOTTOM NAV -->
+<div id="botnav">
+  <button class="nbtn" id="btn-prev" onclick="changePage(-1)">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Sebelumnya
+  </button>
+  <div id="dots"></div>
+  <button class="nbtn" id="btn-next" onclick="changePage(1)">
+    Selanjutnya
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</div>
+
+<script>
+const TOTAL=12;let cur=1;
+
+// Dots
+const dotsEl=document.getElementById('dots');
+for(let i=1;i<=TOTAL;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===1?' active':'');
+  d.dataset.pg=i;d.onclick=()=>goTo(i);
+  dotsEl.appendChild(d);
+}
+
+// Cover stars
+const sc=document.getElementById('sc');
+for(let i=0;i<28;i++){
+  const s=document.createElement('div');s.className='star';
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${(Math.random()*3).toFixed(2)}s;animation-duration:${(2+Math.random()*2).toFixed(2)}s`;
+  sc.appendChild(s);
+}
+
+// Confetti page 12
+const cb=document.getElementById('cb');
+const cols=['#00D4FF','#39FF14','#FFE11A','#FF4DB8','#7C3AED','#FF6600'];
+for(let i=0;i<22;i++){
+  const d=document.createElement('div');const sz=4+Math.random()*7;
+  d.style.cssText=`position:absolute;border-radius:${Math.random()>.5?'50%':'3px'};width:${sz}px;height:${sz}px;background:${cols[Math.floor(Math.random()*cols.length)]};left:${Math.random()*100}%;top:-12px;opacity:0;animation:confetti-fall ${(2+Math.random()*2).toFixed(2)}s ease-in ${(Math.random()*2.5).toFixed(2)}s infinite`;
+  cb.appendChild(d);
+}
+
+function updateUI(){
+  document.getElementById('cpg').textContent=cur;
+  document.getElementById('prog-bar').style.width=((cur/TOTAL)*100)+'%';
+  document.getElementById('btn-prev').disabled=cur===1;
+  const nb=document.getElementById('btn-next');nb.disabled=cur===TOTAL;
+  nb.innerHTML=cur===TOTAL?'🎉 Selesai!':'Selanjutnya <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  dotsEl.querySelectorAll('.dot').forEach(d=>d.classList.toggle('active',+d.dataset.pg===cur));
+  if(cur===8){setTimeout(()=>{document.querySelectorAll('.mfill').forEach(el=>el.style.width=(el.dataset.w||'0')+'%')},250);}
+}
+
+function goTo(target){
+  if(target===cur||target<1||target>TOTAL)return;
+  const fromEl=document.getElementById('p'+cur);
+  const toEl=document.getElementById('p'+target);
+  const goRight=target>cur;
+  toEl.style.setProperty('--sdir',goRight?'55px':'-55px');
+  fromEl.classList.remove('active');
+  toEl.classList.add('active');
+  document.getElementById('stage').scrollTop=0;
+  cur=target;updateUI();
+}
+
+function changePage(d){goTo(cur+d);}
+
+function toggleCheck(el){el.classList.toggle('checked');}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')changePage(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')changePage(-1);
+});
+
+let tx=null;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(tx===null)return;
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>48)changePage(dx<0?1:-1);
+  tx=null;
+},{passive:true});
+
+updateUI();
+</script>
+</body>
+</html>

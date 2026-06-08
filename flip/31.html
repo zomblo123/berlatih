@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 1: Apa Saja yang Ada di Dalam Komputer?</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #5ec8f2;
+    --mint: #3dd9b3;
+    --sun: #ffd43b;
+    --orange: #ff8c42;
+    --pink: #ff6b9d;
+    --purple: #a78bfa;
+    --bg: #f0f9ff;
+    --card: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(94,200,242,0.15) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(61,217,179,0.15) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(255,212,59,0.08) 0%, transparent 60%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, .display { font-family: 'Fredoka One', cursive; }
+
+  /* Stars background */
+  .stars-bg::before {
+    content: '⭐ 🌟 ✨ 💫 ⭐ 🌟 ✨ 💫 ⭐ 🌟';
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    font-size: 1.2rem;
+    opacity: 0.08;
+    letter-spacing: 3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Header gradient */
+  .header-grad {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 40%, #0ea5e9 70%, #22d3ee 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .header-grad::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  /* Floating clouds */
+  .cloud {
+    position: absolute;
+    opacity: 0.18;
+    animation: floatCloud 12s ease-in-out infinite;
+  }
+  .cloud2 { animation-delay: -6s; animation-duration: 15s; }
+  @keyframes floatCloud {
+    0%, 100% { transform: translateX(0) translateY(0); }
+    50% { transform: translateX(15px) translateY(-8px); }
+  }
+
+  /* Aslan character */
+  .aslan-bounce {
+    animation: bounce 2s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* Speech bubble */
+  .speech-bubble {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    border: 3px solid var(--sky);
+    box-shadow: 4px 4px 0px var(--sky);
+  }
+  .speech-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -22px;
+    left: 30px;
+    border: 12px solid transparent;
+    border-top-color: var(--sky);
+  }
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 33px;
+    border: 10px solid transparent;
+    border-top-color: white;
+  }
+
+  /* Component cards */
+  .comp-card {
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 3px solid transparent;
+    position: relative;
+    z-index: 1;
+  }
+  .comp-card:hover {
+    transform: scale(1.08) translateY(-4px);
+    z-index: 10;
+  }
+  .comp-card.active {
+    transform: scale(1.05);
+    border-color: var(--sun);
+    box-shadow: 0 0 0 4px rgba(255,212,59,0.4), 0 8px 24px rgba(0,0,0,0.15);
+  }
+
+  /* Glow effects per component */
+  .glow-cpu:hover  { box-shadow: 0 0 20px rgba(239,68,68,0.5); border-color: #ef4444; }
+  .glow-ram:hover  { box-shadow: 0 0 20px rgba(59,130,246,0.5); border-color: #3b82f6; }
+  .glow-mobo:hover { box-shadow: 0 0 20px rgba(34,197,94,0.5);  border-color: #22c55e; }
+  .glow-hdd:hover  { box-shadow: 0 0 20px rgba(168,85,247,0.5); border-color: #a855f7; }
+  .glow-psu:hover  { box-shadow: 0 0 20px rgba(234,179,8,0.5);  border-color: #eab308; }
+  .glow-fan:hover  { box-shadow: 0 0 20px rgba(20,184,166,0.5); border-color: #14b8a6; }
+
+  /* Pop-up modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .modal-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .modal-box {
+    background: white;
+    border-radius: 28px;
+    max-width: 420px;
+    width: 100%;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    transform: scale(0.8) translateY(30px);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 4px solid transparent;
+  }
+  .modal-overlay.show .modal-box {
+    transform: scale(1) translateY(0);
+  }
+
+  /* Big button */
+  .btn-magic {
+    background: linear-gradient(135deg, #ff6b9d, #ff8c42);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2.5rem;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #c74a6a, 0 8px 20px rgba(255,107,157,0.4);
+    transition: all 0.15s ease;
+    letter-spacing: 0.5px;
+  }
+  .btn-magic:hover { transform: translateY(-3px); box-shadow: 0 9px 0 #c74a6a, 0 12px 28px rgba(255,107,157,0.5); }
+  .btn-magic:active { transform: translateY(3px); box-shadow: 0 3px 0 #c74a6a; }
+
+  .btn-next {
+    background: linear-gradient(135deg, #3dd9b3, #0ea5e9);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.9rem 2.2rem;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.15rem;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #0e7490, 0 7px 18px rgba(14,165,233,0.4);
+    transition: all 0.15s ease;
+  }
+  .btn-next:hover { transform: translateY(-3px); }
+  .btn-next:active { transform: translateY(3px); box-shadow: 0 2px 0 #0e7490; }
+
+  /* Animated enter */
+  @keyframes enterComputer {
+    0%   { transform: scale(1); opacity: 1; }
+    30%  { transform: scale(1.05); }
+    60%  { transform: scale(0.95) translateY(10px); opacity: 0.8; }
+    100% { transform: scale(0) translateY(50px); opacity: 0; }
+  }
+  @keyframes showInside {
+    0%   { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .entering { animation: enterComputer 0.8s ease-in-out forwards; }
+  .inside-show { animation: showInside 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+  /* Fan spin */
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .fan-spin { animation: spin 1.5s linear infinite; }
+  .fan-slow  { animation: spin 4s linear infinite; }
+
+  /* Progress dots */
+  .day-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+  /* Section title underline */
+  .section-title {
+    position: relative;
+    display: inline-block;
+  }
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -6px; left: 0; right: 0;
+    height: 5px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--sun), var(--orange));
+  }
+
+  /* Activity area */
+  .draw-area {
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 28px,
+      rgba(94,200,242,0.25) 28px, rgba(94,200,242,0.25) 30px
+    ),
+    repeating-linear-gradient(
+      90deg, transparent, transparent 28px,
+      rgba(94,200,242,0.15) 28px, rgba(94,200,242,0.15) 30px
+    );
+    border: 3px dashed var(--sky);
+    border-radius: 20px;
+    min-height: 180px;
+  }
+
+  /* Sticker badges */
+  .badge {
+    background: linear-gradient(135deg, var(--sun), var(--orange));
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    border-radius: 50px;
+    padding: 0.3rem 1rem;
+    font-size: 0.85rem;
+    display: inline-block;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 640px) {
+    .comp-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .btn-magic { font-size: 1.1rem; padding: 0.8rem 1.8rem; }
+  }
+
+  /* Pulse ring */
+  @keyframes pulseRing {
+    0%   { transform: scale(1); opacity: 0.7; }
+    100% { transform: scale(2.5); opacity: 0; }
+  }
+  .pulse-ring::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    border: 3px solid currentColor;
+    animation: pulseRing 1.5s ease-out infinite;
+  }
+
+  /* Confetti burst on enter */
+  @keyframes confettiFly {
+    0%   { transform: translate(0,0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) rotate(720deg); opacity: 0; }
+  }
+  .confetti-piece {
+    position: fixed;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 100;
+    animation: confettiFly 1s ease-out forwards;
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body class="stars-bg">
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ======== MODAL OVERLAY ======== -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal-box" id="modalBox">
+    <div class="text-4xl text-center mb-2" id="modalEmoji">🧠</div>
+    <div id="modalColor" class="w-full h-2 rounded-full mb-4"></div>
+    <h3 class="text-2xl font-bold text-center mb-1" id="modalTitle" style="font-family:'Fredoka One',cursive"></h3>
+    <div class="badge mb-3" id="modalBadge"></div>
+    <p class="text-gray-600 text-base leading-relaxed mb-4" id="modalDesc"></p>
+    <div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-3 mb-4">
+      <p class="text-sm font-bold text-yellow-700">💡 Analogi Anak:</p>
+      <p class="text-sm text-yellow-800 mt-1" id="modalAnalogy"></p>
+    </div>
+    <p class="text-center text-2xl" id="modalFun"></p>
+    <button onclick="closeModal()" class="mt-4 w-full py-2 rounded-2xl font-bold text-white text-lg" id="modalBtn"
+      style="background:linear-gradient(135deg,#5ec8f2,#3dd9b3);">Oke, Seru Banget! ✨</button>
+  </div>
+</div>
+
+<!-- ======== ENTER ANIMATION OVERLAY ======== -->
+<div id="enterOverlay" class="fixed inset-0 z-40 flex items-center justify-center pointer-events-none" style="display:none!important;">
+  <div class="text-center">
+    <div style="font-size:5rem">🚀</div>
+    <p style="font-family:'Fredoka One',cursive; font-size:2rem; color:#1e3a8a;">Wusshhh! Masuk ke dalam!</p>
+  </div>
+</div>
+
+<!-- ======== HEADER ======== -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <!-- Clouds decoration -->
+  <div class="cloud" style="top:10px; left:5%; font-size:3rem;">☁️</div>
+  <div class="cloud cloud2" style="top:15px; right:8%; font-size:2.2rem;">☁️</div>
+  <div class="cloud" style="bottom:5px; left:30%; font-size:1.8rem; animation-delay:-3s;">☁️</div>
+
+  <div class="max-w-3xl mx-auto relative z-10 text-center">
+    <!-- Series Badge -->
+    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-3 border border-white/30">
+      <span class="text-xl">🖥️</span>
+      <span style="font-family:'Fredoka One',cursive; font-size:0.9rem; letter-spacing:0.5px;">
+        Petualangan Aslan di Dalam Komputer Ajaib
+      </span>
+      <span class="text-xl">⚡</span>
+    </div>
+
+    <!-- Main Title -->
+    <h1 class="text-3xl sm:text-4xl md:text-5xl mb-2 drop-shadow-lg" style="line-height:1.2;">
+      Hari 1: Apa Saja yang<br>Ada di Dalam Komputer? 🔍
+    </h1>
+    <p class="text-blue-100 text-base sm:text-lg font-semibold">
+      Buka tutupnya... dan lihat apa yang ada di dalamnya! 😲
+    </p>
+
+    <!-- Day progress -->
+    <div class="flex items-center justify-center gap-1.5 mt-4">
+      <div class="day-dot bg-white"></div>
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white/40"></div>
+      <span class="text-white/70 text-xs ml-2 font-semibold">Hari 1 dari 30</span>
+    </div>
+  </div>
+</header>
+
+<!-- ======== MAIN CONTENT ======== -->
+<main class="max-w-3xl mx-auto px-4 py-8 relative z-10">
+
+  <!-- ===== INTRO SECTION ===== -->
+  <section class="mb-10">
+    <div class="flex flex-col sm:flex-row items-end gap-6">
+
+      <!-- Aslan Character SVG -->
+      <div class="flex-shrink-0 flex justify-center" style="min-width:120px;">
+        <div class="aslan-bounce">
+          <svg width="120" height="150" viewBox="0 0 120 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Shadow -->
+            <ellipse cx="60" cy="145" rx="28" ry="6" fill="rgba(0,0,0,0.1)"/>
+            <!-- Body -->
+            <rect x="32" y="88" width="56" height="50" rx="14" fill="#ff8c42"/>
+            <!-- Shirt stripe -->
+            <rect x="32" y="102" width="56" height="6" rx="2" fill="#ff6b9d" opacity="0.6"/>
+            <!-- Left arm -->
+            <rect x="14" y="90" width="20" height="36" rx="10" fill="#ff8c42" transform="rotate(8 14 90)"/>
+            <!-- Right arm (waving!) -->
+            <rect x="84" y="82" width="20" height="36" rx="10" fill="#ff8c42" transform="rotate(-25 84 82)"/>
+            <!-- Legs -->
+            <rect x="36" y="130" width="18" height="22" rx="9" fill="#1e3a8a"/>
+            <rect x="66" y="130" width="18" height="22" rx="9" fill="#1e3a8a"/>
+            <!-- Shoes -->
+            <ellipse cx="45" cy="150" rx="12" ry="6" fill="#1e40af"/>
+            <ellipse cx="75" cy="150" rx="12" ry="6" fill="#1e40af"/>
+            <!-- Neck -->
+            <rect x="50" y="78" width="20" height="14" rx="7" fill="#f9a825"/>
+            <!-- Head -->
+            <ellipse cx="60" cy="60" rx="32" ry="30" fill="#f9a825"/>
+            <!-- Hair -->
+            <ellipse cx="60" cy="35" rx="30" ry="16" fill="#2d1b00"/>
+            <ellipse cx="35" cy="47" rx="9" ry="12" fill="#2d1b00"/>
+            <ellipse cx="85" cy="47" rx="9" ry="12" fill="#2d1b00"/>
+            <!-- Eyes -->
+            <ellipse cx="48" cy="60" rx="7" ry="8" fill="white"/>
+            <ellipse cx="72" cy="60" rx="7" ry="8" fill="white"/>
+            <ellipse cx="49" cy="61" rx="4" ry="5" fill="#2d1b00"/>
+            <ellipse cx="73" cy="61" rx="4" ry="5" fill="#2d1b00"/>
+            <!-- Eye shine -->
+            <circle cx="51" cy="59" r="1.5" fill="white"/>
+            <circle cx="75" cy="59" r="1.5" fill="white"/>
+            <!-- Smile -->
+            <path d="M46 73 Q60 84 74 73" stroke="#2d1b00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <!-- Teeth -->
+            <path d="M50 75 Q60 82 70 75" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <!-- Cheeks -->
+            <ellipse cx="40" cy="68" rx="6" ry="4" fill="#ffb347" opacity="0.5"/>
+            <ellipse cx="80" cy="68" rx="6" ry="4" fill="#ffb347" opacity="0.5"/>
+            <!-- Stars around -->
+            <text x="95" y="50" font-size="14">✨</text>
+            <text x="10" y="80" font-size="12">⭐</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Speech Bubble -->
+      <div class="flex-1">
+        <div class="speech-bubble p-5">
+          <p class="text-sm text-sky-500 font-bold mb-1">Aslan berkata:</p>
+          <p class="text-gray-700 text-base sm:text-lg leading-relaxed font-semibold">
+            "Halo teman-teman! 👋 Hari ini kita mau masuk ke dalam komputer dan lihat apa saja yang ada di dalamnya.
+            Komputer itu seperti <strong class="text-orange-500">tubuh kita</strong> yang punya banyak bagian keren! 😎
+            Yuk, kita jelajahi bareng!"
+          </p>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <span class="badge text-xs">🔬 Misi Hari Ini</span>
+            <span class="badge text-xs" style="background:linear-gradient(135deg,#3dd9b3,#0ea5e9);">6 Komponen</span>
+          </div>
+        </div>
+        <!-- Arrow from bubble points down to Aslan on mobile, but we handle via CSS above -->
+      </div>
+    </div>
+
+    <!-- Enter Button -->
+    <div class="flex justify-center mt-8">
+      <button class="btn-magic relative" onclick="enterComputer()" id="enterBtn">
+        🚀 Aku Mau Masuk!
+      </button>
+    </div>
+    <p class="text-center text-gray-400 text-sm mt-2">Klik tombol di atas untuk petualangan dimulai!</p>
+  </section>
+
+  <!-- ===== COMPUTER VISUAL ===== -->
+  <section class="mb-10" id="computerSection">
+    <div class="text-center mb-6">
+      <h2 class="text-2xl sm:text-3xl section-title" style="color:#1e3a8a;">
+        🖥️ Isi Dalam Komputer
+      </h2>
+      <p class="text-gray-500 mt-3 text-sm">Klik setiap bagian untuk tau lebih banyak! 👆</p>
+    </div>
+
+    <!-- Computer Case SVG illustration -->
+    <div class="relative mx-auto mb-8" style="max-width:480px;">
+      <svg viewBox="0 0 480 340" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full drop-shadow-2xl">
+        <!-- Case outer -->
+        <rect x="20" y="10" width="440" height="320" rx="22" fill="#d1d5db" stroke="#9ca3af" stroke-width="3"/>
+        <rect x="20" y="10" width="440" height="320" rx="22" fill="url(#caseGrad)"/>
+        <!-- Case inner (open) -->
+        <rect x="36" y="26" width="408" height="288" rx="14" fill="#1e293b"/>
+        <!-- PCB green board (motherboard) -->
+        <rect x="50" y="38" width="380" height="264" rx="10" fill="#064e3b" opacity="0.9"/>
+        <!-- PCB traces -->
+        <line x1="80" y1="38" x2="80" y2="302" stroke="#065f46" stroke-width="1.5" opacity="0.6"/>
+        <line x1="130" y1="38" x2="130" y2="302" stroke="#065f46" stroke-width="1.5" opacity="0.6"/>
+        <line x1="200" y1="38" x2="200" y2="302" stroke="#065f46" stroke-width="1.5" opacity="0.6"/>
+        <line x1="300" y1="38" x2="300" y2="302" stroke="#065f46" stroke-width="1.5" opacity="0.6"/>
+        <line x1="50" y1="90" x2="430" y2="90" stroke="#065f46" stroke-width="1.5" opacity="0.6"/>
+        <line x1="50" y1="160" x2="430" y2="160" stroke="#065f46" stroke-width="1.5" opacity="0.6"/>
+        <line x1="50" y1="230" x2="430" y2="230" stroke="#065f46" stroke-width="1.5" opacity="0.6"/>
+
+        <!-- PSU (Power Supply) - top right -->
+        <rect x="310" y="44" width="114" height="86" rx="8" fill="#374151" stroke="#6b7280" stroke-width="2"/>
+        <rect x="316" y="50" width="102" height="74" rx="5" fill="#1f2937"/>
+        <circle cx="367" cy="87" r="22" fill="#374151" stroke="#9ca3af" stroke-width="2"/>
+        <text x="367" y="93" text-anchor="middle" fill="#fbbf24" font-size="18">⚡</text>
+        <rect x="320" y="54" width="40" height="10" rx="3" fill="#4b5563"/>
+        <rect x="366" y="54" width="50" height="10" rx="3" fill="#4b5563"/>
+        <!-- PSU label -->
+        <text x="367" y="142" text-anchor="middle" fill="#fbbf24" font-family="sans-serif" font-size="10" font-weight="bold">PSU</text>
+
+        <!-- CPU - center top -->
+        <rect x="160" y="44" width="110" height="100" rx="8" fill="#1e40af" stroke="#3b82f6" stroke-width="2.5"/>
+        <rect x="170" y="54" width="90" height="80" rx="5" fill="#1d4ed8"/>
+        <!-- CPU pins effect -->
+        <rect x="172" y="56" width="14" height="14" rx="2" fill="#3b82f6" opacity="0.7"/>
+        <rect x="192" y="56" width="14" height="14" rx="2" fill="#3b82f6" opacity="0.7"/>
+        <rect x="212" y="56" width="14" height="14" rx="2" fill="#3b82f6" opacity="0.7"/>
+        <rect x="232" y="56" width="14" height="14" rx="2" fill="#3b82f6" opacity="0.7"/>
+        <rect x="172" y="76" width="14" height="14" rx="2" fill="#3b82f6" opacity="0.7"/>
+        <rect x="192" y="76" width="14" height="14" rx="2" fill="#60a5fa" opacity="0.9"/>
+        <rect x="212" y="76" width="14" height="14" rx="2" fill="#60a5fa" opacity="0.9"/>
+        <rect x="232" y="76" width="14" height="14" rx="2" fill="#3b82f6" opacity="0.7"/>
+        <rect x="172" y="96" width="74" height="30" rx="4" fill="#2563eb"/>
+        <text x="215" y="116" text-anchor="middle" fill="white" font-family="sans-serif" font-size="11" font-weight="bold">CPU</text>
+        <!-- CPU glow -->
+        <rect x="160" y="44" width="110" height="100" rx="8" fill="none" stroke="#60a5fa" stroke-width="1" opacity="0.5"/>
+
+        <!-- Fan - top left -->
+        <circle cx="90" cy="92" r="40" fill="#374151" stroke="#6b7280" stroke-width="2"/>
+        <circle cx="90" cy="92" r="35" fill="#1f2937"/>
+        <!-- Fan blades SVG group - animated via CSS -->
+        <g id="fanBlades" style="transform-origin:90px 92px" class="fan-slow">
+          <path d="M90 92 L95 57 Q90 50 85 57 Z" fill="#4b5563"/>
+          <path d="M90 92 L125 97 Q130 92 125 87 Z" fill="#4b5563"/>
+          <path d="M90 92 L85 127 Q90 134 95 127 Z" fill="#4b5563"/>
+          <path d="M90 92 L55 87 Q50 92 55 97 Z" fill="#4b5563"/>
+          <!-- Diagonal blades -->
+          <path d="M90 92 L114 65 Q113 57 106 61 Z" fill="#6b7280"/>
+          <path d="M90 92 L117 118 Q121 125 125 119 Z" fill="#6b7280"/>
+          <path d="M90 92 L66 119 Q63 127 70 128 Z" fill="#6b7280"/>
+          <path d="M90 92 L63 65 Q57 61 59 68 Z" fill="#6b7280"/>
+        </g>
+        <circle cx="90" cy="92" r="8" fill="#374151" stroke="#9ca3af" stroke-width="1.5"/>
+        <!-- Fan label -->
+        <text x="90" y="142" text-anchor="middle" fill="#5eead4" font-family="sans-serif" font-size="10" font-weight="bold">FAN</text>
+
+        <!-- RAM sticks - middle left -->
+        <rect x="56" y="170" width="26" height="110" rx="4" fill="#7c3aed" stroke="#a78bfa" stroke-width="2"/>
+        <rect x="60" y="176" width="18" height="98" rx="2" fill="#6d28d9"/>
+        <rect x="60" y="180" width="18" height="6" rx="1" fill="#a78bfa" opacity="0.7"/>
+        <rect x="60" y="192" width="18" height="4" rx="1" fill="#a78bfa" opacity="0.5"/>
+        <rect x="60" y="202" width="18" height="4" rx="1" fill="#a78bfa" opacity="0.5"/>
+        <rect x="60" y="212" width="18" height="4" rx="1" fill="#a78bfa" opacity="0.5"/>
+        <rect x="60" y="222" width="18" height="4" rx="1" fill="#c4b5fd" opacity="0.8"/>
+
+        <rect x="88" y="170" width="26" height="110" rx="4" fill="#7c3aed" stroke="#a78bfa" stroke-width="2"/>
+        <rect x="92" y="176" width="18" height="98" rx="2" fill="#6d28d9"/>
+        <rect x="92" y="180" width="18" height="6" rx="1" fill="#a78bfa" opacity="0.7"/>
+        <!-- RAM label -->
+        <text x="82" y="293" text-anchor="middle" fill="#a78bfa" font-family="sans-serif" font-size="10" font-weight="bold">RAM</text>
+
+        <!-- Hard Disk - bottom center -->
+        <rect x="158" y="175" width="140" height="80" rx="8" fill="#374151" stroke="#9ca3af" stroke-width="2"/>
+        <rect x="164" y="181" width="128" height="68" rx="5" fill="#1f2937"/>
+        <circle cx="228" cy="215" r="24" fill="#374151" stroke="#6b7280" stroke-width="1.5"/>
+        <circle cx="228" cy="215" r="18" fill="#111827"/>
+        <circle cx="228" cy="215" r="8" fill="#374151"/>
+        <circle cx="228" cy="215" r="3" fill="#9ca3af"/>
+        <!-- HDD lines (platters) -->
+        <circle cx="228" cy="215" r="14" fill="none" stroke="#374151" stroke-width="1" opacity="0.5"/>
+        <circle cx="228" cy="215" r="20" fill="none" stroke="#374151" stroke-width="1" opacity="0.3"/>
+        <!-- HDD LED -->
+        <circle cx="276" cy="186" r="4" fill="#22c55e"/>
+        <!-- HDD label -->
+        <text x="228" y="268" text-anchor="middle" fill="#6b7280" font-family="sans-serif" font-size="10" font-weight="bold">HARD DISK</text>
+
+        <!-- Motherboard label chips scattered -->
+        <rect x="320" y="175" width="50" height="30" rx="4" fill="#065f46" stroke="#059669" stroke-width="1.5"/>
+        <text x="345" y="195" text-anchor="middle" fill="#34d399" font-family="sans-serif" font-size="8" font-weight="bold">CHIP</text>
+        <rect x="330" y="215" width="80" height="20" rx="4" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="370" y="229" text-anchor="middle" fill="#93c5fd" font-family="sans-serif" font-size="8" font-weight="bold">BIOS ROM</text>
+        <rect x="330" y="245" width="100" height="40" rx="4" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
+        <text x="380" y="270" text-anchor="middle" fill="#d1d5db" font-family="sans-serif" font-size="8" font-weight="bold">PORTS</text>
+        <!-- Ports illustration -->
+        <rect x="336" y="251" width="12" height="12" rx="1" fill="#374151"/>
+        <rect x="352" y="251" width="12" height="12" rx="1" fill="#374151"/>
+        <rect x="368" y="251" width="12" height="12" rx="1" fill="#374151"/>
+        <rect x="384" y="251" width="12" height="12" rx="1" fill="#374151"/>
+
+        <!-- Cables decoration -->
+        <path d="M128 88 Q145 88 158 88" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="4,3" opacity="0.7"/>
+        <path d="M116 130 Q130 150 158 175" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,3" opacity="0.6"/>
+        <path d="M270 90 Q300 90 310 90" stroke="#22c55e" stroke-width="2.5" stroke-dasharray="4,3" opacity="0.7"/>
+
+        <!-- Gradient for case -->
+        <defs>
+          <linearGradient id="caseGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#f3f4f6" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#d1d5db" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Glow dots / LEDs -->
+        <circle cx="44" cy="30" r="4" fill="#22c55e">
+          <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="58" cy="30" r="4" fill="#3b82f6">
+          <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ===== KOMPONEN CARDS ===== -->
+  <section class="mb-12">
+    <div class="text-center mb-6">
+      <h2 class="text-2xl sm:text-3xl section-title" style="color:#1e3a8a;">
+        🔧 6 Bagian Keren Komputer
+      </h2>
+      <p class="text-gray-500 mt-3 text-sm">Klik kartunya untuk belajar lebih banyak! 🖱️</p>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 comp-grid">
+
+      <!-- CPU -->
+      <div class="comp-card glow-cpu bg-white rounded-3xl p-5 text-center shadow-md"
+           onclick="showModal('cpu')" id="card-cpu">
+        <div class="text-5xl mb-3">🧠</div>
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center" style="background:#dbeafe;">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect x="4" y="4" width="20" height="20" rx="3" fill="#1e40af"/>
+            <rect x="8" y="8" width="5" height="5" rx="1" fill="#60a5fa"/>
+            <rect x="15" y="8" width="5" height="5" rx="1" fill="#60a5fa"/>
+            <rect x="8" y="15" width="5" height="5" rx="1" fill="#93c5fd"/>
+            <rect x="15" y="15" width="5" height="5" rx="1" fill="#93c5fd"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-800 text-base" style="font-family:'Fredoka One',cursive;">CPU</h3>
+        <p class="text-xs text-gray-500 mt-1">Otak Komputer 🧠</p>
+        <div class="mt-2 text-xs py-1 px-2 rounded-full inline-block" style="background:#dbeafe; color:#1e40af; font-weight:700;">Klik Aku!</div>
+      </div>
+
+      <!-- RAM -->
+      <div class="comp-card glow-ram bg-white rounded-3xl p-5 text-center shadow-md"
+           onclick="showModal('ram')" id="card-ram">
+        <div class="text-5xl mb-3">🗂️</div>
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center" style="background:#ede9fe;">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="8" width="8" height="18" rx="2" fill="#7c3aed"/>
+            <rect x="12" y="8" width="8" height="18" rx="2" fill="#7c3aed"/>
+            <rect x="22" y="8" width="4" height="18" rx="2" fill="#a78bfa"/>
+            <rect x="3" y="10" width="6" height="3" rx="1" fill="#c4b5fd"/>
+            <rect x="13" y="10" width="6" height="3" rx="1" fill="#c4b5fd"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-800 text-base" style="font-family:'Fredoka One',cursive;">RAM</h3>
+        <p class="text-xs text-gray-500 mt-1">Meja Kerja 📋</p>
+        <div class="mt-2 text-xs py-1 px-2 rounded-full inline-block" style="background:#ede9fe; color:#7c3aed; font-weight:700;">Klik Aku!</div>
+      </div>
+
+      <!-- Motherboard -->
+      <div class="comp-card glow-mobo bg-white rounded-3xl p-5 text-center shadow-md"
+           onclick="showModal('mobo')" id="card-mobo">
+        <div class="text-5xl mb-3">🏠</div>
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center" style="background:#dcfce7;">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="2" width="24" height="24" rx="3" fill="#065f46"/>
+            <line x1="8" y1="2" x2="8" y2="26" stroke="#34d399" stroke-width="1" opacity="0.6"/>
+            <line x1="14" y1="2" x2="14" y2="26" stroke="#34d399" stroke-width="1" opacity="0.6"/>
+            <line x1="20" y1="2" x2="20" y2="26" stroke="#34d399" stroke-width="1" opacity="0.6"/>
+            <line x1="2" y1="10" x2="26" y2="10" stroke="#34d399" stroke-width="1" opacity="0.6"/>
+            <line x1="2" y1="18" x2="26" y2="18" stroke="#34d399" stroke-width="1" opacity="0.6"/>
+            <rect x="4" y="4" width="8" height="6" rx="1" fill="#10b981"/>
+            <rect x="16" y="12" width="8" height="6" rx="1" fill="#10b981"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-800 text-base" style="font-family:'Fredoka One',cursive;">Motherboard</h3>
+        <p class="text-xs text-gray-500 mt-1">Rumah Besar 🏡</p>
+        <div class="mt-2 text-xs py-1 px-2 rounded-full inline-block" style="background:#dcfce7; color:#065f46; font-weight:700;">Klik Aku!</div>
+      </div>
+
+      <!-- Hard Disk -->
+      <div class="comp-card glow-hdd bg-white rounded-3xl p-5 text-center shadow-md"
+           onclick="showModal('hdd')" id="card-hdd">
+        <div class="text-5xl mb-3">🗄️</div>
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center" style="background:#f3e8ff;">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="4" width="24" height="20" rx="3" fill="#374151"/>
+            <circle cx="14" cy="14" r="7" fill="#1f2937" stroke="#6b7280" stroke-width="1"/>
+            <circle cx="14" cy="14" r="4" fill="#374151"/>
+            <circle cx="14" cy="14" r="1.5" fill="#9ca3af"/>
+            <circle cx="22" cy="7" r="2" fill="#22c55e"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-800 text-base" style="font-family:'Fredoka One',cursive;">Hard Disk</h3>
+        <p class="text-xs text-gray-500 mt-1">Lemari Penyimpanan 🗄️</p>
+        <div class="mt-2 text-xs py-1 px-2 rounded-full inline-block" style="background:#f3e8ff; color:#7c3aed; font-weight:700;">Klik Aku!</div>
+      </div>
+
+      <!-- Power Supply -->
+      <div class="comp-card glow-psu bg-white rounded-3xl p-5 text-center shadow-md"
+           onclick="showModal('psu')" id="card-psu">
+        <div class="text-5xl mb-3">⚡</div>
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center" style="background:#fefce8;">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="6" width="24" height="18" rx="3" fill="#374151"/>
+            <path d="M16 8 L11 15 H15 L12 22 L20 13 H16 Z" fill="#fbbf24"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-800 text-base" style="font-family:'Fredoka One',cursive;">Power Supply</h3>
+        <p class="text-xs text-gray-500 mt-1">Jantung Listrik ❤️</p>
+        <div class="mt-2 text-xs py-1 px-2 rounded-full inline-block" style="background:#fefce8; color:#92400e; font-weight:700;">Klik Aku!</div>
+      </div>
+
+      <!-- Kipas Pendingin -->
+      <div class="comp-card glow-fan bg-white rounded-3xl p-5 text-center shadow-md"
+           onclick="showModal('fan')" id="card-fan">
+        <div class="text-5xl mb-3">🌀</div>
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center" style="background:#ccfbf1;">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="12" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
+            <g style="transform-origin:14px 14px" class="fan-spin">
+              <path d="M14 14 L16 5 Q14 2 12 5 Z" fill="#4b5563"/>
+              <path d="M14 14 L23 16 Q26 14 23 12 Z" fill="#4b5563"/>
+              <path d="M14 14 L12 23 Q14 26 16 23 Z" fill="#4b5563"/>
+              <path d="M14 14 L5 12 Q2 14 5 16 Z" fill="#4b5563"/>
+            </g>
+            <circle cx="14" cy="14" r="3" fill="#374151" stroke="#9ca3af" stroke-width="1"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-800 text-base" style="font-family:'Fredoka One',cursive;">Kipas Pendingin</h3>
+        <p class="text-xs text-gray-500 mt-1">Kipas Sejuk 💨</p>
+        <div class="mt-2 text-xs py-1 px-2 rounded-full inline-block" style="background:#ccfbf1; color:#065f46; font-weight:700;">Klik Aku!</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== FUN FACT BANNER ===== -->
+  <section class="mb-10">
+    <div class="rounded-3xl p-5 relative overflow-hidden" style="background:linear-gradient(135deg,#ffd43b,#ff8c42);">
+      <div class="absolute right-4 top-0 text-7xl opacity-20">💡</div>
+      <div class="relative z-10">
+        <p class="text-white font-bold text-sm mb-1" style="font-family:'Fredoka One',cursive;">🤩 Tahukah Kamu?</p>
+        <p class="text-white text-base font-semibold leading-relaxed">
+          CPU modern bisa melakukan <strong>miliaran</strong> perhitungan dalam satu detik!
+          Itu lebih cepat dari kamu mengerjakan soal matematika 1 juta kali lipat! 😂🚀
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ACTIVITY SECTION ===== -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl section-title" style="color:#1e3a8a;">
+        ✏️ Aktivitas Hari Ini
+      </h2>
+    </div>
+
+    <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-dashed" style="border-color:#ffd43b;">
+      <div class="flex items-start gap-4 mb-5">
+        <div class="text-4xl flex-shrink-0">🎨</div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-800" style="font-family:'Fredoka One',cursive;">
+            Tugas Seru: Gambar Komputermu Sendiri!
+          </h3>
+          <p class="text-gray-600 text-sm mt-1 leading-relaxed">
+            Cetak halaman ini atau ambil kertas polos, lalu <strong>gambar komputer impianmu!</strong>
+            Kasih label tiap bagian yang sudah kamu pelajari hari ini ya! 💪
+          </p>
+        </div>
+      </div>
+
+      <!-- Drawing area -->
+      <div class="draw-area flex flex-col items-center justify-center text-center">
+        <div class="text-5xl mb-3 opacity-40">🖊️</div>
+        <p class="text-gray-400 font-semibold text-sm">Area Gambar</p>
+        <p class="text-gray-300 text-xs mt-1">(cetak dan gambar di sini)</p>
+      </div>
+
+      <!-- Checklist -->
+      <div class="mt-5">
+        <p class="text-sm font-bold text-gray-700 mb-3">Tandai komponen yang sudah kamu gambar:</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="checklistGrid">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" class="w-5 h-5 accent-blue-500" onchange="updateCheck(this)">
+            <span class="text-sm text-gray-700">🧠 CPU</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" class="w-5 h-5 accent-purple-500" onchange="updateCheck(this)">
+            <span class="text-sm text-gray-700">🗂️ RAM</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" class="w-5 h-5 accent-green-500" onchange="updateCheck(this)">
+            <span class="text-sm text-gray-700">🏠 Motherboard</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" class="w-5 h-5 accent-violet-500" onchange="updateCheck(this)">
+            <span class="text-sm text-gray-700">🗄️ Hard Disk</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" class="w-5 h-5 accent-yellow-500" onchange="updateCheck(this)">
+            <span class="text-sm text-gray-700">⚡ Power Supply</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" class="w-5 h-5 accent-teal-500" onchange="updateCheck(this)">
+            <span class="text-sm text-gray-700">🌀 Kipas</span>
+          </label>
+        </div>
+        <div id="checkMsg" class="mt-3 text-sm font-bold text-green-600 hidden text-center">
+          🎉 Wah, kamu sudah gambar semua bagian! Kamu hebat! ⭐
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== QUIZ MINI ===== -->
+  <section class="mb-10">
+    <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-6 shadow-md border-2 border-blue-100">
+      <h2 class="text-xl font-bold text-center mb-2 text-blue-900" style="font-family:'Fredoka One',cursive;">
+        🧩 Mini Kuis – Tebak Siapa Aku?
+      </h2>
+      <p class="text-center text-gray-500 text-sm mb-5">Pilih jawaban yang paling tepat!</p>
+
+      <div class="space-y-4" id="quizContainer">
+        <!-- Question 1 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm" id="q1">
+          <p class="font-bold text-gray-800 mb-3 text-sm">1. "Aku adalah bagian yang mengerjakan semua perhitungan komputer. Aku seperti otak manusia!" — Aku adalah... 🤔</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="answerQuiz(1,'b')" class="quiz-btn rounded-xl py-2 px-3 text-sm font-semibold border-2 border-gray-200 text-gray-700 hover:border-blue-400 transition-all" data-q="1" data-a="b">A. RAM 🗂️</button>
+            <button onclick="answerQuiz(1,'a')" class="quiz-btn rounded-xl py-2 px-3 text-sm font-semibold border-2 border-gray-200 text-gray-700 hover:border-blue-400 transition-all" data-q="1" data-a="a">B. CPU 🧠</button>
+            <button onclick="answerQuiz(1,'b')" class="quiz-btn rounded-xl py-2 px-3 text-sm font-semibold border-2 border-gray-200 text-gray-700 hover:border-blue-400 transition-all" data-q="1" data-a="b">C. Hard Disk 🗄️</button>
+            <button onclick="answerQuiz(1,'b')" class="quiz-btn rounded-xl py-2 px-3 text-sm font-semibold border-2 border-gray-200 text-gray-700 hover:border-blue-400 transition-all" data-q="1" data-a="b">D. Kipas 🌀</button>
+          </div>
+          <div id="q1-result" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm" id="q2">
+          <p class="font-bold text-gray-800 mb-3 text-sm">2. Bagian mana yang menyimpan file, foto, dan video di dalam komputer? 💾</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="answerQuiz(2,'b')" class="quiz-btn rounded-xl py-2 px-3 text-sm font-semibold border-2 border-gray-200 text-gray-700 hover:border-blue-400 transition-all">A. CPU 🧠</button>
+            <button onclick="answerQuiz(2,'b')" class="quiz-btn rounded-xl py-2 px-3 text-sm font-semibold border-2 border-gray-200 text-gray-700 hover:border-blue-400 transition-all">B. Motherboard 🏠</button>
+            <button onclick="answerQuiz(2,'a')" class="quiz-btn rounded-xl py-2 px-3 text-sm font-semibold border-2 border-gray-200 text-gray-700 hover:border-blue-400 transition-all">C. Hard Disk 🗄️</button>
+            <button onclick="answerQuiz(2,'b')" class="quiz-btn rounded-xl py-2 px-3 text-sm font-semibold border-2 border-gray-200 text-gray-700 hover:border-blue-400 transition-all">D. RAM 🗂️</button>
+          </div>
+          <div id="q2-result" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+      </div>
+
+      <div id="quizScore" class="mt-4 text-center hidden">
+        <div class="text-3xl mb-2" id="quizScoreEmoji">🌟</div>
+        <p class="font-bold text-lg" id="quizScoreText" style="font-family:'Fredoka One',cursive;"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PREVIEW HARI 2 ===== -->
+  <section class="mb-10">
+    <div class="rounded-3xl p-6 relative overflow-hidden text-white" style="background:linear-gradient(135deg,#1e3a8a,#0ea5e9);">
+      <div class="absolute right-0 top-0 bottom-0 w-24 flex items-center justify-center text-8xl opacity-20">🧠</div>
+      <div class="relative z-10">
+        <span class="badge text-xs mb-3" style="background:rgba(255,255,255,0.2);">📅 Besok</span>
+        <h3 class="text-xl font-bold mb-2" style="font-family:'Fredoka One',cursive;">
+          Hari 2: Mengenal Otak Komputer – CPU! 🧠
+        </h3>
+        <p class="text-blue-100 text-sm leading-relaxed mb-4">
+          Aslan akan mengunjungi bagian paling penting: CPU! Apa yang dia lakukan setiap detik, dan seberapa cepat dia bekerja?
+        </p>
+        <button class="btn-next" onclick="alert('Sampai jumpa besok ya! 😊⭐')">
+          Besok Kita Bahas CPU 🚀 →
+        </button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ======== FOOTER ======== -->
+<footer class="mt-4 pb-8">
+  <div class="max-w-3xl mx-auto px-4">
+    <!-- Progress bar -->
+    <div class="bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
+      <div class="h-3 rounded-full" style="width:3.33%; background:linear-gradient(90deg,#5ec8f2,#3dd9b3); transition:width 1s ease;"></div>
+    </div>
+    <p class="text-center text-gray-400 text-xs mb-4">Progres Seri: Hari 1 dari 30 (3%)</p>
+
+     <p class="text-center text-gray-300 text-xs mt-6">
+      Made with ❤️ for Aslan · Buku Digital Seri Komputer
+    </p>
+  </div>
+</footer>
+
+
+<!-- ======== JAVASCRIPT ======== -->
+<script>
+// ===== COMPONENT DATA =====
+const components = {
+  cpu: {
+    emoji: '🧠',
+    title: 'CPU – Otak Komputer',
+    badge: 'Central Processing Unit',
+    color: 'linear-gradient(90deg,#dbeafe,#bfdbfe)',
+    borderColor: '#3b82f6',
+    desc: 'CPU adalah otak dari komputer. Dia yang mengerjakan semua perhitungan, menjalankan program, dan memberi perintah ke bagian komputer lainnya. Semakin cepat CPUnya, semakin kencang komputermu!',
+    analogy: 'Bayangkan kamu lagi ngerjain PR matematika yang suuuper panjang, sendirian, super cepat. Nah, itulah yang CPU lakukan setiap detik — miliaran kali! 🚀',
+    fun: '⚡ CPU bisa "berpikir" miliaran kali per detik!'
+  },
+  ram: {
+    emoji: '🗂️',
+    title: 'RAM – Meja Kerja',
+    badge: 'Random Access Memory',
+    color: 'linear-gradient(90deg,#ede9fe,#ddd6fe)',
+    borderColor: '#7c3aed',
+    desc: 'RAM adalah memori sementara komputer. Dia menyimpan program dan data yang sedang kamu gunakan sekarang. Ketika komputer dimatikan, semua isi RAM langsung terhapus!',
+    analogy: 'Bayangkan RAM seperti meja belajarmu. Kalau mejanya luas, kamu bisa buka banyak buku sekaligus. Kalau kecil, harus bergantian! 📚',
+    fun: '💡 Semakin besar RAM, semakin banyak tab browser yang bisa dibuka!'
+  },
+  mobo: {
+    emoji: '🏠',
+    title: 'Motherboard – Rumah Besar',
+    badge: 'Papan Induk Komputer',
+    color: 'linear-gradient(90deg,#dcfce7,#bbf7d0)',
+    borderColor: '#22c55e',
+    desc: 'Motherboard adalah papan besar berwarna hijau di dalam komputer. Semua komponen lain (CPU, RAM, Hard Disk, dll) terhubung ke Motherboard. Dia seperti jalan raya yang menghubungkan semua bagian!',
+    analogy: 'Motherboard itu seperti rumah besar dengan banyak kamar. CPU di kamar tidur utama, RAM di meja belajar, Hard Disk di lemari — semua terhubung lewat lorong! 🏡',
+    fun: '🔌 Motherboard punya ratusan konektor dan jalur listrik kecil!'
+  },
+  hdd: {
+    emoji: '🗄️',
+    title: 'Hard Disk – Lemari Penyimpanan',
+    badge: 'Hard Disk / SSD',
+    color: 'linear-gradient(90deg,#f3e8ff,#e9d5ff)',
+    borderColor: '#a855f7',
+    desc: 'Hard Disk (atau SSD) menyimpan semua file, foto, video, musik, dan game kamu secara permanen. Berbeda dengan RAM, data di Hard Disk tidak hilang meskipun komputer dimatikan.',
+    analogy: 'Hard Disk itu seperti lemari baju yang besar. Semua baju (file) kamu tersimpan di sana dengan rapi, dan tidak hilang meski rumah gelap (komputer mati)! 👕👖',
+    fun: '💾 SSD 5-10x lebih cepat dari Hard Disk biasa!'
+  },
+  psu: {
+    emoji: '⚡',
+    title: 'Power Supply – Jantung Listrik',
+    badge: 'Unit Sumber Daya',
+    color: 'linear-gradient(90deg,#fefce8,#fef9c3)',
+    borderColor: '#eab308',
+    desc: 'Power Supply mengubah listrik dari colokan dinding menjadi listrik yang cocok untuk komputer. Dia membagi-bagi listrik ke CPU, RAM, Hard Disk, dan komponen lainnya.',
+    analogy: 'Power Supply itu seperti jantung! Darah (listrik) dipompa dari jantung ke seluruh tubuh (komputer). Tanpa jantung, komputer tidak bisa hidup! ❤️⚡',
+    fun: '🔋 Tanpa Power Supply, komputer tidak bisa menyala sama sekali!'
+  },
+  fan: {
+    emoji: '🌀',
+    title: 'Kipas Pendingin – Penyejuk Ajaib',
+    badge: 'Cooling Fan',
+    color: 'linear-gradient(90deg,#ccfbf1,#99f6e4)',
+    borderColor: '#14b8a6',
+    desc: 'Kipas pendingin bertugas menjaga suhu di dalam komputer tetap dingin. CPU dan komponen lain menghasilkan panas saat bekerja keras. Kipas menghembuskan udara panas keluar agar komputer tidak overheat!',
+    analogy: 'Bayangkan kamu lagi olahraga keras dan mulai berkeringat dan kepanasan. Nah, kipas itu seperti teman yang mengipasi kamu supaya tetap segar! 😅💨',
+    fun: '🌡️ CPU bisa mencapai suhu 70-90°C! Panas banget kan?'
+  }
+};
+
+// ===== MODAL =====
+function showModal(id) {
+  const c = components[id];
+  document.getElementById('modalEmoji').textContent = c.emoji;
+  document.getElementById('modalTitle').textContent = c.title;
+  document.getElementById('modalBadge').textContent = c.badge;
+  document.getElementById('modalBadge').style.background = c.color.includes('blue') ? 'linear-gradient(135deg,#3b82f6,#60a5fa)' : 'linear-gradient(135deg,#ff8c42,#ffd43b)';
+  document.getElementById('modalColor').style.background = c.color;
+  document.getElementById('modalDesc').textContent = c.desc;
+  document.getElementById('modalAnalogy').textContent = c.analogy;
+  document.getElementById('modalFun').textContent = c.fun;
+  document.getElementById('modalBox').style.borderColor = c.borderColor;
+  document.getElementById('modalBtn').style.background = `linear-gradient(135deg, ${c.borderColor}, #3dd9b3)`;
+
+  // Highlight active card
+  document.querySelectorAll('.comp-card').forEach(el => el.classList.remove('active'));
+  document.getElementById('card-' + id)?.classList.add('active');
+
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('show');
+    document.querySelectorAll('.comp-card').forEach(el => el.classList.remove('active'));
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ===== ENTER ANIMATION =====
+function enterComputer() {
+  const btn = document.getElementById('enterBtn');
+  btn.textContent = '🚀 Wusshh!';
+  btn.disabled = true;
+  btn.style.opacity = '0.7';
+
+  // Confetti burst
+  const colors = ['#ffd43b','#ff6b9d','#5ec8f2','#3dd9b3','#ff8c42','#a78bfa'];
+  for (let i = 0; i < 30; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `
+      left: ${40 + Math.random() * 20}%;
+      top: 50%;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      --tx: ${(Math.random() - 0.5) * 300}px;
+      --ty: ${(Math.random() - 0.5) * 300}px;
+      animation-delay: ${Math.random() * 0.3}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1500);
+  }
+
+  // Flash the computer section
+  const section = document.getElementById('computerSection');
+  section.style.transform = 'scale(1.03)';
+  section.style.transition = 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+  setTimeout(() => {
+    section.style.transform = 'scale(1)';
+  }, 500);
+
+  // Show fun message then scroll
+  setTimeout(() => {
+    btn.textContent = '🎉 Petualangan Dimulai!';
+    btn.style.background = 'linear-gradient(135deg,#3dd9b3,#0ea5e9)';
+    section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 600);
+
+  setTimeout(() => {
+    btn.textContent = '🚀 Aku Mau Masuk!';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.background = '';
+  }, 3000);
+}
+
+// ===== QUIZ =====
+let quizAnswers = { 1: null, 2: null };
+let quizCorrect = 0;
+
+function answerQuiz(q, isCorrect) {
+  if (quizAnswers[q] !== null) return; // already answered
+  quizAnswers[q] = isCorrect;
+
+  const resultEl = document.getElementById('q' + q + '-result');
+  resultEl.classList.remove('hidden');
+
+  if (isCorrect === 'a') {
+    resultEl.textContent = '✅ Betul banget! Kamu pintar! 🌟';
+    resultEl.style.color = '#16a34a';
+    quizCorrect++;
+  } else {
+    resultEl.textContent = '❌ Hmm, coba pelajari lagi ya! Jangan menyerah! 💪';
+    resultEl.style.color = '#dc2626';
+  }
+
+  // Disable all buttons in this question
+  const btns = document.querySelectorAll(`#q${q} .quiz-btn`);
+  btns.forEach(b => { b.disabled = true; b.style.opacity = '0.6'; });
+
+  // Check if both answered
+  if (quizAnswers[1] !== null && quizAnswers[2] !== null) {
+    setTimeout(() => {
+      const scoreEl = document.getElementById('quizScore');
+      scoreEl.classList.remove('hidden');
+      const emojiEl = document.getElementById('quizScoreEmoji');
+      const textEl = document.getElementById('quizScoreText');
+      if (quizCorrect === 2) {
+        emojiEl.textContent = '🏆';
+        textEl.textContent = 'Skor 2/2 — Sempurna! Kamu genius! 🎉';
+        textEl.style.color = '#f59e0b';
+      } else if (quizCorrect === 1) {
+        emojiEl.textContent = '⭐';
+        textEl.textContent = 'Skor 1/2 — Bagus! Pelajari lagi besok ya!';
+        textEl.style.color = '#0ea5e9';
+      } else {
+        emojiEl.textContent = '💪';
+        textEl.textContent = 'Skor 0/2 — Jangan menyerah! Coba baca lagi!';
+        textEl.style.color = '#7c3aed';
+      }
+    }, 500);
+  }
+}
+
+// ===== CHECKLIST =====
+function updateCheck(el) {
+  const allChecks = document.querySelectorAll('#checklistGrid input[type=checkbox]');
+  const allChecked = Array.from(allChecks).every(c => c.checked);
+  const msg = document.getElementById('checkMsg');
+  if (allChecked) {
+    msg.classList.remove('hidden');
+    // Trigger confetti
+    const colors = ['#ffd43b','#ff6b9d','#5ec8f2','#3dd9b3'];
+    for (let i = 0; i < 15; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.cssText = `
+        left: ${20 + Math.random() * 60}%;
+        top: 60%;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        --tx: ${(Math.random() - 0.5) * 200}px;
+        --ty: ${-100 - Math.random() * 200}px;
+        animation-delay: ${Math.random() * 0.5}s;
+      `;
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 1500);
+    }
+  } else {
+    msg.classList.add('hidden');
+  }
+}
+</script>
+</body>
+</html>

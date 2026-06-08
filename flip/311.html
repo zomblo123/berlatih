@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 11: Ikan-Ikan Beracun | Petualangan Kapten Cerdas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean-deep: #0a1628;
+    --ocean-mid: #0d2d5e;
+    --ocean-bright: #1565c0;
+    --ocean-light: #1e88e5;
+    --ocean-glow: #42a5f5;
+    --sky-blue: #29b6f6;
+    --foam: #e3f2fd;
+    --gold: #ffd54f;
+    --gold-deep: #ff8f00;
+    --orange: #ff7043;
+    --poison-green: #69f0ae;
+    --poison-purple: #ce93d8;
+    --poison-red: #ef5350;
+    --white: #ffffff;
+    --text-dark: #1a237e;
+    --text-mid: #283593;
+    --bubble: rgba(255,255,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--ocean-deep);
+    min-height: 100vh;
+    overflow: hidden;
+    cursor: default;
+  }
+
+  /* === BACK BUTTON === */
+  .back-btn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 9999;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  .back-btn:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateX(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+
+  /* === OCEAN BACKGROUND === */
+  .ocean-bg {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, #0a1628 0%, #0d2d5e 30%, #1565c0 65%, #0a8080 100%);
+    overflow: hidden;
+  }
+
+  .wave-layer {
+    position: absolute;
+    width: 200%;
+    height: 120px;
+    border-radius: 50%;
+    opacity: 0.15;
+  }
+  .wave-1 { bottom: 0; background: #42a5f5; animation: waveMove 8s linear infinite; }
+  .wave-2 { bottom: 20px; background: #29b6f6; animation: waveMove 12s linear infinite reverse; }
+  .wave-3 { bottom: 40px; background: #1e88e5; animation: waveMove 10s linear infinite; opacity: 0.1; }
+
+  @keyframes waveMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* === BUBBLES === */
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4), rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,255,255,0.2);
+    animation: bubbleRise linear infinite;
+  }
+  @keyframes bubbleRise {
+    0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-110vh) translateX(30px) scale(1.2); opacity: 0; }
+  }
+
+  /* === FISH DECORATIVE === */
+  .deco-fish {
+    position: absolute;
+    font-size: 28px;
+    animation: fishSwim linear infinite;
+    pointer-events: none;
+    filter: drop-shadow(0 0 8px rgba(105,240,174,0.5));
+  }
+  @keyframes fishSwim {
+    0% { transform: translateX(110vw) translateY(0); }
+    50% { transform: translateX(55vw) translateY(-20px); }
+    100% { transform: translateX(-10vw) translateY(0); }
+  }
+
+  /* === MAIN CONTAINER === */
+  .book-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  /* === BOOK CARD === */
+  .book-card {
+    width: 100%;
+    max-width: 780px;
+    height: calc(100vh - 40px);
+    max-height: 920px;
+    background: linear-gradient(135deg, rgba(13,45,94,0.95) 0%, rgba(21,101,192,0.9) 100%);
+    backdrop-filter: blur(20px);
+    border-radius: 28px;
+    border: 2px solid rgba(66,165,245,0.4);
+    box-shadow:
+      0 0 80px rgba(21,101,192,0.5),
+      0 40px 80px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(255,255,255,0.15);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .book-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--ocean-glow), var(--gold));
+    animation: shimmerLine 3s linear infinite;
+    background-size: 200% 100%;
+  }
+  @keyframes shimmerLine {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+  }
+
+  /* === SLIDES === */
+  .slides-wrapper {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 30px 36px 20px;
+    overflow-y: auto;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
+    pointer-events: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(66,165,245,0.4) transparent;
+  }
+  .slide::-webkit-scrollbar { width: 4px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: rgba(66,165,245,0.4); border-radius: 2px; }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+  .slide.exit-left {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* === PROGRESS BAR === */
+  .progress-bar-container {
+    padding: 0 36px;
+    padding-bottom: 10px;
+    background: rgba(0,0,0,0.2);
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgba(255,255,255,0.6);
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-family: 'Nunito', sans-serif;
+  }
+  .progress-track {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--orange));
+    border-radius: 3px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 0 8px rgba(255,213,79,0.6);
+  }
+
+  /* === NAVIGATION === */
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: rgba(0,0,0,0.25);
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .nav-btn {
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    border: 2px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(5px);
+  }
+  .nav-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    border-color: rgba(255,255,255,0.4);
+  }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .page-dots {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 200px;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .dot.active {
+    background: var(--gold);
+    width: 22px;
+    border-radius: 4px;
+    box-shadow: 0 0 8px rgba(255,213,79,0.7);
+  }
+
+  /* === TYPOGRAPHY === */
+  .slide-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    color: var(--gold);
+    text-shadow: 0 2px 10px rgba(255,213,79,0.4);
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .slide-subtitle {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    color: var(--sky-blue);
+    margin-bottom: 12px;
+  }
+  .slide-text {
+    color: rgba(255,255,255,0.9);
+    font-size: 1rem;
+    line-height: 1.7;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .slide-text b { color: var(--gold); }
+  .highlight-box {
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(66,165,245,0.3);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+
+  /* === COVER SLIDE === */
+  .cover-fish-container {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .cover-fish {
+    font-size: 52px;
+    animation: floatFish 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px rgba(105,240,174,0.6));
+    cursor: default;
+  }
+  .cover-fish:nth-child(2) { animation-delay: 0.5s; filter: drop-shadow(0 0 15px rgba(206,147,216,0.6)); }
+  .cover-fish:nth-child(3) { animation-delay: 1s; filter: drop-shadow(0 0 15px rgba(239,83,80,0.6)); }
+  @keyframes floatFish {
+    0%,100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-12px) rotate(5deg); }
+  }
+
+  .cover-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--gold-deep), var(--gold));
+    color: var(--ocean-deep);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    box-shadow: 0 4px 20px rgba(255,213,79,0.5);
+    margin-bottom: 16px;
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.5rem;
+    line-height: 1.15;
+    color: white;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    margin-bottom: 8px;
+  }
+  .cover-title span { color: var(--poison-green); text-shadow: 0 0 20px rgba(105,240,174,0.6); }
+
+  .captain-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    color: var(--sky-blue);
+    margin-top: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .series-badge {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 16px;
+    display: inline-block;
+  }
+
+  /* === FISH GAME === */
+  .fish-game-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .fish-card {
+    background: rgba(255,255,255,0.07);
+    border: 2px solid rgba(66,165,245,0.25);
+    border-radius: 18px;
+    padding: 16px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .fish-card:hover { transform: scale(1.05); border-color: rgba(66,165,245,0.5); }
+  .fish-card .fish-emoji { font-size: 38px; display: block; margin-bottom: 6px; transition: all 0.4s; }
+  .fish-card .fish-name { font-size: 0.78rem; font-weight: 700; color: rgba(255,255,255,0.8); }
+  .fish-card .fish-result {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    opacity: 0;
+    transition: opacity 0.4s;
+    font-weight: 800;
+    font-size: 0.85rem;
+    padding: 8px;
+    text-align: center;
+    line-height: 1.3;
+  }
+  .fish-card.revealed .fish-result { opacity: 1; }
+  .fish-card.revealed .fish-emoji { opacity: 0; }
+  .fish-card.revealed .fish-name { opacity: 0; }
+  .fish-card.poison .fish-result { background: rgba(239,83,80,0.85); color: white; }
+  .fish-card.safe .fish-result { background: rgba(105,240,174,0.85); color: var(--ocean-deep); }
+  .fish-card.poison { border-color: rgba(239,83,80,0.5); }
+  .fish-card.safe { border-color: rgba(105,240,174,0.5); }
+
+  .game-instruction {
+    background: rgba(255,213,79,0.1);
+    border: 1.5px dashed rgba(255,213,79,0.4);
+    border-radius: 14px;
+    padding: 12px 16px;
+    color: var(--gold);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  .reset-btn {
+    background: linear-gradient(135deg, var(--ocean-glow), var(--sky-blue));
+    color: var(--ocean-deep);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: block;
+    margin: 12px auto 0;
+    transition: all 0.3s;
+  }
+  .reset-btn:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(66,165,245,0.5); }
+
+  /* === TRAIT CARDS === */
+  .trait-card {
+    background: rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    border-left: 4px solid;
+    transition: all 0.3s;
+    cursor: default;
+  }
+  .trait-card:hover { transform: translateX(4px); background: rgba(255,255,255,0.1); }
+  .trait-card .trait-icon { font-size: 28px; flex-shrink: 0; }
+  .trait-card .trait-title { font-family: 'Fredoka One', cursive; font-size: 1rem; margin-bottom: 4px; }
+  .trait-card .trait-desc { font-size: 0.88rem; color: rgba(255,255,255,0.8); line-height: 1.5; font-weight: 600; }
+
+  /* === DANGER PILLS === */
+  .danger-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .danger-pill {
+    background: linear-gradient(135deg, rgba(239,83,80,0.2), rgba(239,83,80,0.05));
+    border: 1.5px solid rgba(239,83,80,0.4);
+    border-radius: 16px;
+    padding: 14px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .danger-pill:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(239,83,80,0.3); }
+  .danger-pill .danger-icon { font-size: 30px; display: block; margin-bottom: 6px; }
+  .danger-pill .danger-text { font-size: 0.82rem; font-weight: 700; color: rgba(255,255,255,0.85); line-height: 1.4; }
+
+  /* === CHECK FAKTA === */
+  .cek-fakta-steps {
+    counter-reset: step;
+  }
+  .cek-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    transition: all 0.3s;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+  }
+  .cek-step:hover { background: rgba(255,255,255,0.1); border-color: rgba(66,165,245,0.3); transform: translateX(3px); }
+  .cek-step .step-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--gold-deep), var(--gold));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    color: var(--ocean-deep);
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(255,213,79,0.4);
+  }
+  .cek-step .step-content .step-title { font-family: 'Fredoka One', cursive; font-size: 1rem; color: var(--sky-blue); margin-bottom: 3px; }
+  .cek-step .step-content .step-desc { font-size: 0.85rem; color: rgba(255,255,255,0.8); font-weight: 600; line-height: 1.4; }
+
+  /* === LESSON POINTS === */
+  .lesson-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .lesson-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 14px 16px;
+    border: 1.5px solid rgba(66,165,245,0.2);
+    transition: all 0.3s;
+  }
+  .lesson-item:hover { background: rgba(255,255,255,0.1); transform: scale(1.01); }
+  .lesson-item .lesson-icon { font-size: 26px; flex-shrink: 0; }
+  .lesson-item .lesson-text { font-size: 0.9rem; font-weight: 700; color: rgba(255,255,255,0.9); line-height: 1.4; }
+
+  /* === CHALLENGE === */
+  .challenge-box {
+    background: linear-gradient(135deg, rgba(255,213,79,0.15), rgba(255,143,0,0.1));
+    border: 2px solid rgba(255,213,79,0.4);
+    border-radius: 20px;
+    padding: 22px;
+    text-align: center;
+  }
+  .challenge-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.5rem;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .challenge-task {
+    background: rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 14px;
+    margin: 10px 0;
+    text-align: left;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 1.5px solid transparent;
+  }
+  .challenge-task:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,213,79,0.3); }
+  .challenge-task.done { background: rgba(105,240,174,0.15); border-color: rgba(105,240,174,0.4); }
+  .challenge-task.done .check-circle { background: var(--poison-green); color: var(--ocean-deep); }
+  .check-circle {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .challenge-task .task-text { font-size: 0.9rem; font-weight: 700; color: rgba(255,255,255,0.9); line-height: 1.4; }
+
+  /* === CLOSING === */
+  .star-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .star {
+    font-size: 36px;
+    animation: starPulse 2s ease-in-out infinite;
+  }
+  .star:nth-child(2) { animation-delay: 0.3s; }
+  .star:nth-child(3) { animation-delay: 0.6s; }
+  @keyframes starPulse {
+    0%,100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.2) rotate(10deg); }
+  }
+
+  .closing-card {
+    background: linear-gradient(135deg, rgba(105,240,174,0.15), rgba(66,165,245,0.1));
+    border: 2px solid rgba(105,240,174,0.3);
+    border-radius: 20px;
+    padding: 22px;
+    text-align: center;
+    margin-top: 14px;
+  }
+
+  /* === STORY DIALOGUE === */
+  .dialogue-box {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin: 12px 0;
+    background: rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 14px 16px;
+  }
+  .dialogue-avatar { font-size: 36px; flex-shrink: 0; }
+  .dialogue-content .dialogue-name { font-family: 'Fredoka One', cursive; font-size: 0.9rem; color: var(--gold); margin-bottom: 4px; }
+  .dialogue-content .dialogue-text { font-size: 0.9rem; color: rgba(255,255,255,0.9); font-weight: 600; line-height: 1.5; font-style: italic; }
+
+  /* === POISON VISUAL === */
+  .poison-fish-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 20px;
+    margin: 16px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .poison-fish-big {
+    font-size: 64px;
+    animation: poisonPulse 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(206,147,216,0.8));
+    position: relative;
+    z-index: 2;
+  }
+  @keyframes poisonPulse {
+    0%,100% { filter: drop-shadow(0 0 20px rgba(206,147,216,0.8)) brightness(1); }
+    50% { filter: drop-shadow(0 0 35px rgba(239,83,80,0.9)) brightness(1.2); }
+  }
+  .poison-label {
+    background: linear-gradient(135deg, rgba(239,83,80,0.3), rgba(206,147,216,0.2));
+    border: 2px solid rgba(239,83,80,0.5);
+    border-radius: 14px;
+    padding: 12px 16px;
+    text-align: center;
+  }
+  .poison-label .p-title { font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: #ef9a9a; }
+  .poison-label .p-sub { font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-top: 4px; }
+
+  /* === BEFORE/AFTER === */
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 14px 0;
+  }
+  .compare-card {
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+  }
+  .compare-card.bad { background: rgba(239,83,80,0.15); border: 1.5px solid rgba(239,83,80,0.4); }
+  .compare-card.good { background: rgba(105,240,174,0.15); border: 1.5px solid rgba(105,240,174,0.4); }
+  .compare-card .compare-icon { font-size: 32px; display: block; margin-bottom: 8px; }
+  .compare-card .compare-label { font-family: 'Fredoka One', cursive; font-size: 1rem; margin-bottom: 6px; }
+  .compare-card.bad .compare-label { color: #ef9a9a; }
+  .compare-card.good .compare-label { color: var(--poison-green); }
+  .compare-card .compare-text { font-size: 0.82rem; color: rgba(255,255,255,0.8); font-weight: 600; line-height: 1.4; }
+
+  /* SCROLL INDICATOR */
+  .scroll-hint {
+    position: absolute;
+    bottom: 8px;
+    right: 16px;
+    color: rgba(255,255,255,0.3);
+    font-size: 11px;
+    font-weight: 600;
+    animation: fadeInOut 2s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes fadeInOut {
+    0%,100% { opacity: 0; }
+    50% { opacity: 1; }
+  }
+
+  /* ANIMATED POISON BUBBLES */
+  .poison-bubble {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: rgba(206,147,216,0.6);
+    margin: 0 3px;
+    animation: poisonBubble 1.5s ease-in-out infinite;
+  }
+  .poison-bubble:nth-child(2) { animation-delay: 0.3s; background: rgba(239,83,80,0.6); }
+  .poison-bubble:nth-child(3) { animation-delay: 0.6s; background: rgba(105,240,174,0.6); }
+  @keyframes poisonBubble {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.5); }
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .book-card { border-radius: 20px; }
+    .slide { padding: 20px 20px 16px; }
+    .cover-title { font-size: 1.9rem; }
+    .slide-title { font-size: 1.6rem; }
+    .fish-game-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .danger-grid { grid-template-columns: 1fr 1fr; }
+    .compare-row { grid-template-columns: 1fr 1fr; }
+    .progress-bar-container { padding: 0 20px 10px; }
+    .nav-bar { padding: 10px 16px; }
+    .cover-fish { font-size: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Back Button -->
+<a href="../perpustakaan.html" class="back-btn">← Kembali ke Perpustakaan</a>
+
+<!-- Ocean Background -->
+<div class="ocean-bg">
+  <div class="wave-layer wave-1"></div>
+  <div class="wave-layer wave-2"></div>
+  <div class="wave-layer wave-3"></div>
+</div>
+
+<!-- Main Book -->
+<div class="book-container">
+  <div class="book-card">
+    <!-- Slides -->
+    <div class="slides-wrapper" id="slidesWrapper">
+
+      <!-- SLIDE 1: COVER -->
+      <div class="slide active" id="slide-0">
+        <div style="text-align:center; padding-top: 10px;">
+          <div class="cover-badge">⚓ Hari 11 dari 30 ⚓</div>
+          <div class="cover-fish-container">
+            <span class="cover-fish">🐠</span>
+            <span class="cover-fish">🐡</span>
+            <span class="cover-fish">🐟</span>
+          </div>
+          <h1 class="cover-title">Ikan-Ikan<br><span>Beracun</span></h1>
+          <p style="font-family:'Fredoka One',cursive; font-size:1.15rem; color:rgba(255,255,255,0.7); margin:8px 0;">Berita Bohong &amp; Hoax</p>
+          <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:14px 0;">
+            <span class="poison-bubble"></span>
+            <span class="poison-bubble"></span>
+            <span class="poison-bubble"></span>
+          </div>
+          <div style="background:rgba(255,255,255,0.07); border-radius:16px; padding:14px 20px; margin:14px 0; border:1.5px solid rgba(255,255,255,0.12);">
+            <p style="font-size:0.9rem; color:rgba(255,255,255,0.75); font-weight:600; line-height:1.6;">
+              Cantik di luar, mematikan di dalam.<br>
+              Pelajari cara mengenali ikan yang paling berbahaya<br>di Lautan Digital!
+            </p>
+          </div>
+          <div class="captain-name">
+            <span>⚓</span>
+            <span>Kapten Aslan</span>
+          </div>
+          <div class="series-badge">📚 Seri: Petualangan Kapten Cerdas di Lautan Digital</div>
+        </div>
+      </div>
+
+      <!-- SLIDE 2: PENGANTAR -->
+      <div class="slide" id="slide-1">
+        <h2 class="slide-title">🌊 Petualangan Hari Ini</h2>
+        <p class="slide-text">
+          Kapten Aslan, hebat sekali kamu sudah sampai di <b>Hari ke-11</b>! 🎉
+        </p>
+        <div class="highlight-box">
+          <p style="font-size:0.9rem; color:rgba(255,255,255,0.75); font-weight:600; line-height:1.6;">
+            📖 <b style="color:var(--gold)">Ingat kemarin?</b> Kamu baru saja belajar cara menggunakan <b>Lensa Ajaib</b> untuk membedakan berlian dan sampah di Lautan Digital. Kamu sudah semakin pintar!
+          </p>
+        </div>
+        <p class="slide-text">
+          Tapi hari ini, kamu akan menghadapi musuh yang <b>jauh lebih licik</b>...
+        </p>
+        <div class="poison-fish-display">
+          <div class="poison-fish-big">🐡</div>
+          <div class="poison-label">
+            <div class="p-title">⚠️ Ikan Beracun!</div>
+            <div class="p-sub">Kelihatan cantik dan menggoda...</div>
+            <div class="p-sub" style="color:#ef9a9a;">...tapi sangat berbahaya!</div>
+          </div>
+        </div>
+        <p class="slide-text">
+          Di Lautan Digital, ada ikan-ikan yang sangat <b>indah dan berwarna-warni</b>. Mereka berenang dengan lincah, menari dengan indah, dan terlihat sangat menarik perhatian. Tapi awas — mereka menyembunyikan <b>racun</b> di balik kecantikannya!
+        </p>
+        <p class="slide-text">Ikan-ikan itu namanya... <b style="color:var(--poison-green)">Berita Bohong dan Hoax</b>! 🎭</p>
+      </div>
+
+      <!-- SLIDE 3: CERITA UTAMA -->
+      <div class="slide" id="slide-2">
+        <h2 class="slide-title">📖 Aslan Bertemu Ikan Beracun</h2>
+        <p class="slide-text">Suatu pagi yang cerah, Kapten Aslan sedang berlayar santai di Lautan Digital...</p>
+        <div class="dialogue-box">
+          <span class="dialogue-avatar">⚓</span>
+          <div class="dialogue-content">
+            <div class="dialogue-name">Kapten Aslan</div>
+            <div class="dialogue-text">"Wah, hari ini lautan begitu tenang! Aku akan mencari konten menarik sambil bersantai..."</div>
+          </div>
+        </div>
+        <p class="slide-text">Tiba-tiba, dari balik terumbu karang digital, muncullah <b>gerombolan ikan yang sangat cantik</b>! Warnanya merah menyala, biru berkilau, dan ungu bercahaya. Sirip mereka melambai-lambai, seolah mengundang Aslan mendekat.</p>
+        <div class="dialogue-box">
+          <span class="dialogue-avatar">🐠</span>
+          <div class="dialogue-content">
+            <div class="dialogue-name">Ikan Misterius</div>
+            <div class="dialogue-text">"Hei Kapten! Aku punya BERITA DAHSYAT! Kamu HARUS tahu ini! SANGAT PENTING! Sebarkan ke semua temanmu SEKARANG JUGA!!!"</div>
+          </div>
+        </div>
+        <div class="dialogue-box">
+          <span class="dialogue-avatar">⚓</span>
+          <div class="dialogue-content">
+            <div class="dialogue-name">Kapten Aslan (berpikir)</div>
+            <div class="dialogue-text">"Hmm... mengapa berita ini teriak-teriak terus? Dan kenapa harus disebarkan SEKARANG? Ada yang aneh..."</div>
+          </div>
+        </div>
+        <p class="slide-text">Naluri Kapten Aslan berbisik: <b style="color:var(--gold)">"Hati-hati! Ini mungkin ikan beracun!"</b> 🚨</p>
+        <div class="highlight-box">
+          <p style="font-size:0.88rem; color:rgba(255,255,255,0.8); font-weight:600; line-height:1.6;">
+            🧠 <b style="color:var(--sky-blue)">Ingat ilmu dari Hari 10?</b> Aslan langsung menggunakan Lensa Ajaibnya untuk memeriksa ikan-ikan ini lebih teliti. Dan ternyata... benar! Ikan-ikan ini penuh racun!
+          </p>
+        </div>
+      </div>
+
+      <!-- SLIDE 4: APA ITU HOAX -->
+      <div class="slide" id="slide-3">
+        <h2 class="slide-title">🎭 Apa Itu Ikan Beracun?</h2>
+        <div class="poison-fish-display">
+          <span style="font-size:54px; filter:drop-shadow(0 0 20px rgba(239,83,80,0.7));">🐡</span>
+          <span style="font-size:32px; color:rgba(255,255,255,0.5);">+</span>
+          <span style="font-size:54px; filter:drop-shadow(0 0 20px rgba(206,147,216,0.7));">💭</span>
+          <span style="font-size:32px; color:rgba(255,255,255,0.5);">=</span>
+          <span style="font-size:54px; filter:drop-shadow(0 0 20px rgba(255,213,79,0.7));">🤥</span>
+        </div>
+        <p class="slide-text">
+          Di dunia nyata, ada ikan-ikan cantik seperti <b>ikan buntal</b> dan <b>ikan batu</b> yang terlihat indah tapi mengandung racun mematikan. Kamu tidak boleh memakannya!
+        </p>
+        <p class="slide-text">
+          Di <b>Lautan Digital</b>, "ikan beracun" itu adalah <b>Berita Bohong (Hoax)</b> — yaitu:
+        </p>
+        <div class="highlight-box" style="border-color:rgba(239,83,80,0.4); background:rgba(239,83,80,0.08);">
+          <p style="font-family:'Fredoka One',cursive; font-size:1.1rem; color:#ef9a9a; margin-bottom:8px;">☠️ Definisi Ikan Beracun Digital:</p>
+          <p style="font-size:0.9rem; color:rgba(255,255,255,0.85); font-weight:600; line-height:1.7;">
+            <b style="color:white;">Informasi atau berita yang dibuat-buat</b>, tidak benar, atau diubah-ubah tujuannya untuk <b style="color:var(--gold)">membohongi, menakut-nakuti, atau menipu</b> orang yang membacanya.
+          </p>
+        </div>
+        <div class="compare-row">
+          <div class="compare-card bad">
+            <span class="compare-icon">🐡</span>
+            <div class="compare-label">Ikan Beracun = Hoax</div>
+            <div class="compare-text">Terlihat menarik, tapi isinya bohong dan berbahaya</div>
+          </div>
+          <div class="compare-card good">
+            <span class="compare-icon">🐟</span>
+            <div class="compare-label">Ikan Sehat = Fakta</div>
+            <div class="compare-text">Mungkin biasa saja, tapi isinya benar dan dapat dipercaya</div>
+          </div>
+        </div>
+        <p class="slide-text" style="font-size:0.88rem;">
+          Hoax bisa muncul di mana saja: WhatsApp, YouTube, TikTok, Instagram, bahkan dikirim oleh teman atau keluarga yang tidak tahu kalau itu bohong!
+        </p>
+      </div>
+
+      <!-- SLIDE 5: CIRI-CIRI (GAME) -->
+      <div class="slide" id="slide-4">
+        <h2 class="slide-title">🔍 Kenali Ikan Beracun!</h2>
+        <p class="slide-text">Klik setiap ikan untuk melihat apakah ini ciri-ciri ikan beracun atau ikan sehat!</p>
+        <div class="game-instruction">
+          👆 Tap ikan-ikan di bawah ini untuk mengungkap rahasianya!
+        </div>
+        <div class="fish-game-grid" id="fishGame">
+          <div class="fish-card poison" onclick="revealFish(this)">
+            <span class="fish-emoji">🚨</span>
+            <span class="fish-name">Judul Teriak-teriak</span>
+            <div class="fish-result">☠️ BERACUN!<br><small>"DARURAT!! SEBARKAN SEKARANG!!" — selalu pakai huruf kapital dan kata lebay</small></div>
+          </div>
+          <div class="fish-card poison" onclick="revealFish(this)">
+            <span class="fish-emoji">😱</span>
+            <span class="fish-name">Cerita Super Dramatis</span>
+            <div class="fish-result">☠️ BERACUN!<br><small>Terlalu dramatis, terlalu sedih, atau terlalu mengejutkan — sengaja bikin emosi</small></div>
+          </div>
+          <div class="fish-card safe" onclick="revealFish(this)">
+            <span class="fish-emoji">🏛️</span>
+            <span class="fish-name">Ada Nama Sumber Jelas</span>
+            <div class="fish-result">✅ AMAN!<br><small>Dari sumber terpercaya seperti Kompas, BBC, atau website resmi pemerintah</small></div>
+          </div>
+          <div class="fish-card poison" onclick="revealFish(this)">
+            <span class="fish-emoji">🖼️</span>
+            <span class="fish-name">Gambar Menakutkan</span>
+            <div class="fish-result">☠️ BERACUN!<br><small>Gambar yang mengerikan atau dimanipulasi untuk membuat orang percaya</small></div>
+          </div>
+          <div class="fish-card poison" onclick="revealFish(this)">
+            <span class="fish-emoji">🔗</span>
+            <span class="fish-name">Tidak Ada Sumber</span>
+            <div class="fish-result">☠️ BERACUN!<br><small>"Kata orang tua zaman dulu..." — tidak ada nama narasumber yang jelas</small></div>
+          </div>
+          <div class="fish-card safe" onclick="revealFish(this)">
+            <span class="fish-emoji">📅</span>
+            <span class="fish-name">Ada Tanggal & Penulis</span>
+            <div class="fish-result">✅ AMAN!<br><small>Ada nama penulis, tanggal penerbitan, dan bisa dicek kebenarannya</small></div>
+          </div>
+        </div>
+        <button class="reset-btn" onclick="resetFishGame()">🔄 Main Lagi</button>
+      </div>
+
+      <!-- SLIDE 6: JENIS-JENIS HOAX -->
+      <div class="slide" id="slide-5">
+        <h2 class="slide-title">🐠 Jenis-jenis Ikan Beracun</h2>
+        <p class="slide-text">Di Lautan Digital ada bermacam-macam ikan beracun. Yuk kenali mereka!</p>
+
+        <div class="trait-card" style="border-left-color: #ef5350;">
+          <span class="trait-icon">😰</span>
+          <div>
+            <div class="trait-title" style="color:#ef9a9a;">Ikan Ketakutan (Fear Hoax)</div>
+            <div class="trait-desc">"AWAS! Makan makanan ini bisa langsung meninggal!" — berita yang sengaja menakut-nakuti supaya kamu panik dan menyebarkannya.</div>
+          </div>
+        </div>
+
+        <div class="trait-card" style="border-left-color: #ab47bc;">
+          <span class="trait-icon">💰</span>
+          <div>
+            <div class="trait-title" style="color:var(--poison-purple);">Ikan Hadiah Palsu (Scam Hoax)</div>
+            <div class="trait-desc">"Selamat! Kamu menang hadiah 10 juta! Klik di sini sekarang!" — bohong! Ini jebakan untuk mencuri datamu.</div>
+          </div>
+        </div>
+
+        <div class="trait-card" style="border-left-color: #42a5f5;">
+          <span class="trait-icon">🏥</span>
+          <div>
+            <div class="trait-title" style="color:var(--sky-blue);">Ikan Obat Ajaib (Health Hoax)</div>
+            <div class="trait-desc">"Minum air garam setiap pagi bisa menyembuhkan semua penyakit!" — informasi kesehatan yang salah dan berbahaya.</div>
+          </div>
+        </div>
+
+        <div class="trait-card" style="border-left-color: #ffd54f;">
+          <span class="trait-icon">📸</span>
+          <div>
+            <div class="trait-title" style="color:var(--gold);">Ikan Foto Palsu (Manipulated Images)</div>
+            <div class="trait-desc">Foto asli yang diubah pakai aplikasi, lalu disebarkan seolah kejadian nyata yang mengerikan.</div>
+          </div>
+        </div>
+
+        <div class="trait-card" style="border-left-color: var(--poison-green);">
+          <span class="trait-icon">📱</span>
+          <div>
+            <div class="trait-title" style="color:var(--poison-green);">Ikan Rantai (Chain Hoax)</div>
+            <div class="trait-desc">"Sebarkan ke 10 orang atau nasib buruk akan menimpamu!" — hanya ancaman kosong untuk menyebar-luaskan kebohongan.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 7: BAHAYA -->
+      <div class="slide" id="slide-6">
+        <h2 class="slide-title">☠️ Bahaya Makan Ikan Beracun</h2>
+        <p class="slide-text">Kalau kamu "memakan" (percaya dan menyebarkan) ikan beracun, ini akibatnya:</p>
+
+        <div class="danger-grid">
+          <div class="danger-pill">
+            <span class="danger-icon">😡</span>
+            <div class="danger-text">Marah kepada orang yang tidak bersalah</div>
+          </div>
+          <div class="danger-pill">
+            <span class="danger-icon">😨</span>
+            <div class="danger-text">Takut berlebihan yang tidak perlu</div>
+          </div>
+          <div class="danger-pill">
+            <span class="danger-icon">😢</span>
+            <div class="danger-text">Sedih atau panik tanpa alasan jelas</div>
+          </div>
+          <div class="danger-pill">
+            <span class="danger-icon">🤝</span>
+            <div class="danger-text">Menyebarkan bohong ke teman-teman</div>
+          </div>
+        </div>
+
+        <div class="dialogue-box" style="margin-top:14px;">
+          <span class="dialogue-avatar">👦</span>
+          <div class="dialogue-content">
+            <div class="dialogue-name">Contoh Kasus Nyata</div>
+            <div class="dialogue-text">Budi menerima pesan: "Buah naga mengandung racun berbahaya! Sebarkan ke semua!" Budi percaya dan menyebarkan. Ternyata itu hoax! Mama Budi sudah beli banyak buah naga untuk dibuang. Adiknya menangis tidak bisa makan camilan favoritnya. 😢</div>
+          </div>
+        </div>
+
+        <div class="highlight-box" style="border-color:rgba(239,83,80,0.4); background:rgba(239,83,80,0.08); margin-top:14px;">
+          <p style="font-family:'Fredoka One',cursive; font-size:1rem; color:#ef9a9a; margin-bottom:6px;">⚠️ Bahaya Terbesar:</p>
+          <p style="font-size:0.9rem; color:rgba(255,255,255,0.85); font-weight:600; line-height:1.6;">
+            Kalau kamu menyebarkan hoax, kamu ikut menjadi penyebar racun! Orang lain yang kamu cintai bisa ikut tertipu dan terluka. Bahkan di Indonesia, menyebarkan hoax bisa melanggar hukum!
+          </p>
+        </div>
+      </div>
+
+      <!-- SLIDE 8: CARA MENGHINDARI -->
+      <div class="slide" id="slide-7">
+        <h2 class="slide-title">🛡️ Cara Menghindari Ikan Beracun</h2>
+        <p class="slide-text">Kapten Aslan sudah tahu caranya — dan kamu juga bisa melakukannya!</p>
+
+        <div class="cek-fakta-steps">
+          <div class="cek-step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-title">🛑 BERHENTI dulu!</div>
+              <div class="step-desc">Jangan langsung percaya. Jangan langsung menekan tombol "share". Tarik napas dulu dan berikan waktu untuk berpikir.</div>
+            </div>
+          </div>
+          <div class="cek-step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-title">🤔 TANYA ke diri sendiri</div>
+              <div class="step-desc">"Masuk akal nggak nih? Kenapa harus disebarkan SEKARANG? Siapa yang buat berita ini?" Kalau tidak ada jawaban, curigailah!</div>
+            </div>
+          </div>
+          <div class="cek-step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-title">🔍 CARI tahu di sumber terpercaya</div>
+              <div class="step-desc">Buka Google dan cari beritanya. Lihat apakah media besar seperti Kompas.com atau BBC membahasnya juga.</div>
+            </div>
+          </div>
+          <div class="cek-step">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <div class="step-title">👨‍👩‍👧 TANYA orang dewasa</div>
+              <div class="step-desc">Tanya ayah, ibu, atau guru. Mereka bisa membantu kamu menilai apakah informasi ini benar atau hoax.</div>
+            </div>
+          </div>
+          <div class="cek-step">
+            <div class="step-num">5</div>
+            <div class="step-content">
+              <div class="step-title">🚫 JANGAN sebarkan kalau ragu</div>
+              <div class="step-desc">Kalau kamu tidak 100% yakin kebenarannya, jangan sebarkan! Lebih baik diam daripada menjadi penyebar hoax.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 9: CEK FAKTA -->
+      <div class="slide" id="slide-8">
+        <h2 class="slide-title">🔬 Sudah Terlanjur? Cek Fakta!</h2>
+        <p class="slide-text">
+          Tidak apa-apa kalau kamu sudah terlanjur percaya hoax — yang penting sekarang kamu <b>cek fakta</b> dan perbaiki!
+        </p>
+        <div class="highlight-box" style="border-color:rgba(66,165,245,0.4); text-align:center; margin-bottom:16px;">
+          <p style="font-family:'Fredoka One',cursive; font-size:1.2rem; color:var(--sky-blue); margin-bottom:8px;">🌐 Website Cek Fakta Indonesia</p>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:10px;">
+            <span style="background:rgba(255,255,255,0.1); border-radius:8px; padding:6px 14px; font-weight:700; font-size:0.85rem; color:white;">🔍 turnbackhoax.id</span>
+            <span style="background:rgba(255,255,255,0.1); border-radius:8px; padding:6px 14px; font-weight:700; font-size:0.85rem; color:white;">🔍 cekfakta.com</span>
+            <span style="background:rgba(255,255,255,0.1); border-radius:8px; padding:6px 14px; font-weight:700; font-size:0.85rem; color:white;">🔍 kominfo.go.id</span>
+          </div>
+        </div>
+
+        <div class="compare-row">
+          <div class="compare-card bad">
+            <span class="compare-icon">😰</span>
+            <div class="compare-label">Tanpa Cek Fakta</div>
+            <div class="compare-text">Percaya, share, ikut-ikutan takut, dan menyebarkan racun ke orang lain</div>
+          </div>
+          <div class="compare-card good">
+            <span class="compare-icon">🦸</span>
+            <div class="compare-label">Dengan Cek Fakta</div>
+            <div class="compare-text">Verifikasi dulu, tahu kebenarannya, beri tahu teman yang keliru, dan hentikan penyebaran hoax!</div>
+          </div>
+        </div>
+
+        <div class="dialogue-box" style="margin-top:14px;">
+          <span class="dialogue-avatar">⚓</span>
+          <div class="dialogue-content">
+            <div class="dialogue-name">Kapten Aslan</div>
+            <div class="dialogue-text">"Kapten yang baik tidak hanya melindungi dirinya sendiri — tapi juga menyelamatkan kru kapalnya dari racun yang berbahaya!"</div>
+          </div>
+        </div>
+
+        <div class="highlight-box" style="background:rgba(105,240,174,0.08); border-color:rgba(105,240,174,0.3);">
+          <p style="font-size:0.88rem; color:rgba(255,255,255,0.85); font-weight:600; line-height:1.6;">
+            💪 Kalau kamu sudah terlanjur menyebarkan hoax, tidak apa-apa! Yang penting sekarang kamu minta maaf ke orang yang kamu beritahu dan beri tahu mereka kebenarannya. Itu tanda Kapten yang pemberani dan bertanggung jawab!
+          </p>
+        </div>
+      </div>
+
+      <!-- SLIDE 10: PELAJARAN HARI INI -->
+      <div class="slide" id="slide-9">
+        <h2 class="slide-title">💡 Pelajaran Hari Ini</h2>
+        <p class="slide-text" style="margin-bottom:16px;">Inilah harta karun ilmu yang kamu bawa pulang hari ini, Kapten Aslan! ⚓</p>
+
+        <div class="lesson-grid">
+          <div class="lesson-item">
+            <span class="lesson-icon">🐡</span>
+            <span class="lesson-text"><b style="color:var(--sky-blue)">Hoax = Ikan Beracun</b> — Cantik di luar, berbahaya di dalam. Selalu waspada!</span>
+          </div>
+          <div class="lesson-item">
+            <span class="lesson-icon">🔤</span>
+            <span class="lesson-text"><b style="color:var(--sky-blue)">Judul sensasional</b> adalah tanda bahaya pertama — kalau teriak-teriak, kemungkinan besar hoax!</span>
+          </div>
+          <div class="lesson-item">
+            <span class="lesson-icon">⏸️</span>
+            <span class="lesson-text"><b style="color:var(--sky-blue)">BERHENTI sebelum share</b> — satu detik untuk berpikir bisa mencegah banyak orang tertipu.</span>
+          </div>
+          <div class="lesson-item">
+            <span class="lesson-icon">🔍</span>
+            <span class="lesson-text"><b style="color:var(--sky-blue)">Cek sumber</b> — berita yang benar selalu punya nama narasumber dan bisa diverifikasi.</span>
+          </div>
+          <div class="lesson-item">
+            <span class="lesson-icon">👨‍👩‍👧</span>
+            <span class="lesson-text"><b style="color:var(--sky-blue)">Tanya orang dewasa</b> — tidak ada yang salah dengan meminta bantuan untuk mengecek kebenaran!</span>
+          </div>
+          <div class="lesson-item">
+            <span class="lesson-icon">🦸</span>
+            <span class="lesson-text"><b style="color:var(--sky-blue)">Hentikan rantai hoax</b> — kamu bisa jadi pahlawan dengan tidak ikut menyebarkan kebohongan.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 11: TANTANGAN -->
+      <div class="slide" id="slide-10">
+        <h2 class="slide-title">🎯 Tantangan Kapten Aslan!</h2>
+        <p class="slide-text">Hari ini Aslan punya misi khusus! Selesaikan semua tantangan ini:</p>
+
+        <div class="challenge-box">
+          <div class="challenge-title">⚓ Misi Hari Ini ⚓</div>
+
+          <div class="challenge-task" onclick="toggleTask(this)">
+            <div class="check-circle">✓</div>
+            <span class="task-text">🔍 <b>Cari satu berita</b> yang kamu ragu kebenarannya dan cek di Google apakah itu hoax atau tidak.</span>
+          </div>
+
+          <div class="challenge-task" onclick="toggleTask(this)">
+            <div class="check-circle">✓</div>
+            <span class="task-text">📱 <b>Tanya ayah/ibu/kakak</b>: "Pernah dapat hoax apa?" dan diskusikan bagaimana cara mengenalinya.</span>
+          </div>
+
+          <div class="challenge-task" onclick="toggleTask(this)">
+            <div class="check-circle">✓</div>
+            <span class="task-text">✍️ <b>Buat daftar</b> 3 ciri-ciri hoax di buku catatanmu sebagai pengingat ajaib!</span>
+          </div>
+
+          <div class="challenge-task" onclick="toggleTask(this)">
+            <div class="check-circle">✓</div>
+            <span class="task-text">🚫 <b>Jika ada yang kirim info mencurigakan</b> hari ini, jangan langsung percaya — cek dulu!</span>
+          </div>
+
+          <div class="challenge-task" onclick="toggleTask(this)">
+            <div class="check-circle">✓</div>
+            <span class="task-text">🌐 <b>Kunjungi turnbackhoax.id</b> dan lihat contoh hoax yang pernah ada di Indonesia.</span>
+          </div>
+        </div>
+
+        <p style="text-align:center; margin-top:14px; color:rgba(255,255,255,0.6); font-size:0.85rem; font-weight:600;">
+          👆 Tap setiap tugas untuk menandainya selesai!
+        </p>
+      </div>
+
+      <!-- SLIDE 12: PENUTUP -->
+      <div class="slide" id="slide-11">
+        <div style="text-align:center;">
+          <div class="star-row">
+            <span class="star">⭐</span>
+            <span class="star">🌟</span>
+            <span class="star">⭐</span>
+          </div>
+
+          <h2 class="slide-title" style="font-size:2rem;">Selamat, Kapten Aslan! 🎉</h2>
+          <p style="font-family:'Fredoka One',cursive; font-size:1.1rem; color:var(--sky-blue); margin-bottom:14px;">Kamu telah menguasai ilmu menghadapi Ikan Beracun!</p>
+
+          <div class="closing-card">
+            <span style="font-size:52px; display:block; margin-bottom:12px; animation:floatFish 3s ease-in-out infinite;">⚓</span>
+            <p style="font-family:'Fredoka One',cursive; font-size:1.2rem; color:var(--poison-green); margin-bottom:10px;">Kapten Cerdas Aslan</p>
+            <p style="font-size:0.9rem; color:rgba(255,255,255,0.8); font-weight:600; line-height:1.7;">
+              Dengan kecerdasan dan keberanianmu, kamu bisa melindungi dirimu sendiri, keluargamu, dan teman-temanmu dari bahaya Ikan Beracun di Lautan Digital. Kamu bukan hanya Kapten yang pintar — kamu adalah <b style="color:var(--gold)">Pelindung Kebenaran!</b>
+            </p>
+          </div>
+
+          <div style="background:rgba(255,213,79,0.1); border:2px dashed rgba(255,213,79,0.4); border-radius:16px; padding:16px; margin:14px 0;">
+            <p style="font-family:'Fredoka One',cursive; font-size:1rem; color:var(--gold); margin-bottom:8px;">🗓️ Preview Hari Berikutnya</p>
+            <p style="font-size:0.88rem; color:rgba(255,255,255,0.75); font-weight:600; line-height:1.5;">
+              <b style="color:white;">Hari 12: Mutiara Ilmu vs Plastik Iklan</b> 💎<br>
+              Kapten Aslan akan belajar membedakan konten yang benar-benar berharga seperti mutiara... dari iklan berbungkus cantik yang tidak berguna!
+            </p>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-top:12px;">
+            <span style="font-size:26px;">🐡</span>
+            <span style="font-size:26px;">🚫</span>
+            <span style="font-size:26px;">+</span>
+            <span style="font-size:26px;">🔍</span>
+            <span style="font-size:26px;">✓</span>
+            <span style="font-size:26px;">+</span>
+            <span style="font-size:26px;">⚓</span>
+            <span style="font-size:26px;">=</span>
+            <span style="font-size:26px;">🦸</span>
+          </div>
+          <p style="font-size:0.78rem; color:rgba(255,255,255,0.5); margin-top:10px; font-weight:600;">Tidak percaya hoax + cek fakta + tanya orang dewasa = Kapten Cerdas!</p>
+        </div>
+      </div>
+
+    </div><!-- /slides-wrapper -->
+
+    <!-- Progress Bar -->
+    <div class="progress-bar-container">
+      <div class="progress-label">
+        <span id="slideLabel">Halaman 1 dari 12</span>
+        <span id="slidePercent">8%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:8%"></div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-bar">
+      <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>
+        ← Sebelumnya
+      </button>
+      <div class="page-dots" id="pageDots"></div>
+      <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">
+        Selanjutnya →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Decorative Background Elements -->
+<script>
+// Create bubbles
+const oceanBg = document.querySelector('.ocean-bg');
+for (let i = 0; i < 18; i++) {
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  const size = Math.random() * 16 + 6;
+  b.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${Math.random()*100}%;
+    bottom:${Math.random()*30}%;
+    animation-duration:${Math.random()*8+6}s;
+    animation-delay:${Math.random()*6}s;
+  `;
+  oceanBg.appendChild(b);
+}
+
+// Create swimming fish
+const fishEmojis = ['🐟','🐠','🐡','🦑','🐙'];
+for (let i = 0; i < 3; i++) {
+  const f = document.createElement('div');
+  f.className = 'deco-fish';
+  f.textContent = fishEmojis[Math.floor(Math.random()*fishEmojis.length)];
+  f.style.cssText = `
+    top:${15 + Math.random()*70}%;
+    animation-duration:${18 + Math.random()*14}s;
+    animation-delay:${Math.random()*12}s;
+    font-size:${22 + Math.random()*16}px;
+  `;
+  oceanBg.appendChild(f);
+}
+
+// === SLIDE LOGIC ===
+const TOTAL_SLIDES = 12;
+let current = 0;
+
+function buildDots() {
+  const c = document.getElementById('pageDots');
+  c.innerHTML = '';
+  for (let i = 0; i < TOTAL_SLIDES; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goToSlide(i);
+    c.appendChild(d);
+  }
+}
+
+function updateUI() {
+  // Dots
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+  // Progress
+  const pct = Math.round(((current + 1) / TOTAL_SLIDES) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('slideLabel').textContent = `Halaman ${current + 1} dari ${TOTAL_SLIDES}`;
+  document.getElementById('slidePercent').textContent = pct + '%';
+  // Buttons
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === TOTAL_SLIDES - 1;
+}
+
+function goToSlide(target) {
+  if (target === current) return;
+  const direction = target > current ? 1 : -1;
+  const oldSlide = document.getElementById(`slide-${current}`);
+  const newSlide = document.getElementById(`slide-${target}`);
+
+  oldSlide.classList.remove('active');
+  oldSlide.classList.add('exit-left');
+  if (direction > 0) {
+    newSlide.style.transform = 'translateX(60px)';
+  } else {
+    newSlide.style.transform = 'translateX(-60px)';
+    newSlide.style.opacity = '0';
+  }
+  newSlide.classList.add('active');
+
+  setTimeout(() => {
+    oldSlide.classList.remove('exit-left');
+    oldSlide.style.transform = '';
+    newSlide.style.transform = '';
+    newSlide.style.opacity = '';
+    newSlide.scrollTop = 0;
+  }, 500);
+
+  current = target;
+  updateUI();
+}
+
+function changeSlide(dir) {
+  const target = current + dir;
+  if (target < 0 || target >= TOTAL_SLIDES) return;
+  goToSlide(target);
+}
+
+// === FISH GAME ===
+function revealFish(card) {
+  if (!card.classList.contains('revealed')) {
+    card.classList.add('revealed');
+    // Shake effect for poison
+    if (card.classList.contains('poison')) {
+      card.style.animation = 'none';
+      setTimeout(() => { card.style.animation = ''; }, 10);
+      card.style.boxShadow = '0 0 20px rgba(239,83,80,0.6)';
+    } else {
+      card.style.boxShadow = '0 0 20px rgba(105,240,174,0.6)';
+    }
+  }
+}
+
+function resetFishGame() {
+  document.querySelectorAll('.fish-card').forEach(card => {
+    card.classList.remove('revealed');
+    card.style.boxShadow = '';
+  });
+}
+
+// === CHALLENGE TASKS ===
+function toggleTask(el) {
+  el.classList.toggle('done');
+  const circle = el.querySelector('.check-circle');
+  if (el.classList.contains('done')) {
+    circle.textContent = '✓';
+    circle.style.background = 'var(--poison-green)';
+    circle.style.color = 'var(--ocean-deep)';
+    circle.style.border = '2px solid var(--poison-green)';
+  } else {
+    circle.textContent = '✓';
+    circle.style.background = '';
+    circle.style.color = '';
+    circle.style.border = '2px solid rgba(255,255,255,0.4)';
+  }
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+});
+
+// Touch swipe
+let touchStartX = 0;
+document.querySelector('.book-card').addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+}, { passive: true });
+document.querySelector('.book-card').addEventListener('touchend', e => {
+  const dx = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(dx) > 50) changeSlide(dx > 0 ? 1 : -1);
+}, { passive: true });
+
+// Init
+buildDots();
+updateUI();
+</script>
+</body>
+</html>

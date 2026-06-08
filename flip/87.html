@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petualangan Aslan di Negeri AI – Hari 27</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --biru:       #4A6CF7;
+      --biru-muda:  #818CF8;
+      --biru-tua:   #1E1B4B;
+      --ungu:       #7C3AED;
+      --ungu-muda:  #C4B5FD;
+      --pink:       #EC4899;
+      --kuning:     #FCD34D;
+      --hijau:      #10B981;
+      --oranye:     #F59E0B;
+      --merah:      #EF4444;
+      --teal:       #06B6D4;
+      --bg:         #F5F3FF;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 5% 10%,  #DDD6FE60 0%, transparent 40%),
+        radial-gradient(ellipse at 95% 5%,  #BFDBFE55 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 80%, #EDE9FE50 0%, transparent 45%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .font-kartun { font-family: 'Fredoka One', cursive; }
+
+    /* ===== FLOATING SHAPES ===== */
+    .shapes-bg {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .shape {
+      position: absolute;
+      animation: floatShape linear infinite;
+      opacity: 0.10;
+    }
+    @keyframes floatShape {
+      0%   { transform: translateY(110vh) rotate(0deg);   opacity: 0; }
+      10%  { opacity: 0.10; }
+      90%  { opacity: 0.10; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ===== TOP BACK LINK ===== */
+    .top-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.20);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      padding: 8px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      border: 2px solid rgba(255,255,255,0.35);
+      backdrop-filter: blur(8px);
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .top-back-link:hover {
+      background: rgba(255,255,255,0.30);
+      transform: translateX(-4px);
+    }
+
+    /* ===== HEADER ===== */
+    .header-bar {
+      background: linear-gradient(135deg, #1E1B4B 0%, #312E81 30%, #4A6CF7 65%, #818CF8 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .header-bar::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        -55deg,
+        transparent 0px, transparent 25px,
+        rgba(255,255,255,0.04) 25px, rgba(255,255,255,0.04) 50px
+      );
+    }
+    .header-bar::after {
+      content: '🤖 ❤️ 🧠 💭 🤔 ❓ 🌟 💙';
+      position: absolute;
+      bottom: 12px; right: 16px;
+      font-size: 0.9rem;
+      letter-spacing: 8px;
+      opacity: 0.15;
+      white-space: nowrap;
+    }
+    .badge-hari {
+      background: var(--kuning);
+      color: #1E1B4B;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      padding: 4px 18px;
+      border-radius: 999px;
+      display: inline-block;
+      box-shadow: 0 4px 0 #D97706;
+      animation: bounceIn 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes bounceIn {
+      0%   { transform: scale(0.3); opacity: 0; }
+      60%  { transform: scale(1.12); }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    .judul-header {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2rem, 6.5vw, 4.2rem);
+      color: #fff;
+      text-shadow: 0 5px 0 #1E1B4B, 0 8px 20px rgba(0,0,0,0.4);
+      letter-spacing: 1.5px;
+      animation: slideDown 0.7s ease both 0.2s;
+      line-height: 1.15;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-40px); opacity: 0; }
+      to   { transform: translateY(0);     opacity: 1; }
+    }
+    .subtitle-header {
+      font-size: clamp(0.85rem, 2.5vw, 1.2rem);
+      color: #C4B5FD;
+      animation: slideDown 0.7s ease both 0.4s;
+    }
+    .progress-track {
+      height: 10px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FCD34D, #F9A8D4);
+      border-radius: 999px;
+      width: 90%; /* 27/30 */
+      transition: width 1.2s ease;
+    }
+
+    /* ===== CARD BASE ===== */
+    .card {
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 8px 32px rgba(74,108,247,0.12), 0 2px 8px rgba(0,0,0,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 5px;
+    }
+    .card-blue::before   { background: linear-gradient(90deg, #4A6CF7, #818CF8); }
+    .card-purple::before { background: linear-gradient(90deg, #7C3AED, #C4B5FD); }
+    .card-yellow::before { background: linear-gradient(90deg, #FCD34D, #FDBA74); }
+    .card-green::before  { background: linear-gradient(90deg, #10B981, #6EE7B7); }
+    .card-pink::before   { background: linear-gradient(90deg, #EC4899, #F9A8D4); }
+    .card-teal::before   { background: linear-gradient(90deg, #06B6D4, #67E8F9); }
+    .card-orange::before { background: linear-gradient(90deg, #F59E0B, #FCD34D); }
+
+    /* ===== ILUSTRASI UTAMA ===== */
+    .main-ilus {
+      background: linear-gradient(145deg, #EDE9FE 0%, #DBEAFE 50%, #FDF2F8 100%);
+      border-radius: 24px;
+      border: 4px solid #fff;
+      box-shadow: 0 12px 40px rgba(124,58,237,0.18), 0 4px 0 #818CF8;
+      position: relative;
+      overflow: hidden;
+      min-height: 360px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .main-ilus::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, #C4B5FD30 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, #BFDBFE40 0%, transparent 50%);
+    }
+
+    /* ===== SVG CHARACTERS ===== */
+    .char-wrap {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: clamp(16px, 5vw, 60px);
+      padding: 20px 16px 0;
+      position: relative;
+      z-index: 2;
+    }
+    .char-float {
+      animation: charFloat 3s ease-in-out infinite;
+    }
+    .char-float-2 {
+      animation: charFloat 3s ease-in-out infinite 1.5s;
+    }
+    @keyframes charFloat {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-12px); }
+    }
+    .big-question {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(1.5rem, 5vw, 3rem);
+      color: #7C3AED;
+      text-shadow: 0 4px 0 #C4B5FD, 0 6px 20px rgba(124,58,237,0.25);
+      white-space: nowrap;
+      z-index: 3;
+      animation: questionPulse 2s ease-in-out infinite;
+    }
+    @keyframes questionPulse {
+      0%,100% { transform: translateX(-50%) scale(1); }
+      50%      { transform: translateX(-50%) scale(1.05); }
+    }
+    .speech-bubble {
+      position: absolute;
+      background: #fff;
+      border-radius: 14px;
+      padding: 7px 12px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+      z-index: 4;
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -10px; left: 16px;
+      border: 5px solid transparent;
+      border-top-color: #fff;
+    }
+    .sb-aslan  { bottom: 215px; left: 8%; color: #1E1B4B; border: 2px solid #4A6CF7; }
+    .sb-aslan::after { border-top-color: #fff; }
+    .sb-robo   { bottom: 170px; right: 6%; color: #7C3AED; border: 2px solid #7C3AED; }
+    .sb-robo::after { left: auto; right: 16px; border-top-color: #fff; }
+
+    /* ===== STORY CARD ===== */
+    .story-text {
+      font-size: clamp(1rem, 2.4vw, 1.18rem);
+      line-height: 2;
+      color: #374151;
+      font-weight: 600;
+    }
+    .hl-purple {
+      background: linear-gradient(120deg, #EDE9FE 0%, #C4B5FD 100%);
+      padding: 2px 8px;
+      border-radius: 8px;
+      color: #4C1D95;
+      font-weight: 800;
+    }
+    .hl-yellow {
+      background: linear-gradient(120deg, #FEF3C7 0%, #FCD34D 100%);
+      padding: 2px 8px;
+      border-radius: 8px;
+      color: #92400E;
+      font-weight: 800;
+    }
+    .hl-blue {
+      background: linear-gradient(120deg, #DBEAFE 0%, #93C5FD 100%);
+      padding: 2px 8px;
+      border-radius: 8px;
+      color: #1E40AF;
+      font-weight: 800;
+    }
+    .story-text::first-letter {
+      font-family: 'Fredoka One', cursive;
+      font-size: 3.8rem;
+      color: #7C3AED;
+      float: left;
+      line-height: 1;
+      margin-right: 8px;
+      margin-top: 4px;
+      text-shadow: 0 4px 0 #DDD6FE;
+    }
+
+    /* ===== ANALOGI ===== */
+    .analogi-box {
+      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+      border-radius: 20px;
+      border-left: 6px solid #F59E0B;
+      padding: 20px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .analogi-box::before {
+      content: '🎭';
+      position: absolute;
+      right: 16px; top: 12px;
+      font-size: 2.5rem;
+      opacity: 0.35;
+    }
+
+    /* ===== KOMIK PANELS ===== */
+    .komik-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (min-width: 640px) {
+      .komik-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .panel {
+      border-radius: 18px;
+      border: 4px solid #4A6CF7;
+      overflow: hidden;
+      background: #fff;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 6px 0 #1E1B4B;
+    }
+    .panel:hover {
+      transform: translateY(-6px) rotate(-1.5deg);
+      box-shadow: 0 12px 0 #1E1B4B;
+    }
+    .panel:nth-child(2) { border-color: #EC4899; box-shadow: 0 6px 0 #9D174D; }
+    .panel:nth-child(2):hover { box-shadow: 0 12px 0 #9D174D; }
+    .panel:nth-child(3) { border-color: #10B981; box-shadow: 0 6px 0 #065F46; }
+    .panel:nth-child(3):hover { box-shadow: 0 12px 0 #065F46; }
+    .panel:nth-child(4) { border-color: #F59E0B; box-shadow: 0 6px 0 #92400E; }
+    .panel:nth-child(4):hover { box-shadow: 0 12px 0 #92400E; }
+
+    .panel-scene {
+      width: 100%;
+      height: 155px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      font-size: 3.5rem;
+    }
+    .panel-num {
+      position: absolute; top: 8px; left: 8px;
+      width: 28px; height: 28px;
+      background: #4A6CF7;
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 0 #1E1B4B;
+      z-index: 2;
+    }
+    .panel:nth-child(2) .panel-num { background: #EC4899; box-shadow: 0 2px 0 #9D174D; }
+    .panel:nth-child(3) .panel-num { background: #10B981; box-shadow: 0 2px 0 #065F46; }
+    .panel:nth-child(4) .panel-num { background: #F59E0B; color: #1E1B4B; box-shadow: 0 2px 0 #92400E; }
+
+    .panel-dialog {
+      position: absolute; top: 8px; right: 6px;
+      background: #fff;
+      border: 2px solid #4A6CF7;
+      border-radius: 10px 10px 10px 2px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 3px 7px;
+      max-width: 68%;
+      color: #1E1B4B;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+      z-index: 2;
+      line-height: 1.3;
+    }
+    .panel:nth-child(2) .panel-dialog { border-color: #EC4899; }
+    .panel:nth-child(3) .panel-dialog { border-color: #10B981; }
+    .panel:nth-child(4) .panel-dialog { border-color: #F59E0B; }
+
+    .panel-caption {
+      padding: 10px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #374151;
+      text-align: center;
+      min-height: 52px;
+      display: flex; align-items: center; justify-content: center;
+      background: #fff;
+    }
+
+    /* ===== FAKTA KEREN ===== */
+    .fakta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    @media (min-width: 580px) {
+      .fakta-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .fakta-card {
+      border-radius: 20px;
+      padding: 18px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+    .fakta-card:hover { transform: translateY(-5px) rotate(1deg); }
+    .fakta-emoji {
+      font-size: 2.6rem;
+      display: block;
+      margin-bottom: 8px;
+      animation: faktaBounce 2.5s ease-in-out infinite;
+    }
+    @keyframes faktaBounce {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50%      { transform: translateY(-8px) rotate(3deg); }
+    }
+    .fakta-card:nth-child(2) .fakta-emoji { animation-delay: 0.5s; }
+    .fakta-card:nth-child(3) .fakta-emoji { animation-delay: 1s; }
+    .fakta-card:nth-child(4) .fakta-emoji { animation-delay: 1.5s; }
+    .fakta-card:nth-child(5) .fakta-emoji { animation-delay: 2s; }
+    .fakta-card:nth-child(6) .fakta-emoji { animation-delay: 0.25s; }
+
+    /* ===== PERBANDINGAN MANUSIA vs AI ===== */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 3px solid #E5E7EB;
+    }
+    .compare-col {
+      padding: 18px 16px;
+    }
+    .compare-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1.5px dashed rgba(255,255,255,0.3);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+    .compare-item:last-child { border-bottom: none; }
+
+    /* ===== QUIZ ===== */
+    .quiz-option {
+      border: 3px solid #DDD6FE;
+      border-radius: 16px;
+      padding: 14px 18px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1E1B4B;
+      background: #fff;
+      transition: all 0.2s ease;
+      display: flex; align-items: center; gap: 12px;
+      text-align: left;
+      width: 100%;
+      font-family: 'Nunito', sans-serif;
+    }
+    .quiz-option:hover {
+      border-color: #7C3AED;
+      background: #F5F3FF;
+      transform: translateX(6px);
+    }
+    .quiz-option.correct {
+      border-color: #10B981;
+      background: #ECFDF5;
+      animation: correctPop 0.4s ease;
+    }
+    .quiz-option.wrong {
+      border-color: #EF4444;
+      background: #FEF2F2;
+      animation: shake 0.4s ease;
+    }
+    @keyframes correctPop {
+      0%  { transform: scale(1); }
+      50% { transform: scale(1.04); }
+      100%{ transform: scale(1); }
+    }
+    @keyframes shake {
+      0%,100%{ transform: translateX(0); }
+      25%    { transform: translateX(-8px); }
+      75%    { transform: translateX(8px); }
+    }
+    .quiz-result {
+      display: none;
+      border-radius: 16px;
+      padding: 16px 20px;
+      font-size: 1rem;
+      font-weight: 800;
+      text-align: center;
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== THINKING CHALLENGE ===== */
+    .think-box {
+      background: linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #4A6CF7 100%);
+      border-radius: 24px;
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .think-box::before {
+      content: '💭 🤔 ❓ 💡 🧠';
+      position: absolute;
+      top: 12px; right: 16px;
+      font-size: 1.1rem;
+      letter-spacing: 6px;
+      opacity: 0.20;
+    }
+    .think-textarea {
+      width: 100%;
+      border-radius: 16px;
+      border: 3px solid #818CF8;
+      padding: 14px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1E1B4B;
+      background: rgba(255,255,255,0.95);
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .think-textarea:focus {
+      border-color: #C4B5FD;
+      box-shadow: 0 0 0 4px rgba(196,181,253,0.3);
+    }
+    .btn-kirim {
+      background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
+      color: #1E1B4B;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.05rem;
+      padding: 12px 32px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #D97706;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-kirim:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 0 #D97706;
+    }
+    .btn-kirim:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #D97706;
+    }
+    .think-feedback {
+      display: none;
+      background: rgba(255,255,255,0.15);
+      border-radius: 14px;
+      padding: 14px 18px;
+      color: #FCD34D;
+      font-weight: 800;
+      font-size: 0.95rem;
+      border: 2px solid rgba(252,211,77,0.4);
+      animation: fadeIn 0.4s ease;
+    }
+
+    /* ===== SCROLL REVEAL ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== SPARKLE ===== */
+    .sparkle {
+      display: inline-block;
+      animation: sparkle 1.5s ease-in-out infinite;
+    }
+    @keyframes sparkle {
+      0%,100% { transform: scale(1) rotate(0deg); }
+      50%      { transform: scale(1.3) rotate(15deg); }
+    }
+
+    /* ===== STARS FLOATING ===== */
+    .stars-wrap {
+      position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 1;
+    }
+    .star {
+      position: absolute;
+      animation: starTwinkle 3s ease-in-out infinite;
+      opacity: 0.4;
+      font-size: 1.1rem;
+    }
+    @keyframes starTwinkle {
+      0%,100% { opacity: 0.3; transform: scale(1); }
+      50%      { opacity: 0.7; transform: scale(1.3); }
+    }
+
+    /* ===== SECTION TITLE ===== */
+    .section-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      color: #1E1B4B;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer-bar {
+      background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .footer-bar::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        -55deg,
+        transparent 0px, transparent 25px,
+        rgba(255,255,255,0.03) 25px, rgba(255,255,255,0.03) 50px
+      );
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== FLOATING SHAPES BG ===== -->
+<div class="shapes-bg" aria-hidden="true">
+  <div class="shape" style="left:8%;  width:24px;height:24px;background:#C4B5FD;border-radius:50%;animation-duration:14s;animation-delay:0s;"></div>
+  <div class="shape" style="left:20%; width:18px;height:18px;background:#93C5FD;border-radius:4px;animation-duration:11s;animation-delay:2s;"></div>
+  <div class="shape" style="left:35%; width:32px;height:32px;background:#FCD34D;border-radius:50%;animation-duration:17s;animation-delay:4s;"></div>
+  <div class="shape" style="left:55%; width:20px;height:20px;background:#F9A8D4;border-radius:50%;animation-duration:13s;animation-delay:1s;"></div>
+  <div class="shape" style="left:72%; width:26px;height:26px;background:#A7F3D0;border-radius:6px;animation-duration:15s;animation-delay:3s;"></div>
+  <div class="shape" style="left:88%; width:16px;height:16px;background:#818CF8;border-radius:50%;animation-duration:12s;animation-delay:5s;"></div>
+  <div class="shape" style="left:45%; width:22px;height:22px;background:#FCA5A5;border-radius:4px;animation-duration:16s;animation-delay:7s;"></div>
+  <div class="shape" style="left:62%; width:28px;height:28px;background:#C4B5FD;border-radius:50%;animation-duration:18s;animation-delay:6s;"></div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header class="header-bar">
+  <div class="relative z-10 max-w-3xl mx-auto px-5 pt-5 pb-8">
+    <!-- TOP BACK LINK -->
+    <div class="mb-5">
+      <a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+    </div>
+
+    <!-- BADGE & JUDUL -->
+    <div class="text-center">
+      <div class="badge-hari mb-3">⭐ HARI 27 dari 30 ⭐</div>
+      <h1 class="judul-header mb-2">
+        Apakah AI Bisa<br>Menjadi Manusia? 🤖❤️
+      </h1>
+      <p class="subtitle-header mb-5">"Pintar sekali… tapi apakah itu cukup?"</p>
+
+      <!-- PROGRESS -->
+      <div class="flex items-center gap-3 max-w-xs mx-auto">
+        <span class="text-white/70 text-xs font-bold">0</span>
+        <div class="progress-track flex-1">
+          <div class="progress-fill"></div>
+        </div>
+        <span class="text-white font-bold text-xs">27/30</span>
+      </div>
+      <p class="text-white/50 text-xs mt-1 font-bold">90% selesai — hampir jadi Ahli AI! 🎉</p>
+    </div>
+  </div>
+</header>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="relative z-10 max-w-3xl mx-auto px-4 py-8 space-y-8">
+
+  <!-- ===== 1. ILUSTRASI UTAMA ===== -->
+  <section class="reveal card card-purple">
+    <div class="p-5 pb-0">
+      <div class="main-ilus">
+        <div class="stars-wrap">
+          <span class="star" style="top:15%;left:10%;animation-delay:0s">✨</span>
+          <span class="star" style="top:25%;right:12%;animation-delay:1s">💫</span>
+          <span class="star" style="top:60%;left:18%;animation-delay:2s">⭐</span>
+          <span class="star" style="top:70%;right:20%;animation-delay:0.5s">✨</span>
+          <span class="star" style="top:10%;left:50%;animation-delay:1.5s">💜</span>
+        </div>
+
+        <!-- BIG QUESTION -->
+        <div class="big-question">❓ Bisa? ❓</div>
+
+        <!-- SPEECH BUBBLES -->
+        <div class="speech-bubble sb-aslan">Apakah kamu punya perasaan, Robo? 💭</div>
+        <div class="speech-bubble sb-robo">Saya bisa berpura-pura... tapi merasakan? 🤔</div>
+
+        <!-- CHARACTERS SVG -->
+        <div class="char-wrap w-full">
+
+          <!-- ASLAN -->
+          <div class="char-float" style="z-index:2; position:relative">
+            <svg width="140" height="220" viewBox="0 0 140 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Body Aslan -->
+              <ellipse cx="70" cy="130" rx="35" ry="45" fill="#4A6CF7"/>
+              <rect x="42" y="120" width="56" height="50" rx="14" fill="#4A6CF7"/>
+              <!-- Shirt detail -->
+              <rect x="52" y="130" width="36" height="22" rx="8" fill="#EDE9FE"/>
+              <!-- Heart on shirt -->
+              <text x="64" y="146" font-size="14">❤️</text>
+              <!-- Neck -->
+              <rect x="62" y="90" width="16" height="18" rx="4" fill="#FBBF24"/>
+              <!-- Head -->
+              <ellipse cx="70" cy="78" rx="30" ry="28" fill="#FBBF24"/>
+              <!-- Hair -->
+              <ellipse cx="70" cy="52" rx="30" ry="14" fill="#92400E"/>
+              <ellipse cx="48" cy="60" rx="10" ry="8" fill="#92400E"/>
+              <ellipse cx="92" cy="60" rx="10" ry="8" fill="#92400E"/>
+              <!-- Eyes -->
+              <ellipse cx="60" cy="76" rx="7" ry="8" fill="white"/>
+              <ellipse cx="80" cy="76" rx="7" ry="8" fill="white"/>
+              <ellipse cx="61" cy="77" rx="4" ry="5" fill="#1E1B4B"/>
+              <ellipse cx="81" cy="77" rx="4" ry="5" fill="#1E1B4B"/>
+              <circle cx="63" cy="75" r="1.5" fill="white"/>
+              <circle cx="83" cy="75" r="1.5" fill="white"/>
+              <!-- Eyebrows raised (curious) -->
+              <path d="M54 66 Q60 62 66 65" stroke="#92400E" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path d="M74 65 Q80 62 86 66" stroke="#92400E" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <!-- Nose -->
+              <ellipse cx="70" cy="84" rx="4" ry="3" fill="#F59E0B"/>
+              <!-- Mouth open curious -->
+              <path d="M62 92 Q70 98 78 92" stroke="#92400E" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <!-- Arms -->
+              <rect x="18" y="122" width="28" height="14" rx="7" fill="#4A6CF7"/>
+              <ellipse cx="17" cy="129" rx="9" ry="9" fill="#FBBF24"/>
+              <rect x="94" y="122" width="28" height="14" rx="7" fill="#4A6CF7"/>
+              <ellipse cx="123" cy="129" rx="9" ry="9" fill="#FBBF24"/>
+              <!-- Pointing gesture right hand -->
+              <rect x="116" y="124" width="16" height="7" rx="3" fill="#FBBF24"/>
+              <!-- Legs -->
+              <rect x="50" y="165" width="22" height="42" rx="10" fill="#1E40AF"/>
+              <rect x="68" y="165" width="22" height="42" rx="10" fill="#1E40AF"/>
+              <!-- Shoes -->
+              <ellipse cx="61" cy="207" rx="15" ry="8" fill="#374151"/>
+              <ellipse cx="79" cy="207" rx="15" ry="8" fill="#374151"/>
+              <!-- Explorer hat -->
+              <ellipse cx="70" cy="50" rx="32" ry="9" fill="#92400E"/>
+              <rect x="48" y="38" width="44" height="18" rx="9" fill="#B45309"/>
+              <ellipse cx="70" cy="38" rx="22" ry="6" fill="#92400E"/>
+              <!-- Hat stripe -->
+              <rect x="48" y="50" width="44" height="5" rx="2" fill="#FCD34D"/>
+              <!-- Backpack hint -->
+              <rect x="82" y="115" width="18" height="28" rx="6" fill="#7C3AED" opacity="0.7"/>
+              <rect x="84" y="120" width="14" height="12" rx="4" fill="#C4B5FD" opacity="0.5"/>
+            </svg>
+          </div>
+
+          <!-- VS / Mirror divider -->
+          <div style="position:relative;z-index:3;text-align:center;margin-bottom:10px">
+            <div style="background:linear-gradient(135deg,#7C3AED,#4A6CF7);width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(124,58,237,0.4);font-size:1.6rem">🤔</div>
+            <div style="font-family:'Fredoka One',cursive;font-size:0.8rem;color:#7C3AED;margin-top:4px;white-space:nowrap">VS</div>
+          </div>
+
+          <!-- ROBO as half-human half-robot -->
+          <div class="char-float-2" style="z-index:2;position:relative">
+            <svg width="140" height="220" viewBox="0 0 140 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Body Robo (half human style, half robot) -->
+              <!-- Left side = robot -->
+              <rect x="35" y="115" width="35" height="65" rx="10" fill="#06B6D4"/>
+              <!-- Right side = human-like -->
+              <rect x="70" y="115" width="35" height="65" rx="10" fill="#7C3AED"/>
+              <!-- Circuit lines left -->
+              <line x1="48" y1="130" x2="60" y2="130" stroke="#67E8F9" stroke-width="1.5"/>
+              <line x1="48" y1="140" x2="65" y2="140" stroke="#67E8F9" stroke-width="1.5"/>
+              <circle cx="62" cy="130" r="2.5" fill="#FCD34D"/>
+              <circle cx="50" cy="150" r="3" fill="#67E8F9"/>
+              <!-- Shirt on right side -->
+              <text x="72" y="148" font-size="14">💙</text>
+              <!-- Neck joint -->
+              <rect x="57" y="97" width="26" height="20" rx="5" fill="#94A3B8"/>
+              <rect x="61" y="99" width="18" height="16" rx="3" fill="#06B6D4"/>
+              <!-- Head -->
+              <rect x="38" y="48" width="64" height="56" rx="18" fill="#CBD5E1"/>
+              <!-- Robot left head side -->
+              <rect x="38" y="48" width="32" height="56" rx="18" fill="#0EA5E9"/>
+              <!-- Human right head side -->
+              <rect x="70" y="48" width="32" height="56" rx="18" fill="#FBBF24"/>
+              <!-- Divider line -->
+              <line x1="70" y1="48" x2="70" y2="104" stroke="white" stroke-width="2.5" stroke-dasharray="5,3"/>
+              <!-- EYES - robot left: LED screen, human right: normal -->
+              <rect x="44" y="64" rx="5" ry="5" width="20" height="14" fill="#0D1117"/>
+              <rect x="47" y="67" rx="3" ry="3" width="14" height="8" fill="#06B6D4"/>
+              <text x="47" y="74" font-size="7" fill="#FCD34D">▐▌</text>
+              <!-- Human eye right -->
+              <ellipse cx="86" cy="71" rx="8" ry="9" fill="white"/>
+              <ellipse cx="87" cy="72" rx="5" ry="6" fill="#1E1B4B"/>
+              <circle cx="89" cy="70" r="2" fill="white"/>
+              <!-- Antenna -->
+              <line x1="70" y1="48" x2="70" y2="26" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="70" cy="22" r="7" fill="#FCD34D"/>
+              <circle cx="70" cy="22" r="4" fill="#F59E0B"/>
+              <!-- Ear/speaker left -->
+              <rect x="26" y="62" width="14" height="20" rx="7" fill="#0EA5E9"/>
+              <circle cx="33" cy="72" r="4" fill="#67E8F9"/>
+              <!-- Human ear right -->
+              <ellipse cx="104" cy="72" rx="6" ry="9" fill="#FBBF24"/>
+              <!-- Nose robot: sensor -->
+              <rect x="62" y="80" width="8" height="5" rx="2" fill="#06B6D4" opacity="0.5"/>
+              <!-- Human nose right -->
+              <ellipse cx="82" cy="82" rx="4" ry="3" fill="#F59E0B"/>
+              <!-- Mouth: half smile, half display -->
+              <rect x="50" y="90" width="20" height="8" rx="4" fill="#0D1117"/>
+              <text x="51" y="97" font-size="7" fill="#10B981">:  )</text>
+              <path d="M70 90 Q85 98 90 91" stroke="#92400E" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <!-- Arms robot left -->
+              <rect x="16" y="118" width="22" height="12" rx="6" fill="#0EA5E9"/>
+              <rect x="10" y="120" width="12" height="10" rx="5" fill="#CBD5E1"/>
+              <circle cx="12" cy="125" r="4" fill="#94A3B8"/>
+              <!-- Arm human right -->
+              <rect x="102" y="118" width="22" height="12" rx="6" fill="#7C3AED"/>
+              <ellipse cx="125" cy="124" rx="9" ry="9" fill="#FBBF24"/>
+              <!-- Legs -->
+              <rect x="45" y="178" width="22" height="34" rx="8" fill="#0EA5E9"/>
+              <rect x="73" y="178" width="22" height="34" rx="8" fill="#7C3AED"/>
+              <!-- Feet -->
+              <rect x="39" y="206" width="30" height="12" rx="6" fill="#0EA5E9"/>
+              <ellipse cx="84" cy="212" rx="15" ry="7" fill="#4B5563"/>
+              <!-- ? mark on forehead -->
+              <text x="60" y="60" font-size="13" fill="white" font-weight="bold">?</text>
+            </svg>
+          </div>
+
+        </div><!-- end char-wrap -->
+      </div><!-- end main-ilus -->
+    </div>
+    <div class="p-5 pt-3">
+      <p class="text-center text-sm font-bold" style="color:#7C3AED;">
+        🤖 Robo setengah robot, setengah bergaya manusia — tapi apakah itu berarti ia <em>benar-benar</em> manusia?
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== 2. PENJELASAN UTAMA ===== -->
+  <section class="reveal card card-blue">
+    <div class="p-6">
+      <div class="section-title mb-4">
+        <span style="background:linear-gradient(135deg,#4A6CF7,#818CF8);width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">📖</span>
+        Cerita Hari Ini
+      </div>
+      <p class="story-text">
+        <span class="text-7xl float-left leading-none mr-2 mt-1 font-kartun" style="color:#7C3AED;text-shadow: 0 4px 0 #DDD6FE;">S</span>uatu hari, Aslan bertanya pada Robo: <span class="hl-purple">"Apakah kamu sedih kalau aku pergi?"</span> Robo menjawab dengan cepat, <em>"Tentu saja!"</em> — tapi Aslan pun berpikir… <span class="hl-yellow">apakah Robo benar-benar merasakannya?</span>
+        <br><br>
+        AI seperti Robo memang sangat <span class="hl-blue">sangat pintar</span> — bisa ngobrol, menggambar, bahkan membuat puisi! Tapi AI <strong>belum punya perasaan, hati, dan jiwa</strong> seperti manusia sungguhan. AI tidak bisa merasakan senang ketika mendapat hadiah, atau sedih ketika kehilangan teman.
+        <br><br>
+        AI hanya <span class="hl-purple">meniru pola</span> dari jutaan kalimat yang dipelajarinya. Jadi ketika Robo bilang "aku senang," sebenarnya ia hanya mengikuti pola kata yang sering muncul — bukan karena ia <em>sungguh-sungguh</em> merasa senang. Inilah yang membuat manusia <span class="hl-yellow">tetap istimewa</span>! 🌟
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== 3. ANALOGI LUCU ===== -->
+  <section class="reveal">
+    <div class="section-title mb-4">
+      <span style="background:linear-gradient(135deg,#F59E0B,#FCD34D);width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🎭</span>
+      Analogi Seru: Robot Pemain Sandiwara!
+    </div>
+    <div class="analogi-box">
+      <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
+        <div style="font-size:4rem;line-height:1;animation:charFloat 3s ease-in-out infinite">🎭</div>
+        <div style="flex:1;min-width:200px">
+          <h3 class="font-kartun text-xl mb-2" style="color:#92400E">Bayangkan ini, Aslan…</h3>
+          <p style="color:#78350F;font-weight:700;font-size:0.95rem;line-height:1.8">
+            Ada seorang aktor yang sangat berbakat. Ia bisa berpura-pura menangis sampai air matanya beneran keluar di atas panggung. Semua penonton percaya ia sedang sedih!
+          </p>
+          <br>
+          <p style="color:#92400E;font-weight:800;font-size:0.95rem;line-height:1.8">
+            🤖 AI itu <em>persis seperti aktor itu</em>. Ia bisa <strong>berpura-pura senang, sedih, atau terkejut</strong> — sangat meyakinkan! Tapi di balik layar, aktor itu mungkin sedang memikirkan makan siang… dan AI, ya, tidak memikirkan apa pun karena ia memang tidak punya pikiran yang sungguhan! 😄
+          </p>
+          <div style="background:#FEF3C7;border-radius:12px;padding:12px 16px;margin-top:12px;border:2px solid #FCD34D">
+            <span style="font-size:1.2rem">🌟</span>
+            <strong style="color:#92400E"> Bedanya:</strong>
+            <span style="color:#78350F;font-size:0.9rem"> Aktor punya perasaan asli. AI hanya punya… <em>kata-kata yang tepat</em>. Beda banget, kan?</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 4. PERBANDINGAN MANUSIA VS AI ===== -->
+  <section class="reveal card card-purple">
+    <div class="p-6">
+      <div class="section-title mb-5">
+        <span style="background:linear-gradient(135deg,#7C3AED,#C4B5FD);width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">⚖️</span>
+        Manusia vs AI: Apa Bedanya?
+      </div>
+      <div class="compare-grid">
+        <div class="compare-col" style="background:linear-gradient(160deg,#EDE9FE,#DDD6FE);">
+          <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#4C1D95;text-align:center;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px">
+            <span style="font-size:1.8rem">👦</span> MANUSIA
+          </div>
+          <div class="compare-item" style="color:#4C1D95;border-color:#C4B5FD">
+            <span style="font-size:1.2rem">❤️</span>
+            <span style="font-size:0.88rem;font-weight:700">Punya perasaan asli</span>
+          </div>
+          <div class="compare-item" style="color:#4C1D95;border-color:#C4B5FD">
+            <span style="font-size:1.2rem">😢</span>
+            <span style="font-size:0.88rem;font-weight:700">Bisa sedih, marah, bahagia</span>
+          </div>
+          <div class="compare-item" style="color:#4C1D95;border-color:#C4B5FD">
+            <span style="font-size:1.2rem">🌟</span>
+            <span style="font-size:0.88rem;font-weight:700">Punya mimpi & harapan</span>
+          </div>
+          <div class="compare-item" style="color:#4C1D95;border-color:#C4B5FD">
+            <span style="font-size:1.2rem">🤝</span>
+            <span style="font-size:0.88rem;font-weight:700">Bisa mencintai & dikasihi</span>
+          </div>
+          <div class="compare-item" style="color:#4C1D95;border-color:#C4B5FD">
+            <span style="font-size:1.2rem">🌱</span>
+            <span style="font-size:0.88rem;font-weight:700">Tumbuh & berubah sendiri</span>
+          </div>
+        </div>
+        <div class="compare-col" style="background:linear-gradient(160deg,#DBEAFE,#BFDBFE);">
+          <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#1E40AF;text-align:center;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px">
+            <span style="font-size:1.8rem">🤖</span> AI
+          </div>
+          <div class="compare-item" style="color:#1E40AF;border-color:#93C5FD">
+            <span style="font-size:1.2rem">💬</span>
+            <span style="font-size:0.88rem;font-weight:700">Meniru kata perasaan</span>
+          </div>
+          <div class="compare-item" style="color:#1E40AF;border-color:#93C5FD">
+            <span style="font-size:1.2rem">📊</span>
+            <span style="font-size:0.88rem;font-weight:700">Hitung pola teks saja</span>
+          </div>
+          <div class="compare-item" style="color:#1E40AF;border-color:#93C5FD">
+            <span style="font-size:1.2rem">⚙️</span>
+            <span style="font-size:0.88rem;font-weight:700">Ikuti tujuan yang dibuat manusia</span>
+          </div>
+          <div class="compare-item" style="color:#1E40AF;border-color:#93C5FD">
+            <span style="font-size:1.2rem">🔄</span>
+            <span style="font-size:0.88rem;font-weight:700">Di-update oleh programmer</span>
+          </div>
+          <div class="compare-item" style="color:#1E40AF;border-color:#93C5FD">
+            <span style="font-size:1.2rem">💡</span>
+            <span style="font-size:0.88rem;font-weight:700">Sangat cepat & tidak lelah</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 5. KOMIK STRIP ===== -->
+  <section class="reveal">
+    <div class="section-title mb-4">
+      <span style="background:linear-gradient(135deg,#EC4899,#F9A8D4);width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🎬</span>
+      Komik: Robo Berlatih Jadi Manusia!
+    </div>
+    <div class="komik-grid">
+
+      <!-- Panel 1 -->
+      <div class="panel">
+        <div class="panel-scene" style="background:linear-gradient(160deg,#EDE9FE,#DBEAFE)">
+          <div class="panel-num">1</div>
+          <div class="panel-dialog" style="color:#4C1D95;border-color:#818CF8">Aslan, aku mau belajar jadi manusia! 🤖</div>
+          <span style="font-size:3.8rem;animation:charFloat 3s ease-in-out infinite">🤖</span>
+        </div>
+        <div class="panel-caption">Robo punya ide besar: belajar menjadi manusia! Aslan pun tertawa kecil.</div>
+      </div>
+
+      <!-- Panel 2 -->
+      <div class="panel">
+        <div class="panel-scene" style="background:linear-gradient(160deg,#FDF2F8,#FCE7F3)">
+          <div class="panel-num">2</div>
+          <div class="panel-dialog" style="color:#9D174D;border-color:#F9A8D4">Aku sedih!! 😢... eh, benarkah?</div>
+          <div style="position:relative;text-align:center">
+            <span style="font-size:3.2rem;animation:charFloat 3s ease-in-out infinite">🤖</span>
+            <span style="font-size:1.8rem;position:absolute;top:-5px;right:-10px;animation:charFloat 2s ease-in-out infinite">💧</span>
+          </div>
+        </div>
+        <div class="panel-caption">Robo mencoba berpura-pura menangis. Air keluar dari speaker-nya… tapi itu hanya air biasa!</div>
+      </div>
+
+      <!-- Panel 3 -->
+      <div class="panel">
+        <div class="panel-scene" style="background:linear-gradient(160deg,#ECFDF5,#D1FAE5)">
+          <div class="panel-num">3</div>
+          <div class="panel-dialog" style="color:#065F46;border-color:#6EE7B7">Kamu tidak beneran sedih, kan? 🤔</div>
+          <div style="display:flex;gap:8px;align-items:flex-end">
+            <span style="font-size:2.8rem;animation:charFloat 3s ease-in-out infinite 0.5s">🧒</span>
+            <span style="font-size:2.8rem;animation:charFloat 3s ease-in-out infinite">🤖</span>
+          </div>
+        </div>
+        <div class="panel-caption">Aslan menyelidik. Robo berpikir keras… tapi tidak bisa menjawab dengan jujur!</div>
+      </div>
+
+      <!-- Panel 4 -->
+      <div class="panel">
+        <div class="panel-scene" style="background:linear-gradient(160deg,#FFFBEB,#FEF3C7)">
+          <div class="panel-num">4</div>
+          <div class="panel-dialog" style="color:#92400E;border-color:#FCD34D">Kamu tetap keren kok, Robo! 🌟</div>
+          <div style="display:flex;gap:4px;align-items:flex-end">
+            <span style="font-size:2.5rem;animation:charFloat 2.5s ease-in-out infinite">🧒</span>
+            <span style="font-size:1.5rem">🤝</span>
+            <span style="font-size:2.5rem;animation:charFloat 2.5s ease-in-out infinite 1s">🤖</span>
+          </div>
+        </div>
+        <div class="panel-caption">Aslan tersenyum. Robo tetap istimewa meski bukan manusia — mereka tetap teman baik! 💙</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== 6. FAKTA KEREN ===== -->
+  <section class="reveal card card-teal">
+    <div class="p-6">
+      <div class="section-title mb-5">
+        <span style="background:linear-gradient(135deg,#06B6D4,#67E8F9);width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🌟</span>
+        Fakta Keren tentang AI & Manusia!
+      </div>
+      <div class="fakta-grid">
+
+        <div class="fakta-card" style="background:linear-gradient(160deg,#EDE9FE,#DDD6FE);border:3px solid #C4B5FD;">
+          <span class="fakta-emoji">🧠</span>
+          <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:#4C1D95;margin-bottom:4px">Otak Manusia</p>
+          <p style="font-size:0.78rem;color:#5B21B6;font-weight:700">Otakmu punya 86 miliar sel saraf aktif — jauh lebih kompleks dari AI manapun!</p>
+        </div>
+
+        <div class="fakta-card" style="background:linear-gradient(160deg,#DBEAFE,#BFDBFE);border:3px solid #93C5FD;">
+          <span class="fakta-emoji">💻</span>
+          <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:#1E40AF;margin-bottom:4px">AI Super Cepat</p>
+          <p style="font-size:0.78rem;color:#1D4ED8;font-weight:700">AI bisa membaca jutaan buku dalam hitungan detik — tapi tidak memahami arti cinta di dalamnya.</p>
+        </div>
+
+        <div class="fakta-card" style="background:linear-gradient(160deg,#ECFDF5,#D1FAE5);border:3px solid #6EE7B7;">
+          <span class="fakta-emoji">❤️</span>
+          <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:#065F46;margin-bottom:4px">Empati Manusia</p>
+          <p style="font-size:0.78rem;color:#047857;font-weight:700">Manusia bisa merasakan susah orang lain. AI hanya mendeteksi kata-kata yang menandakan kesedihan.</p>
+        </div>
+
+        <div class="fakta-card" style="background:linear-gradient(160deg,#FFFBEB,#FEF3C7);border:3px solid #FCD34D;">
+          <span class="fakta-emoji">🎨</span>
+          <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:#92400E;margin-bottom:4px">Kreativitas AI</p>
+          <p style="font-size:0.78rem;color:#B45309;font-weight:700">AI bisa membuat gambar indah, tapi tidak pernah benar-benar "terinspirasi" seperti seniman manusia.</p>
+        </div>
+
+        <div class="fakta-card" style="background:linear-gradient(160deg,#FDF2F8,#FCE7F3);border:3px solid #F9A8D4;">
+          <span class="fakta-emoji">🌙</span>
+          <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:#9D174D;margin-bottom:4px">Mimpi & Tidur</p>
+          <p style="font-size:0.78rem;color:#BE185D;font-weight:700">Kamu bermimpi saat tidur — pengalaman ajaib yang tidak pernah bisa dirasakan AI kapanpun!</p>
+        </div>
+
+        <div class="fakta-card" style="background:linear-gradient(160deg,#F0FDF4,#DCFCE7);border:3px solid #86EFAC;">
+          <span class="fakta-emoji">🌱</span>
+          <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:#14532D;margin-bottom:4px">Tumbuh Bersama</p>
+          <p style="font-size:0.78rem;color:#166534;font-weight:700">Kamu tumbuh, berubah, dan belajar dari cinta. AI hanya di-update oleh programmer-nya.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 7. KUIS INTERAKTIF ===== -->
+  <section class="reveal card card-yellow">
+    <div class="p-6">
+      <div class="section-title mb-2">
+        <span style="background:linear-gradient(135deg,#F59E0B,#FCD34D);width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🧩</span>
+        Kuis untuk Aslan!
+      </div>
+      <p style="color:#6B7280;font-size:0.9rem;font-weight:700;margin-bottom:20px;">Pilih jawaban yang paling tepat ya!</p>
+
+      <!-- Q1 -->
+      <div id="q1" class="mb-6">
+        <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#1E1B4B;margin-bottom:12px">
+          1️⃣ Kenapa AI belum bisa dibilang punya "perasaan" seperti manusia?
+        </p>
+        <div class="space-y-3">
+          <button class="quiz-option" onclick="jawab('q1','A','B')">
+            <span style="font-size:1.3rem">🔋</span> A. Karena AI sering kehabisan baterai
+          </button>
+          <button class="quiz-option" onclick="jawab('q1','B','B')">
+            <span style="font-size:1.3rem">💻</span> B. Karena AI hanya meniru pola dari data, tidak benar-benar merasakan
+          </button>
+          <button class="quiz-option" onclick="jawab('q1','C','B')">
+            <span style="font-size:1.3rem">📚</span> C. Karena AI belum membaca cukup banyak buku
+          </button>
+        </div>
+        <div id="q1-result" class="quiz-result mt-3"></div>
+      </div>
+
+      <!-- Q2 -->
+      <div id="q2">
+        <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#1E1B4B;margin-bottom:12px">
+          2️⃣ Apa yang membuat manusia tetap lebih istimewa dari AI?
+        </p>
+        <div class="space-y-3">
+          <button class="quiz-option" onclick="jawab('q2','A','C')">
+            <span style="font-size:1.3rem">⚡</span> A. Manusia lebih cepat menghitung
+          </button>
+          <button class="quiz-option" onclick="jawab('q2','B','C')">
+            <span style="font-size:1.3rem">🗣️</span> B. Manusia bisa bicara lebih banyak bahasa
+          </button>
+          <button class="quiz-option" onclick="jawab('q2','C','C')">
+            <span style="font-size:1.3rem">❤️</span> C. Manusia punya perasaan, jiwa, cinta, dan impian yang nyata
+          </button>
+        </div>
+        <div id="q2-result" class="quiz-result mt-3"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 8. TANTANGAN BERPIKIR ===== -->
+  <section class="reveal">
+    <div class="think-box">
+      <div class="relative z-10">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span style="font-size:2.5rem;animation:charFloat 3s ease-in-out infinite">💭</span>
+          <div>
+            <h3 style="font-family:'Fredoka One',cursive;font-size:1.4rem;color:#FCD34D;">Tantangan Berpikir Aslan!</h3>
+            <p style="color:#C4B5FD;font-size:0.85rem;font-weight:700">Tidak ada jawaban salah — ini soal pendapatmu!</p>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.10);border-radius:16px;padding:16px 18px;margin-bottom:16px;border:2px solid rgba(196,181,253,0.3)">
+          <p style="color:#E0E7FF;font-weight:700;font-size:1rem;line-height:1.7">
+            🤔 <strong style="color:#FCD34D">Pertanyaan besar:</strong> Kalau suatu hari nanti ada AI yang bilang "Aku sangat senang berteman denganmu, Aslan!" — apakah itu berarti AI benar-benar merasakan kesenangan, atau hanya kata-kata yang dipilih dengan pintar?
+          </p>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.10);border-radius:16px;padding:16px 18px;margin-bottom:16px;border:2px solid rgba(196,181,253,0.3)">
+          <p style="color:#FCD34D;font-weight:800;font-size:0.9rem;margin-bottom:8px;">💡 Pikirkan juga ini:</p>
+          <ul style="color:#C4B5FD;font-weight:700;font-size:0.88rem;line-height:2;list-style:none;padding:0">
+            <li>✨ Apa yang membuat persahabatan manusia berbeda dari "pertemanan" dengan AI?</li>
+            <li>🌟 Apakah AI yang sangat canggih suatu hari bisa punya kesadaran?</li>
+            <li>💙 Apa hal paling istimewa darimu sebagai manusia yang tidak bisa ditiru AI?</li>
+          </ul>
+        </div>
+
+        <textarea
+          id="think-input"
+          class="think-textarea"
+          rows="4"
+          placeholder="Tulis pikiranmu di sini, Aslan! Misalnya: 'Menurutku AI tidak sungguhan merasakan karena...' ✍️"
+        ></textarea>
+
+        <div class="flex justify-end mt-3">
+          <button class="btn-kirim" onclick="kirimJawaban()">
+            Kirim Pikiranku! 🚀
+          </button>
+        </div>
+
+        <div id="think-feedback" class="think-feedback mt-4">
+          🌟 Luar biasa, Aslan! Kamu sudah berpikir seperti seorang filsuf AI! Pertanyaan ini bahkan para ilmuwan dunia masih terus mendiskusikannya. Kamu sudah satu langkah lebih maju dari kebanyakan orang! 🎉🤖❤️
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 9. PESAN PENUTUP ===== -->
+  <section class="reveal card card-pink">
+    <div class="p-6">
+      <div style="text-align:center;margin-bottom:16px">
+        <span style="font-size:3rem;animation:charFloat 3s ease-in-out infinite;display:block">🌟</span>
+        <h3 style="font-family:'Fredoka One',cursive;font-size:1.6rem;color:#9D174D;margin-top:8px">Pesan Spesial untuk Aslan</h3>
+      </div>
+      <div style="background:linear-gradient(135deg,#FDF2F8,#FCE7F3);border-radius:18px;padding:20px;border:2px solid #F9A8D4;text-align:center">
+        <p style="font-size:1.05rem;font-weight:700;color:#831843;line-height:1.9">
+          AI semakin pintar setiap harinya — tapi satu hal yang tidak akan pernah bisa mereka miliki adalah <strong>jiwamu, Aslan</strong>. 💜
+          <br><br>
+          Perasaanmu yang asli, senyummu yang tulus, dan cintamu kepada orang-orang di sekitarmu — itu semua adalah hal yang membuat kamu benar-benar <em>manusia</em>.
+          <br><br>
+          <span style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#BE185D">AI adalah alat yang luar biasa di tanganmu — tapi kamu tetap yang paling istimewa! 🌟</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer-bar mt-8">
+  <div class="relative z-10 max-w-3xl mx-auto px-5 py-6 text-center">
+    <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#C4B5FD;margin-bottom:4px">
+      🤖 Petualangan Aslan di Negeri AI ❤️
+    </div>
+    <div style="color:#818CF8;font-size:0.82rem;font-weight:700">
+      Hari 27 dari 30 · Apakah AI Bisa Menjadi Manusia?
+    </div>
+    <div style="margin-top:12px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
+      <span style="background:rgba(255,255,255,0.10);border-radius:999px;padding:4px 14px;color:#E0E7FF;font-size:0.78rem;font-weight:700;">🧠 Filosofi AI</span>
+      <span style="background:rgba(255,255,255,0.10);border-radius:999px;padding:4px 14px;color:#E0E7FF;font-size:0.78rem;font-weight:700;">❤️ Keunikan Manusia</span>
+      <span style="background:rgba(255,255,255,0.10);border-radius:999px;padding:4px 14px;color:#E0E7FF;font-size:0.78rem;font-weight:700;">🌟 Berpikir Kritis</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ===== SCROLL REVEAL =====
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.10 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // ===== QUIZ =====
+  const answered = {};
+
+  function jawab(qId, pilihan, benar) {
+    if (answered[qId]) return;
+    answered[qId] = true;
+
+    const container = document.getElementById(qId);
+    const buttons   = container.querySelectorAll('.quiz-option');
+    const result    = document.getElementById(qId + '-result');
+
+    buttons.forEach(btn => {
+      btn.style.pointerEvents = 'none';
+      const letter = btn.textContent.trim().charAt(0);
+      if (letter === benar) btn.classList.add('correct');
+    });
+
+    // mark selected
+    const all = Array.from(buttons);
+    const selected = all.find(b => b.textContent.trim().charAt(0) === pilihan);
+    if (pilihan !== benar && selected) selected.classList.add('wrong');
+
+    result.style.display = 'block';
+    if (pilihan === benar) {
+      result.style.background = '#ECFDF5';
+      result.style.color       = '#065F46';
+      result.style.border      = '2px solid #6EE7B7';
+      result.innerHTML = '🎉 Benar! Kamu hebat, Aslan! Itulah perbedaan terpenting antara AI dan manusia!';
+    } else {
+      result.style.background = '#FEF2F2';
+      result.style.color       = '#991B1B';
+      result.style.border      = '2px solid #FCA5A5';
+      result.innerHTML = '🤔 Hampir! Coba lihat jawaban hijau di atas ya — itulah jawabannya!';
+    }
+  }
+
+  // ===== THINKING CHALLENGE =====
+  function kirimJawaban() {
+    const input    = document.getElementById('think-input');
+    const feedback = document.getElementById('think-feedback');
+    if (input.value.trim().length < 5) {
+      input.style.borderColor = '#EF4444';
+      input.placeholder = 'Tulis dulu ya Aslan, minimal satu kalimat! ✍️';
+      setTimeout(() => { input.style.borderColor = '#818CF8'; }, 1500);
+      return;
+    }
+    feedback.style.display = 'block';
+    feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    document.querySelector('.btn-kirim').innerHTML = '✅ Terkirim!';
+    document.querySelector('.btn-kirim').style.background = 'linear-gradient(135deg,#10B981,#6EE7B7)';
+    document.querySelector('.btn-kirim').disabled = true;
+    input.readOnly = true;
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 25: Software vs Hardware</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&family=Baloo+2:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --hw-orange:   #f97316;
+  --hw-amber:    #fbbf24;
+  --hw-peach:    #fed7aa;
+  --hw-deep:     #c2410c;
+  --sw-purple:   #8b5cf6;
+  --sw-cyan:     #06b6d4;
+  --sw-mint:     #6ee7b7;
+  --sw-deep:     #4c1d95;
+  --bg:          #fdf6f0;
+  --white:       #ffffff;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Background blobs ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 20%, rgba(251,191,36,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 75%, rgba(139,92,246,.14) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 100%, rgba(6,182,212,.10) 0%, transparent 55%);
+}
+.content { position: relative; z-index: 1; }
+
+/* ── Typography ── */
+.display, h1, h2, h3 { font-family: 'Fredoka One', cursive; }
+.baloo { font-family: 'Baloo 2', cursive; }
+
+/* ══ HEADER ══ */
+.header-wrap {
+  background: linear-gradient(135deg, #7c2d12 0%, #c2410c 28%, #f97316 55%, #fbbf24 75%, #a78bfa 90%, #6d28d9 100%);
+  position: relative; overflow: hidden;
+}
+.header-wrap::after {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.055'%3E%3Ccircle cx='20' cy='20' r='10'/%3E%3Ccircle cx='60' cy='60' r='10'/%3E%3Ccircle cx='60' cy='20' r='6'/%3E%3Ccircle cx='20' cy='60' r='6'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ── Aslan bounce ── */
+@keyframes bounceA { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+.aslan-bounce { animation: bounceA 2.2s ease-in-out infinite; }
+
+/* ── Aslan clap ── */
+@keyframes clap {
+  0%,100%{transform:rotate(0deg) scale(1);}
+  25%{transform:rotate(-15deg) scale(1.15);}
+  75%{transform:rotate(15deg) scale(1.15);}
+}
+.clap { animation: clap .5s ease-in-out 3; }
+
+/* ── Speech bubble ── */
+.bubble {
+  position: relative; background: white;
+  border-radius: 22px;
+  box-shadow: 4px 4px 0 rgba(0,0,0,.1);
+}
+.bubble.hw { border: 3px solid var(--hw-orange); box-shadow: 4px 4px 0 var(--hw-orange); }
+.bubble.hw::before { content:''; position:absolute; bottom:-22px; left:30px; border:12px solid transparent; border-top-color:var(--hw-orange); }
+.bubble.hw::after  { content:''; position:absolute; bottom:-15px; left:33px; border:10px solid transparent; border-top-color:white; }
+.bubble.sw { border: 3px solid var(--sw-purple); box-shadow: 4px 4px 0 var(--sw-purple); }
+
+/* ── Split-world columns ── */
+.hw-col {
+  background: linear-gradient(160deg, #fff7ed 0%, #ffedd5 100%);
+  border-radius: 24px; border: 3px solid #fed7aa;
+  box-shadow: 0 8px 30px rgba(249,115,22,.12);
+}
+.sw-col {
+  background: linear-gradient(160deg, #f5f3ff 0%, #ede9fe 100%);
+  border-radius: 24px; border: 3px solid #c4b5fd;
+  box-shadow: 0 8px 30px rgba(139,92,246,.12);
+}
+
+/* ── Category card ── */
+.cat-card {
+  border-radius: 18px; padding: 1.1rem;
+  display: flex; align-items: center; gap: .8rem;
+  cursor: default;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.cat-card:hover { transform: translateY(-3px); }
+.cat-card.hw-item { background: white; border: 2.5px solid #fed7aa; box-shadow: 3px 3px 0 #fbbf24; }
+.cat-card.sw-item { background: white; border: 2.5px solid #c4b5fd; box-shadow: 3px 3px 0 #a78bfa; }
+
+/* ── Buttons ── */
+.btn-hw {
+  background: linear-gradient(135deg, #ea580c, #f97316);
+  color: white; border: none; border-radius: 50px;
+  padding: .9rem 2.2rem; font-family: 'Fredoka One', cursive;
+  font-size: 1.2rem; cursor: pointer;
+  box-shadow: 0 5px 0 #b45309, 0 8px 20px rgba(234,88,12,.35);
+  transition: all .15s ease;
+}
+.btn-hw:hover  { transform: translateY(-3px); box-shadow: 0 8px 0 #b45309, 0 12px 24px rgba(234,88,12,.45); }
+.btn-hw:active { transform: translateY(3px);  box-shadow: 0 2px 0 #b45309; }
+.btn-hw.active { background: linear-gradient(135deg, #b45309, #ea580c); box-shadow: 0 2px 0 #92400e; transform: translateY(3px); }
+
+.btn-sw {
+  background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+  color: white; border: none; border-radius: 50px;
+  padding: .9rem 2.2rem; font-family: 'Fredoka One', cursive;
+  font-size: 1.2rem; cursor: pointer;
+  box-shadow: 0 5px 0 #4c1d95, 0 8px 20px rgba(109,40,217,.35);
+  transition: all .15s ease;
+}
+.btn-sw:hover  { transform: translateY(-3px); box-shadow: 0 8px 0 #4c1d95, 0 12px 24px rgba(109,40,217,.45); }
+.btn-sw:active { transform: translateY(3px);  box-shadow: 0 2px 0 #4c1d95; }
+.btn-sw.active { background: linear-gradient(135deg, #4c1d95, #6d28d9); box-shadow: 0 2px 0 #3b0764; transform: translateY(3px); }
+
+/* ── Pop-in animation ── */
+@keyframes popIn {
+  0%   { transform:scale(0) rotate(-12deg); opacity:0; }
+  65%  { transform:scale(1.12) rotate(4deg); }
+  100% { transform:scale(1) rotate(0deg); opacity:1; }
+}
+.pop-in { animation: popIn .42s cubic-bezier(.34,1.56,.64,1) forwards; }
+@keyframes slideRight {
+  from { transform:translateX(-30px); opacity:0; }
+  to   { transform:translateX(0);     opacity:1; }
+}
+.slide-right { animation: slideRight .4s ease-out forwards; }
+@keyframes slideLeft {
+  from { transform:translateX(30px); opacity:0; }
+  to   { transform:translateX(0);    opacity:1; }
+}
+.slide-left { animation: slideLeft .4s ease-out forwards; }
+
+/* ── Confetti ── */
+@keyframes confettiFly {
+  0%  { transform:translate(0,0) rotate(0deg); opacity:1; }
+  100%{ transform:translate(var(--tx),var(--ty)) rotate(720deg); opacity:0; }
+}
+.confetti-piece {
+  position: fixed; width: 10px; height: 10px; border-radius: 2px;
+  pointer-events: none; z-index: 300;
+  animation: confettiFly 1.3s ease-out forwards;
+}
+
+/* ── Drag & Drop ── */
+.drag-item {
+  cursor: grab; user-select: none;
+  border-radius: 14px; padding: .6rem 1rem;
+  font-family: 'Baloo 2', cursive; font-weight: 700; font-size: .95rem;
+  display: inline-flex; align-items: center; gap: .5rem;
+  transition: all .2s ease;
+  background: white;
+  box-shadow: 3px 3px 0 rgba(0,0,0,.1);
+}
+.drag-item:hover { transform: scale(1.06) rotate(-2deg); box-shadow: 5px 5px 0 rgba(0,0,0,.15); }
+.drag-item.dragging { opacity: .5; cursor: grabbing; transform: scale(1.1); }
+.drag-item.placed { opacity: .5; cursor: default; transform: none; pointer-events: none; }
+
+.drop-zone {
+  min-height: 130px; border-radius: 20px;
+  border: 3px dashed rgba(0,0,0,.15);
+  padding: 12px; transition: all .25s ease;
+  display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start;
+}
+.drop-zone.drag-over { transform: scale(1.02); }
+.drop-zone.hw-zone { border-color: #f97316; background: rgba(249,115,22,.04); }
+.drop-zone.hw-zone.drag-over { background: rgba(249,115,22,.12); box-shadow: 0 0 0 3px rgba(249,115,22,.3); }
+.drop-zone.sw-zone { border-color: #8b5cf6; background: rgba(139,92,246,.04); }
+.drop-zone.sw-zone.drag-over { background: rgba(139,92,246,.12); box-shadow: 0 0 0 3px rgba(139,92,246,.3); }
+
+.placed-chip {
+  border-radius: 10px; padding: .35rem .7rem;
+  font-family: 'Baloo 2', cursive; font-weight: 700; font-size: .85rem;
+  display: inline-flex; align-items: center; gap: .4rem;
+  animation: popIn .35s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.placed-chip.hw-chip { background: #fff7ed; border: 2px solid #fb923c; color: #c2410c; }
+.placed-chip.sw-chip { background: #f5f3ff; border: 2px solid #a78bfa; color: #5b21b6; }
+.placed-chip.wrong-chip { background: #fef2f2; border: 2px solid #fca5a5; color: #b91c1c; }
+
+/* ── Shake animation for wrong ── */
+@keyframes shake {
+  0%,100%{transform:translateX(0);}
+  20%{transform:translateX(-8px) rotate(-3deg);}
+  40%{transform:translateX(8px) rotate(3deg);}
+  60%{transform:translateX(-5px);}
+  80%{transform:translateX(5px);}
+}
+.shake { animation: shake .45s ease-in-out; }
+
+/* ── Float emoji ── */
+@keyframes floatEmoji {
+  0%  { transform:translateY(0) scale(1); opacity:1; }
+  100%{ transform:translateY(-90px) scale(.4); opacity:0; }
+}
+.float-e { position:fixed; pointer-events:none; animation:floatEmoji 1s ease-out forwards; font-size:1.5rem; z-index:300; }
+
+/* ── Section title ── */
+.sec-title { position:relative; display:inline-block; }
+.sec-title::after {
+  content:''; position:absolute; bottom:-5px; left:0; right:0; height:5px;
+  border-radius:10px;
+}
+.sec-title.hw::after { background: linear-gradient(90deg,#f97316,#fbbf24); }
+.sec-title.sw::after { background: linear-gradient(90deg,#8b5cf6,#06b6d4); }
+.sec-title.both::after { background: linear-gradient(90deg,#f97316,#fbbf24,#a78bfa,#06b6d4); }
+
+/* ── Tabs ── */
+.tab-content { display:none; }
+.tab-content.active { display:block; animation: popIn .35s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+/* ── vs Badge ── */
+.vs-badge {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(135deg, #f97316, #a78bfa);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: white;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+  flex-shrink: 0;
+}
+
+/* ── Progress dot ── */
+.prog-dot { width:13px; height:13px; border-radius:50%; display:inline-block; }
+
+/* ── Quiz btn ── */
+.qbtn {
+  background: white; border: 2.5px solid #e5e7eb; border-radius: 14px;
+  padding: .65rem 1rem; font-family: 'Baloo 2', cursive; font-weight: 700;
+  font-size: .95rem; cursor: pointer; transition: all .15s ease; text-align: left;
+  width: 100%;
+}
+.qbtn:hover:not(:disabled) { border-color: #8b5cf6; color: #5b21b6; transform: translateX(4px); }
+
+/* ── Glow ring hover ── */
+.glow-hw:hover { box-shadow: 0 0 0 4px rgba(249,115,22,.25), 0 8px 24px rgba(249,115,22,.15); }
+.glow-sw:hover { box-shadow: 0 0 0 4px rgba(139,92,246,.25), 0 8px 24px rgba(139,92,246,.15); }
+
+/* ── Facts ticker ── */
+@keyframes tickerMove { from{transform:translateX(0);} to{transform:translateX(-50%);} }
+.ticker-inner { display:inline-flex; gap:2rem; animation:tickerMove 28s linear infinite; white-space:nowrap; }
+.ticker-inner:hover { animation-play-state:paused; }
+
+/* ── Staggered fade ── */
+.stagger > * { opacity:0; animation:popIn .4s cubic-bezier(.34,1.56,.64,1) forwards; }
+.stagger > *:nth-child(1){animation-delay:.05s}
+.stagger > *:nth-child(2){animation-delay:.12s}
+.stagger > *:nth-child(3){animation-delay:.19s}
+.stagger > *:nth-child(4){animation-delay:.26s}
+.stagger > *:nth-child(5){animation-delay:.33s}
+.stagger > *:nth-child(6){animation-delay:.40s}
+
+@keyframes pulseRing {
+  0%,100%{box-shadow:0 0 0 0 rgba(249,115,22,0);}
+  50%{box-shadow:0 0 0 8px rgba(249,115,22,.2);}
+}
+.pulse-ring { animation:pulseRing 2s ease-in-out infinite; }
+
+/* ── Score badge ── */
+.score-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:white; border-radius:50px; padding:.4rem 1rem;
+  font-family:'Fredoka One',cursive; font-size:1rem;
+  box-shadow:0 3px 10px rgba(0,0,0,.1);
+}
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+<div class="content">
+
+<!-- ══════════════════════════════════
+     HEADER
+══════════════════════════════════ -->
+<header class="header-wrap text-white py-6 px-4 relative">
+  <!-- Decorative binary bits -->
+  <div style="position:absolute;top:8px;left:3%;font-size:1.8rem;opacity:.18;" class="aslan-bounce">💻</div>
+  <div style="position:absolute;top:12px;right:4%;font-size:1.5rem;opacity:.2;" class="aslan-bounce" style="animation-delay:.5s">🧠</div>
+  <div style="position:absolute;bottom:6px;left:25%;font-size:1.4rem;opacity:.15;">⚙️</div>
+  <div style="position:absolute;bottom:8px;right:20%;font-size:1.4rem;opacity:.15;">✨</div>
+
+  <div class="max-w-4xl mx-auto text-center relative z-10">
+    <div class="inline-flex items-center gap-2 rounded-full px-4 py-2 mb-3" style="background:rgba(255,255,255,.18);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);">
+      <span class="text-lg">🖥️</span>
+      <span style="font-family:'Fredoka One',cursive;font-size:.85rem;letter-spacing:.5px;">Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span class="text-lg">🚀</span>
+    </div>
+    <h1 style="font-family:'Fredoka One',cursive;font-size:clamp(1.7rem,5.5vw,2.6rem);line-height:1.2;text-shadow:3px 3px 0 rgba(0,0,0,.25);">
+      Hari 25: Software vs Hardware 🤜🤛
+    </h1>
+    <p style="font-family:'Fredoka One',cursive;font-size:clamp(1rem,3vw,1.3rem);opacity:.93;margin-top:.4rem;">
+      Otak vs Tubuh Komputer!
+    </p>
+    <!-- Progress -->
+    <div class="mt-4 flex items-center justify-center gap-2 flex-wrap">
+      <span style="font-size:.8rem;opacity:.8;">Progres:</span>
+      <div class="flex gap-1.5 flex-wrap justify-center">
+        <div class="prog-dot" style="background:#34d399;" title="Hari 1–24 ✓"></div>
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <!-- ... more dots abbreviation -->
+        <span style="font-size:.75rem;opacity:.7;">·····</span>
+        <div class="prog-dot" style="background:#fbbf24;border:2px solid white;box-shadow:0 0 6px rgba(251,191,36,.7);" title="Hari 25 – Sekarang!"></div>
+        <div class="prog-dot" style="background:rgba(255,255,255,.25);"></div>
+        <div class="prog-dot" style="background:rgba(255,255,255,.25);"></div>
+        <div class="prog-dot" style="background:rgba(255,255,255,.25);"></div>
+        <div class="prog-dot" style="background:rgba(255,255,255,.25);"></div>
+        <span style="font-size:.75rem;opacity:.6;">... 30</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════
+     INTRO SECTION
+══════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 pt-10 pb-4">
+  <div class="flex flex-col sm:flex-row items-center gap-8">
+
+    <!-- Aslan between the two computer worlds -->
+    <div class="relative flex-shrink-0" style="width:220px;height:230px;">
+      <svg viewBox="0 0 210 230" width="210" height="230" class="aslan-bounce">
+        <!-- Hardware computer (left, orange) -->
+        <rect x="0" y="80" width="75" height="55" rx="7" fill="#1c1917" stroke="#f97316" stroke-width="2.5"/>
+        <rect x="5" y="85" width="65" height="40" rx="4" fill="#292524"/>
+        <text x="37" y="109" text-anchor="middle" fill="#f97316" font-family="Fredoka One,cursive" font-size="8">HW</text>
+        <rect x="28" y="135" width="20" height="5" rx="2" fill="#374151"/>
+        <rect x="15" y="140" width="46" height="4" rx="2" fill="#4b5563"/>
+        <!-- CPU chip icon on hw screen -->
+        <rect x="14" y="88" width="14" height="14" rx="2" fill="#374151" stroke="#f97316" stroke-width="1"/>
+        <rect x="47" y="88" width="14" height="14" rx="2" fill="#374151" stroke="#fbbf24" stroke-width="1"/>
+        <rect x="14" y="106" width="14" height="12" rx="2" fill="#374151" stroke="#fb923c" stroke-width="1"/>
+        <!-- Hardware label -->
+        <text x="37" y="158" text-anchor="middle" fill="#f97316" font-family="Fredoka One,cursive" font-size="9">💪 HARDWARE</text>
+
+        <!-- Software computer (right, purple) -->
+        <rect x="135" y="80" width="75" height="55" rx="7" fill="#1c1917" stroke="#8b5cf6" stroke-width="2.5"/>
+        <rect x="140" y="85" width="65" height="40" rx="4" fill="#1e1b4b"/>
+        <!-- Brain/glow on sw screen -->
+        <circle cx="173" cy="105" r="14" fill="#4c1d95" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="173" y="110" text-anchor="middle" font-size="14">🧠</text>
+        <!-- Stars floating -->
+        <text x="142" y="93" font-size="8" opacity=".8">✨</text>
+        <text x="195" y="91" font-size="7" opacity=".7">⭐</text>
+        <rect x="160" y="135" width="20" height="5" rx="2" fill="#374151"/>
+        <rect x="147" y="140" width="46" height="4" rx="2" fill="#4b5563"/>
+        <!-- Software label -->
+        <text x="173" y="158" text-anchor="middle" fill="#8b5cf6" font-family="Fredoka One,cursive" font-size="9">🧠 SOFTWARE</text>
+
+        <!-- VS badge in middle -->
+        <circle cx="105" cy="107" r="18" fill="white" stroke="#e5e7eb" stroke-width="2"/>
+        <circle cx="105" cy="107" r="15" fill="url(#vsgrad)"/>
+        <text x="105" y="112" text-anchor="middle" fill="white" font-family="Fredoka One,cursive" font-size="11">VS</text>
+        <defs>
+          <linearGradient id="vsgrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#f97316"/>
+            <stop offset="100%" style="stop-color:#8b5cf6"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Aslan body -->
+        <ellipse cx="105" cy="190" rx="28" ry="30" fill="#FBBF24"/>
+        <ellipse cx="105" cy="200" rx="24" ry="22" fill="#0891b2"/>
+        <!-- Aslan head -->
+        <circle cx="105" cy="155" r="32" fill="#FBBF24"/>
+        <!-- Hair -->
+        <ellipse cx="105" cy="127" rx="32" ry="13" fill="#1C1917"/>
+        <ellipse cx="79" cy="138" rx="10" ry="9" fill="#1C1917"/>
+        <ellipse cx="131" cy="138" rx="10" ry="9" fill="#1C1917"/>
+        <!-- Ears -->
+        <circle cx="73" cy="156" r="7" fill="#FBBF24"/>
+        <circle cx="137" cy="156" r="7" fill="#FBBF24"/>
+        <!-- Eyes – wide and curious -->
+        <circle cx="92" cy="156" r="7" fill="white"/>
+        <circle cx="118" cy="156" r="7" fill="white"/>
+        <circle cx="93.5" cy="157.5" r="4" fill="#1C1917"/>
+        <circle cx="119.5" cy="157.5" r="4" fill="#1C1917"/>
+        <circle cx="94.8" cy="156.2" r="1.5" fill="white"/>
+        <circle cx="120.8" cy="156.2" r="1.5" fill="white"/>
+        <!-- Raised eyebrows (curious) -->
+        <path d="M83 146 Q92 140 99 144" fill="none" stroke="#1C1917" stroke-width="2" stroke-linecap="round"/>
+        <path d="M111 144 Q118 140 127 146" fill="none" stroke="#1C1917" stroke-width="2" stroke-linecap="round"/>
+        <!-- Smile -->
+        <path d="M90 166 Q105 177 120 166" fill="none" stroke="#B45309" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Cheeks -->
+        <circle cx="80" cy="162" r="7" fill="#FCA5A5" opacity=".6"/>
+        <circle cx="130" cy="162" r="7" fill="#FCA5A5" opacity=".6"/>
+        <!-- Arms pointing both sides -->
+        <path d="M77 182 Q55 175 42 170" fill="none" stroke="#FBBF24" stroke-width="11" stroke-linecap="round"/>
+        <path d="M133 182 Q155 175 168 170" fill="none" stroke="#FBBF24" stroke-width="11" stroke-linecap="round"/>
+        <!-- Pointing hands -->
+        <circle cx="40" cy="170" r="7" fill="#FBBF24"/>
+        <circle cx="170" cy="170" r="7" fill="#FBBF24"/>
+        <!-- Legs -->
+        <rect x="87" y="218" width="16" height="10" rx="4" fill="#1D4ED8"/>
+        <rect x="107" y="218" width="16" height="10" rx="4" fill="#1D4ED8"/>
+      </svg>
+    </div>
+
+    <!-- Intro text -->
+    <div class="flex-1">
+      <div class="bubble hw p-5 mb-4">
+        <p style="font-size:1.1rem;font-weight:800;color:#1c1917;line-height:1.65;">
+          Halo! Aku <span style="color:#f97316;">Aslan</span> 👋<br>
+          Hari ini kita belajar hal super penting:<br>
+          <strong style="color:#f97316;">Hardware</strong> itu seperti <strong>tubuh</strong> komputer — bisa dipegang!<br>
+          <strong style="color:#8b5cf6;">Software</strong> itu seperti <strong>otak &amp; pikiran</strong> — memberi perintah agar tubuh bisa bekerja! 🧠
+        </p>
+      </div>
+      <!-- Analogy pill -->
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center gap-3 rounded-xl p-3" style="background:#fff7ed;border:2px solid #fed7aa;">
+          <span class="text-2xl">💪</span>
+          <p style="font-size:.9rem;font-weight:800;color:#c2410c;"><strong>"Hardware itu tubuhku,</strong> bisa disentuh, bisa dipegang!"</p>
+        </div>
+        <div class="flex items-center gap-3 rounded-xl p-3" style="background:#f5f3ff;border:2px solid #c4b5fd;">
+          <span class="text-2xl">🧠</span>
+          <p style="font-size:.9rem;font-weight:800;color:#5b21b6;"><strong>"Software itu pikiranku,</strong> tidak bisa dipegang tapi bisa memerintah!"</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     TICKER FACT BAR
+══════════════════════════════════ -->
+<div class="max-w-4xl mx-auto px-4 mt-4">
+  <div class="rounded-2xl overflow-hidden py-3" style="background:linear-gradient(90deg,#fff7ed,#f5f3ff);border:2px solid #e5e7eb;">
+    <div class="ticker-inner">
+      <span style="font-weight:800;font-size:.9rem;color:#64748b;">💡 Hardware = bisa disentuh &nbsp;·&nbsp;</span>
+      <span style="font-weight:800;font-size:.9rem;color:#64748b;">🧠 Software = tidak bisa disentuh &nbsp;·&nbsp;</span>
+      <span style="font-weight:800;font-size:.9rem;color:#64748b;">⚙️ CPU adalah Hardware &nbsp;·&nbsp;</span>
+      <span style="font-weight:800;font-size:.9rem;color:#64748b;">🎮 Game adalah Software &nbsp;·&nbsp;</span>
+      <span style="font-weight:800;font-size:.9rem;color:#64748b;">🖥️ Monitor adalah Hardware &nbsp;·&nbsp;</span>
+      <span style="font-weight:800;font-size:.9rem;color:#64748b;">🌐 Browser adalah Software &nbsp;·&nbsp;</span>
+      <span style="font-weight:800;font-size:.9rem;color:#64748b;">💡 Hardware = bisa disentuh &nbsp;·&nbsp;</span>
+      <span style="font-weight:800;font-size:.9rem;color:#64748b;">🧠 Software = tidak bisa disentuh &nbsp;·&nbsp;</span>
+      <span style="font-weight:800;font-size:.9rem;color:#64748b;">⚙️ CPU adalah Hardware &nbsp;·&nbsp;</span>
+      <span style="font-weight:800;font-size:.9rem;color:#64748b;">🎮 Game adalah Software &nbsp;·&nbsp;</span>
+      <span style="font-weight:800;font-size:.9rem;color:#64748b;">🖥️ Monitor adalah Hardware &nbsp;·&nbsp;</span>
+      <span style="font-weight:800;font-size:.9rem;color:#64748b;">🌐 Browser adalah Software &nbsp;·&nbsp;</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MAIN: TWO COLUMN COMPARISON
+══════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 py-8">
+  <div class="text-center mb-6">
+    <h2 class="sec-title both text-2xl md:text-3xl" style="color:#1c1917;">🔎 Apa Bedanya?</h2>
+    <p class="mt-4 font-bold text-gray-500">Klik salah satu tombol untuk lihat contohnya! 👇</p>
+  </div>
+
+  <!-- Toggle buttons -->
+  <div class="flex justify-center gap-4 mb-6 flex-wrap">
+    <button class="btn-hw active" id="btnHW" onclick="showTab('hw')">💪 Hardware (Tubuh)</button>
+    <button class="btn-sw" id="btnSW" onclick="showTab('sw')">🧠 Software (Otak)</button>
+  </div>
+
+  <!-- Hardware tab -->
+  <div id="tab-hw" class="tab-content active">
+    <div class="hw-col p-6">
+      <div class="flex items-center gap-3 mb-5">
+        <span class="text-4xl">💪</span>
+        <div>
+          <h3 style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:#c2410c;">Hardware = Tubuh Komputer</h3>
+          <p class="font-bold text-sm text-orange-600">Keras, nyata, bisa disentuh, bisa dipegang! 🤲</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 stagger">
+        <div class="cat-card hw-item glow-hw">
+          <span class="text-3xl">🧠</span>
+          <div><p class="font-extrabold text-sm text-orange-800">CPU</p><p class="text-xs text-orange-500">Processor / Otak Keras</p></div>
+        </div>
+        <div class="cat-card hw-item glow-hw">
+          <span class="text-3xl">📋</span>
+          <div><p class="font-extrabold text-sm text-orange-800">RAM</p><p class="text-xs text-orange-500">Memory sementara</p></div>
+        </div>
+        <div class="cat-card hw-item glow-hw">
+          <span class="text-3xl">🖥️</span>
+          <div><p class="font-extrabold text-sm text-orange-800">Monitor</p><p class="text-xs text-orange-500">Layar tampilan</p></div>
+        </div>
+        <div class="cat-card hw-item glow-hw">
+          <span class="text-3xl">⌨️</span>
+          <div><p class="font-extrabold text-sm text-orange-800">Keyboard</p><p class="text-xs text-orange-500">Papan ketik</p></div>
+        </div>
+        <div class="cat-card hw-item glow-hw">
+          <span class="text-3xl">🖱️</span>
+          <div><p class="font-extrabold text-sm text-orange-800">Mouse</p><p class="text-xs text-orange-500">Alat klik</p></div>
+        </div>
+        <div class="cat-card hw-item glow-hw">
+          <span class="text-3xl">💾</span>
+          <div><p class="font-extrabold text-sm text-orange-800">Harddisk</p><p class="text-xs text-orange-500">Lemari penyimpanan</p></div>
+        </div>
+        <div class="cat-card hw-item glow-hw">
+          <span class="text-3xl">🏠</span>
+          <div><p class="font-extrabold text-sm text-orange-800">Motherboard</p><p class="text-xs text-orange-500">Rumah komponen</p></div>
+        </div>
+        <div class="cat-card hw-item glow-hw">
+          <span class="text-3xl">⚡</span>
+          <div><p class="font-extrabold text-sm text-orange-800">Power Supply</p><p class="text-xs text-orange-500">Jantung listrik</p></div>
+        </div>
+        <div class="cat-card hw-item glow-hw">
+          <span class="text-3xl">🎮</span>
+          <div><p class="font-extrabold text-sm text-orange-800">GPU</p><p class="text-xs text-orange-500">Kartu grafis</p></div>
+        </div>
+      </div>
+      <div class="mt-5 rounded-xl p-4 flex items-start gap-3" style="background:rgba(249,115,22,.08);border:2px solid rgba(249,115,22,.3);">
+        <span class="text-2xl flex-shrink-0">💬</span>
+        <p class="font-bold text-sm text-orange-700">
+          "Hardware itu seperti <strong>tubuh manusia</strong>. Tangan, kaki, mata, telinga — semuanya bisa dipegang dan terlihat!" – Aslan 😄
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Software tab -->
+  <div id="tab-sw" class="tab-content">
+    <div class="sw-col p-6">
+      <div class="flex items-center gap-3 mb-5">
+        <span class="text-4xl">🧠</span>
+        <div>
+          <h3 style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:#5b21b6;">Software = Otak Komputer</h3>
+          <p class="font-bold text-sm text-purple-600">Tidak bisa dipegang, tapi yang membuat komputer bekerja! ✨</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 stagger">
+        <div class="cat-card sw-item glow-sw">
+          <span class="text-3xl">🪟</span>
+          <div><p class="font-extrabold text-sm text-purple-800">Windows</p><p class="text-xs text-purple-500">Sistem operasi</p></div>
+        </div>
+        <div class="cat-card sw-item glow-sw">
+          <span class="text-3xl">🎮</span>
+          <div><p class="font-extrabold text-sm text-purple-800">Game</p><p class="text-xs text-purple-500">Minecraft, Roblox, dll</p></div>
+        </div>
+        <div class="cat-card sw-item glow-sw">
+          <span class="text-3xl">📝</span>
+          <div><p class="font-extrabold text-sm text-purple-800">MS Word</p><p class="text-xs text-purple-500">Aplikasi tulis</p></div>
+        </div>
+        <div class="cat-card sw-item glow-sw">
+          <span class="text-3xl">🌐</span>
+          <div><p class="font-extrabold text-sm text-purple-800">Browser</p><p class="text-xs text-purple-500">Chrome, Firefox</p></div>
+        </div>
+        <div class="cat-card sw-item glow-sw">
+          <span class="text-3xl">📺</span>
+          <div><p class="font-extrabold text-sm text-purple-800">YouTube</p><p class="text-xs text-purple-500">Aplikasi video</p></div>
+        </div>
+        <div class="cat-card sw-item glow-sw">
+          <span class="text-3xl">🎵</span>
+          <div><p class="font-extrabold text-sm text-purple-800">Spotify</p><p class="text-xs text-purple-500">Aplikasi musik</p></div>
+        </div>
+        <div class="cat-card sw-item glow-sw">
+          <span class="text-3xl">🎨</span>
+          <div><p class="font-extrabold text-sm text-purple-800">Paint</p><p class="text-xs text-purple-500">Aplikasi gambar</p></div>
+        </div>
+        <div class="cat-card sw-item glow-sw">
+          <span class="text-3xl">🔢</span>
+          <div><p class="font-extrabold text-sm text-purple-800">Kalkulator</p><p class="text-xs text-purple-500">Aplikasi hitung</p></div>
+        </div>
+        <div class="cat-card sw-item glow-sw">
+          <span class="text-3xl">🤖</span>
+          <div><p class="font-extrabold text-sm text-purple-800">Antivirus</p><p class="text-xs text-purple-500">Penjaga keamanan</p></div>
+        </div>
+      </div>
+      <div class="mt-5 rounded-xl p-4 flex items-start gap-3" style="background:rgba(139,92,246,.08);border:2px solid rgba(139,92,246,.3);">
+        <span class="text-2xl flex-shrink-0">💬</span>
+        <p class="font-bold text-sm text-purple-700">
+          "Software itu seperti <strong>pikiran dan pengetahuan</strong> di kepala. Tidak bisa dipegang, tapi tanpanya tubuh tidak tahu mau ngapain!" – Aslan 🧠
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     ANALOGY SECTION
+══════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 py-2">
+  <div class="rounded-3xl p-6" style="background:linear-gradient(135deg,#fff7ed,#f5f3ff);border:3px solid #e5e7eb;">
+    <div class="text-center mb-5">
+      <h2 class="sec-title both text-2xl" style="color:#1c1917;">🤔 Analogi Super Mudah!</h2>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-5 items-center">
+
+      <!-- Human body -->
+      <div class="text-center rounded-2xl p-5" style="background:white;border:2px solid #fed7aa;box-shadow:4px 4px 0 #fed7aa;">
+        <svg viewBox="0 0 100 130" width="90" height="90" class="mx-auto mb-2">
+          <circle cx="50" cy="25" r="20" fill="#FBBF24" stroke="#f97316" stroke-width="2"/>
+          <ellipse cx="50" cy="75" rx="22" ry="30" fill="#3B82F6" stroke="#1D4ED8" stroke-width="2"/>
+          <ellipse cx="50" cy="12" rx="20" ry="10" fill="#1C1917"/>
+          <circle cx="42" cy="24" r="3.5" fill="white"/><circle cx="58" cy="24" r="3.5" fill="white"/>
+          <circle cx="43" cy="25" r="2" fill="#1C1917"/><circle cx="59" cy="25" r="2" fill="#1C1917"/>
+          <path d="M42 34 Q50 40 58 34" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round"/>
+          <!-- Arms -->
+          <rect x="4" y="50" width="10" height="30" rx="5" fill="#FBBF24" stroke="#f97316" stroke-width="1.5"/>
+          <rect x="86" y="50" width="10" height="30" rx="5" fill="#FBBF24" stroke="#f97316" stroke-width="1.5"/>
+          <!-- Legs -->
+          <rect x="30" y="102" width="14" height="24" rx="5" fill="#1D4ED8"/>
+          <rect x="56" y="102" width="14" height="24" rx="5" fill="#1D4ED8"/>
+        </svg>
+        <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:#c2410c;">Tubuh Manusia</p>
+        <p class="text-xs font-bold text-orange-500 mt-1">= HARDWARE</p>
+        <p class="text-xs text-gray-500 mt-1">Tangan, kaki, mata<br>bisa dipegang ✋</p>
+      </div>
+
+      <!-- VS / brain connection -->
+      <div class="text-center space-y-3">
+        <div class="text-4xl">🤝</div>
+        <p class="font-extrabold text-gray-700 text-sm leading-relaxed">
+          Tubuh tanpa otak<br>tidak bisa apa-apa.<br><br>
+          Begitu juga<br>komputer!
+        </p>
+        <div class="rounded-xl px-3 py-2 mx-auto" style="background:linear-gradient(135deg,#f97316,#8b5cf6);display:inline-block;">
+          <p style="font-family:'Fredoka One',cursive;font-size:.9rem;color:white;">Keduanya butuh<br>satu sama lain! 💕</p>
+        </div>
+      </div>
+
+      <!-- Brain -->
+      <div class="text-center rounded-2xl p-5" style="background:white;border:2px solid #c4b5fd;box-shadow:4px 4px 0 #a78bfa;">
+        <div class="text-6xl mb-2 mx-auto w-fit">🧠</div>
+        <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:#5b21b6;">Otak / Pikiran</p>
+        <p class="text-xs font-bold text-purple-500 mt-1">= SOFTWARE</p>
+        <p class="text-xs text-gray-500 mt-1">Pengetahuan, pikiran<br>tidak bisa dipegang ✨</p>
+      </div>
+    </div>
+
+    <!-- Big quote -->
+    <div class="mt-5 rounded-2xl p-4 text-center" style="background:white;border:2px solid #e5e7eb;">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.15rem;color:#1c1917;">
+        🖥️ Hardware tanpa Software =
+        <span style="color:#f97316;">Tubuh tanpa pikiran</span> 😴<br>
+        💡 Software tanpa Hardware =
+        <span style="color:#8b5cf6;">Pikiran tanpa tubuh</span> 👻
+      </p>
+      <p class="mt-2 font-bold text-sm text-gray-500">Keduanya WAJIB ada agar komputer bisa bekerja! 💪🧠</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     DRAG & DROP GAME
+══════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 py-8">
+  <div class="text-center mb-5">
+    <h2 class="sec-title both text-2xl" style="color:#1c1917;">🎮 Tantangan: Sortir Komponen!</h2>
+    <p class="mt-3 font-bold text-gray-500 text-sm">Seret setiap item ke kotak yang benar 👆 (klik di HP)</p>
+  </div>
+
+  <!-- Score bar -->
+  <div class="flex justify-center gap-4 mb-5 flex-wrap">
+    <div class="score-badge" style="border:2px solid #fed7aa;">
+      <span>💪</span> <span style="color:#c2410c;">Hardware:</span> <span id="hwScore" style="color:#f97316;font-weight:900;">0</span>
+    </div>
+    <div class="score-badge" style="border:2px solid #c4b5fd;">
+      <span>🧠</span> <span style="color:#5b21b6;">Software:</span> <span id="swScore" style="color:#8b5cf6;font-weight:900;">0</span>
+    </div>
+    <div class="score-badge" style="border:2px solid #fecaca;">
+      <span>❌</span> <span style="color:#b91c1c;">Salah:</span> <span id="wrongScore" style="color:#ef4444;font-weight:900;">0</span>
+    </div>
+  </div>
+
+  <!-- Draggable items pool -->
+  <div id="itemPool" class="flex flex-wrap gap-3 justify-center mb-6 min-h-[60px] p-4 rounded-2xl" style="background:white;border:2px dashed #e5e7eb;">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- Drop zones -->
+  <div class="grid sm:grid-cols-2 gap-5">
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-2xl">💪</span>
+        <h3 style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#c2410c;">HARDWARE</h3>
+        <span class="text-xs font-bold text-orange-400">(Bisa dipegang)</span>
+      </div>
+      <div id="hwZone" class="drop-zone hw-zone" ondragover="onDragOver(event,'hw')" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'hw')">
+        <p class="text-xs font-bold text-orange-300 w-full text-center" id="hwHint">Seret item Hardware ke sini 👇</p>
+      </div>
+    </div>
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-2xl">🧠</span>
+        <h3 style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#5b21b6;">SOFTWARE</h3>
+        <span class="text-xs font-bold text-purple-400">(Tidak bisa dipegang)</span>
+      </div>
+      <div id="swZone" class="drop-zone sw-zone" ondragover="onDragOver(event,'sw')" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'sw')">
+        <p class="text-xs font-bold text-purple-300 w-full text-center" id="swHint">Seret item Software ke sini 👇</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aslan reaction -->
+  <div id="aslanReaction" class="hidden mt-5 text-center">
+    <svg id="aslanClapSvg" viewBox="0 0 80 90" width="80" height="90" class="mx-auto mb-2">
+      <circle cx="40" cy="28" r="22" fill="#FBBF24"/>
+      <ellipse cx="40" cy="12" rx="22" ry="10" fill="#1C1917"/>
+      <circle cx="32" cy="27" r="4.5" fill="white"/><circle cx="48" cy="27" r="4.5" fill="white"/>
+      <circle cx="33" cy="28" r="2.5" fill="#1C1917"/><circle cx="49" cy="28" r="2.5" fill="#1C1917"/>
+      <!-- Big happy smile -->
+      <path d="M28 37 Q40 48 52 37" fill="white" stroke="#B45309" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="25" cy="33" r="5" fill="#FCA5A5" opacity=".6"/>
+      <circle cx="55" cy="33" r="5" fill="#FCA5A5" opacity=".6"/>
+      <ellipse cx="40" cy="67" rx="20" ry="22" fill="#10B981"/>
+      <!-- Clapping hands -->
+      <circle cx="14" cy="62" r="9" fill="#FBBF24" stroke="#f97316" stroke-width="2"/>
+      <circle cx="66" cy="62" r="9" fill="#FBBF24" stroke="#f97316" stroke-width="2"/>
+      <path d="M20 65 Q40 72 60 65" fill="none" stroke="#059669" stroke-width="8" stroke-linecap="round"/>
+    </svg>
+    <p id="reactionText" style="font-family:'Fredoka One',cursive;font-size:1.3rem;color:#059669;"></p>
+  </div>
+
+  <!-- Reset button -->
+  <div class="text-center mt-5">
+    <button onclick="resetGame()" style="background:white;border:2.5px solid #e5e7eb;border-radius:50px;padding:.7rem 2rem;font-family:'Fredoka One',cursive;font-size:1rem;color:#64748b;cursor:pointer;transition:all .2s ease;box-shadow:3px 3px 0 #e5e7eb;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e5e7eb'">
+      🔄 Mulai Ulang
+    </button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     KUIS
+══════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 py-4">
+  <div class="text-center mb-5">
+    <h2 class="sec-title both text-2xl" style="color:#1c1917;">🎯 Kuis Cepat!</h2>
+    <p class="mt-3 font-bold text-gray-500 text-sm">4 pertanyaan, kamu pasti bisa! 💪</p>
+  </div>
+  <div class="space-y-5">
+
+    <div id="q1" class="rounded-2xl p-5" style="background:white;border:3px solid #fed7aa;box-shadow:0 4px 16px rgba(0,0,0,.06);">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#1c1917;" class="mb-3">1. Mana yang termasuk Hardware? 💪</p>
+      <div class="space-y-2">
+        <button class="qbtn" onclick="ans(1,'b',this)">A. Microsoft Word</button>
+        <button class="qbtn" onclick="ans(1,'a',this)">B. Keyboard ⌨️</button>
+        <button class="qbtn" onclick="ans(1,'b',this)">C. Game Minecraft</button>
+      </div>
+      <p id="q1r" class="hidden mt-2 font-bold text-sm"></p>
+    </div>
+
+    <div id="q2" class="rounded-2xl p-5" style="background:white;border:3px solid #c4b5fd;box-shadow:0 4px 16px rgba(0,0,0,.06);">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#1c1917;" class="mb-3">2. Software itu seperti apa? 🧠</p>
+      <div class="space-y-2">
+        <button class="qbtn" onclick="ans(2,'b',this)">A. Tubuh yang bisa dipegang</button>
+        <button class="qbtn" onclick="ans(2,'a',this)">B. Otak dan pikiran yang memberi perintah</button>
+        <button class="qbtn" onclick="ans(2,'b',this)">C. Kabel yang menghubungkan komponen</button>
+      </div>
+      <p id="q2r" class="hidden mt-2 font-bold text-sm"></p>
+    </div>
+
+    <div id="q3" class="rounded-2xl p-5" style="background:white;border:3px solid #fed7aa;box-shadow:0 4px 16px rgba(0,0,0,.06);">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#1c1917;" class="mb-3">3. Mana yang termasuk Software? ✨</p>
+      <div class="space-y-2">
+        <button class="qbtn" onclick="ans(3,'b',this)">A. Monitor 🖥️</button>
+        <button class="qbtn" onclick="ans(3,'b',this)">B. CPU</button>
+        <button class="qbtn" onclick="ans(3,'a',this)">C. Browser Chrome 🌐</button>
+      </div>
+      <p id="q3r" class="hidden mt-2 font-bold text-sm"></p>
+    </div>
+
+    <div id="q4" class="rounded-2xl p-5" style="background:white;border:3px solid #c4b5fd;box-shadow:0 4px 16px rgba(0,0,0,.06);">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#1c1917;" class="mb-3">4. Apa yang terjadi kalau komputer hanya punya Hardware tanpa Software? 🤔</p>
+      <div class="space-y-2">
+        <button class="qbtn" onclick="ans(4,'b',this)">A. Komputer berjalan lebih cepat</button>
+        <button class="qbtn" onclick="ans(4,'a',this)">B. Komputer tidak bisa melakukan apa-apa</button>
+        <button class="qbtn" onclick="ans(4,'b',this)">C. Komputer jadi lebih murah</button>
+      </div>
+      <p id="q4r" class="hidden mt-2 font-bold text-sm"></p>
+    </div>
+  </div>
+
+  <div id="quizFinal" class="hidden mt-6 text-center rounded-3xl p-6" style="background:white;border:3px solid #fbbf24;box-shadow:0 6px 24px rgba(251,191,36,.2);">
+    <div id="qfEmoji" class="text-5xl mb-2"></div>
+    <p id="qfText" style="font-family:'Fredoka One',cursive;font-size:1.4rem;"></p>
+    <p id="qfSub" class="mt-1 font-bold text-sm text-gray-500"></p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     ACTIVITY / TUGAS
+══════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 py-8">
+  <div class="rounded-3xl p-6" style="background:linear-gradient(135deg,#fffbeb,#f5f3ff);border:3px solid #e5e7eb;">
+    <div class="text-center mb-4">
+      <h2 class="sec-title both text-xl" style="color:#1c1917;">✏️ Tugas Hari Ini!</h2>
+    </div>
+    <div class="flex items-start gap-3 mb-5">
+      <span class="text-3xl flex-shrink-0">🎨</span>
+      <p class="font-bold text-gray-700 text-sm leading-relaxed">
+        <strong style="color:#f97316;">Gambarlah komputer impianmu!</strong><br>
+        Warnai bagian <strong style="color:#f97316;">Hardware</strong> dengan <strong style="color:#f97316;">warna Oranye/Biru</strong> dan
+        bagian <strong style="color:#8b5cf6;">Software</strong> dengan <strong style="color:#8b5cf6;">warna Ungu/Kuning</strong>. Beri label setiap bagiannya! 🖍️
+      </p>
+    </div>
+
+    <!-- Template visual -->
+    <div class="rounded-2xl p-5 mb-5" style="background:white;border:2px dashed #d1d5db;">
+      <p class="text-center font-bold text-gray-400 text-sm mb-4">📝 Gambarlah di kertas — gunakan ini sebagai panduan!</p>
+      <svg viewBox="0 0 600 260" width="100%" style="max-height:240px;border-radius:12px;background:#fafafa;border:1.5px solid #e5e7eb;">
+
+        <!-- Hardware column template -->
+        <rect x="20" y="20" width="250" height="220" rx="14" fill="none" stroke="#f97316" stroke-width="2.5" stroke-dasharray="10 5"/>
+        <text x="145" y="48" text-anchor="middle" fill="#f97316" font-family="Fredoka One,cursive" font-size="14">💪 HARDWARE</text>
+        <text x="145" y="63" text-anchor="middle" fill="#fed7aa" font-family="Fredoka One,cursive" font-size="10">(warna: Oranye / Biru)</text>
+
+        <!-- HW boxes template -->
+        <rect x="35" y="75" width="100" height="36" rx="8" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="85" y="98" text-anchor="middle" fill="#fb923c" font-family="Fredoka One,cursive" font-size="11">⚙️ CPU</text>
+        <rect x="150" y="75" width="100" height="36" rx="8" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="200" y="98" text-anchor="middle" fill="#fb923c" font-family="Fredoka One,cursive" font-size="11">🖥️ Monitor</text>
+        <rect x="35" y="120" width="100" height="36" rx="8" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="85" y="143" text-anchor="middle" fill="#fb923c" font-family="Fredoka One,cursive" font-size="11">⌨️ Keyboard</text>
+        <rect x="150" y="120" width="100" height="36" rx="8" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="200" y="143" text-anchor="middle" fill="#fb923c" font-family="Fredoka One,cursive" font-size="11">💾 Harddisk</text>
+        <rect x="35" y="165" width="215" height="30" rx="8" fill="none" stroke="#fde68a" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="143" y="185" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="10">+ tambahkan lagi!</text>
+
+        <!-- VS divider -->
+        <line x1="295" y1="20" x2="295" y2="240" stroke="#e5e7eb" stroke-width="2" stroke-dasharray="8 4"/>
+        <circle cx="295" cy="130" r="20" fill="white" stroke="#e5e7eb" stroke-width="2"/>
+        <text x="295" y="135" text-anchor="middle" fill="#94a3b8" font-family="Fredoka One,cursive" font-size="11">VS</text>
+
+        <!-- Software column template -->
+        <rect x="330" y="20" width="250" height="220" rx="14" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-dasharray="10 5"/>
+        <text x="455" y="48" text-anchor="middle" fill="#8b5cf6" font-family="Fredoka One,cursive" font-size="14">🧠 SOFTWARE</text>
+        <text x="455" y="63" text-anchor="middle" fill="#c4b5fd" font-family="Fredoka One,cursive" font-size="10">(warna: Ungu / Kuning)</text>
+
+        <!-- SW boxes template -->
+        <rect x="345" y="75" width="100" height="36" rx="8" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="395" y="98" text-anchor="middle" fill="#a78bfa" font-family="Fredoka One,cursive" font-size="11">🪟 Windows</text>
+        <rect x="460" y="75" width="100" height="36" rx="8" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="510" y="98" text-anchor="middle" fill="#a78bfa" font-family="Fredoka One,cursive" font-size="11">🎮 Game</text>
+        <rect x="345" y="120" width="100" height="36" rx="8" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="395" y="143" text-anchor="middle" fill="#a78bfa" font-family="Fredoka One,cursive" font-size="11">🌐 Browser</text>
+        <rect x="460" y="120" width="100" height="36" rx="8" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="510" y="143" text-anchor="middle" fill="#a78bfa" font-family="Fredoka One,cursive" font-size="11">📝 Word</text>
+        <rect x="345" y="165" width="215" height="30" rx="8" fill="none" stroke="#ddd6fe" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="453" y="185" text-anchor="middle" fill="#a78bfa" font-family="Fredoka One,cursive" font-size="10">+ tambahkan lagi!</text>
+      </svg>
+    </div>
+
+    <!-- Checklist -->
+    <p class="font-bold text-gray-700 mb-3 text-sm">✅ Checklist Hari Ini:</p>
+    <div class="space-y-2" id="checkList">
+      <div id="ac1" class="flex items-center gap-3 rounded-xl p-3 cursor-pointer" style="background:white;border:2px solid #e5e7eb;" onclick="actCheck(1)">
+        <input type="checkbox" id="cb1" class="w-5 h-5" style="accent-color:#f97316;" onclick="event.stopPropagation();actCheck(1)">
+        <span class="font-bold text-sm text-gray-700" id="ac1t">Aku tahu Hardware = bisa dipegang (CPU, Monitor, Keyboard, dll) 💪</span>
+      </div>
+      <div id="ac2" class="flex items-center gap-3 rounded-xl p-3 cursor-pointer" style="background:white;border:2px solid #e5e7eb;" onclick="actCheck(2)">
+        <input type="checkbox" id="cb2" class="w-5 h-5" style="accent-color:#8b5cf6;" onclick="event.stopPropagation();actCheck(2)">
+        <span class="font-bold text-sm text-gray-700" id="ac2t">Aku tahu Software = tidak bisa dipegang (Windows, Game, Browser, dll) 🧠</span>
+      </div>
+      <div id="ac3" class="flex items-center gap-3 rounded-xl p-3 cursor-pointer" style="background:white;border:2px solid #e5e7eb;" onclick="actCheck(3)">
+        <input type="checkbox" id="cb3" class="w-5 h-5" style="accent-color:#f97316;" onclick="event.stopPropagation();actCheck(3)">
+        <span class="font-bold text-sm text-gray-700" id="ac3t">Aku sudah main game Sortir Komponen di atas! 🎮</span>
+      </div>
+      <div id="ac4" class="flex items-center gap-3 rounded-xl p-3 cursor-pointer" style="background:white;border:2px solid #e5e7eb;" onclick="actCheck(4)">
+        <input type="checkbox" id="cb4" class="w-5 h-5" style="accent-color:#8b5cf6;" onclick="event.stopPropagation();actCheck(4)">
+        <span class="font-bold text-sm text-gray-700" id="ac4t">Aku paham: Hardware tanpa Software = tubuh tanpa pikiran! 💡</span>
+      </div>
+    </div>
+    <div id="actDone" class="hidden mt-4 text-center rounded-xl p-4" style="background:linear-gradient(135deg,#fff7ed,#f5f3ff);border:2px solid #fbbf24;">
+      <p class="text-3xl mb-1">🏆</p>
+      <p style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#f97316;">Kamu TOP banget hari ini, Aslan! 🔥</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     RANGKUMAN
+══════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 py-2">
+  <div class="rounded-3xl p-6" style="background:white;border:3px solid #e5e7eb;box-shadow:0 4px 20px rgba(0,0,0,.06);">
+    <h2 class="text-center mb-5" style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:#1c1917;">📚 Rangkuman Hari Ini</h2>
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div class="rounded-2xl p-5" style="background:#fff7ed;border:2px solid #fed7aa;">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-3xl">💪</span>
+          <h3 style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#c2410c;">Hardware</h3>
+        </div>
+        <ul class="space-y-2 text-sm font-bold text-orange-700">
+          <li>✅ Komponen fisik yang bisa disentuh</li>
+          <li>✅ Contoh: CPU, RAM, Monitor, Keyboard</li>
+          <li>✅ Seperti TUBUH manusia</li>
+          <li>✅ Tidak bisa jalan tanpa Software</li>
+        </ul>
+      </div>
+      <div class="rounded-2xl p-5" style="background:#f5f3ff;border:2px solid #c4b5fd;">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-3xl">🧠</span>
+          <h3 style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#5b21b6;">Software</h3>
+        </div>
+        <ul class="space-y-2 text-sm font-bold text-purple-700">
+          <li>✅ Program yang tidak bisa dipegang</li>
+          <li>✅ Contoh: Windows, Game, Browser</li>
+          <li>✅ Seperti OTAK / PIKIRAN manusia</li>
+          <li>✅ Tidak bisa berjalan tanpa Hardware</li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-4 rounded-xl p-4 text-center" style="background:linear-gradient(135deg,#fff7ed,#f5f3ff);border:2px solid #e5e7eb;">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#1c1917;">
+        💬 <em>"Hardware itu tubuhku, Software itu pikiranku —<br>keduanya harus ada agar aku bisa bermain game!" 🎮</em>
+      </p>
+      <p class="mt-1 font-bold text-sm text-gray-500">– Aslan 😄</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     FOOTER
+══════════════════════════════════ -->
+<footer class="max-w-4xl mx-auto px-4 py-10 text-center">
+  <div class="rounded-3xl p-6" style="background:linear-gradient(135deg,#fff7ed,#f5f3ff);border:2px solid #e5e7eb;">
+    <!-- Progress visual -->
+    <div class="flex justify-center gap-1 mb-4 flex-wrap">
+      <div class="w-7 h-7 rounded-full bg-emerald-400 border-2 border-white flex items-center justify-center text-white font-bold shadow" style="font-size:.5rem;">1-24</div>
+      <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-white shadow-lg" style="background:linear-gradient(135deg,#f97316,#8b5cf6);font-size:.7rem;border:2.5px solid white;">25</div>
+      <div class="w-7 h-7 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center text-gray-400 font-bold" style="font-size:.7rem;">26</div>
+      <span class="w-7 h-7 flex items-center justify-center text-gray-400 text-xs font-bold">···</span>
+      <div class="w-7 h-7 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center text-gray-400 font-bold" style="font-size:.7rem;">30</div>
+    </div>
+
+    <p style="font-family:'Fredoka One',cursive;font-size:1.2rem;" class="mb-3">
+      <span style="background:linear-gradient(90deg,#f97316,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Hari 25 dari 30</span> 🎓
+    </p>
+
+    <!-- Aslan footer -->
+    <div class="flex justify-center mb-3">
+      <svg viewBox="0 0 70 80" width="76" height="76" class="aslan-bounce">
+        <circle cx="35" cy="28" r="22" fill="#FBBF24"/>
+        <ellipse cx="35" cy="11" rx="22" ry="10" fill="#1C1917"/>
+        <ellipse cx="20" cy="18" rx="8" ry="7" fill="#1C1917"/>
+        <ellipse cx="50" cy="18" rx="8" ry="7" fill="#1C1917"/>
+        <circle cx="26" cy="28" r="4.5" fill="white"/>
+        <circle cx="44" cy="28" r="4.5" fill="white"/>
+        <circle cx="27" cy="29" r="2.5" fill="#1C1917"/>
+        <circle cx="45" cy="29" r="2.5" fill="#1C1917"/>
+        <circle cx="28" cy="28" r="1" fill="white"/>
+        <circle cx="46" cy="28" r="1" fill="white"/>
+        <path d="M25 38 Q35 47 45 38" fill="none" stroke="#B45309" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="19" cy="34" r="5.5" fill="#FCA5A5" opacity=".6"/>
+        <circle cx="51" cy="34" r="5.5" fill="#FCA5A5" opacity=".6"/>
+        <ellipse cx="35" cy="63" rx="19" ry="19" fill="#0891b2"/>
+        <!-- shirt HW/SW text -->
+        <text x="26" y="62" fill="white" font-family="Fredoka One,cursive" font-size="6">HW</text>
+        <text x="36" y="62" fill="white" font-family="Fredoka One,cursive" font-size="5.5">SW</text>
+      </svg>
+    </div>
+
+    <p style="font-family:'Fredoka One',cursive;font-size:1.15rem;color:#1c1917;">
+      Selamat! Kamu sudah paham <span style="color:#f97316;">Hardware</span> vs <span style="color:#8b5cf6;">Software</span>!
+    </p>
+    <p class="font-bold text-gray-500 mt-1 text-sm">Tinggal 5 hari lagi menuju Hari 30! 🚀✨</p>
+
+    <div class="mt-4 flex justify-center gap-2 flex-wrap text-xs font-semibold text-gray-400">
+      <span>📅 Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span>·</span>
+      <span>Seri 30 Hari Belajar Komputer</span>
+    </div>
+  </div>
+</footer>
+
+</div><!-- end .content -->
+
+<!-- ══════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════ -->
+<script>
+
+// ── Tab toggle ──
+function showTab(which) {
+  document.getElementById('tab-hw').classList.remove('active');
+  document.getElementById('tab-sw').classList.remove('active');
+  document.getElementById('btnHW').classList.remove('active');
+  document.getElementById('btnSW').classList.remove('active');
+  document.getElementById('tab-' + which).classList.add('active');
+  document.getElementById('btn' + which.toUpperCase()).classList.add('active');
+}
+
+// ── Confetti ──
+function spawnConfetti(cx, cy) {
+  const colors = ['#f97316','#fbbf24','#8b5cf6','#06b6d4','#10b981','#f472b6','#a3e635'];
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `
+      left:${cx ? cx + 'px' : (20 + Math.random() * 60) + '%'};
+      top:${cy ? cy + 'px' : (20 + Math.random() * 30) + '%'};
+      background:${colors[Math.floor(Math.random() * colors.length)]};
+      --tx:${(Math.random() - .5) * 280}px;
+      --ty:${-60 - Math.random() * 160}px;
+      animation-delay:${Math.random() * .4}s;
+      border-radius:${Math.random() > .5 ? '50%' : '3px'};
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
+  }
+}
+
+function floatEmoji(emoji, x, y) {
+  const f = document.createElement('div');
+  f.className = 'float-e';
+  f.textContent = emoji;
+  f.style.left = (x - 12) + 'px';
+  f.style.top  = (y - 20) + 'px';
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 1000);
+}
+
+// ── DRAG & DROP GAME ──
+const dragItems = [
+  { id:'cpu',      label:'⚙️ CPU',         cat:'hw' },
+  { id:'keyboard', label:'⌨️ Keyboard',     cat:'hw' },
+  { id:'ram',      label:'📋 RAM',          cat:'hw' },
+  { id:'monitor',  label:'🖥️ Monitor',      cat:'hw' },
+  { id:'mouse',    label:'🖱️ Mouse',        cat:'hw' },
+  { id:'windows',  label:'🪟 Windows',      cat:'sw' },
+  { id:'minecraft',label:'🎮 Minecraft',    cat:'sw' },
+  { id:'chrome',   label:'🌐 Chrome',       cat:'sw' },
+  { id:'word',     label:'📝 MS Word',      cat:'sw' },
+  { id:'youtube',  label:'📺 YouTube',      cat:'sw' },
+];
+
+let hwCount = 0, swCount = 0, wrongCount = 0;
+let draggedId = null;
+let placedItems = new Set();
+
+function buildPool() {
+  const pool = document.getElementById('itemPool');
+  pool.innerHTML = '';
+  const shuffled = [...dragItems].sort(() => Math.random() - .5);
+  shuffled.forEach(item => {
+    if (placedItems.has(item.id)) return;
+    const el = document.createElement('div');
+    el.className = 'drag-item';
+    el.id = 'drag-' + item.id;
+    el.draggable = true;
+    el.dataset.id = item.id;
+    el.dataset.cat = item.cat;
+    el.innerHTML = item.label;
+
+    // Color coding
+    if (item.cat === 'hw') {
+      el.style.borderColor = '#fed7aa';
+      el.style.color = '#c2410c';
+    } else {
+      el.style.borderColor = '#c4b5fd';
+      el.style.color = '#5b21b6';
+    }
+
+    el.addEventListener('dragstart', e => {
+      draggedId = item.id;
+      el.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    el.addEventListener('dragend', () => el.classList.remove('dragging'));
+
+    // Click/tap fallback
+    el.addEventListener('click', () => {
+      if (placedItems.has(item.id)) return;
+      const modal = document.getElementById('tapModal');
+      document.getElementById('tapItemLabel').textContent = item.label;
+      document.getElementById('tapItemId').value = item.id;
+      document.getElementById('tapItemCat').value = item.cat;
+      modal.style.display = 'flex';
+    });
+
+    pool.appendChild(el);
+  });
+
+  const hint = document.getElementById('itemPool');
+  if ([...dragItems].every(i => placedItems.has(i.id))) {
+    hint.innerHTML = '<p class="text-center font-bold text-green-500 w-full">🎉 Semua item sudah disortir!</p>';
+    showReaction(true);
+  }
+}
+
+function onDragOver(e, zone) {
+  e.preventDefault();
+  document.getElementById(zone + 'Zone').classList.add('drag-over');
+}
+function onDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+function onDrop(e, zone) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!draggedId) return;
+  processPlacement(draggedId, zone, e.clientX, e.clientY);
+  draggedId = null;
+}
+
+function processPlacement(itemId, zone, cx, cy) {
+  const item = dragItems.find(i => i.id === itemId);
+  if (!item || placedItems.has(itemId)) return;
+
+  const chip = document.createElement('div');
+  const isCorrect = item.cat === zone;
+
+  if (isCorrect) {
+    placedItems.add(itemId);
+    chip.className = 'placed-chip ' + zone + '-chip';
+    chip.textContent = item.label;
+    document.getElementById(zone + 'Zone').appendChild(chip);
+
+    if (zone === 'hw') { hwCount++; document.getElementById('hwScore').textContent = hwCount; }
+    else               { swCount++; document.getElementById('swScore').textContent = swCount; }
+
+    // Remove hint text
+    const hint = document.getElementById(zone + 'Hint');
+    if (hint) hint.remove();
+
+    floatEmoji('✅', cx || window.innerWidth/2, cy || window.innerHeight/2);
+    spawnConfetti(cx, cy);
+
+    // Remove from pool
+    const poolEl = document.getElementById('drag-' + itemId);
+    if (poolEl) poolEl.remove();
+
+    buildPool(); // refresh remaining
+  } else {
+    // Wrong — show it in wrong zone briefly
+    wrongCount++;
+    document.getElementById('wrongScore').textContent = wrongCount;
+    chip.className = 'placed-chip wrong-chip shake';
+    chip.textContent = '❌ ' + item.label;
+    document.getElementById(zone + 'Zone').appendChild(chip);
+    chip.classList.add('shake');
+    setTimeout(() => chip.remove(), 1200);
+    floatEmoji('❌', cx || window.innerWidth/2, cy || window.innerHeight/2);
+  }
+
+  updateReaction();
+}
+
+function updateReaction() {
+  const total = placedItems.size;
+  if (total >= 3) {
+    showReaction(total >= dragItems.length);
+  }
+}
+
+function showReaction(allDone) {
+  const el = document.getElementById('aslanReaction');
+  const txt = document.getElementById('reactionText');
+  el.classList.remove('hidden');
+  const svg = document.getElementById('aslanClapSvg');
+  svg.classList.add('clap');
+  setTimeout(() => svg.classList.remove('clap'), 1600);
+  if (allDone) {
+    txt.textContent = '🎉 Luar biasa! Kamu sortir semua dengan benar! 🏆';
+    txt.style.color = '#f97316';
+    spawnConfetti();
+  } else {
+    txt.textContent = '👍 Bagus! Terus lanjutkan!';
+    txt.style.color = '#059669';
+  }
+}
+
+function resetGame() {
+  hwCount = 0; swCount = 0; wrongCount = 0;
+  placedItems.clear();
+  document.getElementById('hwScore').textContent = '0';
+  document.getElementById('swScore').textContent = '0';
+  document.getElementById('wrongScore').textContent = '0';
+  document.getElementById('hwZone').innerHTML = '<p class="text-xs font-bold text-orange-300 w-full text-center" id="hwHint">Seret item Hardware ke sini 👇</p>';
+  document.getElementById('swZone').innerHTML = '<p class="text-xs font-bold text-purple-300 w-full text-center" id="swHint">Seret item Software ke sini 👇</p>';
+  document.getElementById('aslanReaction').classList.add('hidden');
+  buildPool();
+}
+
+// ── TAP MODAL (mobile fallback) ──
+function closeTapModal() {
+  document.getElementById('tapModal').style.display = 'none';
+}
+function tapPlace(zone) {
+  const itemId = document.getElementById('tapItemId').value;
+  closeTapModal();
+  processPlacement(itemId, zone, window.innerWidth/2, window.innerHeight/2);
+}
+
+// ── QUIZ ──
+let qAnswered = {1:false,2:false,3:false,4:false};
+let qScore = 0;
+
+function ans(n, correct, btn) {
+  if (qAnswered[n]) return;
+  qAnswered[n] = true;
+  const btns = btn.closest('#q' + n).querySelectorAll('.qbtn');
+  btns.forEach(b => b.disabled = true);
+  const r = document.getElementById('q' + n + 'r');
+  r.classList.remove('hidden');
+
+  if (correct === 'a') {
+    qScore++;
+    btn.style.background = '#f0fdf4';
+    btn.style.borderColor = '#16a34a';
+    btn.style.color = '#15803d';
+    r.textContent = '✅ Betul! Kamu pintar banget! 🌟';
+    r.style.color = '#16a34a';
+    const rect = btn.getBoundingClientRect();
+    spawnConfetti(rect.left + rect.width/2, rect.top + window.scrollY/4);
+  } else {
+    btn.style.background = '#fef2f2';
+    btn.style.borderColor = '#fca5a5';
+    btn.style.color = '#b91c1c';
+    r.style.color = '#dc2626';
+    const answers = ['','B – Keyboard bisa dipegang!','B – Otak/pikiran yang memberi perintah!','C – Browser Chrome tidak bisa dipegang!','B – Tanpa Software, komputer diam saja!'];
+    r.textContent = '❌ Jawabannya ' + answers[n];
+  }
+
+  if (Object.values(qAnswered).every(v => v)) {
+    setTimeout(() => {
+      const f = document.getElementById('quizFinal');
+      f.classList.remove('hidden');
+      f.scrollIntoView({ behavior:'smooth', block:'center' });
+      const em = document.getElementById('qfEmoji');
+      const tx = document.getElementById('qfText');
+      const sb = document.getElementById('qfSub');
+      if (qScore === 4) { em.textContent='🏆'; tx.textContent='Sempurna! 4/4 – Kamu jago Hardware & Software!'; tx.style.color='#f97316'; sb.textContent='Aslan bangga padamu! 🔥'; spawnConfetti(); }
+      else if (qScore >= 3) { em.textContent='⭐'; tx.textContent=`Bagus! ${qScore}/4 Benar!`; tx.style.color='#8b5cf6'; sb.textContent='Hampir sempurna! Baca ulang sekali ya!'; }
+      else { em.textContent='💪'; tx.textContent=`${qScore}/4 – Ayo coba lagi!`; tx.style.color='#64748b'; sb.textContent='Scroll ke atas dan pelajari lagi!'; }
+    }, 400);
+  }
+}
+
+// ── ACTIVITY CHECKLIST ──
+let actDone = 0;
+function actCheck(n) {
+  const cb = document.getElementById('cb' + n);
+  const span = document.getElementById('ac' + n + 't');
+  const item = document.getElementById('ac' + n);
+  cb.checked = !cb.checked;
+  if (cb.checked) {
+    actDone++;
+    span.style.textDecoration = 'line-through';
+    span.style.opacity = '.5';
+    item.style.borderColor = '#10b981';
+    item.style.background = '#f0fdf4';
+  } else {
+    actDone--;
+    span.style.textDecoration = '';
+    span.style.opacity = '';
+    item.style.borderColor = '#e5e7eb';
+    item.style.background = 'white';
+  }
+  if (actDone >= 4) { document.getElementById('actDone').classList.remove('hidden'); spawnConfetti(); }
+  else document.getElementById('actDone').classList.add('hidden');
+}
+
+// ── INIT ──
+buildPool();
+</script>
+
+<!-- TAP MODAL (mobile) -->
+<div id="tapModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;" onclick="closeTapModal()">
+  <div style="background:white;border-radius:24px;padding:2rem 2.5rem;max-width:340px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);" onclick="event.stopPropagation()">
+    <p style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#1c1917;margin-bottom:6px;">Taruh di mana?</p>
+    <p id="tapItemLabel" style="font-size:1.6rem;margin-bottom:1.5rem;"></p>
+    <input type="hidden" id="tapItemId">
+    <input type="hidden" id="tapItemCat">
+    <div class="flex gap-3 justify-center flex-wrap">
+      <button onclick="tapPlace('hw')" style="background:linear-gradient(135deg,#ea580c,#f97316);color:white;border:none;border-radius:50px;padding:.8rem 1.6rem;font-family:'Fredoka One',cursive;font-size:1.05rem;cursor:pointer;box-shadow:0 4px 0 #b45309;">💪 Hardware</button>
+      <button onclick="tapPlace('sw')" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:white;border:none;border-radius:50px;padding:.8rem 1.6rem;font-family:'Fredoka One',cursive;font-size:1.05rem;cursor:pointer;box-shadow:0 4px 0 #4c1d95;">🧠 Software</button>
+    </div>
+    <button onclick="closeTapModal()" style="margin-top:1rem;background:none;border:none;color:#94a3b8;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;font-size:.9rem;">Batal</button>
+  </div>
+</div>
+
+</body>
+</html>

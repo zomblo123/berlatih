@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 4: Zaman Dinosaurus – Kapten Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════ */
+:root{
+  --jungle:    #1b4332;
+  --forest:    #2d6a4f;
+  --fern:      #40916c;
+  --leaf:      #52b788;
+  --moss:      #74c69d;
+  --sky:       #1e3a5f;
+  --sky2:      #2e6096;
+  --sky3:      #4a90d9;
+  --horizon:   #f4a261;
+  --amber:     #e76f51;
+  --fire:      #e63946;
+  --lava:      #ff4500;
+  --gold:      #ffd166;
+  --cream:     #fef9ef;
+  --earth:     #7c4700;
+  --soil:      #a05c2c;
+  --sand:      #d4a96a;
+  --dino-1:    #6b9e3e;  /* green dino */
+  --dino-2:    #c97b2e;  /* brown dino */
+  --dino-3:    #8e5c9e;  /* purple dino */
+  --asteroid:  #8b7355;
+  --cosmic:    #0d0d1a;
+  --star:      #fffde7;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--cosmic);
+  min-height:100vh;
+  overflow-x:hidden;
+  cursor:default;
+}
+
+/* ── BACK BUTTON ── */
+.back-btn{
+  position:fixed;top:16px;left:16px;z-index:1000;
+  background:rgba(0,0,0,.45);backdrop-filter:blur(12px);
+  border:1.5px solid rgba(255,255,255,.22);color:white;
+  padding:10px 18px;border-radius:50px;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;
+  text-decoration:none;display:flex;align-items:center;gap:6px;
+  transition:all .3s;box-shadow:0 4px 20px rgba(0,0,0,.5);
+}
+.back-btn:hover{background:rgba(255,255,255,.15);transform:translateX(-3px)}
+
+/* ── PROGRESS BAR ── */
+.prog-wrap{position:fixed;top:0;left:0;right:0;height:5px;z-index:999;background:rgba(255,255,255,.08)}
+.prog-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--leaf),var(--gold),var(--amber),var(--fire));
+  background-size:300% 100%;
+  border-radius:0 3px 3px 0;
+  transition:width .5s ease;
+  animation:progShimmer 3s linear infinite;
+}
+@keyframes progShimmer{0%{background-position:0%}100%{background-position:300%}}
+
+/* PAGE INDICATOR */
+.page-ind{
+  position:fixed;top:14px;right:16px;z-index:999;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.15);color:white;
+  padding:8px 16px;border-radius:50px;
+  font-family:'Fredoka One',cursive;font-size:14px;
+  letter-spacing:.5px;
+}
+.page-ind span{color:var(--gold)}
+
+/* ═══════════════════════════════════════════════
+   LIVING BACKGROUND
+═══════════════════════════════════════════════ */
+.world-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  transition:background 1.5s ease;
+}
+
+/* Leaf particles */
+.leaf-p{
+  position:absolute;font-size:16px;
+  animation:leafDrift linear infinite;
+  pointer-events:none;opacity:.6;
+}
+@keyframes leafDrift{
+  0%{transform:translateY(-20px) rotate(0deg) translateX(0);opacity:.8}
+  100%{transform:translateY(110vh) rotate(720deg) translateX(60px);opacity:0}
+}
+
+/* Star twinkle */
+.star-p{
+  position:absolute;border-radius:50%;
+  background:white;
+  animation:twinkle ease-in-out infinite;
+}
+@keyframes twinkle{
+  0%,100%{opacity:.1;transform:scale(1)}
+  50%{opacity:.9;transform:scale(1.4)}
+}
+
+/* ═══════════════════════════════════════════════
+   BOOK / SLIDE SYSTEM
+═══════════════════════════════════════════════ */
+.book{
+  position:relative;z-index:10;
+  max-width:840px;margin:0 auto;
+  padding:24px 16px 48px;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding-top:80px;
+}
+
+.slide{display:none;width:100%;animation:slideIn .55s cubic-bezier(.22,1,.36,1)}
+.slide.active{display:block}
+
+@keyframes slideIn{
+  from{opacity:0;transform:translateY(28px) scale(.97)}
+  to{opacity:1;transform:none}
+}
+
+/* ── CARD BASE ── */
+.card{
+  border-radius:32px;
+  padding:48px 48px 56px;
+  box-shadow:0 32px 80px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06) inset;
+  position:relative;overflow:hidden;
+  min-height:520px;
+}
+
+/* top shimmer line */
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--leaf),var(--gold),var(--amber),var(--fire),var(--leaf));
+  background-size:400% 100%;
+  animation:borderFlow 5s linear infinite;
+  border-radius:32px 32px 0 0;
+}
+@keyframes borderFlow{0%{background-position:0%}100%{background-position:400%}}
+
+/* ── CARD THEMES ── */
+.card-jungle{
+  background:linear-gradient(160deg,#1a3d28 0%,#0d2217 60%,#0a1a10 100%);
+  border:1px solid rgba(82,183,136,.18);
+}
+.card-sky{
+  background:linear-gradient(160deg,#1a2e4a 0%,#0d2035 60%,#060f1a 100%);
+  border:1px solid rgba(74,144,217,.18);
+}
+.card-dusk{
+  background:linear-gradient(160deg,#2d1a0e 0%,#1a0d05 60%,#0d0500 100%);
+  border:1px solid rgba(231,111,81,.2);
+}
+.card-cosmic{
+  background:linear-gradient(160deg,#0d0d20 0%,#050510 100%);
+  border:1px solid rgba(255,209,102,.12);
+}
+.card-rebirth{
+  background:linear-gradient(160deg,#1a2e1a 0%,#0d1f0d 100%);
+  border:1px solid rgba(74,183,118,.2);
+}
+
+/* ═══════════════════════════════════════════════
+   COVER
+═══════════════════════════════════════════════ */
+.cover-card{
+  text-align:center;min-height:640px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:0;
+  background:linear-gradient(175deg,#0d1f14 0%,#1b3a26 25%,#2d1a0e 60%,#0d0810 100%);
+  border:1px solid rgba(116,198,157,.15);
+}
+
+/* SVG DINO SCENE */
+.cover-scene{width:100%;height:260px;margin-bottom:16px;position:relative}
+.cover-scene svg{width:100%;height:100%}
+
+/* dino walk */
+@keyframes dinoWalk{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+.dino-walk{animation:dinoWalk 1.8s ease-in-out infinite}
+
+/* dino tail sway */
+@keyframes tailSway{
+  0%,100%{transform:rotate(0deg)}
+  50%{transform:rotate(8deg)}
+}
+
+/* tree sway */
+@keyframes treeSway{
+  0%,100%{transform:rotate(-1.5deg);transform-origin:bottom center}
+  50%{transform:rotate(1.5deg);transform-origin:bottom center}
+}
+.tree-sway{animation:treeSway 4s ease-in-out infinite}
+.tree-sway2{animation:treeSway 5s ease-in-out infinite .8s}
+
+/* volcano smoke */
+@keyframes smokeRise{
+  0%{transform:translateY(0) scale(1);opacity:.7}
+  100%{transform:translateY(-40px) scale(2);opacity:0}
+}
+.smoke{animation:smokeRise 3s ease-out infinite}
+.smoke2{animation:smokeRise 3s ease-out infinite 1s}
+.smoke3{animation:smokeRise 3s ease-out infinite 2s}
+
+/* meteor */
+@keyframes meteorFall{
+  0%{transform:translate(0,0);opacity:1}
+  100%{transform:translate(120px,120px);opacity:0}
+}
+.meteor{animation:meteorFall 2s ease-in infinite 0s}
+
+/* badge */
+.day-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,209,102,.12);
+  border:2px solid rgba(255,209,102,.4);
+  color:var(--gold);padding:8px 20px;border-radius:50px;
+  font-family:'Fredoka One',cursive;font-size:14px;letter-spacing:1px;
+  margin-bottom:16px;
+  animation:badgePulse 2.5s ease-in-out infinite;
+}
+@keyframes badgePulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,209,102,.25)}
+  50%{box-shadow:0 0 0 10px rgba(255,209,102,0)}
+}
+
+.cover-title{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(26px,5.5vw,46px);
+  color:white;line-height:1.2;
+  margin-bottom:10px;
+  text-shadow:0 4px 24px rgba(0,0,0,.6);
+}
+.cover-title .hl-green{
+  background:linear-gradient(135deg,var(--leaf),var(--moss));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;display:block;
+}
+.cover-title .hl-fire{
+  background:linear-gradient(135deg,var(--gold),var(--amber),var(--fire));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;display:block;
+}
+.cover-sub{font-size:14px;color:rgba(255,255,255,.55);margin-bottom:20px;font-weight:700;letter-spacing:.5px}
+.capt-badge{
+  display:inline-flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,rgba(64,145,108,.2),rgba(231,111,81,.15));
+  border:2px solid rgba(255,209,102,.3);
+  padding:14px 28px;border-radius:20px;
+  color:white;font-weight:800;font-size:17px;
+  backdrop-filter:blur(10px);margin-top:10px;
+}
+
+/* ═══════════════════════════════════════════════
+   TYPOGRAPHY
+═══════════════════════════════════════════════ */
+.sec-lbl{
+  display:inline-flex;align-items:center;gap:7px;
+  background:linear-gradient(135deg,var(--fern),var(--forest));
+  color:white;padding:6px 16px;border-radius:50px;
+  font-size:12px;font-weight:800;letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:14px;
+}
+.sec-lbl.fire-lbl{background:linear-gradient(135deg,var(--amber),var(--fire))}
+.sec-lbl.sky-lbl{background:linear-gradient(135deg,var(--sky2),var(--sky3))}
+.sec-lbl.gold-lbl{background:linear-gradient(135deg,var(--earth),var(--soil))}
+
+.slide-title{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(20px,4vw,32px);
+  color:white;margin-bottom:16px;line-height:1.3;
+}
+.slide-title .acc-g{color:var(--moss)}
+.slide-title .acc-f{color:var(--gold)}
+.slide-title .acc-r{color:var(--amber)}
+
+.body-text{
+  color:rgba(255,255,255,.86);
+  font-size:16px;line-height:1.87;font-weight:600;
+}
+.body-text strong{color:var(--gold);font-weight:800}
+.body-text .c-green{color:var(--moss);font-weight:800}
+.body-text .c-amber{color:var(--amber);font-weight:800}
+.body-text .c-fire{color:#ff8c69;font-weight:800}
+
+.story-box{
+  background:rgba(255,255,255,.05);
+  border-left:4px solid var(--gold);
+  border-radius:0 16px 16px 0;
+  padding:18px 22px;margin:18px 0;
+  font-style:italic;color:rgba(255,255,255,.9);
+  font-size:15.5px;line-height:1.92;
+}
+
+/* ═══════════════════════════════════════════════
+   FACT / TIP / WARN BOXES
+═══════════════════════════════════════════════ */
+.fact-box{
+  background:linear-gradient(135deg,rgba(255,209,102,.08),rgba(231,111,81,.06));
+  border:1.5px solid rgba(255,209,102,.25);
+  border-radius:18px;padding:18px 22px;margin:14px 0;
+  display:flex;align-items:flex-start;gap:14px;
+}
+.fact-ico{font-size:30px;flex-shrink:0}
+.fact-body{color:rgba(255,255,255,.87);font-size:14.5px;line-height:1.78}
+.fact-body strong{color:var(--gold)}
+
+.tip-box{
+  background:linear-gradient(135deg,rgba(64,145,108,.12),rgba(45,106,79,.1));
+  border:1.5px solid rgba(116,198,157,.3);
+  border-radius:18px;padding:18px 22px;margin:14px 0;
+  display:flex;align-items:flex-start;gap:14px;
+}
+.tip-box .fact-body strong{color:var(--moss)}
+
+.fire-box{
+  background:linear-gradient(135deg,rgba(230,57,70,.1),rgba(255,69,0,.08));
+  border:1.5px solid rgba(230,57,70,.3);
+  border-radius:18px;padding:18px 22px;margin:14px 0;
+  display:flex;align-items:flex-start;gap:14px;
+}
+.fire-box .fact-body strong{color:#ff8c69}
+
+/* ═══════════════════════════════════════════════
+   DINO CARDS
+═══════════════════════════════════════════════ */
+.dino-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(175px,1fr));
+  gap:14px;margin:18px 0;
+}
+.dino-card{
+  background:rgba(255,255,255,.05);
+  border:1.5px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:18px;
+  text-align:center;cursor:pointer;
+  transition:all .35s;position:relative;overflow:hidden;
+}
+.dino-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 0%,rgba(255,209,102,.1),transparent 70%);
+  opacity:0;transition:opacity .3s;
+}
+.dino-card:hover{transform:translateY(-6px) scale(1.03);border-color:var(--gold)}
+.dino-card:hover::before{opacity:1}
+.dino-card.open{border-color:var(--moss)}
+
+.dc-scene{height:90px;display:flex;align-items:flex-end;justify-content:center;margin-bottom:10px;overflow:hidden}
+.dc-name{font-family:'Fredoka One',cursive;font-size:16px;color:var(--gold);margin-bottom:4px}
+.dc-tag{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:8px;font-style:italic}
+.dc-info{
+  display:none;font-size:12.5px;color:rgba(255,255,255,.8);
+  line-height:1.65;padding-top:10px;border-top:1px solid rgba(255,255,255,.1);
+  animation:fadeIn .3s ease;text-align:left;
+}
+.dino-card.open .dc-info{display:block}
+
+/* ═══════════════════════════════════════════════
+   ASTEROID INTERACTIVE
+═══════════════════════════════════════════════ */
+.asteroid-zone{
+  position:relative;
+  background:radial-gradient(ellipse at top,#1a1440 0%,#050510 70%);
+  border:2px dashed rgba(255,209,102,.2);
+  border-radius:24px;padding:32px;
+  text-align:center;cursor:pointer;
+  transition:all .4s;margin:18px 0;overflow:hidden;
+}
+.asteroid-zone:hover{border-color:rgba(255,100,0,.5)}
+.asteroid-zone.impact{
+  border-color:var(--fire);
+  animation:impactShake .5s ease;
+}
+@keyframes impactShake{
+  0%,100%{transform:none}
+  20%{transform:translate(-5px,3px) rotate(-1deg)}
+  40%{transform:translate(5px,-3px) rotate(1deg)}
+  60%{transform:translate(-3px,5px)}
+  80%{transform:translate(3px,-2px)}
+}
+
+.asteroid-svg{width:100px;height:100px;margin:0 auto 12px;display:block;transition:all .4s}
+.asteroid-zone.impact .asteroid-svg{filter:drop-shadow(0 0 30px var(--fire)) drop-shadow(0 0 60px var(--amber))}
+
+/* impact explosion */
+.explosion{
+  display:none;position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 60%,rgba(255,100,0,.7) 0%,rgba(255,50,0,.3) 30%,transparent 70%);
+  animation:explode .8s ease-out forwards;
+}
+@keyframes explode{
+  0%{opacity:0;transform:scale(0)}
+  20%{opacity:1;transform:scale(1.5)}
+  100%{opacity:0;transform:scale(3)}
+}
+.asteroid-zone.impact .explosion{display:block}
+
+.az-hint{color:rgba(255,255,255,.38);font-size:13px;font-style:italic;margin-top:6px}
+.az-reveal{
+  display:none;padding:16px;background:rgba(230,57,70,.08);
+  border-radius:14px;margin-top:14px;
+  color:rgba(255,255,255,.85);font-size:14.5px;line-height:1.78;text-align:left;
+  animation:fadeIn .4s ease;
+}
+.asteroid-zone.impact .az-reveal{display:block}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+
+/* Floating asteroids */
+@keyframes floatAsteroid{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-10px) rotate(12deg)}
+}
+.float-rock{animation:floatAsteroid 5s ease-in-out infinite}
+
+/* ═══════════════════════════════════════════════
+   TIMELINE
+═══════════════════════════════════════════════ */
+.timeline{position:relative;margin:18px 0}
+.timeline::before{
+  content:'';position:absolute;left:22px;top:0;bottom:0;
+  width:3px;background:linear-gradient(to bottom,var(--leaf),var(--gold),var(--fire));
+  border-radius:3px;
+}
+.tl-item{
+  display:flex;gap:18px;align-items:flex-start;
+  padding:0 0 22px 0;position:relative;
+}
+.tl-dot{
+  width:48px;height:48px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+  border:2px solid rgba(255,255,255,.15);
+  background:var(--jungle);z-index:1;
+  transition:all .3s;cursor:pointer;
+}
+.tl-item:hover .tl-dot{transform:scale(1.15);border-color:var(--gold)}
+.tl-content{flex:1}
+.tl-era{font-family:'Fredoka One',cursive;font-size:15px;color:var(--gold);margin-bottom:3px}
+.tl-age{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:5px;font-style:italic}
+.tl-text{font-size:14.5px;color:rgba(255,255,255,.8);line-height:1.7}
+
+/* ═══════════════════════════════════════════════
+   LESSON LIST
+═══════════════════════════════════════════════ */
+.lesson-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin:14px 0}
+.lesson-list li{
+  display:flex;align-items:flex-start;gap:12px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:14px 18px;
+  color:rgba(255,255,255,.87);font-size:15px;line-height:1.65;
+  transition:all .3s;cursor:default;
+}
+.lesson-list li:hover{background:rgba(255,255,255,.09);transform:translateX(4px)}
+.lesson-list li .li-ico{font-size:24px;flex-shrink:0}
+.lesson-list li strong{color:var(--gold);font-size:14px;display:block;margin-bottom:2px}
+
+/* ═══════════════════════════════════════════════
+   CHALLENGE
+═══════════════════════════════════════════════ */
+.challenge-card{
+  background:linear-gradient(135deg,rgba(64,145,108,.15),rgba(27,67,50,.4));
+  border:2px solid rgba(116,198,157,.3);
+  border-radius:24px;padding:26px;margin:18px 0;
+}
+.ch-title{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.ch-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.85);font-size:15px;line-height:1.65}
+.ch-item:last-child{border-bottom:none}
+.chk{width:26px;height:26px;border:2px solid rgba(255,255,255,.25);border-radius:7px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;margin-top:1px;font-size:14px}
+.chk:hover{border-color:var(--gold);background:rgba(255,209,102,.1)}
+.chk.done{background:linear-gradient(135deg,var(--fern),var(--forest));border-color:var(--leaf);color:white}
+.done-msg{display:none;text-align:center;padding:18px;background:rgba(64,145,108,.15);border:2px solid rgba(116,198,157,.35);border-radius:14px;color:var(--moss);font-family:'Fredoka One',cursive;font-size:17px;margin-top:10px;animation:fadeIn .4s ease}
+
+/* ═══════════════════════════════════════════════
+   CLOSING
+═══════════════════════════════════════════════ */
+.closing-card{
+  text-align:center;
+  background:linear-gradient(175deg,#0d1a0d 0%,#1b3a26 40%,#2d1a0e 80%,#0d0810 100%);
+  min-height:560px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  padding:60px 40px;
+}
+.quote-box{
+  background:linear-gradient(135deg,rgba(255,209,102,.08),rgba(64,145,108,.08));
+  border:2px solid rgba(255,209,102,.22);
+  border-radius:22px;padding:24px 30px;max-width:540px;
+  font-family:'Fredoka One',cursive;font-size:17px;
+  color:white;line-height:1.7;position:relative;
+}
+.quote-box::before{content:'"';font-size:90px;color:rgba(255,209,102,.1);position:absolute;top:-22px;left:14px;line-height:1}
+
+.star-row{display:flex;gap:8px;justify-content:center;margin:6px 0}
+.star-b{font-size:34px;cursor:pointer;transition:all .3s;filter:grayscale(1) opacity(.35)}
+.star-b.on,.star-b:hover{filter:none;transform:scale(1.2) rotate(-10deg)}
+
+/* Teaser cards */
+.teaser-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0;max-width:480px}
+.teaser-c{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px;text-align:center}
+.teaser-c .tc-ico{font-size:28px;margin-bottom:6px}
+.teaser-c .tc-lbl{font-family:'Fredoka One',cursive;font-size:13px;color:var(--gold)}
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ */
+.nav{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:28px;width:100%}
+.nav-btn{
+  display:flex;align-items:center;gap:7px;
+  padding:13px 26px;border-radius:50px;border:none;
+  cursor:pointer;font-family:'Fredoka One',cursive;font-size:15px;
+  transition:all .3s;position:relative;overflow:hidden;
+}
+.btn-prev{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.18);color:white}
+.btn-prev:hover{background:rgba(255,255,255,.14);transform:translateX(-3px)}
+.btn-next{background:linear-gradient(135deg,var(--fern),var(--forest));color:white;box-shadow:0 8px 24px rgba(64,145,108,.35)}
+.btn-next:hover{transform:translateX(3px);box-shadow:0 12px 32px rgba(64,145,108,.55)}
+.btn-next.fire-btn{background:linear-gradient(135deg,var(--amber),var(--fire));box-shadow:0 8px 24px rgba(231,111,81,.35)}
+.btn-next.fire-btn:hover{box-shadow:0 12px 32px rgba(231,111,81,.55)}
+
+.dots{display:flex;gap:5px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s}
+.dot.on{background:var(--gold);width:18px;border-radius:4px;box-shadow:0 0 8px rgba(255,209,102,.5)}
+.dot:hover{background:rgba(255,255,255,.4)}
+
+/* ═══════════════════════════════════════════════
+   COMPARISON VISUAL
+═══════════════════════════════════════════════ */
+.before-after{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin:18px 0}
+.ba-col{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:18px;padding:18px;text-align:center}
+.ba-col.green-col{border-color:rgba(116,198,157,.25);background:rgba(64,145,108,.08)}
+.ba-col.mammal-col{border-color:rgba(255,209,102,.25);background:rgba(255,209,102,.06)}
+.ba-head{font-family:'Fredoka One',cursive;font-size:15px;margin-bottom:10px}
+.ba-head.g{color:var(--moss)}
+.ba-head.y{color:var(--gold)}
+.ba-item{font-size:13px;color:rgba(255,255,255,.72);line-height:1.7;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.07);display:flex;gap:7px;align-items:flex-start}
+.ba-item:last-child{border-bottom:none}
+.ba-arr{font-size:28px;color:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media(max-width:600px){
+  .card{padding:30px 22px 38px;min-height:460px}
+  .dino-grid{grid-template-columns:1fr 1fr}
+  .teaser-grid{grid-template-columns:1fr}
+  .before-after{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  .ba-arr{transform:rotate(90deg)}
+  .nav-btn{padding:11px 18px;font-size:14px}
+  .closing-card{padding:40px 22px}
+}
+</style>
+</head>
+<body>
+
+<!-- BACK -->
+<a href="../perpustakaan.html" class="back-btn">← Kembali ke Perpustakaan</a>
+<div class="page-ind">Halaman <span id="pNum">1</span> / <span id="pTotal">14</span></div>
+<div class="prog-wrap"><div class="prog-fill" id="prog" style="width:7.1%"></div></div>
+
+<!-- BACKGROUND -->
+<div class="world-bg" id="worldBg"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     BOOK
+═══════════════════════════════════════════════════ -->
+<div class="book" id="book">
+
+<!-- ╔══════ SLIDE 1 – COVER ══════╗ -->
+<div class="slide active" id="s1">
+<div class="card cover-card">
+
+  <!-- star decorations -->
+  <div style="position:absolute;top:18px;right:30px;font-size:22px;opacity:.4;animation:floatAsteroid 6s ease-in-out infinite">🌋</div>
+  <div style="position:absolute;bottom:90px;left:22px;font-size:18px;opacity:.3;animation:floatAsteroid 5s ease-in-out infinite 1s">🦕</div>
+  <div style="position:absolute;top:50px;left:30px;font-size:16px;opacity:.25;animation:floatAsteroid 4s ease-in-out infinite .5s">🌿</div>
+
+  <!-- COVER SCENE SVG -->
+  <div class="cover-scene">
+  <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="skyG" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#1a3a5c"/>
+        <stop offset="60%" stop-color="#3d6e3a"/>
+        <stop offset="100%" stop-color="#1b3a26"/>
+      </linearGradient>
+      <linearGradient id="groundG" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#2d4a1e"/>
+        <stop offset="100%" stop-color="#1b3a0d"/>
+      </linearGradient>
+      <radialGradient id="sunG" cx="80%" cy="15%" r="20%">
+        <stop offset="0%" stop-color="#ffe082" stop-opacity=".5"/>
+        <stop offset="100%" stop-color="#ffe082" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="volcGlow" cx="50%" cy="40%" r="50%">
+        <stop offset="0%" stop-color="#ff4500" stop-opacity=".4"/>
+        <stop offset="100%" stop-color="#ff4500" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+
+    <!-- sky -->
+    <rect width="640" height="250" fill="url(#skyG)"/>
+    <!-- sun halo -->
+    <ellipse cx="520" cy="38" rx="80" ry="60" fill="url(#sunG)"/>
+    <!-- sun -->
+    <circle cx="520" cy="38" r="22" fill="#ffe082" opacity=".55"/>
+    <circle cx="520" cy="38" r="14" fill="#ffd54f" opacity=".8"/>
+
+    <!-- clouds -->
+    <ellipse cx="80" cy="40" rx="55" ry="18" fill="rgba(255,255,255,.07)"/>
+    <ellipse cx="110" cy="35" rx="40" ry="14" fill="rgba(255,255,255,.05)"/>
+    <ellipse cx="300" cy="30" rx="70" ry="16" fill="rgba(255,255,255,.06)"/>
+
+    <!-- VOLCANO (bg) -->
+    <path d="M490,240 L540,120 L590,240 Z" fill="#3d1a0a"/>
+    <path d="M490,240 L540,120 L570,240 Z" fill="#2d1005"/>
+    <!-- lava glow -->
+    <ellipse cx="540" cy="120" rx="20" ry="12" fill="#ff4500" opacity=".6"/>
+    <ellipse cx="540" cy="115" rx="12" ry="8" fill="#ff6a00" opacity=".8"/>
+    <!-- smoke puffs -->
+    <circle cx="535" cy="100" r="9" fill="rgba(150,100,80,.4)" class="smoke"/>
+    <circle cx="545" cy="88" r="7" fill="rgba(130,90,70,.35)" class="smoke2"/>
+    <circle cx="538" cy="78" r="5" fill="rgba(110,80,60,.3)" class="smoke3"/>
+
+    <!-- ground -->
+    <path d="M0,190 Q100,178 200,188 Q300,198 400,185 Q500,172 640,182 L640,250 L0,250 Z" fill="url(#groundG)"/>
+    <path d="M0,198 Q160,186 320,195 Q480,204 640,190" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1.5"/>
+
+    <!-- TREES (far) -->
+    <g class="tree-sway" transform="translate(60,120)">
+      <!-- palm tree -->
+      <line x1="15" y1="60" x2="15" y2="0" stroke="#4a2d0d" stroke-width="5" stroke-linecap="round"/>
+      <ellipse cx="15" cy="-2" rx="28" ry="16" fill="#2d6a4f" opacity=".8"/>
+      <ellipse cx="0" cy="5" rx="20" ry="10" fill="#40916c" opacity=".7" transform="rotate(-20,0,5)"/>
+      <ellipse cx="30" cy="5" rx="20" ry="10" fill="#40916c" opacity=".7" transform="rotate(20,30,5)"/>
+    </g>
+    <g class="tree-sway2" transform="translate(140,100)">
+      <line x1="12" y1="80" x2="12" y2="0" stroke="#3d2008" stroke-width="6" stroke-linecap="round"/>
+      <ellipse cx="12" cy="0" rx="35" ry="22" fill="#1b4332"/>
+      <ellipse cx="12" cy="8" rx="28" ry="18" fill="#2d6a4f"/>
+    </g>
+    <g class="tree-sway" transform="translate(380,95)">
+      <line x1="12" y1="80" x2="12" y2="0" stroke="#4a2d0d" stroke-width="5"/>
+      <ellipse cx="12" cy="0" rx="32" ry="20" fill="#1b5e20"/>
+      <ellipse cx="12" cy="8" rx="25" ry="16" fill="#2e7d32"/>
+    </g>
+
+    <!-- FERN (foreground) -->
+    <g transform="translate(0,190)">
+      <path d="M20,20 Q5,-10 30,-20" fill="none" stroke="#40916c" stroke-width="3" stroke-linecap="round"/>
+      <path d="M20,20 Q35,-5 25,-18" fill="none" stroke="#52b788" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M20,20 Q-5,5 10,-15" fill="none" stroke="#40916c" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(580,195)">
+      <path d="M10,15 Q-5,-8 18,-16" fill="none" stroke="#40916c" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M10,15 Q25,-2 16,-14" fill="none" stroke="#52b788" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <!-- T-REX (main hero!) -->
+    <g class="dino-walk" transform="translate(230,110)">
+      <!-- body -->
+      <ellipse cx="50" cy="60" rx="42" ry="30" fill="#5a8a2e"/>
+      <!-- belly -->
+      <ellipse cx="50" cy="65" rx="30" ry="22" fill="#7ab350"/>
+      <!-- neck -->
+      <path d="M30,38 Q25,18 35,8" stroke="#5a8a2e" stroke-width="16" fill="none" stroke-linecap="round"/>
+      <path d="M30,38 Q25,18 35,8" stroke="#7ab350" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <!-- HEAD -->
+      <ellipse cx="38" cy="7" rx="22" ry="14" fill="#5a8a2e" transform="rotate(-10,38,7)"/>
+      <!-- snout -->
+      <path d="M18,10 Q8,14 16,20 L28,16 Z" fill="#4a7a24" transform="rotate(-10,20,14)"/>
+      <!-- teeth -->
+      <path d="M16,16 L20,22 L24,16 L28,22 L32,16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      <!-- eye -->
+      <circle cx="32" cy="3" r="5" fill="white"/>
+      <circle cx="33" cy="4" r="3" fill="#1a1a00"/>
+      <circle cx="34" cy="3" r="1" fill="white"/>
+      <!-- nostril -->
+      <ellipse cx="22" cy="9" rx="2" ry="1.5" fill="#3d6e1a"/>
+      <!-- ARMS (tiny!) -->
+      <line x1="30" y1="44" x2="18" y2="54" stroke="#5a8a2e" stroke-width="5" stroke-linecap="round"/>
+      <line x1="18" y1="54" x2="14" y2="62" stroke="#4a7a24" stroke-width="4" stroke-linecap="round"/>
+      <!-- claw -->
+      <path d="M14,62 L10,67 M14,62 L12,68 M14,62 L16,68" stroke="#3d6e1a" stroke-width="2" stroke-linecap="round"/>
+      <!-- LEGS -->
+      <line x1="38" y1="85" x2="32" y2="108" stroke="#4a7a24" stroke-width="10" stroke-linecap="round"/>
+      <line x1="32" y1="108" x2="20" y2="120" stroke="#3d6e1a" stroke-width="8" stroke-linecap="round"/>
+      <path d="M20,120 L10,126 M20,120 L16,128 M20,120 L24,127" stroke="#3d6e1a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="55" y1="85" x2="58" y2="110" stroke="#4a7a24" stroke-width="10" stroke-linecap="round"/>
+      <line x1="58" y1="110" x2="65" y2="122" stroke="#3d6e1a" stroke-width="8" stroke-linecap="round"/>
+      <!-- TAIL -->
+      <path d="M88,55 Q115,48 130,35" stroke="#5a8a2e" stroke-width="12" fill="none" stroke-linecap="round"/>
+      <path d="M88,55 Q115,48 130,35" stroke="#7ab350" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <!-- spine bumps -->
+      <circle cx="45" cy="30" r="4" fill="#4a7a24"/>
+      <circle cx="55" cy="28" r="3" fill="#4a7a24"/>
+      <circle cx="65" cy="30" r="3.5" fill="#4a7a24"/>
+      <circle cx="75" cy="35" r="3" fill="#4a7a24"/>
+    </g>
+
+    <!-- LONG NECK DINO (bg) -->
+    <g transform="translate(430,130)" opacity=".8">
+      <ellipse cx="30" cy="40" rx="28" ry="20" fill="#8e5c9e"/>
+      <ellipse cx="30" cy="45" rx="20" ry="14" fill="#b47ac7"/>
+      <!-- long neck -->
+      <path d="M20,24 Q15,-10 25,-50 Q30,-70 35,-80" stroke="#8e5c9e" stroke-width="12" fill="none" stroke-linecap="round"/>
+      <!-- head -->
+      <ellipse cx="35" cy="-82" rx="14" ry="9" fill="#8e5c9e" transform="rotate(15,35,-82)"/>
+      <circle cx="29" cy="-85" r="3" fill="white"/>
+      <circle cx="30" cy="-85" r="1.5" fill="#1a1a00"/>
+      <!-- legs -->
+      <line x1="18" y1="56" x2="12" y2="76" stroke="#7a4d8e" stroke-width="7" stroke-linecap="round"/>
+      <line x1="32" y1="58" x2="34" y2="78" stroke="#7a4d8e" stroke-width="7" stroke-linecap="round"/>
+      <!-- tail -->
+      <path d="M52,42 Q70,38 82,28" stroke="#8e5c9e" stroke-width="9" fill="none" stroke-linecap="round"/>
+    </g>
+
+    <!-- METEOR coming down top right -->
+    <g class="float-rock" transform="translate(560,20)" opacity=".9">
+      <ellipse cx="20" cy="12" rx="18" ry="12" fill="#8b7355"/>
+      <ellipse cx="16" cy="8" rx="10" ry="6" fill="#a08060" opacity=".6"/>
+      <!-- fire trail -->
+      <path d="M6,20 L-8,45 L4,38 L0,55 L10,42 L8,58" fill="none" stroke="#ff6a00" stroke-width="3" stroke-linecap="round" opacity=".7" class="meteor"/>
+    </g>
+
+    <!-- tiny dino silhouettes -->
+    <g transform="translate(120,185)" opacity=".5">
+      <ellipse cx="15" cy="10" rx="12" ry="8" fill="#5a8a2e"/>
+      <circle cx="5" cy="5" r="5" fill="#4a7a24"/>
+      <line x1="10" y1="16" x2="8" y2="24" stroke="#3d6e1a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="18" y1="16" x2="20" y2="24" stroke="#3d6e1a" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <!-- footprints -->
+    <ellipse cx="200" cy="228" rx="7" ry="4" fill="rgba(0,0,0,.25)" transform="rotate(-20,200,228)"/>
+    <ellipse cx="220" cy="232" rx="7" ry="4" fill="rgba(0,0,0,.2)" transform="rotate(15,220,232)"/>
+    <ellipse cx="245" cy="226" rx="7" ry="4" fill="rgba(0,0,0,.18)" transform="rotate(-10,245,226)"/>
+
+    <!-- bottom label -->
+    <text x="320" y="247" fill="rgba(255,255,255,.2)" font-size="9" text-anchor="middle" font-family="Nunito,sans-serif">Bumi, 230 Juta Tahun yang Lalu...</text>
+  </svg>
+  </div>
+
+  <div class="day-badge">🦕 HARI 4 dari 30 Hari</div>
+
+  <div class="cover-title">
+    <span class="hl-green">Zaman Dinosaurus</span>
+    <span class="hl-fire">dan Kepunahannya!</span>
+  </div>
+
+  <div class="cover-sub">Petualangan Kapten Cerdas: Jejak Manusia di Bumi</div>
+
+  <div class="capt-badge">
+    <span style="font-size:26px">🧢</span>
+    <span>Kapten <strong>Aslan</strong></span>
+  </div>
+
+  <div style="margin-top:16px;color:rgba(255,255,255,.32);font-size:13px;font-weight:600;letter-spacing:1px">🦖 14 Halaman Petualangan Zaman Purba</div>
+</div>
+<div class="nav">
+  <div class="dots" id="dot1"></div>
+  <button class="nav-btn btn-next" onclick="go(1)">Mulai Petualangan 🦕</button>
+</div>
+</div>
+
+<!-- ╔══════ SLIDE 2 – PENGANTAR ══════╗ -->
+<div class="slide" id="s2">
+<div class="card card-jungle">
+  <div class="sec-lbl">🌿 Pembukaan</div>
+  <div class="slide-title">Selamat Datang Kembali, <span class="acc-g">Kapten Aslan!</span></div>
+
+  <div class="story-box">
+    "Kapten Aslan berdiri di atas mesin waktu buatan sendirinya — si Kotak Coklat yang bau kayu — dan mengambil napas dalam-dalam. Di Hari 3, ia sudah menyaksikan ikan-ikan berani pertama yang melompat ke daratan. Kali ini, indikator waktu pada mesin itu menunjukkan angka yang luar biasa: <em>230.000.000 tahun yang lalu</em>."
+  </div>
+
+  <div class="body-text">
+    Hei, <strong>Kapten Aslan!</strong> Di Hari 3, kamu sudah menyaksikan makhluk pertama yang berani keluar dari air. Sekarang — bersiaplah untuk petualangan yang jauh lebih besar! 🌿
+    <br><br>
+    Hari ini kita akan melompat ke zaman ketika <strong class="c-green">DINOSAURUS</strong> menjadi raja-raja Bumi! Selama <strong>165 juta tahun</strong>, mereka adalah penguasa planet ini. Tapi kemudian... terjadi sesuatu yang mengubah segalanya selamanya. 🌋☄️
+  </div>
+
+  <div class="fact-box">
+    <div class="fact-ico">🤯</div>
+    <div class="fact-body"><strong>Fakta Mengagumkan!</strong><br>
+    Manusia modern baru ada sekitar 300.000 tahun. Dinosaurus hidup selama <strong>165 JUTA tahun</strong>. Jika sejarah Bumi adalah 1 hari penuh (24 jam), manusia baru muncul di detik-detik terakhir tengah malam! 🕛</div>
+  </div>
+</div>
+<div class="nav">
+  <button class="nav-btn btn-prev" onclick="go(-1)">← Sebelumnya</button>
+  <div class="dots" id="dot2"></div>
+  <button class="nav-btn btn-next" onclick="go(1)">Selanjutnya →</button>
+</div>
+</div>
+
+<!-- ╔══════ SLIDE 3 – CERITA UTAMA ══════╗ -->
+<div class="slide" id="s3">
+<div class="card card-jungle">
+  <div class="sec-lbl">🎭 Petualangan</div>
+  <div class="slide-title">🕰️ Aslan Tiba di <span class="acc-g">Bumi Purba!</span></div>
+
+  <div class="story-box">
+    "<em>KLIK!</em> Pintu Kotak Coklat terbuka, dan Aslan melangkah keluar. Udara terasa berbeda — lebih lembap, lebih hangat, dan <strong>penuh dengan aroma tanaman raksasa</strong>. Pohon-pohon setinggi gedung 10 lantai berdiri di sekelilingnya."
+    <br><br>
+    "Kemudian ia mendengar suara: <em>DOOM... DOOM... DOOM...</em> — getaran seperti drum raksasa yang dipukul. Tanah bergetar di bawah kakinya."
+    <br><br>
+    "'Itu... suara apa?' bisik Aslan, pelan-pelan menoleh. Dan di sana — setinggi rumah bertingkat dua — berdirilah seekor T-Rex! Tapi anehnya... T-Rex itu tidak melihat ke arah Aslan. Ia sibuk mengamati seekor serangga raksasa yang terbang lewat."
+    <br><br>
+    "<em>'Hahaha!'</em> tawa Aslan lega. <em>'Kamu lucu juga ternyata, Raja Besar!'</em>"
+  </div>
+
+  <!-- Scene SVG inline (simple) -->
+  <svg viewBox="0 0 500 100" style="width:100%;border-radius:16px;margin:12px 0;overflow:hidden">
+    <rect width="500" height="100" fill="#1b3a26"/>
+    <!-- trees bg -->
+    <path d="M0,100 Q100,85 200,95 Q300,105 400,90 Q450,85 500,92 L500,100 Z" fill="#0d2217"/>
+    <!-- trees -->
+    <g opacity=".7">
+      <line x1="40" y1="80" x2="40" y2="30" stroke="#4a2d0d" stroke-width="5"/>
+      <ellipse cx="40" cy="28" rx="26" ry="16" fill="#1b4332"/>
+    </g>
+    <g opacity=".6">
+      <line x1="420" y1="75" x2="420" y2="20" stroke="#3d2008" stroke-width="6"/>
+      <ellipse cx="420" cy="18" rx="32" ry="20" fill="#2d6a4f"/>
+    </g>
+    <!-- Aslan (simple figure) -->
+    <g transform="translate(140, 45)">
+      <circle cx="10" cy="5" r="8" fill="#f4a261"/>
+      <rect x="4" y="13" width="12" height="16" rx="3" fill="#2e6096"/>
+      <line x1="4" y1="15" x2="-2" y2="26" stroke="#f4a261" stroke-width="3" stroke-linecap="round"/>
+      <line x1="16" y1="15" x2="22" y2="26" stroke="#f4a261" stroke-width="3" stroke-linecap="round"/>
+      <line x1="6" y1="29" x2="4" y2="42" stroke="#1565c0" stroke-width="3" stroke-linecap="round"/>
+      <line x1="14" y1="29" x2="16" y2="42" stroke="#1565c0" stroke-width="3" stroke-linecap="round"/>
+      <!-- hat -->
+      <path d="M2,5 L18,5 L15,0 L5,0 Z" fill="#1565c0"/>
+      <rect x="0" y="5" width="20" height="2" rx="1" fill="#1565c0"/>
+    </g>
+    <!-- T-Rex -->
+    <g class="dino-walk" transform="translate(260,10)">
+      <ellipse cx="45" cy="55" rx="38" ry="26" fill="#5a8a2e"/>
+      <path d="M28,34 Q22,14 30,4" stroke="#5a8a2e" stroke-width="14" fill="none" stroke-linecap="round"/>
+      <ellipse cx="34" cy="4" rx="19" ry="12" fill="#5a8a2e" transform="rotate(-8,34,4)"/>
+      <path d="M16,8 Q8,12 14,17 L24,14 Z" fill="#4a7a24" transform="rotate(-8,18,13)"/>
+      <circle cx="28" cy="1" r="4" fill="white"/>
+      <circle cx="29" cy="1.5" r="2.5" fill="#333"/>
+      <line x1="38" y1="76" x2="30" y2="96" stroke="#4a7a24" stroke-width="9" stroke-linecap="round"/>
+      <line x1="52" y1="76" x2="58" y2="97" stroke="#4a7a24" stroke-width="9" stroke-linecap="round"/>
+      <path d="M78,48 Q98,42 110,32" stroke="#5a8a2e" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <line x1="26" y1="40" x2="14" y2="50" stroke="#4a7a24" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <!-- speech bubble from T-Rex -->
+    <path d="M280,8 Q310,3 335,5 Q345,5 345,14 Q345,23 335,23 Q310,23 280,23 Q272,23 272,16 Q272,8 280,8 Z" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+    <text x="285" y="17" font-size="7.5" fill="white" font-family="Nunito,sans-serif">ROARRR... eh, ada serangga!</text>
+    <!-- ground label -->
+    <text x="250" y="97" fill="rgba(255,255,255,.2)" font-size="8" text-anchor="middle" font-family="Nunito,sans-serif">"Aslan bertemu T-Rex yang... sedang memperhatikan serangga 😄"</text>
+  </svg>
+
+  <div class="body-text">
+    Aslan belajar sesuatu yang penting hari itu: <strong>dinosaurus bukan monster jahat</strong> — mereka hanyalah makhluk yang hidup di zamannya sendiri, sama seperti kita hidup di zaman kita sekarang! 🌿
+  </div>
+</div>
+<div class="nav">
+  <button class="nav-btn btn-prev" onclick="go(-1)">← Sebelumnya</button>
+  <div class="dots" id="dot3"></div>
+  <button class="nav-btn btn-next" onclick="go(1)">Selanjutnya →</button>
+</div>
+</div>
+
+<!-- ╔══════ SLIDE 4 – PENJELASAN ZAMAN DINO ══════╗ -->
+<div class="slide" id="s4">
+<div class="card card-jungle">
+  <div class="sec-lbl">📖 Ilmu Purba</div>
+  <div class="slide-title">🦕 Berapa Lama Dinosaurus <span class="acc-g">Berkuasa?</span></div>
+
+  <div class="body-text" style="margin-bottom:16px">
+    Dinosaurus tidak muncul sekaligus! Ada tiga zaman besar yang perlu kamu ketahui...
+  </div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot">🌿</div>
+      <div class="tl-content">
+        <div class="tl-era">Zaman Trias – Awal Dinosaurus</div>
+        <div class="tl-age">252 – 201 Juta Tahun Lalu</div>
+        <div class="tl-text">Dinosaurus pertama muncul! Ukurannya masih kecil, setinggi manusia. Bumi masih menjadi satu benua besar bernama <strong style="color:var(--gold)">Pangaea</strong>. Udara panas dan kering.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot">🌊</div>
+      <div class="tl-content">
+        <div class="tl-era">Zaman Jura – Kejayaan Dinosaurus</div>
+        <div class="tl-age">201 – 145 Juta Tahun Lalu</div>
+        <div class="tl-text">Inilah era keemasan! Dinosaurus raksasa seperti <strong style="color:var(--gold)">Brachiosaurus</strong> dan <strong style="color:var(--gold)">Stegosaurus</strong> berkeliaran. Hutan tropis lebat. Dinosaurus terbang pertama muncul. Ini era film Jurassic Park! 🎬</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot">🌋</div>
+      <div class="tl-content">
+        <div class="tl-era">Zaman Kapur – Puncak dan Akhir</div>
+        <div class="tl-age">145 – 66 Juta Tahun Lalu</div>
+        <div class="tl-text"><strong style="color:var(--gold)">T-Rex</strong> dan <strong style="color:var(--gold)">Triceratops</strong> hidup di era ini! Bunga pertama bermekaran. Lalu... kepunahan besar terjadi 66 juta tahun lalu. 💥</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fact-box">
+    <div class="fact-ico">🔢</div>
+    <div class="fact-body"><strong>Bayangkan Ini!</strong><br>
+    T-Rex dan Brachiosaurus tidak hidup pada waktu yang sama. Waktu antara T-Rex dan Brachiosaurus lebih jauh daripada jarak kita dari T-Rex ke hari ini! Dinosaurus itu sangat <strong>beragam dan tersebar jauh dalam waktu</strong>. 🤯</div>
+  </div>
+</div>
+<div class="nav">
+  <button class="nav-btn btn-prev" onclick="go(-1)">← Sebelumnya</button>
+  <div class="dots" id="dot4"></div>
+  <button class="nav-btn btn-next" onclick="go(1)">Selanjutnya →</button>
+</div>
+</div>
+
+<!-- ╔══════ SLIDE 5 – JENIS DINOSAURUS INTERAKTIF ══════╗ -->
+<div class="slide" id="s5">
+<div class="card card-jungle">
+  <div class="sec-lbl">🦕 Galeri Dino</div>
+  <div class="slide-title">🌟 Kenalan dengan <span class="acc-g">Para Raja!</span></div>
+
+  <div class="body-text" style="margin-bottom:4px">
+    "Kapten Aslan menyalakan buku catatan digitalnya. <em>'Siapa saja penguasa Bumi ini?'</em> katanya penasaran..."
+  </div>
+
+  <div class="dino-grid">
+
+    <div class="dino-card" onclick="toggleDino(this)">
+      <div class="dc-scene">
+        <svg viewBox="0 0 100 85" width="90">
+          <!-- T-Rex mini -->
+          <ellipse cx="50" cy="55" rx="32" ry="23" fill="#5a8a2e"/>
+          <ellipse cx="50" cy="60" rx="22" ry="16" fill="#7ab350"/>
+          <path d="M34,38 Q28,20 36,10" stroke="#5a8a2e" stroke-width="12" fill="none" stroke-linecap="round"/>
+          <ellipse cx="38" cy="9" rx="18" ry="11" fill="#5a8a2e" transform="rotate(-8)"/>
+          <path d="M20,13 Q12,17 18,22 L28,18Z" fill="#4a7a24" transform="rotate(-8,22,16)"/>
+          <circle cx="32" cy="6" r="4" fill="white"/>
+          <circle cx="33" cy="6.5" r="2.5" fill="#111"/>
+          <line x1="38" y1="72" x2="30" y2="84" stroke="#4a7a24" stroke-width="8" stroke-linecap="round"/>
+          <line x1="56" y1="72" x2="62" y2="84" stroke="#4a7a24" stroke-width="8" stroke-linecap="round"/>
+          <path d="M76,50 Q90,44 98,35" stroke="#5a8a2e" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <line x1="32" y1="40" x2="20" y2="50" stroke="#4a7a24" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="dc-name">T-Rex 🦖</div>
+      <div class="dc-tag">Si Raja Menakutkan</div>
+      <div class="dc-info">Tyrannosaurus Rex hidup 68 juta tahun lalu. Tingginya 6 meter, beratnya 8 ton. Tapi telinganya sangat tajam! Lengannya memang kecil, tapi kakinya bisa berlari 20 km/jam. Ditemukan fosilnya di Amerika Utara. 🦕</div>
+    </div>
+
+    <div class="dino-card" onclick="toggleDino(this)">
+      <div class="dc-scene">
+        <svg viewBox="0 0 120 85" width="110">
+          <!-- Brachiosaurus -->
+          <ellipse cx="55" cy="62" rx="40" ry="20" fill="#8e5c9e"/>
+          <ellipse cx="55" cy="68" rx="28" ry="14" fill="#b47ac7"/>
+          <!-- long neck -->
+          <path d="M35,46 Q25,20 38,-10 Q42,-25 50,-38" stroke="#8e5c9e" stroke-width="13" fill="none" stroke-linecap="round"/>
+          <!-- head -->
+          <ellipse cx="50" cy="-40" rx="14" ry="8" fill="#8e5c9e" transform="rotate(10,50,-40)"/>
+          <circle cx="44" cy="-43" r="3" fill="white"/>
+          <circle cx="45" cy="-43" r="1.5" fill="#111"/>
+          <!-- legs 4 -->
+          <line x1="35" y1="78" x2="28" y2="84" stroke="#7a4d8e" stroke-width="8" stroke-linecap="round"/>
+          <line x1="48" y1="80" x2="44" y2="84" stroke="#7a4d8e" stroke-width="7" stroke-linecap="round"/>
+          <line x1="62" y1="80" x2="65" y2="84" stroke="#7a4d8e" stroke-width="7" stroke-linecap="round"/>
+          <line x1="75" y1="78" x2="82" y2="84" stroke="#7a4d8e" stroke-width="8" stroke-linecap="round"/>
+          <!-- tail -->
+          <path d="M90,56 Q108,50 118,40" stroke="#8e5c9e" stroke-width="10" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="dc-name">Brachiosaurus 🦒</div>
+      <div class="dc-tag">Si Leher Jerapah Raksasa</div>
+      <div class="dc-info">Dinosaurus pemakan daun tertinggi! Lehernya bisa mencapai 13 meter — setinggi gedung 4 lantai! Beratnya 60 ton, seperti 10 ekor gajah. Hidupnya santai, hanya makan daun pohon yang tinggi. 🌿</div>
+    </div>
+
+    <div class="dino-card" onclick="toggleDino(this)">
+      <div class="dc-scene">
+        <svg viewBox="0 0 110 80" width="100">
+          <!-- Triceratops -->
+          <ellipse cx="55" cy="55" rx="42" ry="22" fill="#c97b2e"/>
+          <ellipse cx="55" cy="60" rx="30" ry="16" fill="#e8a050"/>
+          <!-- head with frill -->
+          <ellipse cx="18" cy="42" rx="22" ry="18" fill="#c97b2e"/>
+          <!-- frill -->
+          <path d="M5,30 Q18,10 32,30" fill="#e86230" opacity=".8"/>
+          <!-- horns -->
+          <path d="M10,26 Q5,15 8,8" stroke="#8b5000" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M20,24 Q16,12 19,5" stroke="#8b5000" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M8,38 Q0,35 -3,32" stroke="#6b3d00" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <!-- eye -->
+          <circle cx="12" cy="36" r="4" fill="white"/>
+          <circle cx="13" cy="36" r="2.5" fill="#111"/>
+          <!-- mouth -->
+          <path d="M2,46 Q8,52 16,50" fill="none" stroke="#a0600a" stroke-width="2.5"/>
+          <!-- legs -->
+          <line x1="35" y1="74" x2="28" y2="80" stroke="#a06020" stroke-width="8" stroke-linecap="round"/>
+          <line x1="50" y1="76" x2="46" y2="80" stroke="#a06020" stroke-width="7" stroke-linecap="round"/>
+          <line x1="65" y1="76" x2="68" y2="80" stroke="#a06020" stroke-width="7" stroke-linecap="round"/>
+          <line x1="80" y1="74" x2="86" y2="80" stroke="#a06020" stroke-width="8" stroke-linecap="round"/>
+          <!-- tail -->
+          <path d="M92,50 Q106,44 110,36" stroke="#c97b2e" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <!-- spikes on tail -->
+          <circle cx="98" cy="47" r="3" fill="#8b5000"/>
+          <circle cx="105" cy="42" r="2.5" fill="#8b5000"/>
+        </svg>
+      </div>
+      <div class="dc-name">Triceratops 🦏</div>
+      <div class="dc-tag">Si Tiga Tanduk</div>
+      <div class="dc-info">Dino yang terlihat galak tapi sebenarnya pemakan tumbuhan! Tiga tanduknya bisa sepanjang 1 meter. Hidup bersama T-Rex, tapi sangat ahli membela diri. Kepalanya sepertiga dari panjang tubuhnya! 🌾</div>
+    </div>
+
+    <div class="dino-card" onclick="toggleDino(this)">
+      <div class="dc-scene">
+        <svg viewBox="0 0 110 80" width="100">
+          <!-- Pterosaur (flying) -->
+          <!-- wings -->
+          <path d="M55,40 Q20,20 5,10 Q20,35 55,40" fill="#6b9e3e" opacity=".9"/>
+          <path d="M55,40 Q90,20 105,10 Q90,35 55,40" fill="#6b9e3e" opacity=".9"/>
+          <!-- body -->
+          <ellipse cx="55" cy="42" rx="16" ry="9" fill="#5a8a2e"/>
+          <!-- neck + head -->
+          <path d="M46,36 Q38,28 32,24" stroke="#5a8a2e" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <ellipse cx="29" cy="22" rx="11" ry="7" fill="#5a8a2e" transform="rotate(-20,29,22)"/>
+          <!-- beak -->
+          <path d="M18,24 Q10,22 8,26 L20,28 Z" fill="#4a7a24"/>
+          <!-- eye -->
+          <circle cx="24" cy="20" r="3" fill="white"/>
+          <circle cx="25" cy="20" r="1.8" fill="#111"/>
+          <!-- crest -->
+          <path d="M30,16 Q35,5 40,4 Q38,14 30,16" fill="#e76f51"/>
+          <!-- tail with fin -->
+          <path d="M68,42 Q82,40 90,44" stroke="#4a7a24" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <ellipse cx="93" cy="45" rx="7" ry="4" fill="#5a8a2e" transform="rotate(20,93,45)"/>
+          <!-- legs hanging -->
+          <line x1="50" y1="49" x2="46" y2="60" stroke="#3d6e1a" stroke-width="3" stroke-linecap="round"/>
+          <line x1="60" y1="49" x2="63" y2="60" stroke="#3d6e1a" stroke-width="3" stroke-linecap="round"/>
+          <!-- clouds bg -->
+          <ellipse cx="15" cy="55" rx="18" ry="8" fill="rgba(255,255,255,.06)"/>
+          <ellipse cx="95" cy="65" rx="14" ry="6" fill="rgba(255,255,255,.05)"/>
+        </svg>
+      </div>
+      <div class="dc-name">Pterosaurus ✈️</div>
+      <div class="dc-tag">Si Penguasa Langit</div>
+      <div class="dc-info">Bukan dinosaurus sejati, tapi saudaranya! Reptil terbang pertama. Yang terbesar, Quetzalcoatlus, punya sayap selebar 10–11 meter — lebih lebar dari bus sekolah! Mereka memangsa ikan dari laut. 🐟</div>
+    </div>
+
+    <div class="dino-card" onclick="toggleDino(this)">
+      <div class="dc-scene">
+        <svg viewBox="0 0 110 85" width="100">
+          <!-- Velociraptor -->
+          <ellipse cx="50" cy="55" rx="28" ry="18" fill="#6b9e3e"/>
+          <ellipse cx="50" cy="60" rx="20" ry="12" fill="#8aba5e"/>
+          <!-- neck -->
+          <path d="M34,42 Q28,24 36,14" stroke="#6b9e3e" stroke-width="10" fill="none" stroke-linecap="round"/>
+          <!-- head -->
+          <ellipse cx="38" cy="13" rx="16" ry="9" fill="#6b9e3e" transform="rotate(-12,38,13)"/>
+          <!-- snout -->
+          <path d="M22,16 Q14,19 20,24 L30,21Z" fill="#5a8a2e" transform="rotate(-12,22,20)"/>
+          <!-- eye (big & cute) -->
+          <circle cx="32" cy="10" r="5" fill="white"/>
+          <circle cx="33" cy="10" r="3.5" fill="#1a1a00"/>
+          <circle cx="34" cy="9" r="1.5" fill="white"/>
+          <!-- feathers on head -->
+          <path d="M36,6 Q38,-2 42,0 Q40,6 36,6" fill="#e76f51"/>
+          <path d="M40,4 Q44,-4 48,-2 Q45,4 40,4" fill="#ffd166"/>
+          <!-- arms with claws -->
+          <path d="M36,42 Q26,38 22,44" stroke="#5a8a2e" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M22,44 L16,48 M22,44 L18,50" stroke="#3d6e1a" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- legs -->
+          <line x1="42" y1="70" x2="36" y2="82" stroke="#5a8a2e" stroke-width="7" stroke-linecap="round"/>
+          <line x1="36" y1="82" x2="28" y2="85" stroke="#4a7a24" stroke-width="5" stroke-linecap="round"/>
+          <!-- sickle claw -->
+          <path d="M32,84 Q26,80 24,75" stroke="#3d6e1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <line x1="56" y1="70" x2="62" y2="82" stroke="#5a8a2e" stroke-width="7" stroke-linecap="round"/>
+          <!-- tail with feathers -->
+          <path d="M74,50 Q90,44 100,34" stroke="#6b9e3e" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <path d="M90,40 Q96,30 100,28" stroke="#e76f51" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="dc-name">Velociraptor 🦅</div>
+      <div class="dc-tag">Si Cerdas Berbulu</div>
+      <div class="dc-info">Film Jurassic Park menggambarkannya raksasa, tapi aslinya seukuran kalkun! Yang luar biasa: ia punya <strong>bulu</strong> seperti burung, dan otaknya cukup besar. Ia adalah nenek moyang burung masa kini! 🐦</div>
+    </div>
+
+    <div class="dino-card" onclick="toggleDino(this)">
+      <div class="dc-scene">
+        <svg viewBox="0 0 110 80" width="100">
+          <!-- Stegosaurus -->
+          <ellipse cx="55" cy="60" rx="42" ry="17" fill="#c97b2e"/>
+          <ellipse cx="55" cy="65" rx="32" ry="12" fill="#e8a050"/>
+          <!-- neck+head (low, dumb look 😄) -->
+          <path d="M20,52 Q10,42 14,34" stroke="#c97b2e" stroke-width="10" fill="none" stroke-linecap="round"/>
+          <ellipse cx="14" cy="32" rx="14" ry="9" fill="#c97b2e" transform="rotate(-15,14,32)"/>
+          <path d="M2,33 Q-4,38 0,43 L10,40Z" fill="#a06020" transform="rotate(-15,2,38)"/>
+          <circle cx="8" cy="29" r="3.5" fill="white"/>
+          <circle cx="9" cy="29" r="2" fill="#111"/>
+          <!-- PLATES on back (signature!) -->
+          <path d="M30,44 Q30,25 34,18 Q38,25 38,44" fill="#e86230" opacity=".85"/>
+          <path d="M42,42 Q42,22 46,14 Q50,22 50,42" fill="#ff8c42" opacity=".85"/>
+          <path d="M54,42 Q54,20 58,12 Q62,20 62,42" fill="#e86230" opacity=".85"/>
+          <path d="M66,43 Q66,24 70,17 Q74,24 74,43" fill="#ff8c42" opacity=".85"/>
+          <path d="M76,46 Q76,30 80,24 Q84,30 84,46" fill="#e86230" opacity=".75"/>
+          <!-- tail spikes -->
+          <path d="M92,56 Q105,50 108,44" stroke="#c97b2e" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <path d="M105,48 Q112,40 113,35" stroke="#8b5000" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M100,54 Q108,48 112,50" stroke="#8b5000" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <!-- legs -->
+          <line x1="32" y1="74" x2="26" y2="80" stroke="#a06020" stroke-width="8" stroke-linecap="round"/>
+          <line x1="50" y1="76" x2="47" y2="80" stroke="#a06020" stroke-width="7" stroke-linecap="round"/>
+          <line x1="65" y1="76" x2="68" y2="80" stroke="#a06020" stroke-width="7" stroke-linecap="round"/>
+          <line x1="80" y1="74" x2="86" y2="80" stroke="#a06020" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="dc-name">Stegosaurus 🔺</div>
+      <div class="dc-tag">Si Papan Berjalan</div>
+      <div class="dc-info">Plat besar di punggungnya bukan untuk perlindungan — tapi untuk mengatur suhu tubuh! Otaknya sangat kecil, seukuran walnut. Tapi ekornya berduri tajam untuk mengusir pemangsa. Hidup 155 juta tahun lalu. 🌿</div>
+    </div>
+
+  </div>
+  <div style="text-align:center;color:rgba(255,255,255,.35);font-size:13px;font-style:italic;margin-top:6px">👆 Ketuk setiap dinosaurus untuk mengenal lebih dekat!</div>
+</div>
+<div class="nav">
+  <button class="nav-btn btn-prev" onclick="go(-1)">← Sebelumnya</button>
+  <div class="dots" id="dot5"></div>
+  <button class="nav-btn btn-next" onclick="go(1)">Selanjutnya →</button>
+</div>
+</div>
+
+<!-- ╔══════ SLIDE 6 – KEHIDUPAN ZAMAN DINO ══════╗ -->
+<div class="slide" id="s6">
+<div class="card card-sky">
+  <div class="sec-lbl sky-lbl">🌍 Dunia Purba</div>
+  <div class="slide-title">🌿 Bagaimana Dunia <span class="acc-g">Saat Itu?</span></div>
+
+  <div class="story-box">
+    "Aslan memandang sekelilingnya dengan kagum. Bumi ini sangat berbeda! Tidak ada padang rumput — yang ada hanya pakis raksasa, pohon cycad, dan tanaman-tanaman yang terlihat asing."
+  </div>
+
+  <div class="body-text" style="margin-bottom:16px">
+    Zaman dinosaurus adalah zaman yang <strong class="c-green">luar biasa berbeda</strong> dari Bumi kita sekarang...
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0">
+    <div class="fact-box" style="margin:0">
+      <div class="fact-ico">🌡️</div>
+      <div class="fact-body"><strong>Lebih Panas!</strong><br>Suhu rata-rata Bumi 4–10°C lebih hangat dari sekarang. Tidak ada es di kutub!</div>
+    </div>
+    <div class="fact-box" style="margin:0">
+      <div class="fact-ico">🌿</div>
+      <div class="fact-body"><strong>Tumbuhan Raksasa!</strong><br>Pohon Kauri dan cycad setinggi 30–40 meter. Hutan lebat di mana-mana.</div>
+    </div>
+    <div class="fact-box" style="margin:0">
+      <div class="fact-ico">🌊</div>
+      <div class="fact-body"><strong>Laut Lebih Tinggi!</strong><br>Permukaan laut jauh lebih tinggi. Daratan yang kita kenal sekarang banyak yang terendam air.</div>
+    </div>
+    <div class="fact-box" style="margin:0">
+      <div class="fact-ico">🦋</div>
+      <div class="fact-body"><strong>Serangga Raksasa!</strong><br>Capung dengan sayap selebar 70 cm! Kecoak sebesar piring makan. Udara kaya oksigen membuat mereka tumbuh besar.</div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <div class="fact-ico">🐟</div>
+    <div class="fact-body"><strong>Di Laut Pun Raksasa!</strong><br>
+    Sementara dinosaurus menguasai daratan, laut dikuasai <strong>Mosasaurus</strong> (predator laut sebesar bus) dan <strong>Plesiosaur</strong> (yang konon menginspirasi legenda Loch Ness). Langit dikuasai Pterosaur. Bumi benar-benar dikuasai reptil dari semua penjuru! 🌊</div>
+  </div>
+</div>
+<div class="nav">
+  <button class="nav-btn btn-prev" onclick="go(-1)">← Sebelumnya</button>
+  <div class="dots" id="dot6"></div>
+  <button class="nav-btn btn-next" onclick="go(1)">Selanjutnya →</button>
+</div>
+</div>
+
+<!-- ╔══════ SLIDE 7 – ASTEROID INTERAKTIF ══════╗ -->
+<div class="slide" id="s7">
+<div class="card card-dusk">
+  <div class="sec-lbl fire-lbl">☄️ Peristiwa Besar</div>
+  <div class="slide-title">💥 Hari yang <span class="acc-r">Mengubah Segalanya!</span></div>
+
+  <div class="body-text" style="margin-bottom:10px">
+    "66 juta tahun lalu... langit tiba-tiba bersinar lebih terang dari matahari. Aslan merasakan getaran yang mengguncang Bumi. <em>'Apa itu?!'</em> serunya..."
+  </div>
+
+  <!-- ASTEROID INTERACTIVE ZONE -->
+  <div class="asteroid-zone" id="az" onclick="hitAsteroid()">
+    <div class="explosion" id="exp"></div>
+
+    <svg class="asteroid-svg" id="asteroidSvg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="rockGrad" cx="40%" cy="35%" r="60%">
+          <stop offset="0%" stop-color="#c0a070"/>
+          <stop offset="100%" stop-color="#5a4020"/>
+        </radialGradient>
+        <radialGradient id="fireGrad" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stop-color="#ffcc00"/>
+          <stop offset="60%" stop-color="#ff6600"/>
+          <stop offset="100%" stop-color="#cc0000"/>
+        </radialGradient>
+      </defs>
+      <!-- fire trail -->
+      <path d="M70,20 L90,0" stroke="url(#fireGrad)" stroke-width="8" stroke-linecap="round" opacity=".8"/>
+      <path d="M68,25 L92,5" stroke="#ff8800" stroke-width="5" stroke-linecap="round" opacity=".5"/>
+      <!-- asteroid body -->
+      <path d="M30,12 Q55,5 75,20 Q90,38 85,60 Q78,78 60,82 Q38,88 22,72 Q5,55 10,35 Q15,15 30,12 Z" fill="url(#rockGrad)"/>
+      <!-- craters -->
+      <ellipse cx="45" cy="40" rx="10" ry="7" fill="rgba(0,0,0,.25)"/>
+      <ellipse cx="62" cy="55" rx="6" ry="4" fill="rgba(0,0,0,.2)"/>
+      <ellipse cx="35" cy="58" rx="5" ry="3" fill="rgba(0,0,0,.18)"/>
+      <!-- highlight -->
+      <ellipse cx="38" cy="30" rx="12" ry="7" fill="rgba(255,255,255,.15)" transform="rotate(-20,38,30)"/>
+      <!-- glow -->
+      <circle cx="47" cy="47" r="44" fill="none" stroke="rgba(255,150,0,.15)" stroke-width="3"/>
+      <!-- size indicator -->
+      <text x="47" y="100" fill="rgba(255,200,100,.6)" font-size="7" text-anchor="middle" font-family="Nunito,sans-serif">15 km lebar ↕</text>
+    </svg>
+
+    <div style="font-family:'Fredoka One',cursive;font-size:18px;color:var(--gold);margin-bottom:4px">Ketuk Asteroid Ini!</div>
+    <div class="az-hint" id="azHint">☄️ Apa yang terjadi saat asteroid raksasa ini menghantam Bumi?</div>
+    <div class="az-reveal" id="azReveal">
+      💥 <strong style="color:#ff8c69">SEBUAH ASTEROID SELEBAR 15 KM</strong> menghantam Bumi di wilayah yang kini disebut Meksiko (Chicxulub), 66 juta tahun lalu! Dampaknya:<br><br>
+      🔥 Suhu permukaan naik ribuan derajat dalam hitungan menit<br>
+      🌊 Tsunami setinggi 1,6 km menyapu pantai seluruh dunia<br>
+      🌫️ Debu menutupi seluruh langit selama bertahun-tahun<br>
+      ❄️ "Musim dingin nuklir" membunuh tumbuhan dan hewan<br>
+      🌋 Letusan gunung berapi masif memperparah keadaan<br><br>
+      <em style="color:rgba(255,255,255,.6)">Akibatnya: 75% spesies di Bumi, termasuk semua dinosaurus non-unggas, musnah selamanya! 😢</em>
+    </div>
+  </div>
+</div>
+<div class="nav">
+  <button class="nav-btn btn-prev" onclick="go(-1)">← Sebelumnya</button>
+  <div class="dots" id="dot7"></div>
+  <button class="nav-btn btn-next fire-btn" onclick="go(1)">Selanjutnya →</button>
+</div>
+</div>
+
+<!-- ╔══════ SLIDE 8 – KEPUNAHAN ══════╗ -->
+<div class="slide" id="s8">
+<div class="card card-dusk">
+  <div class="sec-lbl fire-lbl">🌋 Kepunahan</div>
+  <div class="slide-title">🌑 Akhir Zaman <span class="acc-r">Dinosaurus</span></div>
+
+  <div class="story-box">
+    "Aslan berdiri di puncak bukit dan memandang langit yang kini berwarna oranye kelam. <em>'Ini... sangat sedih,'</em> bisiknya. <em>'Tapi,'</em> kata suara di telinganya — suara masa depan — <em>'dari akhir ini, lahirlah awal yang lain.'</em>"
+  </div>
+
+  <div class="body-text" style="margin-bottom:16px">
+    Kepunahan dinosaurus bukan hanya tragedy — ini adalah <strong class="c-amber">titik balik terbesar</strong> dalam sejarah makhluk hidup di Bumi. Mari kita pahami betul apa yang terjadi...
+  </div>
+
+  <ul class="lesson-list" style="gap:10px">
+    <li>
+      <span class="li-ico">🌑</span>
+      <div><strong>Selama Berbulan-bulan Tanpa Matahari</strong>Debu dan asap tebal menutupi seluruh langit Bumi. Tanpa cahaya matahari, hampir semua tanaman mati. Hewan-hewan pemakan tanaman kelaparan. Lalu predator yang memakan mereka pun ikut mati.</div>
+    </li>
+    <li>
+      <span class="li-ico">🐊</span>
+      <div><strong>Yang Selamat: Hewan Kecil dan Adaptif</strong>Makhluk kecil seperti tikus kecil (mamalia), buaya, penyu, dan beberapa reptil berhasil bertahan! Mereka bisa hidup dari biji-bijian, bangkai, dan bersembunyi di dalam tanah atau air.</div>
+    </li>
+    <li>
+      <span class="li-ico">🦅</span>
+      <div><strong>Burung = Dinosaurus yang Selamat!</strong>Para ilmuwan sudah membuktikan: burung modern adalah keturunan langsung theropod — kelompok dinosaurus berbulu! Jadi dinosaurus tidak benar-benar punah. Mereka terbang di langit kita setiap hari! 🐦</div>
+    </li>
+    <li>
+      <span class="li-ico">🌱</span>
+      <div><strong>Bumi Perlahan Pulih Kembali</strong>Dalam ribuan tahun berikutnya, tanaman tumbuh lagi. Mamalia yang selamat mulai berkembang biak dengan cepat. Era baru di Bumi pun dimulai!</div>
+    </li>
+  </ul>
+</div>
+<div class="nav">
+  <button class="nav-btn btn-prev" onclick="go(-1)">← Sebelumnya</button>
+  <div class="dots" id="dot8"></div>
+  <button class="nav-btn btn-next fire-btn" onclick="go(1)">Selanjutnya →</button>
+</div>
+</div>
+
+<!-- ╔══════ SLIDE 9 – MENGAPA PENTING ══════╗ -->
+<div class="slide" id="s9">
+<div class="card card-rebirth">
+  <div class="sec-lbl">🌱 Pentingnya</div>
+  <div class="slide-title">🤔 Mengapa Ini Penting <span class="acc-g">Bagi Kita?</span></div>
+
+  <div class="story-box">
+    "Aslan duduk di bawah pohon pakis yang mulai tumbuh kembali. <em>'Jadi... kalau dinosaurus tidak punah...'</em> pikirnya pelan. <em>'...maka mamalia kecil itu tidak punya kesempatan untuk berkembang... dan kita tidak akan pernah ada!'</em>"
+  </div>
+
+  <div class="body-text" style="margin-bottom:14px">
+    Inilah salah satu pelajaran terbesar dari sejarah: <strong class="c-green">setiap akhir adalah awal yang baru</strong>. Kepunahan dinosaurus membuka pintu bagi evolusi mamalia — dan akhirnya, manusia!
+  </div>
+
+  <div class="before-after">
+    <div class="ba-col green-col">
+      <div class="ba-head g">🦕 Dunia Dinosaurus</div>
+      <div class="ba-item"><span>👑</span><span>Reptil raksasa mendominasi semua ekosistem</span></div>
+      <div class="ba-item"><span>🐭</span><span>Mamalia kecil bersembunyi di celah-celah batu</span></div>
+      <div class="ba-item"><span>🌿</span><span>Hutan tropis menutupi hampir seluruh benua</span></div>
+      <div class="ba-item"><span>🌡️</span><span>Bumi hangat, tidak ada es di kutub</span></div>
+    </div>
+    <div class="ba-arr">→</div>
+    <div class="ba-col mammal-col">
+      <div class="ba-head y">🐾 Setelah Kepunahan</div>
+      <div class="ba-item"><span>🐘</span><span>Mamalia tumbuh besar & menguasai Bumi</span></div>
+      <div class="ba-item"><span>🐵</span><span>Primata muncul, lalu berkembang menjadi kera</span></div>
+      <div class="ba-item"><span>🌸</span><span>Bunga dan rerumputan menyebar di seluruh Bumi</span></div>
+      <div class="ba-item"><span>🧠</span><span>Otak besar berkembang → menuju manusia!</span></div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <div class="fact-ico">💡</div>
+    <div class="fact-body"><strong>Hubungannya dengan Kita!</strong><br>
+    Nenek moyangmu yang pertama — mamalia kecil berbulu seukuran tikus — berhasil selamat dari kepunahan itu. <strong>Karena mereka selamat, kamu ada di sini sekarang</strong>. Kita semua berutang budi pada nenek moyang kecil dan pemberani itu! 🐭💛</div>
+  </div>
+</div>
+<div class="nav">
+  <button class="nav-btn btn-prev" onclick="go(-1)">← Sebelumnya</button>
+  <div class="dots" id="dot9"></div>
+  <button class="nav-btn btn-next" onclick="go(1)">Selanjutnya →</button>
+</div>
+</div>
+
+<!-- ╔══════ SLIDE 10 – FAKTA FUN ══════╗ -->
+<div class="slide" id="s10">
+<div class="card card-jungle">
+  <div class="sec-lbl">🤩 Fakta Seru</div>
+  <div class="slide-title">💎 Fakta <span class="acc-f">Mengagumkan</span> tentang Dino!</div>
+
+  <div class="body-text" style="margin-bottom:14px">
+    "Paman Waktu yang menemani Aslan dalam petualangannya membuka buku tebal dan mulai membacakan fakta-fakta yang membuat Aslan tercengang!"
+  </div>
+
+  <ul class="lesson-list">
+    <li>
+      <span class="li-ico">🔬</span>
+      <div><strong>Ditemukan dari Fosil</strong>Semua yang kita tahu tentang dinosaurus berasal dari fosil — tulang, gigi, dan jejak yang membatu jutaan tahun lalu. Ilmuwan yang mempelajari ini disebut <strong style="color:var(--gold)">Paleontolog</strong>. Kamu bisa jadi salah satunya!</div>
+    </li>
+    <li>
+      <span class="li-ico">🐔</span>
+      <div><strong>Ayam adalah Saudara T-Rex!</strong>Tes DNA membuktikan bahwa ayam dan burung modern adalah kerabat terdekat T-Rex yang masih hidup. Jadi, setiap kali kamu makan ayam... kamu sedang makan saudara jauh Raja Dinosaurus! 😄</div>
+    </li>
+    <li>
+      <span class="li-ico">🥚</span>
+      <div><strong>Semua Dinosaurus Bertelur</strong>Seperti burung dan reptil, semua dinosaurus bertelur. Telur dinosaurus terbesar yang ditemukan berdiameter 45 cm. Tapi yang paling lucu: bayi T-Rex pasti imut banget saat baru menetas! 🥚</div>
+    </li>
+    <li>
+      <span class="li-ico">🗺️</span>
+      <div><strong>Fosil Ada di Seluruh Dunia!</strong>Dinosaurus menguasai seluruh Bumi — termasuk Indonesia! Fosil dinosaurus ditemukan di Kalimantan. Bumi kita punya sejarah yang sangat kaya! 🌏</div>
+    </li>
+  </ul>
+</div>
+<div class="nav">
+  <button class="nav-btn btn-prev" onclick="go(-1)">← Sebelumnya</button>
+  <div class="dots" id="dot10"></div>
+  <button class="nav-btn btn-next" onclick="go(1)">Selanjutnya →</button>
+</div>
+</div>
+
+<!-- ╔══════ SLIDE 11 – PELAJARAN HARI INI ══════╗ -->
+<div class="slide" id="s11">
+<div class="card card-jungle">
+  <div class="sec-lbl gold-lbl">⭐ Pelajaran</div>
+  <div class="slide-title">📖 Yang Kamu Pelajari <span class="acc-f">Hari Ini!</span></div>
+
+  <div class="story-box">
+    "Aslan kembali ke mesin waktunya dengan senyum lebar. Di tangannya ada buku catatan yang penuh coretan — fakta tentang T-Rex, Brachiosaurus, asteroid, dan rahasia terbesar: bahwa dari kehancuran, lahirlah kita."
+  </div>
+
+  <ul class="lesson-list">
+    <li>
+      <span class="li-ico">🦕</span>
+      <div><strong>Dinosaurus Hidup 165 Juta Tahun</strong>Mereka adalah makhluk yang luar biasa sukses — berkuasa jauh lebih lama dari yang bisa kita bayangkan. Manusia baru ada 300.000 tahun!</div>
+    </li>
+    <li>
+      <span class="li-ico">🌍</span>
+      <div><strong>Bumi Zaman Dino Sangat Berbeda</strong>Lebih panas, lebih lembap, tumbuhan raksasa, serangga besar, dan tidak ada es di kutub. Bumi selalu berubah!</div>
+    </li>
+    <li>
+      <span class="li-ico">☄️</span>
+      <div><strong>Asteroid Mengakhiri Zaman Mereka</strong>66 juta tahun lalu, asteroid raksasa menghantam Bumi dan menyebabkan kepunahan massal. 75% spesies musnah dalam waktu singkat.</div>
+    </li>
+    <li>
+      <span class="li-ico">🐦</span>
+      <div><strong>Burung adalah Dinosaurus!</strong>Dinosaurus berbulu (theropod) berevolusi menjadi burung. Setiap kali melihat burung, ingatlah bahwa itu adalah warisan hidup dari zaman purba!</div>
+    </li>
+    <li>
+      <span class="li-ico">🐭</span>
+      <div><strong>Mamalia Kecil Adalah Nenek Moyangmu!</strong>Karena dinosaurus punah, mamalia kecil yang selamat itu bisa berkembang. Itu adalah nenek moyang jauh kita — termasuk kamu, Kapten Aslan!</div>
+    </li>
+    <li>
+      <span class="li-ico">🌱</span>
+      <div><strong>Akhir Selalu Membuka Awal Baru</strong>Pelajaran terbesar: setiap kepunahan membuka peluang bagi kehidupan baru. Ini berlaku dalam sejarah Bumi, dan juga dalam kehidupan kita!</div>
+    </li>
+  </ul>
+</div>
+<div class="nav">
+  <button class="nav-btn btn-prev" onclick="go(-1)">← Sebelumnya</button>
+  <div class="dots" id="dot11"></div>
+  <button class="nav-btn btn-next" onclick="go(1)">Selanjutnya →</button>
+</div>
+</div>
+
+<!-- ╔══════ SLIDE 12 – TANTANGAN ══════╗ -->
+<div class="slide" id="s12">
+<div class="card card-jungle">
+  <div class="sec-lbl">🎯 Misi Kapten</div>
+  <div class="slide-title">🏆 Tantangan Hari Ini untuk <span class="acc-g">Aslan!</span></div>
+
+  <div class="story-box">
+    "'Kapten Aslan!' seru Paman Waktu. 'Kamu tidak bisa hanya melihat — kamu harus <em>merasakan</em> zaman ini! Ini misi spesialmu...'"
+  </div>
+
+  <div class="challenge-card">
+    <div class="ch-title">🦕 Misi Penjelajah Zaman Purba</div>
+
+    <div class="ch-item">
+      <div class="chk" onclick="cek(this)"></div>
+      <div>Gambar dinosaurus favoritmu hari ini! Bisa T-Rex, Triceratops, atau yang lain. Tidak perlu bagus — yang penting kamu mencoba! 🎨</div>
+    </div>
+    <div class="ch-item">
+      <div class="chk" onclick="cek(this)"></div>
+      <div>Tanyakan kepada orang tua atau guru: <em>"Dinosaurus apa yang paling terkenal menurut kamu, dan mengapa?"</em> Catat jawabannya! 📝</div>
+    </div>
+    <div class="ch-item">
+      <div class="chk" onclick="cek(this)"></div>
+      <div>Perhatikan seekor burung hari ini. Ingat bahwa ia adalah keturunan dinosaurus! Coba ceritakan kepada orang di sekitarmu fakta ini. 🐦</div>
+    </div>
+    <div class="ch-item">
+      <div class="chk" onclick="cek(this)"></div>
+      <div>Bayangkan jika asteroid tidak pernah menghantam Bumi — tuliskan 3 hal yang mungkin berbeda sekarang! 💭</div>
+    </div>
+    <div class="ch-item">
+      <div class="chk" onclick="cek(this)"></div>
+      <div>Cari tahu: apa nama ilmuwan yang mempelajari dinosaurus? (Petunjuk: dimulai huruf 'P') 🔬</div>
+    </div>
+  </div>
+
+  <div class="done-msg" id="doneMission">
+    🎉 Luar biasa, Kapten Aslan! Kamu adalah Penjelajah Waktu sejati! 🦕⭐
+  </div>
+</div>
+<div class="nav">
+  <button class="nav-btn btn-prev" onclick="go(-1)">← Sebelumnya</button>
+  <div class="dots" id="dot12"></div>
+  <button class="nav-btn btn-next" onclick="go(1)">Selanjutnya →</button>
+</div>
+</div>
+
+<!-- ╔══════ SLIDE 13 – TEASER HARI 5 ══════╗ -->
+<div class="slide" id="s13">
+<div class="card card-rebirth">
+  <div class="sec-lbl">🔭 Besok</div>
+  <div class="slide-title">🐾 Hari 5: <span class="acc-g">Kemunculan Mamalia dan Primata!</span></div>
+
+  <div class="story-box">
+    "Aslan melompat kembali ke Kotak Coklatnya dan mengatur indikator waktu: maju 60 juta tahun. Di luar jendelanya, ia bisa melihat sesuatu baru muncul di antara pepohonan yang tumbuh kembali... makhluk-makhluk berbulu kecil yang bergerak gesit... <em>'Apakah itu... nenek moyang saya?'</em> bisiknya dengan takjub dan senyum lebar."
+  </div>
+
+  <div class="teaser-grid" style="max-width:100%;grid-template-columns:repeat(3,1fr)">
+    <div class="teaser-c">
+      <div class="tc-ico">🐭</div>
+      <div class="tc-lbl">Mamalia Bertahan</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:4px">Siapa saja yang selamat?</div>
+    </div>
+    <div class="teaser-c">
+      <div class="tc-ico">🐵</div>
+      <div class="tc-lbl">Primata Pertama</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:4px">Kapan mereka muncul?</div>
+    </div>
+    <div class="teaser-c">
+      <div class="tc-ico">🌸</div>
+      <div class="tc-lbl">Bumi Baru</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:4px">Dunia setelah dino!</div>
+    </div>
+  </div>
+
+  <div class="fact-box" style="margin-top:8px">
+    <div class="fact-ico">🚀</div>
+    <div class="fact-body"><strong>Siapkan Dirimu!</strong><br>
+    Besok kita akan menyaksikan kebangkitan makhluk-makhluk yang menjadi nenek moyang langsung kita. Dari mamalia mungil, perlahan-lahan akan lahir <strong>primata — dan suatu saat, manusia!</strong> Petualangan paling menarik ada di depan! 🐾🌟</div>
+  </div>
+</div>
+<div class="nav">
+  <button class="nav-btn btn-prev" onclick="go(-1)">← Sebelumnya</button>
+  <div class="dots" id="dot13"></div>
+  <button class="nav-btn btn-next" onclick="go(1)">Ke Halaman Terakhir →</button>
+</div>
+</div>
+
+<!-- ╔══════ SLIDE 14 – PENUTUP ══════╗ -->
+<div class="slide" id="s14">
+<div class="card cover-card closing-card">
+  <div style="font-size:70px;animation:dinoWalk 2s ease-in-out infinite">🦕</div>
+
+  <div class="day-badge">🎉 Hari 4 Selesai!</div>
+
+  <div class="cover-title">
+    Penjelajah Hebat,
+    <span class="hl-fire">Kapten Aslan!</span>
+  </div>
+
+  <div class="quote-box">
+    "Dinosaurus mungkin sudah lama pergi, tapi mereka meninggalkan warisan yang luar biasa — tanpa mereka berkuasa selama 165 juta tahun, dan tanpa asteroid yang mengakhirinya, kamu tidak akan pernah ada, Kapten Aslan!"
+  </div>
+
+  <div style="color:rgba(255,255,255,.6);font-size:14px;margin:4px 0">Berikan bintang untuk petualangan hari ini:</div>
+  <div class="star-row" id="starRow">
+    <span class="star-b" onclick="bintang(1)">⭐</span>
+    <span class="star-b" onclick="bintang(2)">⭐</span>
+    <span class="star-b" onclick="bintang(3)">⭐</span>
+    <span class="star-b" onclick="bintang(4)">⭐</span>
+    <span class="star-b" onclick="bintang(5)">⭐</span>
+  </div>
+  <div id="starMsg" style="color:var(--gold);font-family:'Fredoka One',cursive;font-size:16px;min-height:26px"></div>
+
+  <div class="capt-badge" style="margin-top:10px">
+    <span style="font-size:24px">🧢</span>
+    <span>Kapten <strong>Aslan</strong> – Penjelajah Zaman Purba</span>
+  </div>
+
+  <div style="color:rgba(255,255,255,.3);font-size:13px;margin-top:14px">Besok: Hari 5 – Kemunculan Mamalia dan Primata 🐾</div>
+</div>
+<div class="nav">
+  <button class="nav-btn btn-prev" onclick="go(-1)">← Sebelumnya</button>
+  <div class="dots" id="dot14"></div>
+  <button class="nav-btn btn-next" onclick="restart()">🏠 Baca Ulang</button>
+</div>
+</div>
+
+</div><!-- /book -->
+
+<script>
+/* ══════════════════════════════════
+   STATE
+══════════════════════════════════ */
+const TOTAL = 14;
+let cur = 1;
+let tickCount = 0;
+let azHit = false;
+
+/* ══════════════════════════════════
+   NAVIGATION
+══════════════════════════════════ */
+function updateUI(){
+  // slides
+  document.querySelectorAll('.slide').forEach((s,i)=>s.classList.toggle('active',i+1===cur));
+  // progress
+  document.getElementById('prog').style.width=(cur/TOTAL*100)+'%';
+  // indicator
+  document.getElementById('pNum').textContent=cur;
+  // dots
+  for(let i=1;i<=TOTAL;i++){
+    const d=document.getElementById('dot'+i);
+    if(d)renderDots(d);
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderDots(el){
+  el.innerHTML='';
+  for(let i=1;i<=TOTAL;i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i===cur?' on':'');
+    d.onclick=()=>{cur=i;updateUI()};
+    el.appendChild(d);
+  }
+}
+
+function go(dir){
+  const n=cur+dir;
+  if(n>=1&&n<=TOTAL){cur=n;updateUI()}
+}
+function restart(){cur=1;updateUI()}
+
+/* ══════════════════════════════════
+   DINO CARDS
+══════════════════════════════════ */
+function toggleDino(el){
+  const wasOpen=el.classList.contains('open');
+  document.querySelectorAll('.dino-card').forEach(c=>c.classList.remove('open'));
+  if(!wasOpen)el.classList.add('open');
+}
+
+/* ══════════════════════════════════
+   ASTEROID
+══════════════════════════════════ */
+function hitAsteroid(){
+  if(azHit){
+    // reset
+    const z=document.getElementById('az');
+    z.classList.remove('impact');
+    document.getElementById('azHint').textContent='☄️ Apa yang terjadi saat asteroid raksasa ini menghantam Bumi?';
+    azHit=false;
+    return;
+  }
+  const z=document.getElementById('az');
+  z.classList.add('impact');
+  document.getElementById('azHint').textContent='💥 DAHSYAT! Ketuk lagi untuk reset';
+  // trigger explosion
+  const exp=document.getElementById('exp');
+  exp.style.display='block';
+  setTimeout(()=>exp.style.display='none',900);
+  azHit=true;
+}
+
+/* ══════════════════════════════════
+   CHALLENGE CHECKBOXES
+══════════════════════════════════ */
+function cek(el){
+  if(el.classList.contains('done')){
+    el.classList.remove('done');el.textContent='';tickCount=Math.max(0,tickCount-1);
+  }else{
+    el.classList.add('done');el.textContent='✓';tickCount++;
+  }
+  document.getElementById('doneMission').style.display=tickCount>=5?'block':'none';
+}
+
+/* ══════════════════════════════════
+   STAR RATING
+══════════════════════════════════ */
+const msgs=['','Baru mulai menjelajah! 🌿','Terus semangat, Kapten! ⚡','Penjelajah yang handal! 🦕','Hampir jadi ahli! 🌟','Kapten Cerdas Sejati! 🏆'];
+function bintang(n){
+  document.querySelectorAll('.star-b').forEach((s,i)=>s.classList.toggle('on',i<n));
+  document.getElementById('starMsg').textContent=msgs[n];
+}
+
+/* ══════════════════════════════════
+   BACKGROUND PARTICLES
+══════════════════════════════════ */
+function buildBG(){
+  const bg=document.getElementById('worldBg');
+  // leaf particles
+  const leaves=['🍃','🌿','🍂','🌱'];
+  for(let i=0;i<10;i++){
+    const l=document.createElement('div');
+    l.className='leaf-p';
+    l.textContent=leaves[Math.floor(Math.random()*leaves.length)];
+    l.style.cssText=`left:${Math.random()*100}%;font-size:${12+Math.random()*10}px;animation-duration:${10+Math.random()*10}s;animation-delay:${Math.random()*8}s;`;
+    bg.appendChild(l);
+  }
+  // stars (tiny)
+  for(let i=0;i<40;i++){
+    const s=document.createElement('div');
+    s.className='star-p';
+    const sz=Math.random()*2.5+0.8;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*60}%;left:${Math.random()*100}%;animation-duration:${2+Math.random()*3}s;animation-delay:${Math.random()*4}s`;
+    bg.appendChild(s);
+  }
+}
+
+/* ══════════════════════════════════
+   KEYBOARD + SWIPE
+══════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+document.addEventListener('touchend',e=>{
+  const d=tx-e.changedTouches[0].clientX;
+  if(Math.abs(d)>50)d>0?go(1):go(-1);
+});
+
+/* ══ INIT ══ */
+buildBG();
+updateUI();
+</script>
+</body>
+</html>

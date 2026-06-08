@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flip 29 – Coding di Tahun 2035 | Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cyan:  #00D4FF;
+    --purple: #A855F7;
+    --pink:  #FF2D78;
+    --dark:  #050A18;
+    --dark2: #0A1628;
+    --dark3: #0D1F3C;
+    --white: #F0FAFF;
+    --glow-cyan: 0 0 18px #00D4FF99;
+    --glow-purple: 0 0 18px #A855F799;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;overflow:hidden;background:var(--dark);font-family:'Plus Jakarta Sans',sans-serif;color:var(--white);}
+
+  /* ── STARS BACKGROUND ── */
+  #stars-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+  /* ── TOP BAR ── */
+  #topbar{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 16px;
+    background:linear-gradient(180deg,rgba(5,10,24,.95) 0%,rgba(5,10,24,.7) 100%);
+    border-bottom:1px solid rgba(0,212,255,.2);
+    backdrop-filter:blur(8px);
+    height:54px;
+  }
+  #topbar .back-btn{
+    display:flex;align-items:center;gap:6px;
+    text-decoration:none;color:var(--cyan);
+    font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;
+    background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.35);
+    border-radius:40px;padding:6px 14px;
+    transition:.25s;letter-spacing:.3px;
+  }
+  #topbar .back-btn:hover{background:rgba(0,212,255,.2);box-shadow:var(--glow-cyan);}
+  #topbar .back-btn svg{flex-shrink:0;}
+  #topbar .flip-label{
+    font-family:'Fredoka One',cursive;font-size:15px;
+    background:linear-gradient(90deg,var(--cyan),var(--purple));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    letter-spacing:.5px;
+  }
+  #topbar .page-counter{
+    font-size:12px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.5px;
+  }
+
+  /* ── FLIPBOOK WRAPPER ── */
+  #flipbook{
+    position:fixed;top:54px;bottom:68px;left:0;right:0;
+    overflow:hidden;z-index:10;
+  }
+
+  /* ── PAGES ── */
+  .page{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    padding:18px 16px 12px;
+    opacity:0;pointer-events:none;
+    transition:opacity .45s ease, transform .45s ease;
+    transform:translateX(60px);
+    overflow-y:auto;
+    scrollbar-width:thin;scrollbar-color:rgba(0,212,255,.3) transparent;
+  }
+  .page.active{opacity:1;pointer-events:auto;transform:translateX(0);}
+  .page.exit-left{opacity:0;transform:translateX(-60px);}
+
+  /* ── BOTTOM NAV ── */
+  #bottomnav{
+    position:fixed;bottom:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 16px;
+    background:linear-gradient(0deg,rgba(5,10,24,.97) 0%,rgba(5,10,24,.7) 100%);
+    border-top:1px solid rgba(0,212,255,.2);
+    backdrop-filter:blur(8px);height:68px;
+  }
+  .nav-btn{
+    display:flex;align-items:center;gap:6px;
+    border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;
+    border-radius:40px;padding:10px 20px;transition:.25s;
+    letter-spacing:.3px;
+  }
+  .nav-btn.prev{background:rgba(168,85,247,.15);color:var(--purple);border:1px solid rgba(168,85,247,.4);}
+  .nav-btn.prev:hover{background:rgba(168,85,247,.3);box-shadow:var(--glow-purple);}
+  .nav-btn.next{background:rgba(0,212,255,.15);color:var(--cyan);border:1px solid rgba(0,212,255,.4);}
+  .nav-btn.next:hover{background:rgba(0,212,255,.3);box-shadow:var(--glow-cyan);}
+  .nav-btn:disabled{opacity:.25;cursor:not-allowed;}
+  .progress-dots{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:160px;}
+  .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);transition:.3s;cursor:pointer;}
+  .dot.active{background:var(--cyan);box-shadow:0 0 8px var(--cyan);transform:scale(1.35);}
+
+  /* ── SHARED COMPONENTS ── */
+  .page-title{
+    font-family:'Fredoka One',cursive;font-size:clamp(22px,5.5vw,34px);
+    text-align:center;line-height:1.15;margin-bottom:10px;
+    background:linear-gradient(135deg,var(--cyan),var(--purple));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .page-subtitle{
+    font-size:clamp(11px,3vw,14px);text-align:center;
+    color:rgba(255,255,255,.6);margin-bottom:14px;font-weight:600;letter-spacing:.4px;
+  }
+  .card{
+    width:100%;max-width:500px;
+    background:rgba(13,31,60,.7);border:1px solid rgba(0,212,255,.18);
+    border-radius:18px;padding:16px;margin-bottom:12px;
+    backdrop-filter:blur(6px);
+    box-shadow:0 4px 24px rgba(0,0,0,.4);
+  }
+  .card-cyan{border-color:rgba(0,212,255,.3);}
+  .card-purple{border-color:rgba(168,85,247,.3);}
+  .card-pink{border-color:rgba(255,45,120,.3);}
+  .body-text{font-size:clamp(12px,3.2vw,15px);line-height:1.7;color:rgba(255,255,255,.88);}
+  .highlight{color:var(--cyan);font-weight:800;}
+  .highlight-purple{color:var(--purple);font-weight:800;}
+  .highlight-pink{color:var(--pink);font-weight:800;}
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;
+    border-radius:30px;padding:5px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;margin:4px;
+    transition:.2s;cursor:default;
+  }
+  .badge-cyan{background:rgba(0,212,255,.15);color:var(--cyan);border:1px solid rgba(0,212,255,.35);}
+  .badge-purple{background:rgba(168,85,247,.15);color:var(--purple);border:1px solid rgba(168,85,247,.35);}
+  .badge-pink{background:rgba(255,45,120,.15);color:var(--pink);border:1px solid rgba(255,45,120,.35);}
+  .badge:hover{transform:scale(1.08);}
+
+  /* glow divider */
+  .glow-line{width:80px;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);margin:10px auto;}
+
+  /* ── PAGE 1 COVER ── */
+  .cover-title{
+    font-family:'Fredoka One',cursive;font-size:clamp(26px,7vw,44px);
+    text-align:center;line-height:1.1;
+    background:linear-gradient(135deg,#00D4FF 0%,#A855F7 50%,#FF2D78 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 0 14px rgba(0,212,255,.4));
+    animation:glow-pulse 3s ease-in-out infinite;
+  }
+  @keyframes glow-pulse{0%,100%{filter:drop-shadow(0 0 10px rgba(0,212,255,.3));}50%{filter:drop-shadow(0 0 22px rgba(168,85,247,.6));}}
+  .flip-number-badge{
+    font-family:'Fredoka One',cursive;font-size:12px;letter-spacing:1px;
+    background:linear-gradient(90deg,var(--cyan),var(--purple));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    border:1px solid rgba(0,212,255,.3);border-radius:30px;padding:4px 14px;
+    margin-bottom:8px;display:inline-block;
+  }
+
+  /* floating animation */
+  .float{animation:float 4s ease-in-out infinite;}
+  .float2{animation:float 5s ease-in-out infinite reverse;}
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+  /* ── PAGE 4 ROBOT CARDS ── */
+  .robot-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:500px;}
+  .robot-card{
+    background:rgba(13,31,60,.8);border:1px solid rgba(0,212,255,.2);
+    border-radius:14px;padding:12px;text-align:center;
+    transition:.3s;cursor:pointer;
+  }
+  .robot-card:hover{transform:scale(1.04);border-color:var(--cyan);box-shadow:var(--glow-cyan);}
+  .robot-card.purple:hover{border-color:var(--purple);box-shadow:var(--glow-purple);}
+  .robot-card.pink:hover{border-color:var(--pink);}
+  .robot-card-title{font-size:11px;font-weight:700;margin-top:6px;letter-spacing:.3px;}
+
+  /* ── PAGE 6 KEREN GRID ── */
+  .cool-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:500px;}
+  .cool-item{
+    background:rgba(13,31,60,.7);border-radius:14px;padding:12px 8px;
+    text-align:center;border:1px solid rgba(168,85,247,.2);
+    transition:.3s;cursor:pointer;
+  }
+  .cool-item:hover{transform:translateY(-4px);border-color:var(--purple);box-shadow:var(--glow-purple);}
+  .cool-item .emoji{font-size:26px;margin-bottom:4px;}
+  .cool-item .label{font-size:11px;font-weight:700;color:rgba(255,255,255,.8);}
+
+  /* ── PAGE 7 FACT CARDS (interactive) ── */
+  .fact-card{
+    width:100%;max-width:500px;background:rgba(13,31,60,.8);
+    border:1px solid rgba(0,212,255,.2);border-radius:14px;padding:14px 16px;
+    margin-bottom:10px;cursor:pointer;transition:.3s;
+    display:flex;align-items:center;gap:12px;
+  }
+  .fact-card:hover{border-color:var(--cyan);box-shadow:var(--glow-cyan);}
+  .fact-card.revealed{background:rgba(0,212,255,.1);border-color:var(--cyan);}
+  .fact-icon{font-size:26px;flex-shrink:0;}
+  .fact-question{font-size:13px;font-weight:700;color:var(--cyan);}
+  .fact-answer{font-size:12px;color:rgba(255,255,255,.8);margin-top:6px;display:none;line-height:1.6;}
+  .fact-card.revealed .fact-answer{display:block;}
+  .fact-hint{font-size:10px;color:rgba(255,255,255,.35);margin-top:4px;}
+
+  /* ── PAGE 8 ROLE CARDS ── */
+  .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:500px;}
+  .role-card{
+    background:rgba(13,31,60,.8);border-radius:14px;padding:14px 10px;
+    text-align:center;transition:.3s;cursor:pointer;
+    border:1px solid rgba(168,85,247,.2);
+  }
+  .role-card:hover{transform:scale(1.06);border-color:var(--purple);box-shadow:var(--glow-purple);}
+  .role-card .role-icon{font-size:28px;margin-bottom:6px;}
+  .role-card .role-title{font-size:11px;font-weight:800;color:var(--purple);}
+  .role-card .role-desc{font-size:10px;color:rgba(255,255,255,.55);margin-top:3px;line-height:1.4;}
+
+  /* ── PAGE 9 CODE SNIPPET ── */
+  .code-block{
+    width:100%;max-width:500px;
+    background:rgba(0,0,0,.5);border:1px solid rgba(0,212,255,.25);
+    border-radius:14px;padding:14px 16px;font-family:'Courier New',monospace;
+    font-size:clamp(10px,2.5vw,13px);line-height:1.7;
+    overflow-x:auto;
+  }
+  .code-comment{color:#6A9955;}
+  .code-keyword{color:#569CD6;}
+  .code-string{color:#CE9178;}
+  .code-func{color:#DCDCAA;}
+  .code-var{color:#9CDCFE;}
+  .code-num{color:#B5CEA8;}
+
+  /* ── PAGE 10 PERSONAL ── */
+  .personal-card{
+    width:100%;max-width:500px;
+    background:linear-gradient(135deg,rgba(0,212,255,.12),rgba(168,85,247,.12));
+    border:1px solid rgba(0,212,255,.3);border-radius:20px;
+    padding:20px;text-align:center;position:relative;overflow:hidden;
+  }
+  .personal-card::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(circle at 50% 0%,rgba(0,212,255,.08),transparent 70%);
+  }
+  .name-glow{
+    font-family:'Fredoka One',cursive;font-size:clamp(22px,6vw,32px);
+    background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    animation:glow-pulse 2.5s ease-in-out infinite;
+  }
+
+  /* ── PAGE 12 ENDING ── */
+  .next-chapter{
+    width:100%;max-width:500px;
+    background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(0,212,255,.15));
+    border:1px solid rgba(168,85,247,.4);border-radius:18px;
+    padding:18px;text-align:center;cursor:pointer;transition:.3s;
+    margin-bottom:12px;
+  }
+  .next-chapter:hover{transform:scale(1.02);box-shadow:var(--glow-purple);}
+  .next-chapter .bab{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--purple);margin-bottom:4px;}
+  .next-chapter .bab-title{font-family:'Fredoka One',cursive;font-size:clamp(15px,4vw,20px);
+    background:linear-gradient(90deg,var(--purple),var(--cyan));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .ayah-card{
+    width:100%;max-width:500px;
+    background:rgba(255,45,120,.1);border:1px solid rgba(255,45,120,.3);
+    border-radius:16px;padding:14px;text-align:center;
+  }
+
+  /* scan line overlay */
+  body::after{
+    content:'';position:fixed;inset:0;z-index:1;
+    background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,212,255,.012) 3px,rgba(0,212,255,.012) 4px);
+    pointer-events:none;animation:scanmove 10s linear infinite;
+  }
+  @keyframes scanmove{from{background-position:0 0;}to{background-position:0 100px;}}
+
+  /* ── SCROLLBAR ── */
+  .page::-webkit-scrollbar{width:4px;}
+  .page::-webkit-scrollbar-thumb{background:rgba(0,212,255,.3);border-radius:4px;}
+
+  /* ring animation */
+  @keyframes spin-slow{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  @keyframes spin-rev{from{transform:rotate(0deg);}to{transform:rotate(-360deg);}}
+  .spin-slow{animation:spin-slow 18s linear infinite;}
+  .spin-rev{animation:spin-rev 12s linear infinite;}
+
+  /* pulse */
+  @keyframes pulse-scale{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+  .pulse{animation:pulse-scale 2.5s ease-in-out infinite;}
+
+  /* blink cursor */
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+  .cursor{animation:blink 1s step-end infinite;color:var(--cyan);}
+</style>
+</head>
+<body>
+
+<!-- Stars Canvas -->
+<canvas id="stars-canvas"></canvas>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <a href="../perpustakaan.html" class="back-btn">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Perpustakaan
+  </a>
+  <span class="flip-label">✦ Flip 29</span>
+  <span class="page-counter" id="pg-counter">1 / 12</span>
+</div>
+
+<!-- FLIPBOOK -->
+<div id="flipbook">
+
+  <!-- PAGE 1: COVER -->
+  <div class="page active" id="page-1">
+    <div style="margin-top:8px;text-align:center;">
+      <span class="flip-number-badge">✦ FLIPBOOK #29 ✦</span>
+    </div>
+
+    <!-- SVG Futuristic Cover Illustration -->
+    <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:480px;margin:6px 0;" class="float">
+      <!-- Deep space bg -->
+      <defs>
+        <radialGradient id="cg1" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#0D1F3C"/>
+          <stop offset="100%" stop-color="#050A18"/>
+        </radialGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect width="320" height="180" rx="16" fill="url(#cg1)"/>
+      <!-- Grid lines -->
+      <g stroke="#00D4FF" stroke-width=".3" opacity=".15">
+        <line x1="0" y1="90" x2="320" y2="90"/>
+        <line x1="0" y1="60" x2="320" y2="60"/>
+        <line x1="0" y1="120" x2="320" y2="120"/>
+        <line x1="80" y1="0" x2="80" y2="180"/>
+        <line x1="160" y1="0" x2="160" y2="180"/>
+        <line x1="240" y1="0" x2="240" y2="180"/>
+      </g>
+      <!-- Orbit rings -->
+      <ellipse cx="160" cy="90" rx="100" ry="40" fill="none" stroke="#A855F7" stroke-width="1" stroke-dasharray="4 4" opacity=".4" class="spin-slow"/>
+      <ellipse cx="160" cy="90" rx="130" ry="55" fill="none" stroke="#00D4FF" stroke-width=".7" stroke-dasharray="6 6" opacity=".25" class="spin-rev"/>
+      <!-- Planet -->
+      <circle cx="160" cy="90" r="36" fill="#0A1628" stroke="#00D4FF" stroke-width="1.5" filter="url(#glow)"/>
+      <circle cx="160" cy="90" r="36" fill="none" stroke="url(#pg)" stroke-width="1.5"/>
+      <defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00D4FF"/><stop offset="100%" stop-color="#A855F7"/></linearGradient></defs>
+      <!-- Robot face on planet -->
+      <rect x="148" y="78" width="24" height="20" rx="4" fill="#0D2040" stroke="#00D4FF" stroke-width="1"/>
+      <rect x="152" y="82" width="7" height="5" rx="1.5" fill="#00D4FF" opacity=".9"/>
+      <rect x="161" y="82" width="7" height="5" rx="1.5" fill="#A855F7" opacity=".9"/>
+      <rect x="153" y="91" width="14" height="3" rx="1.5" fill="#00D4FF" opacity=".6"/>
+      <rect x="156" y="72" width="8" height="6" rx="2" fill="#0D2040" stroke="#00D4FF" stroke-width=".8"/>
+      <circle cx="160" cy="71" r="1.5" fill="#FF2D78"/>
+      <!-- Code snippets floating -->
+      <text x="16" y="35" font-family="Courier New" font-size="7" fill="#00D4FF" opacity=".7">if (future) {</text>
+      <text x="16" y="45" font-family="Courier New" font-size="7" fill="#A855F7" opacity=".7">  code();</text>
+      <text x="16" y="55" font-family="Courier New" font-size="7" fill="#00D4FF" opacity=".7">}</text>
+      <text x="220" y="140" font-family="Courier New" font-size="7" fill="#FF2D78" opacity=".7">print("2035")</text>
+      <text x="225" y="150" font-family="Courier New" font-size="7" fill="#A855F7" opacity=".7">AI.run()</text>
+      <!-- Stars -->
+      <circle cx="40" cy="25" r="1" fill="white" opacity=".8"/>
+      <circle cx="270" cy="20" r="1.5" fill="#00D4FF" opacity=".7"/>
+      <circle cx="290" cy="60" r="1" fill="white" opacity=".6"/>
+      <circle cx="20" cy="100" r="1" fill="#A855F7" opacity=".7"/>
+      <circle cx="300" cy="130" r="1.5" fill="#00D4FF" opacity=".5"/>
+      <circle cx="50" cy="155" r="1" fill="white" opacity=".6"/>
+      <!-- Flying car -->
+      <g transform="translate(48,130)" opacity=".8">
+        <ellipse cx="0" cy="0" rx="18" ry="7" fill="#0D2040" stroke="#00D4FF" stroke-width=".8"/>
+        <ellipse cx="0" cy="-3" rx="11" ry="4" fill="#1A3A5C" stroke="#00D4FF" stroke-width=".5"/>
+        <line x1="-18" y1="3" x2="-24" y2="6" stroke="#00D4FF" stroke-width="1" opacity=".5"/>
+        <line x1="18" y1="3" x2="24" y2="6" stroke="#00D4FF" stroke-width="1" opacity=".5"/>
+      </g>
+    </svg>
+
+    <div class="cover-title">Coding di Tahun 2035</div>
+    <div style="font-family:'Fredoka One',cursive;font-size:clamp(14px,4vw,20px);text-align:center;color:var(--purple);margin:4px 0 10px;">Robot &amp; Dunia Futuristik</div>
+    <div class="page-subtitle">Bagaimana coding akan mengubah dunia di masa depan?</div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:4px;">
+      <span class="badge badge-cyan">🤖 Robot</span>
+      <span class="badge badge-purple">🚀 AI</span>
+      <span class="badge badge-pink">⚡ Masa Depan</span>
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:rgba(255,255,255,.35);text-align:center;">Untuk Aslan ✦ Bab 29</div>
+  </div>
+
+  <!-- PAGE 2: PENGENALAN -->
+  <div class="page" id="page-2">
+    <div class="page-title">Bayangkan Tahun 2035…</div>
+    <div class="page-subtitle">Halo <span style="color:var(--cyan);font-weight:800;">Aslan!</span> 👋</div>
+
+    <svg viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:440px;margin:4px 0 10px;" class="float2">
+      <defs>
+        <radialGradient id="bg2" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stop-color="#0D1F3C"/>
+          <stop offset="100%" stop-color="#050A18"/>
+        </radialGradient>
+      </defs>
+      <rect width="300" height="140" rx="14" fill="url(#bg2)"/>
+      <!-- Smart home -->
+      <rect x="20" y="60" width="80" height="60" rx="4" fill="#0A1628" stroke="#00D4FF" stroke-width="1"/>
+      <polygon points="20,60 60,25 100,60" fill="#0D2040" stroke="#00D4FF" stroke-width="1"/>
+      <!-- windows glow -->
+      <rect x="35" y="75" width="15" height="15" rx="2" fill="#00D4FF" opacity=".5"/>
+      <rect x="70" y="75" width="15" height="15" rx="2" fill="#A855F7" opacity=".5"/>
+      <rect x="50" y="90" width="20" height="30" rx="2" fill="#1A3A5C" stroke="#00D4FF" stroke-width=".5"/>
+      <!-- WiFi signal from house -->
+      <g transform="translate(60,22)" stroke="#00D4FF" fill="none" stroke-width="1" opacity=".6">
+        <path d="M-12,0 Q0,-10 12,0" stroke-dasharray="2 2"/>
+        <path d="M-18,-6 Q0,-18 18,-6" stroke-dasharray="2 2" opacity=".5"/>
+      </g>
+      <!-- Self driving car -->
+      <g transform="translate(130,95)">
+        <rect x="-35" y="-15" width="70" height="24" rx="6" fill="#0A1628" stroke="#A855F7" stroke-width="1"/>
+        <rect x="-25" y="-25" width="50" height="14" rx="4" fill="#0D2040" stroke="#A855F7" stroke-width=".7"/>
+        <circle cx="-22" cy="11" r="5" fill="#1A3A5C" stroke="#A855F7" stroke-width="1"/>
+        <circle cx="22" cy="11" r="5" fill="#1A3A5C" stroke="#A855F7" stroke-width="1"/>
+        <text x="0" y="-14" text-anchor="middle" font-size="6" fill="#A855F7" font-family="Courier New">AUTO</text>
+        <rect x="-15" y="-22" width="30" height="8" rx="2" fill="#A855F7" opacity=".2"/>
+      </g>
+      <!-- Robot friend -->
+      <g transform="translate(240,65)">
+        <rect x="-18" y="-20" width="36" height="30" rx="6" fill="#0A1628" stroke="#00D4FF" stroke-width="1.2"/>
+        <rect x="-12" y="-14" width="9" height="8" rx="2" fill="#00D4FF" opacity=".8"/>
+        <rect x="3" y="-14" width="9" height="8" rx="2" fill="#FF2D78" opacity=".8"/>
+        <rect x="-9" y="-2" width="18" height="4" rx="2" fill="#00D4FF" opacity=".4"/>
+        <rect x="-8" y="10" width="6" height="15" rx="3" fill="#0A1628" stroke="#00D4FF" stroke-width=".8"/>
+        <rect x="2" y="10" width="6" height="15" rx="3" fill="#0A1628" stroke="#00D4FF" stroke-width=".8"/>
+        <rect x="-6" y="-30" width="12" height="12" rx="3" fill="#0A1628" stroke="#00D4FF" stroke-width=".8"/>
+        <circle cx="0" cy="-28" r="2" fill="#FF2D78"/>
+        <!-- wave hand -->
+        <line x1="18" y1="-5" x2="28" y2="-15" stroke="#00D4FF" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+      <text x="150" y="130" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.4)">Semua karena CODING!</text>
+    </svg>
+
+    <div class="card card-cyan">
+      <p class="body-text">Bayangkan <span class="highlight">Aslan</span> sudah dewasa di tahun 2035. Kamu tinggal di rumah yang super pintar—lampu menyala sendiri, AC menyesuaikan suhu, dan ada <span class="highlight">robot</span> yang selalu siap membantu kamu!</p>
+    </div>
+    <div class="card card-purple">
+      <p class="body-text">Mobilmu bisa <span class="highlight-purple">nyetir sendiri</span> sambil kamu duduk santai menikmati pemandangan. Semua keajaiban ini ada satu rahasianya… 🤫</p>
+    </div>
+    <div style="text-align:center;margin-top:4px;">
+      <div style="font-family:'Fredoka One',cursive;font-size:clamp(18px,5vw,26px);background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;" class="pulse">✨ C O D I N G ! ✨</div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: DUNIA 2035 -->
+  <div class="page" id="page-3">
+    <div class="page-title">Dunia di Tahun 2035</div>
+    <div class="page-subtitle">Internet of Things — Semua Terhubung! 🌐</div>
+
+    <svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:440px;margin:4px 0 10px;">
+      <rect width="300" height="130" rx="14" fill="#050A18"/>
+      <!-- IoT network nodes -->
+      <circle cx="150" cy="65" r="18" fill="#0D1F3C" stroke="#00D4FF" stroke-width="1.5"/>
+      <text x="150" y="69" text-anchor="middle" font-size="14" fill="#00D4FF">🌐</text>
+      <!-- nodes -->
+      <g stroke="#00D4FF" stroke-width=".6" stroke-dasharray="3 3" opacity=".5">
+        <line x1="150" y1="47" x2="75" y2="25"/><line x1="150" y1="47" x2="225" y2="25"/>
+        <line x1="150" y1="83" x2="60" y2="110"/><line x1="150" y1="83" x2="240" y2="110"/>
+        <line x1="132" y1="55" x2="35" y2="65"/><line x1="168" y1="55" x2="265" y2="65"/>
+      </g>
+      <!-- device icons -->
+      <circle cx="75" cy="25" r="14" fill="#0A1628" stroke="#A855F7" stroke-width="1"/><text x="75" y="29" text-anchor="middle" font-size="11">🏠</text>
+      <circle cx="225" cy="25" r="14" fill="#0A1628" stroke="#A855F7" stroke-width="1"/><text x="225" y="29" text-anchor="middle" font-size="11">🚗</text>
+      <circle cx="60" cy="110" r="14" fill="#0A1628" stroke="#FF2D78" stroke-width="1"/><text x="60" y="114" text-anchor="middle" font-size="11">👕</text>
+      <circle cx="240" cy="110" r="14" fill="#0A1628" stroke="#FF2D78" stroke-width="1"/><text x="240" y="114" text-anchor="middle" font-size="11">🏫</text>
+      <circle cx="35" cy="65" r="14" fill="#0A1628" stroke="#00D4FF" stroke-width="1"/><text x="35" y="69" text-anchor="middle" font-size="11">📱</text>
+      <circle cx="265" cy="65" r="14" fill="#0A1628" stroke="#00D4FF" stroke-width="1"/><text x="265" y="69" text-anchor="middle" font-size="11">🤖</text>
+      <!-- data packets animation suggestion -->
+      <circle cx="112" cy="36" r="2.5" fill="#00D4FF" opacity=".8"><animate attributeName="cx" values="112;75" dur="2s" repeatCount="indefinite"/><animate attributeName="cy" values="36;25" dur="2s" repeatCount="indefinite"/></circle>
+      <circle cx="188" cy="36" r="2.5" fill="#A855F7" opacity=".8"><animate attributeName="cx" values="188;225" dur="2.5s" repeatCount="indefinite"/><animate attributeName="cy" values="36;25" dur="2.5s" repeatCount="indefinite"/></circle>
+    </svg>
+
+    <div class="card card-cyan">
+      <p class="body-text">Di tahun 2035, hampir semua benda akan terhubung lewat internet — ini disebut <span class="highlight">Internet of Things (IoT)</span>. Bayangkan baju yang bisa mendeteksi kesehatanmu! 👕</p>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:10px;">
+      <span class="badge badge-cyan">🏠 Rumah Pintar</span>
+      <span class="badge badge-purple">🚗 Mobil Otomatis</span>
+      <span class="badge badge-pink">👕 Baju Sensor</span>
+      <span class="badge badge-cyan">🏫 Sekolah Digital</span>
+      <span class="badge badge-purple">📱 HP Super Canggih</span>
+    </div>
+    <div class="card card-purple">
+      <p class="body-text">Semua benda "pintar" itu perlu <span class="highlight-purple">kode program</span> untuk bisa berjalan. Dan programmer-lah yang menulis kode itu! <span class="highlight">Aslan</span> bisa jadi salah satunya! 🚀</p>
+    </div>
+  </div>
+
+  <!-- PAGE 4: ROBOT -->
+  <div class="page" id="page-4">
+    <div class="page-title">Robot yang Membantu Manusia</div>
+    <div class="page-subtitle">Di tahun 2035, robot ada di mana-mana! 🤖</div>
+
+    <div class="robot-grid" style="margin-bottom:10px;">
+      <!-- Robot Teman -->
+      <div class="robot-card" onclick="this.classList.toggle('revealed');this.querySelector('.rc-desc').style.display=this.classList.contains('revealed')?'block':'none'">
+        <svg viewBox="0 0 60 70" width="60" height="70" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="18" width="40" height="32" rx="8" fill="#0A1628" stroke="#00D4FF" stroke-width="1.5"/>
+          <rect x="18" y="26" width="10" height="8" rx="2" fill="#00D4FF" opacity=".9"/>
+          <rect x="32" y="26" width="10" height="8" rx="2" fill="#00D4FF" opacity=".9"/>
+          <path d="M19,38 Q30,44 41,38" stroke="#00D4FF" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <rect x="22" y="8" width="16" height="12" rx="3" fill="#0A1628" stroke="#00D4FF" stroke-width="1.2"/>
+          <circle cx="30" cy="6" r="3" fill="#FF2D78"/>
+          <rect x="5" y="24" width="6" height="16" rx="3" fill="#0A1628" stroke="#00D4FF" stroke-width="1"/>
+          <rect x="49" y="24" width="6" height="16" rx="3" fill="#0A1628" stroke="#00D4FF" stroke-width="1"/>
+          <rect x="16" y="50" width="10" height="16" rx="4" fill="#0A1628" stroke="#00D4FF" stroke-width="1"/>
+          <rect x="34" y="50" width="10" height="16" rx="4" fill="#0A1628" stroke="#00D4FF" stroke-width="1"/>
+        </svg>
+        <div class="robot-card-title" style="color:var(--cyan);">🎮 Robot Teman<br>Bermain</div>
+        <div class="rc-desc" style="display:none;font-size:10px;color:rgba(255,255,255,.6);margin-top:5px;line-height:1.4;">Main bareng, belajar bareng, dan selalu ada buat kamu!</div>
+      </div>
+      <!-- Robot Guru -->
+      <div class="robot-card purple" onclick="this.classList.toggle('revealed');this.querySelector('.rc-desc').style.display=this.classList.contains('revealed')?'block':'none'">
+        <svg viewBox="0 0 60 70" width="60" height="70" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="18" width="40" height="32" rx="8" fill="#0A1628" stroke="#A855F7" stroke-width="1.5"/>
+          <rect x="18" y="26" width="10" height="8" rx="2" fill="#A855F7" opacity=".9"/>
+          <rect x="32" y="26" width="10" height="8" rx="2" fill="#A855F7" opacity=".9"/>
+          <rect x="18" y="37" width="24" height="4" rx="2" fill="#A855F7" opacity=".4"/>
+          <rect x="22" y="8" width="16" height="12" rx="3" fill="#0A1628" stroke="#A855F7" stroke-width="1.2"/>
+          <circle cx="30" cy="6" r="3" fill="#00D4FF"/>
+          <rect x="5" y="24" width="6" height="16" rx="3" fill="#0A1628" stroke="#A855F7" stroke-width="1"/>
+          <rect x="49" y="24" width="6" height="16" rx="3" fill="#0A1628" stroke="#A855F7" stroke-width="1"/>
+          <line x1="49" y1="26" x2="56" y2="20" stroke="#A855F7" stroke-width="1.2"/>
+          <rect x="52" y="15" width="8" height="6" rx="1" fill="#A855F7" opacity=".7"/>
+          <rect x="16" y="50" width="10" height="16" rx="4" fill="#0A1628" stroke="#A855F7" stroke-width="1"/>
+          <rect x="34" y="50" width="10" height="16" rx="4" fill="#0A1628" stroke="#A855F7" stroke-width="1"/>
+        </svg>
+        <div class="robot-card-title" style="color:var(--purple);">📚 Robot Guru<br>Pintar</div>
+        <div class="rc-desc" style="display:none;font-size:10px;color:rgba(255,255,255,.6);margin-top:5px;line-height:1.4;">Mengajar dengan sabar dan tahu cara belajar terbaik untukmu!</div>
+      </div>
+      <!-- Robot Dokter -->
+      <div class="robot-card pink" onclick="this.classList.toggle('revealed');this.querySelector('.rc-desc').style.display=this.classList.contains('revealed')?'block':'none'">
+        <svg viewBox="0 0 60 70" width="60" height="70" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="18" width="40" height="32" rx="8" fill="#0A1628" stroke="#FF2D78" stroke-width="1.5"/>
+          <rect x="18" y="26" width="10" height="8" rx="2" fill="#FF2D78" opacity=".9"/>
+          <rect x="32" y="26" width="10" height="8" rx="2" fill="#FF2D78" opacity=".9"/>
+          <rect x="25" y="36" width="10" height="2" rx="1" fill="#FF2D78" opacity=".6"/>
+          <rect x="29" y="33" width="2" height="8" rx="1" fill="#FF2D78" opacity=".6"/>
+          <rect x="22" y="8" width="16" height="12" rx="3" fill="#0A1628" stroke="#FF2D78" stroke-width="1.2"/>
+          <circle cx="30" cy="6" r="3" fill="#A855F7"/>
+          <rect x="5" y="24" width="6" height="16" rx="3" fill="#0A1628" stroke="#FF2D78" stroke-width="1"/>
+          <rect x="49" y="24" width="6" height="16" rx="3" fill="#0A1628" stroke="#FF2D78" stroke-width="1"/>
+          <rect x="16" y="50" width="10" height="16" rx="4" fill="#0A1628" stroke="#FF2D78" stroke-width="1"/>
+          <rect x="34" y="50" width="10" height="16" rx="4" fill="#0A1628" stroke="#FF2D78" stroke-width="1"/>
+        </svg>
+        <div class="robot-card-title" style="color:var(--pink);">🏥 Robot Dokter<br>Kecil</div>
+        <div class="rc-desc" style="display:none;font-size:10px;color:rgba(255,255,255,.6);margin-top:5px;line-height:1.4;">Bisa deteksi penyakit lebih cepat dan akurat dari dokter biasa!</div>
+      </div>
+      <!-- Robot Bersih -->
+      <div class="robot-card" onclick="this.classList.toggle('revealed');this.querySelector('.rc-desc').style.display=this.classList.contains('revealed')?'block':'none'">
+        <svg viewBox="0 0 60 70" width="60" height="70" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="30" cy="46" rx="22" ry="10" fill="#0A1628" stroke="#00D4FF" stroke-width="1.2"/>
+          <circle cx="30" cy="35" r="14" fill="#0A1628" stroke="#00D4FF" stroke-width="1.5"/>
+          <circle cx="30" cy="35" r="7" fill="#0D1F3C" stroke="#00D4FF" stroke-width="1"/>
+          <text x="30" y="39" text-anchor="middle" font-size="9" fill="#00D4FF">🧹</text>
+          <circle cx="18" cy="50" r="3" fill="#0A1628" stroke="#00D4FF" stroke-width="1"/>
+          <circle cx="30" cy="52" r="3" fill="#0A1628" stroke="#00D4FF" stroke-width="1"/>
+          <circle cx="42" cy="50" r="3" fill="#0A1628" stroke="#00D4FF" stroke-width="1"/>
+          <rect x="25" y="20" width="10" height="8" rx="2" fill="#0A1628" stroke="#00D4FF" stroke-width=".8"/>
+          <circle cx="30" cy="18" r="2" fill="#A855F7"/>
+        </svg>
+        <div class="robot-card-title" style="color:var(--cyan);">🧹 Robot Pembersih<br>Rumah</div>
+        <div class="rc-desc" style="display:none;font-size:10px;color:rgba(255,255,255,.6);margin-top:5px;line-height:1.4;">Bersihin rumah otomatis sambil kamu main atau belajar!</div>
+      </div>
+    </div>
+    <div class="card card-cyan">
+      <p class="body-text" style="text-align:center;">👆 <span class="highlight">Ketuk kartu robot</span> di atas untuk lihat info lebih lanjut!</p>
+    </div>
+  </div>
+
+  <!-- PAGE 5: CODING BAHASA MASA DEPAN -->
+  <div class="page" id="page-5">
+    <div class="page-title">Coding = "Bahasa" Masa Depan</div>
+    <div class="page-subtitle">Semakin jago coding, semakin keren duniamu! 💻</div>
+
+    <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:440px;margin:4px 0 10px;">
+      <rect width="300" height="120" rx="14" fill="#050A18"/>
+      <!-- Language comparison -->
+      <text x="20" y="25" font-family="'Plus Jakarta Sans',sans-serif" font-size="9" fill="rgba(255,255,255,.4)">Bahasa Manusia:</text>
+      <text x="20" y="42" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" fill="white" font-weight="700">"Nyalakan lampu!"</text>
+      <line x1="20" y1="50" x2="280" y2="50" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+      <text x="20" y="65" font-family="'Plus Jakarta Sans',sans-serif" font-size="9" fill="rgba(255,255,255,.4)">Bahasa Mesin (Python):</text>
+      <text x="20" y="82" font-family="Courier New" font-size="11" fill="#00D4FF">lamp.</text><text x="54" y="82" font-family="Courier New" font-size="11" fill="#DCDCAA">turn_on</text><text x="104" y="82" font-family="Courier New" font-size="11" fill="white">()</text>
+      <text x="20" y="98" font-family="Courier New" font-size="11" fill="#569CD6">if</text><text x="37" y="98" font-family="Courier New" font-size="11" fill="#9CDCFE"> robot</text><text x="79" y="98" font-family="Courier New" font-size="11" fill="white">.</text><text x="84" y="98" font-family="Courier New" font-size="11" fill="#DCDCAA">is_ready</text><text x="145" y="98" font-family="Courier New" font-size="11" fill="white">:</text>
+      <text x="20" y="114" font-family="Courier New" font-size="11" fill="#9CDCFE">   robot</text><text x="72" y="114" font-family="Courier New" font-size="11" fill="white">.</text><text x="77" y="114" font-family="Courier New" font-size="11" fill="#DCDCAA">help</text><text x="107" y="114" font-family="Courier New" font-size="11" fill="white">()</text>
+      <!-- arrow -->
+      <g transform="translate(240,60)">
+        <circle r="16" fill="#0D1F3C" stroke="#A855F7" stroke-width="1.2"/>
+        <text y="4" text-anchor="middle" font-size="14">⚡</text>
+      </g>
+    </svg>
+
+    <div class="card card-cyan">
+      <p class="body-text">Sama seperti kamu belajar Bahasa Indonesia atau Bahasa Inggris, robot dan komputer punya bahasa sendiri. Itulah <span class="highlight">CODING!</span> 🧠</p>
+    </div>
+    <div class="card card-purple">
+      <p class="body-text">Semua robot dan barang pintar di tahun 2035 dikendalikan oleh <span class="highlight-purple">kode program</span> yang ditulis oleh programmer.</p>
+    </div>
+    <div class="card card-pink">
+      <p class="body-text"><span class="highlight">Aslan</span> yang belajar coding sekarang = <span class="highlight-pink">Pencipta Teknologi</span> di tahun 2035! 🔥</p>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;">
+      <span class="badge badge-cyan">🐍 Python</span>
+      <span class="badge badge-purple">🌐 JavaScript</span>
+      <span class="badge badge-pink">🐱 Scratch</span>
+      <span class="badge badge-cyan">☕ Java</span>
+    </div>
+  </div>
+
+  <!-- PAGE 6: HAL KEREN -->
+  <div class="page" id="page-6">
+    <div class="page-title">Hal Keren yang Akan Terjadi!</div>
+    <div class="page-subtitle">Semua ini nyata di tahun 2035 🚀</div>
+
+    <div class="cool-grid" style="margin-bottom:10px;">
+      <div class="cool-item" onclick="this.style.background='rgba(168,85,247,.2)'">
+        <div class="emoji">🚗💨</div>
+        <div class="label" style="color:var(--cyan);">Mobil Terbang</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;">Flying cars di langit kota!</div>
+      </div>
+      <div class="cool-item" onclick="this.style.background='rgba(168,85,247,.2)'">
+        <div class="emoji">🥽✨</div>
+        <div class="label" style="color:var(--purple);">Kacamata AR</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;">Dunia nyata + digital menyatu!</div>
+      </div>
+      <div class="cool-item" onclick="this.style.background='rgba(168,85,247,.2)'">
+        <div class="emoji">🏠💬</div>
+        <div class="label" style="color:var(--pink);">Rumah Bisa Bicara</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;">"Hai Aslan, sudah makan?"</div>
+      </div>
+      <div class="cool-item" onclick="this.style.background='rgba(168,85,247,.2)'">
+        <div class="emoji">🤖🧠</div>
+        <div class="label" style="color:var(--cyan);">Asisten AI Pribadi</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;">AI yang tahu semua keinginanmu!</div>
+      </div>
+      <div class="cool-item" style="grid-column:span 2" onclick="this.style.background='rgba(0,212,255,.1)'">
+        <div class="emoji">🎮🌍</div>
+        <div class="label" style="color:var(--purple);">Game Seterasa Dunia Nyata!</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;">Virtual Reality yang sangat immersive — seperti kamu benar-benar masuk ke dalam game!</div>
+      </div>
+    </div>
+
+    <div class="card card-cyan">
+      <p class="body-text" style="text-align:center;">👆 <span class="highlight">Ketuk setiap kotak</span> untuk menyalakan teknologinya! Semua ini dibuat oleh <span class="highlight">programmer berbakat</span> seperti kamu nanti!</p>
+    </div>
+
+    <svg viewBox="0 0 300 70" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:440px;margin:6px 0;">
+      <rect width="300" height="70" rx="12" fill="rgba(0,212,255,.05)" stroke="rgba(0,212,255,.2)" stroke-width="1"/>
+      <!-- flying car illustration -->
+      <g transform="translate(150,35)" class="float">
+        <ellipse rx="40" ry="14" fill="#0A1628" stroke="#00D4FF" stroke-width="1.2"/>
+        <ellipse cy="-7" rx="25" ry="8" fill="#0D2040" stroke="#00D4FF" stroke-width=".8"/>
+        <ellipse cx="-30" cy="8" rx="8" ry="4" fill="#0D2040" stroke="#A855F7" stroke-width=".7" opacity=".6"/>
+        <ellipse cx="30" cy="8" rx="8" ry="4" fill="#0D2040" stroke="#A855F7" stroke-width=".7" opacity=".6"/>
+        <circle cx="-20" cy="0" r="3" fill="#00D4FF" opacity=".7"/>
+        <circle cx="20" cy="0" r="3" fill="#A855F7" opacity=".7"/>
+        <g opacity=".4">
+          <line x1="-8" y1="14" x2="-12" y2="25" stroke="#00D4FF" stroke-width=".8"/>
+          <line x1="0" y1="14" x2="0" y2="26" stroke="#00D4FF" stroke-width=".8"/>
+          <line x1="8" y1="14" x2="12" y2="25" stroke="#00D4FF" stroke-width=".8"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- PAGE 7: FAKTA FUTURISTIK -->
+  <div class="page" id="page-7">
+    <div class="page-title">Fakta Futuristik! 🔍</div>
+    <div class="page-subtitle">Ketuk setiap fakta untuk ungkap rahasianya!</div>
+
+    <div class="fact-card" onclick="this.classList.toggle('revealed')" id="f1">
+      <div class="fact-icon">🤝</div>
+      <div style="flex:1;">
+        <div class="fact-question">Programmer + AI = Tim Super!</div>
+        <div class="fact-hint">Ketuk untuk tahu lebih...</div>
+        <div class="fact-answer">Di tahun 2035, programmer bekerja sama dengan AI untuk membuat kode. AI bisa nulis kode dasar, lalu programmer menyempurnakannya. Hasilnya? Software 10× lebih cepat!</div>
+      </div>
+    </div>
+
+    <div class="fact-card" onclick="this.classList.toggle('revealed')" id="f2">
+      <div class="fact-icon">💼</div>
+      <div style="flex:1;">
+        <div class="fact-question">Pekerjaan Baru yang Belum Ada Sekarang!</div>
+        <div class="fact-hint">Ketuk untuk tahu lebih...</div>
+        <div class="fact-answer">Bayangkan jadi "Desainer Dunia Virtual", "Engineer Robot Teman", atau "Programmer AI Kesehatan"! Pekerjaan-pekerjaan keren ini BELUM ADA hari ini — tapi akan ada di 2035!</div>
+      </div>
+    </div>
+
+    <div class="fact-card" onclick="this.classList.toggle('revealed')" id="f3">
+      <div class="fact-icon">🏆</div>
+      <div style="flex:1;">
+        <div class="fact-question">Anak yang Belajar Coding Sekarang = Bos di 2035!</div>
+        <div class="fact-hint">Ketuk untuk tahu lebih...</div>
+        <div class="fact-answer">Anak-anak yang belajar coding di usia 10 tahun seperti Aslan, akan punya keunggulan BESAR di tahun 2035. Mereka bisa memimpin proyek teknologi dan menciptakan inovasi yang mengubah dunia!</div>
+      </div>
+    </div>
+
+    <div class="fact-card" onclick="this.classList.toggle('revealed')" id="f4">
+      <div class="fact-icon">🌍</div>
+      <div style="flex:1;">
+        <div class="fact-question">Coding Menyelamatkan Bumi!</div>
+        <div class="fact-hint">Ketuk untuk tahu lebih...</div>
+        <div class="fact-answer">Programmer di 2035 akan membuat sistem energi surya yang super efisien, mengelola sampah dengan robot, dan menciptakan kota hijau yang ramah lingkungan. Coding = menyelamatkan bumi!</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:6px;font-size:11px;color:rgba(255,255,255,.35);">Sudah buka semua fakta? Keren! 🎉</div>
+  </div>
+
+  <!-- PAGE 8: PERAN MASA DEPAN -->
+  <div class="page" id="page-8">
+    <div class="page-title">Peran Kamu di Masa Depan</div>
+    <div class="page-subtitle"><span style="color:var(--cyan);">Aslan</span> bisa jadi apa saja! ✨</div>
+
+    <div class="role-grid" style="margin-bottom:10px;">
+      <div class="role-card">
+        <div class="role-icon">🤖</div>
+        <div class="role-title">Pembuat Robot</div>
+        <div class="role-desc">Merancang dan memprogram robot cerdas untuk membantu kehidupan manusia</div>
+      </div>
+      <div class="role-card">
+        <div class="role-icon">🌐</div>
+        <div class="role-title">Desainer Dunia Virtual</div>
+        <div class="role-desc">Membuat dunia digital yang indah dan immersive untuk dihuni jutaan orang</div>
+      </div>
+      <div class="role-card">
+        <div class="role-icon">🎮</div>
+        <div class="role-title">Pembuat Game Futuristik</div>
+        <div class="role-desc">Menciptakan game VR/AR yang membuat pemain seolah masuk ke dunia lain</div>
+      </div>
+      <div class="role-card">
+        <div class="role-icon">🧠</div>
+        <div class="role-title">Engineer AI</div>
+        <div class="role-desc">Membangun kecerdasan buatan yang membantu jutaan orang setiap harinya</div>
+      </div>
+    </div>
+
+    <svg viewBox="0 0 300 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:440px;margin:4px 0 10px;">
+      <rect width="300" height="90" rx="12" fill="rgba(168,85,247,.06)" stroke="rgba(168,85,247,.25)" stroke-width="1"/>
+      <!-- timeline -->
+      <line x1="20" y1="45" x2="280" y2="45" stroke="rgba(0,212,255,.3)" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <!-- milestones -->
+      <g transform="translate(40,45)"><circle r="10" fill="#0A1628" stroke="#00D4FF" stroke-width="1.5"/><text y="4" text-anchor="middle" font-size="9">📅</text><text y="25" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.6)">2026</text><text y="35" text-anchor="middle" font-size="7" fill="#00D4FF">Mulai</text><text y="44" text-anchor="middle" font-size="7" fill="#00D4FF">Coding</text></g>
+      <g transform="translate(120,45)"><circle r="10" fill="#0A1628" stroke="#A855F7" stroke-width="1.5"/><text y="4" text-anchor="middle" font-size="9">🎓</text><text y="25" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.6)">2030</text><text y="35" text-anchor="middle" font-size="7" fill="#A855F7">Ahli</text><text y="44" text-anchor="middle" font-size="7" fill="#A855F7">Coding</text></g>
+      <g transform="translate(200,45)"><circle r="10" fill="#0A1628" stroke="#FF2D78" stroke-width="1.5"/><text y="4" text-anchor="middle" font-size="9">🚀</text><text y="25" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.6)">2035</text><text y="35" text-anchor="middle" font-size="7" fill="#FF2D78">Buat</text><text y="44" text-anchor="middle" font-size="7" fill="#FF2D78">Teknologi</text></g>
+      <g transform="translate(265,45)"><circle r="10" fill="#0A1628" stroke="#00D4FF" stroke-width="1.5"/><text y="4" text-anchor="middle" font-size="9">⭐</text><text y="25" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.6)">2040</text><text y="35" text-anchor="middle" font-size="7" fill="#00D4FF">Pemimpin</text><text y="44" text-anchor="middle" font-size="7" fill="#00D4FF">Dunia</text></g>
+    </svg>
+
+    <div class="card card-purple">
+      <p class="body-text" style="text-align:center;">Jalur <span class="highlight">Aslan</span> menuju masa depan dimulai sekarang! Setiap baris kode yang kamu tulis hari ini adalah <span class="highlight-purple">batu bata</span> menuju istana teknologimu! 🏰</p>
+    </div>
+  </div>
+
+  <!-- PAGE 9: MULAI SEKARANG -->
+  <div class="page" id="page-9">
+    <div class="page-title">Mulai dari Sekarang!</div>
+    <div class="page-subtitle">Semua kecanggihan 2035 dimulai dari sini 🌱</div>
+
+    <div class="code-block" style="margin-bottom:10px;max-width:500px;width:100%;">
+      <div><span class="code-comment"># Program pertama Aslan! 🚀</span></div>
+      <div><span class="code-keyword">print</span>(<span class="code-string">"Halo, saya Aslan!"</span>)</div>
+      <div><span class="code-keyword">print</span>(<span class="code-string">"Saya akan jadi programmer 2035!"</span>)</div>
+      <br>
+      <div><span class="code-comment"># Robot masa depanku</span></div>
+      <div><span class="code-keyword">class</span> <span class="code-var">RobotAslan</span>:</div>
+      <div>&nbsp;&nbsp;<span class="code-keyword">def</span> <span class="code-func">sapa</span>(<span class="code-var">self</span>):</div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-string">"Halo! Aku robot milik Aslan! 🤖"</span></div>
+      <br>
+      <div><span class="code-var">robot</span> = <span class="code-var">RobotAslan</span>()</div>
+      <div><span class="code-keyword">print</span>(<span class="code-var">robot</span>.<span class="code-func">sapa</span>())</div>
+      <div><span class="cursor">█</span></div>
+    </div>
+
+    <div class="card card-cyan">
+      <p class="body-text">Kode di atas adalah contoh <span class="highlight">Python</span> — salah satu bahasa coding paling populer di dunia! Mudah kan? 😊</p>
+    </div>
+
+    <div style="width:100%;max-width:500px;margin-bottom:10px;">
+      <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:8px;letter-spacing:.5px;">PILIH BAHASA CODING-MU:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <div onclick="this.style.borderColor='var(--cyan)';this.style.background='rgba(0,212,255,.15)'" style="flex:1;min-width:130px;background:rgba(13,31,60,.8);border:1px solid rgba(0,212,255,.2);border-radius:12px;padding:10px;cursor:pointer;transition:.3s;text-align:center;">
+          <div style="font-size:20px;">🐱</div>
+          <div style="font-size:11px;font-weight:800;color:var(--cyan);margin-top:4px;">Scratch</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.5);">Untuk pemula, drag & drop!</div>
+        </div>
+        <div onclick="this.style.borderColor='var(--purple)';this.style.background='rgba(168,85,247,.15)'" style="flex:1;min-width:130px;background:rgba(13,31,60,.8);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:10px;cursor:pointer;transition:.3s;text-align:center;">
+          <div style="font-size:20px;">🐍</div>
+          <div style="font-size:11px;font-weight:800;color:var(--purple);margin-top:4px;">Python</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.5);">Bahasa AI & robot!</div>
+        </div>
+        <div onclick="this.style.borderColor='var(--pink)';this.style.background='rgba(255,45,120,.15)'" style="flex:1;min-width:130px;background:rgba(13,31,60,.8);border:1px solid rgba(255,45,120,.2);border-radius:12px;padding:10px;cursor:pointer;transition:.3s;text-align:center;">
+          <div style="font-size:20px;">🌐</div>
+          <div style="font-size:11px;font-weight:800;color:var(--pink);margin-top:4px;">JavaScript</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.5);">Buat website & game!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 10: PESAN UNTUK ASLAN -->
+  <div class="page" id="page-10">
+    <div class="page-title">Pesan untuk Aslan 💌</div>
+    <div class="glow-line"></div>
+
+    <div class="personal-card" style="margin-bottom:12px;max-width:500px;">
+      <div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,.4);margin-bottom:8px;">PESAN SPESIAL UNTUK</div>
+      <div class="name-glow">Aslan</div>
+      <div style="margin:16px 0;font-size:clamp(12px,3.2vw,15px);line-height:1.8;color:rgba(255,255,255,.85);">
+        Di tahun <span style="color:var(--cyan);font-weight:800;">2035</span> nanti, dunia akan sangat berbeda dari sekarang. Robot, AI, dan teknologi canggih ada di mana-mana.
+        <br><br>
+        Dan di antara jutaan orang di dunia, <span style="color:var(--pink);font-weight:800;">kamu</span> bisa jadi salah satu yang <span style="color:var(--purple);font-weight:800;">menciptakan</span> semua keajaiban itu!
+        <br><br>
+        Bukan hanya <em>memakai</em> teknologi — tapi <span style="color:var(--cyan);font-weight:800;">MEMBUATNYA</span>. 🚀
+      </div>
+      <div style="background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:12px;padding:12px;margin-top:4px;">
+        <div style="font-size:13px;font-weight:700;color:var(--cyan);margin-bottom:4px;">💡 Ingat selalu:</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.8);line-height:1.7;">
+          "Mimpi besar dimulai dari<br>
+          <span style="color:var(--purple);font-weight:800;">belajar kecil</span> hari ini."
+        </div>
+      </div>
+    </div>
+
+    <svg viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:440px;" class="float2">
+      <rect width="300" height="80" rx="12" fill="rgba(168,85,247,.06)" stroke="rgba(168,85,247,.2)" stroke-width="1"/>
+      <text x="150" y="20" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="9" fill="rgba(255,255,255,.4)">Aslan's Future Technology Lab</text>
+      <!-- mini icons -->
+      <text x="30" y="55" font-size="20">🤖</text>
+      <text x="72" y="55" font-size="20">🚀</text>
+      <text x="114" y="55" font-size="20">💻</text>
+      <text x="156" y="55" font-size="20">🧠</text>
+      <text x="198" y="55" font-size="20">🌐</text>
+      <text x="240" y="55" font-size="20">⚡</text>
+      <line x1="20" y1="60" x2="280" y2="60" stroke="rgba(0,212,255,.2)" stroke-width=".8"/>
+      <text x="150" y="72" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.3)">Founded by Aslan, 2035</text>
+    </svg>
+  </div>
+
+  <!-- PAGE 11: PESAN PENTING -->
+  <div class="page" id="page-11">
+    <div class="page-title">Pesan Penting! ⚡</div>
+    <div class="glow-line"></div>
+
+    <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:440px;margin:8px 0 12px;" class="float">
+      <rect width="300" height="120" rx="14" fill="#050A18"/>
+      <!-- Shield icon -->
+      <path d="M150,15 L190,30 L190,70 Q190,95 150,108 Q110,95 110,70 L110,30 Z" fill="#0A1628" stroke="#00D4FF" stroke-width="1.5"/>
+      <!-- Code inside shield -->
+      <text x="150" y="52" text-anchor="middle" font-family="Courier New" font-size="11" fill="#00D4FF">&lt;code&gt;</text>
+      <text x="150" y="66" text-anchor="middle" font-family="Courier New" font-size="9" fill="#A855F7">future()</text>
+      <text x="150" y="80" text-anchor="middle" font-family="Courier New" font-size="11" fill="#00D4FF">&lt;/code&gt;</text>
+      <!-- Decorative glow -->
+      <circle cx="150" cy="60" r="55" fill="none" stroke="#00D4FF" stroke-width=".5" opacity=".15" stroke-dasharray="5 5"/>
+      <circle cx="150" cy="60" r="70" fill="none" stroke="#A855F7" stroke-width=".5" opacity=".1" stroke-dasharray="8 8"/>
+    </svg>
+
+    <div class="card" style="background:linear-gradient(135deg,rgba(0,212,255,.12),rgba(168,85,247,.15));border:2px solid rgba(0,212,255,.4);text-align:center;max-width:500px;padding:22px;">
+      <div style="font-family:'Fredoka One',cursive;font-size:clamp(16px,4.5vw,22px);line-height:1.4;background:linear-gradient(135deg,var(--cyan),var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+        "Coding bukan hanya pelajaran,
+      </div>
+      <div style="font-family:'Fredoka One',cursive;font-size:clamp(16px,4.5vw,22px);line-height:1.4;margin-bottom:12px;background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+        tapi senjata untuk membangun masa depan yang lebih baik."
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.5px;">— Untuk Aslan</div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px;width:100%;max-width:500px;">
+      <div style="flex:1;min-width:140px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.25);border-radius:12px;padding:10px;text-align:center;">
+        <div style="font-size:18px;">💪</div>
+        <div style="font-size:11px;font-weight:700;color:var(--cyan);margin-top:4px;">Kekuatan Nyata</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);">Coding memberimu kemampuan untuk menciptakan apa saja</div>
+      </div>
+      <div style="flex:1;min-width:140px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.25);border-radius:12px;padding:10px;text-align:center;">
+        <div style="font-size:18px;">🌟</div>
+        <div style="font-size:11px;font-weight:700;color:var(--purple);margin-top:4px;">Masa Depan Cerah</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);">Programmer adalah profesi paling dibutuhkan di 2035</div>
+      </div>
+      <div style="flex:1;min-width:140px;background:rgba(255,45,120,.08);border:1px solid rgba(255,45,120,.25);border-radius:12px;padding:10px;text-align:center;">
+        <div style="font-size:18px;">❤️</div>
+        <div style="font-size:11px;font-weight:700;color:var(--pink);margin-top:4px;">Ubah Dunia</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);">Setiap kode yang kamu buat bisa membantu jutaan orang</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 12: ENDING -->
+  <div class="page" id="page-12">
+    <div class="page-title">Sampai Jumpa, Aslan! 👋</div>
+    <div class="page-subtitle">Dunia futuristik menunggu kontribusimu! 🌌</div>
+
+    <svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:440px;margin:4px 0 10px;" class="float">
+      <rect width="300" height="100" rx="14" fill="#050A18"/>
+      <!-- Celebration -->
+      <g opacity=".7">
+        <text x="30" y="50" font-size="20">🚀</text>
+        <text x="80" y="30" font-size="16">⭐</text>
+        <text x="120" y="55" font-size="14">💡</text>
+        <text x="155" y="35" font-size="22">🤖</text>
+        <text x="200" y="55" font-size="14">⚡</text>
+        <text x="235" y="30" font-size="16">🌟</text>
+        <text x="260" y="50" font-size="20">💻</text>
+      </g>
+      <text x="150" y="78" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="13" fill="white" opacity=".7">Aslan — Future Tech Creator</text>
+      <text x="150" y="93" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.3)">Coded with ❤️ by Ayah Sigit • Bab 29</text>
+    </svg>
+
+    <div class="card card-cyan" style="max-width:500px;text-align:center;">
+      <p class="body-text">Kamu sudah melihat sekilas <span class="highlight">coding di tahun 2035!</span> Dunia futuristik itu nyata dan menunggu kontribusi <span class="highlight">Aslan</span>! 🌟</p>
+    </div>
+
+    <div class="next-chapter" style="max-width:500px;">
+      <div class="bab">✦ FLIPBOOK SELANJUTNYA ✦</div>
+      <div class="bab-title">📖 Bab 30: Aku Mau Jadi Programmer!</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;">Langkah Pertamaku →</div>
+      <div style="margin-top:10px;font-size:11px;color:rgba(168,85,247,.7);font-weight:600;">Coming soon... tunggu ya Aslan! 🚀</div>
+    </div>
+
+    <div class="ayah-card" style="max-width:500px;">
+      <div style="font-size:22px;margin-bottom:6px;">👨‍💻</div>
+      <div style="font-size:13px;font-weight:800;color:var(--pink);margin-bottom:6px;">Ada pertanyaan tentang coding?</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.6;">
+        Tentang <span style="color:var(--cyan);font-weight:700;">robot</span>, <span style="color:var(--purple);font-weight:700;">AI</span>, atau <span style="color:var(--pink);font-weight:700;">masa depan coding</span>?<br>
+        <strong style="color:white;">Tanya Ayah Sigit ya!</strong> 🤗<br>
+        <span style="font-size:11px;color:rgba(255,255,255,.4);">Ayah siap bantu mempersiapkan masa depanmu!</span>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:10px;margin-bottom:4px;">
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;">
+        <span class="badge badge-cyan">Bab 29 ✓</span>
+        <span class="badge badge-purple">Selesai! 🎉</span>
+        <span class="badge badge-pink">Aslan = Future Coder 🚀</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end flipbook -->
+
+<!-- BOTTOM NAV -->
+<div id="bottomnav">
+  <button class="nav-btn prev" id="btn-prev" onclick="navigate(-1)" disabled>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Sebelumnya
+  </button>
+  <div class="progress-dots" id="dots"></div>
+  <button class="nav-btn next" id="btn-next" onclick="navigate(1)">
+    Selanjutnya
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
+<script>
+// ── STARS ──
+(function(){
+  const c=document.getElementById('stars-canvas');
+  const ctx=c.getContext('2d');
+  let stars=[];
+  function resize(){c.width=innerWidth;c.height=innerHeight;stars=[];for(let i=0;i<160;i++){stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.5+.3,o:Math.random()*.8+.2,s:Math.random()*.3+.05,phase:Math.random()*Math.PI*2});}}
+  function draw(){ctx.clearRect(0,0,c.width,c.height);stars.forEach(s=>{s.phase+=s.s*.04;const o=s.o*(.6+.4*Math.sin(s.phase));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${o})`;ctx.fill();});requestAnimationFrame(draw);}
+  resize();window.addEventListener('resize',resize);draw();
+})();
+
+// ── FLIPBOOK ──
+let current=0;const total=12;
+const pages=document.querySelectorAll('.page');
+const dots=document.getElementById('dots');
+const btnP=document.getElementById('btn-prev');
+const btnN=document.getElementById('btn-next');
+const pgC=document.getElementById('pg-counter');
+
+// Build dots
+for(let i=0;i<total;i++){const d=document.createElement('div');d.className='dot'+(i===0?' active':'');d.onclick=()=>goTo(i);dots.appendChild(d);}
+
+function navigate(dir){goTo(current+dir);}
+function goTo(n){
+  if(n<0||n>=total)return;
+  const prev=pages[current];
+  prev.classList.remove('active');
+  prev.classList.add('exit-left');
+  setTimeout(()=>prev.classList.remove('exit-left'),450);
+  current=n;
+  // scroll new page to top
+  pages[current].scrollTop=0;
+  pages[current].classList.add('active');
+  // update UI
+  document.querySelectorAll('.dot').forEach((d,i)=>{d.classList.toggle('active',i===current);});
+  pgC.textContent=(current+1)+' / '+total;
+  btnP.disabled=current===0;
+  btnN.disabled=current===total-1;
+}
+
+// Swipe support
+let tx=0;
+const fb=document.getElementById('flipbook');
+fb.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+fb.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>50){navigate(dx<0?1:-1);}
+},{passive:true});
+</script>
+</body>
+</html>

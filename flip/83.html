@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petualangan Aslan di Negeri AI – Hari 23</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --hijau: #2E7D32;
+      --hijau-muda: #66BB6A;
+      --hijau-soft: #A5D6A7;
+      --hijau-pale: #E8F5E9;
+      --biru: #1565C0;
+      --biru-muda: #42A5F5;
+      --biru-soft: #BBDEFB;
+      --biru-pale: #E3F2FD;
+      --teal: #00695C;
+      --teal-muda: #26A69A;
+      --teal-soft: #B2DFDB;
+      --teal-pale: #E0F2F1;
+      --kuning: #F9A825;
+      --kuning-pale: #FFF8E1;
+      --merah-muda: #E91E63;
+      --ungu: #6A1B9A;
+      --putih: #FFFFFF;
+      --bg: #F0FFF4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      background-image:
+        radial-gradient(circle at 5% 10%,  #C8E6C966 0%, transparent 38%),
+        radial-gradient(circle at 95% 85%,  #BBDEFB55 0%, transparent 38%),
+        radial-gradient(circle at 50% 50%,  #E0F2F144 0%, transparent 55%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .font-kartun { font-family: 'Fredoka One', cursive; }
+
+    /* ===== FLOATING BG SHAPES ===== */
+    .shapes-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .shape { position: absolute; animation: floatShape linear infinite; opacity: 0.08; }
+    @keyframes floatShape {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.08; }
+      90%  { opacity: 0.08; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ===== TOP BACK LINK ===== */
+    .top-back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.92);
+      color: var(--hijau);
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      padding: 8px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+      transition: all 0.2s ease;
+      border: 2px solid rgba(255,255,255,0.8);
+      position: relative; z-index: 10;
+    }
+    .top-back-link:hover { background:#fff; transform:translateX(-3px); box-shadow:0 6px 20px rgba(0,0,0,0.18); }
+
+    /* ===== HEADER ===== */
+    .header-bar {
+      background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 20%, #388E3C 45%, #43A047 65%, #26A69A 85%, #00897B 100%);
+      position: relative; overflow: hidden;
+    }
+    .header-bar::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        55deg, transparent 0px, transparent 22px,
+        rgba(255,255,255,0.04) 22px, rgba(255,255,255,0.04) 44px
+      );
+    }
+    .header-bar::after {
+      content: '❤️ Sehat Selalu • AI Dokter • Teknologi Medis • Rontgen • MRI • Diagnosa ✨';
+      position: absolute; bottom: 8px; right: 0;
+      font-size: 0.62rem; color: rgba(255,255,255,0.13);
+      letter-spacing: 3px; white-space: nowrap; width: 100%; text-align: center;
+    }
+
+    .badge-hari {
+      background: var(--kuning); color: #1B5E20;
+      font-family: 'Fredoka One', cursive; font-size: 0.95rem; letter-spacing: 1px;
+      padding: 4px 18px; border-radius: 999px; display: inline-block;
+      box-shadow: 0 4px 0 #F57F17;
+      animation: bounceIn 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes bounceIn {
+      0%   { transform: scale(0.3); opacity: 0; }
+      60%  { transform: scale(1.12); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .page-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(1.9rem, 5.5vw, 3.8rem);
+      color: #fff;
+      text-shadow: 0 5px 0 #1B5E20, 0 8px 20px rgba(0,0,0,0.3);
+      letter-spacing: 1px;
+      animation: slideDown 0.7s ease both 0.2s;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-40px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+    .subtitle-header { font-size: clamp(0.85rem, 2.5vw, 1.15rem); color: #C8E6C9; animation: slideDown 0.7s ease both 0.4s; }
+
+    /* ===== PROGRESS ===== */
+    .progress-track { background: #A5D6A7; border-radius: 999px; height: 16px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, #43A047, #26A69A, #FFD600);
+      background-size: 200% 100%;
+      animation: progressAnim 3s linear infinite;
+      width: 76.7%;
+    }
+    @keyframes progressAnim { 0% { background-position:0% 50%; } 100% { background-position:200% 50%; } }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: #fff; border-radius: 28px;
+      box-shadow: 0 8px 32px rgba(46,125,50,0.10), 0 2px 8px rgba(0,0,0,0.06);
+      position: relative; overflow: hidden;
+    }
+    .card::before { content:''; position:absolute; top:0; left:0; right:0; height:5px; }
+    .card-green::before  { background: linear-gradient(90deg,#43A047,#A5D6A7); }
+    .card-teal::before   { background: linear-gradient(90deg,#00897B,#4DB6AC); }
+    .card-blue::before   { background: linear-gradient(90deg,#1565C0,#42A5F5); }
+    .card-yellow::before { background: linear-gradient(90deg,#F9A825,#FFD54F); }
+    .card-purple::before { background: linear-gradient(90deg,#6A1B9A,#CE93D8); }
+    .card-pink::before   { background: linear-gradient(90deg,#E91E63,#F48FB1); }
+    .card-cyan::before   { background: linear-gradient(90deg,#00ACC1,#80DEEA); }
+
+    /* ===== HIGHLIGHT SPANS ===== */
+    .hl-green  { background:linear-gradient(120deg,#C8E6C9,#A5D6A7); padding:2px 8px; border-radius:8px; color:#1B5E20; font-weight:800; }
+    .hl-blue   { background:linear-gradient(120deg,#BBDEFB,#90CAF9); padding:2px 8px; border-radius:8px; color:#0D47A1; font-weight:800; }
+    .hl-yellow { background:linear-gradient(120deg,#FFF9C4,#FFE082); padding:2px 8px; border-radius:8px; color:#E65100; font-weight:800; }
+    .hl-teal   { background:linear-gradient(120deg,#B2DFDB,#80CBC4); padding:2px 8px; border-radius:8px; color:#004D40; font-weight:800; }
+    .story-text { font-size:clamp(1.05rem,2.5vw,1.2rem); line-height:2; color:#37474F; font-weight:600; }
+
+    /* ===== MAIN ILLUSTRATION ===== */
+    .main-illus {
+      background: linear-gradient(145deg,#E8F5E9 0%,#E0F2F1 50%,#E3F2FD 100%);
+      border-radius:28px; border:5px solid #fff;
+      box-shadow:0 12px 40px rgba(46,125,50,0.15), 0 4px 0 #43A047;
+      position:relative; overflow:hidden; min-height:380px;
+    }
+    .illus-badge {
+      position:absolute; top:14px; left:14px;
+      background:var(--kuning); color:#1B5E20;
+      font-family:'Fredoka One',cursive; font-size:0.85rem;
+      padding:4px 14px; border-radius:999px;
+      box-shadow:0 3px 0 #F57F17; z-index:5;
+    }
+    /* Heartbeat line decoration */
+    .heartbeat-line {
+      position:absolute; bottom:0; left:0; right:0; height:40px;
+      opacity:0.12; overflow:hidden;
+    }
+
+    /* ===== AI SCAN ANIMATION ===== */
+    @keyframes scanLine {
+      0%   { top: 10%; }
+      100% { top: 90%; }
+    }
+    .scan-beam {
+      position:absolute; left:0; right:0; height:3px;
+      background:linear-gradient(90deg,transparent,#43A047,#80CBC4,#43A047,transparent);
+      animation:scanLine 2.5s ease-in-out infinite alternate;
+      box-shadow:0 0 12px #43A047;
+    }
+
+    /* ===== ROBO / CHARACTER ANIM ===== */
+    @keyframes roboFloat { 0%,100%{transform:translateY(0) rotate(-2deg);} 50%{transform:translateY(-10px) rotate(2deg);} }
+    .robo-anim { animation:roboFloat 3s ease-in-out infinite; display:inline-block; }
+    @keyframes heartbeat { 0%,100%{transform:scale(1);} 15%{transform:scale(1.25);} 30%{transform:scale(1);} 45%{transform:scale(1.15);} }
+    .heart-anim { animation:heartbeat 1.6s ease-in-out infinite; display:inline-block; }
+    @keyframes pulseDot { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.4);opacity:0.6;} }
+    .pulse-dot { animation:pulseDot 1.2s ease-in-out infinite; display:inline-block; }
+
+    /* ===== ANALOGY CARDS ===== */
+    .analogy-item {
+      background:linear-gradient(135deg,#fff 0%,#F1F8E9 100%);
+      border-radius:20px; border:3px solid #A5D6A7;
+      padding:16px; text-align:center;
+      transition:transform 0.2s, box-shadow 0.2s;
+    }
+    .analogy-item:hover { transform:translateY(-5px); box-shadow:0 12px 28px rgba(46,125,50,0.18); }
+    .analogy-emoji { font-size:2.4rem; margin-bottom:6px; }
+    .analogy-title { font-family:'Fredoka One',cursive; font-size:1rem; color:#2E7D32; }
+    .analogy-desc  { font-size:0.82rem; font-weight:700; color:#546E7A; margin-top:4px; line-height:1.5; }
+
+    /* ===== COMIC STRIP ===== */
+    .comic-panel {
+      background:#fff; border:3px solid #43A047; border-radius:20px;
+      box-shadow:4px 4px 0 #43A047; overflow:hidden; position:relative;
+      transition:transform 0.2s;
+    }
+    .comic-panel:hover { transform:scale(1.03) rotate(-1deg); }
+    .comic-panel-header {
+      background:linear-gradient(90deg,#43A047,#66BB6A);
+      color:#fff; font-family:'Fredoka One',cursive;
+      font-size:0.75rem; padding:5px 12px; text-align:center;
+    }
+    .comic-scene {
+      min-height:135px; display:flex; align-items:center;
+      justify-content:center; flex-direction:column;
+      gap:6px; padding:12px 8px 6px; font-size:2.6rem;
+    }
+    .speech-bubble {
+      background:#fff; border:2px solid #43A047; border-radius:14px;
+      padding:6px 10px; font-size:0.72rem; font-weight:800; color:#1B5E20;
+      text-align:center; position:relative; max-width:150px;
+      box-shadow:2px 2px 0 #43A047;
+    }
+    .speech-bubble::before {
+      content:''; position:absolute; top:-10px; left:50%; transform:translateX(-50%);
+      border-left:8px solid transparent; border-right:8px solid transparent;
+      border-bottom:10px solid #43A047;
+    }
+    .comic-caption {
+      background:#E8F5E9; font-size:0.75rem; font-weight:800;
+      color:#2E7D32; padding:6px 10px; text-align:center;
+      border-top:2px solid #C8E6C9;
+    }
+
+    /* ===== FACT BOXES ===== */
+    .fact-box { border-radius:20px; padding:18px 20px; position:relative; overflow:hidden; }
+    .fact-box::after { content:attr(data-emoji); position:absolute; right:12px; top:12px; font-size:2.5rem; opacity:0.18; }
+    .fact-box h3 { font-family:'Fredoka One',cursive; font-size:1.05rem; margin-bottom:6px; }
+    .fact-box p  { font-size:0.88rem; font-weight:700; line-height:1.7; }
+
+    /* ===== AI TOOLS GRID ===== */
+    .ai-tool-card {
+      background:#fff; border-radius:18px; padding:14px;
+      border:3px solid #A5D6A7; text-align:center;
+      box-shadow:0 4px 14px rgba(46,125,50,0.10);
+      transition:transform 0.2s, box-shadow 0.2s;
+    }
+    .ai-tool-card:hover { transform:translateY(-4px); box-shadow:0 10px 24px rgba(46,125,50,0.18); }
+    .ai-tool-icon { font-size:2.2rem; margin-bottom:6px; }
+    .ai-tool-name { font-family:'Fredoka One',cursive; font-size:0.9rem; color:#1B5E20; }
+    .ai-tool-desc { font-size:0.75rem; font-weight:700; color:#546E7A; margin-top:3px; line-height:1.4; }
+
+    /* ===== QUIZ ===== */
+    .quiz-option {
+      background:#fff; border:3px solid #A5D6A7; border-radius:16px;
+      padding:12px 20px; cursor:pointer; font-weight:800; font-size:0.95rem;
+      color:#37474F; transition:all 0.2s; text-align:left;
+      display:flex; align-items:center; gap:10px; width:100%;
+    }
+    .quiz-option:hover { border-color:#43A047; background:#E8F5E9; transform:translateX(4px); }
+    .quiz-option.correct { border-color:#43A047; background:#E8F5E9; color:#2E7D32; }
+    .quiz-option.wrong   { border-color:#E53935; background:#FFEBEE; color:#C62828; }
+    .opt-letter {
+      min-width:34px; height:34px;
+      background:linear-gradient(135deg,#43A047,#81C784);
+      color:#fff; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Fredoka One',cursive; font-size:1rem; flex-shrink:0;
+    }
+    .quiz-option.correct .opt-letter { background:linear-gradient(135deg,#1565C0,#42A5F5); }
+    .quiz-option.wrong .opt-letter   { background:linear-gradient(135deg,#E53935,#EF9A9A); }
+
+    /* ===== SCROLL REVEAL ===== */
+    .reveal { opacity:0; transform:translateY(30px); transition:opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* ===== PULSE STAR ===== */
+    @keyframes pulseStar { 0%,100%{transform:scale(1);} 50%{transform:scale(1.3);} }
+    .pulse-star { animation:pulseStar 1.5s ease-in-out infinite; display:inline-block; }
+
+    /* ===== XRAY FRAME ===== */
+    .xray-frame {
+      background:#0D1B2A; border-radius:16px;
+      border:3px solid #43A047;
+      padding:16px; position:relative;
+      overflow:hidden; box-shadow:0 0 20px rgba(67,160,71,0.3);
+    }
+    .xray-frame .scan-beam { z-index:3; }
+
+    /* ===== STAT PILL ===== */
+    .stat-pill {
+      display:inline-flex; align-items:center; gap:8px;
+      border-radius:999px; padding:8px 18px;
+      font-family:'Fredoka One',cursive; font-size:1rem;
+      box-shadow:0 4px 12px rgba(0,0,0,0.12);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== FLOATING BG SHAPES ===== -->
+<div class="shapes-bg">
+  <div class="shape" style="font-size:2rem;left:4%;animation-duration:13s;animation-delay:0s;">❤️</div>
+  <div class="shape" style="font-size:1.6rem;left:18%;animation-duration:16s;animation-delay:2s;">🏥</div>
+  <div class="shape" style="font-size:1.8rem;left:38%;animation-duration:11s;animation-delay:1s;">💊</div>
+  <div class="shape" style="font-size:2rem;left:58%;animation-duration:18s;animation-delay:5s;">🩺</div>
+  <div class="shape" style="font-size:1.5rem;left:72%;animation-duration:14s;animation-delay:3s;">🔬</div>
+  <div class="shape" style="font-size:1.8rem;left:86%;animation-duration:17s;animation-delay:7s;">🤖</div>
+  <div class="shape" style="font-size:1.4rem;left:28%;animation-duration:12s;animation-delay:9s;">⭐</div>
+  <div class="shape" style="font-size:1.6rem;left:50%;animation-duration:15s;animation-delay:4s;">🧬</div>
+  <div class="shape" style="font-size:1.3rem;left:92%;animation-duration:10s;animation-delay:6s;">💉</div>
+</div>
+
+<div style="position:relative;z-index:1;">
+
+  <!-- ===== HEADER ===== -->
+  <div class="header-bar">
+    <div class="max-w-4xl mx-auto px-5 py-5">
+
+      <div class="mb-4">
+        <a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+      </div>
+
+      <div class="text-center pb-4">
+        <div class="mb-3 flex flex-wrap justify-center gap-3">
+          <span class="badge-hari">📅 HARI KE-23</span>
+          <span style="background:linear-gradient(135deg,#E91E63,#F06292);color:#fff;font-family:'Fredoka One',cursive;font-size:0.95rem;padding:4px 18px;border-radius:999px;box-shadow:0 4px 0 #880E4F;display:inline-block;animation:bounceIn 0.8s cubic-bezier(.36,.07,.19,.97) both 0.3s;">
+            🏥 AI & KESEHATAN
+          </span>
+        </div>
+        <h1 class="page-title">AI Membantu Dokter 🩺🤖</h1>
+        <p class="subtitle-header mt-2">Teknologi Cerdas di Rumah Sakit Masa Depan!</p>
+
+        <div class="mt-5 max-w-sm mx-auto">
+          <div class="flex justify-between mb-1" style="font-size:0.8rem;color:#C8E6C9;font-weight:800;">
+            <span>⚡ Progress Aslan</span>
+            <span>23 / 30 Hari</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CONTENT ===== -->
+  <div class="max-w-4xl mx-auto px-4 py-8 space-y-8">
+
+    <!-- ===== MAIN ILLUSTRATION ===== -->
+    <div class="card card-green reveal">
+      <div class="main-illus p-6">
+        <span class="illus-badge">🎨 Ilustrasi Hari Ini</span>
+
+        <!-- Heartbeat decoration top -->
+        <div class="heartbeat-line" style="top:0;bottom:auto;">
+          <svg viewBox="0 0 800 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:40px;">
+            <polyline points="0,20 100,20 140,5 160,35 180,10 200,30 220,20 400,20 440,5 460,35 480,10 500,30 520,20 800,20"
+              stroke="#43A047" stroke-width="2.5" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Characters row -->
+        <div class="flex justify-center items-end gap-4 mb-6 mt-10 flex-wrap">
+          <!-- Dokter -->
+          <div class="text-center">
+            <div style="font-size:4.5rem;line-height:1;">👨‍⚕️</div>
+            <div style="background:linear-gradient(135deg,#1565C0,#42A5F5);color:#fff;border-radius:12px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:0.8rem;margin-top:4px;box-shadow:0 3px 0 #0D47A1;">Dokter</div>
+          </div>
+          <!-- Plus sign -->
+          <div style="font-size:2.5rem;color:#43A047;font-family:'Fredoka One',cursive;padding-bottom:20px;">+</div>
+          <!-- Robo -->
+          <div class="text-center robo-anim">
+            <div style="font-size:4.5rem;line-height:1;">🤖</div>
+            <div style="background:linear-gradient(135deg,#43A047,#81C784);color:#fff;border-radius:12px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:0.8rem;margin-top:4px;box-shadow:0 3px 0 #2E7D32;">Robo AI</div>
+          </div>
+          <!-- Equals -->
+          <div style="font-size:2.5rem;color:#43A047;font-family:'Fredoka One',cursive;padding-bottom:20px;">=</div>
+          <!-- Heart -->
+          <div class="text-center">
+            <div class="heart-anim" style="font-size:4.5rem;line-height:1;">❤️‍🩹</div>
+            <div style="background:linear-gradient(135deg,#E91E63,#F06292);color:#fff;border-radius:12px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:0.8rem;margin-top:4px;box-shadow:0 3px 0 #880E4F;">Sembuh!</div>
+          </div>
+          <!-- Aslan -->
+          <div class="text-center" style="margin-left:16px;">
+            <div style="font-size:3.8rem;line-height:1;">🧒</div>
+            <div style="background:linear-gradient(135deg,#F9A825,#FFD54F);color:#1B5E20;border-radius:12px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:0.8rem;margin-top:4px;box-shadow:0 3px 0 #F57F17;">Aslan</div>
+          </div>
+        </div>
+
+        <!-- X-Ray scanning visual -->
+        <div class="flex justify-center gap-4 flex-wrap mb-5">
+          <!-- Xray frame -->
+          <div class="xray-frame" style="width:160px;min-height:120px;">
+            <div class="scan-beam"></div>
+            <div style="text-align:center;position:relative;z-index:2;">
+              <div style="font-size:3rem;filter:grayscale(1) brightness(1.8);">🫁</div>
+              <div style="color:#43A047;font-family:'Fredoka One',cursive;font-size:0.75rem;margin-top:4px;">SCAN AKTIF</div>
+              <div style="display:flex;justify-content:center;gap:4px;margin-top:4px;">
+                <div class="pulse-dot" style="width:8px;height:8px;background:#43A047;border-radius:50%;animation-delay:0s;"></div>
+                <div class="pulse-dot" style="width:8px;height:8px;background:#43A047;border-radius:50%;animation-delay:0.3s;"></div>
+                <div class="pulse-dot" style="width:8px;height:8px;background:#43A047;border-radius:50%;animation-delay:0.6s;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Analysis box -->
+          <div style="background:#fff;border:3px solid #43A047;border-radius:18px;padding:14px 16px;box-shadow:0 4px 16px rgba(46,125,50,0.12);min-width:170px;max-width:200px;">
+            <div style="font-family:'Fredoka One',cursive;font-size:0.85rem;color:#2E7D32;margin-bottom:8px;">🧠 Analisis AI:</div>
+            <div style="font-size:0.75rem;font-weight:800;color:#37474F;line-height:1.8;">
+              <div style="color:#43A047;">✅ Paru-paru: Normal</div>
+              <div style="color:#43A047;">✅ Jantung: Sehat</div>
+              <div style="color:#E53935;">⚠️ Titik kecil: Periksa!</div>
+              <div style="color:#43A047;">✅ Tulang: Oke</div>
+            </div>
+            <div style="background:#E8F5E9;border-radius:8px;padding:5px 8px;margin-top:8px;font-family:'Fredoka One',cursive;font-size:0.72rem;color:#1B5E20;text-align:center;">
+              Akurasi: 97.3% 🎯
+            </div>
+          </div>
+        </div>
+
+        <!-- Robo speech -->
+        <div class="flex justify-center">
+          <div style="background:#fff;border:3px solid #43A047;border-radius:20px;padding:12px 20px;max-width:460px;text-align:center;box-shadow:0 6px 20px rgba(46,125,50,0.15);position:relative;">
+            <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:1.2rem;">💬</div>
+            <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:#1B5E20;margin-top:4px;">
+              "AI bisa membantu dokter melihat penyakit yang mungkin terlewat – lebih cepat, lebih akurat!"
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PENJELASAN ===== -->
+    <div class="card card-green p-7 reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <div style="background:linear-gradient(135deg,#43A047,#81C784);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 0 #2E7D32;flex-shrink:0;">📖</div>
+        <h2 class="font-kartun" style="font-size:1.7rem;color:#1B5E20;">AI di Rumah Sakit – Apa Itu?</h2>
+      </div>
+      <p class="story-text">
+        Pernah lihat mesin <span class="hl-teal">rontgen atau MRI</span> di rumah sakit?
+        Mesin itu mengambil foto bagian dalam tubuh kita. Nah, sekarang
+        <span class="hl-green">AI yang pintar</span> bisa melihat foto itu dan langsung
+        <span class="hl-yellow">menemukan penyakit</span> lebih cepat dari mata manusia!
+      </p>
+      <br>
+      <p class="story-text">
+        AI juga bisa membaca <span class="hl-blue">ribuan catatan pasien</span> dalam hitungan detik,
+        membantu dokter memilih <span class="hl-green">obat yang paling tepat</span>,
+        bahkan memprediksi apakah seseorang mungkin sakit sebelum gejalanya muncul!
+        Dokter dan AI <span class="hl-yellow">bekerja sama seperti tim superhero</span> – saling melengkapi! <span class="pulse-star">🌟</span>
+      </p>
+    </div>
+
+    <!-- ===== AI TOOLS GRID ===== -->
+    <div class="reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <div style="background:linear-gradient(135deg,#00897B,#4DB6AC);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 0 #004D40;flex-shrink:0;">🔬</div>
+        <h2 class="font-kartun" style="font-size:1.7rem;color:#004D40;">AI Bekerja di Rumah Sakit</h2>
+      </div>
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
+        <div class="ai-tool-card">
+          <div class="ai-tool-icon">🩻</div>
+          <div class="ai-tool-name">Baca Rontgen</div>
+          <div class="ai-tool-desc">AI melihat foto rontgen dan menemukan kanker, patah tulang, atau infeksi dengan cepat</div>
+        </div>
+        <div class="ai-tool-card">
+          <div class="ai-tool-icon">🫀</div>
+          <div class="ai-tool-name">Monitor Jantung</div>
+          <div class="ai-tool-desc">AI memantau detak jantung 24 jam dan langsung kasih peringatan jika ada bahaya</div>
+        </div>
+        <div class="ai-tool-card">
+          <div class="ai-tool-icon">💊</div>
+          <div class="ai-tool-name">Pilih Obat</div>
+          <div class="ai-tool-desc">AI menyarankan obat terbaik berdasarkan riwayat kesehatan dan alergi pasien</div>
+        </div>
+        <div class="ai-tool-card">
+          <div class="ai-tool-icon">🧬</div>
+          <div class="ai-tool-name">Analisis DNA</div>
+          <div class="ai-tool-desc">AI membaca DNA kita untuk menemukan penyakit keturunan sebelum muncul</div>
+        </div>
+        <div class="ai-tool-card">
+          <div class="ai-tool-icon">🤖</div>
+          <div class="ai-tool-name">Robot Operasi</div>
+          <div class="ai-tool-desc">Robot dikontrol AI bisa melakukan operasi dengan tangan yang lebih stabil dari dokter</div>
+        </div>
+        <div class="ai-tool-card">
+          <div class="ai-tool-icon">📱</div>
+          <div class="ai-tool-name">Diagnosa Kulit</div>
+          <div class="ai-tool-desc">Foto kulit lewat HP, AI langsung tahu apakah ada masalah kulit atau tidak</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ANALOGI LUCU ===== -->
+    <div class="card card-teal p-7 reveal">
+      <div class="flex items-center gap-3 mb-6">
+        <div style="background:linear-gradient(135deg,#00897B,#4DB6AC);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 0 #004D40;flex-shrink:0;">🤣</div>
+        <h2 class="font-kartun" style="font-size:1.7rem;color:#004D40;">Analogi Seru!</h2>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#E0F2F1,#B2DFDB);border-radius:20px;border:3px solid #4DB6AC;padding:16px 20px;margin-bottom:20px;text-align:center;">
+        <p style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#004D40;">
+          🔍 AI Dokter = Kacamata Super Canggih!
+        </p>
+        <p style="font-size:0.95rem;font-weight:700;color:#37474F;margin-top:6px;">
+          Bayangkan punya kacamata yang bisa melihat <em>jauh di dalam tubuh</em> dan langsung tahu ada masalah di mana!
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <div class="analogy-item">
+          <div class="analogy-emoji">🦸‍♂️</div>
+          <div class="analogy-title">Dokter = Superman</div>
+          <div class="analogy-desc">Pintar dan berpengalaman, tapi butuh waktu untuk memeriksa satu per satu</div>
+        </div>
+        <div class="analogy-item">
+          <div class="analogy-emoji">🤖</div>
+          <div class="analogy-title">AI = Sidekick Canggih</div>
+          <div class="analogy-desc">Bisa melihat ribuan hal sekaligus, tidak pernah capek, tidak pernah lupa</div>
+        </div>
+        <div class="analogy-item">
+          <div class="analogy-emoji">🏆</div>
+          <div class="analogy-title">Bersama = Tim Juara!</div>
+          <div class="analogy-desc">Dokter ambil keputusan, AI bantu dengan data – hasilnya terbaik untuk pasien!</div>
+        </div>
+      </div>
+
+      <div style="background:#fff;border-radius:16px;border:3px dashed #26A69A;padding:14px 18px;margin-top:16px;text-align:center;">
+        <p style="font-size:0.95rem;font-weight:800;color:#004D40;">
+          🎯 Seperti punya asisten super cerdas yang membaca 1.000 buku kedokteran sekaligus dan langsung kasih saran! Dokter tetap yang memutuskan, AI yang membantu data! 🩺
+        </p>
+      </div>
+    </div>
+
+    <!-- ===== COMIC STRIP ===== -->
+    <div class="card card-blue p-7 reveal">
+      <div class="flex items-center gap-3 mb-6">
+        <div style="background:linear-gradient(135deg,#1565C0,#42A5F5);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 0 #0D47A1;flex-shrink:0;">📖</div>
+        <h2 class="font-kartun" style="font-size:1.7rem;color:#0D47A1;">Komik: Hari Sibuk di Rumah Sakit AI!</h2>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+
+        <!-- Panel 1 -->
+        <div class="comic-panel">
+          <div class="comic-panel-header">Panel 1 🏥</div>
+          <div class="comic-scene">
+            <div>🧒🚶</div>
+            <div class="speech-bubble">"Wah, ada robot di rumah sakit ini!"</div>
+          </div>
+          <div class="comic-caption">Aslan & Robo mengunjungi RS masa depan!</div>
+        </div>
+
+        <!-- Panel 2 -->
+        <div class="comic-panel">
+          <div class="comic-panel-header">Panel 2 🩻</div>
+          <div class="comic-scene">
+            <div>👨‍⚕️🤖</div>
+            <div class="speech-bubble">"AI lihat foto rontgen ini. Ada yang aneh?"</div>
+            <div style="font-size:1.4rem;">🩻🔍</div>
+          </div>
+          <div class="comic-caption">Dokter dan AI memeriksa foto bersama!</div>
+        </div>
+
+        <!-- Panel 3 -->
+        <div class="comic-panel">
+          <div class="comic-panel-header">Panel 3 ⚡</div>
+          <div class="comic-scene">
+            <div>🤖💡</div>
+            <div class="speech-bubble">"Titik kecil di sini! Mungkin perlu diperiksa lagi!"</div>
+          </div>
+          <div class="comic-caption">AI menemukan sesuatu dalam 0,3 detik!</div>
+        </div>
+
+        <!-- Panel 4 -->
+        <div class="comic-panel">
+          <div class="comic-panel-header">Panel 4 ❤️</div>
+          <div class="comic-scene">
+            <div>👨‍⚕️🤖🧒</div>
+            <div class="speech-bubble">"Terima kasih AI! Pasien akan segera sembuh!"</div>
+          </div>
+          <div class="comic-caption">Tim dokter + AI = pasien sehat! 🎉</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== FAKTA KEREN ===== -->
+    <div class="reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <div style="background:linear-gradient(135deg,#F9A825,#FFD54F);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 0 #F57F17;flex-shrink:0;">⚡</div>
+        <h2 class="font-kartun" style="font-size:1.7rem;color:#E65100;">Fakta Keren AI Medis!</h2>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+        <div class="fact-box" data-emoji="🎯" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:3px solid #43A047;">
+          <h3 style="color:#1B5E20;">🩻 Super Akurat!</h3>
+          <p style="color:#1B5E20;">AI bisa mendeteksi kanker paru-paru dari foto rontgen dengan akurasi 97% – bahkan lebih baik dari dokter spesialis terbaik dalam beberapa kasus!</p>
+        </div>
+
+        <div class="fact-box" data-emoji="⚡" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border:3px solid #1565C0;">
+          <h3 style="color:#0D47A1;">⏱️ Sangat Cepat!</h3>
+          <p style="color:#0D47A1;">Dokter butuh 30 menit untuk membaca satu hasil MRI. AI bisa melakukannya dalam 30 detik – 60 kali lebih cepat! Bayangkan berapa banyak pasien yang tertolong!</p>
+        </div>
+
+        <div class="fact-box" data-emoji="💊" style="background:linear-gradient(135deg,#FFF8E1,#FFF176);border:3px solid #F9A825;">
+          <h3 style="color:#E65100;">🔮 Bisa Prediksi!</h3>
+          <p style="color:#BF360C;">Di AS, AI sudah bisa memprediksi serangan jantung 24 jam sebelum terjadi! Dokter bisa langsung bertindak dan menyelamatkan nyawa sebelum terlambat.</p>
+        </div>
+
+        <div class="fact-box" data-emoji="🌍" style="background:linear-gradient(135deg,#E0F2F1,#B2DFDB);border:3px solid #00897B;">
+          <h3 style="color:#004D40;">🌐 Membantu Daerah Terpencil!</h3>
+          <p style="color:#004D40;">Di daerah yang tidak ada dokter, AI di smartphone bisa membantu mendeteksi penyakit mata, kulit, dan demam berdarah hanya dari sebuah foto!</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== AI VS DOKTER COMPARISON ===== -->
+    <div class="card card-purple p-7 reveal">
+      <h2 class="font-kartun text-center mb-5" style="font-size:1.6rem;color:#4A148C;">🤝 Dokter + AI = Tim Terbaik!</h2>
+      <div class="grid grid-cols-2 gap-4">
+
+        <div style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:20px;padding:16px;border:3px solid #42A5F5;">
+          <div style="text-align:center;font-size:2.5rem;margin-bottom:8px;">👨‍⚕️</div>
+          <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#0D47A1;text-align:center;margin-bottom:10px;">Kekuatan Dokter</div>
+          <div class="space-y-2">
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:0.82rem;font-weight:700;color:#1565C0;">
+              <span>💙</span><span>Empati & kepedulian untuk pasien</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:0.82rem;font-weight:700;color:#1565C0;">
+              <span>💙</span><span>Pengalaman bertahun-tahun</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:0.82rem;font-weight:700;color:#1565C0;">
+              <span>💙</span><span>Mengambil keputusan besar</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:0.82rem;font-weight:700;color:#1565C0;">
+              <span>💙</span><span>Berbicara dan menenangkan pasien</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:20px;padding:16px;border:3px solid #43A047;">
+          <div style="text-align:center;font-size:2.5rem;margin-bottom:8px;" class="robo-anim">🤖</div>
+          <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#2E7D32;text-align:center;margin-bottom:10px;">Kekuatan AI</div>
+          <div class="space-y-2">
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:0.82rem;font-weight:700;color:#43A047;">
+              <span>💚</span><span>Membaca ribuan data sekaligus</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:0.82rem;font-weight:700;color:#43A047;">
+              <span>💚</span><span>Tidak pernah capek atau lupa</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:0.82rem;font-weight:700;color:#43A047;">
+              <span>💚</span><span>Mendeteksi pola yang tak terlihat</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:0.82rem;font-weight:700;color:#43A047;">
+              <span>💚</span><span>Bekerja 24 jam tanpa istirahat</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div style="background:linear-gradient(135deg,#EDE7F6,#D1C4E9);border-radius:16px;border:3px solid #7C4DFF;padding:14px 18px;margin-top:16px;text-align:center;">
+        <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#4A148C;">
+          🏆 AI tidak menggantikan dokter – AI MEMBANTU dokter menjadi lebih baik! Seperti kalkulator membantu guru matematika! 📐
+        </p>
+      </div>
+    </div>
+
+    <!-- ===== QUIZ ===== -->
+    <div class="card card-pink p-7 reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <div style="background:linear-gradient(135deg,#E91E63,#F48FB1);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 0 #880E4F;flex-shrink:0;">🧩</div>
+        <h2 class="font-kartun" style="font-size:1.7rem;color:#880E4F;">Quiz Aslan! Yuk Coba!</h2>
+      </div>
+
+      <!-- Q1 -->
+      <div id="q1-section" class="mb-7">
+        <div style="background:linear-gradient(135deg,#FCE4EC,#F8BBD9);border-radius:16px;padding:14px 18px;margin-bottom:14px;border:2px solid #F48FB1;">
+          <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#880E4F;">
+            ❓ Pertanyaan 1: Apa yang bisa dilakukan AI di rumah sakit?
+          </p>
+        </div>
+        <div class="space-y-3" id="q1-options">
+          <button class="quiz-option" onclick="checkAnswer(this,'q1',false)">
+            <span class="opt-letter">A</span> Memasak makanan untuk pasien
+          </button>
+          <button class="quiz-option" onclick="checkAnswer(this,'q1',true)">
+            <span class="opt-letter">B</span> Membantu dokter melihat penyakit dari foto rontgen dengan cepat
+          </button>
+          <button class="quiz-option" onclick="checkAnswer(this,'q1',false)">
+            <span class="opt-letter">C</span> Bernyanyi untuk menghibur pasien
+          </button>
+          <button class="quiz-option" onclick="checkAnswer(this,'q1',false)">
+            <span class="opt-letter">D</span> Menggantikan dokter sepenuhnya
+          </button>
+        </div>
+        <div id="q1-result" style="display:none;margin-top:12px;"></div>
+      </div>
+
+      <!-- Q2 -->
+      <div id="q2-section">
+        <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:16px;padding:14px 18px;margin-bottom:14px;border:2px solid #81C784;">
+          <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#2E7D32;">
+            ❓ Pertanyaan 2: Apakah AI menggantikan dokter?
+          </p>
+        </div>
+        <div class="space-y-3" id="q2-options">
+          <button class="quiz-option" onclick="checkAnswer(this,'q2',false)">
+            <span class="opt-letter">A</span> Ya, AI lebih pintar dari semua dokter
+          </button>
+          <button class="quiz-option" onclick="checkAnswer(this,'q2',false)">
+            <span class="opt-letter">B</span> Ya, rumah sakit tidak perlu dokter lagi
+          </button>
+          <button class="quiz-option" onclick="checkAnswer(this,'q2',true)">
+            <span class="opt-letter">C</span> Tidak, AI membantu dokter agar bekerja lebih baik
+          </button>
+          <button class="quiz-option" onclick="checkAnswer(this,'q2',false)">
+            <span class="opt-letter">D</span> Tidak, karena AI tidak berguna di rumah sakit
+          </button>
+        </div>
+        <div id="q2-result" style="display:none;margin-top:12px;"></div>
+      </div>
+
+      <div id="final-result" class="mt-5" style="display:none;"></div>
+    </div>
+
+    <!-- ===== RANGKUMAN ===== -->
+    <div class="card card-green p-7 reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <div style="background:linear-gradient(135deg,#43A047,#81C784);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 0 #2E7D32;flex-shrink:0;">🌟</div>
+        <h2 class="font-kartun" style="font-size:1.7rem;color:#1B5E20;">Yang Aslan Pelajari Hari Ini!</h2>
+      </div>
+      <div class="space-y-3">
+        <div style="display:flex;align-items:flex-start;gap:12px;background:#E8F5E9;border-radius:14px;padding:12px 16px;border-left:5px solid #43A047;">
+          <span style="font-size:1.3rem;flex-shrink:0;">✅</span>
+          <p style="font-weight:800;color:#37474F;font-size:0.95rem;">AI bisa membaca <strong>foto rontgen & MRI</strong> lebih cepat dari dokter</p>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;background:#E3F2FD;border-radius:14px;padding:12px 16px;border-left:5px solid #1565C0;">
+          <span style="font-size:1.3rem;flex-shrink:0;">✅</span>
+          <p style="font-weight:800;color:#37474F;font-size:0.95rem;">AI bisa mendeteksi penyakit dengan <strong>akurasi hingga 97%</strong></p>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;background:#FFF8E1;border-radius:14px;padding:12px 16px;border-left:5px solid #F9A825;">
+          <span style="font-size:1.3rem;flex-shrink:0;">✅</span>
+          <p style="font-weight:800;color:#37474F;font-size:0.95rem;">AI <strong>tidak menggantikan dokter</strong> – mereka bekerja sama sebagai tim</p>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;background:#E0F2F1;border-radius:14px;padding:12px 16px;border-left:5px solid #00897B;">
+          <span style="font-size:1.3rem;flex-shrink:0;">✅</span>
+          <p style="font-weight:800;color:#37474F;font-size:0.95rem;">AI medis sudah <strong>menyelamatkan banyak nyawa</strong> di seluruh dunia!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="text-center py-6 reveal">
+      <div style="display:inline-flex;align-items:center;gap:12px;background:#fff;border-radius:24px;padding:16px 28px;box-shadow:0 8px 24px rgba(46,125,50,0.15);border:3px solid #A5D6A7;">
+        <span style="font-size:2.5rem;" class="robo-anim">🤖</span>
+        <div style="text-align:left;">
+          <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#1B5E20;">Hari 23 selesai! Kamu hebat, Aslan! 🎉</p>
+          <p style="font-size:0.85rem;font-weight:700;color:#546E7A;">Besok: Mobil yang Bisa Nyetir Sendiri! 🚗🤖</p>
+        </div>
+        <span class="heart-anim" style="font-size:2rem;">❤️</span>
+      </div>
+      <div class="mt-4" style="font-size:0.8rem;font-weight:700;color:#90A4AE;">
+        🌟 Petualangan Aslan di Negeri AI • Hari 23 dari 30
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /wrapper -->
+
+
+<script>
+  // ===== SCROLL REVEAL =====
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ===== QUIZ =====
+  const answered = { q1: false, q2: false };
+
+  function checkAnswer(btn, qId, isCorrect) {
+    if (answered[qId]) return;
+    answered[qId] = true;
+
+    const opts = document.querySelectorAll(`#${qId}-options .quiz-option`);
+    opts.forEach(o => { o.style.pointerEvents = 'none'; o.style.opacity = '0.65'; });
+    btn.style.opacity = '1';
+    btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+    if (!isCorrect) {
+      opts.forEach(o => {
+        if (o.getAttribute('onclick').includes('true')) {
+          o.style.opacity = '1';
+          o.classList.add('correct');
+        }
+      });
+    }
+
+    const result = document.getElementById(`${qId}-result`);
+    result.style.display = 'block';
+
+    if (isCorrect) {
+      result.innerHTML = `
+        <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:3px solid #43A047;border-radius:16px;padding:14px 18px;text-align:center;">
+          <p style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#2E7D32;">🎉 Benar sekali, Aslan! Luar biasa!</p>
+          <p style="font-size:0.88rem;font-weight:700;color:#388E3C;margin-top:4px;">
+            ${qId === 'q1'
+              ? 'Tepat! AI bisa menganalisis foto rontgen ribuan kali lebih cepat dan membantu dokter mendeteksi penyakit lebih awal!'
+              : 'Betul! AI adalah asisten dokter yang sangat canggih – mereka bekerja sama, bukan saling menggantikan!'}
+          </p>
+        </div>`;
+    } else {
+      result.innerHTML = `
+        <div style="background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border:3px solid #E53935;border-radius:16px;padding:14px 18px;text-align:center;">
+          <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#C62828;">😊 Hampir! Lihat jawaban yang benar ya!</p>
+          <p style="font-size:0.88rem;font-weight:700;color:#B71C1C;margin-top:4px;">
+            ${qId === 'q1'
+              ? 'Jawaban B benar! AI bisa membaca foto rontgen dengan cepat dan akurat untuk membantu dokter.'
+              : 'Jawaban C benar! AI membantu dokter – seperti kacamata membantu orang yang kurang awas melihat lebih jelas!'}
+          </p>
+        </div>`;
+    }
+
+    if (answered.q1 && answered.q2) {
+      setTimeout(showFinalResult, 500);
+    }
+  }
+
+  function showFinalResult() {
+    const el = document.getElementById('final-result');
+    el.style.display = 'block';
+    el.innerHTML = `
+      <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:3px solid #43A047;border-radius:20px;padding:20px;text-align:center;animation:bounceIn 0.5s ease;">
+        <div style="font-size:3rem;margin-bottom:8px;">🏥🤖❤️</div>
+        <p style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:#1B5E20;">Quiz Selesai! Kamu Hebat!</p>
+        <p style="font-size:1rem;font-weight:800;color:#388E3C;margin-top:6px;">
+          Sekarang kamu sudah tahu bagaimana AI membantu dokter menyelamatkan nyawa! <br>
+          Mungkin suatu hari kamu bisa jadi dokter AI! 🩺🚀
+        </p>
+      </div>`;
+  }
+</script>
+
+</body>
+</html>

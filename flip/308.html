@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 8: Sampah Mengambang di Lautan Digital | Kapten Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deep: #071525;
+  --ocean: #0c2d52;
+  --mid: #13457a;
+  --surface: #1a6aab;
+  --sky: #3b9fd8;
+  --foam: #d6eef8;
+  --gold: #ffc107;
+  --gold2: #ffdd57;
+  --orange: #ff8c00;
+  --coral: #ff5252;
+  --trash-green: #7cb342;
+  --trash-brown: #795548;
+  --white: #ffffff;
+  --warn: #ff6f00;
+  --good: #2e7d32;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:linear-gradient(170deg,#071525 0%,#0c2d52 45%,#1a6aab 80%,#3b9fd8 100%);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── OCEAN BG ── */
+.bg-wrap{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.bg-stars{position:absolute;top:0;left:0;right:0;height:45%;}
+.bstar{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,3s) infinite var(--delay,0s);}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:1;transform:scale(1.6)}}
+
+.wave-row{position:absolute;bottom:0;left:-100%;width:300%;border-radius:60% 60% 0 0;}
+.w1{height:90px;background:rgba(26,106,171,.25);animation:wv 9s ease-in-out infinite;bottom:0;}
+.w2{height:80px;background:rgba(19,69,122,.3);animation:wv 12s ease-in-out infinite reverse;bottom:8px;}
+.w3{height:70px;background:rgba(12,45,82,.4);animation:wv 15s ease-in-out infinite;bottom:14px;}
+@keyframes wv{0%,100%{transform:translateX(0)}50%{transform:translateX(8%)}}
+
+/* floating trash pieces in background */
+.bg-trash{position:absolute;font-size:var(--ts,20px);opacity:.18;animation:drift var(--dd,14s) ease-in-out infinite var(--dl,0s);pointer-events:none;}
+@keyframes drift{
+  0%{transform:translate(0,0) rotate(0deg);}
+  25%{transform:translate(20px,-12px) rotate(15deg);}
+  50%{transform:translate(5px,10px) rotate(-8deg);}
+  75%{transform:translate(-15px,-5px) rotate(20deg);}
+  100%{transform:translate(0,0) rotate(0deg);}
+}
+
+/* bubble */
+.bub{position:absolute;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.35),rgba(255,255,255,.05));
+  border:1px solid rgba(255,255,255,.15);
+  animation:bubUp linear infinite;}
+@keyframes bubUp{0%{transform:translateY(100vh);opacity:0}10%{opacity:.8}90%{opacity:.3}100%{transform:translateY(-10vh);opacity:0}}
+
+/* ── BACK BUTTON ── */
+.back-btn{
+  position:fixed;top:14px;left:14px;z-index:9999;
+  background:linear-gradient(135deg,#ffc107,#ff8c00);
+  color:#071525;border:none;padding:9px 18px;border-radius:50px;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;
+  cursor:pointer;box-shadow:0 4px 14px rgba(255,193,7,.55);
+  text-decoration:none;display:flex;align-items:center;gap:6px;
+  transition:all .3s;letter-spacing:.2px;
+}
+.back-btn:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 6px 20px rgba(255,193,7,.75);}
+
+/* ── BOOK ── */
+.book{position:relative;z-index:10;max-width:840px;margin:0 auto;padding:18px 14px 88px;}
+
+.page{display:none;animation:pgIn .55s cubic-bezier(.4,0,.2,1);}
+.page.active{display:block;}
+@keyframes pgIn{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:none}}
+
+/* ── CARD BASE ── */
+.card{
+  background:linear-gradient(148deg,rgba(255,255,255,.97),rgba(214,238,248,.95));
+  border-radius:28px;padding:34px 30px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.3),inset 0 1px 0 rgba(255,255,255,.8);
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,#ffc107,#ff5252,#1a6aab,#7cb342,#ffc107);
+  background-size:300%;animation:shimBar 5s linear infinite;
+}
+@keyframes shimBar{0%{background-position:0%}100%{background-position:300%}}
+
+.page-tag{
+  position:absolute;top:14px;right:14px;
+  background:linear-gradient(135deg,rgba(255,193,7,.18),rgba(255,140,0,.18));
+  border:1px solid rgba(255,193,7,.4);border-radius:20px;
+  padding:4px 12px;font-size:11px;font-weight:800;color:var(--gold);
+  letter-spacing:.4px;text-transform:uppercase;
+}
+
+/* ── COVER ── */
+.cover-card{
+  background:linear-gradient(155deg,#071525 0%,#0c2d52 45%,#13457a 80%,#1a3d6b 100%);
+  color:#fff;text-align:center;padding:48px 28px 42px;
+  min-height:530px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.cover-card::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 20% 25%,rgba(255,82,82,.1) 0%,transparent 50%),
+             radial-gradient(circle at 80% 75%,rgba(255,193,7,.1) 0%,transparent 50%);
+  pointer-events:none;
+}
+
+.cover-ocean-scene{
+  position:relative;width:100%;height:170px;margin:18px 0;
+  overflow:hidden;
+}
+.cover-waves{
+  position:absolute;bottom:0;left:0;right:0;height:60px;
+  background:linear-gradient(0deg,rgba(26,106,171,.6),transparent);
+  border-radius:50% 50% 0 0;animation:wv 6s ease-in-out infinite;
+}
+.cover-trash-item{
+  position:absolute;font-size:var(--s,26px);
+  animation:floatTrash var(--ft,4s) ease-in-out infinite var(--fd,0s);
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.5));
+}
+@keyframes floatTrash{
+  0%,100%{transform:translateY(0) rotate(var(--r0,-5deg));}
+  50%{transform:translateY(-10px) rotate(var(--r1,5deg));}
+}
+.cover-ship{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  font-size:42px;animation:shipRock 4s ease-in-out infinite;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.6));z-index:5;
+}
+@keyframes shipRock{
+  0%,100%{transform:translateX(-50%) rotate(-3deg) translateY(0);}
+  50%{transform:translateX(-45%) rotate(3deg) translateY(-8px);}
+}
+
+.cover-badge{
+  background:linear-gradient(135deg,rgba(255,82,82,.2),rgba(255,193,7,.2));
+  border:2px solid rgba(255,82,82,.4);border-radius:50px;
+  padding:5px 18px;font-size:12px;font-weight:700;color:#ff8a80;
+  letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;
+}
+.cover-title{
+  font-family:'Fredoka One',cursive;font-size:clamp(26px,6vw,46px);
+  line-height:1.15;color:#fff;text-shadow:0 3px 10px rgba(0,0,0,.5);margin-bottom:8px;
+}
+.cover-title span{color:var(--gold);display:block;}
+.cover-sub{font-size:14px;color:rgba(255,255,255,.7);font-weight:600;margin-bottom:20px;}
+.captain-badge{
+  background:linear-gradient(135deg,#ffc107,#ff8c00);color:#071525;
+  padding:10px 24px;border-radius:50px;font-weight:900;font-size:16px;
+  display:inline-flex;align-items:center;gap:8px;
+  box-shadow:0 6px 20px rgba(255,193,7,.55);animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 6px 20px rgba(255,193,7,.5)}50%{box-shadow:0 6px 30px rgba(255,193,7,.9)}}
+
+.series-flag{
+  position:absolute;top:16px;right:16px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:10px;padding:6px 12px;font-size:11px;font-weight:700;
+  color:rgba(255,255,255,.7);text-align:center;line-height:1.4;
+}
+
+/* ── SECTION HEADER ── */
+.sec-hdr{display:flex;align-items:center;gap:14px;margin-bottom:22px;}
+.sec-ico{width:54px;height:54px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.15);}
+.sec-title{font-family:'Fredoka One',cursive;font-size:clamp(19px,4vw,27px);color:#1a237e;line-height:1.2;}
+.sec-sub{font-size:12px;color:var(--surface);font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.4px;}
+
+/* ── STORY TEXT ── */
+.story{font-size:16px;line-height:1.85;color:#1a2a4a;font-weight:600;}
+.story p{margin-bottom:15px;}
+.callout{
+  background:linear-gradient(135deg,#fff8e1,#ffe082);
+  border-left:4px solid var(--gold);border-radius:0 14px 14px 0;
+  padding:14px 18px;margin:16px 0;font-style:italic;
+  font-size:15px;color:#5d3a00;font-weight:700;
+}
+.callout::before{content:'🌟 ';}
+
+.navi-speech{
+  background:linear-gradient(135deg,#e8f5e9,#c8e6c9);
+  border-radius:16px;padding:16px 18px;
+  border-left:4px solid #2e7d32;margin:16px 0;
+  display:flex;align-items:flex-start;gap:12px;
+}
+.navi-speech .navi-ico{font-size:34px;flex-shrink:0;}
+.navi-speech .navi-txt{font-size:15px;font-weight:700;color:#1b3a2a;line-height:1.6;}
+.navi-speech .navi-name{font-family:'Fredoka One',cursive;color:#1b5e20;font-size:15px;margin-bottom:4px;}
+
+/* ── OCEAN SCENE BOX ── */
+.ocean-box{
+  background:linear-gradient(180deg,#0c2d52 0%,#071525 100%);
+  border-radius:18px;padding:22px 18px;position:relative;overflow:hidden;margin:16px 0;
+}
+.ocean-box-txt{color:rgba(255,255,255,.9);font-size:15px;font-weight:700;line-height:1.7;position:relative;z-index:2;}
+.ocean-box::after{content:'';position:absolute;bottom:0;left:0;right:0;height:30px;background:rgba(26,106,171,.15);border-radius:50% 50% 0 0;}
+
+/* ── TRASH ITEMS INTERACTIVE ── */
+.trash-sea{
+  position:relative;background:linear-gradient(180deg,#1a6aab 0%,#0c2d52 100%);
+  border-radius:22px;padding:24px 18px 18px;overflow:hidden;
+  min-height:300px;margin:18px 0;
+}
+.trash-sea-waves{
+  position:absolute;bottom:0;left:0;right:0;height:50px;
+  background:rgba(255,255,255,.06);border-radius:60% 60% 0 0;
+  animation:wv 7s ease-in-out infinite;
+}
+.trash-sea-label{
+  font-family:'Fredoka One',cursive;font-size:14px;color:rgba(255,255,255,.7);
+  text-align:center;margin-bottom:16px;letter-spacing:.3px;
+}
+
+.trash-piece{
+  position:absolute;cursor:pointer;
+  transition:transform .25s cubic-bezier(.4,0,.2,1),opacity .4s;
+  animation:floatTrash var(--ft,3.5s) ease-in-out infinite var(--fd,0s);
+  filter:drop-shadow(0 3px 8px rgba(0,0,0,.45));
+  z-index:5;
+}
+.trash-piece:hover{transform:scale(1.3) !important;filter:drop-shadow(0 0 12px rgba(255,193,7,.8));}
+.trash-piece.removed{
+  animation:trashPop .5s cubic-bezier(.4,0,.2,1) forwards !important;
+  pointer-events:none;
+}
+@keyframes trashPop{
+  0%{transform:scale(1);opacity:1;}
+  40%{transform:scale(1.4) rotate(20deg);opacity:1;}
+  100%{transform:scale(0) rotate(45deg) translateY(-30px);opacity:0;}
+}
+
+.trash-label-popup{
+  position:absolute;z-index:20;
+  background:linear-gradient(135deg,#212121,#1a1a2e);color:#fff;
+  border-radius:14px;padding:10px 14px;font-size:12px;font-weight:700;
+  box-shadow:0 8px 24px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.15);
+  max-width:180px;line-height:1.5;pointer-events:none;
+  animation:popIn .3s cubic-bezier(.4,0,.2,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.trash-label-popup::before{
+  content:'⚠️ SAMPAH: ';color:#ff8a80;display:block;
+  font-size:10px;margin-bottom:3px;font-family:'Fredoka One',cursive;
+}
+.trash-hint{font-size:12px;color:rgba(255,255,255,.6);text-align:center;margin-top:8px;font-weight:700;}
+
+/* ship in trash sea */
+.sea-ship{
+  position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
+  font-size:36px;z-index:10;
+  animation:shipRock 5s ease-in-out infinite;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.6));
+}
+
+/* ── TRASH TYPES GRID ── */
+.trash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin:18px 0;}
+.trash-type-card{
+  border-radius:18px;padding:16px 14px;cursor:pointer;
+  transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;
+  border:2px solid transparent;
+}
+.trash-type-card:hover{transform:translateY(-5px);border-color:rgba(255,255,255,.35);box-shadow:0 12px 30px rgba(0,0,0,.25);}
+.trash-type-card.revealed{border-color:var(--gold);box-shadow:0 8px 24px rgba(255,193,7,.35);}
+.tt-emoji{font-size:38px;display:block;margin-bottom:8px;animation:floatEmoji 3s ease-in-out infinite;}
+@keyframes floatEmoji{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) translateY(-5px)}}
+.tt-name{font-family:'Fredoka One',cursive;font-size:17px;color:#fff;margin-bottom:4px;}
+.tt-short{font-size:12px;color:rgba(255,255,255,.75);font-weight:700;line-height:1.4;}
+.tt-detail{
+  margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18);
+  display:none;animation:expandIn .35s ease;
+}
+.tt-detail.open{display:block;}
+@keyframes expandIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.tt-detail-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:12px;color:rgba(255,255,255,.88);font-weight:600;line-height:1.4;}
+
+/* ── WHY SO MUCH TRASH ── */
+.reason-list{display:grid;gap:13px;margin:18px 0;}
+.reason-card{
+  background:linear-gradient(135deg,#fff3e0,#ffe0b2);
+  border-radius:16px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;
+  border-left:4px solid #ff8c00;transition:transform .2s;
+}
+.reason-card:hover{transform:translateX(4px);}
+.reason-num{
+  width:34px;height:34px;background:linear-gradient(135deg,#ff8c00,#e65100);
+  color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'Fredoka One',cursive;font-size:17px;flex-shrink:0;
+  box-shadow:0 3px 8px rgba(255,140,0,.4);
+}
+.reason-txt{font-size:14px;font-weight:700;color:#3e2000;line-height:1.5;}
+.reason-txt small{display:block;font-weight:600;color:#795548;font-size:12px;margin-top:2px;}
+
+/* ── DANGER EFFECTS ── */
+.danger-wrap{
+  background:linear-gradient(135deg,#ffebee,#ffcdd2);
+  border:2px solid #e53935;border-radius:20px;padding:22px 18px;margin:18px 0;
+}
+.danger-title{font-family:'Fredoka One',cursive;color:#b71c1c;font-size:19px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.danger-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;font-size:14px;font-weight:700;color:#7f1d1d;line-height:1.5;}
+
+/* ── HOW TO SPOT TRASH ── */
+.detect-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0;}
+.detect-col{border-radius:18px;padding:18px 16px;}
+.detect-title{font-family:'Fredoka One',cursive;font-size:17px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.detect-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;font-size:13px;font-weight:700;line-height:1.4;}
+
+/* ── LESSON ── */
+.lesson-list{display:grid;gap:13px;margin:18px 0;}
+.lesson-item{
+  background:#fff;border-radius:16px;padding:15px 17px;
+  display:flex;align-items:flex-start;gap:13px;
+  box-shadow:0 4px 12px rgba(0,0,0,.07);border:2px solid #e3f2fd;
+  transition:all .3s;
+}
+.lesson-item:hover{border-color:#42a5f5;transform:translateY(-3px);box-shadow:0 8px 20px rgba(30,136,229,.14);}
+.lesson-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;}
+.lesson-txt{font-size:14px;font-weight:700;color:#1a237e;line-height:1.5;}
+.lesson-txt small{display:block;font-weight:600;color:#5c6bc0;font-size:12px;margin-top:2px;}
+
+/* ── CHALLENGE ── */
+.challenge-wrap{
+  background:linear-gradient(135deg,#0c2d52,#1a6aab);
+  border-radius:24px;padding:26px 22px;color:#fff;position:relative;overflow:hidden;margin:18px 0;
+}
+.challenge-wrap::before{
+  content:'';position:absolute;top:-20%;right:-5%;
+  width:180px;height:180px;
+  background:radial-gradient(circle,rgba(255,193,7,.18),transparent 60%);border-radius:50%;
+}
+.challenge-title{font-family:'Fredoka One',cursive;font-size:20px;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.ch-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;font-size:14px;font-weight:700;line-height:1.5;}
+.ch-box{
+  width:22px;height:22px;border:2px solid rgba(255,255,255,.45);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  cursor:pointer;transition:all .3s;margin-top:1px;font-size:13px;color:transparent;
+}
+.ch-box.chk{background:var(--gold);border-color:var(--gold);color:#071525;animation:chkBounce .4s ease;}
+@keyframes chkBounce{0%{transform:scale(1)}50%{transform:scale(1.45)}100%{transform:scale(1)}}
+
+/* ── CLOSING ── */
+.close-card{
+  background:linear-gradient(155deg,#1a6aab,#0c2d52);
+  color:#fff;text-align:center;padding:44px 26px;position:relative;overflow:hidden;
+}
+.close-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 25% 70%,rgba(255,193,7,.14),transparent 50%),
+             radial-gradient(circle at 75% 30%,rgba(59,159,216,.2),transparent 50%);
+}
+.close-big{font-size:68px;display:block;margin-bottom:14px;animation:spinWobble 6s ease-in-out infinite;}
+@keyframes spinWobble{0%{transform:rotate(-6deg) scale(1)}25%{transform:rotate(6deg) scale(1.1)}50%{transform:rotate(-6deg) scale(1)}75%{transform:rotate(6deg) scale(1.1)}100%{transform:rotate(-6deg) scale(1)}}
+.close-title{font-family:'Fredoka One',cursive;font-size:clamp(20px,5vw,32px);color:var(--gold);margin-bottom:12px;line-height:1.2;}
+.close-txt{font-size:15px;line-height:1.75;color:rgba(255,255,255,.9);font-weight:600;max-width:500px;margin:0 auto 20px;}
+.next-box{
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:16px;padding:14px 18px;font-size:13px;font-weight:700;color:rgba(255,255,255,.82);
+}
+.next-box strong{color:var(--gold2);font-family:'Fredoka One',cursive;font-size:15px;display:block;margin-top:4px;}
+
+/* ── NAV BAR ── */
+.nav-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:9999;
+  padding:10px 18px 16px;
+  background:linear-gradient(0deg,rgba(7,21,37,.97) 0%,transparent 100%);
+}
+.nav-inner{max-width:840px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.nav-btn{
+  background:linear-gradient(135deg,#ffc107,#ff8c00);color:#071525;border:none;
+  padding:11px 20px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:15px;
+  cursor:pointer;box-shadow:0 4px 14px rgba(255,193,7,.5);
+  transition:all .3s;display:flex;align-items:center;gap:6px;min-width:100px;justify-content:center;
+}
+.nav-btn:disabled{background:rgba(255,255,255,.12);color:rgba(255,255,255,.35);box-shadow:none;cursor:not-allowed;}
+.nav-btn:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,193,7,.75);}
+.nav-progress{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.prog-label{font-size:11px;font-weight:800;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.4px;}
+.prog-track{width:100%;height:8px;background:rgba(255,255,255,.13);border-radius:10px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#ffc107,#ff8c00);border-radius:10px;transition:width .5s ease;box-shadow:0 0 8px rgba(255,193,7,.6);}
+.prog-dots{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:220px;}
+.pdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .3s;cursor:pointer;}
+.pdot.vis{background:rgba(255,193,7,.45);}
+.pdot.cur{background:var(--gold);transform:scale(1.45);box-shadow:0 0 6px rgba(255,193,7,.8);}
+
+/* ── SOUND BTN ── */
+.sound-btn{
+  position:fixed;bottom:78px;right:14px;z-index:9998;
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(26,106,171,.9),rgba(19,69,122,.9));
+  border:2px solid rgba(255,255,255,.25);color:#fff;font-size:19px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(0,0,0,.35);transition:all .3s;backdrop-filter:blur(8px);
+}
+.sound-btn:hover{transform:scale(1.12);}
+
+/* ── CONFETTI ── */
+.conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;z-index:99999;animation:confFall linear forwards;}
+@keyframes confFall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+/* ── CLEANUP METER ── */
+.cleanup-bar-wrap{margin:14px 0;}
+.cleanup-label{display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#1a2a4a;margin-bottom:6px;}
+.cleanup-track{height:18px;background:#e0e0e0;border-radius:10px;overflow:hidden;position:relative;}
+.cleanup-fill{
+  height:100%;border-radius:10px;
+  background:linear-gradient(90deg,#ff5252,#ffc107,#66bb6a);
+  transition:width .7s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 10px rgba(255,193,7,.5);
+  display:flex;align-items:center;justify-content:flex-end;padding-right:8px;
+}
+.cleanup-fill span{font-size:11px;font-weight:800;color:#fff;}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .card{padding:22px 16px;}
+  .cover-card{padding:38px 18px 34px;min-height:470px;}
+  .trash-grid{grid-template-columns:1fr 1fr;}
+  .detect-grid{grid-template-columns:1fr;}
+}
+@media(max-width:380px){
+  .trash-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div class="bg-wrap">
+  <div class="bg-stars" id="starsEl"></div>
+  <!-- bg trash -->
+  <div class="bg-trash" style="--ts:22px;--dd:16s;--dl:0s;top:15%;left:8%;">🗑️</div>
+  <div class="bg-trash" style="--ts:18px;--dd:20s;--dl:3s;top:30%;left:70%;">📢</div>
+  <div class="bg-trash" style="--ts:16px;--dd:13s;--dl:1.5s;top:60%;left:20%;">💬</div>
+  <div class="bg-trash" style="--ts:20px;--dd:18s;--dl:5s;top:70%;left:85%;">🎣</div>
+  <div class="bg-trash" style="--ts:24px;--dd:22s;--dl:2s;top:45%;left:45%;">📧</div>
+  <div id="bubblesEl"></div>
+  <div class="wave-row w1"></div>
+  <div class="wave-row w2"></div>
+  <div class="wave-row w3"></div>
+</div>
+
+<a href="../perpustakaan.html" class="back-btn">← Kembali ke Perpustakaan</a>
+<button class="sound-btn" id="soundBtn" title="Suara ombak">🌊</button>
+
+<div class="book">
+
+<!-- ══════════ PAGE 1 : COVER ══════════ -->
+<div class="page active" id="pg0">
+  <div class="card cover-card">
+    <div class="series-flag">📚 Seri Kapten Cerdas<br>Hari ke-8 dari 30</div>
+    <div class="cover-badge">⚠️ Minggu 2 · Hari 8</div>
+
+    <div class="cover-ocean-scene">
+      <!-- floating trash -->
+      <div class="cover-trash-item" style="--s:32px;--ft:3s;--fd:0s;--r0:-8deg;--r1:8deg;left:6%;bottom:55%;">🗑️</div>
+      <div class="cover-trash-item" style="--s:28px;--ft:4s;--fd:.5s;--r0:5deg;--r1:-10deg;left:20%;bottom:40%;">📢</div>
+      <div class="cover-trash-item" style="--s:24px;--ft:3.5s;--fd:1s;--r0:-12deg;--r1:6deg;left:35%;bottom:62%;">💬</div>
+      <div class="cover-trash-item" style="--s:30px;--ft:5s;--fd:.8s;--r0:6deg;--r1:-6deg;right:28%;bottom:45%;">🎣</div>
+      <div class="cover-trash-item" style="--s:26px;--ft:3.8s;--fd:.3s;--r0:-4deg;--r1:9deg;right:10%;bottom:58%;">📧</div>
+      <div class="cover-trash-item" style="--s:20px;--ft:4.5s;--fd:1.5s;--r0:8deg;--r1:-5deg;left:55%;bottom:35%;">🪣</div>
+      <div class="cover-waves"></div>
+      <div class="cover-ship">⛵</div>
+    </div>
+
+    <h1 class="cover-title">
+      Sampah Mengambang<br>
+      <span>di Lautan Digital!</span>
+    </h1>
+    <p class="cover-sub">Apa itu sampah digital dan bagaimana cara menghindarinya?</p>
+    <div class="captain-badge">⚓ Kapten Aslan</div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 2 : RECAP ══════════ -->
+<div class="page" id="pg1">
+  <div class="card" style="position:relative">
+    <div class="page-tag">📖 Hal. 2</div>
+    <div class="sec-hdr">
+      <div class="sec-ico" style="background:linear-gradient(135deg,#1a6aab,#0c2d52)">📜</div>
+      <div>
+        <div class="sec-title">Perjalanan Kapten Aslan — Minggu Pertama!</div>
+        <div class="sec-sub">Kilasan 7 Hari Pertama di Lautan Digital</div>
+      </div>
+    </div>
+    <div class="story">
+      <p>Hei, Kapten Aslan! Kamu sudah melewati <strong>7 hari yang luar biasa</strong> di Lautan Digital. Mari kita ingat kembali perjalananmu!</p>
+    </div>
+    <div style="display:grid;gap:10px;margin:16px 0;">
+      <div style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-radius:13px;padding:12px 15px;display:flex;align-items:center;gap:11px;">
+        <span style="font-size:22px">🌊</span>
+        <div style="flex:1">
+          <div style="font-family:'Fredoka One',cursive;color:#1565c0;font-size:14px;">Hari 1–3</div>
+          <div style="font-size:13px;font-weight:700;color:#1a2a4a;">Menemukan lautan, mendapat kapal ajaib, dan belajar arus Internet</div>
+        </div>
+        <span style="font-size:18px">✅</span>
+      </div>
+      <div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:13px;padding:12px 15px;display:flex;align-items:center;gap:11px;">
+        <span style="font-size:22px">🗺️</span>
+        <div style="flex:1">
+          <div style="font-family:'Fredoka One',cursive;color:#2e7d32;font-size:14px;">Hari 4–5</div>
+          <div style="font-size:13px;font-weight:700;color:#1a2a4a;">Menjelajahi pulau-pulau dan memahami angin viral yang kencang</div>
+        </div>
+        <span style="font-size:18px">✅</span>
+      </div>
+      <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border-radius:13px;padding:12px 15px;display:flex;align-items:center;gap:11px;">
+        <span style="font-size:22px">🛡️</span>
+        <div style="flex:1">
+          <div style="font-family:'Fredoka One',cursive;color:#e65100;font-size:14px;">Hari 6–7</div>
+          <div style="font-size:13px;font-weight:700;color:#1a2a4a;">Belajar membaca peta rahasia dan aturan keselamatan berlayar</div>
+        </div>
+        <span style="font-size:18px">✅</span>
+      </div>
+    </div>
+    <div class="callout">Sekarang kamu sudah siap memasuki Minggu 2 — saatnya belajar membedakan mana yang berguna dan mana yang harus dihindari!</div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 3 : STORY ══════════ -->
+<div class="page" id="pg2">
+  <div class="card" style="position:relative">
+    <div class="page-tag">📖 Hal. 3</div>
+    <div class="sec-hdr">
+      <div class="sec-ico" style="background:linear-gradient(135deg,#ff5252,#c62828)">😱</div>
+      <div>
+        <div class="sec-title">Ada Apa di Laut Hari Ini?!</div>
+        <div class="sec-sub">Awal Cerita Hari Ke-8</div>
+      </div>
+    </div>
+    <div class="story">
+      <p>Pagi itu, Kapten Aslan melangkah ke dek kapalnya dengan semangat membara. Matahari baru saja terbit, dan lautan digital berkilau keemasan.</p>
+      <p>Tapi tunggu...</p>
+    </div>
+
+    <div class="ocean-box">
+      <div class="ocean-box-txt">
+        😰 <em>"Navigator Navi... apa itu yang mengambang di mana-mana?"</em> bisik Kapten Aslan sambil mengerutkan dahi.<br><br>
+        Di depan matanya, air laut yang tadinya biru jernih kini penuh dengan... <strong style="color:#ff8a80;">sampah!</strong> Ratusan, bahkan ribuan benda aneh mengapung di permukaan — benda-benda berwarna mencolok, bersuara keras, terus bergerak, dan terus muncul tanpa henti!
+      </div>
+    </div>
+
+    <div class="story">
+      <p>Ada kantong plastik iklan yang terbang ke mana-mana. Ada botol kosong berisi kata-kata bohong. Ada jaring nelayan penipu yang siap menjebak siapa saja yang tidak waspada.</p>
+    </div>
+
+    <div class="navi-speech">
+      <div class="navi-ico">🦅</div>
+      <div>
+        <div class="navi-name">Navigator Navi berkata:</div>
+        <div class="navi-txt">"Kapten Aslan, selamat datang di kenyataan Lautan Digital! Ini yang disebut SAMPAH DIGITAL. Hari ini kita akan belajar mengenalinya, memahaminya, dan yang terpenting — cara menghindarinya!"</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 4 : WHAT IS DIGITAL TRASH (INTERACTIVE) ══════════ -->
+<div class="page" id="pg3">
+  <div class="card" style="position:relative">
+    <div class="page-tag">📖 Hal. 4</div>
+    <div class="sec-hdr">
+      <div class="sec-ico" style="background:linear-gradient(135deg,#ff8c00,#e65100)">🗑️</div>
+      <div>
+        <div class="sec-title">Apa Saja Jenis Sampah Digital?</div>
+        <div class="sec-sub">Ketuk setiap sampah untuk mengenalnya! ✨</div>
+      </div>
+    </div>
+
+    <div class="story">
+      <p>Navi mengeluarkan teropong ajaibnya dan mulai mengidentifikasi setiap jenis sampah yang mengambang. <strong>Ketuk setiap kartu untuk membuka informasi!</strong></p>
+    </div>
+
+    <div class="trash-grid">
+
+      <div class="trash-type-card" style="background:linear-gradient(135deg,#c62828,#e53935);" onclick="toggleTrash(this,'t1')">
+        <span class="tt-emoji">📢</span>
+        <div class="tt-name">Iklan Berlebihan</div>
+        <div class="tt-short">Pop-up yang tidak pernah berhenti muncul</div>
+        <div class="tt-detail" id="t1">
+          <div class="tt-detail-row">💡 <span>Iklan yang muncul tiba-tiba, menutup layar, atau teriak "MENANG HADIAH!"</span></div>
+          <div class="tt-detail-row">⚠️ <span>Sering mengandung virus atau jebakan klik berbahaya</span></div>
+          <div class="tt-detail-row">🛡️ <span>Abaikan dan langsung tutup tanpa mengklik apapun!</span></div>
+        </div>
+      </div>
+
+      <div class="trash-type-card" style="background:linear-gradient(135deg,#4a148c,#6a1b9a);" onclick="toggleTrash(this,'t2')">
+        <span class="tt-emoji">🎣</span>
+        <div class="tt-name">Clickbait</div>
+        <div class="tt-short">Judul lebay yang tidak sesuai isinya</div>
+        <div class="tt-detail" id="t2">
+          <div class="tt-detail-row">💡 <span>"KAMU TIDAK AKAN PERCAYA APA YANG TERJADI!!!" — tapi isinya kosong</span></div>
+          <div class="tt-detail-row">⚠️ <span>Dibuat untuk menipu klik — isinya tidak sesuai judulnya sama sekali</span></div>
+          <div class="tt-detail-row">🛡️ <span>Baca dulu judulnya dengan kritis — apakah masuk akal?</span></div>
+        </div>
+      </div>
+
+      <div class="trash-type-card" style="background:linear-gradient(135deg,#1b5e20,#2e7d32);" onclick="toggleTrash(this,'t3')">
+        <span class="tt-emoji">💬</span>
+        <div class="tt-name">Berita Hoax</div>
+        <div class="tt-short">Informasi palsu yang disebarkan sebagai kebenaran</div>
+        <div class="tt-detail" id="t3">
+          <div class="tt-detail-row">💡 <span>Berita bohong yang dibuat sengaja untuk menipu orang banyak</span></div>
+          <div class="tt-detail-row">⚠️ <span>Bisa bikin orang panik, takut, atau marah tanpa alasan</span></div>
+          <div class="tt-detail-row">🛡️ <span>Selalu cek di sumber resmi — jangan langsung percaya!</span></div>
+        </div>
+      </div>
+
+      <div class="trash-type-card" style="background:linear-gradient(135deg,#bf360c,#e64a19);" onclick="toggleTrash(this,'t4')">
+        <span class="tt-emoji">📧</span>
+        <div class="tt-name">Spam & Phishing</div>
+        <div class="tt-short">Pesan sampah yang mencuri datamu</div>
+        <div class="tt-detail" id="t4">
+          <div class="tt-detail-row">💡 <span>Email/pesan yang pura-pura dari bank atau teman untuk mencuri info</span></div>
+          <div class="tt-detail-row">⚠️ <span>Bisa mencuri password, data pribadi, dan uang orang tua!</span></div>
+          <div class="tt-detail-row">🛡️ <span>Jangan pernah klik link dari pengirim yang tidak dikenal</span></div>
+        </div>
+      </div>
+
+      <div class="trash-type-card" style="background:linear-gradient(135deg,#0d47a1,#1565c0);" onclick="toggleTrash(this,'t5')">
+        <span class="tt-emoji">🤖</span>
+        <div class="tt-name">Konten Kosong</div>
+        <div class="tt-short">Konten panjang tapi tidak ada isinya</div>
+        <div class="tt-detail" id="t5">
+          <div class="tt-detail-row">💡 <span>Video atau artikel yang panjang tapi tidak mengajarkan apapun</span></div>
+          <div class="tt-detail-row">⚠️ <span>Membuang waktu berhargamu tanpa memberikan manfaat</span></div>
+          <div class="tt-detail-row">🛡️ <span>Tanya diri: "Apakah aku belajar sesuatu setelah ini?"</span></div>
+        </div>
+      </div>
+
+      <div class="trash-type-card" style="background:linear-gradient(135deg,#37474f,#546e7a);" onclick="toggleTrash(this,'t6')">
+        <span class="tt-emoji">😡</span>
+        <div class="tt-name">Konten Negatif</div>
+        <div class="tt-short">Konten yang memancing emosi dan kemarahan</div>
+        <div class="tt-detail" id="t6">
+          <div class="tt-detail-row">💡 <span>Video atau komentar yang membuat kamu marah, sedih, atau takut</span></div>
+          <div class="tt-detail-row">⚠️ <span>Dirancang untuk memancing emosi agar kamu terus menonton</span></div>
+          <div class="tt-detail-row">🛡️ <span>Jika merasa tidak nyaman — langsung berhenti dan tutup!</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 5 : TRASH SEA INTERACTIVE ══════════ -->
+<div class="page" id="pg4">
+  <div class="card" style="position:relative">
+    <div class="page-tag">📖 Hal. 5</div>
+    <div class="sec-hdr">
+      <div class="sec-ico" style="background:linear-gradient(135deg,#1a6aab,#0c2d52)">⛵</div>
+      <div>
+        <div class="sec-title">Bantu Kapten Aslan Membersihkan Laut!</div>
+        <div class="sec-sub">Ketuk sampah untuk membuangnya! 🗑️</div>
+      </div>
+    </div>
+
+    <div class="story">
+      <p>Kapal Kapten Aslan sudah dilengkapi dengan <strong>Jaring Pembersih Ajaib</strong>! Ketuk setiap sampah untuk membuangnya dari lautan digital!</p>
+    </div>
+
+    <div class="cleanup-bar-wrap">
+      <div class="cleanup-label">
+        <span>🌊 Kebersihan Lautan</span>
+        <span id="cleanPct">0%</span>
+      </div>
+      <div class="cleanup-track">
+        <div class="cleanup-fill" id="cleanFill" style="width:0%"><span id="cleanFillTxt"></span></div>
+      </div>
+    </div>
+
+    <div class="trash-sea" id="trashSea">
+      <div class="trash-sea-label">🎯 Ketuk semua sampah untuk membersihkan lautan!</div>
+      <div class="trash-sea-waves"></div>
+      <div class="sea-ship">⛵</div>
+
+      <!-- Trash items - will be positioned via JS -->
+      <div class="trash-piece" data-label="Iklan pop-up yang menipu!" style="--ft:3.2s;--fd:0s;font-size:32px;top:18%;left:8%;">📢</div>
+      <div class="trash-piece" data-label="Berita hoax yang menakutkan!" style="--ft:4s;--fd:.5s;font-size:28px;top:12%;left:30%;">💬</div>
+      <div class="trash-piece" data-label="Clickbait! Judul palsu!" style="--ft:3.5s;--fd:1s;font-size:30px;top:25%;left:55%;">🎣</div>
+      <div class="trash-piece" data-label="Spam email berbahaya!" style="--ft:4.5s;--fd:.3s;font-size:26px;top:45%;left:15%;">📧</div>
+      <div class="trash-piece" data-label="Konten kosong buang waktu!" style="--ft:3.8s;--fd:.8s;font-size:28px;top:50%;left:40%;">🤖</div>
+      <div class="trash-piece" data-label="Konten marah-marahan!" style="--ft:5s;--fd:1.2s;font-size:30px;top:40%;left:70%;">😡</div>
+      <div class="trash-piece" data-label="Informasi yang salah!" style="--ft:3s;--fd:.6s;font-size:24px;top:65%;left:22%;">❌</div>
+      <div class="trash-piece" data-label="Link penipuan berbahaya!" style="--ft:4.2s;--fd:1.5s;font-size:26px;top:60%;left:60%;">🪣</div>
+    </div>
+
+    <p class="trash-hint" id="trashHint">👆 Ketuk sampah di atas untuk membersihkan lautan Kapten Aslan!</p>
+    <div id="trashMsg" style="text-align:center;font-family:'Fredoka One',cursive;font-size:16px;color:#2e7d32;min-height:24px;margin-top:6px;"></div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 6 : WHY SO MUCH TRASH ══════════ -->
+<div class="page" id="pg5">
+  <div class="card" style="position:relative">
+    <div class="page-tag">📖 Hal. 6</div>
+    <div class="sec-hdr">
+      <div class="sec-ico" style="background:linear-gradient(135deg,#ff8c00,#e65100)">🤔</div>
+      <div>
+        <div class="sec-title">Kenapa Lautan Penuh Sampah?</div>
+        <div class="sec-sub">Rahasia di balik banjir sampah digital</div>
+      </div>
+    </div>
+    <div class="story">
+      <p>"Tapi Navi, kenapa ada begitu banyak sampah di sini?" tanya Kapten Aslan dengan heran. Navigator Navi menghela napas panjang dan mulai menjelaskan...</p>
+    </div>
+
+    <div class="reason-list">
+      <div class="reason-card">
+        <div class="reason-num">1</div>
+        <div class="reason-txt">
+          💰 <strong>Uang dari Klik</strong>
+          <small>Setiap kali kamu mengklik iklan atau berita bohong, seseorang mendapat uang. Itulah kenapa mereka terus membuat lebih banyak!</small>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-num">2</div>
+        <div class="reason-txt">
+          🤖 <strong>Robot Penyebar Otomatis</strong>
+          <small>Ada robot-robot digital yang menyebarkan sampah secara otomatis, ratusan kali per menit, tanpa henti!</small>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-num">3</div>
+        <div class="reason-txt">
+          😤 <strong>Emosi Manusia Mudah Dipancing</strong>
+          <small>Sampah digital sengaja dibuat untuk membuat kamu marah, takut, atau penasaran — karena emosi membuat orang klik tanpa berpikir!</small>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-num">4</div>
+        <div class="reason-txt">
+          📱 <strong>Siapa Saja Bisa Membuang Sampah</strong>
+          <small>Di Lautan Digital, siapapun bisa "membuang" konten tanpa tanggung jawab — tidak ada petugas kebersihan 24 jam!</small>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-num">5</div>
+        <div class="reason-txt">
+          🔄 <strong>Orang Ikut Menyebarkan Tanpa Sadar</strong>
+          <small>Ketika seseorang membagikan berita hoax ke temannya, mereka tanpa sadar jadi penyebar sampah digital!</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 7 : DANGERS ══════════ -->
+<div class="page" id="pg6">
+  <div class="card" style="position:relative">
+    <div class="page-tag">📖 Hal. 7</div>
+    <div class="sec-hdr">
+      <div class="sec-ico" style="background:linear-gradient(135deg,#c62828,#b71c1c)">☠️</div>
+      <div>
+        <div class="sec-title">Bahaya "Memakan" Sampah Digital!</div>
+        <div class="sec-sub">Apa yang terjadi kalau kamu terus konsumsi sampah?</div>
+      </div>
+    </div>
+    <div class="story">
+      <p>Di tepi pulau kecil, Kapten Aslan menemukan seorang pelaut muda yang kelihatan sangat bingung, pusing, dan lelah. Ternyata, ia telah menghabiskan 3 jam memakan sampah digital tanpa henti!</p>
+    </div>
+
+    <div class="ocean-box">
+      <div class="ocean-box-txt">
+        😵 <em>"Saya tidak tahu mana yang benar dan mana yang salah lagi... semua berita terasa menakutkan... kepala saya pusing..."</em> — keluh si pelaut muda.
+      </div>
+    </div>
+
+    <div class="danger-wrap">
+      <div class="danger-title">🚨 Efek Berbahaya Sampah Digital:</div>
+      <div class="danger-item"><span>🧠</span><span><strong>Bingung membedakan benar dan salah</strong> — Terlalu banyak informasi palsu membuat pikiranmu kacau!</span></div>
+      <div class="danger-item"><span>😰</span><span><strong>Takut dan cemas berlebihan</strong> — Berita hoax dirancang untuk menakut-nakuti sampai kamu panik!</span></div>
+      <div class="danger-item"><span>⌚</span><span><strong>Buang waktu berharga</strong> — 1 jam membaca sampah = 1 jam yang bisa dipakai belajar atau bermain!</span></div>
+      <div class="danger-item"><span>💸</span><span><strong>Tertipu uang atau data pribadi</strong> — Phishing dan penipuan digital bisa mencuri informasi penting!</span></div>
+      <div class="danger-item"><span>😡</span><span><strong>Jadi mudah marah dan tidak percaya</strong> — Konten negatif mengajarimu untuk selalu curiga dan marah!</span></div>
+      <div class="danger-item"><span>🦠</span><span><strong>Menyebarkan virus kebohongan</strong> — Kalau kamu membagikan hoax, kamu ikut menjadi penyebar sampah!</span></div>
+    </div>
+
+    <div class="callout">Kapten Aslan langsung memberikan "Obat Anti-Sampah" kepada pelaut muda itu — yaitu berpikir kritis sebelum mempercayai apapun yang dilihat di layar!</div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 8 : HOW TO DETECT ══════════ -->
+<div class="page" id="pg7">
+  <div class="card" style="position:relative">
+    <div class="page-tag">📖 Hal. 8</div>
+    <div class="sec-hdr">
+      <div class="sec-ico" style="background:linear-gradient(135deg,#2e7d32,#1b5e20)">🔍</div>
+      <div>
+        <div class="sec-title">Cara Membedakan Sampah vs Berlian!</div>
+        <div class="sec-sub">Radar Super Kapten Aslan</div>
+      </div>
+    </div>
+
+    <div class="story">
+      <p>Navi mengeluarkan "Kaca Pembesar Kebenaran" — alat ajaib yang bisa langsung membedakan sampah dari harta karun! Mari kita pelajari cara menggunakannya!</p>
+    </div>
+
+    <div class="detect-grid">
+      <div class="detect-col" style="background:linear-gradient(135deg,#ffebee,#ffcdd2);">
+        <div class="detect-title" style="color:#b71c1c">🗑️ Ciri-ciri SAMPAH</div>
+        <div class="detect-item"><span>🔴</span><span style="color:#7f1d1d">Judul terlalu lebay dan dramatis</span></div>
+        <div class="detect-item"><span>🔴</span><span style="color:#7f1d1d">Tidak ada nama pengarang/sumber</span></div>
+        <div class="detect-item"><span>🔴</span><span style="color:#7f1d1d">Membuatmu panik atau marah langsung</span></div>
+        <div class="detect-item"><span>🔴</span><span style="color:#7f1d1d">Ejaan dan tata bahasa berantakan</span></div>
+        <div class="detect-item"><span>🔴</span><span style="color:#7f1d1d">Minta klik atau share segera</span></div>
+        <div class="detect-item"><span>🔴</span><span style="color:#7f1d1d">Situs/akun baru dibuat atau aneh</span></div>
+      </div>
+
+      <div class="detect-col" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);">
+        <div class="detect-title" style="color:#1b5e20">💎 Ciri-ciri BERLIAN</div>
+        <div class="detect-item"><span>🟢</span><span style="color:#1a3d2e">Judul jelas dan tidak berlebihan</span></div>
+        <div class="detect-item"><span>🟢</span><span style="color:#1a3d2e">Ada nama penulis dan sumber terpercaya</span></div>
+        <div class="detect-item"><span>🟢</span><span style="color:#1a3d2e">Informasi bisa diverifikasi di tempat lain</span></div>
+        <div class="detect-item"><span>🟢</span><span style="color:#1a3d2e">Bahasa rapi dan mudah dipahami</span></div>
+        <div class="detect-item"><span>🟢</span><span style="color:#1a3d2e">Mengajak berpikir, bukan langsung percaya</span></div>
+        <div class="detect-item"><span>🟢</span><span style="color:#1a3d2e">Dari situs/akun yang sudah lama dan terpercaya</span></div>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-radius:16px;padding:16px 18px;border-left:4px solid #1a6aab;margin-top:10px;">
+      <div style="font-family:'Fredoka One',cursive;color:#1565c0;font-size:17px;margin-bottom:10px;">🧭 Formula STOP sebelum Share:</div>
+      <div style="display:grid;gap:8px;">
+        <div style="display:flex;gap:10px;font-size:14px;font-weight:700;color:#0d3b6e;"><span style="font-family:'Fredoka One',cursive;color:#e53935;font-size:18px;width:20px">S</span><span>— <strong>Stop!</strong> Jangan langsung klik atau bagikan</span></div>
+        <div style="display:flex;gap:10px;font-size:14px;font-weight:700;color:#0d3b6e;"><span style="font-family:'Fredoka One',cursive;color:#ff8c00;font-size:18px;width:20px">T</span><span>— <strong>Think!</strong> Apakah ini masuk akal?</span></div>
+        <div style="display:flex;gap:10px;font-size:14px;font-weight:700;color:#0d3b6e;"><span style="font-family:'Fredoka One',cursive;color:#ffc107;font-size:18px;width:20px">O</span><span>— <strong>Open!</strong> Cek sumber lain yang terpercaya</span></div>
+        <div style="display:flex;gap:10px;font-size:14px;font-weight:700;color:#0d3b6e;"><span style="font-family:'Fredoka One',cursive;color:#2e7d32;font-size:18px;width:20px">P</span><span>— <strong>Post/Pass!</strong> Bagikan hanya kalau sudah yakin benar</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 9 : LESSONS ══════════ -->
+<div class="page" id="pg8">
+  <div class="card" style="position:relative">
+    <div class="page-tag">📖 Hal. 9</div>
+    <div class="sec-hdr">
+      <div class="sec-ico" style="background:linear-gradient(135deg,#ffc107,#ff8c00)">💡</div>
+      <div>
+        <div class="sec-title">Pelajaran Hari Ini!</div>
+        <div class="sec-sub">Harta karun ilmu Kapten Aslan</div>
+      </div>
+    </div>
+
+    <div class="lesson-list">
+      <div class="lesson-item">
+        <div class="lesson-ico" style="background:linear-gradient(135deg,#ffebee,#ffcdd2)">🗑️</div>
+        <div class="lesson-txt">
+          Lautan Digital penuh dengan sampah digital
+          <small>Iklan berlebihan, clickbait, hoax, spam — semuanya mengambang menunggu untuk menipu</small>
+        </div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-ico" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2)">💰</div>
+        <div class="lesson-txt">
+          Sampah digital dibuat sengaja untuk mencari keuntungan
+          <small>Setiap klikmu adalah uang bagi pembuat sampah — jadilah klikker yang cerdas!</small>
+        </div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-ico" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0)">😰</div>
+        <div class="lesson-txt">
+          Sampah digital bisa merusak pikiranmu
+          <small>Hoax membuat bingung, konten negatif membuat cemas, spam bisa mencuri datamu!</small>
+        </div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-ico" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9)">🔍</div>
+        <div class="lesson-txt">
+          Gunakan formula STOP sebelum percaya atau menyebarkan
+          <small>Stop → Think → Open (cek sumber) → Post/Pass. Empat langkah yang menyelamatkan!</small>
+        </div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-ico" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb)">🦅</div>
+        <div class="lesson-txt">
+          Kapten cerdas tidak memakan sampah
+          <small>Kamu bertanggung jawab atas apa yang kamu baca, percaya, dan bagikan kepada orang lain!</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 10 : CHALLENGE ══════════ -->
+<div class="page" id="pg9">
+  <div class="card" style="position:relative">
+    <div class="page-tag">📖 Hal. 10</div>
+    <div class="sec-hdr">
+      <div class="sec-ico" style="background:linear-gradient(135deg,#1a6aab,#0c2d52)">🏆</div>
+      <div>
+        <div class="sec-title">Tantangan Hari Ini!</div>
+        <div class="sec-sub">Misi Khusus Kapten Aslan</div>
+      </div>
+    </div>
+
+    <div class="challenge-wrap">
+      <div class="challenge-title">⚓ Misi Anti-Sampah Digital!</div>
+
+      <div class="ch-item">
+        <div class="ch-box" onclick="doCheck(this)">✓</div>
+        <span>🗑️ <strong>Berburu Sampah!</strong> — Hari ini, ketika membuka YouTube atau media sosial, identifikasi minimal 3 konten yang kamu curigai sebagai "sampah digital". Tulis di buku catatanmu!</span>
+      </div>
+
+      <div class="ch-item">
+        <div class="ch-box" onclick="doCheck(this)">✓</div>
+        <span>🔍 <strong>Tes STOP!</strong> — Kalau kamu melihat berita atau video yang mengejutkan, terapkan formula STOP sebelum mempercayainya. Ceritakan hasilnya ke orang tua!</span>
+      </div>
+
+      <div class="ch-item">
+        <div class="ch-box" onclick="doCheck(this)">✓</div>
+        <span>📢 <strong>Detektif Clickbait!</strong> — Cari 2 judul clickbait di internet dan tuliskan kenapa itu disebut clickbait. Apa yang membuat judulnya menipu?</span>
+      </div>
+
+      <div class="ch-item">
+        <div class="ch-box" onclick="doCheck(this)">✓</div>
+        <span>👨‍👩‍👧 <strong>Ajari Orang Tua!</strong> — Jelaskan kepada orang tuamu tentang formula STOP. Kamu adalah Kapten Cerdas yang mengajari orang lain!</span>
+      </div>
+
+      <div class="ch-item">
+        <div class="ch-box" onclick="doCheck(this)">✓</div>
+        <span>🎨 <strong>Bonus Kreatif!</strong> — Gambar "Monster Sampah Digital" versimu! Beri nama setiap bagian tubuhnya sesuai jenis sampah digital yang sudah kamu pelajari!</span>
+      </div>
+
+      <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.2);text-align:center;font-size:13px;font-weight:700;color:rgba(255,255,255,.75);">
+        ✨ Setiap misi yang diselesaikan = kamu semakin jadi Kapten Cerdas!
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 11 : CLOSING ══════════ -->
+<div class="page" id="pg10">
+  <div class="card close-card" style="position:relative">
+    <div class="page-tag" style="color:var(--gold)">📖 Hal. 11 · Selesai!</div>
+
+    <span class="close-big">🌊</span>
+    <h2 class="close-title">Lautan Lebih Bersih Karena Kapten Aslan!</h2>
+    <p class="close-txt">
+      Luar biasa! Hari ini kamu telah belajar mengenali <strong style="color:var(--gold2)">6 jenis sampah digital</strong>, memahami kenapa lautan digital penuh sampah, dan yang paling penting — kamu sudah punya <strong style="color:var(--gold2)">formula STOP</strong> untuk melindungi dirimu!
+    </p>
+
+    <div style="display:flex;justify-content:center;gap:10px;margin:18px 0;font-size:30px;flex-wrap:wrap;">
+      <span style="animation:floatEmoji 2s infinite">📢</span>
+      <span style="animation:floatEmoji 2.5s infinite .3s">🎣</span>
+      <span style="animation:floatEmoji 2s infinite .6s">💬</span>
+      <span style="animation:floatEmoji 3s infinite .9s">🚫</span>
+      <span style="animation:floatEmoji 2.5s infinite 1.2s">🛡️</span>
+      <span style="animation:floatEmoji 2s infinite 1.5s">⚓</span>
+    </div>
+
+    <div class="next-box">
+      🌊 Besok di Hari 9 kamu akan belajar tentang...
+      <strong>💎 Berlian yang Tersembunyi di Dasar Laut!</strong>
+      Setelah tahu sampahnya, sekarang saatnya menemukan harta karun sejati di Lautan Digital!
+    </div>
+
+    <div style="margin-top:22px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+      <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:9px 15px;font-size:12px;font-weight:700;color:rgba(255,255,255,.75);">📚 Hari ke-8 dari 30</div>
+      <div style="background:rgba(255,193,7,.2);border:1px solid rgba(255,193,7,.4);border-radius:12px;padding:9px 15px;font-size:12px;font-weight:700;color:var(--gold2);">⭐ Progress: 27% Selesai!</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /book -->
+
+<!-- NAV -->
+<div class="nav-bar">
+  <div class="nav-inner">
+    <button class="nav-btn" id="prevBtn" onclick="changePage(-1)" disabled>← Prev</button>
+    <div class="nav-progress">
+      <div class="prog-label" id="pgLabel">Halaman 1 / 11</div>
+      <div class="prog-track"><div class="prog-fill" id="pgFill" style="width:9.09%"></div></div>
+      <div class="prog-dots" id="pgDots"></div>
+    </div>
+    <button class="nav-btn" id="nextBtn" onclick="changePage(1)">Next →</button>
+  </div>
+</div>
+
+<script>
+// ── Stars ──
+const starsEl = document.getElementById('starsEl');
+for(let i=0;i<55;i++){
+  const s=document.createElement('div');
+  s.className='bstar';
+  const sz=Math.random()*2.5+1;
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--d:${Math.random()*2+2}s;--delay:${Math.random()*4}s;`;
+  starsEl.appendChild(s);
+}
+
+// ── Bubbles ──
+const bubEl=document.getElementById('bubblesEl');
+function makeBub(){
+  const b=document.createElement('div');b.className='bub';
+  const sz=Math.random()*18+5;
+  b.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;animation-duration:${Math.random()*7+6}s;animation-delay:${Math.random()*4}s;`;
+  bubEl.appendChild(b);setTimeout(()=>b.remove(),14000);
+}
+setInterval(makeBub,1800);for(let i=0;i<4;i++)makeBub();
+
+// ── Pages ──
+const TOTAL=11;let cur=0;
+const dotsEl=document.getElementById('pgDots');
+for(let i=0;i<TOTAL;i++){
+  const d=document.createElement('div');d.className='pdot'+(i===0?' cur':'');
+  d.onclick=()=>goPage(i);dotsEl.appendChild(d);
+}
+
+function updateNav(){
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===TOTAL-1;
+  document.getElementById('pgLabel').textContent=`Halaman ${cur+1} / ${TOTAL}`;
+  document.getElementById('pgFill').style.width=`${((cur+1)/TOTAL)*100}%`;
+  document.querySelectorAll('.pdot').forEach((d,i)=>{
+    d.className='pdot'+(i<cur?' vis':'')+(i===cur?' cur':'');
+  });
+}
+
+function goPage(n){
+  if(n<0||n>=TOTAL)return;
+  document.getElementById('pg'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('pg'+cur).classList.add('active');
+  updateNav();window.scrollTo({top:0,behavior:'smooth'});
+  if(cur===TOTAL-1)launchConfetti();
+}
+function changePage(d){goPage(cur+d);}
+updateNav();
+
+// ── Toggle trash types ──
+function toggleTrash(card,id){
+  const det=document.getElementById(id);
+  const open=det.classList.contains('open');
+  document.querySelectorAll('.tt-detail.open').forEach(e=>e.classList.remove('open'));
+  document.querySelectorAll('.trash-type-card.revealed').forEach(e=>e.classList.remove('revealed'));
+  if(!open){det.classList.add('open');card.classList.add('revealed');}
+}
+
+// ── Trash sea cleanup ──
+let total=0,removed=0;
+const msgs=['🎉 Bagus! Terus bersihkan!','💪 Keren! Lautan makin bersih!','🌊 Luar biasa Kapten!','⭐ Hampir bersih semua!','🏆 SEMPURNA! Lautan bersih!'];
+window.addEventListener('DOMContentLoaded',()=>{
+  const pieces=document.querySelectorAll('.trash-piece');
+  total=pieces.length;
+  pieces.forEach(p=>{
+    p.addEventListener('click',function(e){
+      if(this.classList.contains('removed'))return;
+      // show popup
+      const popup=document.createElement('div');
+      popup.className='trash-label-popup';
+      popup.textContent=this.dataset.label||'Sampah digital!';
+      const rect=this.getBoundingClientRect();
+      const seaRect=document.getElementById('trashSea').getBoundingClientRect();
+      popup.style.cssText=`top:${rect.top-seaRect.top-70}px;left:${rect.left-seaRect.left-10}px;`;
+      document.getElementById('trashSea').appendChild(popup);
+      setTimeout(()=>popup.remove(),1500);
+      this.classList.add('removed');
+      removed++;
+      const pct=Math.round(removed/total*100);
+      document.getElementById('cleanFill').style.width=pct+'%';
+      document.getElementById('cleanFillTxt').textContent=pct>20?pct+'%':'';
+      document.getElementById('cleanPct').textContent=pct+'%';
+      if(removed===total){
+        document.getElementById('trashMsg').textContent='🎉 LAUTAN BERSIH! Kapten Aslan berhasil!';
+        launchMiniConf();
+      }else{
+        document.getElementById('trashMsg').textContent=msgs[Math.floor(removed/total*(msgs.length-1))];
+      }
+      spawnStars(e.clientX,e.clientY);
+    });
+  });
+});
+
+function spawnStars(x,y){
+  ['⭐','✨','💫','🌟'].forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.textContent=s;el.style.cssText=`position:fixed;left:${x}px;top:${y}px;font-size:${14+i*4}px;pointer-events:none;z-index:99999;animation:confFall ${.6+i*.1}s ease forwards;`;
+    document.body.appendChild(el);setTimeout(()=>el.remove(),1000);
+  });
+}
+
+// ── Challenge checkboxes ──
+function doCheck(el){
+  el.classList.toggle('chk');
+  if(el.classList.contains('chk')){el.style.color='#071525';}else{el.style.color='transparent';}
+  if(el.classList.contains('chk'))spawnStars(el.getBoundingClientRect().left+11,el.getBoundingClientRect().top+11);
+}
+
+// ── Confetti ──
+function launchMiniConf(){
+  const cols=['#ffc107','#ff5252','#42a5f5','#66bb6a','#ce93d8'];
+  for(let i=0;i<40;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');c.className='conf';
+      c.style.cssText=`left:${Math.random()*100}vw;top:-15px;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${Math.random()*1.5+1}s;animation-delay:${Math.random()*.3}s;width:${Math.random()*9+4}px;height:${Math.random()*9+4}px;border-radius:${Math.random()>.5?'50%':'2px'};`;
+      document.body.appendChild(c);setTimeout(()=>c.remove(),3500);
+    },i*35);
+  }
+}
+function launchConfetti(){
+  const cols=['#ffc107','#ff8c00','#ff5252','#42a5f5','#66bb6a','#ce93d8','#fff176'];
+  for(let i=0;i<70;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');c.className='conf';
+      c.style.cssText=`left:${Math.random()*100}vw;top:-15px;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${Math.random()*2+1.5}s;animation-delay:${Math.random()*.5}s;width:${Math.random()*10+5}px;height:${Math.random()*10+5}px;border-radius:${Math.random()>.5?'50%':'2px'};`;
+      document.body.appendChild(c);setTimeout(()=>c.remove(),4000);
+    },i*35);
+  }
+}
+
+// ── Ocean Sound ──
+let actx=null,gn=null,ns=null,playing=false;
+document.getElementById('soundBtn').addEventListener('click',()=>{
+  if(!playing){
+    actx=new(window.AudioContext||window.webkitAudioContext)();
+    gn=actx.createGain();gn.gain.setValueAtTime(0,actx.currentTime);gn.gain.linearRampToValueAtTime(.1,actx.currentTime+2);
+    const buf=actx.createBuffer(1,actx.sampleRate*4,actx.sampleRate);
+    const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
+    const f=actx.createBiquadFilter();f.type='lowpass';f.frequency.value=380;
+    ns=actx.createBufferSource();ns.buffer=buf;ns.loop=true;
+    ns.connect(f);f.connect(gn);gn.connect(actx.destination);ns.start();
+    playing=true;document.getElementById('soundBtn').textContent='🔊';
+    document.getElementById('soundBtn').style.background='linear-gradient(135deg,rgba(255,193,7,.9),rgba(255,140,0,.9))';
+  }else{
+    if(gn)gn.gain.linearRampToValueAtTime(0,actx.currentTime+1);
+    setTimeout(()=>{if(ns)ns.stop();actx=null;gn=null;ns=null;},1100);
+    playing=false;document.getElementById('soundBtn').textContent='🌊';
+    document.getElementById('soundBtn').style.background='linear-gradient(135deg,rgba(26,106,171,.9),rgba(19,69,122,.9))';
+  }
+});
+</script>
+</body>
+</html>

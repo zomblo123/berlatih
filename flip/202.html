@@ -1,0 +1,1363 @@
+<!-- BUKU DIGITAL ASLAN - Hari 2: Gunung Berapi yang Marah -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gunung Berapi yang Marah — Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #2d6a4f;
+    --moss: #40916c;
+    --leaf: #74c69d;
+    --sky: #1a6985;
+    --ocean: #2196a0;
+    --sand: #d4a574;
+    --earth: #8b5e3c;
+    --lava: #e85d04;
+    --magma: #dc2f02;
+    --fire: #f72585;
+    --orange: #f4a261;
+    --yellow: #ffd60a;
+    --cream: #fefae0;
+    --dark-bg: #0d1b2a;
+    --card-light: #ffffff;
+    --text-main: #1b2a1e;
+    --text-light: #f0fdf4;
+    --shadow: 0 8px 32px rgba(0,0,0,0.15);
+    --radius: 24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #0d1b2a;
+    color: #f0fdf4;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  body.light-mode {
+    background: #fff8f0;
+    color: #1b2a1e;
+  }
+
+  /* ─── EMBER PARTICLES ─── */
+  .embers {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .ember {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--lava);
+    animation: float-up linear infinite;
+    opacity: 0;
+  }
+  @keyframes float-up {
+    0%   { transform: translateY(0) scale(1); opacity: 0.7; }
+    80%  { opacity: 0.3; }
+    100% { transform: translateY(-100vh) scale(0.3); opacity: 0; }
+  }
+  body.light-mode .embers { opacity: 0.3; }
+
+  /* ─── TOP NAV ─── */
+  .top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(13, 27, 42, 0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(232,93,4,0.25);
+  }
+  body.light-mode .top-nav {
+    background: rgba(255,248,240,0.92);
+    border-color: rgba(232,93,4,0.2);
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--moss), var(--forest));
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 800;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(64,145,108,0.4);
+  }
+  .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(64,145,108,0.5); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .book-day-badge {
+    background: linear-gradient(135deg, var(--lava), var(--magma));
+    color: white;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  .mode-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,0.2); transform: rotate(20deg); }
+  body.light-mode .mode-btn { background: rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.15); color: #1b2a1e; }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-wrap {
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    z-index: 99;
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--yellow), var(--orange), var(--lava), var(--magma));
+    transition: width 0.35s ease;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* ─── MAIN CONTAINER ─── */
+  .book-container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 20px 40px;
+  }
+
+  /* ─── PAGES ─── */
+  .page { display: none; animation: fadeUp 0.5s ease forwards; }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── COVER ─── */
+  .cover-page {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    position: relative;
+  }
+
+  .cover-volcano {
+    width: 220px;
+    height: 200px;
+    position: relative;
+    margin: 0 auto 32px;
+    animation: floatVolcano 3.5s ease-in-out infinite;
+  }
+  @keyframes floatVolcano {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-12px); }
+  }
+
+  /* SVG-drawn volcano with CSS */
+  .volcano-mountain {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 110px solid transparent;
+    border-right: 110px solid transparent;
+    border-bottom: 160px solid #5c3317;
+    filter: drop-shadow(0 8px 24px rgba(220,47,2,0.5));
+  }
+  .volcano-mountain::before {
+    content: '';
+    position: absolute;
+    bottom: -160px; left: -70px;
+    width: 0; height: 0;
+    border-left: 70px solid transparent;
+    border-right: 70px solid transparent;
+    border-bottom: 100px solid #7a4520;
+  }
+
+  .volcano-snow {
+    position: absolute;
+    top: -145px; left: 50%;
+    transform: translateX(-50%);
+    width: 70px; height: 40px;
+    background: #c94b08;
+    border-radius: 50% 50% 0 0;
+    overflow: hidden;
+  }
+
+  .lava-flow {
+    position: absolute;
+    top: -130px; left: 50%;
+    transform: translateX(-50%);
+    width: 26px;
+    height: 80px;
+    background: linear-gradient(180deg, var(--yellow) 0%, var(--lava) 60%, var(--magma) 100%);
+    border-radius: 0 0 50% 50%;
+    animation: lavaFlow 1.5s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 12px rgba(255,150,0,0.8));
+  }
+  @keyframes lavaFlow {
+    0%  { transform: translateX(-50%) scaleX(1); height: 80px; }
+    100%{ transform: translateX(-50%) scaleX(1.3); height: 95px; }
+  }
+
+  .eruption-cloud {
+    position: absolute;
+    top: -195px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 56px;
+    animation: puff 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 16px rgba(255,100,0,0.6));
+  }
+  @keyframes puff {
+    0%,100% { transform: translateX(-50%) scale(1); }
+    50%     { transform: translateX(-50%) scale(1.2); }
+  }
+
+  .floating-debris {
+    position: absolute;
+    font-size: 24px;
+    animation: debris 4s ease-in-out infinite;
+  }
+  .floating-debris:nth-child(1) { top: 5%; left: 8%;  animation-delay: 0s; }
+  .floating-debris:nth-child(2) { top: 8%; right: 10%; animation-delay: -1.5s; }
+  .floating-debris:nth-child(3) { bottom: 25%; left: 5%; animation-delay: -3s; }
+  .floating-debris:nth-child(4) { bottom: 20%; right: 8%; animation-delay: -2s; }
+  @keyframes debris {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50%     { transform: translateY(-10px) rotate(15deg); }
+  }
+
+  .cover-badge {
+    background: linear-gradient(135deg, var(--lava), var(--magma));
+    color: white;
+    padding: 6px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: inline-block;
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(28px, 6vw, 50px);
+    line-height: 1.2;
+    background: linear-gradient(135deg, #ffd60a, #f4a261, #e85d04, #f4a261);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease infinite;
+    margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+
+  .cover-subtitle { font-size: clamp(16px, 3vw, 22px); opacity: 0.7; margin-bottom: 24px; }
+
+  .cover-name-badge {
+    background: linear-gradient(135deg, rgba(232,93,4,0.15), rgba(244,162,97,0.15));
+    border: 2px solid rgba(232,93,4,0.35);
+    border-radius: 20px;
+    padding: 16px 32px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+  }
+  .cover-name-badge p { font-size: 14px; opacity: 0.7; margin-bottom: 4px; }
+  .cover-name-badge h2 { font-family: 'Fredoka One', cursive; font-size: clamp(22px,4vw,32px); color: var(--orange); }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+  }
+  body.light-mode .card {
+    background: white;
+    border-color: rgba(232,93,4,0.12);
+    box-shadow: 0 4px 24px rgba(232,93,4,0.08);
+    color: #1b2a1e;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent, linear-gradient(90deg, var(--lava), var(--orange)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .card-magma   { --accent: linear-gradient(90deg, #9d0208, #dc2f02); }
+  .card-eruption{ --accent: linear-gradient(90deg, #dc2f02, #e85d04); }
+  .card-parts   { --accent: linear-gradient(90deg, #e85d04, #f4a261); }
+  .card-famous  { --accent: linear-gradient(90deg, #f4a261, #ffd60a); }
+  .card-benefit { --accent: linear-gradient(90deg, var(--moss), var(--leaf)); }
+
+  .card-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    display: block;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  }
+
+  .card h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(22px, 4vw, 30px);
+    margin-bottom: 8px;
+    color: var(--orange);
+  }
+  body.light-mode .card h2 { color: var(--lava); }
+
+  .card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 20px 0 10px;
+    color: var(--orange);
+  }
+  body.light-mode .card h3 { color: var(--earth); }
+
+  .card p {
+    font-size: clamp(15px, 2.5vw, 17px);
+    line-height: 1.85;
+    opacity: 0.9;
+    margin-bottom: 14px;
+  }
+
+  /* ─── DEPTH BADGE ─── */
+  .depth-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232,93,4,0.15);
+    border: 1px solid rgba(232,93,4,0.35);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--orange);
+    margin-bottom: 16px;
+  }
+
+  /* ─── ANALOGY BOX ─── */
+  .analogy-box {
+    background: linear-gradient(135deg, rgba(232,93,4,0.08), rgba(244,162,97,0.12));
+    border: 2px dashed rgba(232,93,4,0.3);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .analogy-box::before {
+    content: '💡 Analogi Keren!';
+    position: absolute;
+    top: -12px; left: 20px;
+    background: var(--dark-bg);
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--orange);
+  }
+  body.light-mode .analogy-box { background: linear-gradient(135deg,rgba(232,93,4,0.05),rgba(244,162,97,0.08)); }
+  body.light-mode .analogy-box::before { background: white; }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header { text-align: center; margin-bottom: 32px; padding-top: 20px; }
+  .section-header .tag {
+    display: inline-block;
+    background: rgba(232,93,4,0.12);
+    border: 1px solid rgba(232,93,4,0.3);
+    color: var(--orange);
+    padding: 4px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-header h1 { font-family: 'Fredoka One', cursive; font-size: clamp(24px,5vw,40px); line-height: 1.2; }
+
+  /* ─── SCENE BOX ─── */
+  .scene-box {
+    background: linear-gradient(135deg, rgba(13,27,42,0.85), rgba(139,30,0,0.25));
+    border: 1px solid rgba(232,93,4,0.25);
+    border-radius: 20px;
+    padding: 28px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  body.light-mode .scene-box {
+    background: linear-gradient(135deg, rgba(255,248,240,0.95), rgba(232,93,4,0.06));
+    border-color: rgba(232,93,4,0.2);
+  }
+  .scene-title {
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 12px;
+    opacity: 0.8;
+  }
+  .scene-box p { font-size: clamp(15px,2.5vw,17px); line-height: 1.9; font-style: italic; opacity: 0.9; }
+
+  /* ─── VOLCANO PARTS DIAGRAM ─── */
+  .volcano-diagram-wrap {
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto 20px;
+    position: relative;
+  }
+
+  .volcano-svg-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .v-diagram {
+    position: relative;
+    width: 300px;
+    height: 280px;
+    margin: 0 auto;
+  }
+
+  /* Mountain shape */
+  .vd-mountain {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 150px solid transparent;
+    border-right: 150px solid transparent;
+    border-bottom: 220px solid #7a4520;
+  }
+  .vd-mountain::before {
+    content:'';
+    position: absolute;
+    bottom: -220px; left: -95px;
+    width: 0; height: 0;
+    border-left: 95px solid transparent;
+    border-right: 95px solid transparent;
+    border-bottom: 130px solid #5c3317;
+  }
+
+  /* Magma chamber */
+  .vd-magma-chamber {
+    position: absolute;
+    bottom: 10px; left: 50%;
+    transform: translateX(-50%);
+    width: 120px; height: 50px;
+    background: radial-gradient(ellipse, #ff6b00, #9d0208);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(255,100,0,0.5);
+    animation: pulse-magma 2s ease-in-out infinite;
+  }
+  @keyframes pulse-magma { 0%,100%{transform:translateX(-50%) scale(1)} 50%{transform:translateX(-50%) scale(1.1)} }
+
+  /* Vent channel */
+  .vd-vent {
+    position: absolute;
+    bottom: 55px; left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 160px;
+    background: linear-gradient(180deg, #ffd60a 0%, #e85d04 60%, #9d0208 100%);
+    border-radius: 8px;
+  }
+
+  /* Crater */
+  .vd-crater {
+    position: absolute;
+    top: 30px; left: 50%;
+    transform: translateX(-50%);
+    width: 44px; height: 20px;
+    background: radial-gradient(ellipse, #ff6b00, #9d0208);
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(255,100,0,0.6);
+  }
+
+  /* Eruption from crater */
+  .vd-eruption {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    font-size: 38px;
+    animation: erupt 1.8s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(255,150,0,0.7));
+  }
+  @keyframes erupt { 0%,100%{transform:translateX(-50%) scale(0.9) translateY(0)} 50%{transform:translateX(-50%) scale(1.1) translateY(-5px)} }
+
+  /* Lava side flow */
+  .vd-lava-side {
+    position: absolute;
+    top: 100px; left: 22%;
+    width: 22px; height: 60px;
+    background: linear-gradient(180deg, var(--lava), var(--magma));
+    border-radius: 0 0 50% 50%;
+    transform: rotate(-25deg);
+    opacity: 0.85;
+  }
+
+  .diagram-labels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .diag-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .diag-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ─── DANGER / BENEFIT ─── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+
+  .mini-card {
+    border-radius: 18px;
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mini-card-danger  { background: rgba(220,47,2,0.12);  border: 1px solid rgba(220,47,2,0.25); }
+  .mini-card-benefit { background: rgba(64,145,108,0.12); border: 1px solid rgba(64,145,108,0.25); }
+  body.light-mode .mini-card-danger  { background: rgba(220,47,2,0.06);  }
+  body.light-mode .mini-card-benefit { background: rgba(64,145,108,0.06);}
+
+  .mini-card .mini-icon { font-size: 36px; }
+  .mini-card strong { font-size: 15px; font-weight: 900; }
+  .mini-card p { font-size: 14px; line-height: 1.6; opacity: 0.85; margin: 0; }
+
+  /* ─── FAMOUS VOLCANOES ─── */
+  .volcano-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .vc-item {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(232,93,4,0.2);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .vc-item:hover { transform: translateY(-4px); }
+  body.light-mode .vc-item { background: #fff8f0; border-color: rgba(232,93,4,0.15); }
+  .vc-item .vc-icon { font-size: 44px; display: block; margin-bottom: 10px; }
+  .vc-item strong { display: block; font-size: 15px; font-weight: 900; margin-bottom: 4px; }
+  .vc-item span { font-size: 13px; opacity: 0.7; }
+  .vc-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 12px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 800;
+    background: rgba(232,93,4,0.15);
+    color: var(--orange);
+    border: 1px solid rgba(232,93,4,0.25);
+  }
+
+  /* ─── FACT GRID ─── */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .fact-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .fact-card:hover { transform: translateY(-4px); }
+  body.light-mode .fact-card { background: #fff8f0; border-color: rgba(232,93,4,0.12); }
+  .fact-card .fact-emoji { font-size: 40px; margin-bottom: 10px; display: block; }
+  .fact-card .fact-number { font-family: 'Fredoka One', cursive; font-size: 24px; color: var(--orange); display: block; margin-bottom: 4px; }
+  .fact-card .fact-label { font-size: 13px; opacity: 0.7; font-weight: 700; }
+
+  /* ─── CHALLENGE ─── */
+  .challenge-card {
+    background: linear-gradient(135deg, rgba(26,105,133,0.2), rgba(232,93,4,0.15));
+    border: 2px solid rgba(232,93,4,0.25);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin: 20px 0;
+  }
+  body.light-mode .challenge-card { background: linear-gradient(135deg,rgba(26,105,133,0.06),rgba(232,93,4,0.06)); }
+
+  .challenge-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 24px;
+    color: var(--orange);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  body.light-mode .challenge-title { color: var(--lava); }
+
+  .challenge-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .challenge-item:last-child { border-bottom: none; }
+  body.light-mode .challenge-item { border-color: rgba(0,0,0,0.06); }
+
+  .challenge-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--lava), var(--magma));
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 14px;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .challenge-item p { font-size: 15px; line-height: 1.7; opacity: 0.9; }
+
+  /* ─── NAV BUTTONS ─── */
+  .nav-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  body.light-mode .nav-btns { border-color: rgba(0,0,0,0.06); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover  { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-prev {
+    background: rgba(255,255,255,0.08);
+    color: inherit;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  body.light-mode .btn-prev { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); color:#1b2a1e; }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--lava), var(--magma));
+    color: white;
+    box-shadow: 0 4px 16px rgba(232,93,4,0.35);
+    flex: 1; justify-content: center;
+    max-width: 280px;
+  }
+  .btn-next:hover { box-shadow: 0 6px 24px rgba(232,93,4,0.5); }
+
+  .btn-done {
+    background: linear-gradient(135deg, var(--moss), var(--forest));
+    color: white;
+    box-shadow: 0 4px 16px rgba(64,145,108,0.35);
+    width: 100%; max-width: 400px;
+    margin: 0 auto;
+    justify-content: center;
+    font-size: 17px;
+    padding: 18px 32px;
+  }
+  .btn-done:hover { box-shadow: 0 6px 24px rgba(64,145,108,0.5); }
+
+  .page-indicator { font-size: 13px; opacity: 0.5; font-weight: 700; white-space: nowrap; }
+
+  /* ─── CLOSING ─── */
+  .closing-content { text-align: center; padding: 40px 20px; }
+  .trophy-big {
+    font-size: 100px;
+    display: block; margin: 0 auto 24px;
+    animation: bounceIn 0.8s cubic-bezier(0.36,0.07,0.19,0.97);
+    filter: drop-shadow(0 8px 24px rgba(244,162,97,0.5));
+  }
+  @keyframes bounceIn {
+    0%  { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); }
+    100%{ transform: scale(1); opacity: 1; }
+  }
+  .quote-box {
+    background: linear-gradient(135deg, rgba(232,93,4,0.1), rgba(244,162,97,0.1));
+    border-left: 4px solid var(--lava);
+    border-radius: 0 16px 16px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+    text-align: left;
+  }
+  .quote-box p { font-size: 18px; font-style: italic; line-height: 1.8; }
+  .quote-box cite { font-size: 13px; opacity: 0.6; margin-top: 8px; display: block; font-style: normal; font-weight: 700; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .book-container { padding: 76px 16px 32px; }
+    .card { padding: 24px 20px; }
+    .nav-btns { flex-wrap: wrap; }
+    .btn-next { max-width: 100%; }
+    .cover-volcano { width: 180px; height: 170px; }
+    .fact-grid { grid-template-columns: 1fr 1fr; }
+    .volcano-cards { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .book-container { padding: 80px 32px 40px; }
+    .card p { font-size: 18px; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(232,93,4,0.3); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- EMBER PARTICLES -->
+<div class="embers" id="embers"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+  <div class="nav-right">
+    <span class="book-day-badge">🌋 Hari ke-2</span>
+    <button class="mode-btn" id="modeBtn" title="Ganti Mode">☀️</button>
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<!-- ═══════════════ BOOK CONTAINER ═══════════════ -->
+<div class="book-container">
+
+  <!-- ── PAGE 1: COVER ── -->
+  <div class="page active" id="page-1">
+    <div class="cover-page">
+      <span class="floating-debris">🔥</span>
+      <span class="floating-debris">💨</span>
+      <span class="floating-debris">🪨</span>
+      <span class="floating-debris">⚡</span>
+
+      <!-- Volcano illustration -->
+      <div class="cover-volcano">
+        <div class="eruption-cloud">🌋</div>
+        <div class="volcano-mountain"></div>
+        <div class="lava-flow"></div>
+      </div>
+
+      <div class="cover-badge">📚 Buku Sains Petualangan • Hari ke-2</div>
+      <h1 class="cover-title">Gunung Berapi<br>yang Marah!</h1>
+      <p class="cover-subtitle">🌋 Mengapa Mereka Meletus?</p>
+
+      <div class="cover-name-badge">
+        <p>Petualangan sains milik:</p>
+        <h2>🌟 Aslan 🌟</h2>
+        <p style="font-size:13px;margin-top:4px;">Penjelajah Bumi Sejati • Kelas 3 SD</p>
+      </div>
+
+      <div class="nav-btns" style="justify-content:center;border:none;padding-top:0;">
+        <button class="btn btn-next" onclick="goPage(2)" style="max-width:280px;font-size:17px;padding:16px 32px;">
+          🚀 Mulai Petualangan!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE 2: PENGANTAR ── -->
+  <div class="page" id="page-2">
+    <div class="section-header">
+      <span class="tag">✉️ Kembali Lagi!</span>
+      <h1>Hei Aslan, Kita<br>Balik Lagi! 🎉</h1>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🌋</span>
+      <p>Hei, <strong>Aslan</strong>! Kemarin kamu sudah berhasil menjelajahi pusat Bumi dan mengetahui semua rahasianya. Kamu memang penjelajah luar biasa!</p>
+      <p>Hari ini, petualangan kita belum selesai. <strong>Terra Explorer sudah dipanaskan</strong> dan siap membawa kita ke destinasi baru yang lebih seru — dan lebih PANAS! 🔥</p>
+      <p>Kali ini, kita akan pergi melihat dari dekat salah satu kejadian alam paling dramatis dan paling dahsyat di seluruh Bumi…</p>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Pesan Dari Terra Explorer</p>
+      <p>"Aslan! Ini Terra Explorer. Sistemku sudah siap 100%. Tujuan kita hari ini bukan ke bawah tanah, tapi naik ke atas — menuju <strong>gunung berapi yang sedang marah!</strong> 🌋 Kita akan melihat langsung mengapa gunung bisa memuntahkan api, batu, dan asap tebal. Siap? Kencangkan sabuk pengamanmu!"</p>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--sky),var(--leaf));">
+      <h3>🗺️ Yang Akan Kita Pelajari Hari Ini</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(220,47,2,0.12);border-radius:14px;">
+          <span style="font-size:28px;">🪨</span>
+          <div><strong>Apa itu Magma dan Lava</strong><p style="font-size:13px;margin:0;opacity:0.7;">Batu yang meleleh jadi cairan super panas</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(232,93,4,0.12);border-radius:14px;">
+          <span style="font-size:28px;">💥</span>
+          <div><strong>Mengapa Gunung Meletus</strong><p style="font-size:13px;margin:0;opacity:0.7;">Tekanan dahsyat dari dalam Bumi</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(244,162,97,0.12);border-radius:14px;">
+          <span style="font-size:28px;">🏔️</span>
+          <div><strong>Bagian-bagian Gunung Berapi</strong><p style="font-size:13px;margin:0;opacity:0.7;">Dari kawah sampai dapur magma</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(64,145,108,0.12);border-radius:14px;">
+          <span style="font-size:28px;">🇮🇩</span>
+          <div><strong>Gunung Berapi Indonesia</strong><p style="font-size:13px;margin:0;opacity:0.7;">Gunung Merapi & Krakatau yang legendaris</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(116,198,157,0.12);border-radius:14px;">
+          <span style="font-size:28px;">⚖️</span>
+          <div><strong>Bahaya & Manfaat Gunung Berapi</strong><p style="font-size:13px;margin:0;opacity:0.7;">Dua sisi dari kekuatan alam yang luar biasa</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+      <span class="page-indicator">Halaman 2 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(3)">Kenalan sama Magma! 🪨 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 3: MAGMA & LAVA ── -->
+  <div class="page" id="page-3">
+    <div class="section-header">
+      <span class="tag">🪨 Bab Satu</span>
+      <h1>Magma dan Lava<br><span style="color:var(--orange)">Apa Bedanya?</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Menuju Dapur Magma</p>
+      <p>"Terra Explorer terbang rendah di atas gunung. Di bawah kita, ada retakan di tanah yang mengeluarkan asap panas. Sensor Terra Explorer mendeteksi suhu ribuan derajat dari dalam... kita sedang berada tepat di atas dapur magma! Cahaya merah-oranye menyinari kabinmu, Aslan. Ini dia — magma!"</p>
+    </div>
+
+    <div class="card card-magma">
+      <span class="card-icon">🔴</span>
+      <h2>Apa itu Magma?</h2>
+      <p>Magma adalah <strong>batuan cair yang ada di dalam Bumi</strong> — tepatnya di lapisan mantel dan di bawah kerak Bumi yang kita pelajari kemarin. Suhunya sangat panas, bisa mencapai <strong>700 hingga 1.300°C!</strong> 🌡️</p>
+      <p>Magma terbentuk karena batuan di dalam Bumi mendapat tekanan dan panas yang luar biasa besar, sehingga meleleh menjadi cairan kental seperti sirop tebal yang sangat sangat panas.</p>
+
+      <div class="analogy-box">
+        <p>Bayangkan kamu punya cokelat batang 🍫. Kalau kamu panaskan di microwave, cokelat itu meleleh jadi cairan. Nah, magma itu seperti <strong>cokelat leleh</strong> — tapi bahannya bukan cokelat, melainkan <strong>batu</strong>, dan panasnya jutaan kali lebih dahsyat!</p>
+      </div>
+
+      <h3>🌋 Lalu, Apa itu Lava?</h3>
+      <p>Ini rahasia seru: magma dan lava sebenarnya <strong>sama persis — batu cair!</strong> Bedanya hanya di mana lokasinya:</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;">
+        <div style="background:rgba(157,2,8,0.15);border:1px solid rgba(157,2,8,0.3);border-radius:16px;padding:18px;text-align:center;">
+          <span style="font-size:40px;display:block;margin-bottom:8px;">🌍</span>
+          <strong style="font-size:15px;display:block;margin-bottom:6px;color:#ff6b6b;">MAGMA</strong>
+          <p style="font-size:13px;line-height:1.6;margin:0;opacity:0.85;">Batu cair yang ada <strong>di dalam Bumi</strong>. Belum keluar ke permukaan.</p>
+        </div>
+        <div style="background:rgba(232,93,4,0.15);border:1px solid rgba(232,93,4,0.3);border-radius:16px;padding:18px;text-align:center;">
+          <span style="font-size:40px;display:block;margin-bottom:8px;">🌋</span>
+          <strong style="font-size:15px;display:block;margin-bottom:6px;color:var(--orange);">LAVA</strong>
+          <p style="font-size:13px;line-height:1.6;margin:0;opacity:0.85;">Batu cair yang sudah <strong>keluar ke permukaan</strong> saat gunung meletus.</p>
+        </div>
+      </div>
+
+      <p>Jadi kalau ada magma yang keluar dari gunung, namanya langsung berubah jadi lava! Keren, kan? 😄</p>
+
+      <h3>🌡️ Seberapa Panas Lava?</h3>
+      <p>Lava yang baru keluar dari gunung suhunya antara <strong>700 – 1.200°C</strong>. Sebagai perbandingan, oven pizza hanya 250°C — jadi lava itu hampir <strong>5 kali lebih panas dari oven!</strong> 🍕🔥</p>
+      <p>Lava yang mengalir bisa menghancurkan apa saja di jalurnya. Tapi jangan khawatir — lava biasanya mengalir cukup lambat sehingga orang bisa menghindar!</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+      <span class="page-indicator">Halaman 3 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(4)">Kenapa Meletus? 💥 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 4: MENGAPA MELETUS ── -->
+  <div class="page" id="page-4">
+    <div class="section-header">
+      <span class="tag">💥 Bab Dua</span>
+      <h1>Mengapa Gunung<br><span style="color:var(--lava)">Berapi Meletus?</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Merasakan Getaran</p>
+      <p>"Terra Explorer berguncang! 😱 Sensor tekanan menunjukkan angka yang makin naik dari dalam gunung. Ada sesuatu yang mendorong dari bawah... sangat kuat... seperti raksasa yang terbangun dari tidur. Persiapkan dirimu, Aslan — gunung berapi mau MELETUS!"</p>
+    </div>
+
+    <div class="card card-eruption">
+      <span class="card-icon">💥</span>
+      <h2>Tekanan yang Menumpuk</h2>
+      <p>Bayangkan di dalam Bumi ada "ruangan" besar bernama <strong>dapur magma</strong> yang penuh dengan magma super panas. Magma terus dipanaskan dari dalam Bumi, dan saat dipanaskan, magma mengembang dan butuh lebih banyak ruang.</p>
+      <p>Semakin lama, tekanan di dalam dapur magma makin besar. Magma terus mendorong ke atas mencari jalan keluar — seperti kamu menekan balon dari semua sisi!</p>
+
+      <div class="analogy-box">
+        <p>Pernah mengocok botol minuman bersoda lalu membukanya? 🥤 <strong>BUSSSHH!</strong> — minumannya muncrat keluar! Itu persis yang terjadi di gunung berapi. Karbon dioksida dalam soda adalah seperti tekanan magma, dan saat tutupnya dibuka — itulah letusannya!</p>
+      </div>
+
+      <h3>🔬 Peran Gas dalam Letusan</h3>
+      <p>Di dalam magma ada banyak <strong>gas</strong> yang terjebak — seperti uap air, karbon dioksida, dan belerang. Gas ini membantu mendorong magma ke atas. Semakin banyak gasnya, semakin dahsyat letusannya!</p>
+      <p>Gunung berapi yang lavasnya kental (seperti sirop kental) biasanya lebih berbahaya karena gasnya sulit keluar — tekanan menumpuk lebih lama dan akhirnya BOOM! 💥</p>
+
+      <h3>📐 Jalur Magma Naik ke Atas</h3>
+      <p>Magma naik melalui <strong>saluran</strong> (vent) di dalam gunung. Kalau tekananya cukup kuat, magma akan menerobos sampai ke kawah (lubang di puncak gunung) dan keluar sebagai letusan. Yang keluar bisa berupa:</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;">
+        <span style="background:rgba(220,47,2,0.15);border:1px solid rgba(220,47,2,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🌋 Lava Cair</span>
+        <span style="background:rgba(100,100,100,0.15);border:1px solid rgba(150,150,150,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">💨 Abu Vulkanik</span>
+        <span style="background:rgba(64,145,108,0.15);border:1px solid rgba(64,145,108,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">☁️ Gas Beracun</span>
+        <span style="background:rgba(139,94,60,0.15);border:1px solid rgba(139,94,60,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🪨 Batu & Kerikil</span>
+        <span style="background:rgba(232,93,4,0.15);border:1px solid rgba(232,93,4,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">⚡ Petir Vulkanik</span>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+      <span class="page-indicator">Halaman 4 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(5)">Bagian Gunung! 🏔️ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 5: BAGIAN-BAGIAN GUNUNG ── -->
+  <div class="page" id="page-5">
+    <div class="section-header">
+      <span class="tag">🏔️ Bab Tiga</span>
+      <h1>Bagian-Bagian<br><span style="color:var(--orange)">Gunung Berapi</span></h1>
+    </div>
+
+    <div class="card card-parts">
+      <span class="card-icon">🏔️</span>
+      <h2>Anatomi Gunung Berapi</h2>
+      <p>Gunung berapi bukan cuma "gundukan tanah yang keluar api" — di dalamnya ada struktur yang sangat kompleks! Mari kita lihat satu per satu bagiannya, Aslan!</p>
+
+      <!-- VOLCANO DIAGRAM -->
+      <div class="volcano-diagram-wrap">
+        <div class="v-diagram">
+          <div class="vd-eruption">🌋</div>
+          <div class="vd-crater"></div>
+          <div class="vd-mountain">
+            <div class="vd-vent"></div>
+          </div>
+          <div class="vd-lava-side"></div>
+          <div class="vd-magma-chamber"></div>
+        </div>
+        <div class="diagram-labels">
+          <div class="diag-label"><div class="diag-dot" style="background:#ff6b00;box-shadow:0 0 6px #ff6b00;"></div><span><strong>Kawah</strong> — lubang puncak</span></div>
+          <div class="diag-label"><div class="diag-dot" style="background:#ffd60a;"></div><span><strong>Saluran</strong> — jalur magma</span></div>
+          <div class="diag-label"><div class="diag-dot" style="background:#e85d04;"></div><span><strong>Lereng</strong> — badan gunung</span></div>
+          <div class="diag-label"><div class="diag-dot" style="background:radial-gradient(circle,#ff6b00,#9d0208);background-color:#9d0208;"></div><span><strong>Dapur Magma</strong> — sumber lava</span></div>
+        </div>
+      </div>
+
+      <h3>🕳️ 1. Kawah (Crater)</h3>
+      <p>Kawah adalah <strong>lubang besar di puncak gunung berapi</strong>. Dari sinilah lava, abu, dan gas keluar saat letusan terjadi. Kawah bisa berukuran dari beberapa meter sampai beberapa kilometer! Setelah letusan besar, kawah bisa terisi air hujan dan menjadi danau kawah yang cantik. 💧</p>
+
+      <h3>⛰️ 2. Lereng Gunung</h3>
+      <p>Lereng adalah badan gunung yang terbentuk dari lapisan-lapisan lava dan abu yang telah mengeras selama ribuan tahun. Semakin sering meletus, gunung makin tinggi! Lereng gunung berapi sering sangat subur karena abu vulkanik menyuburkan tanah. 🌱</p>
+
+      <h3>🔶 3. Saluran Utama (Main Vent)</h3>
+      <p>Saluran utama adalah "pipa alami" di dalam gunung yang menghubungkan dapur magma dengan kawah di puncak. Magma naik melalui saluran ini seperti air naik lewat sedotan! 🥤</p>
+
+      <h3>🔴 4. Dapur Magma (Magma Chamber)</h3>
+      <p>Ini adalah "perut" gunung berapi — ruang raksasa di bawah tanah yang berisi magma panas. Di sinilah semua energi letusan disimpan. Dapur magma bisa berukuran raksasa, bahkan lebih besar dari kota besar sekalipun! 🌆</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+      <span class="page-indicator">Halaman 5 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(6)">Gunung Indonesia! 🇮🇩 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 6: GUNUNG TERKENAL ── -->
+  <div class="page" id="page-6">
+    <div class="section-header">
+      <span class="tag">🇮🇩 Bab Empat</span>
+      <h1>Gunung Berapi<br><span style="color:var(--orange)">Indonesia</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Di Atas Kepulauan Indonesia</p>
+      <p>"Aslan! Lihat ke bawah 😲 Indonesia adalah negara dengan gunung berapi TERBANYAK di seluruh dunia! Ada lebih dari 127 gunung berapi aktif di sini. Kita sedang terbang di atas 'Ring of Fire' — cincin api raksasa yang mengelilingi Samudra Pasifik. Indonesia ada tepat di atasnya!"</p>
+    </div>
+
+    <div class="card card-famous">
+      <span class="card-icon">🌋</span>
+      <h2>Gunung-Gunung Berapi Legendaris!</h2>
+
+      <div class="volcano-cards">
+        <div class="vc-item">
+          <span class="vc-icon">🗻</span>
+          <strong>Gunung Merapi</strong>
+          <span>Yogyakarta & Jawa Tengah</span>
+          <span class="vc-badge">⚡ Paling Aktif di Indonesia</span>
+          <p style="font-size:13px;line-height:1.6;margin-top:10px;opacity:0.85;">Tinggi 2.930 meter. Selalu dalam pengawasan ketat karena sering meletus. Lavasnya sangat tebal dan berbahaya. Tapi tanahnya subur dan banyak orang tinggal di sekitarnya!</p>
+        </div>
+        <div class="vc-item">
+          <span class="vc-icon">💥</span>
+          <strong>Krakatau</strong>
+          <span>Selat Sunda, Banten</span>
+          <span class="vc-badge">🏆 Letusan Terdahsyat</span>
+          <p style="font-size:13px;line-height:1.6;margin-top:10px;opacity:0.85;">Letusannya pada 1883 adalah salah satu yang terdahsyat dalam sejarah manusia! Suaranya terdengar sampai Australia. Kini anak gunung berapi baru tumbuh: Anak Krakatau!</p>
+        </div>
+        <div class="vc-item">
+          <span class="vc-icon">🌄</span>
+          <strong>Gunung Bromo</strong>
+          <span>Jawa Timur</span>
+          <span class="vc-badge">📸 Paling Indah</span>
+          <p style="font-size:13px;line-height:1.6;margin-top:10px;opacity:0.85;">Terkenal dengan pemandangan matahari terbit yang indah di atas lautan awan dan pasir. Masih aktif tapi dianggap lebih jinak. Jadi tempat wisata favorit!</p>
+        </div>
+        <div class="vc-item">
+          <span class="vc-icon">🏝️</span>
+          <strong>Gunung Agung</strong>
+          <span>Bali</span>
+          <span class="vc-badge">🙏 Gunung Suci</span>
+          <p style="font-size:13px;line-height:1.6;margin-top:10px;opacity:0.85;">Gunung tertinggi di Bali (3.031 m) yang dianggap suci oleh masyarakat Hindu Bali. Terakhir meletus dahsyat tahun 2017-2019 dan membuat banyak penerbangan terganggu.</p>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;background:rgba(232,93,4,0.1);border:1px solid rgba(232,93,4,0.25);border-radius:16px;padding:18px 20px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🌍 <strong>Tahukah kamu?</strong> Indonesia berada di "Cincin Api" (Ring of Fire) — zona gunung berapi dan gempa paling aktif di dunia. Ada sekitar <strong>500 gunung berapi</strong> di seluruh Indonesia, dan <strong>127 di antaranya masih aktif!</strong> Itu membuat Indonesia jadi negara dengan gunung berapi aktif terbanyak di dunia! 🇮🇩🏆</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+      <span class="page-indicator">Halaman 6 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(7)">Bahaya & Manfaat! ⚖️ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 7: BAHAYA & MANFAAT + FAKTA ── -->
+  <div class="page" id="page-7">
+    <div class="section-header">
+      <span class="tag">⚖️ Bab Lima</span>
+      <h1>Dua Sisi<br><span style="color:var(--orange)">Gunung Berapi</span></h1>
+    </div>
+
+    <div class="card card-benefit">
+      <span class="card-icon">⚖️</span>
+      <h2>Berbahaya sekaligus Bermanfaat!</h2>
+      <p>Gunung berapi sering dianggap musuh manusia — tapi sebenarnya, mereka juga punya banyak manfaat! Seperti obat yang pahit tapi menyehatkan, gunung berapi punya dua sisi yang sangat berbeda.</p>
+
+      <h3>⚠️ Bahaya Gunung Berapi</h3>
+      <div class="two-col">
+        <div class="mini-card mini-card-danger">
+          <span class="mini-icon">🌊</span>
+          <strong>Lahar Panas</strong>
+          <p>Campuran lava, air, dan lumpur yang mengalir deras dan menghancurkan semua di jalurnya.</p>
+        </div>
+        <div class="mini-card mini-card-danger">
+          <span class="mini-icon">☁️</span>
+          <strong>Abu Vulkanik</strong>
+          <p>Abu yang menutupi ladang, rumah, dan jalan. Berbahaya dihirup dan bisa menutupi atap hingga roboh.</p>
+        </div>
+        <div class="mini-card mini-card-danger">
+          <span class="mini-icon">💨</span>
+          <strong>Gas Beracun</strong>
+          <p>Gas seperti belerang yang keluar bisa berbahaya bagi pernapasan manusia dan hewan.</p>
+        </div>
+        <div class="mini-card mini-card-danger">
+          <span class="mini-icon">🌋</span>
+          <strong>Awan Panas</strong>
+          <p>Disebut "wedhus gembel" — campuran gas panas, abu, dan batu yang bergerak sangat cepat dan mematikan.</p>
+        </div>
+      </div>
+
+      <h3 style="color:var(--leaf);margin-top:24px;">✅ Manfaat Gunung Berapi</h3>
+      <div class="two-col">
+        <div class="mini-card mini-card-benefit">
+          <span class="mini-icon">🌾</span>
+          <strong>Tanah Super Subur</strong>
+          <p>Abu vulkanik mengandung mineral yang membuat tanah di sekitar gunung berapi sangat subur untuk pertanian!</p>
+        </div>
+        <div class="mini-card mini-card-benefit">
+          <span class="mini-icon">♨️</span>
+          <strong>Energi Panas Bumi</strong>
+          <p>Panas dari gunung berapi bisa diubah menjadi listrik yang ramah lingkungan. Indonesia memanfaatkan ini!</p>
+        </div>
+        <div class="mini-card mini-card-benefit">
+          <span class="mini-icon">💎</span>
+          <strong>Mineral Berharga</strong>
+          <p>Gunung berapi membawa mineral langka seperti belerang, emas, dan berlian ke permukaan Bumi.</p>
+        </div>
+        <div class="mini-card mini-card-benefit">
+          <span class="mini-icon">🏖️</span>
+          <strong>Pulau dan Daratan Baru</strong>
+          <p>Lava yang mengeras di laut membentuk pulau-pulau baru! Kepulauan Hawaii terbentuk dengan cara ini.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAKTA KEREN -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--ocean),var(--orange));">
+      <span class="card-icon">🤯</span>
+      <h2>Fakta Keren Gunung Berapi!</h2>
+      <div class="fact-grid">
+        <div class="fact-card">
+          <span class="fact-emoji">🌋</span>
+          <span class="fact-number">127</span>
+          <span class="fact-label">Gunung berapi aktif di Indonesia</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌡️</span>
+          <span class="fact-number">1.200°C</span>
+          <span class="fact-label">Suhu maksimum lava saat keluar</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">💨</span>
+          <span class="fact-number">700 km/jam</span>
+          <span class="fact-label">Kecepatan awan panas terdahsyat</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌍</span>
+          <span class="fact-number">1.500+</span>
+          <span class="fact-label">Gunung berapi aktif di seluruh dunia</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🕰️</span>
+          <span class="fact-number">1883</span>
+          <span class="fact-label">Tahun letusan dahsyat Krakatau</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🏝️</span>
+          <span class="fact-number">Hawaii</span>
+          <span class="fact-label">Kepulauan yang terbentuk dari lava</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+      <span class="page-indicator">Halaman 7 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(8)">Tantangan Aslan! ⚡ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 8: TANTANGAN + PENUTUP ── -->
+  <div class="page" id="page-8">
+    <div class="section-header">
+      <span class="tag">⚡ Tantangan Aslan</span>
+      <h1>Buktikan Kamu<br>Ahli Vulkanologi! 🌋</h1>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-title">🏆 Misi Vulkanologi Aslan</div>
+      <p style="font-size:15px;opacity:0.8;margin-bottom:20px;">Kamu sudah tahu rahasia gunung berapi! Sekarang saatnya membuktikan keahlianmu dengan tantangan-tantangan seru ini!</p>
+
+      <div class="challenge-item">
+        <div class="challenge-num">1</div>
+        <div>
+          <p><strong>Buat Gunung Berapi Meletus!</strong> 🧪 Minta bantuan orang tuamu. Buat gunung dari tanah liat atau kertas bekas. Isi lubangnya dengan soda kue (baking soda). Tuang cuka dan pewarna merah — <strong>BUM! Gunung berapi mini-mu meletus!</strong> Ini adalah reaksi kimia yang meniru bagaimana gas mendorong magma keluar.</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">2</div>
+        <div>
+          <p><strong>Gambar Penampang Gunung Berapi!</strong> 🖍️ Ambil kertas dan gambar gunung berapi dari samping. Gambar juga bagian dalamnya: dapur magma, saluran, kawah, dan aliran lava. Beri warna dan label masing-masing bagian. Tempel di kamarmu!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">3</div>
+        <div>
+          <p><strong>Kuis Kilat!</strong> ⚡ Jawab tanpa melihat buku: (a) Apa bedanya magma dan lava? (b) Sebutkan 3 bahaya gunung berapi! (c) Kenapa tanah di sekitar gunung berapi sangat subur? (d) Gunung berapi mana yang paling aktif di Indonesia?</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">4</div>
+        <div>
+          <p><strong>Jadilah Reporter Berita!</strong> 📺 Bayangkan kamu reporter TV yang meliput letusan gunung berapi. Rekam video dengan HP (minta bantuan orang tua) dan jelaskan apa yang terjadi, mengapa meletus, dan apa yang harus dilakukan warga sekitar!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">5</div>
+        <div>
+          <p><strong>Cari Tahu Lebih Dalam!</strong> 🔭 Minta orang tuamu mencari di internet: "Ring of Fire" atau "Cincin Api Pasifik". Lihat petanya — kamu akan takjub melihat betapa banyaknya gunung berapi yang mengelilingi Samudra Pasifik, dan Indonesia ada tepat di tengah-tengahnya!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENUTUP -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--lava),var(--orange),var(--leaf));margin-top:32px;">
+      <div class="closing-content">
+        <span class="trophy-big">🌋</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(24px,5vw,36px);margin-bottom:16px;">
+          Luar Biasa, Aslan! 🎉
+        </h2>
+        <p style="font-size:clamp(15px,2.5vw,17px);max-width:500px;margin:0 auto 24px;line-height:1.8;opacity:0.9;">
+          Kamu telah menyelesaikan Hari ke-2 petualangan sainsmu! Sekarang kamu tahu rahasia gunung berapi — dari magma yang mendidih sampai letusan yang dahsyat. Kamu adalah seorang <strong>Vulkanolog Muda</strong> sejati!
+        </p>
+
+        <div class="quote-box" style="max-width:520px;margin:0 auto 28px;">
+          <p>"Alam bukan musuh yang harus ditakuti, melainkan guru terbesar yang harus dipahami. Setiap letusan gunung berapi adalah pelajaran tentang betapa hidup dan dinamisnya planet kita."</p>
+          <cite>— Untuk Aslan, Vulkanolog Muda 🌋</cite>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px;">
+          <span style="background:rgba(157,2,8,0.15);border:1px solid rgba(157,2,8,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🪨 Master Magma & Lava</span>
+          <span style="background:rgba(232,93,4,0.15);border:1px solid rgba(232,93,4,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">💥 Ahli Letusan</span>
+          <span style="background:rgba(244,162,97,0.15);border:1px solid rgba(244,162,97,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🏔️ Penjelajah Kawah</span>
+          <span style="background:rgba(64,145,108,0.15);border:1px solid rgba(64,145,108,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🇮🇩 Pakar Gunung Indonesia</span>
+        </div>
+
+        <button class="btn btn-done" onclick="selesaiMembaca()">
+          ✅ Saya Sudah Selesai Membaca!
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(7)">← Kembali</button>
+      <span class="page-indicator">Halaman 8 dari 8</span>
+      <span></span>
+    </div>
+  </div>
+
+</div><!-- end book-container -->
+
+<script>
+  // ── EMBERS ──
+  const emberContainer = document.getElementById('embers');
+  for (let i = 0; i < 30; i++) {
+    const e = document.createElement('div');
+    e.className = 'ember';
+    const size = Math.random() * 5 + 2;
+    const hue = Math.random() > 0.5 ? '#e85d04' : '#ffd60a';
+    e.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      bottom:${Math.random()*20}%;
+      background:${hue};
+      box-shadow:0 0 ${size*2}px ${hue};
+      animation-duration:${4 + Math.random()*6}s;
+      animation-delay:${Math.random()*5}s;
+    `;
+    emberContainer.appendChild(e);
+  }
+
+  // ── PAGES ──
+  const TOTAL = 8;
+  let current = 1;
+
+  function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── DARK / LIGHT MODE ──
+  const modeBtn = document.getElementById('modeBtn');
+  let isLight = false;
+  modeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+    modeBtn.textContent = isLight ? '🌙' : '☀️';
+  });
+
+  // ── SELESAI MEMBACA ──
+  function selesaiMembaca() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.82);backdrop-filter:blur(8px);
+      z-index:999;display:flex;align-items:center;justify-content:center;
+      padding:20px;animation:fadeUp 0.3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="background:linear-gradient(135deg,#1f0d00,#0d1b2a);border:2px solid rgba(232,93,4,0.45);border-radius:28px;padding:40px;max-width:440px;width:100%;text-align:center;color:white;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#ffd60a,#e85d04,#dc2f02);"></div>
+        <span style="font-size:80px;display:block;margin-bottom:16px;">🌋</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:12px;background:linear-gradient(135deg,#f4a261,#ffd60a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Keren Banget, Aslan!</h2>
+        <p style="font-size:16px;line-height:1.8;opacity:0.9;margin-bottom:24px;">Hari ke-2 selesai! 🎉<br>Kamu sudah tahu <strong>rahasia gunung berapi</strong> — dari magma panas sampai manfaatnya bagi manusia.<br><br>Sampai jumpa di Hari ke-3! 🚀</p>
+        <button onclick="this.closest('div').parentElement.remove()" style="background:linear-gradient(135deg,#e85d04,#dc2f02);color:white;border:none;padding:14px 32px;border-radius:50px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(232,93,4,0.45);">Mantap! Tutup 🌋</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+  }
+
+  // ── KEYBOARD NAV ──
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(current - 1);
+  });
+
+  // Init
+  updateProgress();
+</script>
+</body>
+</html>

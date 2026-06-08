@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hari 30: Petualangan Berikutnya – Lautan Digital Selamanya | Kapten Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Fredoka:wght@300;400;500;600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ===================== ROOT ===================== */
+:root{
+  --deep:#030d2e;
+  --navy:#0a2058;
+  --mid:#1251a3;
+  --bright:#2196f3;
+  --sky:#81d4fa;
+  --foam:#e1f5fe;
+  --gold:#ffd700;
+  --gold2:#ffb300;
+  --orange:#ff8c00;
+  --sun:#fff176;
+  --coral:#ff6b6b;
+  --green:#26a69a;
+  --white:#ffffff;
+  --sand:#fff8e1;
+  --star-gold:#ffe57f;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Fredoka','Poppins',sans-serif;
+  background:var(--deep);
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ====== ANIMATED SKY BG ====== */
+.sky-canvas{
+  position:fixed;inset:0;z-index:0;
+  background:linear-gradient(180deg,#020c24 0%,#0a2058 35%,#1251a3 65%,#0d6eaa 100%);
+  overflow:hidden;pointer-events:none;
+}
+.star-field{position:absolute;inset:0;}
+.star{
+  position:absolute;background:white;border-radius:50%;
+  animation:twinkle ease-in-out infinite;
+}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(.7);}50%{opacity:1;transform:scale(1.2);}}
+.sun-rise{
+  position:absolute;bottom:-60px;left:50%;transform:translateX(-50%);
+  width:180px;height:180px;
+  background:radial-gradient(circle,#fff9c4,#ffe57f 40%,#ffb300 65%,transparent 80%);
+  border-radius:50%;
+  animation:sunPulse 4s ease-in-out infinite;
+  opacity:0;transition:opacity 2s;
+}
+@keyframes sunPulse{0%,100%{transform:translateX(-50%) scale(1);}50%{transform:translateX(-50%) scale(1.06);}}
+.sun-rise.visible{opacity:1;}
+/* Birds */
+.bird{
+  position:absolute;font-size:20px;
+  animation:birdFly linear infinite;
+  opacity:0;
+}
+@keyframes birdFly{
+  0%{transform:translateX(-80px) translateY(0);opacity:0;}
+  5%{opacity:1;}
+  95%{opacity:1;}
+  100%{transform:translateX(calc(100vw + 80px)) translateY(-40px);opacity:0;}
+}
+/* Sailing ship */
+.ship-scene{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;height:120px;pointer-events:none;
+  opacity:0;transition:opacity 1.5s;
+}
+.ship-scene.visible{opacity:1;}
+.ship-emoji{
+  position:absolute;bottom:20px;left:-80px;
+  font-size:52px;
+  animation:sailAcross 20s linear infinite;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.5));
+}
+@keyframes sailAcross{
+  0%{left:-80px;}
+  100%{left:calc(100% + 80px);}
+}
+.ocean-wave-bg{
+  position:absolute;bottom:0;left:0;right:0;height:60px;
+  background:linear-gradient(180deg,transparent,rgba(21,101,192,.5),rgba(10,26,94,.8));
+}
+
+/* ====== BACK BUTTON ====== */
+.back-btn{
+  position:fixed;top:16px;left:16px;z-index:1000;
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:var(--navy);border:none;border-radius:50px;
+  padding:10px 20px;font-family:'Fredoka',sans-serif;
+  font-size:15px;font-weight:600;cursor:pointer;
+  text-decoration:none;display:flex;align-items:center;gap:8px;
+  box-shadow:0 4px 16px rgba(255,215,0,.45);transition:all .3s;
+}
+.back-btn:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 8px 24px rgba(255,215,0,.6);}
+
+/* ====== BOOK CONTAINER ====== */
+.book{
+  position:relative;z-index:10;
+  max-width:840px;margin:0 auto;
+  padding:80px 16px 90px;
+  min-height:100vh;
+}
+
+/* ====== SLIDE ====== */
+.slide{display:none;animation:pageIn .55s cubic-bezier(.22,1,.36,1);}
+.slide.active{display:block;}
+@keyframes pageIn{from{opacity:0;transform:translateY(36px);}to{opacity:1;transform:translateY(0);}}
+
+/* ====== CARD ====== */
+.card{
+  background:linear-gradient(145deg,rgba(255,255,255,.97),rgba(225,245,254,.94));
+  border-radius:36px;padding:44px 40px;
+  box-shadow:0 24px 64px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.25);
+  position:relative;overflow:hidden;
+}
+.card::after{
+  content:'';position:absolute;top:-80px;right:-80px;
+  width:260px;height:260px;
+  background:radial-gradient(circle,rgba(255,215,0,.1),transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+
+/* ====== PROGRESS ====== */
+.progress-wrap{
+  position:fixed;bottom:0;left:0;right:0;z-index:1000;
+  background:rgba(3,13,46,.93);padding:14px 20px;
+  display:flex;align-items:center;gap:14px;
+  backdrop-filter:blur(12px);
+  border-top:1px solid rgba(255,215,0,.2);
+}
+.prog-bg{flex:1;height:11px;background:rgba(255,255,255,.12);border-radius:20px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--orange));border-radius:20px;transition:width .55s ease;}
+.page-lbl{color:var(--gold);font-size:13px;font-weight:600;white-space:nowrap;font-family:'Fredoka',sans-serif;}
+.nav-btn{
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:var(--navy);border:none;border-radius:50px;
+  padding:9px 24px;font-family:'Fredoka',sans-serif;
+  font-size:15px;font-weight:700;cursor:pointer;
+  transition:all .3s;box-shadow:0 3px 12px rgba(255,215,0,.35);
+}
+.nav-btn:hover{transform:scale(1.07);}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+/* ====== SECTION PARTS ====== */
+.sec-head{text-align:center;margin-bottom:28px;}
+.sec-icon{font-size:64px;margin-bottom:10px;display:block;filter:drop-shadow(0 6px 12px rgba(0,0,0,.15));}
+.sec-title{font-family:'Fredoka One',cursive;font-size:30px;color:var(--navy);margin-bottom:6px;line-height:1.2;}
+.sec-sub{font-size:15px;color:#546e7a;font-weight:500;}
+
+.story{
+  background:linear-gradient(135deg,#e3f2fd,#f8fafc);
+  border-left:5px solid var(--mid);border-radius:18px;
+  padding:20px 24px;margin-bottom:18px;
+  font-size:16px;line-height:1.8;color:#263238;
+}
+.story p{margin-bottom:12px;}
+.story p:last-child{margin-bottom:0;}
+
+.hl{
+  background:linear-gradient(135deg,#fff8e1,#fffde7);
+  border:2px solid rgba(255,215,0,.5);border-radius:18px;
+  padding:18px 22px;margin:16px 0;
+  font-size:15px;color:#4a3000;line-height:1.75;
+}
+.hl strong{color:var(--navy);}
+
+.wave-div{text-align:center;font-size:22px;letter-spacing:8px;margin:18px 0;color:var(--bright);opacity:.55;}
+
+/* ====== COVER ====== */
+.cover-card{
+  background:linear-gradient(145deg,#030d2e,#0a2058,#1251a3);
+  border-radius:36px;padding:0;overflow:hidden;min-height:600px;position:relative;
+  box-shadow:0 28px 80px rgba(0,0,0,.6);
+}
+.cover-stars{position:absolute;inset:0;pointer-events:none;}
+.cover-star{position:absolute;color:white;animation:twinkle ease-in-out infinite;}
+.cover-sun{
+  position:absolute;bottom:140px;left:50%;transform:translateX(-50%);
+  width:120px;height:120px;
+  background:radial-gradient(circle,#fff9c4,#ffe57f 40%,#ffb300 65%,transparent 80%);
+  border-radius:50%;
+  animation:sunPulse 4s ease-in-out infinite;
+}
+.cover-ocean-strip{
+  position:absolute;bottom:0;left:0;right:0;height:160px;
+  background:linear-gradient(180deg,transparent,rgba(21,101,192,.7),#030d2e);
+}
+.cover-waves{position:absolute;bottom:40px;left:0;right:0;height:80px;overflow:hidden;}
+.cwave{
+  position:absolute;width:200%;height:80px;
+  background:rgba(129,212,250,.15);border-radius:50%;
+  animation:wm 4s linear infinite;
+}
+.cwave:nth-child(2){animation-delay:-2s;background:rgba(255,255,255,.07);}
+@keyframes wm{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.cover-ship{
+  position:absolute;bottom:60px;font-size:60px;
+  animation:coverShip 12s ease-in-out infinite;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,.5));
+}
+@keyframes coverShip{0%,100%{left:10%;transform:rotate(-3deg);}50%{left:70%;transform:rotate(3deg);}}
+.cover-bird{position:absolute;font-size:18px;animation:birdFly linear infinite;}
+.cover-inner{position:relative;z-index:5;padding:44px 40px 210px;text-align:center;}
+.series-pill{
+  display:inline-block;
+  background:rgba(255,215,0,.18);border:1px solid rgba(255,215,0,.5);
+  color:var(--gold);border-radius:50px;padding:6px 20px;
+  font-size:13px;font-weight:700;margin-bottom:22px;letter-spacing:.5px;
+}
+.cover-num{font-size:90px;line-height:1;margin-bottom:4px;filter:drop-shadow(0 6px 16px rgba(0,0,0,.5));}
+.cover-day{font-family:'Fredoka One',cursive;font-size:22px;color:var(--gold);margin-bottom:10px;letter-spacing:2px;}
+.cover-title{font-family:'Fredoka One',cursive;font-size:36px;color:white;line-height:1.2;margin-bottom:8px;text-shadow:0 4px 16px rgba(0,0,0,.5);}
+.cover-sub{font-size:17px;color:var(--sky);margin-bottom:26px;}
+.captain-pill{
+  display:inline-flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,rgba(255,215,0,.25),rgba(255,140,0,.2));
+  border:2px solid rgba(255,215,0,.6);border-radius:50px;
+  padding:12px 28px;color:white;font-size:18px;font-weight:700;
+}
+.cover-final-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,215,0,.15);border:1px solid rgba(255,215,0,.4);
+  color:var(--gold);border-radius:16px;padding:8px 18px;
+  font-size:13px;font-weight:600;margin-top:16px;
+}
+
+/* ====== JOURNEY MAP ====== */
+.journey-map{margin:16px 0;}
+.week-block{
+  border-radius:22px;padding:18px 20px;margin-bottom:14px;
+  cursor:pointer;transition:all .35s;
+  border:2px solid transparent;
+}
+.week-block:hover{transform:translateY(-4px);}
+.week-block.w1{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#90caf9;}
+.week-block.w2{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-color:#a5d6a7;}
+.week-block.w3{background:linear-gradient(135deg,#fff3e0,#ffe0b2);border-color:#ffcc80;}
+.week-block.w4{background:linear-gradient(135deg,#f3e5f5,#e1bee7);border-color:#ce93d8;}
+.week-block.wf{background:linear-gradient(135deg,#fff8e1,#fff9c4);border-color:var(--gold);}
+.week-title{font-family:'Fredoka One',cursive;font-size:17px;margin-bottom:8px;}
+.week-block.w1 .week-title{color:#0d47a1;}
+.week-block.w2 .week-title{color:#1b5e20;}
+.week-block.w3 .week-title{color:#e65100;}
+.week-block.w4 .week-title{color:#4a148c;}
+.week-block.wf .week-title{color:#f57f17;}
+.week-days{display:flex;flex-wrap:wrap;gap:8px;}
+.day-chip{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.7);border-radius:50px;
+  padding:5px 12px;font-size:12px;font-weight:600;
+  color:#263238;transition:all .2s;cursor:pointer;
+}
+.day-chip:hover{background:white;transform:scale(1.06);}
+.day-chip .chip-icon{font-size:15px;}
+
+/* ====== PROMISE BOX ====== */
+.promise-box{
+  background:linear-gradient(145deg,var(--navy),#1a237e);
+  border-radius:28px;padding:32px;color:white;text-align:center;
+  position:relative;overflow:hidden;margin:16px 0;
+}
+.promise-box::before{
+  content:'';position:absolute;top:-50px;right:-50px;
+  width:180px;height:180px;
+  background:rgba(255,215,0,.12);border-radius:50%;
+}
+.promise-title{font-family:'Fredoka One',cursive;font-size:24px;color:var(--gold);margin-bottom:8px;}
+.promise-text{font-size:15px;color:#90caf9;margin-bottom:22px;line-height:1.7;}
+.promise-list{list-style:none;text-align:left;padding:0;margin-bottom:24px;}
+.promise-list li{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:15px;color:#e3f2fd;line-height:1.55;
+}
+.promise-list li:last-child{border-bottom:none;}
+.promise-list li .pico{font-size:22px;flex-shrink:0;margin-top:2px;}
+.promise-sign-btn{
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:var(--navy);border:none;border-radius:50px;
+  padding:14px 40px;font-family:'Fredoka One',cursive;
+  font-size:20px;cursor:pointer;
+  box-shadow:0 6px 24px rgba(255,215,0,.5);
+  transition:all .3s;
+}
+.promise-sign-btn:hover{transform:scale(1.07);box-shadow:0 10px 32px rgba(255,215,0,.7);}
+.promise-sign-btn.signed{background:linear-gradient(135deg,#43a047,#1b5e20);color:white;}
+.signed-stamp{
+  display:none;margin-top:16px;
+  font-family:'Fredoka One',cursive;font-size:22px;color:var(--gold);
+  animation:stampIn .5s cubic-bezier(.22,1,.36,1);
+}
+@keyframes stampIn{from{opacity:0;transform:scale(.4) rotate(-8deg);}to{opacity:1;transform:scale(1) rotate(0);}}
+.signed-stamp.show{display:block;}
+
+/* ====== FUTURE CARDS ====== */
+.future-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:16px 0;}
+.fut-card{
+  background:linear-gradient(145deg,#fff,#e3f2fd);
+  border:2px solid #90caf9;border-radius:22px;
+  padding:20px 16px;text-align:center;
+  cursor:pointer;transition:all .35s;
+}
+.fut-card:hover{transform:translateY(-6px);box-shadow:0 14px 36px rgba(33,150,243,.25);border-color:var(--mid);}
+.fut-icon{font-size:44px;margin-bottom:10px;display:block;}
+.fut-title{font-family:'Fredoka One',cursive;font-size:16px;color:var(--navy);margin-bottom:6px;}
+.fut-text{font-size:13px;color:#546e7a;line-height:1.5;}
+
+/* ====== WISDOM LIST ====== */
+.wisdom-list{list-style:none;padding:0;}
+.wisdom-list li{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:15px 18px;background:linear-gradient(135deg,#f8faff,#e8f4fe);
+  border-radius:18px;margin-bottom:12px;
+  border-left:5px solid var(--mid);
+  font-size:15px;line-height:1.65;color:#263238;
+  cursor:pointer;transition:all .3s;
+}
+.wisdom-list li:hover{transform:translateX(7px);border-left-color:var(--gold);}
+.wisdom-list li .wico{font-size:30px;flex-shrink:0;margin-top:2px;}
+.wisdom-list li strong{display:block;color:var(--navy);font-size:15px;margin-bottom:3px;}
+
+/* ====== LESSON GRID ====== */
+.lesson-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:18px 0;}
+.lesson-card{
+  background:linear-gradient(145deg,#fff,#e3f2fd);
+  border:2px solid #90caf9;border-radius:22px;
+  padding:20px 14px;text-align:center;
+  cursor:pointer;transition:all .35s;
+}
+.lesson-card:hover{transform:translateY(-5px);box-shadow:0 12px 30px rgba(33,150,243,.22);}
+.lesson-card .lico{font-size:42px;margin-bottom:10px;display:block;}
+.lesson-card .ltxt{font-size:14px;font-weight:600;color:var(--navy);line-height:1.45;}
+
+/* ====== MEDAL GALLERY ====== */
+.medal-gallery{
+  display:flex;flex-wrap:wrap;justify-content:center;
+  gap:16px;margin:20px 0;
+}
+.medal-item{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  background:linear-gradient(145deg,#fff8e1,#fff9c4);
+  border:2px solid var(--gold);border-radius:20px;
+  padding:16px 18px;cursor:pointer;transition:all .35s;
+  min-width:100px;
+}
+.medal-item:hover{transform:translateY(-6px) scale(1.07);box-shadow:0 12px 28px rgba(255,215,0,.4);}
+.medal-item .mico{font-size:42px;filter:drop-shadow(0 4px 8px rgba(255,215,0,.4));}
+.medal-item .mlbl{font-size:12px;font-weight:700;color:#5d4037;text-align:center;line-height:1.3;}
+
+/* ====== LIFETIME CHALLENGE ====== */
+.lifetime-box{
+  background:linear-gradient(145deg,#0a2058,#1a237e);
+  border-radius:28px;padding:30px 28px;color:white;position:relative;overflow:hidden;
+}
+.lifetime-box::before{
+  content:'';position:absolute;bottom:-40px;left:-40px;
+  width:160px;height:160px;
+  background:rgba(255,215,0,.08);border-radius:50%;
+}
+.lt-title{font-family:'Fredoka One',cursive;font-size:24px;color:var(--gold);margin-bottom:4px;}
+.lt-sub{font-size:13px;color:#90caf9;margin-bottom:20px;}
+.lt-list{list-style:none;padding:0;}
+.lt-list li{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:15px;color:#e3f2fd;line-height:1.55;
+}
+.lt-list li:last-child{border-bottom:none;}
+.lt-check{
+  width:30px;height:30px;border:2px solid var(--gold);border-radius:50%;
+  flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .3s;font-size:15px;margin-top:2px;
+}
+.lt-check:hover{background:rgba(255,215,0,.2);}
+.lt-check.done{background:var(--gold);color:var(--navy);border-color:var(--gold);}
+
+/* ====== EPIC CLOSING ====== */
+.epic-card{
+  background:linear-gradient(145deg,#030d2e,#0a2058,#1251a3);
+  border-radius:36px;padding:48px 36px;text-align:center;
+  color:white;position:relative;overflow:hidden;min-height:480px;
+}
+.epic-stars-bg{position:absolute;inset:0;pointer-events:none;}
+.epic-star{position:absolute;color:white;animation:twinkle ease-in-out infinite;}
+.epic-sun-glow{
+  position:absolute;top:-60px;left:50%;transform:translateX(-50%);
+  width:240px;height:240px;
+  background:radial-gradient(circle,rgba(255,249,196,.25),rgba(255,229,127,.1) 50%,transparent 75%);
+  border-radius:50%;
+  animation:sunPulse 5s ease-in-out infinite;
+}
+.epic-trophy{font-size:88px;display:block;margin-bottom:18px;filter:drop-shadow(0 8px 24px rgba(255,215,0,.7));animation:trophyBounce 3s ease-in-out infinite;}
+@keyframes trophyBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.epic-title{font-family:'Fredoka One',cursive;font-size:34px;color:var(--gold);margin-bottom:10px;text-shadow:0 4px 16px rgba(255,215,0,.5);}
+.epic-sub{font-family:'Fredoka One',cursive;font-size:20px;color:var(--sky);margin-bottom:20px;}
+.epic-msg{font-size:16px;color:#b3e5fc;line-height:1.85;margin-bottom:28px;}
+.epic-quote{
+  background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.35);
+  border-radius:18px;padding:18px 24px;
+  font-size:17px;color:white;font-style:italic;font-weight:600;
+  margin-bottom:24px;line-height:1.6;
+}
+.confetti-btn{
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:var(--navy);border:none;border-radius:50px;
+  padding:16px 44px;font-family:'Fredoka One',cursive;
+  font-size:22px;cursor:pointer;
+  box-shadow:0 8px 28px rgba(255,215,0,.55);
+  transition:all .3s;position:relative;z-index:5;
+  animation:btnGlow 2s ease-in-out infinite;
+}
+@keyframes btnGlow{0%,100%{box-shadow:0 8px 28px rgba(255,215,0,.55);}50%{box-shadow:0 12px 40px rgba(255,215,0,.9);}}
+.confetti-btn:hover{transform:scale(1.09);}
+.confetti-btn.fired{background:linear-gradient(135deg,#43a047,#1b5e20);color:white;animation:none;}
+.epic-next{
+  background:rgba(255,255,255,.08);border-radius:18px;
+  padding:18px 22px;margin-top:24px;font-size:14px;color:#e1f5fe;line-height:1.7;
+}
+.epic-next strong{color:var(--gold);display:block;font-size:16px;margin-bottom:6px;}
+.ship-sail{
+  font-size:44px;margin:20px auto 0;display:block;
+  animation:shipBobFinal 3s ease-in-out infinite;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,.4));
+}
+@keyframes shipBobFinal{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-10px) rotate(3deg);}}
+.signature{
+  margin-top:28px;
+  font-family:'Fredoka One',cursive;font-size:16px;color:rgba(255,255,255,.4);
+  letter-spacing:1px;
+}
+
+/* ====== SPARKLE EFFECT ====== */
+.gold-spark{
+  position:fixed;pointer-events:none;z-index:9999;
+  font-size:22px;animation:sparkFly 1.3s ease forwards;
+}
+@keyframes sparkFly{0%{opacity:1;transform:scale(1) translateY(0);}100%{opacity:0;transform:scale(.5) translateY(-90px) rotate(30deg);}}
+
+/* ====== CONFETTI ====== */
+.confetti-piece{
+  position:fixed;z-index:9998;pointer-events:none;
+  width:10px;height:14px;border-radius:3px;
+  animation:confettiFall linear forwards;
+}
+@keyframes confettiFall{
+  0%{transform:translateY(-20px) rotate(0deg);opacity:1;}
+  100%{transform:translateY(110vh) rotate(720deg);opacity:.3;}
+}
+
+/* ====== RESPONSIVE ====== */
+@media(max-width:600px){
+  .cover-title{font-size:28px;}
+  .card{padding:28px 18px;}
+  .epic-card{padding:36px 20px;}
+  .epic-title{font-size:26px;}
+  .future-grid{grid-template-columns:1fr;}
+  .lesson-grid{grid-template-columns:repeat(2,1fr);}
+  .medal-gallery{gap:10px;}
+  .medal-item{min-width:80px;padding:12px 10px;}
+}
+</style>
+</head>
+<body>
+
+<!-- SKY BG -->
+<div class="sky-canvas" id="skyBg">
+  <div class="star-field" id="starField"></div>
+  <div class="sun-rise" id="sunRise"></div>
+  <div class="ocean-wave-bg"></div>
+  <div class="ship-scene" id="shipScene">
+    <div class="ship-emoji">⛵</div>
+  </div>
+</div>
+
+<!-- BACK BUTTON -->
+<a class="back-btn" href="../perpustakaan.html">← Kembali ke Perpustakaan</a>
+
+<div class="book">
+
+<!-- ===== SLIDE 1: EPIC COVER ===== -->
+<div class="slide active" id="slide-1">
+  <div class="cover-card">
+    <div class="cover-stars" id="coverStars"></div>
+    <div class="cover-sun"></div>
+    <div class="cover-ocean-strip"></div>
+    <div class="cover-waves"><div class="cwave"></div><div class="cwave"></div></div>
+    <!-- Birds -->
+    <div class="cover-bird" style="top:22%;animation-duration:9s;animation-delay:0s;">🦅</div>
+    <div class="cover-bird" style="top:30%;animation-duration:12s;animation-delay:-4s;font-size:14px;">🕊️</div>
+    <div class="cover-bird" style="top:15%;animation-duration:10s;animation-delay:-7s;font-size:16px;">🦅</div>
+    <div class="cover-ship"></div>
+    <div class="cover-inner">
+      <div class="series-pill">⚓ Petualangan Kapten Cerdas di Lautan Digital</div>
+      <div class="cover-num">🏆</div>
+      <div class="cover-day">HARI 30 – HARI TERAKHIR</div>
+      <div class="cover-title">Petualangan Berikutnya<br/>Lautan Digital Selamanya</div>
+      <div class="cover-sub">Perjalanan 30 hari yang luar biasa kini mencapai puncaknya...</div>
+      <div class="captain-pill">
+        <span>👑</span>
+        <span>Kapten <strong>Aslan</strong></span>
+        <span>⚓</span>
+      </div>
+      <div class="cover-final-badge">🎓 WISUDA KAPTEN CERDAS SEJATI 🎓</div>
+    </div>
+  </div>
+  <div style="text-align:center;color:rgba(100,180,255,.6);font-size:13px;margin-top:14px;animation:twinkle 2s ease-in-out infinite;">✨ Hari terakhir yang paling epik sedang menantimu... ✨</div>
+</div>
+
+<!-- ===== SLIDE 2: PENGANTAR ===== -->
+<div class="slide" id="slide-2">
+  <div class="card">
+    <div class="sec-head">
+      <span class="sec-icon">🌅</span>
+      <div class="sec-title">Hari Terakhir yang Paling Indah</div>
+      <div class="sec-sub">Petualangan 30 hari menuju puncaknya...</div>
+    </div>
+    <div class="story">
+      <p>Di <strong>Hari 28</strong>, Aslan mendapatkan gelar Kapten Cerdas Sejati — ia membuktikan dirinya layak memimpin kapalnya sendiri di Lautan Digital. 🎓</p>
+      <p>Di <strong>Hari 29</strong>, Aslan menghitung semua harta karun yang ia bawa pulang — ilmu, kebijaksanaan, keterampilan, dan keberanian yang telah berkembang selama perjalanan. 💎</p>
+      <p>Dan kini... <strong>Hari 30</strong>. Hari terakhir dalam petualangan resmi ini. Tapi ini bukan akhir — ini adalah awal yang sesungguhnya! 🚀</p>
+    </div>
+    <div class="hl" style="text-align:center;">
+      <strong>📅 30 Hari Perjalanan Aslan:</strong><br/>
+      Minggu 1 🌊 → Minggu 2 💎 → Minggu 3 🛡️ → Minggu 4 ⚓ → Hari Ini 🏆
+    </div>
+    <div class="wave-div">🌊 ⭐ 🌊 ⭐ 🌊</div>
+    <div class="story" style="border-left-color:var(--gold);background:linear-gradient(135deg,#fff8e1,#fffde7);">
+      <p>Pagi itu, matahari terbit lebih cerah dari biasanya. Kapal Aslan berdiri kokoh di atas air yang tenang dan jernih. Di cakrawala, terlihat lautan tak terbatas yang siap untuk dijelajahi...</p>
+      <p><strong>"Ini bukan perpisahan,"</strong> bisik Aslan dalam hati. <strong>"Ini adalah permulaan selamanya."</strong> ⭐</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 3: CERITA UTAMA ===== -->
+<div class="slide" id="slide-3">
+  <div class="card">
+    <div class="sec-head">
+      <span class="sec-icon">🚢</span>
+      <div class="sec-title">Aslan Berlayar Menuju Cakrawala</div>
+      <div class="sec-sub">Momen paling mengharukan dalam petualangan ini...</div>
+    </div>
+    <div class="story">
+      <p>Aslan berdiri di haluan kapalnya, memandang lautan biru yang membentang sejauh mata memandang. Di belakangnya, terlihat jejak perjalanan 30 hari — pulau-pulau kecil, badai yang pernah ia hadapi, dan harta karun yang berkilau di bawah air.</p>
+      <p>Semua teman yang ia kumpulkan selama 30 hari berlayar bersama-sama. Marina si Pendeteksi Hoaks 🔍, Bimo si Pembuat Konten 🎨, Sari si Penjaga Privasi 🔒, dan masih banyak lagi. Mereka semua berkumpul di geladak kapal untuk merayakan hari terakhir ini. 🎉</p>
+    </div>
+    <div class="story" style="background:linear-gradient(135deg,#fff3e0,#fff8e1);border-left-color:var(--orange);">
+      <p>"Aslan," kata Kapten Senior dari jauh, suaranya hangat seperti matahari sore, "kamu datang 30 hari yang lalu sebagai anak yang penasaran. Dan hari ini kamu berdiri di sini sebagai seorang <strong>Kapten Cerdas Sejati!</strong>"</p>
+      <p>Air mata haru mengalir sedikit di pipi Aslan. Bukan karena sedih — tapi karena ia tahu, petualangan ini telah mengubahnya menjadi seseorang yang lebih bijak, lebih berani, dan lebih bertanggung jawab. 💙</p>
+    </div>
+    <div class="story" style="background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border-left-color:var(--green);">
+      <p>Dengan mantap, Aslan mengangkat tangannya ke udara dan berseru keras:</p>
+      <p style="text-align:center;font-size:18px;font-weight:700;color:var(--navy);">"Lautan Digital menungguku! Dan aku siap! Selamanya!" ⚓🌊✨</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 4: JOURNEY MAP ===== -->
+<div class="slide" id="slide-4">
+  <div class="card">
+    <div class="sec-head">
+      <span class="sec-icon">🗺️</span>
+      <div class="sec-title">Peta Perjalanan 30 Hari Aslan</div>
+      <div class="sec-sub">Ketuk setiap minggu untuk melihat kenangan! 💫</div>
+    </div>
+    <div class="journey-map">
+      <div class="week-block w1" onclick="expandWeek(this,'w1')">
+        <div class="week-title">⚓ Minggu 1 – Mengenal Lautan Digital</div>
+        <div class="week-days" id="days-w1" style="display:none;">
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🌊</span>Hari 1: Menemukan Lautan</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">📱</span>Hari 2: Kapal Ajaib</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🌐</span>Hari 3: Internet</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🏝️</span>Hari 4: Pulau Digital</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">💨</span>Hari 5: Tren Viral</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🗺️</span>Hari 6: Peta Rahasia</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🛡️</span>Hari 7: Aturan Keselamatan</div>
+        </div>
+      </div>
+      <div class="week-block w2" onclick="expandWeek(this,'w2')">
+        <div class="week-title">💎 Minggu 2 – Membedakan Sampah dan Berlian</div>
+        <div class="week-days" id="days-w2" style="display:none;">
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🗑️</span>Hari 8: Sampah Digital</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">💎</span>Hari 9: Berlian Tersembunyi</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🔬</span>Hari 10: Menguji Konten</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🐟</span>Hari 11: Berita Bohong</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🌺</span>Hari 12: Mutiara vs Plastik</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🤔</span>Hari 13: Mengapa Tertipu</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🔍</span>Hari 14: Lensa Kebenaran</div>
+        </div>
+      </div>
+      <div class="week-block w3" onclick="expandWeek(this,'w3')">
+        <div class="week-title">🛡️ Minggu 3 – Keselamatan dan Perlindungan</div>
+        <div class="week-days" id="days-w3" style="display:none;">
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">👾</span>Hari 15: Monster Digital</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🔑</span>Hari 16: Privasi</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🎭</span>Hari 17: Orang Pura-pura</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">👣</span>Hari 18: Jejak Digital</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">⚔️</span>Hari 19: Kata Sandi</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🌀</span>Hari 20: Cyberbullying</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🆘</span>Hari 21: Minta Tolong</div>
+        </div>
+      </div>
+      <div class="week-block w4" onclick="expandWeek(this,'w4')">
+        <div class="week-title">👑 Minggu 4 – Menjadi Nahkoda yang Bijak</div>
+        <div class="week-days" id="days-w4" style="display:none;">
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">💚</span>Hari 22: Kebaikan Digital</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🤝</span>Hari 23: Menolong Teman</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">⏱️</span>Hari 24: Screen Time</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🎨</span>Hari 25: Konten Kreatif</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🌏</span>Hari 26: Teman Online</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🧹</span>Hari 27: Bersih-bersih</div>
+        </div>
+      </div>
+      <div class="week-block wf" onclick="expandWeek(this,'wf')">
+        <div class="week-title">🏆 Hari Penutup &amp; Refleksi</div>
+        <div class="week-days" id="days-wf" style="display:none;">
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">🎓</span>Hari 28: Kapten Cerdas Sejati</div>
+          <div class="day-chip" onclick="addSpark(event)"><span class="chip-icon">💰</span>Hari 29: Harta Karun</div>
+          <div class="day-chip" style="background:linear-gradient(135deg,var(--gold),var(--orange));color:var(--navy);font-weight:700;" onclick="addSpark(event)"><span class="chip-icon">🏆</span>Hari 30: Selamanya ← Kamu di Sini!</div>
+        </div>
+      </div>
+    </div>
+    <div class="hl" style="text-align:center;font-size:14px;">
+      💡 <strong>Ketuk setiap minggu untuk membuka kenangan!</strong> Setiap chip bisa diklik untuk sparkle emas ✨
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 5: PESAN PERPISAHAN ===== -->
+<div class="slide" id="slide-5">
+  <div class="card">
+    <div class="sec-head">
+      <span class="sec-icon">💌</span>
+      <div class="sec-title">Pesan dari Kapten Senior</div>
+      <div class="sec-sub">Kata-kata terakhir yang akan selalu diingat Aslan...</div>
+    </div>
+    <div class="story" style="background:linear-gradient(135deg,#e8eaf6,#f3e5f5);border-left-color:#7c4dff;font-style:italic;">
+      <p>"Aslan yang kusayangi,</p>
+      <p>Tiga puluh hari yang lalu, kamu menaiki kapal dengan penuh rasa ingin tahu. Hari ini, kamu turun dari kapal itu sebagai seseorang yang lebih kuat, lebih bijak, dan lebih bertanggung jawab.</p>
+      <p>Kamu belajar mengenal lautan yang indah sekaligus berbahaya. Kamu belajar membedakan berlian dari sampah. Kamu belajar melindungi dirimu dan orang-orang yang kamu sayangi. Dan kamu belajar menjadi nahkoda yang bijak — yang tidak hanya memikirkan dirinya sendiri, tapi juga menjaga lautannya untuk semua orang.</p>
+    </div>
+    <div class="story" style="background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border-left-color:var(--green);">
+      <p>Lautan Digital akan terus berubah. Ombak baru akan datang. Teknologi baru akan bermunculan. Tantangan baru akan muncul. Tapi kamu sudah punya kompas yang paling penting: <strong>kebijaksanaanmu sendiri.</strong></p>
+      <p>Selama kamu terus berpikir sebelum bertindak, selama kamu terus memilih kebaikan, selama kamu terus menjaga diri dan orang lain — kamu akan selalu menjadi Kapten Cerdas yang sejati.</p>
+    </div>
+    <div class="hl" style="text-align:center;font-size:17px;border-color:rgba(124,77,255,.4);background:linear-gradient(135deg,#ede7f6,#f3e5f5);color:#4a148c;">
+      <strong>"Berlayarlah dengan cerdas, Kapten Aslan.<br/>Lautan Digital selamanya menantimu."</strong><br/>
+      <span style="font-size:13px;color:#7c4dff;">— Kapten Senior, Lautan Digital 🌊</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 6: JANJI KAPTEN ===== -->
+<div class="slide" id="slide-6">
+  <div class="card">
+    <div class="sec-head">
+      <span class="sec-icon">✍️</span>
+      <div class="sec-title">Janji Kapten Cerdas Sejati</div>
+      <div class="sec-sub">Aslan siap menandatangani janjinya untuk selamanya!</div>
+    </div>
+    <div class="promise-box">
+      <div class="promise-title">📜 Janji Kapten Aslan</div>
+      <div class="promise-text">Dengan bangga dan penuh keyakinan, aku berjanji kepada diri sendiri, kepada keluargaku, dan kepada seluruh penghuni Lautan Digital:</div>
+      <ul class="promise-list">
+        <li><span class="pico">🧠</span><span>Aku akan <strong>berpikir sebelum share</strong> — selalu memastikan informasi itu benar dan bermanfaat</span></li>
+        <li><span class="pico">🛡️</span><span>Aku akan <strong>menjaga privasi</strong> diriku dan orang lain dari tangan yang tidak bertanggung jawab</span></li>
+        <li><span class="pico">💬</span><span>Aku akan <strong>berbicara dengan sopan</strong> di dunia digital, seperti aku berbicara face-to-face</span></li>
+        <li><span class="pico">🌟</span><span>Aku akan <strong>menyebarkan kebaikan dan konten positif</strong> yang berguna bagi banyak orang</span></li>
+        <li><span class="pico">🤝</span><span>Aku akan <strong>membela teman</strong> yang disakiti di dunia digital dan membantu mereka melaporkan</span></li>
+        <li><span class="pico">⏱️</span><span>Aku akan <strong>menjaga keseimbangan</strong> waktu layar — hidup tidak hanya di lautan digital!</span></li>
+        <li><span class="pico">📚</span><span>Aku akan <strong>terus belajar</strong> karena Lautan Digital selalu berubah dan aku harus tetap cerdas</span></li>
+        <li><span class="pico">❤️</span><span>Aku akan <strong>menggunakan internet untuk kebaikan</strong> — karena itulah warisan seorang Kapten Cerdas</span></li>
+      </ul>
+      <button class="promise-sign-btn" id="signBtn" onclick="signPromise()">✍️ Tandatangani Janji Ini!</button>
+      <div class="signed-stamp" id="signedStamp">
+        🏅 RESMI DITANDATANGANI OLEH KAPTEN Aslan 🏅<br/>
+        <span style="font-size:14px;color:#90caf9;font-weight:400;">Hari ke-30 Petualangan di Lautan Digital ⚓</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 7: MASA DEPAN ===== -->
+<div class="slide" id="slide-7">
+  <div class="card">
+    <div class="sec-head">
+      <span class="sec-icon">🔭</span>
+      <div class="sec-title">Lautan Digital Masa Depanmu</div>
+      <div class="sec-sub">Petualangan apa yang menanti Kapten Aslan? ✨</div>
+    </div>
+    <div class="story">
+      <p>Petualangan 30 hari ini hanyalah <strong>peta dasar</strong> untuk berlayar di Lautan Digital. Di depanmu, masih banyak pulau yang belum dijelajahi, harta karun yang belum ditemukan, dan teman baru yang menunggumu!</p>
+    </div>
+    <div class="future-grid">
+      <div class="fut-card" onclick="addSpark(event)">
+        <span class="fut-icon">🤖</span>
+        <div class="fut-title">Kecerdasan Buatan (AI)</div>
+        <div class="fut-text">Dunia AI semakin berkembang — pelajari cara menggunakannya dengan bijak sebagai alat kreatif!</div>
+      </div>
+      <div class="fut-card" onclick="addSpark(event)">
+        <span class="fut-icon">💻</span>
+        <div class="fut-title">Coding & Membuat App</div>
+        <div class="fut-text">Dari pengguna menjadi pencipta! Aslan bisa belajar membuat aplikasi dan gamenya sendiri.</div>
+      </div>
+      <div class="fut-card" onclick="addSpark(event)">
+        <span class="fut-icon">🎮</span>
+        <div class="fut-title">Game Development</div>
+        <div class="fut-text">Bayangkan game petualangan buatanmu sendiri — "Petualangan Kapten Aslan 2"! 🚀</div>
+      </div>
+      <div class="fut-card" onclick="addSpark(event)">
+        <span class="fut-icon">🎥</span>
+        <div class="fut-title">Content Creator</div>
+        <div class="fut-text">Buat konten edukatif yang menginspirasi jutaan anak lain untuk jadi Kapten Cerdas!</div>
+      </div>
+      <div class="fut-card" onclick="addSpark(event)">
+        <span class="fut-icon">🔐</span>
+        <div class="fut-title">Keamanan Siber</div>
+        <div class="fut-text">Jadilah penjaga lautan profesional — lindungi orang banyak dari ancaman digital!</div>
+      </div>
+      <div class="fut-card" onclick="addSpark(event)">
+        <span class="fut-icon">🌍</span>
+        <div class="fut-title">Digital Citizenship</div>
+        <div class="fut-text">Jadilah duta digital yang mengajarkan kebijaksanaan kepada anak-anak di seluruh Indonesia!</div>
+      </div>
+    </div>
+    <div class="hl" style="text-align:center;">
+      💡 <strong>Klik setiap kartu untuk merasakannya!</strong> Mana yang paling menarik untukmu, Aslan? 🌟
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 8: GALERI MEDALI ===== -->
+<div class="slide" id="slide-8">
+  <div class="card">
+    <div class="sec-head">
+      <span class="sec-icon">🏅</span>
+      <div class="sec-title">Galeri Medali Kapten Aslan</div>
+      <div class="sec-sub">Semua yang berhasil kamu kumpulkan! Ketuk setiap medali! 🌟</div>
+    </div>
+    <div class="medal-gallery">
+      <div class="medal-item" onclick="addSpark(event)">
+        <span class="mico">🧭</span>
+        <span class="mlbl">Penjelajah<br/>Lautan</span>
+      </div>
+      <div class="medal-item" onclick="addSpark(event)">
+        <span class="mico">🔍</span>
+        <span class="mlbl">Detektor<br/>Hoaks</span>
+      </div>
+      <div class="medal-item" onclick="addSpark(event)">
+        <span class="mico">🛡️</span>
+        <span class="mlbl">Penjaga<br/>Privasi</span>
+      </div>
+      <div class="medal-item" onclick="addSpark(event)">
+        <span class="mico">🔑</span>
+        <span class="mlbl">Master<br/>Kata Sandi</span>
+      </div>
+      <div class="medal-item" onclick="addSpark(event)">
+        <span class="mico">💬</span>
+        <span class="mlbl">Komunikator<br/>Bijak</span>
+      </div>
+      <div class="medal-item" onclick="addSpark(event)">
+        <span class="mico">🎨</span>
+        <span class="mlbl">Kreator<br/>Konten</span>
+      </div>
+      <div class="medal-item" onclick="addSpark(event)">
+        <span class="mico">🤝</span>
+        <span class="mlbl">Teman<br/>Sejati</span>
+      </div>
+      <div class="medal-item" onclick="addSpark(event)">
+        <span class="mico">🧹</span>
+        <span class="mlbl">Pembersih<br/>Lautan</span>
+      </div>
+      <div class="medal-item" onclick="addSpark(event)">
+        <span class="mico">⚖️</span>
+        <span class="mlbl">Penyeimbang<br/>Screen Time</span>
+      </div>
+      <div class="medal-item" onclick="addSpark(event)" style="border-color:var(--gold);background:linear-gradient(145deg,#fff9c4,var(--gold));transform:scale(1.06);">
+        <span class="mico">👑</span>
+        <span class="mlbl" style="color:#5d4037;font-weight:800;">KAPTEN<br/>CERDAS ★</span>
+      </div>
+    </div>
+    <div class="hl" style="text-align:center;margin-top:8px;">
+      🏆 <strong>10 Medali berhasil dikumpulkan!</strong><br/>
+      Medali <strong>Kapten Cerdas</strong> adalah medali tertinggi yang hanya diberikan kepada yang terpilih! ⭐
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 9: MOTIVASI SELAMANYA ===== -->
+<div class="slide" id="slide-9">
+  <div class="card">
+    <div class="sec-head">
+      <span class="sec-icon">💪</span>
+      <div class="sec-title">Tetap Bijak Selamanya!</div>
+      <div class="sec-sub">Kata-kata semangat untuk perjalanan panjang Aslan...</div>
+    </div>
+    <ul class="wisdom-list">
+      <li onclick="addSpark(event)">
+        <span class="wico">🌟</span>
+        <div>
+          <strong>Kebijaksanaan tidak pernah kadaluwarsa</strong>
+          Teknologi akan terus berubah, tapi nilai-nilai baik yang kamu pelajari — kejujuran, keberanian, kebaikan — akan selalu relevan sepanjang hidupmu.
+        </div>
+      </li>
+      <li onclick="addSpark(event)">
+        <span class="wico">🌊</span>
+        <div>
+          <strong>Ombak besar datang untuk membuatmu lebih kuat</strong>
+          Setiap tantangan di dunia digital adalah kesempatan untuk tumbuh. Kapten cerdas tidak lari dari badai — ia belajar menaklukannya!
+        </div>
+      </li>
+      <li onclick="addSpark(event)">
+        <span class="wico">🔆</span>
+        <div>
+          <strong>Jadilah mercusuar, bukan hanya pelayar</strong>
+          Dengan ilmu yang kamu miliki, kamu bisa menjadi cahaya yang menuntun teman-temanmu menghindari bahaya di Lautan Digital.
+        </div>
+      </li>
+      <li onclick="addSpark(event)">
+        <span class="wico">🌱</span>
+        <div>
+          <strong>Terus belajar, terus bertumbuh</strong>
+          Seorang Kapten yang hebat tidak pernah berhenti belajar. Setiap hari adalah Hari 1 dari petualangan baru!
+        </div>
+      </li>
+      <li onclick="addSpark(event)">
+        <span class="wico">❤️</span>
+        <div>
+          <strong>Internet bisa menjadi tempat yang indah</strong>
+          Semakin banyak orang sepertimu yang bijak dan baik bermain di internet, semakin indah lautan itu menjadi untuk semua orang!
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== SLIDE 10: PELAJARAN TERAKHIR ===== -->
+<div class="slide" id="slide-10">
+  <div class="card">
+    <div class="sec-head">
+      <span class="sec-icon">📚</span>
+      <div class="sec-title">Pelajaran Terakhir yang Paling Penting</div>
+      <div class="sec-sub">Rangkuman emas dari 30 hari petualangan 🌟</div>
+    </div>
+    <div class="lesson-grid">
+      <div class="lesson-card" onclick="addSpark(event)">
+        <span class="lico">🧠</span>
+        <span class="ltxt">Pikirkan dulu sebelum klik, share, atau komentar apapun</span>
+      </div>
+      <div class="lesson-card" onclick="addSpark(event)">
+        <span class="lico">🔒</span>
+        <span class="ltxt">Privasi adalah harta paling berharga di lautan digital</span>
+      </div>
+      <div class="lesson-card" onclick="addSpark(event)">
+        <span class="lico">🌱</span>
+        <span class="ltxt">Sebarkan kebaikan — satu konten positif bisa mengubah hari seseorang</span>
+      </div>
+      <div class="lesson-card" onclick="addSpark(event)">
+        <span class="lico">⚖️</span>
+        <span class="ltxt">Hidup seimbang: layar dan dunia nyata sama-sama butuh perhatianmu</span>
+      </div>
+      <div class="lesson-card" onclick="addSpark(event)">
+        <span class="lico">🤝</span>
+        <span class="ltxt">Teman yang baik di dunia digital dimulai dari dirimu yang baik terlebih dahulu</span>
+      </div>
+      <div class="lesson-card" onclick="addSpark(event)">
+        <span class="lico">🆘</span>
+        <span class="ltxt">Meminta bantuan adalah tanda kekuatan, bukan kelemahan</span>
+      </div>
+      <div class="lesson-card" onclick="addSpark(event)">
+        <span class="lico">🎨</span>
+        <span class="ltxt">Kreativitasmu adalah hadiah terbaik yang bisa kamu bagikan ke dunia</span>
+      </div>
+      <div class="lesson-card" onclick="addSpark(event)">
+        <span class="lico">⚓</span>
+        <span class="ltxt">Kapten Cerdas tidak pernah berhenti belajar menjadi lebih baik</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 11: TANTANGAN SEUMUR HIDUP ===== -->
+<div class="slide" id="slide-11">
+  <div class="card">
+    <div class="sec-head">
+      <span class="sec-icon">🎯</span>
+      <div class="sec-title">Tantangan Seumur Hidup!</div>
+      <div class="sec-sub">Bukan tantangan harian — ini adalah tantangan untuk selamanya, Kapten Aslan! ⚓</div>
+    </div>
+    <div class="lifetime-box">
+      <div class="lt-title">🏆 Misi Kapten Aslan</div>
+      <div class="lt-sub">Mulai hari ini, selamanya, kamu adalah Kapten Cerdas yang bertugas...</div>
+      <ul class="lt-list">
+        <li>
+          <div class="lt-check" onclick="ltCheck(this)"></div>
+          <span>🧭 <strong>Setiap minggu:</strong> Temukan minimal 1 hal baru dan bermanfaat tentang dunia digital</span>
+        </li>
+        <li>
+          <div class="lt-check" onclick="ltCheck(this)"></div>
+          <span>🌱 <strong>Setiap hari:</strong> Lakukan minimal 1 tindakan baik di dunia digital (komentar positif, share konten edukatif)</span>
+        </li>
+        <li>
+          <div class="lt-check" onclick="ltCheck(this)"></div>
+          <span>🛡️ <strong>Setiap kali:</strong> Berhenti sebelum share berita — tanya "Apakah ini benar? Apakah ini berguna?"</span>
+        </li>
+        <li>
+          <div class="lt-check" onclick="ltCheck(this)"></div>
+          <span>👫 <strong>Setiap bulan:</strong> Ajarkan satu hal tentang keamanan digital kepada teman atau adikmu</span>
+        </li>
+        <li>
+          <div class="lt-check" onclick="ltCheck(this)"></div>
+          <span>⚖️ <strong>Setiap hari:</strong> Jaga waktu layar — pastikan ada waktu untuk aktivitas offline yang menyenangkan juga!</span>
+        </li>
+        <li>
+          <div class="lt-check" onclick="ltCheck(this)"></div>
+          <span>🎨 <strong>Setiap kesempatan:</strong> Gunakan kreativitasmu untuk membuat konten yang menginspirasi orang lain</span>
+        </li>
+        <li>
+          <div class="lt-check" onclick="ltCheck(this)"></div>
+          <span>💙 <strong>Selamanya:</strong> Ingat bahwa di balik setiap layar ada manusia sungguhan dengan perasaan dan hati</span>
+        </li>
+      </ul>
+      <div id="ltScore" style="text-align:center;font-size:15px;font-weight:700;color:var(--gold);margin-top:12px;min-height:28px;">☐ Mulai centang komitmenmu, Kapten!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 12: EPIC CLOSING ===== -->
+<div class="slide" id="slide-12">
+  <div class="epic-card">
+    <div class="epic-stars-bg" id="epicStars"></div>
+    <div class="epic-sun-glow"></div>
+    <span class="epic-trophy">🏆</span>
+    <div class="epic-title">SELAMAT, KAPTEN ASLAN!</div>
+    <div class="epic-sub">Petualangan 30 Hari Telah Selesai!</div>
+    <div class="epic-msg">
+      <strong>Aslan</strong>, kamu telah menyelesaikan perjalanan yang luar biasa!<br/>
+      Dari seorang pelaut pemula yang baru pertama kali melihat Lautan Digital,<br/>
+      kamu telah tumbuh menjadi <strong>Kapten Cerdas Sejati</strong> yang bijak, berani, dan bertanggung jawab! 🌊⚓<br/><br/>
+      Lautan Digital yang luas dan tak terbatas kini menunggumu.<br/>
+      Berlayarlah dengan cerdas, berlayarlah dengan hati, berlayarlah selamanya! ✨
+    </div>
+    <div class="epic-quote">
+      "Bukan lamanya perjalanan yang membuat seorang kapten hebat,<br/>
+      tapi bagaimana ia berlayar — dengan hati, dengan akal, dan dengan keberanian.<br/>
+      Kamu sudah memiliki ketiganya, Aslan." 🌊⭐
+    </div>
+    <button class="confetti-btn" id="confettiBtn" onclick="launchCelebration()">
+      🎉 RAYAKAN KELULUSAN! 🎉
+    </button>
+    <div id="celebMsg" style="display:none;margin-top:16px;font-family:'Fredoka One',cursive;font-size:22px;color:var(--gold);animation:stampIn .6s ease;">
+      🏅 KAPTEN CERDAS SEJATI 🏅<br/>
+      <span style="font-size:14px;font-family:'Fredoka',sans-serif;font-weight:500;color:#b3e5fc;">Aslan – Angkatan ke-1 Lautan Digital</span>
+    </div>
+    <div class="epic-next">
+      <strong>🚀 Petualangan Berikutnya Adalah Hidupmu Sendiri!</strong>
+      Lautan Digital menantimu setiap hari. Kamu sudah punya semua yang dibutuhkan untuk berlayar dengan selamat, bijak, dan penuh semangat. Sampai jumpa di lautan, Kapten! ⚓🌊
+    </div>
+    <span class="ship-sail">⛵</span>
+    <div class="signature">— Seri "Petualangan Kapten Cerdas di Lautan Digital" • 30 Hari Berselancar yang Bijak —</div>
+  </div>
+</div>
+
+</div><!-- /book -->
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <button class="nav-btn" id="prevBtn" onclick="goPage(-1)" disabled>← Sebelumnya</button>
+  <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:8.33%"></div></div>
+  <span class="page-lbl" id="pageLbl">1 / 12</span>
+  <button class="nav-btn" id="nextBtn" onclick="goPage(1)">Berikutnya →</button>
+</div>
+
+<script>
+// ===== STAR FIELD =====
+(function(){
+  const sf = document.getElementById('starField');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const sz=1+Math.random()*2.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*70}%;animation-duration:${2+Math.random()*4}s;animation-delay:-${Math.random()*6}s;`;
+    sf.appendChild(s);
+  }
+  // Cover stars
+  const cs=document.getElementById('coverStars');
+  if(cs){
+    for(let i=0;i<80;i++){
+      const s=document.createElement('div');
+      s.className='cover-star';
+      const sz=1+Math.random()*3;
+      s.style.cssText=`width:${sz}px;height:${sz}px;background:white;border-radius:50%;left:${Math.random()*100}%;top:${Math.random()*60}%;animation-duration:${2+Math.random()*4}s;animation-delay:-${Math.random()*6}s;`;
+      cs.appendChild(s);
+    }
+  }
+  // Epic stars
+  const es=document.getElementById('epicStars');
+  if(es){
+    const emj=['⭐','✨','🌟','💫','⚡'];
+    for(let i=0;i<20;i++){
+      const s=document.createElement('div');
+      s.className='epic-star';
+      s.textContent=emj[Math.floor(Math.random()*emj.length)];
+      s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;font-size:${12+Math.random()*16}px;animation-duration:${2+Math.random()*4}s;animation-delay:-${Math.random()*6}s;`;
+      es.appendChild(s);
+    }
+  }
+})();
+
+// Activate sky elements on last slide
+function activateSky(){
+  document.getElementById('sunRise').classList.add('visible');
+  document.getElementById('shipScene').classList.add('visible');
+}
+
+// ===== PAGINATION =====
+let cur=1;const tot=12;
+function goPage(d){
+  document.getElementById('slide-'+cur).classList.remove('active');
+  cur=Math.max(1,Math.min(tot,cur+d));
+  document.getElementById('slide-'+cur).classList.add('active');
+  document.getElementById('prevBtn').disabled=cur===1;
+  document.getElementById('nextBtn').disabled=cur===tot;
+  document.getElementById('pageLbl').textContent=cur+' / '+tot;
+  document.getElementById('progFill').style.width=((cur/tot)*100)+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(cur===tot) activateSky();
+}
+
+// ===== SPARKLE =====
+function addSpark(e){
+  e.stopPropagation&&e.stopPropagation();
+  const emj=['✨','⭐','💫','🌟','🎉','🏅','⚓'];
+  const x=e.clientX||e.pageX||window.innerWidth/2;
+  const y=e.clientY||e.pageY||200;
+  for(let i=0;i<4;i++){
+    const sp=document.createElement('div');
+    sp.className='gold-spark';
+    sp.textContent=emj[Math.floor(Math.random()*emj.length)];
+    sp.style.cssText=`left:${x+(-30+Math.random()*60)}px;top:${y+(-20+Math.random()*40)+window.scrollY}px;`;
+    document.body.appendChild(sp);
+    setTimeout(()=>sp.remove(),1300);
+  }
+}
+// For non-event calls
+function addSpark2(el){
+  const rect=el.getBoundingClientRect();
+  const e={clientX:rect.left+rect.width/2,clientY:rect.top+rect.height/2,stopPropagation:()=>{}};
+  addSpark(e);
+}
+
+// ===== JOURNEY MAP EXPAND =====
+function expandWeek(el,id){
+  const days=document.getElementById('days-'+id);
+  const open=days.style.display==='flex';
+  days.style.display=open?'none':'flex';
+  addSpark2(el);
+}
+
+// ===== SIGN PROMISE =====
+function signPromise(){
+  const btn=document.getElementById('signBtn');
+  const stamp=document.getElementById('signedStamp');
+  btn.textContent='✅ Janji Sudah Ditandatangani!';
+  btn.classList.add('signed');
+  stamp.classList.add('show');
+  // Big sparkle burst
+  for(let i=0;i<12;i++){
+    const sp=document.createElement('div');
+    sp.className='gold-spark';
+    sp.textContent=['🏅','⭐','✨','🌟','👑'][Math.floor(Math.random()*5)];
+    sp.style.cssText=`left:${15+Math.random()*70}%;top:${20+Math.random()*60}%;font-size:${20+Math.random()*16}px;`;
+    document.body.appendChild(sp);
+    setTimeout(()=>sp.remove(),1500);
+  }
+}
+
+// ===== LIFETIME CHECK =====
+let ltDone=0;
+function ltCheck(el){
+  const was=el.classList.contains('done');
+  el.classList.toggle('done');
+  ltDone+=was?-1:1;
+  if(!was){el.textContent='✓';addSpark2(el);}
+  else el.textContent='';
+  const msgs=['☐ Mulai centang komitmenmu, Kapten!','⭐ 1/7 — Komitmen pertama dimulai!','⭐⭐ 2/7 — Luar biasa, teruskan!','⭐⭐⭐ 3/7 — Kapten sejati tidak mudah menyerah!','⭐⭐⭐⭐ 4/7 — Hampir sampai!','⭐⭐⭐⭐⭐ 5/7 — Dua lagi untuk gelar legendaris!','🏆🏆 6/7 — Satu langkah terakhir!','🎖️ 7/7 SEMUA KOMITMEN DIKUNCI! Kapten Aslan, kamu LUAR BIASA! 🎉'];
+  document.getElementById('ltScore').textContent=msgs[Math.max(0,Math.min(7,ltDone))];
+}
+
+// ===== CONFETTI CELEBRATION =====
+function launchCelebration(){
+  const btn=document.getElementById('confettiBtn');
+  btn.textContent='🏆 SELAMAT, KAPTEN ASLAN! 🏆';
+  btn.classList.add('fired');
+  document.getElementById('celebMsg').style.display='block';
+  fireConfetti();
+  // Big sparkle rain
+  for(let i=0;i<20;i++){
+    setTimeout(()=>{
+      const sp=document.createElement('div');
+      sp.className='gold-spark';
+      sp.textContent=['🏅','⭐','✨','🌟','👑','🎉','🏆','🎊'][Math.floor(Math.random()*8)];
+      sp.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*80+window.scrollY}px;font-size:${18+Math.random()*20}px;`;
+      document.body.appendChild(sp);
+      setTimeout(()=>sp.remove(),1500);
+    },i*80);
+  }
+}
+
+function fireConfetti(){
+  const colors=['#ffd700','#ff8c00','#ff6b6b','#42a5f5','#66bb6a','#ab47bc','#fff176','#fff'];
+  for(let i=0;i<120;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');
+      c.className='confetti-piece';
+      const col=colors[Math.floor(Math.random()*colors.length)];
+      const left=Math.random()*100;
+      const dur=2+Math.random()*3;
+      const w=6+Math.random()*10;
+      const h=10+Math.random()*14;
+      c.style.cssText=`left:${left}%;top:-20px;width:${w}px;height:${h}px;background:${col};animation-duration:${dur}s;animation-delay:${Math.random()*.8}s;border-radius:${Math.random()>0.5?'50%':'3px'};`;
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),(dur+1)*1000);
+    },i*25);
+  }
+  // Keep firing
+  setTimeout(fireConfetti,4000);
+}
+
+// Swipe
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const d=tx-e.changedTouches[0].clientX;
+  if(Math.abs(d)>55){d>0&&cur<tot?goPage(1):d<0&&cur>1?goPage(-1):null;}
+},{passive:true});
+</script>
+</body>
+</html>

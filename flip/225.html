@@ -1,0 +1,1162 @@
+<!-- BUKU DIGITAL ASLAN - Hari 25: Petualangan ke Cincin Saturnus -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan ke Cincin Saturnus — Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest:  #2d6a4f;
+    --moss:    #40916c;
+    --leaf:    #74c69d;
+    --sky:     #1a6985;
+    --ocean:   #2196a0;
+    /* Saturn palette */
+    --saturn:  #c8a84b;
+    --gold:    #fbbf24;
+    --amber:   #f59e0b;
+    --cream-s: #fde68a;
+    --ring1:   #e8c96a;
+    --ring2:   #b8935a;
+    --ring3:   #d4aa72;
+    --violet:  #7c3aed;
+    --purple:  #a855f7;
+    --iceblue: #7dd3fc;
+    --teal:    #2dd4bf;
+    --glow:    #fde68a;
+    --dark-bg: #080510;
+    --stardust:#fef9e7;
+    --radius:  24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #080510;
+    color: #fef9e7;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background .4s, color .4s;
+  }
+  body.light-mode { background: #fffbeb; color: #1a1200; }
+
+  /* ── STARFIELD ── */
+  .starfield {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .star-p {
+    position: absolute; border-radius: 50%;
+    background: white; opacity: 0;
+    animation: twinkle ease-in-out infinite alternate;
+  }
+  @keyframes twinkle {
+    from { opacity: .15; transform: scale(1); }
+    to   { opacity: .95; transform: scale(1.5); }
+  }
+  /* Ring-dust shimmer particles */
+  .ring-dust {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .rdust-p {
+    position: absolute; border-radius: 50%;
+    opacity: 0;
+    animation: rdrift ease-in-out infinite;
+  }
+  @keyframes rdrift {
+    0%   { transform: translateX(-20px); opacity: 0; }
+    20%  { opacity: .55; }
+    80%  { opacity: .3; }
+    100% { transform: translateX(120vw); opacity: 0; }
+  }
+  body.light-mode .starfield { opacity: .2; }
+  body.light-mode .ring-dust { opacity: .15; }
+
+  /* ── TOP NAV ── */
+  .top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(8,5,16,.9);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(200,168,75,.25);
+  }
+  body.light-mode .top-nav {
+    background: rgba(255,251,235,.94);
+    border-color: rgba(200,168,75,.22);
+  }
+
+  .back-btn {
+    display: flex; align-items: center; gap: 8px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--moss), var(--forest));
+    color: white; padding: 10px 18px; border-radius: 50px;
+    font-size: 14px; font-weight: 800;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 14px rgba(64,145,108,.4);
+  }
+  .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(64,145,108,.5); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .book-day-badge {
+    background: linear-gradient(135deg, var(--saturn), var(--amber));
+    color: #1a0a00; padding: 6px 14px; border-radius: 50px;
+    font-size: 12px; font-weight: 800; letter-spacing: .5px;
+  }
+
+  .mode-btn {
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+    color: var(--glow); width: 40px; height: 40px; border-radius: 50%;
+    font-size: 18px; cursor: pointer;
+    transition: background .2s, transform .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,.2); transform: rotate(20deg); }
+  body.light-mode .mode-btn { background: rgba(0,0,0,.07); border-color: rgba(0,0,0,.12); color: #1a1200; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    position: fixed; top: 64px; left: 0; right: 0;
+    z-index: 99; height: 6px; background: rgba(255,255,255,.07);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--iceblue), var(--gold), var(--amber), var(--violet));
+    transition: width .35s ease; border-radius: 0 4px 4px 0;
+  }
+
+  /* ── BOOK CONTAINER ── */
+  .book-container {
+    position: relative; z-index: 1;
+    max-width: 860px; margin: 0 auto;
+    padding: 80px 20px 40px;
+  }
+
+  /* ── PAGES ── */
+  .page { display: none; animation: fadeUp .5s ease forwards; }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ═══════ COVER ═══════ */
+  .cover-page {
+    min-height: calc(100vh - 80px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 20px; position: relative;
+  }
+
+  /* Saturn CSS illustration */
+  .cover-saturn-wrap {
+    width: 280px; height: 220px;
+    position: relative; margin: 0 auto 36px;
+    animation: float-sat 4.2s ease-in-out infinite;
+  }
+  @keyframes float-sat {
+    0%,100% { transform: translateY(0) rotate(-.5deg); }
+    50%      { transform: translateY(-18px) rotate(.5deg); }
+  }
+
+  .saturn-globe {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px; height: 115px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 38% 32%,
+      #fde68a 0%, #c8a84b 35%, #a07830 60%, #6b4f1e 85%, #3a2800 100%);
+    box-shadow:
+      0 0 0 8px rgba(200,168,75,.18),
+      0 0 0 22px rgba(200,168,75,.07),
+      0 0 70px rgba(200,168,75,.4),
+      inset -28px -20px 50px rgba(0,0,0,.5),
+      inset 10px 10px 28px rgba(255,230,120,.12);
+    z-index: 3;
+  }
+  /* Band stripes */
+  .saturn-globe::before {
+    content: '';
+    position: absolute;
+    top: 30%; left: 8%; right: 8%; height: 22%;
+    background: rgba(160,110,20,.3);
+    border-radius: 50%;
+    filter: blur(5px);
+  }
+  .saturn-globe::after {
+    content: '';
+    position: absolute;
+    top: 55%; left: 12%; right: 12%; height: 14%;
+    background: rgba(255,200,80,.15);
+    border-radius: 50%;
+    filter: blur(4px);
+  }
+
+  /* Ring system — 3 ellipses */
+  .ring-wrap {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotateX(74deg);
+    width: 270px; height: 270px;
+    z-index: 2;
+  }
+  .ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border-style: solid;
+  }
+  .ring-a {
+    width: 250px; height: 250px;
+    border-width: 14px;
+    border-color: rgba(232,201,106,.55);
+    box-shadow: 0 0 18px rgba(232,201,106,.3), inset 0 0 10px rgba(232,201,106,.2);
+  }
+  .ring-b {
+    width: 202px; height: 202px;
+    border-width: 10px;
+    border-color: rgba(184,147,90,.5);
+    box-shadow: 0 0 12px rgba(184,147,90,.25);
+  }
+  .ring-c {
+    width: 163px; height: 163px;
+    border-width: 6px;
+    border-color: rgba(212,170,114,.45);
+  }
+  /* Ring shadow on globe */
+  .ring-shadow {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -48%) rotateX(74deg);
+    width: 130px; height: 130px;
+    background: transparent;
+    border-radius: 50%;
+    box-shadow: 0 6px 0 14px rgba(0,0,0,.35);
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  /* Moons */
+  .moon-titan {
+    position: absolute;
+    top: 10%; right: 5%;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #fde68a, #c8893a 60%, #7a4800);
+    box-shadow: 0 0 10px rgba(200,137,58,.5);
+    animation: orbit-titan 7s linear infinite;
+    z-index: 5;
+  }
+  .moon-enc {
+    position: absolute;
+    bottom: 14%; left: 8%;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, #e0f4ff, #a8d8f0 55%, #5ba8d0);
+    box-shadow: 0 0 8px rgba(125,211,252,.55);
+    animation: orbit-enc 5s linear infinite;
+    z-index: 5;
+  }
+  @keyframes orbit-titan { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-8px,6px)} }
+  @keyframes orbit-enc   { 0%,100%{transform:translate(0,0)} 50%{transform:translate(6px,-5px)} }
+
+  /* Space debris */
+  .space-float {
+    position: absolute; font-size: 24px;
+    animation: sfloat ease-in-out infinite;
+  }
+  .space-float:nth-child(1){ top:4%;  left:6%;  animation-duration:5s; animation-delay:0s; }
+  .space-float:nth-child(2){ top:5%;  right:8%; animation-duration:4.5s; animation-delay:-2s; }
+  .space-float:nth-child(3){ bottom:20%; left:4%; animation-duration:6s; animation-delay:-4s; }
+  .space-float:nth-child(4){ bottom:18%; right:5%; animation-duration:5s; animation-delay:-1s; }
+  @keyframes sfloat {
+    0%,100%{ transform:translateY(0) rotate(0deg); }
+    50%    { transform:translateY(-12px) rotate(12deg); }
+  }
+
+  .cover-badge {
+    background: linear-gradient(135deg, var(--saturn), var(--amber));
+    color: #1a0a00; padding: 6px 20px; border-radius: 50px;
+    font-size: 13px; font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 16px; display: inline-block;
+  }
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(27px, 6vw, 50px); line-height: 1.2;
+    background: linear-gradient(135deg, var(--iceblue), var(--gold), var(--amber), var(--purple));
+    background-size: 300%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3.5s ease infinite; margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+  .cover-subtitle { font-size: clamp(15px,3vw,21px); opacity: .75; margin-bottom: 24px; }
+
+  .cover-name-badge {
+    background: linear-gradient(135deg, rgba(200,168,75,.16), rgba(124,58,237,.14));
+    border: 2px solid rgba(200,168,75,.38);
+    border-radius: 20px; padding: 16px 32px; margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+  }
+  .cover-name-badge p  { font-size: 14px; opacity: .7; margin-bottom: 4px; }
+  .cover-name-badge h2 { font-family:'Fredoka One',cursive; font-size:clamp(22px,4vw,32px); color:var(--gold); }
+
+  /* ═══════ CARDS ═══════ */
+  .card {
+    background: rgba(254,249,231,.05);
+    border: 1px solid rgba(200,168,75,.16);
+    border-radius: var(--radius); padding: 32px; margin-bottom: 24px;
+    backdrop-filter: blur(8px); position: relative; overflow: hidden;
+  }
+  body.light-mode .card {
+    background: white; border-color: rgba(200,168,75,.18);
+    box-shadow: 0 4px 24px rgba(200,168,75,.1); color: #1a1200;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: var(--accent, linear-gradient(90deg, var(--saturn), var(--gold)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .card-ring   { --accent: linear-gradient(90deg, #6b4f1e, #c8a84b); }
+  .card-comp   { --accent: linear-gradient(90deg, #c8a84b, #fbbf24); }
+  .card-size   { --accent: linear-gradient(90deg, #fbbf24, #f59e0b); }
+  .card-moons  { --accent: linear-gradient(90deg, var(--iceblue), var(--teal)); }
+  .card-float  { --accent: linear-gradient(90deg, var(--violet), var(--purple)); }
+  .card-facts  { --accent: linear-gradient(90deg, var(--purple), var(--gold)); }
+
+  .card-icon { font-size:56px; margin-bottom:16px; display:block; line-height:1; filter:drop-shadow(0 4px 8px rgba(0,0,0,.35)); }
+  .card h2   { font-family:'Fredoka One',cursive; font-size:clamp(22px,4vw,30px); margin-bottom:8px; color:var(--gold); }
+  body.light-mode .card h2 { color: var(--amber); }
+  .card h3   { font-size:18px; font-weight:800; margin:20px 0 10px; color:var(--amber); }
+  body.light-mode .card h3 { color:#7a4800; }
+  .card p    { font-size:clamp(15px,2.5vw,17px); line-height:1.85; opacity:.9; margin-bottom:14px; }
+
+  .depth-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(200,168,75,.14); border:1px solid rgba(200,168,75,.36);
+    border-radius:50px; padding:6px 16px;
+    font-size:13px; font-weight:800; color:var(--gold); margin-bottom:16px;
+  }
+
+  .analogy-box {
+    background: linear-gradient(135deg, rgba(200,168,75,.08), rgba(124,58,237,.1));
+    border: 2px dashed rgba(200,168,75,.32);
+    border-radius: 16px; padding: 20px 24px; margin: 20px 0; position: relative;
+  }
+  .analogy-box::before {
+    content: '💡 Analogi Keren!';
+    position: absolute; top: -12px; left: 20px;
+    background: var(--dark-bg); padding: 2px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 800; color: var(--gold);
+  }
+  body.light-mode .analogy-box::before { background: white; color: var(--amber); }
+  body.light-mode .analogy-box { background: rgba(200,168,75,.04); }
+
+  /* section header */
+  .section-header { text-align:center; margin-bottom:32px; padding-top:20px; }
+  .section-header .tag {
+    display:inline-block; background:rgba(200,168,75,.12);
+    border:1px solid rgba(200,168,75,.32); color:var(--gold);
+    padding:4px 16px; border-radius:50px;
+    font-size:12px; font-weight:800; letter-spacing:1px; text-transform:uppercase; margin-bottom:12px;
+  }
+  .section-header h1 { font-family:'Fredoka One',cursive; font-size:clamp(24px,5vw,40px); line-height:1.2; }
+
+  /* scene box */
+  .scene-box {
+    background: linear-gradient(135deg, rgba(8,5,16,.9), rgba(100,79,30,.22));
+    border: 1px solid rgba(200,168,75,.24); border-radius:20px;
+    padding:28px; margin:20px 0; position:relative; overflow:hidden;
+  }
+  body.light-mode .scene-box {
+    background: linear-gradient(135deg, rgba(255,251,235,.96), rgba(200,168,75,.07));
+    border-color: rgba(200,168,75,.22);
+  }
+  .scene-title { font-weight:900; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); margin-bottom:12px; opacity:.85; }
+  .scene-box p { font-size:clamp(15px,2.5vw,17px); line-height:1.9; font-style:italic; opacity:.92; }
+
+  /* Ring composition visual */
+  .ring-layers {
+    display: flex; flex-direction: column; gap: 10px; margin: 20px 0;
+  }
+  .ring-layer {
+    display: flex; align-items: center; gap: 14px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(200,168,75,.15);
+    border-radius: 14px; padding: 14px 18px;
+    position: relative; overflow: hidden;
+  }
+  body.light-mode .ring-layer { background: rgba(200,168,75,.05); }
+  .rl-color {
+    width: 18px; height: 50px; border-radius: 6px; flex-shrink: 0;
+  }
+  .rl-info strong { font-size: 15px; font-weight: 900; display: block; margin-bottom: 3px; }
+  .rl-info span   { font-size: 13px; opacity: .75; line-height: 1.5; }
+  .rl-badge {
+    margin-left: auto; flex-shrink: 0;
+    background: rgba(200,168,75,.15); border: 1px solid rgba(200,168,75,.28);
+    border-radius: 50px; padding: 4px 12px; font-size: 12px; font-weight: 800; color: var(--gold);
+  }
+
+  /* two-col */
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; }
+  @media(max-width:520px){ .two-col{ grid-template-columns:1fr; } }
+  .mini-card { border-radius:18px; padding:20px 18px; display:flex; flex-direction:column; gap:8px; }
+  .mc-gold   { background:rgba(200,168,75,.12); border:1px solid rgba(200,168,75,.26); }
+  .mc-ice    { background:rgba(125,211,252,.1);  border:1px solid rgba(125,211,252,.22); }
+  .mc-purple { background:rgba(124,58,237,.12);  border:1px solid rgba(124,58,237,.26); }
+  .mc-teal   { background:rgba(45,212,191,.1);   border:1px solid rgba(45,212,191,.22); }
+  body.light-mode .mc-gold   { background:rgba(200,168,75,.06); }
+  body.light-mode .mc-ice    { background:rgba(125,211,252,.06); }
+  body.light-mode .mc-purple { background:rgba(124,58,237,.06); }
+  body.light-mode .mc-teal   { background:rgba(45,212,191,.06); }
+  .mini-card .mini-icon { font-size:36px; }
+  .mini-card strong { font-size:15px; font-weight:900; }
+  .mini-card p { font-size:14px; line-height:1.6; opacity:.85; margin:0; }
+
+  /* moon cards */
+  .moon-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin:20px 0; }
+  .moon-card {
+    border-radius:20px; padding:24px 20px; text-align:center;
+    transition: transform .2s;
+    position: relative; overflow: hidden;
+  }
+  .moon-card:hover { transform: translateY(-4px); }
+  .moon-card .moon-icon { font-size:52px; display:block; margin-bottom:12px; }
+  .moon-card strong { font-family:'Fredoka One',cursive; font-size:20px; display:block; margin-bottom:6px; }
+  .moon-card .moon-type { font-size:12px; font-weight:800; padding:3px 12px; border-radius:50px; display:inline-block; margin-bottom:10px; }
+  .moon-card p { font-size:13px; line-height:1.65; opacity:.85; }
+  .mc-titan   { background:rgba(200,168,75,.14); border:2px solid rgba(200,168,75,.3); }
+  .mc-encl    { background:rgba(125,211,252,.12); border:2px solid rgba(125,211,252,.28); }
+  .mc-mimas   { background:rgba(124,58,237,.12); border:2px solid rgba(124,58,237,.26); }
+  body.light-mode .mc-titan  { background:rgba(200,168,75,.08); }
+  body.light-mode .mc-encl   { background:rgba(125,211,252,.08); }
+  body.light-mode .mc-mimas  { background:rgba(124,58,237,.08); }
+
+  /* fact grid */
+  .fact-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:16px; margin:20px 0; }
+  .fact-card { background:rgba(254,249,231,.05); border:1px solid rgba(200,168,75,.16); border-radius:20px; padding:24px 20px; text-align:center; transition:transform .2s; }
+  .fact-card:hover { transform:translateY(-4px); }
+  body.light-mode .fact-card { background:#fffbeb; border-color:rgba(200,168,75,.18); }
+  .fact-card .fact-emoji  { font-size:40px; margin-bottom:10px; display:block; }
+  .fact-card .fact-number { font-family:'Fredoka One',cursive; font-size:23px; color:var(--gold); display:block; margin-bottom:4px; }
+  .fact-card .fact-label  { font-size:13px; opacity:.7; font-weight:700; }
+
+  /* challenge */
+  .challenge-card {
+    background: linear-gradient(135deg, rgba(124,58,237,.16), rgba(200,168,75,.13));
+    border: 2px solid rgba(200,168,75,.26); border-radius:var(--radius); padding:32px; margin:20px 0;
+  }
+  body.light-mode .challenge-card { background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(200,168,75,.05)); }
+  .challenge-title { font-family:'Fredoka One',cursive; font-size:24px; color:var(--gold); margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+  body.light-mode .challenge-title { color:var(--amber); }
+  .challenge-item { display:flex; align-items:flex-start; gap:14px; padding:14px 0; border-bottom:1px solid rgba(200,168,75,.12); }
+  .challenge-item:last-child { border-bottom:none; }
+  body.light-mode .challenge-item { border-color:rgba(0,0,0,.06); }
+  .challenge-num { width:32px; height:32px; background:linear-gradient(135deg,var(--saturn),var(--amber)); color:#1a0a00; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:14px; flex-shrink:0; margin-top:2px; }
+  .challenge-item p { font-size:15px; line-height:1.7; opacity:.9; }
+
+  /* nav */
+  .nav-btns { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-top:40px; padding-top:24px; border-top:1px solid rgba(200,168,75,.16); }
+  body.light-mode .nav-btns { border-color:rgba(0,0,0,.06); }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:14px 24px; border-radius:50px; font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; cursor:pointer; border:none; transition:transform .2s,box-shadow .2s; }
+  .btn:hover  { transform:translateY(-2px); }
+  .btn:active { transform:translateY(0); }
+  .btn-prev { background:rgba(254,249,231,.08); color:inherit; border:1px solid rgba(200,168,75,.2); }
+  body.light-mode .btn-prev { background:rgba(0,0,0,.05); border-color:rgba(0,0,0,.1); color:#1a1200; }
+  .btn-next { background:linear-gradient(135deg,var(--saturn),var(--amber)); color:#1a0a00; box-shadow:0 4px 16px rgba(200,168,75,.38); flex:1; justify-content:center; max-width:280px; }
+  .btn-next:hover { box-shadow:0 6px 24px rgba(200,168,75,.55); }
+  .btn-done { background:linear-gradient(135deg,var(--moss),var(--forest)); color:white; box-shadow:0 4px 16px rgba(64,145,108,.35); width:100%; max-width:400px; margin:0 auto; justify-content:center; font-size:17px; padding:18px 32px; }
+  .btn-done:hover { box-shadow:0 6px 24px rgba(64,145,108,.5); }
+  .page-indicator { font-size:13px; opacity:.5; font-weight:700; white-space:nowrap; }
+
+  /* closing */
+  .closing-content { text-align:center; padding:40px 20px; }
+  .trophy-big { font-size:100px; display:block; margin:0 auto 24px; animation:bounceIn .8s cubic-bezier(.36,.07,.19,.97); filter:drop-shadow(0 8px 24px rgba(200,168,75,.5)); }
+  @keyframes bounceIn { 0%{transform:scale(0);opacity:0} 60%{transform:scale(1.2)} 100%{transform:scale(1);opacity:1} }
+  .quote-box { background:linear-gradient(135deg,rgba(200,168,75,.1),rgba(124,58,237,.1)); border-left:4px solid var(--saturn); border-radius:0 16px 16px 0; padding:20px 24px; margin:24px 0; text-align:left; }
+  .quote-box p { font-size:18px; font-style:italic; line-height:1.8; }
+  .quote-box cite { font-size:13px; opacity:.6; margin-top:8px; display:block; font-style:normal; font-weight:700; }
+
+  /* info row */
+  .info-row { display:flex; align-items:flex-start; gap:14px; padding:14px 0; border-bottom:1px solid rgba(200,168,75,.1); }
+  .info-row:last-child { border-bottom:none; }
+  .info-row .info-icon { font-size:32px; flex-shrink:0; margin-top:2px; }
+  .info-row p { font-size:clamp(15px,2.5vw,17px); line-height:1.75; opacity:.9; }
+
+  /* Saturn mini inline diagram */
+  .sat-inline {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0; margin: 20px auto; width: fit-content;
+    position: relative; height: 80px;
+  }
+  .sat-inline-globe {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: radial-gradient(ellipse at 38% 32%, #fde68a, #c8a84b 45%, #7a4f18);
+    box-shadow: 0 0 20px rgba(200,168,75,.4), inset -12px -8px 20px rgba(0,0,0,.4);
+    position: relative; z-index: 2;
+    flex-shrink: 0;
+  }
+  .sat-ring-inline {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%) rotateX(70deg);
+    border-radius: 50%;
+    border-style: solid;
+    pointer-events: none;
+  }
+  .sri-a { width:160px;height:160px; border-width:10px; border-color:rgba(232,201,106,.55); }
+  .sri-b { width:124px;height:124px; border-width:7px;  border-color:rgba(184,147,90,.5); }
+
+  /* responsive */
+  @media(max-width:600px){
+    .book-container{ padding:76px 16px 32px; }
+    .card{ padding:24px 20px; }
+    .nav-btns{ flex-wrap:wrap; }
+    .btn-next{ max-width:100%; }
+    .fact-grid{ grid-template-columns:1fr 1fr; }
+    .moon-grid{ grid-template-columns:1fr; }
+  }
+  @media(min-width:768px) and (max-width:1024px){
+    .book-container{ padding:80px 32px 40px; }
+    .card p{ font-size:18px; }
+  }
+  ::-webkit-scrollbar{ width:6px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  ::-webkit-scrollbar-thumb{ background:rgba(200,168,75,.35); border-radius:4px; }
+</style>
+</head>
+<body>
+
+<div class="starfield" id="starfield"></div>
+<div class="ring-dust" id="ringDust"></div>
+
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+  <div class="nav-right">
+    <span class="book-day-badge">🪐 Hari ke-25</span>
+    <button class="mode-btn" id="modeBtn" title="Ganti Mode">☀️</button>
+  </div>
+</nav>
+
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<div class="book-container">
+
+  <!-- ══ PAGE 1: COVER ══ -->
+  <div class="page active" id="page-1">
+    <div class="cover-page">
+      <span class="space-float">✨</span>
+      <span class="space-float">🌌</span>
+      <span class="space-float">⭐</span>
+      <span class="space-float">🚀</span>
+
+      <div class="cover-saturn-wrap">
+        <div class="ring-wrap">
+          <div class="ring ring-a"></div>
+          <div class="ring ring-b"></div>
+          <div class="ring ring-c"></div>
+        </div>
+        <div class="saturn-globe"></div>
+        <div class="ring-shadow"></div>
+        <div class="moon-titan"></div>
+        <div class="moon-enc"></div>
+      </div>
+
+      <div class="cover-badge">📚 Buku Sains Petualangan • Hari ke-25</div>
+      <h1 class="cover-title">Petualangan ke<br>Cincin Saturnus!</h1>
+      <p class="cover-subtitle">🪐 Planet Paling Cantik di Tata Surya</p>
+
+      <div class="cover-name-badge">
+        <p>Petualangan antariksa milik:</p>
+        <h2>🌟 Aslan 🌟</h2>
+        <p style="font-size:13px;margin-top:4px;">Penjelajah Bintang-Bintang • Kelas 3 SD</p>
+      </div>
+
+      <div class="nav-btns" style="justify-content:center;border:none;padding-top:0;">
+        <button class="btn btn-next" onclick="goPage(2)" style="max-width:290px;font-size:17px;padding:16px 32px;">
+          🪐 Terbang ke Saturnus!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 2: PENGANTAR ══ -->
+  <div class="page" id="page-2">
+    <div class="section-header">
+      <span class="tag">✉️ Petualangan Hari 25</span>
+      <h1>Hei Aslan,<br>Siap Melewati Cincin Raksasa? 🪐</h1>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🪐</span>
+      <p>Hei, <strong>Aslan</strong>! Hari ke-25 sudah tiba — dan hari ini kita akan pergi ke planet yang paling fotogenik di seluruh Tata Surya. Planet yang sudah membuat para ilmuwan dan anak-anak terpesona selama berabad-abad.</p>
+      <p>Bukan Mars yang merah, bukan Jupiter yang besar — tapi planet dengan <strong>cincin ajaib yang melingkarinya</strong>. Planet yang bisa mengapung di air. Planet yang hari-harinya lebih pendek dari pikiranmu!</p>
+      <p>Bersiaplah, Aslan — kita menuju <strong>Saturnus!</strong> 🌟</p>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Meninggalkan Orbit Mars</p>
+      <p>"Aslan! Terra Explorer di sini. Kita sudah melewati sabuk asteroid antara Mars dan Jupiter — batu-batu besar melayang di sekeliling kita tapi Terra Explorer bermanuver dengan sempurna. Di ujung sana… aku menangkap bayangan planet bercincin yang mulai terlihat! Jarak kita masih 1,2 miliar kilometer — tapi cincinnya sudah terlihat seperti lingkaran cahaya keemasan di kegelapan angkasa. Ini luar biasa indah, Aslan! 🤩"</p>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--sky),var(--gold));">
+      <h3>🗺️ Yang Akan Kita Pelajari Hari Ini</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(200,168,75,.12);border-radius:14px;">
+          <span style="font-size:28px;">💍</span>
+          <div><strong>Mengapa Saturnus Punya Cincin</strong><p style="font-size:13px;margin:0;opacity:.7;">Rahasia cincin es terbesar di alam semesta</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(160,120,30,.14);border-radius:14px;">
+          <span style="font-size:28px;">🧊</span>
+          <div><strong>Cincin itu Terbuat dari Apa?</strong><p style="font-size:13px;margin:0;opacity:.7;">Batu es, debu, dan serpihan-serpihan raksasa</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(125,211,252,.12);border-radius:14px;">
+          <span style="font-size:28px;">🌙</span>
+          <div><strong>Bulan-Bulan Saturnus</strong><p style="font-size:13px;margin:0;opacity:.7;">Titan si Bulan Beratmosfer & Enceladus sang Semburan</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(124,58,237,.12);border-radius:14px;">
+          <span style="font-size:28px;">🏊</span>
+          <div><strong>Planet yang Bisa Mengapung!</strong><p style="font-size:13px;margin:0;opacity:.7;">Kenapa Saturnus lebih ringan dari air</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(45,212,191,.1);border-radius:14px;">
+          <span style="font-size:28px;">🤯</span>
+          <div><strong>Fakta Paling Mengejutkan</strong><p style="font-size:13px;margin:0;opacity:.7;">Data dan angka yang akan membuatmu geleng-geleng kepala</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+      <span class="page-indicator">Halaman 2 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(3)">Kenapa Ada Cincin? 💍 →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 3: MENGAPA ADA CINCIN ══ -->
+  <div class="page" id="page-3">
+    <div class="section-header">
+      <span class="tag">💍 Bab Satu</span>
+      <h1>Rahasia<br><span style="color:var(--gold)">Cincin Saturnus</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Mendekati Cincin</p>
+      <p>"Aslan… aku tidak bisa berhenti memandanginya. 😍 Di depan kita, Saturnus berdiri megah dikelilingi cincin-cincin besar yang berkilau seperti permata raksasa. Cincinnya begitu lebar sehingga jika kita merentangkan tangan, cincin itu akan menutupi seluruh pandanganmu! Mari kita terbang lebih dekat dan melihat apa sebenarnya benda ajaib ini…"</p>
+    </div>
+
+    <div class="card card-ring">
+      <span class="card-icon">💍</span>
+      <span class="depth-badge">📏 Lebar cincin: ±282.000 km | Ketebalan: hanya 10–100 m!</span>
+      <h2>Dari Mana Datangnya Cincin?</h2>
+      <p>Cincin Saturnus adalah salah satu keajaiban terbesar di Tata Surya kita. Tapi dari mana asalnya? Para ilmuwan meyakini cincin ini terbentuk dari <strong>sisa-sisa bulan, komet, atau asteroid</strong> yang hancur karena gaya gravitasi Saturnus yang sangat besar — seperti bola kaca yang jatuh dan pecah menjadi ribuan serpihan!</p>
+      <p>Serpihan-serpihan itu kemudian tersebar di sekitar Saturnus membentuk cakram pipih yang berputar seperti piringan musik raksasa. Dan karena serpihan itu banyak mengandung es, cincinnya <strong>memantulkan cahaya Matahari</strong> dan terlihat berkilau keemasan dari luar angkasa. ✨</p>
+
+      <div class="analogy-box">
+        <p>Bayangkan kamu menghancurkan sebuah balon berisi confetti warna-warni di atas meja yang berputar. Potongan-potongan confetti akan menyebar dan membentuk lingkaran datar di sekitar pusat meja. Persis itulah yang terjadi pada cincin Saturnus — tapi ukurannya jutaan kali lebih besar dan terbuat dari batu dan es! 🎊</p>
+      </div>
+
+      <h3>📐 Seberapa Besar Cincin Saturnus?</h3>
+      <p>Inilah bagian yang paling mengejutkan: cincin Saturnus <strong>sangat lebar tapi sangat tipis</strong>. Lebarnya bisa mencapai <strong>282.000 km</strong> — cukup untuk menempatkan 22 planet Bumi berderet! Tapi ketebalannya hanya sekitar <strong>10 hingga 100 meter</strong> — bahkan lebih tipis dari lapangan sepak bola! Kalau kamu melihatnya dari samping, cincin itu nyaris tidak terlihat. 😲</p>
+
+      <div class="sat-inline">
+        <div class="sri-a sat-ring-inline"></div>
+        <div class="sri-b sat-ring-inline"></div>
+        <div class="sat-inline-globe"></div>
+      </div>
+      <p style="text-align:center;font-size:13px;opacity:.6;margin-top:4px;">Penampang Saturnus dan cincinnya (dari depan)</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+      <span class="page-indicator">Halaman 3 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(4)">Terbuat dari Apa? 🧊 →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 4: KOMPOSISI CINCIN ══ -->
+  <div class="page" id="page-4">
+    <div class="section-header">
+      <span class="tag">🧊 Bab Dua</span>
+      <h1>Cincin Itu<br><span style="color:var(--gold)">Terbuat dari Apa?</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Memasuki Zona Cincin</p>
+      <p>"Terra Explorer sekarang terbang melalui celah di antara cincin-cincin Saturnus yang disebut Celah Cassini! Di sekeliling kita ada bongkahan-bongkahan es yang berputar — ukurannya dari sekecil butiran pasir sampai sebesar rumah dua lantai! Mereka bergerak sangat cepat dan berkilau indah seperti berlian terbang. Awas kepalamu, Aslan! 😄🧊"</p>
+    </div>
+
+    <div class="card card-comp">
+      <span class="card-icon">🧊</span>
+      <h2>Isi dari Cincin Ajaib Ini</h2>
+      <p>Mungkin kamu berpikir cincin Saturnus adalah seperti cincin emas yang solid dan keras. Tapi sebenarnya, cincin itu terdiri dari <strong>jutaan hingga miliaran partikel</strong> yang masing-masing berputar mengelilingi Saturnus secara independen — seperti arus lalu lintas planet yang sangat padat!</p>
+
+      <div class="ring-layers">
+        <div class="ring-layer">
+          <div class="rl-color" style="background:linear-gradient(180deg,#e0f4ff,#a8d8f0);box-shadow:0 0 8px rgba(125,211,252,.4);"></div>
+          <div class="rl-info">
+            <strong>Es Air (H₂O)</strong>
+            <span>Komponen terbesar — lebih dari 90% cincin Saturnus terbuat dari es air yang murni. Inilah yang membuatnya memantulkan cahaya begitu terang dan indah! ❄️</span>
+          </div>
+          <span class="rl-badge">~93%</span>
+        </div>
+        <div class="ring-layer">
+          <div class="rl-color" style="background:linear-gradient(180deg,#a07830,#6b4f1e);"></div>
+          <div class="rl-info">
+            <strong>Batu & Debu Silikat</strong>
+            <span>Batu-batuan kecil dan debu yang menjadi inti dari bongkahan es. Berasal dari sisa-sisa komet dan asteroid yang hancur oleh gravitasi Saturnus. 🪨</span>
+          </div>
+          <span class="rl-badge">~5%</span>
+        </div>
+        <div class="ring-layer">
+          <div class="rl-color" style="background:linear-gradient(180deg,#888,#555);"></div>
+          <div class="rl-info">
+            <strong>Debu Karbon Gelap</strong>
+            <span>Partikel-partikel gelap yang mempergelap beberapa bagian cincin. Debu ini berasal dari meteor yang menghantam bulan-bulan Saturnus. 💨</span>
+          </div>
+          <span class="rl-badge">~2%</span>
+        </div>
+      </div>
+
+      <h3>💍 Nama-Nama Cincin Saturnus</h3>
+      <p>Ilmuwan memberi nama setiap cincin Saturnus dengan huruf abjad, dimulai dari yang pertama ditemukan (bukan yang terdekat dari planet):</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(200,168,75,.1);border-radius:12px;">
+          <span style="font-weight:900;color:var(--gold);font-size:18px;min-width:28px;">D</span>
+          <span style="font-size:14px;opacity:.85;">Cincin paling dalam, sangat tipis dan samar</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(200,168,75,.12);border-radius:12px;">
+          <span style="font-weight:900;color:var(--gold);font-size:18px;min-width:28px;">C</span>
+          <span style="font-size:14px;opacity:.85;">Cincin dalam, agak gelap dan transparan</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(200,168,75,.16);border-radius:12px;">
+          <span style="font-weight:900;color:var(--gold);font-size:18px;min-width:28px;">B</span>
+          <span style="font-size:14px;opacity:.85;">Cincin terlebar dan paling terang — inilah yang paling mudah dilihat dari Bumi!</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(160,120,30,.12);border-radius:12px;">
+          <span style="font-weight:900;color:var(--amber);font-size:18px;min-width:28px;">— </span>
+          <span style="font-size:14px;opacity:.85;"><strong>Celah Cassini</strong> — celah kosong pemisah antara cincin B dan A, ditemukan oleh ilmuwan Cassini tahun 1675</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(200,168,75,.14);border-radius:12px;">
+          <span style="font-weight:900;color:var(--gold);font-size:18px;min-width:28px;">A</span>
+          <span style="font-size:14px;opacity:.85;">Cincin luar utama, besar dan cerah — di sini juga ada celah Encke yang lebih kecil</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(200,168,75,.08);border-radius:12px;">
+          <span style="font-weight:900;color:var(--gold);font-size:18px;min-width:28px;">E, F, G</span>
+          <span style="font-size:14px;opacity:.85;">Cincin-cincin luar yang sangat samar dan tipis, sulit dilihat dari Bumi</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+      <span class="page-indicator">Halaman 4 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(5)">Saturnus vs Bumi! 📏 →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 5: UKURAN & KECEPATAN ══ -->
+  <div class="page" id="page-5">
+    <div class="section-header">
+      <span class="tag">📏 Bab Tiga</span>
+      <h1>Ukuran &amp; Kecepatan<br><span style="color:var(--gold)">Saturnus yang Gila!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Mengelilingi Saturnus</p>
+      <p>"Aslan, aku terbang mengelilingi Saturnus dan… ini memakan waktu yang sangat lama! Planet ini BESAR. Sangat besar. Di monitor Terra Explorer, Bumi terlihat seperti titik kecil dibandingkan dengan raksasa kuning keemasan ini. Angin di permukaannya bertiup lebih kencang dari badai terdahsyat manapun yang pernah ada di Bumi! 🌪️"</p>
+    </div>
+
+    <div class="card card-size">
+      <span class="card-icon">📏</span>
+      <h2>Saturnus: Raksasa Gas Kedua Terbesar!</h2>
+
+      <div class="two-col">
+        <div class="mini-card mc-gold">
+          <span class="mini-icon">🌍</span>
+          <strong>Ukuran Raksasa</strong>
+          <p>Diameter Saturnus adalah <strong>116.460 km</strong> — hampir 9,5 kali lebih besar dari Bumi! Kamu bisa memasukkan <strong>764 planet Bumi</strong> ke dalam Saturnus sekaligus! 😲</p>
+        </div>
+        <div class="mini-card mc-purple">
+          <span class="mini-icon">⚡</span>
+          <strong>Hari yang Super Singkat</strong>
+          <p>Satu hari di Saturnus hanya <strong>10 jam 33 menit!</strong> Walaupun ukurannya raksasa, Saturnus berputar sangat cepat sehingga hari-harinya jauh lebih pendek dari di Bumi. 🌀</p>
+        </div>
+        <div class="mini-card mc-ice">
+          <span class="mini-icon">📅</span>
+          <strong>Tahun yang Sangat Panjang</strong>
+          <p>Saturnus membutuhkan <strong>29,5 tahun Bumi</strong> untuk sekali mengelilingi Matahari. Artinya, sejak kamu lahir, Saturnus belum genap sepertiga dari perjalanan satu tahunnya! 🌞</p>
+        </div>
+        <div class="mini-card mc-teal">
+          <span class="mini-icon">🌪️</span>
+          <strong>Angin Terterkencang</strong>
+          <p>Angin di Saturnus bisa mencapai <strong>1.800 km per jam!</strong> Itu lebih dari dua kali kecepatan pesawat jet tercepat yang pernah dibuat manusia! 🛩️💨</p>
+        </div>
+      </div>
+
+      <h3>🌡️ Suhu di Saturnus</h3>
+      <p>Permukaan awan teratas Saturnus suhunya sekitar <strong>−178°C</strong> — sangat dingin! Tapi anehnya, inti Saturnus justru sangat panas, mencapai sekitar <strong>11.700°C</strong> — lebih panas dari permukaan Matahari! Saturnus menghasilkan <strong>lebih banyak panas dari dalamnya</strong> daripada yang ia terima dari Matahari. Para ilmuwan masih belum sepenuhnya paham mengapa ini bisa terjadi. 🔬</p>
+
+      <div class="analogy-box">
+        <p>Berapa cepat 1.800 km/jam? Bayangkan jarak Jakarta ke Surabaya itu sekitar 700 km. Angin Saturnus bisa menempuh jarak itu dalam <strong>kurang dari 25 menit!</strong> Sedangkan pesawat komersial butuh 1,5 jam untuk rute yang sama. Angin Saturnus adalah "petir perjalanan"! ✈️🌪️</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+      <span class="page-indicator">Halaman 5 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(6)">Bulan-bulan Saturnus! 🌙 →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 6: BULAN-BULAN SATURNUS ══ -->
+  <div class="page" id="page-6">
+    <div class="section-header">
+      <span class="tag">🌙 Bab Empat</span>
+      <h1>Keluarga Bulan<br><span style="color:var(--gold)">Saturnus yang Besar!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Mendeteksi Bulan-Bulan</p>
+      <p>"Sensor Terra Explorer mendeteksi banyak objek mengorbit Saturnus! Bukan satu, bukan dua — tapi <strong>lebih dari 140 bulan</strong>! Saturnus adalah planet dengan bulan terbanyak di seluruh Tata Surya. Dua di antaranya sangat spesial dan menarik perhatianku… Mari kita mendekat! 🌙"</p>
+    </div>
+
+    <div class="card card-moons">
+      <span class="card-icon">🌙</span>
+      <span class="depth-badge">🌙 Jumlah Bulan Saturnus: 146 bulan (rekor terbanyak!)</span>
+      <h2>Keluarga Bulan Raksasa Saturnus</h2>
+
+      <div class="moon-grid">
+        <div class="moon-card mc-titan">
+          <span class="moon-icon">🟡</span>
+          <strong>Titan</strong>
+          <span class="moon-type" style="background:rgba(200,168,75,.2);color:var(--gold);">🌟 Bulan Terbesar</span>
+          <p>Titan adalah bulan terbesar Saturnus — bahkan <strong>lebih besar dari planet Merkurius!</strong> Yang membuatnya super istimewa: Titan punya <strong>atmosfer yang tebal</strong> seperti Bumi, dengan danau dan sungai — tapi bukan dari air, melainkan dari <strong>cairan metana</strong>! Beberapa ilmuwan percaya kehidupan sederhana mungkin ada di Titan. 🧬</p>
+        </div>
+        <div class="moon-card mc-encl">
+          <span class="moon-icon">🔵</span>
+          <strong>Enceladus</strong>
+          <span class="moon-type" style="background:rgba(125,211,252,.2);color:var(--iceblue);">💧 Bulan Air</span>
+          <p>Enceladus hanyalah bulan kecil berdiameter 500 km — tapi ia menyimpan rahasia besar! Di kutub selatannya ada <strong>geyser raksasa</strong> yang menyemburkan air dan uap ke luar angkasa dengan kecepatan hingga 1.400 km/jam! Di bawah permukaannya yang beku terdapat <strong>lautan air cair</strong> — salah satu tempat paling menjanjikan untuk mencari kehidupan di luar Bumi! 🌊</p>
+        </div>
+        <div class="moon-card mc-mimas">
+          <span class="moon-icon">⚪</span>
+          <strong>Mimas</strong>
+          <span class="moon-type" style="background:rgba(124,58,237,.2);color:var(--purple);">🎬 Bulan "Death Star"</span>
+          <p>Mimas adalah bulan kecil dengan sebuah kawah raksasa bernama Herschel yang ukurannya hampir sepertiga diameter bulan ini! Tampilannya yang unik ini membuatnya mirip sekali dengan <strong>"Death Star" dari film Star Wars</strong>! Para penggemar Star Wars di seluruh dunia langsung jatuh cinta pada bulan ini. 🎬⚔️</p>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.22);border-radius:16px;padding:18px 20px;">
+        <p style="margin:0;font-size:14px;line-height:1.8;">🌟 <strong>Rekor Terbaru!</strong> Pada tahun 2023, para ilmuwan menemukan <strong>62 bulan baru</strong> di sekitar Saturnus, sehingga total jumlahnya menjadi <strong>146 bulan!</strong> Ini menjadikan Saturnus sebagai planet dengan bulan terbanyak di Tata Surya, mengalahkan Jupiter yang punya 95 bulan. Rekor ini bahkan mungkin masih bisa dipecahkan lagi saat teleskop lebih canggih dikirim! 🏆</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+      <span class="page-indicator">Halaman 6 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(7)">Planet Mengapung + Fakta! 🏊 →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 7: MENGAPUNG + FAKTA ══ -->
+  <div class="page" id="page-7">
+    <div class="section-header">
+      <span class="tag">🏊 Bab Lima</span>
+      <h1>Planet yang<br><span style="color:var(--gold)">Bisa Mengapung!</span></h1>
+    </div>
+
+    <div class="card card-float">
+      <span class="card-icon">🏊</span>
+      <h2>Saturnus Lebih Ringan dari Air?!</h2>
+      <p>Ini mungkin fakta paling mengejutkan tentang Saturnus: jika kamu punya kolam renang yang <strong>cukup besar</strong> dan kamu letakkan Saturnus di dalamnya — Saturnus akan <strong>MENGAPUNG!</strong> 😱</p>
+
+      <div class="analogy-box">
+        <p>Kerapatan benda menentukan apakah ia tenggelam atau mengapung. Air memiliki kerapatan 1 gram per cm³. Saturnus memiliki kerapatan hanya <strong>0,687 gram per cm³</strong> — lebih rendah dari air! Itu seperti balon gas yang diisi udara — walaupun besar, ia ringan dan mengapung! 🎈</p>
+      </div>
+
+      <h3>🌀 Kenapa Bisa Seringan Itu?</h3>
+      <p>Saturnus adalah <strong>planet gas raksasa</strong> — tidak seperti Bumi yang padat berbatu, Saturnus hampir seluruhnya terdiri dari gas hidrogen dan helium. Tidak ada permukaan keras yang bisa kamu pijak — kalau kamu mencoba mendarat di "permukaan" Saturnus, kamu akan terus jatuh menembus lapisan awan yang semakin padat!</p>
+
+      <div class="two-col">
+        <div class="mini-card mc-gold">
+          <span class="mini-icon">💨</span>
+          <strong>96% Hidrogen</strong>
+          <p>Gas terbesar penyusun Saturnus adalah hidrogen — gas paling ringan di alam semesta! Inilah yang membuat Saturnus begitu ringan.</p>
+        </div>
+        <div class="mini-card mc-purple">
+          <span class="mini-icon">🔵</span>
+          <strong>3% Helium</strong>
+          <p>Helium adalah gas kedua terbanyak — sama dengan gas yang digunakan untuk mengembangkan balon ulang tahun! 🎈</p>
+        </div>
+        <div class="mini-card mc-ice">
+          <span class="mini-icon">💎</span>
+          <strong>Inti Berlian?</strong>
+          <p>Di pusat Saturnus, tekanannya begitu besar sehingga karbon bisa berubah menjadi <strong>berlian padat</strong>! Mungkin ada hujan berlian di dalam Saturnus! 💎🌧️</p>
+        </div>
+        <div class="mini-card mc-teal">
+          <span class="mini-icon">🌀</span>
+          <strong>Badai Heksagonal</strong>
+          <p>Di Kutub Utara Saturnus ada badai berbentuk <strong>heksagon (segi enam)</strong> yang sudah berlangsung selama puluhan tahun — fenomena paling misterius di Tata Surya!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-facts">
+      <span class="card-icon">🤯</span>
+      <h2>Fakta Keren Saturnus!</h2>
+      <div class="fact-grid">
+        <div class="fact-card">
+          <span class="fact-emoji">🪐</span>
+          <span class="fact-number">116.460 km</span>
+          <span class="fact-label">Diameter Saturnus — 9,5× lebih besar dari Bumi</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">💍</span>
+          <span class="fact-number">282.000 km</span>
+          <span class="fact-label">Lebar total sistem cincin Saturnus</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌙</span>
+          <span class="fact-number">146 Bulan</span>
+          <span class="fact-label">Jumlah bulan Saturnus — terbanyak di Tata Surya!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">⏱️</span>
+          <span class="fact-number">10j 33m</span>
+          <span class="fact-label">Panjang satu hari di Saturnus</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🏊</span>
+          <span class="fact-number">0,687 g/cm³</span>
+          <span class="fact-label">Kerapatan Saturnus — lebih rendah dari air!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌪️</span>
+          <span class="fact-number">1.800 km/j</span>
+          <span class="fact-label">Kecepatan angin di Saturnus</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+      <span class="page-indicator">Halaman 7 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(8)">Tantangan Aslan! ⚡ →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 8: TANTANGAN + PENUTUP ══ -->
+  <div class="page" id="page-8">
+    <div class="section-header">
+      <span class="tag">⚡ Tantangan Aslan</span>
+      <h1>Buktikan Kamu<br>Ahli Astronomi! 🪐</h1>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-title">🏆 Misi Saturnus Aslan</div>
+      <p style="font-size:15px;opacity:.8;margin-bottom:20px;">Kamu baru saja menyelesaikan perjalanan epik ke Saturnus! Sekarang buktikan keahlian astronomi-mu dengan tantangan seru berikut!</p>
+
+      <div class="challenge-item">
+        <div class="challenge-num">1</div>
+        <div>
+          <p><strong>Buat Model Saturnus!</strong> 🎨 Ambil balon besar dan kembangkan. Lilit dengan kertas karton berbentuk oval di sekelilingnya (ini cincinnya). Cat atau warnai balon dengan warna kuning-oranye-cokelat, dan buat garis-garis horizontal untuk mewakili pita awan Saturnus. Tunjukkan ke keluargamu dan jelaskan mengapa ada cincinnya!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">2</div>
+        <div>
+          <p><strong>Uji Mengapung atau Tenggelam!</strong> 🏊 Ambil baskom berisi air. Coba masukkan berbagai benda: jeruk, koin, batu kecil, gabus, plastik, kayu. Mana yang mengapung? Mana yang tenggelam? Saturnus mengapung karena kerapatannya kurang dari 1. Benda yang mengapung juga punya kerapatan kurang dari air. Catat hasilnya!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">3</div>
+        <div>
+          <p><strong>Kuis Tiga Bulan Saturnus!</strong> ⭐ Tutup bukumu, lalu jawab: (a) Bulan mana yang punya lautan di bawah es dan semburan air ke angkasa? (b) Bulan mana yang mirip Death Star? (c) Bulan mana yang punya danau metana cair dan atmosfer tebal? Skor penuh = kamu adalah Ahli Bulan Saturnus sejati! 🏆</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">4</div>
+        <div>
+          <p><strong>Gambar Perbandingan Ukuran!</strong> 🖍️ Gambar Bumi sebagai lingkaran kecil dengan diameter 2 cm. Sekarang gambar Saturnus dengan diameter yang benar secara proporsional — Saturnus 9,5× lebih besar dari Bumi, jadi diameternya harus 19 cm! Gambar juga cincinnya yang sangat tipis. Betapa bedanya, bukan? 😲</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">5</div>
+        <div>
+          <p><strong>Lihat Saturnus Secara Nyata!</strong> 🔭 Minta orang tuamu mencari tahu kapan Saturnus bisa dilihat dari Indonesia malam ini (ketik "kapan Saturnus terlihat dari Indonesia" di internet). Kalau bisa, coba pinjam teleskop kecil atau teropong dari sekolah atau tetangga. Saturnus dengan cincinnya bisa terlihat bahkan dengan teleskop murah! Ini akan jadi momen yang tidak terlupakan! ✨</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENUTUP -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--violet),var(--gold),var(--iceblue));margin-top:32px;">
+      <div class="closing-content">
+        <span class="trophy-big">🪐</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(24px,5vw,36px);margin-bottom:16px;">
+          Luar Biasa, Aslan! 🎉
+        </h2>
+        <p style="font-size:clamp(15px,2.5vw,17px);max-width:520px;margin:0 auto 24px;line-height:1.85;opacity:.92;">
+          Kamu telah menyelesaikan Hari ke-25 — perjalanan ke salah satu keindahan paling spektakuler di Tata Surya kita! Kini kamu tahu rahasia cincin Saturnus, bulan-bulannya yang unik, dan fakta bahwa planet raksasa ini bisa mengapung di air. Kamu adalah <strong>Astronom Muda</strong> yang sesungguhnya! 🌟
+        </p>
+
+        <div class="quote-box" style="max-width:540px;margin:0 auto 28px;">
+          <p>"Alam semesta tidak hanya lebih aneh dari yang kita bayangkan — ia lebih aneh dari yang bisa kita bayangkan. Dan Saturnus, dengan cincin emasnya yang menari di kegelapan angkasa, adalah bukti terbaik dari keajaiban itu."</p>
+          <cite>— Untuk Aslan, Astronom Muda Berbintang 🪐✨</cite>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px;">
+          <span style="background:rgba(200,168,75,.15);border:1px solid rgba(200,168,75,.32);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">💍 Penjelajah Cincin Saturnus</span>
+          <span style="background:rgba(125,211,252,.15);border:1px solid rgba(125,211,252,.32);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🌙 Ahli Bulan Saturnus</span>
+          <span style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.32);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🏊 Master Fisika Kerapatan</span>
+          <span style="background:rgba(45,212,191,.15);border:1px solid rgba(45,212,191,.32);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🔭 Astronom Muda Berbintang</span>
+        </div>
+
+        <button class="btn btn-done" onclick="selesaiMembaca()">
+          ✅ Saya Sudah Selesai Membaca!
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(7)">← Kembali</button>
+      <span class="page-indicator">Halaman 8 dari 8</span>
+      <span></span>
+    </div>
+  </div>
+
+</div><!-- /.book-container -->
+
+<script>
+  // ── STAR FIELD ──
+  const sf = document.getElementById('starfield');
+  for (let i = 0; i < 150; i++) {
+    const s = document.createElement('div');
+    s.className = 'star-p';
+    const sz = Math.random() * 2.5 + .6;
+    const warm = Math.random() > .7;
+    s.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      top:${Math.random()*100}%; left:${Math.random()*100}%;
+      background:${warm ? '#fde68a' : 'white'};
+      animation-duration:${2+Math.random()*4}s;
+      animation-delay:${Math.random()*5}s;
+    `;
+    sf.appendChild(s);
+  }
+
+  // ── RING DUST (shimmer particles drifting across) ──
+  const rd = document.getElementById('ringDust');
+  const dustColors = ['#fde68a','#e8c96a','#b8935a','#d4aa72','#7dd3fc'];
+  for (let i = 0; i < 25; i++) {
+    const d = document.createElement('div');
+    d.className = 'rdust-p';
+    const sz = Math.random() * 3 + 1;
+    const col = dustColors[Math.floor(Math.random() * dustColors.length)];
+    d.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      top:${20 + Math.random()*60}%;
+      left:${Math.random()*5}%;
+      background:${col};
+      box-shadow:0 0 ${sz*2}px ${col};
+      animation-duration:${14+Math.random()*16}s;
+      animation-delay:${Math.random()*14}s;
+    `;
+    rd.appendChild(d);
+  }
+
+  // ── PAGES ──
+  const TOTAL = 8;
+  let current = 1;
+
+  function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── DARK / LIGHT MODE ──
+  const modeBtn = document.getElementById('modeBtn');
+  let isLight = false;
+  modeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+    modeBtn.textContent = isLight ? '🌙' : '☀️';
+  });
+
+  // ── SELESAI MEMBACA ──
+  function selesaiMembaca() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,.86);backdrop-filter:blur(14px);
+      z-index:999;display:flex;align-items:center;justify-content:center;
+      padding:20px;animation:fadeUp .3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="
+        background:linear-gradient(135deg,#1a1000,#080510);
+        border:2px solid rgba(200,168,75,.48);
+        border-radius:28px;padding:40px;max-width:440px;width:100%;
+        text-align:center;color:#fef9e7;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;
+          background:linear-gradient(90deg,#7dd3fc,#fbbf24,#c8a84b,#7c3aed);"></div>
+        <span style="font-size:80px;display:block;margin-bottom:16px;">🪐</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:12px;
+          background:linear-gradient(135deg,#fde68a,#f59e0b);
+          -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+          background-clip:text;">Perjalananmu Terus Berlanjut!</h2>
+        <p style="font-size:16px;line-height:1.85;opacity:.92;margin-bottom:24px;">
+          Hari ke-25 selesai! 🎉<br>
+          Kamu sudah melihat cincin es yang indah,<br>
+          bulan dengan semburan air, dan planet yang<br>
+          <strong>bisa mengapung di lautan raksasa!</strong><br><br>
+          Bintang-bintang berikutnya menunggumu, Aslan! ✨
+        </p>
+        <button onclick="this.closest('div').parentElement.remove()" style="
+          background:linear-gradient(135deg,#c8a84b,#a07830);
+          color:#1a0a00;border:none;padding:14px 32px;border-radius:50px;
+          font-size:16px;font-weight:800;cursor:pointer;
+          font-family:'Nunito',sans-serif;
+          box-shadow:0 4px 16px rgba(200,168,75,.5);">
+          Sip! Tutup 🪐
+        </button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  }
+
+  // ── KEYBOARD ──
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(current - 1);
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>

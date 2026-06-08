@@ -1,0 +1,1473 @@
+<!-- BUKU DIGITAL ASLAN - Hari 5: Petualangan di Terumbu Karang Ajaib -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan di Terumbu Karang Ajaib — Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --reef-teal:   #00897b;
+    --reef-teal2:  #26a69a;
+    --reef-cyan:   #00bcd4;
+    --reef-orange: #ff7043;
+    --reef-coral:  #ff8a65;
+    --reef-gold:   #ffd54f;
+    --reef-purple: #7e57c2;
+    --reef-blue:   #1565c0;
+    --reef-sky:    #29b6f6;
+    --sand:        #ffe0b2;
+    --earth:       #8d6e63;
+    --dark-bg:     #011a14;
+    --mid-bg:      #022b20;
+    --surface-bg:  #033d2e;
+    --text-light:  #e0f7f4;
+    --shadow:      0 8px 32px rgba(0,0,0,0.28);
+    --radius:      24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #011a14;
+    color: #e0f7f4;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  body.light-mode {
+    background: #e8faf5;
+    color: #012118;
+  }
+
+  /* ─── FLOATING PARTICLES ─── */
+  .reef-particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .rp {
+    position: absolute;
+    border-radius: 50%;
+    animation: rpFloat linear infinite;
+    opacity: 0;
+  }
+  @keyframes rpFloat {
+    0%   { opacity: 0.7; transform: translateY(0) rotate(0deg); }
+    60%  { opacity: 0.3; }
+    100% { opacity: 0;   transform: translateY(-110vh) rotate(360deg); }
+  }
+  body.light-mode .reef-particles { opacity: 0.35; }
+
+  /* ─── TOP NAV ─── */
+  .top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(1,26,20,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,188,212,0.18);
+  }
+  body.light-mode .top-nav {
+    background: rgba(232,250,245,0.95);
+    border-color: rgba(0,137,123,0.2);
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--reef-teal), var(--reef-blue));
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 800;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(0,137,123,0.45);
+  }
+  .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,137,123,0.6); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .book-day-badge {
+    background: linear-gradient(135deg, var(--reef-teal2), var(--reef-orange));
+    color: white;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  .mode-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,0.18); transform: rotate(20deg); }
+  body.light-mode .mode-btn { background: rgba(0,0,0,0.07); border-color: rgba(0,0,0,0.12); color: #012118; }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-wrap {
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    z-index: 99;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--reef-teal), var(--reef-cyan), var(--reef-orange), var(--reef-gold));
+    transition: width 0.35s ease;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 8px rgba(0,188,212,0.5);
+  }
+
+  /* ─── MAIN CONTAINER ─── */
+  .book-container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 20px 40px;
+  }
+
+  /* ─── PAGES ─── */
+  .page { display: none; animation: fadeUp 0.5s ease forwards; }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── COVER ─── */
+  .cover-page {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    position: relative;
+  }
+
+  /* ── REEF ILLUSTRATION ── */
+  .cover-reef-wrap {
+    width: 220px;
+    height: 220px;
+    position: relative;
+    margin: 0 auto 32px;
+    animation: floatReef 3.5s ease-in-out infinite;
+  }
+  @keyframes floatReef {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-14px); }
+  }
+
+  /* CSS coral reef scene */
+  .reef-scene {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 90px;
+  }
+  /* Sand base */
+  .reef-sand {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 28px;
+    background: linear-gradient(180deg, #c8a060, #b08040);
+    border-radius: 50% 50% 20px 20px / 20px 20px 20px 20px;
+  }
+  /* Coral branches */
+  .coral-1 {
+    position: absolute;
+    bottom: 22px; left: 18px;
+    width: 14px; height: 55px;
+    background: linear-gradient(180deg, var(--reef-orange), #e64a19);
+    border-radius: 8px 8px 4px 4px;
+  }
+  .coral-1::before, .coral-1::after {
+    content: '';
+    position: absolute;
+    width: 10px; height: 35px;
+    background: inherit;
+    border-radius: 6px 6px 3px 3px;
+  }
+  .coral-1::before { top: 8px; left: -12px; transform: rotate(-25deg); }
+  .coral-1::after  { top: 6px; right: -12px; transform: rotate(25deg); }
+
+  .coral-2 {
+    position: absolute;
+    bottom: 22px; left: 55px;
+    width: 10px; height: 40px;
+    background: linear-gradient(180deg, #ff4081, #c2185b);
+    border-radius: 6px 6px 3px 3px;
+  }
+  .coral-2::before {
+    content: '';
+    position: absolute;
+    width: 8px; height: 28px;
+    background: inherit;
+    border-radius: 5px 5px 2px 2px;
+    top: 5px; left: -10px;
+    transform: rotate(-20deg);
+  }
+
+  .coral-3 {
+    position: absolute;
+    bottom: 22px; right: 20px;
+    width: 16px; height: 48px;
+    background: linear-gradient(180deg, #26c6da, #00838f);
+    border-radius: 8px 8px 4px 4px;
+  }
+  .coral-3::before, .coral-3::after {
+    content: '';
+    position: absolute;
+    width: 10px; height: 30px;
+    background: inherit;
+    border-radius: 6px 6px 3px 3px;
+  }
+  .coral-3::before { top: 6px; left: -12px; transform: rotate(-20deg); }
+  .coral-3::after  { top: 4px; right: -11px; transform: rotate(20deg); }
+
+  /* Fan coral */
+  .coral-fan {
+    position: absolute;
+    bottom: 26px; left: 90px;
+    width: 50px; height: 60px;
+    border: 6px solid #8d24aa;
+    border-radius: 50% 50% 0 0;
+    border-bottom: none;
+    box-shadow: inset 0 0 0 6px rgba(141,36,170,0.3);
+  }
+
+  /* Clownfish CSS */
+  .clown-fish {
+    position: absolute;
+    top: 30px; left: 50%;
+    transform: translateX(-50%);
+    animation: fishSwim 4s ease-in-out infinite;
+  }
+  @keyframes fishSwim {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50%     { transform: translateX(-40%) translateY(-10px); }
+  }
+  .cf-body {
+    width: 44px; height: 28px;
+    background: linear-gradient(180deg, #ff6d00, #ff8f00);
+    border-radius: 50% 60% 60% 50%;
+    position: relative;
+    box-shadow: 0 3px 10px rgba(255,109,0,0.5);
+  }
+  .cf-stripe {
+    position: absolute;
+    top: 4px;
+    width: 5px; height: 20px;
+    background: white;
+    border-radius: 3px;
+  }
+  .cf-stripe:nth-child(1) { left: 10px; }
+  .cf-stripe:nth-child(2) { left: 22px; }
+  .cf-eye {
+    position: absolute;
+    top: 6px; right: 8px;
+    width: 7px; height: 7px;
+    background: #000;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+  .cf-tail {
+    position: absolute;
+    right: -14px; top: 4px;
+    width: 0; height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 14px solid #ff6d00;
+  }
+
+  /* Seaweed */
+  .seaweed {
+    position: absolute;
+    bottom: 22px;
+    width: 8px;
+    background: linear-gradient(180deg, #00c853, #1b5e20);
+    border-radius: 4px;
+    transform-origin: bottom center;
+    animation: sway 3s ease-in-out infinite;
+  }
+  @keyframes sway {
+    0%,100% { transform: rotate(-12deg); }
+    50%     { transform: rotate(12deg); }
+  }
+  .seaweed:nth-child(1) { left: 38px;  height: 36px; animation-delay: 0s; }
+  .seaweed:nth-child(2) { left: 148px; height: 28px; animation-delay: -1.5s; }
+  .seaweed:nth-child(3) { left: 170px; height: 42px; animation-delay: -0.8s; }
+
+  /* Floating marine emojis */
+  .floating-marine {
+    position: absolute;
+    font-size: 24px;
+    animation: marineFloat 4s ease-in-out infinite;
+  }
+  .floating-marine:nth-child(1) { top: 5%;  left: 6%;   animation-delay: 0s; }
+  .floating-marine:nth-child(2) { top: 9%;  right: 8%;  animation-delay: -1.5s; }
+  .floating-marine:nth-child(3) { bottom: 28%; left: 5%;  animation-delay: -3s; }
+  .floating-marine:nth-child(4) { bottom: 22%; right: 6%; animation-delay: -2s; }
+  @keyframes marineFloat {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50%     { transform: translateY(-10px) rotate(10deg); }
+  }
+
+  .cover-badge {
+    background: linear-gradient(135deg, var(--reef-teal2), var(--reef-orange));
+    color: white;
+    padding: 6px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: inline-block;
+    box-shadow: 0 0 16px rgba(0,188,212,0.3);
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(28px, 6vw, 50px);
+    line-height: 1.2;
+    background: linear-gradient(135deg, #00e5ff, #69f0ae, #ffca28, #ff7043, #00e5ff);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease infinite;
+    margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+
+  .cover-subtitle { font-size: clamp(16px, 3vw, 22px); opacity: 0.75; margin-bottom: 24px; }
+
+  .cover-name-badge {
+    background: linear-gradient(135deg, rgba(0,188,212,0.08), rgba(255,112,67,0.08));
+    border: 2px solid rgba(0,188,212,0.25);
+    border-radius: 20px;
+    padding: 16px 32px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+  }
+  .cover-name-badge p { font-size: 14px; opacity: 0.7; margin-bottom: 4px; }
+  .cover-name-badge h2 { font-family: 'Fredoka One', cursive; font-size: clamp(22px,4vw,32px); color: var(--reef-cyan); }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+  }
+  body.light-mode .card {
+    background: white;
+    border-color: rgba(0,137,123,0.15);
+    box-shadow: 0 4px 24px rgba(0,188,212,0.1);
+    color: #012118;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent, linear-gradient(90deg, var(--reef-teal), var(--reef-cyan)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .card-reef    { --accent: linear-gradient(90deg, #00897b, #26c6da, #69f0ae); }
+  .card-symb    { --accent: linear-gradient(90deg, #7e57c2, #26c6da, #69f0ae); }
+  .card-life    { --accent: linear-gradient(90deg, #ff7043, #ffd54f, #ff8a65); }
+  .card-danger  { --accent: linear-gradient(90deg, #b71c1c, #e53935, #ff7043); }
+  .card-protect { --accent: linear-gradient(90deg, #2e7d32, #43a047, #69f0ae); }
+
+  .card-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    display: block;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  }
+
+  .card h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(22px, 4vw, 30px);
+    margin-bottom: 8px;
+    color: var(--reef-cyan);
+  }
+  body.light-mode .card h2 { color: var(--reef-teal); }
+
+  .card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 20px 0 10px;
+    color: var(--reef-cyan);
+  }
+  body.light-mode .card h3 { color: var(--reef-teal); }
+
+  .card p {
+    font-size: clamp(15px, 2.5vw, 17px);
+    line-height: 1.85;
+    opacity: 0.9;
+    margin-bottom: 14px;
+  }
+
+  /* ─── ANALOGY BOX ─── */
+  .analogy-box {
+    background: linear-gradient(135deg, rgba(0,188,212,0.07), rgba(255,112,67,0.07));
+    border: 2px dashed rgba(0,188,212,0.28);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .analogy-box::before {
+    content: '💡 Analogi Keren!';
+    position: absolute;
+    top: -12px; left: 20px;
+    background: var(--dark-bg);
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--reef-cyan);
+  }
+  body.light-mode .analogy-box { background: linear-gradient(135deg,rgba(0,188,212,0.05),rgba(255,112,67,0.05)); }
+  body.light-mode .analogy-box::before { background: white; }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header { text-align: center; margin-bottom: 32px; padding-top: 20px; }
+  .section-header .tag {
+    display: inline-block;
+    background: rgba(0,188,212,0.1);
+    border: 1px solid rgba(0,188,212,0.28);
+    color: var(--reef-cyan);
+    padding: 4px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-header h1 { font-family: 'Fredoka One', cursive; font-size: clamp(24px,5vw,40px); line-height: 1.2; }
+
+  /* ─── SCENE BOX ─── */
+  .scene-box {
+    background: linear-gradient(135deg, rgba(1,26,20,0.92), rgba(0,137,123,0.12));
+    border: 1px solid rgba(0,188,212,0.15);
+    border-radius: 20px;
+    padding: 28px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .scene-box::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 80% 50%, rgba(0,188,212,0.05), transparent 60%);
+    pointer-events: none;
+  }
+  body.light-mode .scene-box {
+    background: linear-gradient(135deg, rgba(232,250,245,0.97), rgba(0,188,212,0.04));
+    border-color: rgba(0,137,123,0.18);
+  }
+  .scene-title {
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--reef-cyan);
+    margin-bottom: 12px;
+    opacity: 0.8;
+  }
+  .scene-box p { font-size: clamp(15px,2.5vw,17px); line-height: 1.9; font-style: italic; opacity: 0.9; }
+
+  /* ─── ANIMAL GRID ─── */
+  .animal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .animal-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(0,188,212,0.18);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .animal-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,188,212,0.06), transparent 60%);
+    pointer-events: none;
+  }
+  .animal-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,188,212,0.15); }
+  body.light-mode .animal-card { background: #e8faf5; border-color: rgba(0,137,123,0.2); }
+  .animal-card .ac-icon { font-size: 52px; display: block; margin-bottom: 10px; }
+  .animal-card strong { display: block; font-size: 15px; font-weight: 900; margin-bottom: 4px; }
+  .animal-card span { font-size: 13px; opacity: 0.7; }
+  .ac-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 12px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 800;
+    background: rgba(0,188,212,0.1);
+    color: var(--reef-cyan);
+    border: 1px solid rgba(0,188,212,0.22);
+  }
+  .ac-desc {
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 10px;
+    opacity: 0.85;
+  }
+
+  /* ─── SYMBIOSIS VISUAL ─── */
+  .symbiosis-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  .sym-node {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(0,188,212,0.22);
+    border-radius: 18px;
+    padding: 18px 20px;
+    text-align: center;
+    min-width: 130px;
+    flex: 1;
+    max-width: 180px;
+  }
+  body.light-mode .sym-node { background: #e8faf5; }
+  .sym-node .sn-icon { font-size: 40px; display: block; margin-bottom: 8px; }
+  .sym-node strong { display: block; font-size: 14px; font-weight: 900; margin-bottom: 4px; }
+  .sym-node p { font-size: 12px; line-height: 1.5; opacity: 0.75; margin: 0; }
+  .sym-arrow { font-size: 28px; color: var(--reef-cyan); flex-shrink: 0; opacity: 0.7; }
+
+  /* ─── DANGER BAR ─── */
+  .danger-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 16px;
+    margin-bottom: 12px;
+  }
+  .danger-icon { font-size: 40px; flex-shrink: 0; }
+  .danger-content { flex: 1; }
+  .danger-content strong { display: block; font-size: 16px; font-weight: 900; margin-bottom: 6px; }
+  .danger-content p { font-size: 14px; line-height: 1.65; opacity: 0.88; margin: 0; }
+
+  /* ─── TWO COL CARDS ─── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+
+  .mini-card {
+    border-radius: 18px;
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mini-card-teal   { background: rgba(0,188,212,0.08);  border: 1px solid rgba(0,188,212,0.22); }
+  .mini-card-orange { background: rgba(255,112,67,0.1);  border: 1px solid rgba(255,112,67,0.25); }
+  .mini-card-gold   { background: rgba(255,213,79,0.08); border: 1px solid rgba(255,213,79,0.22); }
+  .mini-card-green  { background: rgba(0,137,123,0.1);   border: 1px solid rgba(0,137,123,0.25); }
+  body.light-mode .mini-card-teal   { background: rgba(0,188,212,0.06); }
+  body.light-mode .mini-card-orange { background: rgba(255,112,67,0.06); }
+  body.light-mode .mini-card-gold   { background: rgba(255,213,79,0.05); }
+  body.light-mode .mini-card-green  { background: rgba(0,137,123,0.06); }
+
+  .mini-card .mini-icon { font-size: 36px; }
+  .mini-card strong { font-size: 15px; font-weight: 900; }
+  .mini-card p { font-size: 14px; line-height: 1.6; opacity: 0.85; margin: 0; }
+
+  /* ─── FACT GRID ─── */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .fact-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .fact-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,188,212,0.12); }
+  body.light-mode .fact-card { background: #e8faf5; border-color: rgba(0,137,123,0.15); }
+  .fact-card .fact-emoji { font-size: 40px; margin-bottom: 10px; display: block; }
+  .fact-card .fact-number { font-family: 'Fredoka One', cursive; font-size: 20px; color: var(--reef-cyan); display: block; margin-bottom: 4px; }
+  .fact-card .fact-label { font-size: 13px; opacity: 0.7; font-weight: 700; }
+
+  /* ─── TEMPERATURE BLEACH VISUAL ─── */
+  .bleach-bar-wrap {
+    background: rgba(0,0,0,0.25);
+    border-radius: 10px;
+    height: 30px;
+    overflow: hidden;
+    margin: 10px 0;
+    position: relative;
+    border: 1px solid rgba(255,112,67,0.2);
+  }
+  .bleach-bar {
+    height: 100%;
+    border-radius: 8px;
+    display: flex; align-items: center; padding-left: 12px;
+    font-size: 12px; font-weight: 900; color: white; white-space: nowrap;
+  }
+
+  /* ─── CHALLENGE ─── */
+  .challenge-card {
+    background: linear-gradient(135deg, rgba(1,26,20,0.88), rgba(0,137,123,0.12));
+    border: 2px solid rgba(0,188,212,0.22);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin: 20px 0;
+  }
+  body.light-mode .challenge-card {
+    background: linear-gradient(135deg, rgba(0,188,212,0.04), rgba(255,112,67,0.04));
+  }
+
+  .challenge-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 24px;
+    color: var(--reef-cyan);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  body.light-mode .challenge-title { color: var(--reef-teal); }
+
+  .challenge-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .challenge-item:last-child { border-bottom: none; }
+  body.light-mode .challenge-item { border-color: rgba(0,0,0,0.05); }
+
+  .challenge-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--reef-teal2), var(--reef-orange));
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 14px;
+    flex-shrink: 0; margin-top: 2px;
+    box-shadow: 0 0 10px rgba(0,188,212,0.3);
+  }
+  .challenge-item p { font-size: 15px; line-height: 1.7; opacity: 0.9; }
+
+  /* ─── NAV BUTTONS ─── */
+  .nav-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  body.light-mode .nav-btns { border-color: rgba(0,0,0,0.05); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover  { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-prev {
+    background: rgba(255,255,255,0.06);
+    color: inherit;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  body.light-mode .btn-prev { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); color:#012118; }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--reef-teal2), var(--reef-orange));
+    color: white;
+    box-shadow: 0 4px 16px rgba(0,137,123,0.35);
+    flex: 1; justify-content: center;
+    max-width: 300px;
+  }
+  .btn-next:hover { box-shadow: 0 6px 24px rgba(0,188,212,0.5); }
+
+  .btn-done {
+    background: linear-gradient(135deg, var(--reef-teal), var(--reef-blue));
+    color: white;
+    box-shadow: 0 4px 16px rgba(0,137,123,0.4);
+    width: 100%; max-width: 400px;
+    margin: 0 auto;
+    justify-content: center;
+    font-size: 17px;
+    padding: 18px 32px;
+  }
+  .btn-done:hover { box-shadow: 0 6px 24px rgba(0,188,212,0.55); }
+
+  .page-indicator { font-size: 13px; opacity: 0.5; font-weight: 700; white-space: nowrap; }
+
+  /* ─── CLOSING ─── */
+  .closing-content { text-align: center; padding: 40px 20px; }
+  .trophy-big {
+    font-size: 100px;
+    display: block; margin: 0 auto 24px;
+    animation: bounceIn 0.8s cubic-bezier(0.36,0.07,0.19,0.97);
+    filter: drop-shadow(0 0 24px rgba(0,188,212,0.6));
+  }
+  @keyframes bounceIn {
+    0%  { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); }
+    100%{ transform: scale(1); opacity: 1; }
+  }
+  .quote-box {
+    background: linear-gradient(135deg, rgba(0,188,212,0.08), rgba(255,112,67,0.08));
+    border-left: 4px solid var(--reef-teal2);
+    border-radius: 0 16px 16px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+    text-align: left;
+  }
+  .quote-box p { font-size: 18px; font-style: italic; line-height: 1.8; }
+  .quote-box cite { font-size: 13px; opacity: 0.6; margin-top: 8px; display: block; font-style: normal; font-weight: 700; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .book-container { padding: 76px 16px 32px; }
+    .card { padding: 24px 20px; }
+    .nav-btns { flex-wrap: wrap; }
+    .btn-next { max-width: 100%; }
+    .fact-grid { grid-template-columns: 1fr 1fr; }
+    .animal-grid { grid-template-columns: 1fr 1fr; }
+    .cover-reef-wrap { width: 190px; height: 190px; }
+    .symbiosis-flow { flex-direction: column; align-items: stretch; }
+    .sym-arrow { transform: rotate(90deg); margin: 0 auto; }
+  }
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .book-container { padding: 80px 32px 40px; }
+    .card p { font-size: 18px; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,188,212,0.28); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- REEF PARTICLES -->
+<div class="reef-particles" id="reefParticles"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+  <div class="nav-right">
+    <span class="book-day-badge">🐠 Hari ke-5</span>
+    <button class="mode-btn" id="modeBtn" title="Ganti Mode">☀️</button>
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<!-- ═══════════════ BOOK CONTAINER ═══════════════ -->
+<div class="book-container">
+
+  <!-- ── PAGE 1: COVER ── -->
+  <div class="page active" id="page-1">
+    <div class="cover-page">
+      <span class="floating-marine">🐠</span>
+      <span class="floating-marine">🐢</span>
+      <span class="floating-marine">🦈</span>
+      <span class="floating-marine">🪸</span>
+
+      <!-- Reef illustration -->
+      <div class="cover-reef-wrap">
+        <!-- Clownfish -->
+        <div class="clown-fish">
+          <div class="cf-body">
+            <div class="cf-stripe"></div>
+            <div class="cf-stripe"></div>
+            <div class="cf-eye"></div>
+            <div class="cf-tail"></div>
+          </div>
+        </div>
+        <!-- Reef scene -->
+        <div class="reef-scene">
+          <div class="seaweed" style="left:38px;height:36px;"></div>
+          <div class="seaweed" style="left:148px;height:28px;animation-delay:-1.5s;"></div>
+          <div class="seaweed" style="left:170px;height:42px;animation-delay:-0.8s;"></div>
+          <div class="coral-1"></div>
+          <div class="coral-2"></div>
+          <div class="coral-3"></div>
+          <div class="coral-fan"></div>
+          <div class="reef-sand"></div>
+        </div>
+      </div>
+
+      <div class="cover-badge">📚 Buku Sains Petualangan • Hari ke-5</div>
+      <h1 class="cover-title">Petualangan di<br>Terumbu Karang Ajaib!</h1>
+      <p class="cover-subtitle">🪸 Hutan Hujan di Bawah Laut yang Penuh Warna</p>
+
+      <div class="cover-name-badge">
+        <p>Petualangan sains milik:</p>
+        <h2>🌟 Aslan 🌟</h2>
+        <p style="font-size:13px;margin-top:4px;">Penjelajah Terumbu Karang • Kelas 3 SD</p>
+      </div>
+
+      <div class="nav-btns" style="justify-content:center;border:none;padding-top:0;">
+        <button class="btn btn-next" onclick="goPage(2)" style="max-width:290px;font-size:17px;padding:16px 32px;">
+          🪸 Mulai Petualangan!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE 2: PENGANTAR ── -->
+  <div class="page" id="page-2">
+    <div class="section-header">
+      <span class="tag">✉️ Hari Kelima!</span>
+      <h1>Hei Aslan, Siap<br>Menjelajahi Hutan Laut? 🪸</h1>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🪸</span>
+      <p>Hei, <strong>Aslan</strong>! Kemarin kamu berhasil menyelami laut dalam yang gelap gulita dan bertemu monster-monster laut yang menakjubkan. Kamu benar-benar penjelajah laut yang berani!</p>
+      <p>Hari ini Terra Explorer mengajak kamu ke tempat yang <strong>jauh lebih berwarna dan ramai</strong> — bukan di kedalaman gelap, tapi di zona terang yang hangat dekat permukaan. Tempat yang disebut para ilmuwan sebagai <strong>"Hutan Hujan di Bawah Laut"</strong>. Inilah TERUMBU KARANG! 🪸</p>
+      <p>Di sini, lebih dari <strong>25% dari seluruh spesies laut di Bumi</strong> hidup bersama — warna-warni, penuh kehidupan, dan punya cerita yang luar biasa. Bersiaplah takjub! 🌈</p>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Pesan Dari Terra Explorer</p>
+      <p>"Aslan! Terra Explorer sudah dipasang lampu sorot warna-warni dan kamera ultra HD! Hari ini kita tidak menyelam sangat dalam — kita menjelajahi zona hangat antara 5 sampai 30 meter dari permukaan. Kecepatan kapal selam dikurangi supaya kita bisa melihat dengan detail setiap sudut terumbu karang. Ohh... sudah terlihat dari sini! Warna merah, jingga, ungu, kuning — seperti taman bunga di bawah laut! Ayo segera masuk!"</p>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--reef-teal2),var(--reef-orange));">
+      <h3>🗺️ Yang Akan Kita Pelajari Hari Ini</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(0,137,123,0.12);border-radius:14px;">
+          <span style="font-size:28px;">🪸</span>
+          <div><strong>Apa itu Terumbu Karang?</strong><p style="font-size:13px;margin:0;opacity:0.7;">Kenapa disebut hutan hujan di laut?</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(255,112,67,0.1);border-radius:14px;">
+          <span style="font-size:28px;">🐠</span>
+          <div><strong>Penghuni Terumbu Karang</strong><p style="font-size:13px;margin:0;opacity:0.7;">Ikan, kura-kura, pari, dan ratusan makhluk lainnya!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(126,87,194,0.1);border-radius:14px;">
+          <span style="font-size:28px;">🌿</span>
+          <div><strong>Simbiosis Ajaib</strong><p style="font-size:13px;margin:0;opacity:0.7;">Persahabatan rahasia antara karang dan alga kecil!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(183,28,28,0.1);border-radius:14px;">
+          <span style="font-size:28px;">⚠️</span>
+          <div><strong>Bahaya yang Mengancam</strong><p style="font-size:13px;margin:0;opacity:0.7;">Pemanasan global dan sampah plastik jadi musuh terbesar</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(46,125,50,0.1);border-radius:14px;">
+          <span style="font-size:28px;">💚</span>
+          <div><strong>Cara Melindungi Terumbu Karang</strong><p style="font-size:13px;margin:0;opacity:0.7;">Apa yang bisa Aslan lakukan untuk membantu?</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+      <span class="page-indicator">Halaman 2 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(3)">Apa itu Terumbu Karang? 🪸 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 3: APA ITU TERUMBU KARANG ── -->
+  <div class="page" id="page-3">
+    <div class="section-header">
+      <span class="tag">🪸 Bab Satu</span>
+      <h1>Terumbu Karang:<br><span style="color:var(--reef-cyan)">Hutan Hujan di Laut!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Memasuki Terumbu Karang!</p>
+      <p>"Terra Explorer memasuki zona terumbu karang dan... WOW! 😍 Di mana-mana ada struktur berwarna-warni yang bentuknya seperti otak, seperti pohon, seperti payung, seperti kipas! Ada yang merah menyala, ungu terang, kuning keemasan, biru safir. Ribuan ikan berwarna pelangi berenang di antara mereka. Ini benar-benar seperti kota bawah laut! Aslan, selamat datang di tempat paling berwarna di Bumi!"</p>
+    </div>
+
+    <div class="card card-reef">
+      <span class="card-icon">🪸</span>
+      <h2>Karang Bukan Batu, Bukan Tumbuhan — Tapi HEWAN!</h2>
+      <p>Banyak orang mengira terumbu karang adalah batu atau tumbuhan laut. Padahal... karang adalah <strong>hewan!</strong> Tepatnya, karang adalah ribuan hewan kecil bernama <strong>polip karang</strong> yang hidup berkoloni dan membangun "rumah" dari kalsium karbonat (bahan yang sama dengan cangkang kerang).</p>
+      <p>Setiap polip karang ukurannya kecil — hanya beberapa milimeter — tapi bersama-sama mereka membangun struktur yang bisa lebih besar dari gedung bertingkat! Karang yang kamu lihat itu sebenarnya adalah <strong>jutaan hewan kecil yang hidup berdampingan</strong>. 🤯</p>
+
+      <div class="analogy-box">
+        <p>Bayangkan sebuah gedung apartemen raksasa 🏢. Setiap kamar ditempati satu keluarga. Nah, terumbu karang adalah "apartemen" karang — setiap polip kecil punya kamarnya sendiri, dan bersama-sama mereka membentuk struktur besar yang menjadi rumah bagi ribuan hewan lain!</p>
+      </div>
+
+      <h3>🌳 Kenapa Disebut "Hutan Hujan di Laut"?</h3>
+      <p>Hutan hujan tropis dikenal sebagai ekosistem paling kaya di daratan — rumah bagi jutaan spesies hewan dan tumbuhan. Nah, terumbu karang adalah setara dengan itu di bawah laut!</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;">
+        <div style="background:rgba(46,125,50,0.12);border:1px solid rgba(46,125,50,0.25);border-radius:16px;padding:20px;text-align:center;">
+          <span style="font-size:44px;display:block;margin-bottom:8px;">🌳</span>
+          <strong style="display:block;font-size:14px;margin-bottom:6px;color:#69f0ae;">Hutan Hujan Tropis</strong>
+          <p style="font-size:13px;line-height:1.6;margin:0;opacity:0.8;">Menutupi 6% permukaan daratan Bumi, tapi menjadi rumah bagi 50% spesies darat.</p>
+        </div>
+        <div style="background:rgba(0,188,212,0.1);border:1px solid rgba(0,188,212,0.25);border-radius:16px;padding:20px;text-align:center;box-shadow:0 0 14px rgba(0,188,212,0.08);">
+          <span style="font-size:44px;display:block;margin-bottom:8px;">🪸</span>
+          <strong style="display:block;font-size:14px;margin-bottom:6px;color:var(--reef-cyan);">Terumbu Karang</strong>
+          <p style="font-size:13px;line-height:1.6;margin:0;opacity:0.8;">Hanya 0,1% dari luas lautan, tapi menjadi rumah bagi 25% spesies laut! Luar biasa!</p>
+        </div>
+      </div>
+
+      <h3>🌍 Di Mana Terumbu Karang Tumbuh?</h3>
+      <p>Terumbu karang hanya bisa tumbuh di kondisi tertentu: air yang <strong>hangat (24–29°C), jernih, dangkal (kurang dari 70 meter)</strong>, dan kaya sinar matahari. Itu kenapa terumbu karang paling banyak ditemukan di wilayah tropis — dan Indonesia berada tepat di pusatnya! 🇮🇩</p>
+
+      <div style="background:rgba(0,137,123,0.1);border:1px solid rgba(0,137,123,0.25);border-radius:16px;padding:18px 20px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🇮🇩 <strong>Indonesia Juara Terumbu Karang!</strong> Indonesia memiliki <strong>51.000 km²</strong> terumbu karang — terbesar kedua di dunia setelah Australia (Great Barrier Reef)! Raja Ampat di Papua Barat bahkan punya keanekaragaman terumbu karang yang lebih tinggi dari mana pun di Bumi. Kita punya harta yang luar biasa! 💎</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+      <span class="page-indicator">Halaman 3 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(4)">Penghuni Terumbu Karang! 🐠 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 4: PENGHUNI TERUMBU KARANG ── -->
+  <div class="page" id="page-4">
+    <div class="section-header">
+      <span class="tag">🐠 Bab Dua</span>
+      <h1>Penghuni Terumbu Karang:<br><span style="color:var(--reef-cyan)">Ribuan Teman Baru!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Di Tengah Kehidupan!</p>
+      <p>"Aslan, Terra Explorer dikelilingi dari segala arah! Ada gerombolan ikan kupu-kupu berwarna kuning dan hitam, ada penyu besar yang berenang anggun, ada gurita yang menyamarkan diri jadi karang, dan... ada ikan badut oranye yang mengintip dari balik anemon! Setiap sudut ada kehidupan baru. Sensor biodiversitas mendeteksi lebih dari 400 spesies berbeda di radius 100 meter! Ini benar-benar kota di bawah laut! 🐠"</p>
+    </div>
+
+    <div class="card card-life">
+      <span class="card-icon">🐠</span>
+      <h2>Kenalan dengan Warga Terumbu Karang!</h2>
+      <p>Terumbu karang adalah apartemen terbesar di Bumi — penghuni datang dari semua jenis hewan laut! Yuk berkenalan dengan beberapa warga terkenalnya!</p>
+
+      <div class="animal-grid">
+        <div class="animal-card">
+          <span class="ac-icon">🐠</span>
+          <strong>Ikan Badut (Clownfish)</strong>
+          <span>Amphiprioninae</span>
+          <span class="ac-badge">⭐ Bintang Terumbu</span>
+          <p class="ac-desc">Ikan oranye lucu dengan garis putih ini hidup bersama anemon laut! Mereka kebal terhadap sengatan anemon, sementara ikan lain menghindarinya. Ikan Nemo asli! Betina selalu lebih besar dari jantan.</p>
+        </div>
+        <div class="animal-card">
+          <span class="ac-icon">🐢</span>
+          <strong>Penyu Hijau</strong>
+          <span>Chelonia mydas</span>
+          <span class="ac-badge">🌿 Pemakan Rumput Laut</span>
+          <p class="ac-desc">Penyu cantik yang sudah ada di Bumi sejak zaman dinosaurus! Mereka makan rumput laut dan ubur-ubur. Bisa hidup hingga 80 tahun. Terancam punah — bertelur di pantai-pantai Indonesia!</p>
+        </div>
+        <div class="animal-card">
+          <span class="ac-icon">🦈</span>
+          <strong>Hiu Karang</strong>
+          <span>Carcharhinus spp.</span>
+          <span class="ac-badge">👑 Raja Terumbu</span>
+          <p class="ac-desc">Hiu karang adalah predator penting yang menjaga keseimbangan ekosistem. Tanpa hiu, ikan herbivora akan terlalu banyak dan menghabiskan alga sampai terumbu rusak. Hiu adalah dokter ekosistem!</p>
+        </div>
+        <div class="animal-card">
+          <span class="ac-icon">🪼</span>
+          <strong>Ubur-Ubur</strong>
+          <span>Medusozoa</span>
+          <span class="ac-badge">🌈 Berenang Melayang</span>
+          <p class="ac-desc">Makhluk transparan yang sudah ada 650 juta tahun sebelum dinosaurus! Tidak punya otak, jantung, atau tulang. Tapi bisa menyengat dan berenang dengan anggun. Beberapa jenis bioluminescent!</p>
+        </div>
+        <div class="animal-card">
+          <span class="ac-icon">🐙</span>
+          <strong>Gurita</strong>
+          <span>Octopus spp.</span>
+          <span class="ac-badge">🎭 Ahli Kamuflase</span>
+          <p class="ac-desc">Makhluk paling cerdas di laut! Bisa mengubah warna dan tekstur kulit dalam sepersekian detik untuk menyamar. Punya tiga jantung dan darahnya berwarna biru! Hidup di celah-celah terumbu karang.</p>
+        </div>
+        <div class="animal-card">
+          <span class="ac-icon">🦀</span>
+          <strong>Kepiting & Udang</strong>
+          <span>Crustacea</span>
+          <span class="ac-badge">🧹 Petugas Kebersihan</span>
+          <p class="ac-desc">Kepiting dan udang adalah "janitor" terumbu karang! Mereka memakan sisa makanan, alga berlebih, dan bahkan membersihkan parasit dari tubuh ikan besar. Sangat penting untuk kebersihan terumbu!</p>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;background:rgba(255,112,67,0.08);border:1px solid rgba(255,112,67,0.22);border-radius:16px;padding:18px 20px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🐟 <strong>Tahukah Kamu?</strong> Terumbu karang adalah rumah bagi lebih dari <strong>4.000 spesies ikan</strong> dan lebih dari <strong>800 spesies karang</strong>! Bahkan setelah ratusan tahun mempelajarinya, para ilmuwan masih terus menemukan spesies baru setiap tahunnya. Terumbu karang menyimpan misteri yang belum habis dijelajahi! 🔬</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+      <span class="page-indicator">Halaman 4 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(5)">Simbiosis Ajaib! 🌿 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 5: SIMBIOSIS ── -->
+  <div class="page" id="page-5">
+    <div class="section-header">
+      <span class="tag">🌿 Bab Tiga</span>
+      <h1>Persahabatan Rahasia:<br><span style="color:var(--reef-cyan)">Simbiosis di Terumbu Karang!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Misi Penelitian Khusus!</p>
+      <p>"Aslan, Terra Explorer mengaktifkan mikroskop super! Kita zooming ke permukaan karang... luar biasa! Di dalam jaringan karang yang transparan, ada bintik-bintik kecil hijau dan kuning. Mereka adalah alga kecil bernama zooxanthellae — ukurannya 10x lebih kecil dari rambut manusia! Makhluk-makhluk mungil inilah yang membuat terumbu karang bisa berwarna-warni dan hidup subur. Ini adalah persahabatan paling penting di lautan! 🔬"</p>
+    </div>
+
+    <div class="card card-symb">
+      <span class="card-icon">🌿</span>
+      <h2>Simbiosis: Hidup Saling Membantu!</h2>
+      <p><strong>Simbiosis</strong> adalah hubungan erat antara dua jenis makhluk hidup yang berbeda. Ada simbiosis yang menguntungkan keduanya (mutualisme), ada yang satu untung satu netral (komensalisme), dan ada yang satu untung satu rugi (parasitisme).</p>
+      <p>Di terumbu karang, banyak sekali contoh simbiosis! Yang paling penting adalah hubungan antara <strong>polip karang</strong> dan <strong>zooxanthellae</strong>:</p>
+
+      <div class="symbiosis-flow">
+        <div class="sym-node">
+          <span class="sn-icon">🪸</span>
+          <strong>Polip Karang</strong>
+          <p>Memberi "rumah" dan CO₂ kepada zooxanthellae. Melindungi mereka di dalam jaringannya.</p>
+        </div>
+        <div class="sym-arrow">⇄</div>
+        <div class="sym-node">
+          <span class="sn-icon">🌿</span>
+          <strong>Zooxanthellae</strong>
+          <p>Alga kecil yang berfotosintesis di dalam karang. Memberi 90% energi makanan untuk karang!</p>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Bayangkan kamu punya teman yang tinggal di kamarmu 🏠. Kamu kasih dia tempat tidur dan makan. Sebagai balasannya, dia memasak makanan lezat setiap hari dan membayar 90% tagihan listrik. Itulah hubungan karang dengan zooxanthellae — teman berbagi yang saling menguntungkan! 🤝</p>
+      </div>
+
+      <h3>🎨 Kenapa Karang Berwarna-warni?</h3>
+      <p>Warna indah terumbu karang sebagian besar berasal dari pigmen dalam zooxanthellae! Karang sendiri sebenarnya transparan — warna merah, coklat, hijau, dan kuning berasal dari ribuan zooxanthellae yang tinggal di dalamnya.</p>
+      <p>Saat karang stres karena suhu air terlalu panas, zooxanthellae meninggalkan polip. Akibatnya karang menjadi <strong>putih pucat</strong> — itulah yang disebut "pemutihan karang" atau <strong>coral bleaching</strong>. Karang bisa mati jika zooxanthellae tidak kembali! ⚠️</p>
+
+      <h3>🐠 Simbiosis Lain di Terumbu Karang</h3>
+      <div class="two-col">
+        <div class="mini-card mini-card-orange">
+          <span class="mini-icon">🐠</span>
+          <strong>Ikan Badut & Anemon</strong>
+          <p>Ikan badut kebal sengatan anemon dan tinggal di sana untuk perlindungan. Anemon mendapat makanan dari sisa makan ikan badut. Sama-sama untung!</p>
+        </div>
+        <div class="mini-card mini-card-teal">
+          <span class="mini-icon">🦐</span>
+          <strong>Udang Pembersih & Ikan Besar</strong>
+          <p>Ikan-ikan besar berbaris di "stasiun kebersihan" karang. Udang kecil membersihkan parasit dari tubuh ikan besar. Ikan dapat bersih, udang dapat makan!</p>
+        </div>
+        <div class="mini-card mini-card-green">
+          <span class="mini-icon">🐢</span>
+          <strong>Penyu & Terumbu Karang</strong>
+          <p>Penyu makan spons yang tumbuh berlebih di atas karang, mencegahnya menutupi karang. Penyu dapat makanan, karang tetap bersih dan sehat!</p>
+        </div>
+        <div class="mini-card mini-card-gold">
+          <span class="mini-icon">🐡</span>
+          <strong>Ikan Parrotfish & Karang</strong>
+          <p>Ikan parrotfish memakan karang mati dan alga, lalu mengeluarkannya sebagai pasir putih! 70% pasir putih pantai tropis berasal dari ikan ini! 😮</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+      <span class="page-indicator">Halaman 5 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(6)">Bahaya yang Mengancam! ⚠️ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 6: BAHAYA ── -->
+  <div class="page" id="page-6">
+    <div class="section-header">
+      <span class="tag">⚠️ Bab Empat</span>
+      <h1>Terumbu Karang<br><span style="color:#ff7043">dalam Bahaya!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Menemukan Sesuatu yang Mengkhawatirkan!</p>
+      <p>"Aslan, Terra Explorer bergerak ke area lain dan... 😢 Di sini terumbu karang warnanya berbeda. Bukan merah, oranye, atau ungu — semuanya putih pucat seperti tulang. Tidak ada ikan berwarna-warni di sana. Sensor mendeteksi suhu air yang lebih tinggi dari normal dan ada sampah plastik tersangkut di antara karang. Ini adalah coral bleaching — pemutihan karang akibat stres. Kita harus tahu apa yang menyebabkannya dan bagaimana membantu! ⚠️"</p>
+    </div>
+
+    <div class="card card-danger">
+      <span class="card-icon">⚠️</span>
+      <h2>Ancaman Serius untuk Terumbu Karang Kita</h2>
+      <p>Terumbu karang yang membutuhkan <strong>jutaan tahun untuk tumbuh</strong> bisa rusak hanya dalam hitungan tahun. Para ilmuwan memperingatkan bahwa 50% terumbu karang di dunia sudah hilang sejak tahun 1950, dan bisa semakin parah jika kita tidak bertindak. Apa saja ancamannya?</p>
+
+      <div style="display:flex;flex-direction:column;gap:12px;margin:20px 0;">
+        <div class="danger-item" style="background:rgba(183,28,28,0.12);border:1px solid rgba(229,57,53,0.25);">
+          <span class="danger-icon">🌡️</span>
+          <div class="danger-content">
+            <strong style="color:#ff8a65;">Pemanasan Global & Coral Bleaching</strong>
+            <p>Ketika suhu air laut naik hanya 1–2°C saja di atas normal, karang menjadi stres dan mengusir zooxanthellae-nya. Karang memutih dan bisa mati jika suhu tidak kembali normal. Ini disebut <strong>coral bleaching</strong>. Akibat perubahan iklim, kejadian ini makin sering terjadi!</p>
+          </div>
+        </div>
+
+        <div style="margin: 4px 0 12px;">
+          <div style="font-size:13px;font-weight:800;margin-bottom:8px;opacity:0.8;">Seberapa Serius Pemutihan Karang di Dunia?</div>
+          <div style="margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800;margin-bottom:4px;"><span>🌡️ 1998 — El Niño Besar</span><span style="color:#ff8a65;">~16% karang dunia mati</span></div>
+            <div class="bleach-bar-wrap"><div class="bleach-bar" style="width:30%;background:linear-gradient(90deg,#e53935,#ff7043);">Kejadian pertama skala besar</div></div>
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800;margin-bottom:4px;"><span>🌡️ 2016 — Pemutihan Masif</span><span style="color:#ff5252;">~50% Great Barrier Reef rusak</span></div>
+            <div class="bleach-bar-wrap"><div class="bleach-bar" style="width:65%;background:linear-gradient(90deg,#c62828,#e53935);">Terparah dalam sejarah saat itu</div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:900;margin-bottom:4px;"><span>🌡️ 2024 — Global Mass Bleaching</span><span style="color:#ff1744;font-family:'Fredoka One',cursive;">60%+ terumbu dunia terdampak!</span></div>
+            <div class="bleach-bar-wrap" style="border-color:rgba(255,23,68,0.3);"><div class="bleach-bar" style="width:100%;background:linear-gradient(90deg,#b71c1c,#d32f2f,#e53935);font-weight:900;">Status Darurat — Terparah Sepanjang Masa 🚨</div></div>
+          </div>
+        </div>
+
+        <div class="danger-item" style="background:rgba(30,30,60,0.3);border:1px solid rgba(100,100,200,0.2);">
+          <span class="danger-icon">🗑️</span>
+          <div class="danger-content">
+            <strong style="color:#90caf9;">Polusi Plastik</strong>
+            <p>Sekitar <strong>11 juta ton sampah plastik</strong> masuk ke laut setiap tahun! Plastik merusak terumbu karang secara fisik — mengiris, menutup, dan menghalangi cahaya. Plastik yang hancur menjadi <strong>mikroplastik</strong> yang termakan makhluk laut dan merusak sistem mereka dari dalam.</p>
+          </div>
+        </div>
+
+        <div class="danger-item" style="background:rgba(40,20,0,0.3);border:1px solid rgba(150,100,50,0.25);">
+          <span class="danger-icon">🎣</span>
+          <div class="danger-content">
+            <strong style="color:#ffcc80;">Penangkapan Ikan Berlebihan & Merusak</strong>
+            <p>Penggunaan bom ikan dan racun sianida untuk menangkap ikan secara ilegal langsung menghancurkan struktur terumbu karang yang dibangun jutaan tahun. Jaring yang ditinggalkan juga melilit dan merusak karang serta membunuh penyu.</p>
+          </div>
+        </div>
+
+        <div class="danger-item" style="background:rgba(0,50,30,0.2);border:1px solid rgba(0,150,100,0.2);">
+          <span class="danger-icon">🏗️</span>
+          <div class="danger-content">
+            <strong style="color:#a5d6a7;">Pembangunan Pantai Tidak Ramah Lingkungan</strong>
+            <p>Sedimen (lumpur dan pasir) dari pembangunan di daratan terbawa ke laut dan menutupi terumbu karang, menghalangi cahaya matahari yang dibutuhkan zooxanthellae untuk berfotosintesis. Air laut yang keruh = karang yang kelaparan.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,112,67,0.08);border:1px solid rgba(255,112,67,0.2);border-radius:16px;padding:16px 20px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">💔 <strong>Fakta Penting:</strong> Karang tumbuh hanya <strong>0,5–2 cm per tahun</strong>. Terumbu karang yang tebalnya 10 cm mungkin sudah berusia <strong>50–100 tahun!</strong> Kerusakan yang terjadi dalam satu musim bisa butuh ratusan tahun untuk pulih — <em>jika</em> ancamannya dihentikan.</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+      <span class="page-indicator">Halaman 6 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(7)">Fakta Keren & Cara Melindungi! 💚 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 7: FAKTA KEREN + AKSI ── -->
+  <div class="page" id="page-7">
+    <div class="section-header">
+      <span class="tag">💚 Bab Lima</span>
+      <h1>Fakta Keren &<br><span style="color:var(--reef-cyan)">Ayo Lindungi Terumbu!</span></h1>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--reef-teal),var(--reef-cyan),var(--reef-gold));">
+      <span class="card-icon">🤯</span>
+      <h2>Fakta-Fakta Keren Terumbu Karang!</h2>
+      <div class="fact-grid">
+        <div class="fact-card">
+          <span class="fact-emoji">🪸</span>
+          <span class="fact-number">0,1%</span>
+          <span class="fact-label">Luas terumbu karang dari seluruh lautan — tapi rumah 25% spesies laut!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">⏳</span>
+          <span class="fact-number">500 juta</span>
+          <span class="fact-label">Tahun karang sudah ada di Bumi — jauh sebelum dinosaurus!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌊</span>
+          <span class="fact-number">1 miliar</span>
+          <span class="fact-label">Manusia bergantung pada terumbu karang untuk pangan dan penghasilan</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🏝️</span>
+          <span class="fact-number">90%</span>
+          <span class="fact-label">Pantai putih tropis yang terbuat dari "kotoran" ikan parrotfish!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🇮🇩</span>
+          <span class="fact-number">51.000 km²</span>
+          <span class="fact-label">Luas terumbu karang Indonesia — terbesar ke-2 di dunia!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">💊</span>
+          <span class="fact-number">50%+</span>
+          <span class="fact-label">Obat kanker dan AIDS modern yang terinspirasi dari organisme terumbu karang</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-protect">
+      <span class="card-icon">💚</span>
+      <h2>Apa yang Bisa Kita Lakukan?</h2>
+      <p>Kabar baiknya: terumbu karang masih bisa diselamatkan! Dan kamu — Aslan — bisa ikut berperan! Berikut cara-cara nyata yang bisa kita lakukan:</p>
+
+      <div style="display:flex;flex-direction:column;gap:12px;margin:16px 0;">
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(46,125,50,0.1);border:1px solid rgba(67,160,71,0.25);border-radius:14px;">
+          <span style="font-size:32px;">🛍️</span>
+          <div><strong>Kurangi Plastik Sekali Pakai</strong><p style="font-size:13px;margin:2px 0 0;opacity:0.8;">Bawa tas belanja sendiri, pakai botol minum isi ulang, hindari sedotan plastik. Setiap plastik yang kamu hindari adalah satu langkah menyelamatkan terumbu!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(46,125,50,0.1);border:1px solid rgba(67,160,71,0.25);border-radius:14px;">
+          <span style="font-size:32px;">💡</span>
+          <div><strong>Hemat Energi di Rumah</strong><p style="font-size:13px;margin:2px 0 0;opacity:0.8;">Matikan lampu saat tidak dipakai, cabut charger yang tidak terpakai. Lebih sedikit energi = lebih sedikit CO₂ = laut tidak memanas = terumbu karang selamat!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(46,125,50,0.1);border:1px solid rgba(67,160,71,0.25);border-radius:14px;">
+          <span style="font-size:32px;">🗣️</span>
+          <div><strong>Sebarkan Pengetahuan!</strong><p style="font-size:13px;margin:2px 0 0;opacity:0.8;">Ceritakan kepada teman dan keluarga tentang pentingnya terumbu karang. Satu orang yang peduli bisa mengajak sepuluh orang lain untuk ikut peduli!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(46,125,50,0.1);border:1px solid rgba(67,160,71,0.25);border-radius:14px;">
+          <span style="font-size:32px;">🌊</span>
+          <div><strong>Jaga Kebersihan Pantai & Sungai</strong><p style="font-size:13px;margin:2px 0 0;opacity:0.8;">Sampah di sungai mengalir ke laut. Jika kamu piknik di pantai atau sungai, pastikan tidak ada sampah yang kamu tinggalkan — bahkan lebih bagus jika memungut sampah orang lain!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(46,125,50,0.1);border:1px solid rgba(67,160,71,0.25);border-radius:14px;">
+          <span style="font-size:32px;">🐟</span>
+          <div><strong>Makan Ikan yang Berkelanjutan</strong><p style="font-size:13px;margin:2px 0 0;opacity:0.8;">Pilih ikan yang ditangkap secara bertanggung jawab. Hindari membeli ikan yang ditangkap dengan cara merusak seperti bom atau racun sianida.</p></div>
+        </div>
+      </div>
+
+      <div style="background:rgba(0,188,212,0.08);border:1px solid rgba(0,188,212,0.22);border-radius:16px;padding:18px 20px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🌟 <strong>Kabar Baik!</strong> Di seluruh dunia, termasuk Indonesia, ilmuwan dan penyelam relawan sedang membangun "taman karang" — menanam fragmen karang baru di area yang rusak. Karang bisa pulih jika ancamannya berkurang! Di Raja Ampat, upaya konservasi sudah menunjukkan hasil luar biasa — karangnya semakin sehat! 💚</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+      <span class="page-indicator">Halaman 7 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(8)">Tantangan Aslan! ⚡ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 8: TANTANGAN + PENUTUP ── -->
+  <div class="page" id="page-8">
+    <div class="section-header">
+      <span class="tag">⚡ Tantangan Aslan</span>
+      <h1>Buktikan Kamu<br>Ahli Biologi Laut! 🪸</h1>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-title">🏆 Misi Terumbu Karang Aslan</div>
+      <p style="font-size:15px;opacity:0.8;margin-bottom:20px;">Kamu sudah menjelajahi keajaiban terumbu karang bersama Terra Explorer! Saatnya membuktikan semangat penjaga terumbu karangmu dengan tantangan-tantangan seru berikut!</p>
+
+      <div class="challenge-item">
+        <div class="challenge-num">1</div>
+        <div>
+          <p><strong>Buat Terumbu Karang Mini!</strong> 🪸 Siapkan wadah plastik atau baskom, isi air, lalu tata berbagai benda yang mewakili terumbu karang: batu-batuan kecil (karang), tanaman plastik (alga), mainan ikan kecil (penghuni), kerang (hewan laut). Buat seseru dan sewarna mungkin! Foto dan tunjukkan kepada orang tua sambil menjelaskan apa itu terumbu karang dan siapa saja penghuninya.</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">2</div>
+        <div>
+          <p><strong>Simulasi Coral Bleaching!</strong> 🌡️ Siapkan segelas air bening. Teteskan beberapa tetes pewarna makanan kuning atau hijau — ini adalah "zooxanthellae" dalam karang. Sekarang tambahkan air panas sedikit demi sedikit sambil mengaduk. Lihat bagaimana warna menyebar dan menghilang? Itulah yang terjadi saat suhu laut naik — zooxanthellae pergi dan karang jadi "putih pucat". Ceritakan penemuanmu kepada keluarga!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">3</div>
+        <div>
+          <p><strong>Kuis Kilat Biologi Laut!</strong> ⚡ Jawab tanpa melihat buku: (a) Karang itu hewan, tumbuhan, atau batu? (b) Apa nama alga kecil yang hidup di dalam karang? (c) Kenapa ikan badut tidak tersengat anemon? (d) Apa itu coral bleaching? (e) Di provinsi mana Indonesia ada Raja Ampat yang punya terumbu karang terindah?</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">4</div>
+        <div>
+          <p><strong>Jadi Seniman Terumbu Karang!</strong> 🎨 Gambar adegan bawah laut di terumbu karang dengan warna-warna cerah! Pastikan ada: minimal 3 jenis ikan berbeda, terumbu karang beraneka warna, penyu atau hiu, dan zooxanthellae (titik-titik kecil di dalam karang). Tuliskan nama setiap makhluk yang kamu gambar. Ini karya senimu sebagai penjaga terumbu karang! 🖌️</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">5</div>
+        <div>
+          <p><strong>Aksi Nyata Minggu Ini!</strong> 🌊 Pilih SATU aksi nyata yang akan kamu lakukan minggu ini: (a) Tidak pakai sedotan plastik sama sekali selama seminggu, ATAU (b) Ajak satu teman atau anggota keluarga untuk tahu tentang bahaya sampah plastik bagi terumbu karang, ATAU (c) Tulis surat pendek kepada terumbu karang berisi janjimu untuk menjaganya. Aksi kecil dari satu anak bisa menginspirasi banyak orang! 💚</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENUTUP -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--reef-teal),var(--reef-cyan),var(--reef-orange),var(--reef-gold));margin-top:32px;">
+      <div class="closing-content">
+        <span class="trophy-big">🪸</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(24px,5vw,36px);margin-bottom:16px;">
+          Luar Biasa, Aslan! 🎉
+        </h2>
+        <p style="font-size:clamp(15px,2.5vw,17px);max-width:500px;margin:0 auto 24px;line-height:1.8;opacity:0.9;">
+          Kamu telah menyelesaikan Hari ke-5 dan menjelajahi keajaiban terumbu karang! Dari polip karang yang kecil hingga ekosistem paling beragam di laut, dari persahabatan zooxanthellae hingga ancaman yang harus kita hadapi bersama. Kamu adalah <strong>Pejuang Terumbu Karang</strong> sejati Indonesia!
+        </p>
+
+        <div class="quote-box" style="max-width:520px;margin:0 auto 28px;">
+          <p>"Terumbu karang adalah harta karun yang tidak ternilai — lebih tua dari peradaban manusia, lebih berwarna dari pelangi mana pun. Menjaganya bukan hanya tugas ilmuwan, tapi tugas setiap anak yang mencintai Bumi ini."</p>
+          <cite>— Untuk Aslan, Pejuang Terumbu Karang Indonesia 🪸</cite>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px;">
+          <span style="background:rgba(0,137,123,0.15);border:1px solid rgba(0,188,212,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🪸 Ahli Terumbu Karang</span>
+          <span style="background:rgba(255,112,67,0.12);border:1px solid rgba(255,112,67,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🐠 Kenalan Hewan Laut</span>
+          <span style="background:rgba(126,87,194,0.12);border:1px solid rgba(126,87,194,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🌿 Master Simbiosis</span>
+          <span style="background:rgba(46,125,50,0.15);border:1px solid rgba(67,160,71,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">💚 Pejuang Lingkungan</span>
+        </div>
+
+        <button class="btn btn-done" onclick="selesaiMembaca()">
+          ✅ Saya Sudah Selesai Membaca!
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(7)">← Kembali</button>
+      <span class="page-indicator">Halaman 8 dari 8</span>
+      <span></span>
+    </div>
+  </div>
+
+</div><!-- end book-container -->
+
+<script>
+  // ── REEF PARTICLES ──
+  const container = document.getElementById('reefParticles');
+  const colors = ['#00bcd4','#69f0ae','#ff7043','#ffd54f','#ff8a65','#26c6da','#ff4081'];
+
+  for (let i = 0; i < 50; i++) {
+    const p = document.createElement('div');
+    p.className = 'rp';
+    const size = Math.random() * 7 + 2;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const isSquare = Math.random() > 0.6;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      bottom:${Math.random()*15}%;
+      background:${color};
+      box-shadow:0 0 ${size*2}px ${color}88;
+      border-radius:${isSquare ? '2px' : '50%'};
+      animation-duration:${5 + Math.random()*9}s;
+      animation-delay:${Math.random()*9}s;
+      opacity:0;
+    `;
+    container.appendChild(p);
+  }
+
+  // ── PAGES ──
+  const TOTAL = 8;
+  let current = 1;
+
+  function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── DARK / LIGHT MODE ──
+  const modeBtn = document.getElementById('modeBtn');
+  let isLight = false;
+  modeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+    modeBtn.textContent = isLight ? '🌙' : '☀️';
+  });
+
+  // ── SELESAI MEMBACA ──
+  function selesaiMembaca() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);
+      z-index:999;display:flex;align-items:center;justify-content:center;
+      padding:20px;animation:fadeUp 0.3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="background:linear-gradient(135deg,#011a14,#022b20);border:2px solid rgba(0,188,212,0.38);border-radius:28px;padding:40px;max-width:440px;width:100%;text-align:center;color:white;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#00bcd4,#69f0ae,#ffd54f,#ff7043);box-shadow:0 0 12px rgba(0,188,212,0.5);"></div>
+        <span style="font-size:80px;display:block;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(0,188,212,0.6));">🪸</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:12px;background:linear-gradient(135deg,#00e5ff,#69f0ae,#ffd54f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Keren Banget, Aslan!</h2>
+        <p style="font-size:16px;line-height:1.8;opacity:0.9;margin-bottom:24px;">Hari ke-5 selesai! 🎉<br>Kamu sudah menjelajahi <strong>keajaiban terumbu karang</strong> — dari polip karang mungil, simbiosis ajaib dengan zooxanthellae, hingga ancaman yang harus kita lawan bersama.<br><br>Kamu kini adalah pejuang terumbu karang Indonesia! 🇮🇩<br>Sampai jumpa di Hari ke-6! 🚀</p>
+        <button onclick="this.closest('div').parentElement.remove()" style="background:linear-gradient(135deg,#00897b,#ff7043);color:white;border:none;padding:14px 32px;border-radius:50px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(0,137,123,0.45);">Mantap! Tutup 🪸</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+  }
+
+  // ── KEYBOARD NAV ──
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(current - 1);
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>

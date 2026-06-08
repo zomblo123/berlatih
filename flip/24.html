@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Flip 24 – Mark Zuckerberg: Membuat Facebook dari Kamar</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        fredoka: ['Fredoka', 'sans-serif'],
+        jakarta: ['Plus Jakarta Sans', 'sans-serif'],
+      },
+      colors: {
+        fb: { blue: '#1877f2', dark: '#0b5ed7', light: '#e7f0fe', mid: '#3b82f6' },
+      }
+    }
+  }
+}
+</script>
+<style>
+  :root {
+    --fb-blue: #1877f2;
+    --fb-dark: #0b5ed7;
+    --fb-light: #e7f0fe;
+    --fb-hover: #166fe5;
+    --fb-bg: #f0f2f5;
+    --text-primary: #050505;
+    --text-secondary: #65676b;
+    --text-tertiary: #90949c;
+    --border: #ced0d4;
+    --card-shadow: 0 1px 2px rgba(0,0,0,0.1), 0 1px 6px rgba(0,0,0,0.08);
+    --card-shadow-hover: 0 4px 20px rgba(24,119,242,0.15), 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--fb-bg);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Top App Bar ── */
+  #app-bar {
+    background: var(--fb-blue);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(24,119,242,0.35);
+  }
+
+  /* ── Story Progress (top of screen) ── */
+  #story-bar {
+    display: flex;
+    gap: 3px;
+    padding: 6px 10px 0;
+    background: var(--fb-blue);
+    flex-shrink: 0;
+  }
+  .story-seg {
+    flex: 1;
+    height: 3px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+    overflow: hidden;
+    transition: background 0.4s ease;
+  }
+  .story-seg.done { background: white; }
+  .story-seg.active { background: rgba(255,255,255,0.7); position: relative; }
+  .story-seg.active::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: white;
+    border-radius: 2px;
+    animation: seg-fill 0.5s ease forwards;
+  }
+  @keyframes seg-fill {
+    from { width: 0%; }
+    to   { width: 100%; }
+  }
+
+  /* ── Scrollable Content Area ── */
+  #feed-area {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── Page / Post Card ── */
+  .post-card {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    padding: 12px 12px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    opacity: 0;
+    transform: translateX(60px) scale(0.97);
+    transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), transform 0.4s cubic-bezier(0.4,0,0.2,1);
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+  .post-card.active {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    pointer-events: all;
+  }
+  .post-card.exit-left {
+    opacity: 0;
+    transform: translateX(-60px) scale(0.97);
+  }
+  .post-card.exit-right {
+    opacity: 0;
+    transform: translateX(60px) scale(0.97);
+  }
+  .post-card::-webkit-scrollbar { width: 3px; }
+  .post-card::-webkit-scrollbar-thumb { background: rgba(24,119,242,0.25); border-radius: 2px; }
+
+  /* ── Post Inner Card ── */
+  .fb-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* ── Card Header (poster info) ── */
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px 10px;
+  }
+  .poster-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1877f2, #42a5f5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(24,119,242,0.3);
+  }
+  .poster-meta { flex: 1; min-width: 0; }
+  .poster-name {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600; font-size: 15px;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+  .poster-time {
+    font-size: 12px; color: var(--text-secondary);
+    display: flex; align-items: center; gap: 4px;
+    margin-top: 1px;
+  }
+  .public-icon { color: var(--fb-blue); }
+
+  /* ── Card Banner ── */
+  .card-banner {
+    width: 100%;
+    padding: 28px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .banner-emoji {
+    font-size: clamp(56px, 12vw, 80px);
+    line-height: 1;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+    animation: float-emoji 3.5s ease-in-out infinite;
+  }
+  @keyframes float-emoji {
+    0%,100% { transform: translateY(0) rotate(-3deg); }
+    50%      { transform: translateY(-10px) rotate(3deg); }
+  }
+  .banner-title {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: clamp(22px, 5vw, 34px);
+    line-height: 1.15;
+    color: white;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  }
+  .banner-subtitle {
+    font-size: clamp(13px, 2.8vw, 15px);
+    color: rgba(255,255,255,0.88);
+    font-weight: 500;
+    max-width: 340px;
+  }
+
+  /* ── Card Body ── */
+  .card-body { padding: 14px 18px 10px; }
+  .card-text {
+    font-size: clamp(14px, 2.5vw, 15.5px);
+    color: var(--text-primary);
+    line-height: 1.75;
+    font-weight: 400;
+  }
+  .card-text strong { color: var(--fb-blue); font-weight: 700; }
+  .card-text em { color: #65676b; font-style: normal; font-size: 0.9em; }
+
+  /* ── Reaction Bar ── */
+  .reaction-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-top: 1px solid #e4e6eb;
+    border-bottom: 1px solid #e4e6eb;
+    margin: 8px 0 0;
+  }
+  .reaction-emoji { font-size: 17px; }
+  .reaction-count {
+    font-size: 13px; color: var(--text-secondary);
+    flex: 1;
+  }
+  .reaction-read { font-size: 12px; color: var(--text-secondary); }
+
+  /* ── Action Row ── */
+  .action-row {
+    display: flex;
+    padding: 4px 8px;
+  }
+  .action-btn {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px;
+    padding: 8px 4px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    user-select: none;
+    border: none; background: none; font-family: inherit;
+  }
+  .action-btn:hover { background: #f2f2f2; }
+  .action-btn.liked { color: var(--fb-blue); }
+  .action-btn svg { width: 20px; height: 20px; }
+
+  /* ── Info Chips ── */
+  .info-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--fb-light);
+    border: 1px solid rgba(24,119,242,0.2);
+    color: var(--fb-dark);
+    font-size: 13px; font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+  }
+  .info-chip:hover {
+    background: var(--fb-blue);
+    color: white;
+    box-shadow: 0 4px 12px rgba(24,119,242,0.3);
+  }
+
+  /* ── Timeline items ── */
+  .timeline-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    position: relative;
+  }
+  .timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 16px; top: 36px; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--fb-blue), transparent);
+    border-radius: 1px;
+  }
+  .tl-dot {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--fb-light);
+    border: 2px solid var(--fb-blue);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 15px;
+    box-shadow: 0 0 0 4px rgba(24,119,242,0.08);
+  }
+  .tl-content { flex: 1; padding-bottom: 8px; }
+  .tl-title {
+    font-weight: 700; font-size: 14px; color: var(--text-primary);
+    font-family: 'Fredoka', sans-serif;
+    font-size: 16px;
+  }
+  .tl-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-top: 2px; }
+
+  /* ── Fact Card (Page 7) ── */
+  .fact-card {
+    background: white;
+    border: 1.5px solid #e4e6eb;
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .fact-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; bottom: 0; width: 4px;
+    background: var(--fb-blue);
+    border-radius: 4px 0 0 4px;
+  }
+  .fact-card.liked-card {
+    border-color: rgba(24,119,242,0.4);
+    background: var(--fb-light);
+    box-shadow: 0 4px 16px rgba(24,119,242,0.15);
+  }
+  .fact-card.liked-card::before { background: var(--fb-blue); }
+  .fact-emoji { font-size: 28px; line-height: 1; flex-shrink: 0; }
+  .fact-text { flex: 1; font-size: 14px; color: var(--text-primary); line-height: 1.6; }
+  .fact-text strong { color: var(--fb-blue); }
+  .fact-like-btn {
+    flex-shrink: 0;
+    display: flex; align-items: center; gap: 4px;
+    background: none; border: 1.5px solid #e4e6eb;
+    border-radius: 20px; padding: 5px 12px;
+    font-size: 12px; font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    font-family: inherit;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+  .fact-like-btn:hover { border-color: var(--fb-blue); color: var(--fb-blue); transform: scale(1.05); }
+  .fact-like-btn.active {
+    background: var(--fb-blue);
+    border-color: var(--fb-blue);
+    color: white;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(24,119,242,0.35);
+  }
+  .fact-like-btn .like-icon { font-size: 14px; }
+
+  /* ── Quote Block ── */
+  .quote-block {
+    border-left: 4px solid var(--fb-blue);
+    background: var(--fb-light);
+    border-radius: 0 12px 12px 0;
+    padding: 14px 16px;
+    margin: 10px 0;
+  }
+  .quote-text {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 17px; font-weight: 500;
+    color: var(--fb-dark);
+    line-height: 1.5;
+  }
+  .quote-attr { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+
+  /* ── Stat Grid ── */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat-box {
+    background: linear-gradient(135deg, var(--fb-light), #dbeafe);
+    border: 1px solid rgba(24,119,242,0.18);
+    border-radius: 14px;
+    padding: 14px 12px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .stat-box:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(24,119,242,0.15); }
+  .stat-num {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 26px; font-weight: 700;
+    color: var(--fb-blue); line-height: 1;
+  }
+  .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; font-weight: 600; }
+
+  /* ── Challenge Item ── */
+  .challenge-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px;
+    background: #fff8f0;
+    border: 1px solid #ffe0b2;
+    border-radius: 12px;
+  }
+  .challenge-item .ci-dot {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #ff9800;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0; margin-top: 1px;
+    color: white; font-weight: 700;
+  }
+
+  /* ── Highlight Pill ── */
+  .highlight-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, #1877f2, #42a5f5);
+    color: white;
+    font-size: 12px; font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 20px;
+    box-shadow: 0 2px 10px rgba(24,119,242,0.3);
+  }
+
+  /* ── Message Card ── */
+  .message-card {
+    background: linear-gradient(135deg, #1877f2 0%, #1565c0 100%);
+    border-radius: 16px; padding: 18px;
+    color: white; position: relative; overflow: hidden;
+  }
+  .message-card::before {
+    content: '💬';
+    position: absolute; right: -8px; top: -8px;
+    font-size: 80px; opacity: 0.08; transform: rotate(-15deg);
+  }
+  .message-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 18px; font-weight: 700; margin-bottom: 8px;
+  }
+  .message-body { font-size: 14px; line-height: 1.7; opacity: 0.95; }
+
+  /* ── Step Item ── */
+  .step-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 14px;
+    background: white;
+    border: 1px solid #e4e6eb;
+    border-radius: 14px;
+    transition: all 0.2s ease;
+  }
+  .step-item:hover { border-color: rgba(24,119,242,0.35); box-shadow: 0 4px 16px rgba(24,119,242,0.08); }
+  .step-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--fb-blue);
+    color: white; font-weight: 700; font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-family: 'Fredoka', sans-serif;
+    box-shadow: 0 3px 10px rgba(24,119,242,0.35);
+  }
+
+  /* ── Bottom Navigation ── */
+  #bottom-nav {
+    flex-shrink: 0;
+    background: white;
+    border-top: 1px solid #e4e6eb;
+    padding: 10px 16px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+  }
+  .nav-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 11px 20px;
+    border-radius: 12px;
+    font-size: 14px; font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .nav-btn:active { transform: scale(0.94); }
+  #btn-prev {
+    background: var(--fb-light);
+    color: var(--fb-blue);
+    border: 1.5px solid rgba(24,119,242,0.25);
+  }
+  #btn-prev:hover:not(:disabled) { background: #d1e4ff; border-color: var(--fb-blue); }
+  #btn-prev:disabled { opacity: 0.3; pointer-events: none; }
+  #btn-next {
+    background: var(--fb-blue);
+    color: white;
+    box-shadow: 0 4px 16px rgba(24,119,242,0.35);
+    flex: 1; justify-content: center;
+    max-width: 220px;
+  }
+  #btn-next:hover:not(:disabled) { background: var(--fb-dark); box-shadow: 0 6px 20px rgba(24,119,242,0.5); }
+  #btn-next:disabled { opacity: 0.3; pointer-events: none; }
+  .page-indicator {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-secondary);
+    text-align: center; white-space: nowrap;
+  }
+
+  /* ── Cover specific ── */
+  .cover-banner {
+    background: linear-gradient(145deg, #1877f2 0%, #0b5ed7 40%, #1565c0 70%, #0d47a1 100%);
+    padding: 40px 20px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-banner::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 40%, rgba(255,255,255,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(0,0,0,0.1) 0%, transparent 50%);
+  }
+  .cover-banner::after {
+    content: 'f';
+    position: absolute; right: -10px; bottom: -20px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 180px; font-weight: 700;
+    color: rgba(255,255,255,0.06);
+    line-height: 1;
+  }
+  .cover-emoji-ring {
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: 2px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 18px;
+    position: relative;
+    animation: float-emoji 4s ease-in-out infinite;
+    box-shadow: 0 0 0 8px rgba(255,255,255,0.06);
+  }
+  .cover-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white; font-size: 11px; font-weight: 600;
+    padding: 5px 14px; border-radius: 20px; letter-spacing: 0.5px;
+    backdrop-filter: blur(8px);
+  }
+
+  /* ── Ending decorations ── */
+  .ending-banner {
+    background: linear-gradient(135deg, #1877f2, #42a5f5, #1877f2);
+    background-size: 200% 200%;
+    animation: gradient-shift 4s ease infinite;
+    padding: 30px 20px; text-align: center;
+  }
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .next-preview {
+    background: white;
+    border: 2px solid var(--fb-light);
+    border-radius: 16px; padding: 16px;
+    display: flex; align-items: center; gap: 14px;
+    transition: all 0.2s ease;
+  }
+  .next-preview:hover { border-color: rgba(24,119,242,0.35); box-shadow: 0 4px 16px rgba(24,119,242,0.1); }
+  .next-icon {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: linear-gradient(135deg, #1877f2, #42a5f5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(24,119,242,0.3);
+  }
+  .ayah-note {
+    background: linear-gradient(135deg, #fff8e1, #fff3e0);
+    border: 1.5px solid #ffe082;
+    border-radius: 16px; padding: 16px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .back-to-lib {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: white;
+    color: var(--fb-blue);
+    border: 2px solid rgba(24,119,242,0.3);
+    border-radius: 14px;
+    padding: 14px 20px;
+    font-size: 15px; font-weight: 700;
+    font-family: 'Fredoka', sans-serif;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: var(--card-shadow);
+  }
+  .back-to-lib:hover { background: var(--fb-blue); color: white; box-shadow: 0 6px 20px rgba(24,119,242,0.3); }
+
+  /* ── Utilities ── */
+  .divider { height: 1px; background: #e4e6eb; margin: 10px 0; }
+  .section-label {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-tertiary); margin-bottom: 8px;
+  }
+  .gap-col { display: flex; flex-direction: column; gap: 10px; }
+
+  /* ── Mobile tweaks ── */
+  @media (max-width: 480px) {
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+    .card-body { padding: 12px 14px 8px; }
+    .cover-banner { padding: 30px 16px 24px; }
+  }
+  @media (min-width: 600px) {
+    .post-card { padding: 16px 20px 12px; }
+    .fb-card { box-shadow: 0 2px 8px rgba(0,0,0,0.1), 0 1px 20px rgba(0,0,0,0.06); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Story Progress Bar ── -->
+<div id="story-bar"></div>
+
+<!-- ── App Bar ── -->
+<div id="app-bar">
+  <div style="display:flex; align-items:center; gap:10px; padding: 10px 14px 12px;">
+    <a href="..\/perpustakaan.html" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;cursor:pointer;text-decoration:none;flex-shrink:0;transition:background 0.15s;" title="Kembali ke Perpustakaan" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </a>
+    <div style="flex:1; min-width:0;">
+      <div style="font-family:'Fredoka',sans-serif; font-size:16px; font-weight:600; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.2;">📚 Ruang Baca Aslan</div>
+      <div style="font-size:11px; color:rgba(255,255,255,0.75); margin-top:1px; letter-spacing:0.3px;">Seri Edukasi #24 · Tokoh Teknologi</div>
+    </div>
+    <div id="page-counter" style="font-family:'Fredoka',sans-serif; font-size:13px; font-weight:600; color:white; background:rgba(255,255,255,0.15); padding:5px 12px; border-radius:20px; flex-shrink:0; border:1px solid rgba(255,255,255,0.2);">1 / 12</div>
+  </div>
+</div>
+
+<!-- ── Feed / Content Area ── -->
+<div id="feed-area">
+
+  <!-- ░░ PAGE 1: COVER ░░ -->
+  <div class="post-card active" id="page-1">
+    <div class="fb-card">
+      <div class="cover-banner">
+        <div class="cover-badge" style="margin-bottom:16px;">
+          <span>📖</span> Flip #24 · Aslan's World
+        </div>
+        <div class="cover-emoji-ring">
+          <span style="font-size:54px;">👨‍💻</span>
+        </div>
+        <div class="banner-title" style="color:white;">Mark Zuckerberg</div>
+        <div style="font-family:'Fredoka',sans-serif; font-size:20px; font-weight:500; color:rgba(255,255,255,0.85); margin:6px 0 10px;">Membuat Facebook dari Kamar</div>
+        <div class="banner-subtitle">Dari kamar kosan jadi menghubungkan dunia 🌍</div>
+        <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:18px;">
+          <span class="info-chip" style="background:rgba(255,255,255,0.15); border-color:rgba(255,255,255,0.3); color:white;">💡 Inovasi</span>
+          <span class="info-chip" style="background:rgba(255,255,255,0.15); border-color:rgba(255,255,255,0.3); color:white;">💻 Coding</span>
+          <span class="info-chip" style="background:rgba(255,255,255,0.15); border-color:rgba(255,255,255,0.3); color:white;">🌐 Sosial Media</span>
+        </div>
+      </div>
+      <div class="card-header">
+        <div class="poster-avatar">📘</div>
+        <div class="poster-meta">
+          <div class="poster-name">Ruang Baca Aslan</div>
+          <div class="poster-time">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="public-icon"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Untuk umum · Seri Edukasi Aslan
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="card-text">Hai <strong>Aslan</strong>! 👋 Selamat datang di Flip #24. Hari ini kita akan berkenalan dengan salah satu tokoh paling berpengaruh di dunia teknologi — <strong>Mark Zuckerberg</strong>, pendiri Facebook! 🚀</p>
+      </div>
+      <div class="reaction-bar">
+        <span class="reaction-emoji">👍</span><span class="reaction-emoji">❤️</span><span class="reaction-emoji">🎉</span>
+        <span class="reaction-count">Aslan dan 3 jutaan pembaca lainnya</span>
+        <span class="reaction-read">12 halaman</span>
+      </div>
+      <div class="action-row">
+        <button class="action-btn" onclick="toggleMainLike(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          Suka
+        </button>
+        <button class="action-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Komentar
+        </button>
+        <button class="action-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Bagikan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 2: PENGENALAN ░░ -->
+  <div class="post-card" id="page-2">
+    <div class="fb-card">
+      <div class="card-header">
+        <div class="poster-avatar">📘</div>
+        <div class="poster-meta">
+          <div class="poster-name">Ruang Baca Aslan</div>
+          <div class="poster-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="public-icon"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Untuk umum · Halaman 2</div>
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg,#1877f2,#2196F3); padding:24px 20px; text-align:center;">
+        <div style="font-size:60px; animation:float-emoji 3s ease-in-out infinite;">📱</div>
+        <div style="font-family:'Fredoka',sans-serif; font-size:22px; font-weight:700; color:white; margin-top:10px;">Kamu Pasti Sudah Tahu!</div>
+      </div>
+      <div class="card-body gap-col" style="margin-top:4px;">
+        <p class="card-text">Hai <strong>Aslan</strong>! Kamu pasti tahu <strong>Facebook</strong> atau <strong>Instagram</strong> kan? Dua aplikasi ini digunakan oleh miliaran orang di seluruh dunia setiap harinya! 🌍</p>
+        <div class="quote-block">
+          <div class="quote-text">"Tapi tahukah kamu... semua itu dibuat oleh seorang anak muda yang memulai semuanya dari <strong>kamar kosannya</strong> saat masih kuliah!"</div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-num">3B+</div>
+            <div class="stat-label">Pengguna Facebook</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">2B+</div>
+            <div class="stat-label">Pengguna Instagram</div>
+          </div>
+        </div>
+        <p class="card-text" style="font-size:13px; color:var(--text-secondary); text-align:center;">📌 Semua ini dimulai oleh satu orang dengan laptop di kamar kos kecil!</p>
+      </div>
+      <div class="reaction-bar"><span class="reaction-emoji">😲</span><span class="reaction-emoji">👍</span><span class="reaction-count">Aslan dan banyak pembaca kagum!</span></div>
+      <div class="action-row">
+        <button class="action-btn" onclick="toggleMainLike(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Suka</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Komentar</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Bagikan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 3: SIAPA MARK ░░ -->
+  <div class="post-card" id="page-3">
+    <div class="fb-card">
+      <div class="card-header">
+        <div class="poster-avatar">👦</div>
+        <div class="poster-meta">
+          <div class="poster-name">Profil: Mark Zuckerberg</div>
+          <div class="poster-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="public-icon"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Untuk umum · Halaman 3</div>
+        </div>
+      </div>
+      <!-- Profile Card -->
+      <div style="background:linear-gradient(180deg, #1877f2 0%, #1877f2 45%, #f0f2f5 45%); padding:0 0 0;">
+        <div style="padding:20px 20px 0; text-align:center;">
+          <div style="width:80px;height:80px;border-radius:50%;background:white;border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto;box-shadow:0 4px 16px rgba(0,0,0,0.15);">👦</div>
+        </div>
+        <div style="background:#f0f2f5; padding:12px 20px 16px; text-align:center;">
+          <div style="font-family:'Fredoka',sans-serif; font-size:22px; font-weight:700; color:#050505;">Mark Elliot Zuckerberg</div>
+          <div style="font-size:13px; color:#65676b; margin-top:2px;">CEO & Co-founder Meta (Facebook)</div>
+          <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-top:10px;">
+            <span class="highlight-pill">🇺🇸 Amerika</span>
+            <span class="highlight-pill">📅 1984</span>
+            <span class="highlight-pill">💻 Programmer</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body gap-col" style="padding-top:16px;">
+        <div class="timeline-item">
+          <div class="tl-dot">🏠</div>
+          <div class="tl-content">
+            <div class="tl-title">Lahir di New York, 1984</div>
+            <div class="tl-desc">Mark lahir di White Plains, New York. Ayahnya seorang dokter gigi, ibunya psikiater.</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-dot">💡</div>
+          <div class="tl-content">
+            <div class="tl-title">Suka Komputer Sejak Kecil</div>
+            <div class="tl-desc">Sejak kecil Mark sudah <strong>sangat suka komputer dan coding</strong>. Di usia 12 tahun, dia sudah membuat program chatting untuk keluarganya!</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-dot">🎓</div>
+          <div class="tl-content">
+            <div class="tl-title">Siswa Jenius</div>
+            <div class="tl-desc">Mark belajar sendiri bahasa pemrograman Atari BASIC, lalu ayahnya menyewa tutor khusus karena melihat bakatnya.</div>
+          </div>
+        </div>
+      </div>
+      <div class="reaction-bar"><span class="reaction-emoji">😮</span><span class="reaction-emoji">👏</span><span class="reaction-count">Keren banget! Mark belajar coding sejak usia 12!</span></div>
+      <div class="action-row">
+        <button class="action-btn" onclick="toggleMainLike(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Suka</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Komentar</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Bagikan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 4: MASA KULIAH ░░ -->
+  <div class="post-card" id="page-4">
+    <div class="fb-card">
+      <div class="card-header">
+        <div class="poster-avatar">🎓</div>
+        <div class="poster-meta">
+          <div class="poster-name">Harvard University Days</div>
+          <div class="poster-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="public-icon"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Untuk umum · Halaman 4</div>
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg, #8B0000, #c62828); padding:26px 20px; text-align:center; position:relative; overflow:hidden;">
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 70% 30%, rgba(255,255,255,0.06),transparent);"></div>
+        <div style="font-size:55px;">🏛️</div>
+        <div style="font-family:'Fredoka',sans-serif; font-size:24px; font-weight:700; color:white; margin-top:8px;">Harvard University</div>
+        <div style="font-size:13px; color:rgba(255,255,255,0.8); margin-top:4px;">Cambridge, Massachusetts — 2002</div>
+      </div>
+      <div class="card-body gap-col" style="padding-top:16px;">
+        <p class="card-text">Saat kuliah di <strong>Universitas Harvard</strong> — salah satu universitas terbaik di dunia — Mark bukan mahasiswa biasa!</p>
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div>
+            <div style="font-weight:700; font-size:14px; color:#050505;">Membuat Program untuk Teman</div>
+            <div style="font-size:13px; color:#65676b; margin-top:3px; line-height:1.55;">Mark sering membuat program kecil-kecilan untuk teman-temannya di Harvard. Salah satunya adalah "CourseMatch" untuk memilih mata kuliah.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div>
+            <div style="font-weight:700; font-size:14px; color:#050505;">Suka Memecahkan Masalah</div>
+            <div style="font-size:13px; color:#65676b; margin-top:3px; line-height:1.55;">Dia selalu melihat masalah di sekitarnya dan berpikir: <em>"Bisakah coding membantu menyelesaikan ini?"</em></div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div>
+            <div style="font-weight:700; font-size:14px; color:#050505;">Proyek Awal "Facemash"</div>
+            <div style="font-size:13px; color:#65676b; margin-top:3px; line-height:1.55;">Sebelum Facebook, Mark membuat "Facemash" — website rating foto mahasiswa Harvard yang langsung viral di kampus!</div>
+          </div>
+        </div>
+        <div class="quote-block">
+          <div class="quote-text">"Dia suka memecahkan masalah dengan coding — inilah sifat seorang programmer sejati! 💻"</div>
+        </div>
+      </div>
+      <div class="reaction-bar"><span class="reaction-emoji">🎓</span><span class="reaction-emoji">💡</span><span class="reaction-count">Mark kuliah di Harvard tapi coding yang paling seru!</span></div>
+      <div class="action-row">
+        <button class="action-btn" onclick="toggleMainLike(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Suka</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Komentar</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Bagikan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 5: IDE AWAL FACEBOOK ░░ -->
+  <div class="post-card" id="page-5">
+    <div class="fb-card">
+      <div class="card-header">
+        <div class="poster-avatar">💡</div>
+        <div class="poster-meta">
+          <div class="poster-name">Kisah Lahirnya Facebook</div>
+          <div class="poster-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="public-icon"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Untuk umum · Halaman 5</div>
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg, #1877f2 0%, #0b5ed7 100%); padding:28px 24px; text-align:center; position:relative; overflow:hidden;">
+        <div style="font-size:56px; animation:float-emoji 3s ease-in-out infinite;">💡</div>
+        <div style="font-family:'Fredoka',sans-serif; font-size:13px; font-weight:600; color:rgba(255,255,255,0.75); letter-spacing:1.5px; text-transform:uppercase; margin-top:8px;">Februari 2004</div>
+        <div style="font-family:'Fredoka',sans-serif; font-size:26px; font-weight:700; color:white; margin-top:4px;">"TheFacebook" Lahir!</div>
+        <div style="font-size:28px; margin-top:10px; letter-spacing:4px;">🛏️ ➡️ 🌐</div>
+      </div>
+      <div class="card-body gap-col" style="padding-top:16px;">
+        <p class="card-text">Awalnya Mark membuat website sederhana bernama <strong>"TheFacebook"</strong> pada Februari 2004. Tujuannya sangat sederhana:</p>
+        <div class="message-card">
+          <div class="message-title">🎯 Tujuan Sederhana Mark</div>
+          <div class="message-body">Menghubungkan mahasiswa di kampus Harvard agar bisa <strong>saling kenal</strong> satu sama lain secara online. Sesederhana itu!</div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-num">1 mg</div>
+            <div class="stat-label">Waktu Buat Website</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">1500</div>
+            <div class="stat-label">Pengguna Pertama</div>
+          </div>
+        </div>
+        <p class="card-text">Dalam waktu <strong>24 jam pertama</strong> saja, sudah ada 1.200–1.500 mahasiswa Harvard yang mendaftar! Mark tahu: <em>idenya berhasil! ✨</em></p>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <span class="info-chip">🛏️ Dari Kamar Kos</span>
+          <span class="info-chip">💻 1 Laptop</span>
+          <span class="info-chip">☕ Banyak Kopi</span>
+        </div>
+      </div>
+      <div class="reaction-bar"><span class="reaction-emoji">🔥</span><span class="reaction-emoji">😮</span><span class="reaction-count">Wow, 1.500 pengguna dalam sehari!</span></div>
+      <div class="action-row">
+        <button class="action-btn" onclick="toggleMainLike(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Suka</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Komentar</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Bagikan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 6: DARI KAMAR KOSAN KE DUNIA ░░ -->
+  <div class="post-card" id="page-6">
+    <div class="fb-card">
+      <div class="card-header">
+        <div class="poster-avatar">🌍</div>
+        <div class="poster-meta">
+          <div class="poster-name">Facebook Goes Global!</div>
+          <div class="poster-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="public-icon"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Untuk umum · Halaman 6</div>
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg, #0d47a1, #1877f2, #42a5f5); padding:26px 20px; text-align:center;">
+        <div style="font-size:48px;">🛏️ → 🏢 → 🌍</div>
+        <div style="font-family:'Fredoka',sans-serif; font-size:20px; font-weight:700; color:white; margin-top:10px;">Dari Kamar Kosan ke Seluruh Dunia</div>
+      </div>
+      <div class="card-body gap-col" style="padding-top:16px;">
+        <div class="timeline-item">
+          <div class="tl-dot">🏫</div>
+          <div class="tl-content">
+            <div class="tl-title">Menyebar ke Universitas Lain</div>
+            <div class="tl-desc">Dalam waktu singkat, Facebook menyebar ke universitas-universitas lain di seluruh Amerika Serikat.</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-dot">🏢</div>
+          <div class="tl-content">
+            <div class="tl-title">Pindah ke Silicon Valley</div>
+            <div class="tl-desc">Mark dan tim kecilnya pindah ke California untuk fokus membangun Facebook secara serius. Dia bahkan tidak menyelesaikan kuliahnya!</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-dot">💰</div>
+          <div class="tl-content">
+            <div class="tl-title">Mendapat Investasi Besar</div>
+            <div class="tl-desc">Investor melihat potensi Facebook dan menggelontorkan jutaan dolar. Facebook terus tumbuh pesat!</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-dot">🌍</div>
+          <div class="tl-content">
+            <div class="tl-title">Menghubungkan Seluruh Dunia</div>
+            <div class="tl-desc">Kini Facebook (Meta) digunakan oleh <strong>lebih dari 3 miliar orang</strong> di seluruh dunia setiap bulannya!</div>
+          </div>
+        </div>
+      </div>
+      <div class="reaction-bar"><span class="reaction-emoji">🚀</span><span class="reaction-emoji">🌍</span><span class="reaction-count">Perjalanan luar biasa dari kamar kos!</span></div>
+      <div class="action-row">
+        <button class="action-btn" onclick="toggleMainLike(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Suka</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Komentar</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Bagikan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 7: FAKTA KEREN (INTERACTIVE) ░░ -->
+  <div class="post-card" id="page-7">
+    <div class="fb-card">
+      <div class="card-header">
+        <div class="poster-avatar">⭐</div>
+        <div class="poster-meta">
+          <div class="poster-name">Fakta Keren — Ketuk 👍 untuk Like!</div>
+          <div class="poster-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="public-icon"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Untuk umum · Halaman 7 · Interaktif!</div>
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg, #f9a825, #ffa000); padding:20px; text-align:center;">
+        <div style="font-size:50px; animation:float-emoji 3s ease-in-out infinite;">⭐</div>
+        <div style="font-family:'Fredoka',sans-serif; font-size:22px; font-weight:700; color:white; margin-top:8px;">Fakta Keren tentang Mark!</div>
+        <div style="font-size:13px; color:rgba(255,255,255,0.85); margin-top:4px;">Tekan tombol 👍 di setiap fakta yang kamu suka, Aslan!</div>
+      </div>
+      <div class="card-body gap-col" style="padding-top:14px;">
+        <div class="fact-card" id="fact-1">
+          <div class="fact-emoji">🧑</div>
+          <div class="fact-text">Mark membuat Facebook saat berusia <strong>19 tahun</strong> — saat kamu berusia 19 tahun, kamu bisa membuat apa?</div>
+          <button class="fact-like-btn" onclick="toggleFactLike(this,'fact-1')"><span class="like-icon">👍</span> <span class="like-label">Suka!</span></button>
+        </div>
+        <div class="fact-card" id="fact-2">
+          <div class="fact-emoji">🎓</div>
+          <div class="fact-text">Mark <strong>drop out (keluar)</strong> dari Harvard — universitas terbaik dunia — hanya untuk fokus mengembangkan Facebook!</div>
+          <button class="fact-like-btn" onclick="toggleFactLike(this,'fact-2')"><span class="like-icon">👍</span> <span class="like-label">Suka!</span></button>
+        </div>
+        <div class="fact-card" id="fact-3">
+          <div class="fact-emoji">📱</div>
+          <div class="fact-text">Sekarang Facebook (Meta) juga memiliki <strong>Instagram</strong> dan <strong>WhatsApp</strong> — dua aplikasi yang mungkin kamu gunakan setiap hari!</div>
+          <button class="fact-like-btn" onclick="toggleFactLike(this,'fact-3')"><span class="like-icon">👍</span> <span class="like-label">Suka!</span></button>
+        </div>
+        <div class="fact-card" id="fact-4">
+          <div class="fact-emoji">💰</div>
+          <div class="fact-text">Mark adalah salah satu <strong>miliarder termuda</strong> dalam sejarah. Kekayaannya dibangun dari coding dan ide sederhana!</div>
+          <button class="fact-like-btn" onclick="toggleFactLike(this,'fact-4')"><span class="like-icon">👍</span> <span class="like-label">Suka!</span></button>
+        </div>
+        <div id="like-tally" style="text-align:center; font-size:13px; color:#65676b; padding:6px; display:none;">
+          🎉 <strong>Aslan</strong> sudah menyukai <span id="like-count">0</span> fakta!
+        </div>
+      </div>
+      <div class="reaction-bar"><span class="reaction-emoji">⭐</span><span class="reaction-emoji">🤩</span><span class="reaction-count">Fakta mana yang paling keren menurut Aslan?</span></div>
+      <div class="action-row">
+        <button class="action-btn" onclick="toggleMainLike(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Suka Semua</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Komentar</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Bagikan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 8: TANTANGAN ░░ -->
+  <div class="post-card" id="page-8">
+    <div class="fb-card">
+      <div class="card-header">
+        <div class="poster-avatar">⚡</div>
+        <div class="poster-meta">
+          <div class="poster-name">Tantangan yang Dihadapi Mark</div>
+          <div class="poster-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="public-icon"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Untuk umum · Halaman 8</div>
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg, #b71c1c, #e53935); padding:24px 20px; text-align:center;">
+        <div style="font-size:54px; animation:float-emoji 3s ease-in-out infinite;">💪</div>
+        <div style="font-family:'Fredoka',sans-serif; font-size:22px; font-weight:700; color:white; margin-top:8px;">Jalan Sukses Tidak Selalu Mulus</div>
+      </div>
+      <div class="card-body gap-col" style="padding-top:14px;">
+        <p class="card-text">Perjalanan Mark tidak selalu mudah. Ada banyak tantangan yang harus dia hadapi:</p>
+        <div class="challenge-item">
+          <div class="ci-dot">1</div>
+          <div>
+            <div style="font-weight:700; font-size:14px; color:#050505; margin-bottom:3px;">Diragukan Banyak Orang</div>
+            <div style="font-size:13px; color:#65676b; line-height:1.55;">Banyak orang tidak percaya bahwa ide sederhana Mark bisa menjadi besar. Mereka bilang "tidak mungkin berhasil".</div>
+          </div>
+        </div>
+        <div class="challenge-item">
+          <div class="ci-dot">2</div>
+          <div>
+            <div style="font-weight:700; font-size:14px; color:#050505; margin-bottom:3px;">Masalah Hukum & Persaingan</div>
+            <div style="font-size:13px; color:#65676b; line-height:1.55;">Seiring Facebook semakin besar, banyak masalah hukum muncul, termasuk persengketaan tentang siapa yang benar-benar menciptakan Facebook.</div>
+          </div>
+        </div>
+        <div class="challenge-item">
+          <div class="ci-dot">3</div>
+          <div>
+            <div style="font-weight:700; font-size:14px; color:#050505; margin-bottom:3px;">Masalah Privasi & Keamanan</div>
+            <div style="font-size:13px; color:#65676b; line-height:1.55;">Facebook pernah menghadapi masalah besar soal privasi data pengguna dan harus tampil di sidang di Kongres Amerika.</div>
+          </div>
+        </div>
+        <div class="quote-block">
+          <div class="quote-text">Tapi Mark terus <strong>belajar, memperbaiki</strong>, dan membuat Facebook lebih baik setiap harinya! 💪</div>
+          <div class="quote-attr">— Inilah sikap seorang pemimpin yang hebat</div>
+        </div>
+      </div>
+      <div class="reaction-bar"><span class="reaction-emoji">💪</span><span class="reaction-emoji">🔥</span><span class="reaction-count">Tantangan tidak menghentikan Mark!</span></div>
+      <div class="action-row">
+        <button class="action-btn" onclick="toggleMainLike(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Suka</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Komentar</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Bagikan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 9: VISI MARK ░░ -->
+  <div class="post-card" id="page-9">
+    <div class="fb-card">
+      <div class="card-header">
+        <div class="poster-avatar">🔭</div>
+        <div class="poster-meta">
+          <div class="poster-name">Visi Besar Mark Zuckerberg</div>
+          <div class="poster-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="public-icon"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Untuk umum · Halaman 9</div>
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg, #1a237e, #1877f2, #42a5f5); padding:28px 24px; text-align:center; position:relative; overflow:hidden;">
+        <div style="font-size:60px; animation:float-emoji 4s ease-in-out infinite;">🌐</div>
+        <div style="font-family:'Fredoka',sans-serif; font-size:24px; font-weight:700; color:white; margin-top:10px;">Visi yang Mengubah Dunia</div>
+        <div style="font-size:40px; margin-top:12px; opacity:0.3; letter-spacing:6px;">·····</div>
+      </div>
+      <div class="card-body gap-col" style="padding-top:16px;">
+        <div class="message-card" style="background:linear-gradient(135deg, #1a237e, #1877f2);">
+          <div class="message-title">💬 Kata Mark Sendiri</div>
+          <div class="message-body">"Misi kami adalah untuk memberi orang-orang kekuatan untuk membangun komunitas dan mendekatkan dunia."</div>
+        </div>
+        <p class="card-text">Mark percaya bahwa <strong>dunia akan lebih baik</strong> jika orang-orang saling terhubung. Itulah kenapa dia terus bekerja keras untuk membuat platform yang menghubungkan <strong>semua orang di planet ini</strong>.</p>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-num">200+</div>
+            <div class="stat-label">Negara Pengguna</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">100+</div>
+            <div class="stat-label">Bahasa Tersedia</div>
+          </div>
+        </div>
+        <div style="background:#e8f4fd; border-radius:14px; padding:14px 16px; border-left:4px solid #1877f2;">
+          <div style="font-family:'Fredoka',sans-serif; font-size:15px; font-weight:600; color:#1877f2; margin-bottom:6px;">🔭 Visi Masa Depan: Metaverse</div>
+          <div style="font-size:13px; color:#65676b; line-height:1.6;">Mark kini sedang membangun <strong>Metaverse</strong> — dunia virtual yang memungkinkan orang berkomunikasi seperti bertemu langsung, tapi dari rumah masing-masing!</div>
+        </div>
+      </div>
+      <div class="reaction-bar"><span class="reaction-emoji">🌐</span><span class="reaction-emoji">🚀</span><span class="reaction-count">Visi Mark sungguh luar biasa!</span></div>
+      <div class="action-row">
+        <button class="action-btn" onclick="toggleMainLike(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Suka</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Komentar</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Bagikan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 10: PESAN UNTUK ANAK-ANAK ░░ -->
+  <div class="post-card" id="page-10">
+    <div class="fb-card">
+      <div class="card-header">
+        <div class="poster-avatar" style="background:linear-gradient(135deg,#ff9800,#f57c00);">🌟</div>
+        <div class="poster-meta">
+          <div class="poster-name">Pesan untuk Aslan & Teman-teman</div>
+          <div class="poster-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="public-icon"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Untuk umum · Halaman 10</div>
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg, #e65100, #ff9800, #ffc107); padding:28px 20px; text-align:center;">
+        <div style="font-size:56px; animation:float-emoji 3.5s ease-in-out infinite;">🌟</div>
+        <div style="font-family:'Fredoka',sans-serif; font-size:24px; font-weight:700; color:white; margin-top:8px;">Kamu Bisa Melakukannya!</div>
+      </div>
+      <div class="card-body gap-col" style="padding-top:16px;">
+        <div class="message-card" style="background:linear-gradient(135deg, #e65100, #ff9800);">
+          <div class="message-title">💌 Pesan Khusus untuk Aslan</div>
+          <div class="message-body">Kamu <strong>tidak perlu menunggu dewasa</strong> untuk membuat sesuatu yang besar. Mark memulai Facebook di usia 19 tahun — dan kamu sudah mulai belajar sekarang!</div>
+        </div>
+        <div class="quote-block" style="border-color:#ff9800; background:#fff8e1;">
+          <div class="quote-text" style="color:#e65100;">"Mulai dari yang kecil di kamar kamu, seperti Mark yang mulai dari kamar kosannya."</div>
+          <div class="quote-attr">— Pelajaran dari kisah Mark Zuckerberg</div>
+        </div>
+        <div class="gap-col">
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#f3f4f6;border-radius:12px;">
+            <span style="font-size:22px;flex-shrink:0;">🛏️</span>
+            <div style="font-size:13.5px;color:#050505;line-height:1.6;"><strong>Mulai dari kamar kamu.</strong> Kamu tidak butuh kantor besar atau modal jutaan. Cukup laptop dan semangat!</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#f3f4f6;border-radius:12px;">
+            <span style="font-size:22px;flex-shrink:0;">💡</span>
+            <div style="font-size:13.5px;color:#050505;line-height:1.6;"><strong>Selesaikan masalah nyata.</strong> Facebook lahir karena Mark melihat masalah nyata dan mencari solusinya.</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#f3f4f6;border-radius:12px;">
+            <span style="font-size:22px;flex-shrink:0;">🔄</span>
+            <div style="font-size:13.5px;color:#050505;line-height:1.6;"><strong>Terus perbaiki.</strong> Tidak ada yang sempurna dari awal. Mark terus memperbarui Facebook hingga hari ini!</div>
+          </div>
+        </div>
+      </div>
+      <div class="reaction-bar"><span class="reaction-emoji">💪</span><span class="reaction-emoji">🌟</span><span class="reaction-count">Aslan bisa menjadi kreator teknologi berikutnya!</span></div>
+      <div class="action-row">
+        <button class="action-btn" onclick="toggleMainLike(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Suka</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Komentar</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Bagikan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 11: PESAN PENTING ░░ -->
+  <div class="post-card" id="page-11">
+    <div class="fb-card">
+      <div class="card-header">
+        <div class="poster-avatar" style="background:linear-gradient(135deg,#2e7d32,#43a047);">💚</div>
+        <div class="poster-meta">
+          <div class="poster-name">Pesan Penting dari Flipbook Ini</div>
+          <div class="poster-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="public-icon"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Untuk umum · Halaman 11</div>
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg, #1b5e20, #2e7d32, #43a047); padding:26px 22px; text-align:center;">
+        <div style="font-size:54px; animation:float-emoji 3s ease-in-out infinite;">🔑</div>
+        <div style="font-family:'Fredoka',sans-serif; font-size:22px; font-weight:700; color:white; margin-top:8px;">Kunci Keberhasilan Mark</div>
+      </div>
+      <div class="card-body gap-col" style="padding-top:16px;">
+        <p class="card-text"><strong>Facebook lahir dari coding dan ide sederhana.</strong> Ini membuktikan bahwa <strong>satu ide + coding</strong> bisa mengubah cara dunia berkomunikasi! 🌍</p>
+        <div style="display:grid; grid-template-columns:1fr; gap:8px;">
+          <div style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:linear-gradient(135deg,#e8f5e9,#f1f8e9); border-radius:12px; border-left:4px solid #43a047;">
+            <span style="font-size:24px;">💻</span>
+            <div>
+              <div style="font-weight:700; font-size:14px; color:#1b5e20;">Coding adalah Kuncinya</div>
+              <div style="font-size:12.5px; color:#65676b; margin-top:2px;">Tanpa coding, tidak ada Facebook, Instagram, atau WhatsApp.</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:linear-gradient(135deg,#e8f5e9,#f1f8e9); border-radius:12px; border-left:4px solid #43a047;">
+            <span style="font-size:24px;">💡</span>
+            <div>
+              <div style="font-weight:700; font-size:14px; color:#1b5e20;">Ide Tidak Perlu Sempurna</div>
+              <div style="font-size:12.5px; color:#65676b; margin-top:2px;">Facebook awalnya sangat sederhana. Yang penting: mulai!</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:linear-gradient(135deg,#e8f5e9,#f1f8e9); border-radius:12px; border-left:4px solid #43a047;">
+            <span style="font-size:24px;">🤝</span>
+            <div>
+              <div style="font-weight:700; font-size:14px; color:#1b5e20;">Bangun Tim yang Solid</div>
+              <div style="font-size:12.5px; color:#65676b; margin-top:2px;">Mark tidak sendirian. Dia memiliki teman-teman yang mendukungnya.</div>
+            </div>
+          </div>
+        </div>
+        <div class="message-card" style="background:linear-gradient(135deg, #1b5e20, #2e7d32);">
+          <div class="message-title">🌍 Dampak Nyata</div>
+          <div class="message-body">Satu ide + satu orang dengan coding skills bisa mengubah cara <strong>3 miliar manusia</strong> berkomunikasi. Bayangkan apa yang bisa kamu buat, <strong>Aslan!</strong></div>
+        </div>
+      </div>
+      <div class="reaction-bar"><span class="reaction-emoji">🔑</span><span class="reaction-emoji">💚</span><span class="reaction-count">Coding + Ide = Mengubah Dunia!</span></div>
+      <div class="action-row">
+        <button class="action-btn" onclick="toggleMainLike(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Suka</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Komentar</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Bagikan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ PAGE 12: ENDING ░░ -->
+  <div class="post-card" id="page-12">
+    <div class="fb-card">
+      <div class="ending-banner">
+        <div style="font-size:60px; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2));">🎉</div>
+        <div style="font-family:'Fredoka',sans-serif; font-size:26px; font-weight:700; color:white; margin-top:12px;">Selamat, Aslan!</div>
+        <div style="font-size:14px; color:rgba(255,255,255,0.9); margin-top:6px; max-width:320px; margin-inline:auto;">Kamu sudah mengenal Mark Zuckerberg — anak yang mengubah cara dunia berkomunikasi! 🌍</div>
+      </div>
+      <div class="card-body gap-col" style="padding-top:16px;">
+        <!-- Summary chips -->
+        <div style="display:flex; flex-wrap:wrap; gap:7px; justify-content:center;">
+          <span class="info-chip">👦 19 Tahun</span>
+          <span class="info-chip">🛏️ Dari Kamar Kos</span>
+          <span class="info-chip">💻 Coding</span>
+          <span class="info-chip">🌍 3 Miliar User</span>
+        </div>
+        <div class="divider"></div>
+        <!-- Next chapter -->
+        <div class="section-label">Flipbook Selanjutnya →</div>
+        <div class="next-preview">
+          <div class="next-icon">🍎</div>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif; font-weight:700; font-size:16px; color:#050505;">Bab 25 · Steve Jobs</div>
+            <div style="font-size:13px; color:#65676b; margin-top:2px;">Pria yang Membuat HP Impian</div>
+            <div style="display:inline-flex; align-items:center; gap:4px; margin-top:6px; font-size:11px; font-weight:600; color:var(--fb-blue);">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Segera hadir!
+            </div>
+          </div>
+        </div>
+        <!-- Ayah note -->
+        <div class="ayah-note">
+          <span style="font-size:24px; flex-shrink:0;">👨‍💼</span>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif; font-weight:700; font-size:15px; color:#050505; margin-bottom:4px;">Pesan dari Ayah Sigit 💙</div>
+            <div style="font-size:13px; color:#65676b; line-height:1.65;">Kalau ada yang ingin ditanyakan tentang Mark Zuckerberg, Facebook, atau coding — <strong>tanya saja ke Ayah Sigit ya!</strong> Ayah siap jelasin dengan senang hati! 😊</div>
+          </div>
+        </div>
+        <!-- Back button -->
+        <a href="..\/perpustakaan.html" class="back-to-lib">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Kembali ke Perpustakaan
+        </a>
+      </div>
+      <div class="reaction-bar"><span class="reaction-emoji">🎉</span><span class="reaction-emoji">❤️</span><span class="reaction-emoji">👏</span><span class="reaction-count">Aslan suka flipbook ini!</span></div>
+      <div class="action-row">
+        <button class="action-btn" onclick="toggleMainLike(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Suka</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Komentar</button>
+        <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Bagikan</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end feed-area -->
+
+<!-- ── Bottom Navigation ── -->
+<div id="bottom-nav">
+  <button class="nav-btn" id="btn-prev" onclick="goPage(-1)" disabled>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    Sebelumnya
+  </button>
+  <div class="page-indicator" id="page-indicator">1 / 12</div>
+  <button class="nav-btn" id="btn-next" onclick="goPage(1)">
+    Selanjutnya
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+  </button>
+</div>
+
+<script>
+const TOTAL = 12;
+let current = 1;
+let busy = false;
+
+// Build story segments
+const storyBar = document.getElementById('story-bar');
+for (let i = 1; i <= TOTAL; i++) {
+  const seg = document.createElement('div');
+  seg.className = 'story-seg' + (i === 1 ? ' active' : '');
+  seg.id = 'seg-' + i;
+  storyBar.appendChild(seg);
+}
+
+function updateUI() {
+  // Counter
+  document.getElementById('page-counter').textContent = current + ' / ' + TOTAL;
+  document.getElementById('page-indicator').textContent = current + ' / ' + TOTAL;
+
+  // Buttons
+  document.getElementById('btn-prev').disabled = current === 1;
+  document.getElementById('btn-next').disabled = current === TOTAL;
+
+  // Story segments
+  for (let i = 1; i <= TOTAL; i++) {
+    const seg = document.getElementById('seg-' + i);
+    seg.className = 'story-seg' + (i < current ? ' done' : i === current ? ' active' : '');
+  }
+}
+
+function goPage(dir) {
+  if (busy) return;
+  const target = current + dir;
+  if (target < 1 || target > TOTAL) return;
+  busy = true;
+
+  const cur = document.getElementById('page-' + current);
+  const nxt = document.getElementById('page-' + target);
+
+  // Determine direction
+  const exitClass = dir > 0 ? 'exit-left' : 'exit-right';
+  const enterDir  = dir > 0 ? 60 : -60;
+
+  // Animate out
+  cur.classList.add(exitClass);
+
+  // Prepare next (hidden, offset)
+  nxt.style.transform = `translateX(${enterDir}px) scale(0.97)`;
+  nxt.style.opacity = '0';
+  nxt.style.transition = 'none';
+  nxt.classList.add('active');
+
+  // Scroll to top for next page
+  nxt.scrollTop = 0;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      nxt.style.transition = '';
+      nxt.style.transform = '';
+      nxt.style.opacity = '';
+
+      setTimeout(() => {
+        cur.classList.remove('active', 'exit-left', 'exit-right');
+        cur.style.transform = '';
+        cur.style.opacity = '';
+        cur.style.transition = '';
+        current = target;
+        updateUI();
+        busy = false;
+      }, 420);
+    });
+  });
+}
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(-1);
+});
+
+// Swipe support
+let touchX = 0, touchY = 0;
+document.getElementById('feed-area').addEventListener('touchstart', e => {
+  touchX = e.touches[0].clientX;
+  touchY = e.touches[0].clientY;
+}, { passive: true });
+document.getElementById('feed-area').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchX;
+  const dy = e.changedTouches[0].clientY - touchY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+    goPage(dx < 0 ? 1 : -1);
+  }
+}, { passive: true });
+
+// ── Like buttons (page-level) ──
+function toggleMainLike(btn) {
+  btn.classList.toggle('liked');
+  if (btn.classList.contains('liked')) {
+    btn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="#1877f2" stroke="#1877f2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+      Disukai!`;
+    btn.style.color = '#1877f2';
+  } else {
+    btn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+      Suka`;
+    btn.style.color = '';
+  }
+}
+
+// ── Fact Like buttons (page 7) ──
+let factLikes = new Set();
+function toggleFactLike(btn, factId) {
+  const card = document.getElementById(factId);
+  const label = btn.querySelector('.like-label');
+
+  if (factLikes.has(factId)) {
+    factLikes.delete(factId);
+    btn.classList.remove('active');
+    card.classList.remove('liked-card');
+    label.textContent = 'Suka!';
+    btn.querySelector('.like-icon').textContent = '👍';
+  } else {
+    factLikes.add(factId);
+    btn.classList.add('active');
+    card.classList.add('liked-card');
+    label.textContent = 'Disukai!';
+    btn.querySelector('.like-icon').textContent = '💙';
+
+    // Bounce animation
+    btn.style.transform = 'scale(1.18)';
+    setTimeout(() => { btn.style.transform = ''; }, 250);
+  }
+
+  // Update tally
+  const tally = document.getElementById('like-tally');
+  const count = document.getElementById('like-count');
+  count.textContent = factLikes.size;
+  tally.style.display = factLikes.size > 0 ? 'block' : 'none';
+}
+
+updateUI();
+</script>
+</body>
+</html>

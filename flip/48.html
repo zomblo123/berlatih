@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 18: Speaker dan Microphone – Telinga & Mulut Komputer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #5ec8f2;
+    --mint: #3dd9b3;
+    --sun: #ffd43b;
+    --orange: #ff8c42;
+    --pink: #ff6b9d;
+    --purple: #a78bfa;
+    --bg: #f0f9ff;
+    --card: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(94,200,242,0.15) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(167,139,250,0.15) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(255,212,59,0.08) 0%, transparent 60%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, .display { font-family: 'Fredoka One', cursive; }
+
+  /* Stars background */
+  .stars-bg::before {
+    content: '🎵 🎶 🎤 🔊 🎵 🎶 🎤 🔊 🎵 🎶';
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    font-size: 1.2rem;
+    opacity: 0.06;
+    letter-spacing: 3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Header gradient */
+  .header-grad {
+    background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 40%, #a855f7 70%, #ec4899 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .header-grad::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+    pointer-events: none;
+  }
+
+  /* Floating music notes */
+  .note {
+    position: absolute;
+    opacity: 0.25;
+    animation: floatNote 8s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .note2 { animation-delay: -4s; animation-duration: 11s; }
+  .note3 { animation-delay: -2s; animation-duration: 9s; }
+  @keyframes floatNote {
+    0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
+    50% { transform: translateX(12px) translateY(-15px) rotate(10deg); }
+  }
+
+  /* Aslan bounce */
+  .aslan-bounce { animation: bounce 2s ease-in-out infinite; }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* Speech bubble */
+  .speech-bubble {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    border: 3px solid var(--purple);
+    box-shadow: 4px 4px 0px var(--purple);
+  }
+  .speech-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -22px;
+    left: 30px;
+    border: 12px solid transparent;
+    border-top-color: var(--purple);
+  }
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 33px;
+    border: 10px solid transparent;
+    border-top-color: white;
+  }
+
+  /* Component cards */
+  .comp-card {
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 3px solid transparent;
+    position: relative;
+    z-index: 1;
+  }
+  .comp-card:hover { transform: scale(1.06) translateY(-4px); z-index: 10; }
+
+  .glow-speaker:hover {
+    box-shadow: 0 0 30px rgba(167,139,250,0.6);
+    border-color: var(--purple) !important;
+  }
+  .glow-mic:hover {
+    box-shadow: 0 0 30px rgba(255,107,157,0.6);
+    border-color: var(--pink) !important;
+  }
+
+  /* Speaker vibrate animation */
+  @keyframes speakerVibrate {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    10% { transform: scale(1.08) rotate(-2deg); }
+    20% { transform: scale(1.12) rotate(2deg); }
+    30% { transform: scale(1.08) rotate(-1deg); }
+    40% { transform: scale(1.1) rotate(1deg); }
+    50% { transform: scale(1.06) rotate(-2deg); }
+    60% { transform: scale(1.1) rotate(2deg); }
+    70% { transform: scale(1.08) rotate(-1deg); }
+    80% { transform: scale(1.06) rotate(1deg); }
+    90% { transform: scale(1.04) rotate(0deg); }
+  }
+  .speaker-playing { animation: speakerVibrate 0.15s ease-in-out infinite; }
+
+  /* Mic recording pulse */
+  @keyframes micPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,107,157,0.7); }
+    50% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(255,107,157,0); }
+  }
+  .mic-recording { animation: micPulse 1s ease-in-out infinite; }
+
+  /* Equalizer bars */
+  .eq-bar {
+    display: inline-block;
+    width: 8px;
+    border-radius: 4px 4px 0 0;
+    background: linear-gradient(to top, #7c3aed, #ec4899);
+    transition: height 0.1s ease;
+  }
+  @keyframes eqAnim1 { 0%,100%{height:8px} 25%{height:40px} 50%{height:20px} 75%{height:35px} }
+  @keyframes eqAnim2 { 0%,100%{height:20px} 25%{height:10px} 50%{height:45px} 75%{height:15px} }
+  @keyframes eqAnim3 { 0%,100%{height:35px} 25%{height:20px} 50%{height:8px} 75%{height:42px} }
+  @keyframes eqAnim4 { 0%,100%{height:15px} 25%{height:38px} 50%{height:28px} 75%{height:10px} }
+  @keyframes eqAnim5 { 0%,100%{height:28px} 25%{height:15px} 50%{height:42px} 75%{height:22px} }
+  @keyframes eqAnim6 { 0%,100%{height:10px} 25%{height:30px} 50%{height:18px} 75%{height:40px} }
+  @keyframes eqAnim7 { 0%,100%{height:38px} 25%{height:8px} 50%{height:30px} 75%{height:14px} }
+  .eq-active .eq-bar:nth-child(1) { animation: eqAnim1 0.4s ease-in-out infinite; }
+  .eq-active .eq-bar:nth-child(2) { animation: eqAnim2 0.5s ease-in-out infinite; }
+  .eq-active .eq-bar:nth-child(3) { animation: eqAnim3 0.35s ease-in-out infinite; }
+  .eq-active .eq-bar:nth-child(4) { animation: eqAnim4 0.45s ease-in-out infinite; }
+  .eq-active .eq-bar:nth-child(5) { animation: eqAnim5 0.38s ease-in-out infinite; }
+  .eq-active .eq-bar:nth-child(6) { animation: eqAnim6 0.42s ease-in-out infinite; }
+  .eq-active .eq-bar:nth-child(7) { animation: eqAnim7 0.48s ease-in-out infinite; }
+
+  /* Sound waves animation */
+  @keyframes soundWave {
+    0% { transform: scale(0.8); opacity: 1; }
+    100% { transform: scale(2.5); opacity: 0; }
+  }
+  .sound-wave {
+    position: absolute;
+    border-radius: 50%;
+    border: 3px solid var(--purple);
+    animation: soundWave 1.5s ease-out infinite;
+  }
+  .sound-wave:nth-child(2) { animation-delay: 0.5s; border-color: var(--pink); }
+  .sound-wave:nth-child(3) { animation-delay: 1s; border-color: var(--sky); }
+
+  /* Mic wave animation */
+  @keyframes micWave {
+    0% { transform: scaleX(0); opacity: 1; }
+    100% { transform: scaleX(1); opacity: 0; }
+  }
+
+  /* Big button */
+  .btn-magic {
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2.5rem;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #5b21b6, 0 8px 20px rgba(124,58,237,0.4);
+    transition: all 0.15s ease;
+    letter-spacing: 0.5px;
+  }
+  .btn-magic:hover { transform: translateY(-3px); box-shadow: 0 9px 0 #5b21b6, 0 12px 28px rgba(124,58,237,0.5); }
+  .btn-magic:active { transform: translateY(3px); box-shadow: 0 3px 0 #5b21b6; }
+
+  .btn-speaker {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.85rem 2rem;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #5b21b6, 0 6px 16px rgba(124,58,237,0.4);
+    transition: all 0.15s ease;
+  }
+  .btn-speaker:hover { transform: translateY(-2px); }
+  .btn-speaker:active { transform: translateY(2px); box-shadow: 0 2px 0 #5b21b6; }
+
+  .btn-mic {
+    background: linear-gradient(135deg, #ec4899, #f97316);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.85rem 2rem;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #be185d, 0 6px 16px rgba(236,72,153,0.4);
+    transition: all 0.15s ease;
+  }
+  .btn-mic:hover { transform: translateY(-2px); }
+  .btn-mic:active { transform: translateY(2px); box-shadow: 0 2px 0 #be185d; }
+
+  .btn-next {
+    background: linear-gradient(135deg, #3dd9b3, #0ea5e9);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.9rem 2.2rem;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.15rem;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #0e7490, 0 7px 18px rgba(14,165,233,0.4);
+    transition: all 0.15s ease;
+  }
+  .btn-next:hover { transform: translateY(-3px); }
+  .btn-next:active { transform: translateY(3px); box-shadow: 0 2px 0 #0e7490; }
+
+  .btn-prev {
+    background: linear-gradient(135deg, #ffd43b, #ff8c42);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.9rem 2.2rem;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.15rem;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #c07a00, 0 7px 18px rgba(255,140,66,0.4);
+    transition: all 0.15s ease;
+  }
+  .btn-prev:hover { transform: translateY(-3px); }
+  .btn-prev:active { transform: translateY(3px); box-shadow: 0 2px 0 #c07a00; }
+
+  /* Day dot progress */
+  .day-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+  /* Section title underline */
+  .section-title {
+    position: relative;
+    display: inline-block;
+  }
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -6px; left: 0; right: 0;
+    height: 5px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--purple), var(--pink));
+  }
+
+  /* Draw area */
+  .draw-area {
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 28px,
+      rgba(167,139,250,0.2) 28px, rgba(167,139,250,0.2) 30px
+    ),
+    repeating-linear-gradient(
+      90deg, transparent, transparent 28px,
+      rgba(167,139,250,0.12) 28px, rgba(167,139,250,0.12) 30px
+    );
+    border: 3px dashed var(--purple);
+    border-radius: 20px;
+    min-height: 180px;
+  }
+
+  /* Sticker badges */
+  .badge {
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    border-radius: 50px;
+    padding: 0.3rem 1rem;
+    font-size: 0.85rem;
+    display: inline-block;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+  }
+
+  /* Info card hover */
+  .info-card {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .info-card:hover { transform: translateY(-4px); }
+
+  /* Comparison card */
+  .compare-card {
+    transition: all 0.3s ease;
+  }
+  .compare-card:hover { transform: scale(1.02); }
+
+  /* Recording text animation */
+  @keyframes recordBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .rec-blink { animation: recordBlink 0.8s ease-in-out infinite; }
+
+  /* Toast notification */
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    box-shadow: 0 8px 30px rgba(124,58,237,0.5);
+    z-index: 999;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Confetti */
+  @keyframes confettiFly {
+    0%   { transform: translate(0,0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) rotate(720deg); opacity: 0; }
+  }
+  .confetti-piece {
+    position: fixed;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 100;
+    animation: confettiFly 1s ease-out forwards;
+  }
+
+  /* Sound ripple wrapper */
+  .sound-ring-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Waveform display */
+  .waveform-bar {
+    width: 4px;
+    border-radius: 2px;
+    background: linear-gradient(to top, #ec4899, #ffd43b);
+    height: 4px;
+    transition: height 0.1s ease;
+  }
+  @keyframes waveAnim1 { 0%,100%{height:4px} 50%{height:28px} }
+  @keyframes waveAnim2 { 0%,100%{height:10px} 50%{height:18px} }
+  @keyframes waveAnim3 { 0%,100%{height:18px} 50%{height:4px} }
+  @keyframes waveAnim4 { 0%,100%{height:6px} 50%{height:22px} }
+  @keyframes waveAnim5 { 0%,100%{height:24px} 50%{height:8px} }
+  .waveform-active .waveform-bar:nth-child(1) { animation: waveAnim1 0.4s ease-in-out infinite; }
+  .waveform-active .waveform-bar:nth-child(2) { animation: waveAnim2 0.3s ease-in-out infinite; }
+  .waveform-active .waveform-bar:nth-child(3) { animation: waveAnim3 0.5s ease-in-out infinite; }
+  .waveform-active .waveform-bar:nth-child(4) { animation: waveAnim4 0.35s ease-in-out infinite; }
+  .waveform-active .waveform-bar:nth-child(5) { animation: waveAnim5 0.45s ease-in-out infinite; }
+  .waveform-active .waveform-bar:nth-child(6) { animation: waveAnim1 0.38s ease-in-out infinite 0.1s; }
+  .waveform-active .waveform-bar:nth-child(7) { animation: waveAnim3 0.42s ease-in-out infinite 0.2s; }
+  .waveform-active .waveform-bar:nth-child(8) { animation: waveAnim2 0.36s ease-in-out infinite 0.15s; }
+  .waveform-active .waveform-bar:nth-child(9) { animation: waveAnim4 0.5s ease-in-out infinite 0.05s; }
+  .waveform-active .waveform-bar:nth-child(10) { animation: waveAnim5 0.4s ease-in-out infinite 0.25s; }
+
+  @media (max-width: 640px) {
+    .btn-magic { font-size: 1.1rem; padding: 0.8rem 1.8rem; }
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body class="stars-bg">
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast">🎵 Suaranya keren!</div>
+
+<!-- ======== HEADER ======== -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <!-- Music notes decoration -->
+  <div class="note" style="top:12px; left:6%; font-size:2rem;">🎵</div>
+  <div class="note note2" style="top:18px; right:9%; font-size:2.5rem;">🎶</div>
+  <div class="note note3" style="bottom:8px; left:28%; font-size:1.8rem;">🎤</div>
+  <div class="note" style="bottom:10px; right:20%; font-size:1.5rem;">🔊</div>
+
+  <div class="max-w-3xl mx-auto relative z-10 text-center">
+    <!-- Series Badge -->
+    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-3 border border-white/30">
+      <span class="text-xl">🖥️</span>
+      <span style="font-family:'Fredoka One',cursive; font-size:0.9rem; letter-spacing:0.5px;">
+        Petualangan Aslan di Dalam Komputer Ajaib
+      </span>
+      <span class="text-xl">⚡</span>
+    </div>
+
+    <!-- Main Title -->
+    <h1 class="text-3xl sm:text-4xl md:text-5xl mb-2 drop-shadow-lg" style="line-height:1.2;">
+      Hari 18: Speaker & Microphone 🔊🎤
+    </h1>
+    <p class="text-purple-100 text-base sm:text-lg font-semibold">
+      Telinga &amp; Mulut Komputer! 👂🗣️
+    </p>
+
+    <!-- Day progress -->
+    <div class="flex items-center justify-center gap-1.5 mt-4 flex-wrap">
+      <!-- Days 1-17 filled -->
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <div class="day-dot bg-white opacity-60"></div>
+      <!-- Day 18 = active -->
+      <div class="day-dot bg-white ring-4 ring-yellow-300 ring-offset-1 scale-125"></div>
+      <!-- Days 19-30 empty -->
+      <div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div>
+      <span class="text-white/80 text-xs ml-2 font-semibold">Hari 18 dari 30</span>
+    </div>
+  </div>
+</header>
+
+<!-- ======== MAIN CONTENT ======== -->
+<main class="max-w-3xl mx-auto px-4 py-8 relative z-10">
+
+  <!-- ===== INTRO SECTION ===== -->
+  <section class="mb-10">
+    <div class="flex flex-col sm:flex-row items-end gap-6">
+
+      <!-- Aslan with Mic & Speaker -->
+      <div class="flex-shrink-0 flex justify-center" style="min-width:130px;">
+        <div class="aslan-bounce">
+          <svg width="130" height="165" viewBox="0 0 130 165" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Shadow -->
+            <ellipse cx="65" cy="160" rx="32" ry="7" fill="rgba(0,0,0,0.1)"/>
+            <!-- Body -->
+            <rect x="34" y="94" width="58" height="52" rx="14" fill="#ff8c42"/>
+            <!-- Shirt stripe purple -->
+            <rect x="34" y="108" width="58" height="7" rx="2" fill="#a855f7" opacity="0.7"/>
+            <!-- Music note on shirt -->
+            <text x="55" y="126" font-size="12" fill="white" opacity="0.8">🎵</text>
+            <!-- Left arm (holding microphone) -->
+            <rect x="10" y="96" width="26" height="14" rx="7" fill="#ff8c42" transform="rotate(-10 10 96)"/>
+            <!-- Microphone in left hand -->
+            <rect x="5" y="110" width="10" height="18" rx="5" fill="#555"/>
+            <ellipse cx="10" cy="108" rx="7" ry="8" fill="#333"/>
+            <rect x="6" y="116" width="8" height="2" rx="1" fill="#888"/>
+            <rect x="6" y="120" width="8" height="2" rx="1" fill="#888"/>
+            <rect x="6" y="124" width="8" height="2" rx="1" fill="#888"/>
+            <!-- Right arm (raised, excited) -->
+            <rect x="92" y="88" width="26" height="14" rx="7" fill="#ff8c42" transform="rotate(20 92 88)"/>
+            <!-- Music notes from mouth -->
+            <text x="95" y="75" font-size="13" opacity="0.8">🎵</text>
+            <text x="105" y="60" font-size="10" opacity="0.6">🎶</text>
+            <!-- Legs -->
+            <rect x="38" y="138" width="20" height="24" rx="10" fill="#1e3a8a"/>
+            <rect x="70" y="138" width="20" height="24" rx="10" fill="#1e3a8a"/>
+            <!-- Shoes -->
+            <ellipse cx="48" cy="162" rx="13" ry="6" fill="#1e40af"/>
+            <ellipse cx="80" cy="162" rx="13" ry="6" fill="#1e40af"/>
+            <!-- Neck -->
+            <rect x="53" y="84" width="22" height="14" rx="7" fill="#f9a825"/>
+            <!-- Head -->
+            <ellipse cx="65" cy="64" rx="34" ry="32" fill="#f9a825"/>
+            <!-- Hair -->
+            <ellipse cx="65" cy="37" rx="32" ry="17" fill="#2d1b00"/>
+            <ellipse cx="38" cy="50" rx="10" ry="13" fill="#2d1b00"/>
+            <ellipse cx="92" cy="50" rx="10" ry="13" fill="#2d1b00"/>
+            <!-- Eyes (excited wide) -->
+            <ellipse cx="52" cy="63" rx="8" ry="9" fill="white"/>
+            <ellipse cx="78" cy="63" rx="8" ry="9" fill="white"/>
+            <ellipse cx="53" cy="64" rx="5" ry="6" fill="#2d1b00"/>
+            <ellipse cx="79" cy="64" rx="5" ry="6" fill="#2d1b00"/>
+            <!-- Eye shine -->
+            <circle cx="55" cy="62" r="2" fill="white"/>
+            <circle cx="81" cy="62" r="2" fill="white"/>
+            <!-- Smile big -->
+            <path d="M48 77 Q65 92 82 77" stroke="#2d1b00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M52 79 Q65 88 78 79" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <!-- Cheeks -->
+            <ellipse cx="42" cy="72" rx="7" ry="5" fill="#ffb347" opacity="0.5"/>
+            <ellipse cx="88" cy="72" rx="7" ry="5" fill="#ffb347" opacity="0.5"/>
+            <!-- Headphones -->
+            <path d="M33 55 Q33 30 65 28 Q97 30 97 55" stroke="#7c3aed" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <rect x="27" y="52" width="12" height="16" rx="6" fill="#7c3aed"/>
+            <rect x="91" y="52" width="12" height="16" rx="6" fill="#7c3aed"/>
+            <!-- Stars -->
+            <text x="104" y="48" font-size="14">✨</text>
+            <text x="10" y="85" font-size="12">⭐</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Speech Bubble -->
+      <div class="flex-1">
+        <div class="speech-bubble p-5">
+          <p class="text-sm font-bold mb-1" style="color:var(--purple);">Aslan berkata:</p>
+          <p class="text-gray-700 text-base sm:text-lg leading-relaxed font-semibold">
+            "Halo teman-teman! 👋 Hari ini aku pakai headphone keren ini dan belajar tentang
+            <strong class="text-purple-600">Speaker</strong> dan
+            <strong class="text-pink-500">Microphone</strong>! Mereka adalah
+            <strong class="text-orange-500">Telinga dan Mulut Komputer</strong>!
+            Aku bisa nyanyi lewat speaker nih! 🎵🎤"
+          </p>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <span class="badge text-xs">🔊 Speaker</span>
+            <span class="badge text-xs" style="background:linear-gradient(135deg,#ec4899,#f97316);">🎤 Microphone</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Intro text card -->
+    <div class="mt-6 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-3xl p-6">
+      <p class="text-gray-700 text-base sm:text-lg leading-relaxed text-center font-semibold">
+        🎵 <strong class="text-purple-600">Speaker</strong> bisa mengeluarkan suara, musik, dan suara game.
+        Sedangkan <strong class="text-pink-500">Microphone</strong> bisa mendengar suara kita!
+        Seru banget kan? Yuk kita kenalan lebih dekat! 🚀
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== SPEAKER & MICROPHONE VISUAL ===== -->
+  <section class="mb-10">
+    <h2 class="section-title text-2xl sm:text-3xl text-gray-800 mb-8 text-center">
+      Kenalan Sama Speaker &amp; Microphone! 👋
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+
+      <!-- SPEAKER CARD -->
+      <div class="comp-card glow-speaker bg-white rounded-3xl p-6 shadow-lg border-3 border-purple-200" id="speakerCard"
+           style="border:3px solid #e9d5ff;">
+        <div class="text-center mb-4">
+          <!-- Speaker SVG -->
+          <div class="relative inline-block" id="speakerSvgWrap">
+            <!-- Sound waves (hidden by default) -->
+            <div id="soundWaves" class="hidden">
+              <div class="sound-wave" style="width:100px;height:100px;top:-10px;left:-10px;"></div>
+              <div class="sound-wave" style="width:100px;height:100px;top:-10px;left:-10px;"></div>
+              <div class="sound-wave" style="width:100px;height:100px;top:-10px;left:-10px;"></div>
+            </div>
+            <svg id="speakerSvg" width="120" height="130" viewBox="0 0 120 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Speaker box -->
+              <rect x="10" y="10" width="100" height="110" rx="16" fill="#7c3aed"/>
+              <rect x="10" y="10" width="100" height="110" rx="16" fill="url(#speakerGrad)"/>
+              <defs>
+                <linearGradient id="speakerGrad" x1="10" y1="10" x2="110" y2="120" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#9333ea"/>
+                  <stop offset="100%" stop-color="#6d28d9"/>
+                </linearGradient>
+              </defs>
+              <!-- Speaker grille -->
+              <circle cx="60" cy="65" r="38" fill="#4c1d95"/>
+              <circle cx="60" cy="65" r="34" fill="#3b0764"/>
+              <!-- Speaker cone circles -->
+              <circle cx="60" cy="65" r="28" fill="#5b21b6" stroke="#7c3aed" stroke-width="2"/>
+              <circle cx="60" cy="65" r="20" fill="#4c1d95" stroke="#8b5cf6" stroke-width="1.5"/>
+              <circle cx="60" cy="65" r="12" fill="#6d28d9"/>
+              <circle cx="60" cy="65" r="6" fill="#9333ea"/>
+              <circle cx="60" cy="65" r="3" fill="#c084fc"/>
+              <!-- Speaker grill dots -->
+              <circle cx="35" cy="40" r="2" fill="#6d28d9"/>
+              <circle cx="42" cy="35" r="2" fill="#6d28d9"/>
+              <circle cx="50" cy="32" r="2" fill="#6d28d9"/>
+              <circle cx="35" cy="48" r="2" fill="#6d28d9"/>
+              <circle cx="85" cy="40" r="2" fill="#6d28d9"/>
+              <circle cx="78" cy="35" r="2" fill="#6d28d9"/>
+              <circle cx="70" cy="32" r="2" fill="#6d28d9"/>
+              <circle cx="85" cy="48" r="2" fill="#6d28d9"/>
+              <!-- Top panel LEDs -->
+              <circle cx="35" cy="22" r="4" fill="#22d3ee" opacity="0.8"/>
+              <circle cx="47" cy="22" r="4" fill="#a3e635" opacity="0.8"/>
+              <circle cx="59" cy="22" r="4" fill="#ffd43b" opacity="0.8"/>
+              <circle cx="71" cy="22" r="4" fill="#f87171" opacity="0.8"/>
+              <!-- Volume knob -->
+              <circle cx="90" cy="105" r="8" fill="#1e1b4b" stroke="#a78bfa" stroke-width="2"/>
+              <line x1="90" y1="97" x2="90" y2="101" stroke="#c084fc" stroke-width="2" stroke-linecap="round"/>
+              <!-- Brand text -->
+              <text x="35" y="115" font-size="9" fill="#c084fc" font-family="monospace">SOUNDMAX</text>
+              <!-- Shine -->
+              <rect x="15" y="14" width="30" height="8" rx="4" fill="white" opacity="0.1"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Equalizer visualization -->
+        <div class="flex items-end justify-center gap-1.5 mb-4 bg-gray-900 rounded-2xl p-3" style="min-height:60px;" id="eqContainer">
+          <div class="eq-bar" style="height:8px; background:linear-gradient(to top,#7c3aed,#a855f7);"></div>
+          <div class="eq-bar" style="height:20px; background:linear-gradient(to top,#7c3aed,#a855f7);"></div>
+          <div class="eq-bar" style="height:35px; background:linear-gradient(to top,#7c3aed,#a855f7);"></div>
+          <div class="eq-bar" style="height:15px; background:linear-gradient(to top,#7c3aed,#a855f7);"></div>
+          <div class="eq-bar" style="height:28px; background:linear-gradient(to top,#7c3aed,#a855f7);"></div>
+          <div class="eq-bar" style="height:10px; background:linear-gradient(to top,#7c3aed,#a855f7);"></div>
+          <div class="eq-bar" style="height:38px; background:linear-gradient(to top,#7c3aed,#a855f7);"></div>
+          <p class="text-gray-500 text-xs ml-1" id="eqLabel">Klik tombol! 🎵</p>
+        </div>
+
+        <h3 class="text-xl font-bold text-purple-700 text-center mb-2" style="font-family:'Fredoka One',cursive;">
+          🔊 Speaker
+        </h3>
+        <p class="text-gray-600 text-sm text-center leading-relaxed">
+          Mengeluarkan suara, musik, dan suara game. Seperti <strong>mulut komputer</strong> yang bisa bernyanyi dan berbicara! 🎤
+        </p>
+        <div class="flex justify-center mt-4 gap-2 flex-wrap">
+          <button class="btn-speaker text-sm px-4 py-2" onclick="playSpeaker()" id="speakerBtn">
+            🔊 Coba Nyanyi!
+          </button>
+        </div>
+      </div>
+
+      <!-- MICROPHONE CARD -->
+      <div class="comp-card glow-mic bg-white rounded-3xl p-6 shadow-lg" id="micCard"
+           style="border:3px solid #fce7f3;">
+        <div class="text-center mb-4">
+          <!-- Microphone SVG -->
+          <div class="relative inline-block" id="micSvgWrap">
+            <svg id="micSvg" width="120" height="130" viewBox="0 0 120 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Stand base -->
+              <rect x="40" y="118" width="40" height="6" rx="3" fill="#ec4899"/>
+              <rect x="55" y="98" width="10" height="22" rx="5" fill="#f9a8d4"/>
+              <!-- Stand arms -->
+              <path d="M40 120 Q60 108 80 120" stroke="#ec4899" stroke-width="4" stroke-linecap="round" fill="none"/>
+              <!-- Mic body -->
+              <rect x="46" y="60" width="28" height="44" rx="5" fill="#be185d"/>
+              <!-- Mic grille top -->
+              <ellipse cx="60" cy="42" rx="22" ry="26" fill="#ec4899"/>
+              <ellipse cx="60" cy="42" rx="18" ry="22" fill="#be185d"/>
+              <!-- Grille pattern -->
+              <line x1="44" y1="30" x2="76" y2="30" stroke="#ec4899" stroke-width="1.5" opacity="0.6"/>
+              <line x1="42" y1="38" x2="78" y2="38" stroke="#ec4899" stroke-width="1.5" opacity="0.6"/>
+              <line x1="42" y1="46" x2="78" y2="46" stroke="#ec4899" stroke-width="1.5" opacity="0.6"/>
+              <line x1="44" y1="54" x2="76" y2="54" stroke="#ec4899" stroke-width="1.5" opacity="0.6"/>
+              <line x1="55" y1="16" x2="55" y2="66" stroke="#ec4899" stroke-width="1.5" opacity="0.5"/>
+              <line x1="60" y1="16" x2="60" y2="66" stroke="#ec4899" stroke-width="1.5" opacity="0.5"/>
+              <line x1="65" y1="16" x2="65" y2="66" stroke="#ec4899" stroke-width="1.5" opacity="0.5"/>
+              <!-- Pop filter ring -->
+              <ellipse cx="60" cy="42" rx="22" ry="26" stroke="#f9a8d4" stroke-width="3" fill="none"/>
+              <!-- Windscreen sparkle -->
+              <circle cx="52" cy="30" r="3" fill="white" opacity="0.25"/>
+              <!-- Mute button -->
+              <rect x="48" y="68" width="24" height="12" rx="6" fill="#9f1239"/>
+              <circle cx="60" cy="74" r="4" fill="#fda4af" id="micLedCircle"/>
+              <!-- Brand text -->
+              <text x="44" y="90" font-size="7" fill="#fda4af" font-family="monospace">VOICEPRO</text>
+              <!-- Cable -->
+              <path d="M60 118 Q55 125 60 128 Q65 131 60 128" stroke="#9f1239" stroke-width="3" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Waveform display (mic input simulation) -->
+        <div class="flex items-center justify-center gap-1 mb-4 bg-gray-900 rounded-2xl p-3" style="min-height:60px;" id="waveformContainer">
+          <div class="waveform-bar" style="height:4px;"></div>
+          <div class="waveform-bar" style="height:4px;"></div>
+          <div class="waveform-bar" style="height:4px;"></div>
+          <div class="waveform-bar" style="height:4px;"></div>
+          <div class="waveform-bar" style="height:4px;"></div>
+          <div class="waveform-bar" style="height:4px;"></div>
+          <div class="waveform-bar" style="height:4px;"></div>
+          <div class="waveform-bar" style="height:4px;"></div>
+          <div class="waveform-bar" style="height:4px;"></div>
+          <div class="waveform-bar" style="height:4px;"></div>
+          <p class="text-gray-500 text-xs ml-2" id="waveLabel">Klik tombol! 🎤</p>
+        </div>
+
+        <h3 class="text-xl font-bold text-pink-600 text-center mb-2" style="font-family:'Fredoka One',cursive;">
+          🎤 Microphone
+        </h3>
+        <p class="text-gray-600 text-sm text-center leading-relaxed">
+          Mendengar suara kita! Dipakai untuk rekam suara, video call, atau main game bareng teman! Seperti <strong>telinga komputer</strong>! 👂
+        </p>
+        <div class="flex justify-center mt-4 gap-2 flex-wrap">
+          <button class="btn-mic text-sm px-4 py-2" onclick="startRecording()" id="micBtn">
+            🎤 Coba Bicara!
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== PENJELASAN LENGKAP ===== -->
+  <section class="mb-10">
+    <h2 class="section-title text-2xl sm:text-3xl text-gray-800 mb-8">
+      Bagaimana Cara Kerjanya? 🤔
+    </h2>
+
+    <div class="grid grid-cols-1 gap-5 mt-8">
+
+      <!-- Speaker explanation -->
+      <div class="info-card bg-gradient-to-r from-purple-50 to-violet-50 rounded-3xl p-6 border-2 border-purple-200 shadow-md">
+        <div class="flex items-start gap-4">
+          <div class="text-5xl flex-shrink-0">🔊</div>
+          <div>
+            <h3 class="text-xl font-bold text-purple-700 mb-2" style="font-family:'Fredoka One',cursive;">Speaker – Si Mulut Bernyanyi!</h3>
+            <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+              Speaker mengubah sinyal listrik menjadi <strong class="text-purple-600">suara yang bisa kita dengar</strong>.
+              Di dalamnya ada membran yang bergetar cepat banget — itulah yang bikin bunyi! 🎵
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">🎮 Suara Game</span>
+              <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">🎵 Musik</span>
+              <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">📹 Video YouTube</span>
+              <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">📚 Buku Audio</span>
+            </div>
+            <div class="mt-3 bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-3">
+              <p class="text-xs font-bold text-yellow-700">💡 Aslan bilang:</p>
+              <p class="text-xs text-yellow-800 mt-1">"Wah, aku bisa nyanyi lewat speaker nih! Volume 100 gass! 🔊💥"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Microphone explanation -->
+      <div class="info-card bg-gradient-to-r from-pink-50 to-rose-50 rounded-3xl p-6 border-2 border-pink-200 shadow-md">
+        <div class="flex items-start gap-4">
+          <div class="text-5xl flex-shrink-0">🎤</div>
+          <div>
+            <h3 class="text-xl font-bold text-pink-600 mb-2" style="font-family:'Fredoka One',cursive;">Microphone – Si Telinga Pendengar!</h3>
+            <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+              Microphone menangkap gelombang suara dari udara dan mengubahnya menjadi
+              <strong class="text-pink-600">sinyal listrik</strong> yang dimengerti komputer! 🌊
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <span class="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-bold">📞 Video Call</span>
+              <span class="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-bold">🎙️ Rekam Suara</span>
+              <span class="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-bold">🤖 Voice Assistant</span>
+              <span class="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-bold">🎮 Voice Chat</span>
+            </div>
+            <div class="mt-3 bg-blue-50 border-2 border-blue-200 rounded-2xl p-3">
+              <p class="text-xs font-bold text-blue-700">💡 Aslan bilang:</p>
+              <p class="text-xs text-blue-800 mt-1">"Keren! Aku bisa ngobrol sama teman di seluruh dunia pakai microphone! Halo semua!! 🌍📞"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== PERBANDINGAN LUCU ===== -->
+  <section class="mb-10">
+    <h2 class="section-title text-2xl sm:text-3xl text-gray-800 mb-8">
+      Perbandingan Seru! ⚡
+    </h2>
+
+    <div class="mt-8 bg-white rounded-3xl p-6 shadow-lg border-2 border-yellow-200">
+      <!-- VS Banner -->
+      <div class="text-center mb-6">
+        <span class="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full font-bold text-lg" style="font-family:'Fredoka One',cursive;">
+          Speaker VS Microphone
+        </span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 relative">
+        <!-- VS divider -->
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+          <div class="bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full w-12 h-12 flex items-center justify-center font-bold text-white text-lg shadow-lg" style="font-family:'Fredoka One',cursive;">VS</div>
+        </div>
+
+        <!-- Speaker side -->
+        <div class="compare-card bg-purple-50 rounded-2xl p-4 border-2 border-purple-200 text-center">
+          <div class="text-4xl mb-2">🔊</div>
+          <h4 class="font-bold text-purple-700 text-sm mb-2" style="font-family:'Fredoka One',cursive;">SPEAKER</h4>
+          <div class="space-y-1 text-left">
+            <p class="text-xs text-gray-600 flex items-center gap-1"><span>➡️</span> Mengeluarkan suara</p>
+            <p class="text-xs text-gray-600 flex items-center gap-1"><span>➡️</span> Seperti MULUT komputer</p>
+            <p class="text-xs text-gray-600 flex items-center gap-1"><span>➡️</span> Bergetar untuk bunyi</p>
+            <p class="text-xs text-gray-600 flex items-center gap-1"><span>➡️</span> Ada volume naik/turun</p>
+          </div>
+          <div class="mt-3 bg-purple-100 rounded-xl p-2">
+            <p class="text-xs font-bold text-purple-700">Seperti mulut yang</p>
+            <p class="text-xs font-bold text-purple-600">nyanyi kencang! 🎶</p>
+          </div>
+        </div>
+
+        <!-- Microphone side -->
+        <div class="compare-card bg-pink-50 rounded-2xl p-4 border-2 border-pink-200 text-center">
+          <div class="text-4xl mb-2">🎤</div>
+          <h4 class="font-bold text-pink-600 text-sm mb-2" style="font-family:'Fredoka One',cursive;">MICROPHONE</h4>
+          <div class="space-y-1 text-left">
+            <p class="text-xs text-gray-600 flex items-center gap-1"><span>➡️</span> Menangkap suara</p>
+            <p class="text-xs text-gray-600 flex items-center gap-1"><span>➡️</span> Seperti TELINGA komputer</p>
+            <p class="text-xs text-gray-600 flex items-center gap-1"><span>➡️</span> Ubah suara jadi sinyal</p>
+            <p class="text-xs text-gray-600 flex items-center gap-1"><span>➡️</span> Bisa mute/unmute</p>
+          </div>
+          <div class="mt-3 bg-pink-100 rounded-xl p-2">
+            <p class="text-xs font-bold text-pink-700">Seperti telinga yang</p>
+            <p class="text-xs font-bold text-pink-600">dengarkan baik-baik! 👂</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fun quote -->
+      <div class="mt-6 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-4 border-2 border-yellow-300 text-center">
+        <p class="text-base sm:text-lg font-bold text-orange-700">
+          🌟 "Speaker seperti <span class="text-purple-600">mulut yang nyanyi kencang</span>,<br>
+          Microphone seperti <span class="text-pink-600">telinga yang mendengarkan baik-baik</span>." 🌟
+        </p>
+        <p class="text-sm text-gray-500 mt-1">— Aslan si Petualang Komputer 😄</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== INTERACTIVE ZONE ===== -->
+  <section class="mb-10">
+    <h2 class="section-title text-2xl sm:text-3xl text-gray-800 mb-2">
+      Zona Interaktif! 🎮
+    </h2>
+    <p class="text-gray-500 text-sm mt-3 mb-8">Klik tombol-tombol di bawah ini dan lihat yang terjadi! 👇</p>
+
+    <!-- Speaker interactive panel -->
+    <div class="bg-gradient-to-br from-purple-600 to-violet-700 rounded-3xl p-6 mb-5 shadow-xl text-white">
+      <h3 class="text-xl font-bold mb-4 text-center" style="font-family:'Fredoka One',cursive;">🔊 Studio Speaker Aslan</h3>
+
+      <!-- Now playing display -->
+      <div class="bg-black/30 rounded-2xl p-4 mb-4" id="nowPlayingPanel">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" id="trackEmoji" style="background:rgba(255,255,255,0.2);">🎵</div>
+          <div>
+            <p class="text-xs text-purple-200 font-semibold">Now Playing</p>
+            <p class="font-bold text-white" id="trackName" style="font-family:'Fredoka One',cursive;">Pilih lagu dulu!</p>
+          </div>
+          <div class="ml-auto text-2xl" id="playStateIcon">⏸</div>
+        </div>
+        <!-- Equalizer in panel -->
+        <div class="flex items-end gap-1.5 justify-center" style="height:50px;" id="eqDisplay">
+          <div class="eq-bar" style="height:8px; background:linear-gradient(to top,#a78bfa,#e879f9);"></div>
+          <div class="eq-bar" style="height:20px; background:linear-gradient(to top,#a78bfa,#e879f9);"></div>
+          <div class="eq-bar" style="height:35px; background:linear-gradient(to top,#a78bfa,#e879f9);"></div>
+          <div class="eq-bar" style="height:15px; background:linear-gradient(to top,#a78bfa,#e879f9);"></div>
+          <div class="eq-bar" style="height:28px; background:linear-gradient(to top,#a78bfa,#e879f9);"></div>
+          <div class="eq-bar" style="height:10px; background:linear-gradient(to top,#a78bfa,#e879f9);"></div>
+          <div class="eq-bar" style="height:38px; background:linear-gradient(to top,#a78bfa,#e879f9);"></div>
+        </div>
+      </div>
+
+      <!-- Song buttons -->
+      <p class="text-xs text-purple-200 text-center mb-3 font-semibold">Pilih lagu yang mau diputar:</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+        <button onclick="selectTrack(0)" class="track-btn bg-white/20 hover:bg-white/30 rounded-xl py-2 px-2 text-center text-xs font-bold transition-all hover:scale-105 border-2 border-transparent" id="track0">
+          🎵<br>Pop Ceria
+        </button>
+        <button onclick="selectTrack(1)" class="track-btn bg-white/20 hover:bg-white/30 rounded-xl py-2 px-2 text-center text-xs font-bold transition-all hover:scale-105 border-2 border-transparent" id="track1">
+          🎸<br>Rock Keren
+        </button>
+        <button onclick="selectTrack(2)" class="track-btn bg-white/20 hover:bg-white/30 rounded-xl py-2 px-2 text-center text-xs font-bold transition-all hover:scale-105 border-2 border-transparent" id="track2">
+          🎮<br>Musik Game
+        </button>
+        <button onclick="selectTrack(3)" class="track-btn bg-white/20 hover:bg-white/30 rounded-xl py-2 px-2 text-center text-xs font-bold transition-all hover:scale-105 border-2 border-transparent" id="track3">
+          🎹<br>Piano Syahdu
+        </button>
+      </div>
+
+      <!-- Volume slider -->
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-xl">🔈</span>
+        <input type="range" min="0" max="100" value="70" class="flex-1 accent-yellow-400" id="volumeSlider"
+               oninput="changeVolume(this.value)"
+               style="height:6px; border-radius:3px;">
+        <span class="text-xl">🔊</span>
+        <span class="text-sm font-bold w-8 text-yellow-300" id="volumeDisplay">70</span>
+      </div>
+
+      <!-- Aslan reaction box -->
+      <div class="bg-black/20 rounded-2xl p-3 text-center min-h-[50px] flex items-center justify-center">
+        <p class="font-bold text-sm" id="speakerReaction">🔊 Klik lagu di atas dan play!</p>
+      </div>
+    </div>
+
+    <!-- Microphone interactive panel -->
+    <div class="bg-gradient-to-br from-pink-500 to-rose-600 rounded-3xl p-6 shadow-xl text-white">
+      <h3 class="text-xl font-bold mb-4 text-center" style="font-family:'Fredoka One',cursive;">🎤 Studio Rekam Aslan</h3>
+
+      <!-- Recording status display -->
+      <div class="bg-black/30 rounded-2xl p-4 mb-4">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="relative w-12 h-12">
+            <div class="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center text-2xl" id="micStatusIcon">🎤</div>
+            <div class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-gray-500 border-2 border-white" id="recDot"></div>
+          </div>
+          <div>
+            <p class="text-xs text-pink-200 font-semibold">Status Microphone</p>
+            <p class="font-bold text-white" id="micStatusText" style="font-family:'Fredoka One',cursive;">Siap digunakan</p>
+          </div>
+          <div class="ml-auto font-bold text-yellow-300 text-lg" id="recTimer" style="font-family:'Fredoka One',cursive;">00:00</div>
+        </div>
+        <!-- Waveform in panel -->
+        <div class="flex items-center gap-1 justify-center" style="height:50px;" id="waveformDisplay">
+          <div class="waveform-bar" style="height:4px; background:linear-gradient(to top,#f9a8d4,#fda4af);"></div>
+          <div class="waveform-bar" style="height:4px; background:linear-gradient(to top,#f9a8d4,#fda4af);"></div>
+          <div class="waveform-bar" style="height:4px; background:linear-gradient(to top,#f9a8d4,#fda4af);"></div>
+          <div class="waveform-bar" style="height:4px; background:linear-gradient(to top,#f9a8d4,#fda4af);"></div>
+          <div class="waveform-bar" style="height:4px; background:linear-gradient(to top,#f9a8d4,#fda4af);"></div>
+          <div class="waveform-bar" style="height:4px; background:linear-gradient(to top,#f9a8d4,#fda4af);"></div>
+          <div class="waveform-bar" style="height:4px; background:linear-gradient(to top,#f9a8d4,#fda4af);"></div>
+          <div class="waveform-bar" style="height:4px; background:linear-gradient(to top,#f9a8d4,#fda4af);"></div>
+          <div class="waveform-bar" style="height:4px; background:linear-gradient(to top,#f9a8d4,#fda4af);"></div>
+          <div class="waveform-bar" style="height:4px; background:linear-gradient(to top,#f9a8d4,#fda4af);"></div>
+        </div>
+      </div>
+
+      <!-- Mic activity buttons -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+        <button onclick="simulateMicActivity('sing')" class="bg-white/20 hover:bg-white/30 rounded-xl py-3 text-center text-xs font-bold transition-all hover:scale-105">
+          🎵 Nyanyi
+        </button>
+        <button onclick="simulateMicActivity('call')" class="bg-white/20 hover:bg-white/30 rounded-xl py-3 text-center text-xs font-bold transition-all hover:scale-105">
+          📞 Video Call
+        </button>
+        <button onclick="simulateMicActivity('game')" class="bg-white/20 hover:bg-white/30 rounded-xl py-3 text-center text-xs font-bold transition-all hover:scale-105">
+          🎮 Main Game
+        </button>
+        <button onclick="simulateMicActivity('assistant')" class="bg-white/20 hover:bg-white/30 rounded-xl py-3 text-center text-xs font-bold transition-all hover:scale-105">
+          🤖 Voice AI
+        </button>
+        <button onclick="simulateMicActivity('record')" class="bg-white/20 hover:bg-white/30 rounded-xl py-3 text-center text-xs font-bold transition-all hover:scale-105">
+          ⏺️ Rekam
+        </button>
+        <button onclick="stopMic()" class="bg-red-500/40 hover:bg-red-500/60 rounded-xl py-3 text-center text-xs font-bold transition-all hover:scale-105">
+          ⏹️ Stop
+        </button>
+      </div>
+
+      <!-- Aslan reaction for mic -->
+      <div class="bg-black/20 rounded-2xl p-3 text-center min-h-[50px] flex items-center justify-center">
+        <p class="font-bold text-sm" id="micReaction">🎤 Pilih aktivitas di atas!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FUN FACTS ===== -->
+  <section class="mb-10">
+    <h2 class="section-title text-2xl sm:text-3xl text-gray-800 mb-8">
+      Fakta Seru! 🤩
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+      <div class="info-card bg-white rounded-2xl p-4 border-2 border-yellow-200 shadow text-center">
+        <div class="text-4xl mb-2">🎸</div>
+        <p class="font-bold text-gray-800 text-sm mb-1">Speaker Pertama</p>
+        <p class="text-xs text-gray-500">Speaker listrik pertama ditemukan tahun <strong>1861</strong> oleh Philipp Reis! Sudah lebih dari 160 tahun! 😲</p>
+      </div>
+      <div class="info-card bg-white rounded-2xl p-4 border-2 border-purple-200 shadow text-center">
+        <div class="text-4xl mb-2">🎤</div>
+        <p class="font-bold text-gray-800 text-sm mb-1">Microphone di HP</p>
+        <p class="text-xs text-gray-500">Handphone punya <strong>2 atau lebih</strong> microphone sekaligus! Satu untuk suara, satu untuk kurangi kebisingan! 📱</p>
+      </div>
+      <div class="info-card bg-white rounded-2xl p-4 border-2 border-pink-200 shadow text-center">
+        <div class="text-4xl mb-2">🌊</div>
+        <p class="font-bold text-gray-800 text-sm mb-1">Getaran Suara</p>
+        <p class="text-xs text-gray-500">Speaker bergetar <strong>20 sampai 20.000 kali</strong> per detik untuk menghasilkan semua nada suara! Keren banget! 🤯</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== QUIZ ===== -->
+  <section class="mb-10">
+    <h2 class="section-title text-2xl sm:text-3xl text-gray-800 mb-8">
+      Kuis Seru! 🧠
+    </h2>
+
+    <div class="mt-8 space-y-4" id="quizSection">
+
+      <!-- Question 1 -->
+      <div class="bg-white rounded-3xl p-5 shadow border-2 border-blue-100" id="q1Card">
+        <p class="font-bold text-gray-800 mb-4">❓ Pertanyaan 1: Apa fungsi Speaker pada komputer?</p>
+        <div class="space-y-2">
+          <button onclick="answerQuiz(1,'A')" class="quiz-btn w-full text-left py-3 px-4 rounded-2xl border-2 border-gray-200 hover:border-purple-400 hover:bg-purple-50 transition-all font-semibold text-sm" id="q1A">
+            A. Mendengarkan suara dari luar
+          </button>
+          <button onclick="answerQuiz(1,'B')" class="quiz-btn w-full text-left py-3 px-4 rounded-2xl border-2 border-gray-200 hover:border-purple-400 hover:bg-purple-50 transition-all font-semibold text-sm" id="q1B">
+            B. Mengeluarkan suara dan musik
+          </button>
+          <button onclick="answerQuiz(1,'C')" class="quiz-btn w-full text-left py-3 px-4 rounded-2xl border-2 border-gray-200 hover:border-purple-400 hover:bg-purple-50 transition-all font-semibold text-sm" id="q1C">
+            C. Menyimpan file musik
+          </button>
+        </div>
+        <div class="mt-3 hidden rounded-2xl p-3" id="q1Feedback"></div>
+      </div>
+
+      <!-- Question 2 -->
+      <div class="bg-white rounded-3xl p-5 shadow border-2 border-blue-100" id="q2Card">
+        <p class="font-bold text-gray-800 mb-4">❓ Pertanyaan 2: Microphone itu seperti apa bagian dari tubuh?</p>
+        <div class="space-y-2">
+          <button onclick="answerQuiz(2,'A')" class="quiz-btn w-full text-left py-3 px-4 rounded-2xl border-2 border-gray-200 hover:border-pink-400 hover:bg-pink-50 transition-all font-semibold text-sm" id="q2A">
+            A. Seperti mata yang melihat
+          </button>
+          <button onclick="answerQuiz(2,'B')" class="quiz-btn w-full text-left py-3 px-4 rounded-2xl border-2 border-gray-200 hover:border-pink-400 hover:bg-pink-50 transition-all font-semibold text-sm" id="q2B">
+            B. Seperti telinga yang mendengarkan
+          </button>
+          <button onclick="answerQuiz(2,'C')" class="quiz-btn w-full text-left py-3 px-4 rounded-2xl border-2 border-gray-200 hover:border-pink-400 hover:bg-pink-50 transition-all font-semibold text-sm" id="q2C">
+            C. Seperti kaki yang berjalan
+          </button>
+        </div>
+        <div class="mt-3 hidden rounded-2xl p-3" id="q2Feedback"></div>
+      </div>
+
+      <!-- Question 3 -->
+      <div class="bg-white rounded-3xl p-5 shadow border-2 border-blue-100" id="q3Card">
+        <p class="font-bold text-gray-800 mb-4">❓ Pertanyaan 3: Untuk apa kita memakai Microphone saat video call?</p>
+        <div class="space-y-2">
+          <button onclick="answerQuiz(3,'A')" class="quiz-btn w-full text-left py-3 px-4 rounded-2xl border-2 border-gray-200 hover:border-green-400 hover:bg-green-50 transition-all font-semibold text-sm" id="q3A">
+            A. Supaya layar lebih terang
+          </button>
+          <button onclick="answerQuiz(3,'B')" class="quiz-btn w-full text-left py-3 px-4 rounded-2xl border-2 border-gray-200 hover:border-green-400 hover:bg-green-50 transition-all font-semibold text-sm" id="q3B">
+            B. Supaya suara kita bisa didengar orang lain
+          </button>
+          <button onclick="answerQuiz(3,'C')" class="quiz-btn w-full text-left py-3 px-4 rounded-2xl border-2 border-gray-200 hover:border-green-400 hover:bg-green-50 transition-all font-semibold text-sm" id="q3C">
+            C. Supaya internet lebih cepat
+          </button>
+        </div>
+        <div class="mt-3 hidden rounded-2xl p-3" id="q3Feedback"></div>
+      </div>
+
+    </div>
+
+    <!-- Score display -->
+    <div class="mt-6 text-center hidden" id="scoreDisplay">
+      <div class="bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-3xl p-6 shadow-xl">
+        <div class="text-5xl mb-2" id="scoreEmoji">🌟</div>
+        <p class="text-2xl font-bold" style="font-family:'Fredoka One',cursive;" id="scoreText">Nilai Kamu!</p>
+        <p class="text-sm mt-1 opacity-90" id="scoreMessage"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== AKTIVITAS MENGGAMBAR ===== -->
+  <section class="mb-10">
+    <h2 class="section-title text-2xl sm:text-3xl text-gray-800 mb-2">
+      Aktivitas Hari Ini! ✏️
+    </h2>
+
+    <div class="mt-8 bg-white rounded-3xl p-6 shadow-lg border-2 border-purple-200">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="text-4xl">🎨</div>
+        <div>
+          <h3 class="text-xl font-bold text-purple-700" style="font-family:'Fredoka One',cursive;">Tugas Hari Ini!</h3>
+          <p class="text-gray-600 text-sm">Gambar di kertas atau langsung di sini!</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-2xl p-4 mb-5">
+        <p class="text-base font-bold text-gray-800 mb-2">🖌️ <strong class="text-purple-600">Gambarlah Speaker dan Microphone impianmu!</strong></p>
+        <ul class="space-y-1 text-sm text-gray-600">
+          <li>🔊 Speaker-mu mau berbentuk seperti apa? (Bundar? Kotak? Seperti roket?)</li>
+          <li>🎤 Microphone-mu mau seperti bintang? Atau seperti permen?</li>
+          <li>🎨 Warna favorit kamu apa? Pakai semua! Makin warna-warni makin keren!</li>
+          <li>✨ Tambahkan hiasan dan dekorasi sesuai imajinasimu!</li>
+        </ul>
+      </div>
+
+      <!-- Mini canvas drawing area -->
+      <div class="mb-4">
+        <p class="text-sm font-bold text-gray-600 mb-2">🎨 Gambar Digital di Sini:</p>
+        <div class="relative">
+          <canvas id="drawCanvas" width="600" height="250"
+            class="w-full border-3 rounded-2xl cursor-crosshair"
+            style="border:3px dashed #a78bfa; background: repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(167,139,250,0.2) 28px,rgba(167,139,250,0.2) 30px),repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(167,139,250,0.12) 28px,rgba(167,139,250,0.12) 30px), white; touch-action: none;">
+          </canvas>
+        </div>
+        <!-- Drawing tools -->
+        <div class="flex flex-wrap items-center gap-2 mt-2">
+          <p class="text-xs text-gray-500 font-semibold">Warna:</p>
+          <button onclick="setColor('#7c3aed')" class="w-6 h-6 rounded-full border-2 border-white shadow" style="background:#7c3aed;"></button>
+          <button onclick="setColor('#ec4899')" class="w-6 h-6 rounded-full border-2 border-white shadow" style="background:#ec4899;"></button>
+          <button onclick="setColor('#ffd43b')" class="w-6 h-6 rounded-full border-2 border-white shadow" style="background:#ffd43b;"></button>
+          <button onclick="setColor('#ff8c42')" class="w-6 h-6 rounded-full border-2 border-white shadow" style="background:#ff8c42;"></button>
+          <button onclick="setColor('#3dd9b3')" class="w-6 h-6 rounded-full border-2 border-white shadow" style="background:#3dd9b3;"></button>
+          <button onclick="setColor('#5ec8f2')" class="w-6 h-6 rounded-full border-2 border-white shadow" style="background:#5ec8f2;"></button>
+          <button onclick="setColor('#f97316')" class="w-6 h-6 rounded-full border-2 border-white shadow" style="background:#f97316;"></button>
+          <button onclick="setColor('#1e3a8a')" class="w-6 h-6 rounded-full border-2 border-white shadow" style="background:#1e3a8a;"></button>
+          <button onclick="setColor('#000000')" class="w-6 h-6 rounded-full border-2 border-white shadow" style="background:#000;"></button>
+          <span class="mx-1 text-gray-300">|</span>
+          <p class="text-xs text-gray-500 font-semibold">Ukuran:</p>
+          <button onclick="setBrush(3)" class="px-2 py-1 bg-gray-100 hover:bg-purple-100 rounded-lg text-xs font-bold transition-all">S</button>
+          <button onclick="setBrush(7)" class="px-2 py-1 bg-gray-100 hover:bg-purple-100 rounded-lg text-xs font-bold transition-all">M</button>
+          <button onclick="setBrush(14)" class="px-2 py-1 bg-gray-100 hover:bg-purple-100 rounded-lg text-xs font-bold transition-all">L</button>
+          <button onclick="setBrush(24)" class="px-2 py-1 bg-gray-100 hover:bg-purple-100 rounded-lg text-xs font-bold transition-all">XL</button>
+          <span class="mx-1 text-gray-300">|</span>
+          <button onclick="clearCanvas()" class="px-3 py-1 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg text-xs font-bold transition-all">🗑️ Hapus</button>
+          <button onclick="saveDrawing()" class="px-3 py-1 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-xs font-bold transition-all">💾 Simpan</button>
+        </div>
+      </div>
+
+      <!-- Print area placeholder -->
+      <div class="draw-area flex flex-col items-center justify-center text-center p-8">
+        <p class="text-4xl mb-3">🎨</p>
+        <p class="font-bold text-purple-600 text-base">Area Gambar (Cetak & Gambar di Kertas!)</p>
+        <p class="text-gray-500 text-sm mt-2">Cetak halaman ini dan gunakan kotak ini untuk menggambar<br>Speaker dan Microphone impian Aslan! 🖊️</p>
+        <div class="flex gap-4 mt-4 flex-wrap justify-center">
+          <div class="bg-purple-100 rounded-xl px-4 py-2 text-xs font-bold text-purple-700">🔊 Speaker Impian</div>
+          <div class="bg-pink-100 rounded-xl px-4 py-2 text-xs font-bold text-pink-700">🎤 Microphone Impian</div>
+          <div class="bg-yellow-100 rounded-xl px-4 py-2 text-xs font-bold text-yellow-700">✨ Hiasan Keren</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== RANGKUMAN ===== -->
+  <section class="mb-10">
+    <div class="bg-gradient-to-br from-purple-600 via-violet-600 to-pink-600 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+      <!-- Background decoration -->
+      <div class="absolute top-0 right-0 text-9xl opacity-10 pointer-events-none">🎵</div>
+      <div class="absolute bottom-0 left-0 text-7xl opacity-10 pointer-events-none">🎤</div>
+
+      <h2 class="text-2xl font-bold mb-5 text-center relative z-10" style="font-family:'Fredoka One',cursive;">
+        🌟 Apa yang Kita Pelajari Hari Ini? 🌟
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 relative z-10">
+        <div class="bg-white/15 rounded-2xl p-3 flex gap-2 items-start backdrop-blur-sm">
+          <span class="text-xl">🔊</span>
+          <p class="text-sm font-semibold leading-snug">Speaker mengeluarkan suara — mulut komputer yang bisa nyanyi!</p>
+        </div>
+        <div class="bg-white/15 rounded-2xl p-3 flex gap-2 items-start backdrop-blur-sm">
+          <span class="text-xl">🎤</span>
+          <p class="text-sm font-semibold leading-snug">Microphone menangkap suara — telinga komputer yang setia mendengar!</p>
+        </div>
+        <div class="bg-white/15 rounded-2xl p-3 flex gap-2 items-start backdrop-blur-sm">
+          <span class="text-xl">🌊</span>
+          <p class="text-sm font-semibold leading-snug">Speaker bergetar untuk buat bunyi, microphone tangkap getaran suara!</p>
+        </div>
+        <div class="bg-white/15 rounded-2xl p-3 flex gap-2 items-start backdrop-blur-sm">
+          <span class="text-xl">📞</span>
+          <p class="text-sm font-semibold leading-snug">Keduanya kerja sama untuk video call, game online, dan rekam suara!</p>
+        </div>
+      </div>
+      <div class="mt-5 bg-white/20 rounded-2xl p-4 text-center backdrop-blur-sm relative z-10">
+        <p class="font-bold text-lg" style="font-family:'Fredoka One',cursive;">"Mantap! Aslan makin pintar tentang komputer! 💪🎉"</p>
+        <p class="text-sm opacity-80 mt-1">Besok kita pelajari Port USB dan Webcam! Semakin seru! 🚀</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER NAVIGATION ===== -->
+  <section class="mb-8">
+    <div class="bg-white rounded-3xl p-5 shadow-lg border-2 border-gray-100">
+      <!-- Progress bar -->
+      <div class="mb-4">
+        <div class="flex justify-between text-xs font-bold text-gray-500 mb-2">
+          <span>Progress Petualangan Aslan</span>
+          <span>18 / 30 Hari</span>
+        </div>
+        <div class="bg-gray-200 rounded-full h-4 overflow-hidden">
+          <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full transition-all duration-1000"
+               style="width:60%;"></div>
+        </div>
+        <p class="text-xs text-gray-400 mt-1 text-center">60% selesai! Terus semangat Aslan! 🌟</p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-between">
+        <button class="btn-prev" onclick="goToDay(17)">
+          ⬅️ Hari 17
+        </button>
+        <div class="text-center">
+          <span class="text-gray-500 text-sm font-bold">Hari 18 dari 30</span>
+          <p class="text-xs text-gray-400">Speaker &amp; Microphone ✅</p>
+        </div>
+        <button class="btn-next" onclick="goToDay(19)">
+          Hari 19: Port USB &amp; Webcam ➡️
+        </button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="text-center py-6 px-4 border-t border-purple-100">
+  <p class="text-gray-400 text-sm">🖥️ Petualangan Aslan di Dalam Komputer Ajaib • Hari 18 dari 30</p>
+  <p class="text-gray-300 text-xs mt-1">Dibuat dengan ❤️ untuk Aslan si Petualang Cilik</p>
+</footer>
+
+<!-- ======== JAVASCRIPT ======== -->
+<script>
+  // ===== TOAST =====
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ===== CONFETTI =====
+  function launchConfetti(x, y) {
+    const colors = ['#7c3aed','#ec4899','#ffd43b','#ff8c42','#3dd9b3','#5ec8f2'];
+    for (let i = 0; i < 18; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      const tx = (Math.random() - 0.5) * 300;
+      const ty = (Math.random() - 0.7) * 300;
+      el.style.cssText = `
+        left:${x}px; top:${y}px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        border-radius:${Math.random()>0.5?'50%':'2px'};
+        --tx:${tx}px; --ty:${ty}px;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1100);
+    }
+  }
+
+  // ===== SPEAKER =====
+  let speakerPlaying = false;
+  let speakerInterval = null;
+
+  const speakerReactions = [
+    "🎵 Waaah suaranya kencang banget! Aku jadi mau nyanyi! 🎤",
+    "🔊 BOOOM! Speaker Aslan ngalahkan speaker di mall! 😂",
+    "🎶 Ini lagunya enak banget! Auto joget nih! 💃",
+    "🎵 Volume max! Tetangga ikut dengar juga nih! 🏠",
+    "🔥 Speaker ini keren parah! Suaranya mantap jiwa! 🎸"
+  ];
+
+  function playSpeaker() {
+    if (speakerPlaying) {
+      stopSpeaker();
+      return;
+    }
+    speakerPlaying = true;
+    const btn = document.getElementById('speakerBtn');
+    btn.textContent = '⏹️ Stop Musik';
+    btn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
+
+    // Animate speaker
+    document.getElementById('speakerSvg').classList.add('speaker-playing');
+
+    // Animate equalizer
+    document.getElementById('eqContainer').classList.add('eq-active');
+    document.getElementById('eqDisplay').classList.add('eq-active');
+    document.getElementById('eqLabel').textContent = '🎵 Sedang Bermain!';
+
+    const reaction = speakerReactions[Math.floor(Math.random() * speakerReactions.length)];
+    document.getElementById('speakerReaction').textContent = reaction;
+
+    // Play audio
+    playTone();
+
+    showToast('🔊 Speaker Nyala! Volume Max! 🎵');
+    launchConfetti(window.innerWidth/2, window.innerHeight/2);
+
+    // Auto stop after 5s
+    speakerInterval = setTimeout(stopSpeaker, 5000);
+  }
+
+  function stopSpeaker() {
+    speakerPlaying = false;
+    clearTimeout(speakerInterval);
+    const btn = document.getElementById('speakerBtn');
+    btn.textContent = '🔊 Coba Nyanyi!';
+    btn.style.background = '';
+    document.getElementById('speakerSvg').classList.remove('speaker-playing');
+    document.getElementById('eqContainer').classList.remove('eq-active');
+    document.getElementById('eqDisplay').classList.remove('eq-active');
+    document.getElementById('eqLabel').textContent = '🎵 Klik lagi!';
+    document.getElementById('speakerReaction').textContent = '🔊 Klik lagu di atas dan play!';
+    stopTone();
+  }
+
+  // ===== AUDIO ENGINE — Web Audio Melody Synthesizer =====
+  let audioCtx = null;
+  let masterGain = null;
+  let activeNodes = [];
+  let melodyLoopId = null;
+  let currentBeat = 0;
+  let currentVolume = 70;
+
+  // Note frequency helper
+  const NOTE = {
+    C3:130.81, D3:146.83, E3:164.81, F3:174.61, G3:196.00, A3:220.00, B3:246.94,
+    C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392.00, A4:440.00, B4:493.88,
+    C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99, A5:880.00,
+    R:0 // rest
+  };
+
+  // 4 track definitions — each has melody + bass + optional drum pattern
+  // Each step = 1/8 note at given BPM
+  const TRACKS = [
+    {
+      // 0: Pop Ceria — happy C-major riff (Twinkle-Twinkle feel)
+      name: 'Pop Ceria 🎵', emoji: '🎵', bpm: 140,
+      melody: [
+        {n:'C4',d:0.3},{n:'C4',d:0.3},{n:'G4',d:0.3},{n:'G4',d:0.3},
+        {n:'A4',d:0.3},{n:'A4',d:0.3},{n:'G4',d:0.6},{n:'R',d:0.1},
+        {n:'F4',d:0.3},{n:'F4',d:0.3},{n:'E4',d:0.3},{n:'E4',d:0.3},
+        {n:'D4',d:0.3},{n:'D4',d:0.3},{n:'C4',d:0.6},{n:'R',d:0.2},
+      ],
+      bass: [
+        {n:'C3',d:0.6},{n:'R',d:0.1},{n:'G3',d:0.6},{n:'R',d:0.1},
+        {n:'A3',d:0.6},{n:'R',d:0.1},{n:'G3',d:0.6},{n:'R',d:0.1},
+        {n:'F3',d:0.6},{n:'R',d:0.1},{n:'E3',d:0.6},{n:'R',d:0.1},
+        {n:'D3',d:0.6},{n:'R',d:0.1},{n:'C3',d:0.6},{n:'R',d:0.2},
+      ],
+      melodyType: 'triangle', bassType: 'sine',
+      melodyVol: 0.35, bassVol: 0.18
+    },
+    {
+      // 1: Rock Keren — power chord riff with distortion feel
+      name: 'Rock Keren 🎸', emoji: '🎸', bpm: 168,
+      melody: [
+        {n:'E4',d:0.15},{n:'R',d:0.1},{n:'E4',d:0.15},{n:'R',d:0.1},
+        {n:'G4',d:0.15},{n:'R',d:0.1},{n:'E4',d:0.15},{n:'R',d:0.1},
+        {n:'A4',d:0.3},{n:'R',d:0.15},{n:'G4',d:0.3},{n:'R',d:0.15},
+        {n:'E4',d:0.6},{n:'R',d:0.25},
+        {n:'D4',d:0.15},{n:'R',d:0.1},{n:'D4',d:0.15},{n:'R',d:0.1},
+        {n:'F4',d:0.15},{n:'R',d:0.1},{n:'D4',d:0.15},{n:'R',d:0.1},
+        {n:'G4',d:0.3},{n:'R',d:0.15},{n:'F4',d:0.3},{n:'R',d:0.15},
+        {n:'E4',d:0.6},{n:'R',d:0.25},
+      ],
+      bass: [
+        {n:'E3',d:0.2},{n:'E3',d:0.2},{n:'E3',d:0.2},{n:'E3',d:0.2},
+        {n:'A3',d:0.2},{n:'A3',d:0.2},{n:'G3',d:0.2},{n:'G3',d:0.2},
+        {n:'E3',d:0.4},{n:'R',d:0.4},
+        {n:'D3',d:0.2},{n:'D3',d:0.2},{n:'D3',d:0.2},{n:'D3',d:0.2},
+        {n:'G3',d:0.2},{n:'G3',d:0.2},{n:'F3',d:0.2},{n:'F3',d:0.2},
+        {n:'E3',d:0.4},{n:'R',d:0.4},
+      ],
+      melodyType: 'sawtooth', bassType: 'sawtooth',
+      melodyVol: 0.28, bassVol: 0.22
+    },
+    {
+      // 2: Musik Game — 8-bit adventure theme (Mario-ish)
+      name: 'Musik Game 🎮', emoji: '🎮', bpm: 180,
+      melody: [
+        {n:'E5',d:0.15},{n:'E5',d:0.15},{n:'R',d:0.15},{n:'E5',d:0.15},
+        {n:'R',d:0.15},{n:'C5',d:0.15},{n:'E5',d:0.3},{n:'R',d:0.1},
+        {n:'G5',d:0.4},{n:'R',d:0.2},{n:'G4',d:0.4},{n:'R',d:0.2},
+        {n:'C5',d:0.3},{n:'R',d:0.1},{n:'G4',d:0.25},{n:'R',d:0.1},
+        {n:'E4',d:0.3},{n:'R',d:0.1},{n:'A4',d:0.25},{n:'R',d:0.1},
+        {n:'B4',d:0.25},{n:'R',d:0.1},{n:'A4',d:0.25},{n:'R',d:0.1},
+        {n:'G4',d:0.25},{n:'E5',d:0.25},{n:'G5',d:0.25},{n:'R',d:0.1},
+        {n:'A5',d:0.3},{n:'F5',d:0.2},{n:'G5',d:0.2},{n:'R',d:0.2},
+      ],
+      bass: [
+        {n:'C3',d:0.3},{n:'G3',d:0.3},{n:'C4',d:0.3},{n:'G3',d:0.3},
+        {n:'C3',d:0.3},{n:'G3',d:0.3},{n:'E3',d:0.3},{n:'G3',d:0.3},
+        {n:'F3',d:0.3},{n:'C3',d:0.3},{n:'F3',d:0.3},{n:'C3',d:0.3},
+        {n:'G3',d:0.3},{n:'D3',d:0.3},{n:'G3',d:0.3},{n:'D3',d:0.3},
+      ],
+      melodyType: 'square', bassType: 'square',
+      melodyVol: 0.3, bassVol: 0.15
+    },
+    {
+      // 3: Piano Syahdu — gentle C major arpeggios + melody
+      name: 'Piano Syahdu 🎹', emoji: '🎹', bpm: 96,
+      melody: [
+        {n:'E4',d:0.5},{n:'G4',d:0.5},{n:'C5',d:0.5},{n:'G4',d:0.5},
+        {n:'E5',d:0.5},{n:'D5',d:0.5},{n:'C5',d:1.0},{n:'R',d:0.2},
+        {n:'D4',d:0.5},{n:'F4',d:0.5},{n:'B4',d:0.5},{n:'F4',d:0.5},
+        {n:'D5',d:0.5},{n:'C5',d:0.5},{n:'B4',d:1.0},{n:'R',d:0.2},
+        {n:'C4',d:0.5},{n:'E4',d:0.5},{n:'G4',d:0.5},{n:'E4',d:0.5},
+        {n:'C5',d:0.5},{n:'B4',d:0.5},{n:'A4',d:1.0},{n:'R',d:0.2},
+        {n:'G4',d:0.5},{n:'A4',d:0.5},{n:'B4',d:0.5},{n:'A4',d:0.5},
+        {n:'G5',d:0.5},{n:'F5',d:0.5},{n:'E5',d:1.0},{n:'R',d:0.3},
+      ],
+      bass: [
+        {n:'C3',d:1.0},{n:'G3',d:1.0},{n:'E3',d:1.0},{n:'G3',d:1.0},
+        {n:'D3',d:1.0},{n:'A3',d:1.0},{n:'F3',d:1.0},{n:'A3',d:1.0},
+        {n:'C3',d:1.0},{n:'G3',d:1.0},{n:'A3',d:1.0},{n:'E3',d:1.0},
+        {n:'G3',d:1.0},{n:'D3',d:1.0},{n:'C3',d:1.0},{n:'G3',d:1.0},
+      ],
+      melodyType: 'sine', bassType: 'sine',
+      melodyVol: 0.38, bassVol: 0.2
+    }
+  ];
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.setValueAtTime(currentVolume / 100 * 0.8, audioCtx.currentTime);
+    // Simple reverb-like effect using a small delay
+    const delay = audioCtx.createDelay(0.3);
+    delay.delayTime.value = 0.06;
+    const delayGain = audioCtx.createGain();
+    delayGain.gain.value = 0.18;
+    masterGain.connect(audioCtx.destination);
+    masterGain.connect(delay);
+    delay.connect(delayGain);
+    delayGain.connect(audioCtx.destination);
+  }
+
+  function scheduleNote(freq, type, vol, startTime, duration) {
+    if (!audioCtx || freq === 0) return null;
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, startTime);
+    // Attack
+    g.gain.setValueAtTime(0, startTime);
+    g.gain.linearRampToValueAtTime(vol, startTime + Math.min(0.02, duration * 0.1));
+    // Sustain then decay
+    g.gain.setValueAtTime(vol, startTime + duration * 0.6);
+    g.gain.exponentialRampToValueAtTime(0.001, startTime + duration * 0.98);
+    osc.connect(g);
+    g.connect(masterGain);
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+    activeNodes.push(osc, g);
+    return osc;
+  }
+
+  function playMelodyLoop(trackIdx) {
+    if (!audioCtx) return;
+    const track = TRACKS[trackIdx];
+    const beatLen = 60 / track.bpm; // seconds per beat
+
+    let melodyTime = audioCtx.currentTime + 0.05;
+    let bassTime = audioCtx.currentTime + 0.05;
+
+    // Schedule one full loop of melody
+    track.melody.forEach(step => {
+      const dur = step.d * beatLen * 2;
+      scheduleNote(NOTE[step.n] || 0, track.melodyType, track.melodyVol, melodyTime, dur);
+      melodyTime += dur + 0.01;
+    });
+
+    // Schedule one full loop of bass
+    track.bass.forEach(step => {
+      const dur = step.d * beatLen * 2;
+      scheduleNote(NOTE[step.n] || 0, track.bassType, track.bassVol, bassTime, dur);
+      bassTime += dur + 0.01;
+    });
+
+    // Calculate total loop length and re-schedule
+    const loopLen = Math.max(melodyTime, bassTime) - audioCtx.currentTime;
+    melodyLoopId = setTimeout(() => {
+      if (speakerPlaying) playMelodyLoop(trackIdx);
+    }, (loopLen - 0.1) * 1000);
+  }
+
+  function playTone() {
+    try {
+      initAudio();
+      stopNodes();
+      playMelodyLoop(window.currentTrack || 0);
+    } catch(e) { console.warn('Audio error:', e); }
+  }
+
+  function stopNodes() {
+    clearTimeout(melodyLoopId);
+    melodyLoopId = null;
+    activeNodes.forEach(n => { try { if (n.stop) n.stop(); n.disconnect(); } catch(e){} });
+    activeNodes = [];
+  }
+
+  function stopTone() {
+    stopNodes();
+    if (masterGain) { try { masterGain.disconnect(); } catch(e){} masterGain = null; }
+  }
+
+  // Volume
+  function changeVolume(val) {
+    currentVolume = parseInt(val);
+    document.getElementById('volumeDisplay').textContent = val;
+    if (masterGain && audioCtx) {
+      masterGain.gain.linearRampToValueAtTime(currentVolume / 100 * 0.8, audioCtx.currentTime + 0.05);
+    }
+  }
+
+  // Track selection
+  const tracks = TRACKS;
+  window.currentTrack = 0;
+
+  function selectTrack(i) {
+    window.currentTrack = i;
+    document.querySelectorAll('.track-btn').forEach((btn, idx) => {
+      btn.style.border = idx === i ? '2px solid #ffd43b' : '2px solid transparent';
+      btn.style.background = idx === i ? 'rgba(255,255,255,0.35)' : '';
+    });
+    document.getElementById('trackName').textContent = tracks[i].name;
+    document.getElementById('trackEmoji').textContent = tracks[i].emoji;
+    document.getElementById('playStateIcon').textContent = speakerPlaying ? '🎵' : '▶️';
+
+    if (speakerPlaying) {
+      stopNodes();
+      if (masterGain) { try { masterGain.disconnect(); } catch(e){} masterGain = null; }
+      playTone();
+    }
+
+    showToast('🎵 Lagu ' + tracks[i].name + ' dipilih!');
+  }
+
+  // ===== MICROPHONE =====
+  let micActive = false;
+  let recTimerInterval = null;
+  let recSeconds = 0;
+
+  const micActivities = {
+    sing: {
+      icon: '🎵', status: 'Sedang Nyanyi!', led: '#22d3ee',
+      reaction: '🎵 "LA LA LA! Aslan lagi nyanyi seru! Komputer bisa dengar suaraku!" 🎤✨',
+      wave: true
+    },
+    call: {
+      icon: '📞', status: 'Video Call Aktif', led: '#a3e635',
+      reaction: '📞 "Halo! Halo! Bisa dengar aku? Aslan lagi video call sama teman!" 😄📱',
+      wave: true
+    },
+    game: {
+      icon: '🎮', status: 'Voice Chat Game', led: '#ffd43b',
+      reaction: '🎮 "PUSH! PUSH! Ke kiri! Aslan lagi main game pakai suara!" 🕹️🔥',
+      wave: true
+    },
+    assistant: {
+      icon: '🤖', status: 'Voice AI Aktif', led: '#a78bfa',
+      reaction: '🤖 "Hey Aslan, silakan bicara! Komputer siap mendengarkan kamu!" 🌟',
+      wave: true
+    },
+    record: {
+      icon: '⏺️', status: '● REC - Merekam...', led: '#f87171',
+      reaction: '⏺️ "Rekaman dimulai! Bicara sekarang Aslan! 3... 2... 1... ACTION!" 🎬',
+      wave: true
+    }
+  };
+
+  function simulateMicActivity(type) {
+    const act = micActivities[type];
+    micActive = true;
+
+    document.getElementById('micStatusIcon').textContent = act.icon;
+    document.getElementById('micStatusText').textContent = act.status;
+    document.getElementById('micLedCircle').style.fill = act.led;
+    document.getElementById('micReaction').textContent = act.reaction;
+
+    // Red dot blink for recording
+    const dot = document.getElementById('recDot');
+    if (type === 'record') {
+      dot.style.background = '#ef4444';
+      dot.classList.add('rec-blink');
+    } else {
+      dot.style.background = '#22d3ee';
+      dot.classList.remove('rec-blink');
+    }
+
+    // Start waveform
+    document.getElementById('waveformContainer').classList.add('waveform-active');
+    document.getElementById('waveformDisplay').classList.add('waveform-active');
+    document.getElementById('waveLabel').textContent = '🔴 Mendengar...';
+
+    // Mic SVG pulse
+    document.getElementById('micSvg').classList.add('mic-recording');
+
+    // Timer
+    clearInterval(recTimerInterval);
+    recSeconds = 0;
+    recTimerInterval = setInterval(() => {
+      recSeconds++;
+      const m = String(Math.floor(recSeconds/60)).padStart(2,'0');
+      const s = String(recSeconds%60).padStart(2,'0');
+      document.getElementById('recTimer').textContent = m+':'+s;
+    }, 1000);
+
+    showToast('🎤 Microphone Aktif! ' + act.icon);
+    if (type !== 'record') launchConfetti(window.innerWidth/2, 200);
+
+    // Auto stop
+    setTimeout(stopMic, 6000);
+  }
+
+  function stopMic() {
+    micActive = false;
+    clearInterval(recTimerInterval);
+    document.getElementById('micStatusIcon').textContent = '🎤';
+    document.getElementById('micStatusText').textContent = 'Siap digunakan';
+    document.getElementById('micLedCircle').style.fill = '#fda4af';
+    document.getElementById('micReaction').textContent = '🎤 Pilih aktivitas di atas!';
+    document.getElementById('recDot').style.background = '#6b7280';
+    document.getElementById('recDot').classList.remove('rec-blink');
+    document.getElementById('waveformContainer').classList.remove('waveform-active');
+    document.getElementById('waveformDisplay').classList.remove('waveform-active');
+    document.getElementById('waveLabel').textContent = '⏹️ Berhenti';
+    document.getElementById('micSvg').classList.remove('mic-recording');
+  }
+
+  // Mic button (simpler)
+  function startRecording() {
+    simulateMicActivity('record');
+  }
+
+  // ===== QUIZ =====
+  const answers = { 1: 'B', 2: 'B', 3: 'B' };
+  const feedbacks = {
+    1: {
+      B: { text: '✅ Benar banget! Speaker tugasnya mengeluarkan suara dan musik. Mulut komputer yang suka bernyanyi! 🎵', bg: 'bg-green-100 border-green-300 text-green-800' },
+      wrong: { text: '❌ Hampir! Speaker itu mengeluarkan suara, bukan menyimpan atau mendengar. Coba ingat: Speaker = Mulut komputer! 🔊', bg: 'bg-red-100 border-red-300 text-red-800' }
+    },
+    2: {
+      B: { text: '✅ Yes! Microphone itu seperti telinga yang mendengarkan dengan baik. Sangat tepat! 👂🎤', bg: 'bg-green-100 border-green-300 text-green-800' },
+      wrong: { text: '❌ Belum tepat! Microphone itu seperti TELINGA yang mendengar suara kita. Bukan mata atau kaki ya! 😄', bg: 'bg-red-100 border-red-300 text-red-800' }
+    },
+    3: {
+      B: { text: '✅ Betul sekali! Microphone kita gunakan supaya suara kita bisa didengar oleh orang lain saat video call! 📞✅', bg: 'bg-green-100 border-green-300 text-green-800' },
+      wrong: { text: '❌ Coba lagi! Microphone dipakai supaya suara kita terdengar oleh orang yang kita telepon. Bukan untuk layar atau internet ya! 🎤', bg: 'bg-red-100 border-red-300 text-red-800' }
+    }
+  };
+
+  let quizAnswered = {};
+  let quizScore = 0;
+
+  function answerQuiz(qNum, choice) {
+    if (quizAnswered[qNum]) return;
+    quizAnswered[qNum] = choice;
+
+    const correct = answers[qNum];
+    const fb = feedbacks[qNum];
+    const isCorrect = choice === correct;
+    if (isCorrect) quizScore++;
+
+    // Style buttons
+    ['A','B','C'].forEach(opt => {
+      const btn = document.getElementById(`q${qNum}${opt}`);
+      if (opt === correct) {
+        btn.style.background = '#dcfce7';
+        btn.style.borderColor = '#86efac';
+        btn.style.color = '#166534';
+      } else if (opt === choice && !isCorrect) {
+        btn.style.background = '#fee2e2';
+        btn.style.borderColor = '#fca5a5';
+        btn.style.color = '#991b1b';
+      }
+      btn.disabled = true;
+    });
+
+    // Show feedback
+    const fbDiv = document.getElementById(`q${qNum}Feedback`);
+    const fbData = isCorrect ? fb[correct] : fb.wrong;
+    fbDiv.className = `mt-3 rounded-2xl p-3 border-2 text-sm font-semibold ${fbData.bg}`;
+    fbDiv.textContent = fbData.text;
+    fbDiv.classList.remove('hidden');
+
+    if (isCorrect) launchConfetti(window.innerWidth/2, 300);
+
+    // Check if all answered
+    if (Object.keys(quizAnswered).length === 3) {
+      setTimeout(showScore, 800);
+    }
+  }
+
+  function showScore() {
+    const scoreDiv = document.getElementById('scoreDisplay');
+    scoreDiv.classList.remove('hidden');
+    const emojis = ['😅','😊','🌟','🏆'];
+    const msgs = [
+      'Jangan menyerah! Baca lagi ya dan coba besok!',
+      'Bagus! Satu salah, tapi hampir sempurna! 💪',
+      'Hampir sempurna! Kamu pintar banget! 🌟',
+      'SEMPURNA! Aslan adalah master komputer! 🏆🎉'
+    ];
+    document.getElementById('scoreEmoji').textContent = emojis[quizScore];
+    document.getElementById('scoreText').textContent = `Nilai: ${quizScore}/3 ✨`;
+    document.getElementById('scoreMessage').textContent = msgs[quizScore];
+    if (quizScore === 3) launchConfetti(window.innerWidth/2, window.innerHeight/2);
+    showToast(`🌟 Nilai kamu: ${quizScore}/3!`);
+  }
+
+  // ===== NAVIGATION =====
+  function goToDay(day) {
+    showToast(`🚀 Menuju Hari ${day}...`);
+    setTimeout(() => {
+      alert(`📚 Hari ${day} sedang disiapkan!\n\nFile: aslan-hari${day}.html`);
+    }, 800);
+  }
+
+  // ===== DRAWING CANVAS =====
+  const canvas = document.getElementById('drawCanvas');
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
+  let currentColor = '#7c3aed';
+  let brushSize = 5;
+
+  function setColor(c) { currentColor = c; }
+  function setBrush(s) { brushSize = s; }
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    if (e.touches) {
+      return {
+        x: (e.touches[0].clientX - rect.left) * scaleX,
+        y: (e.touches[0].clientY - rect.top) * scaleY
+      };
+    }
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
+    };
+  }
+
+  canvas.addEventListener('mousedown', e => {
+    drawing = true;
+    const p = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+  });
+  canvas.addEventListener('mousemove', e => {
+    if (!drawing) return;
+    const p = getPos(e);
+    ctx.lineWidth = brushSize;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = currentColor;
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+  });
+  canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
+  canvas.addEventListener('mouseleave', () => { drawing = false; ctx.beginPath(); });
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    drawing = true;
+    const p = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+  }, { passive: false });
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (!drawing) return;
+    const p = getPos(e);
+    ctx.lineWidth = brushSize;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = currentColor;
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+  }, { passive: false });
+  canvas.addEventListener('touchend', () => { drawing = false; ctx.beginPath(); });
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    showToast('🗑️ Canvas dibersihkan!');
+  }
+
+  function saveDrawing() {
+    const link = document.createElement('a');
+    link.download = 'gambar-speaker-mic-aslan.png';
+    link.href = canvas.toDataURL();
+    link.click();
+    showToast('💾 Gambar tersimpan!');
+  }
+
+  // ===== INIT =====
+  // Select first track by default
+  selectTrack(0);
+</script>
+
+</body>
+</html>

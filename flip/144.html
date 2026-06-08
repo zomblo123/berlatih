@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Aslan's English Adventure — Day 14: The Lost Star</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #060812;
+    --deep:    #0a0d20;
+    --sky:     #3b82f6;
+    --amber:   #f59e0b;
+    --gold:    #fbbf24;
+    --emerald: #10b981;
+    --coral:   #f97316;
+    --purple:  #8b5cf6;
+    --indigo:  #4f46e5;
+    --rose:    #f43f5e;
+    --white:   #ffffff;
+    --starlight: #e0f2fe;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star {
+    position: absolute; border-radius: 50%; background: white;
+    animation: twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:.15;transform:scale(1);}50%{opacity:.92;transform:scale(1.5);} }
+
+  /* Drifting stardust */
+  .stardust {
+    position: fixed; pointer-events: none; z-index: 0; border-radius: 50%;
+    background: radial-gradient(circle, #bae6fd 0%, #7dd3fc40 70%, transparent 100%);
+    animation: stardrift var(--std,9s) ease-in-out infinite var(--stdelay,0s);
+  }
+  @keyframes stardrift {
+    0%{transform:translate(0,0) scale(1);opacity:0;}
+    18%{opacity:.85;}
+    55%{transform:translate(var(--stx,25px),var(--sty,-65px)) scale(1.2);opacity:.5;}
+    100%{transform:translate(var(--stx2,-18px),var(--sty2,-120px)) scale(.4);opacity:0;}
+  }
+
+  .shoot {
+    position: fixed; top: 9%; left: -10%;
+    width: 150px; height: 2px;
+    background: linear-gradient(90deg, transparent, #bae6fd, transparent);
+    animation: shoot 9s linear infinite 1.5s; z-index: 0;
+  }
+  @keyframes shoot {
+    0%{left:-10%;top:9%;opacity:0;}5%{opacity:1;}40%{left:110%;top:27%;opacity:0;}100%{left:110%;top:27%;opacity:0;}
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 36px 20px 60px; }
+
+  /* ===== HERO ===== */
+  .hero { text-align: center; margin-bottom: 44px; animation: fadeDown .8s ease both; }
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
+  .hero-badge {
+    display: inline-flex; gap: 8px;
+    background: rgba(186,230,253,.11); border: 1px solid rgba(186,230,253,.32);
+    color: #bae6fd; padding: 7px 22px; border-radius: 100px;
+    font-size: .8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Baloo 2', cursive; font-size: clamp(2rem,6vw,3.2rem);
+    font-weight: 800; color: var(--white); line-height: 1.15; margin-bottom: 12px;
+  }
+  .hero h1 .accent { background: linear-gradient(135deg,#bae6fd,#fbbf24); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero-sub { color: rgba(255,255,255,.55); font-size: 1rem; max-width: 500px; margin: 0 auto 28px; line-height: 1.6; }
+  .hero-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .tag { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.7); padding:6px 16px; border-radius:100px; font-size:.78rem; font-weight:600; backdrop-filter:blur(8px); }
+
+  .progress-wrap { background:rgba(255,255,255,.07); border-radius:100px; height:8px; margin-bottom:40px; overflow:hidden; border:1px solid rgba(255,255,255,.08); }
+  .progress-bar { height:100%; background:linear-gradient(90deg,#bae6fd,#fbbf24); border-radius:100px; width:0%; transition:width .6s ease; }
+  .progress-label { text-align:right; font-size:.75rem; color:rgba(255,255,255,.4); margin-top:6px; font-weight:600; }
+
+  /* ===== ILLUSTRATION ===== */
+  .illustration-card {
+    background: linear-gradient(135deg,#060812 0%,#0e1230 50%,#060812 100%);
+    border-radius: 32px; padding: 32px 24px 24px; margin-bottom: 40px;
+    text-align: center; position: relative; overflow: hidden; animation: fadeUp .9s ease .1s both;
+    border: 1px solid rgba(186,230,253,.16);
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+  .illus-svg { max-width: 290px; width: 100%; position: relative; z-index: 1; }
+  .illus-quote { color:rgba(255,255,255,.75); font-size:.95rem; font-weight:600; margin-top:16px; font-style:italic; }
+  .illus-quote strong { color:#bae6fd; font-style:normal; }
+
+  /* ===== SPEED CONTROLS ===== */
+  .speed-controls {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 16px; animation: fadeUp .9s ease .15s both;
+  }
+  .speed-label { color: rgba(255,255,255,.5); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .speed-btn {
+    padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06); color: rgba(255,255,255,.6);
+    font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s;
+    backdrop-filter: blur(8px); font-family: 'Nunito', sans-serif;
+  }
+  .speed-btn:hover { background: rgba(255,255,255,.12); color: white; }
+  .speed-btn.active {
+    background: linear-gradient(135deg, #0ea5e9, #0369a1);
+    color: white; border-color: transparent;
+    box-shadow: 0 4px 16px rgba(14,165,233,.4);
+  }
+
+  .master-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:40px; animation:fadeUp .9s ease .2s both; }
+  .btn-master { display:inline-flex; align-items:center; gap:10px; padding:13px 28px; border-radius:100px; border:none; cursor:pointer; font-weight:700; transition:transform .15s; font-family:'Nunito',sans-serif; font-size:.95rem; }
+  .btn-master:active { transform:scale(.97); }
+  .btn-play-all { background:linear-gradient(135deg,#0ea5e9,#0369a1); color:white; box-shadow:0 6px 24px rgba(14,165,233,.4); }
+  .btn-stop { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:rgba(255,255,255,.75); backdrop-filter:blur(8px); }
+
+  /* ===== CHAPTERS ===== */
+  .chapter {
+    background: linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.09); border-radius: 28px;
+    margin-bottom: 24px; overflow: hidden; backdrop-filter: blur(12px);
+    transition: transform .2s; animation: fadeUp .7s ease both;
+  }
+  .chapter:hover { transform: translateY(-3px); }
+  .chapter:nth-child(1){animation-delay:.1s;}.chapter:nth-child(2){animation-delay:.2s;}
+  .chapter:nth-child(3){animation-delay:.3s;}.chapter:nth-child(4){animation-delay:.4s;}
+  .chapter:nth-child(5){animation-delay:.5s;}
+  .chapter-accent { height: 4px; }
+  .ch1 .chapter-accent{background:linear-gradient(90deg,#bae6fd,#38bdf8);}
+  .ch2 .chapter-accent{background:linear-gradient(90deg,#fcd34d,#f59e0b);}
+  .ch3 .chapter-accent{background:linear-gradient(90deg,#c4b5fd,#7c3aed);}
+  .ch4 .chapter-accent{background:linear-gradient(90deg,#6ee7b7,#059669);}
+  .ch5 .chapter-accent{background:linear-gradient(90deg,#fda4af,#e11d48);}
+  .chapter-inner { padding: 28px 28px 24px; }
+  .chapter-head { display:flex; align-items:center; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+  .chapter-num {
+    width:52px; height:52px; border-radius:16px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2',cursive; font-size:1.3rem; font-weight:800; color:white;
+  }
+  .ch1 .chapter-num{background:linear-gradient(135deg,#bae6fd,#0ea5e9);}
+  .ch2 .chapter-num{background:linear-gradient(135deg,#fcd34d,#d97706);}
+  .ch3 .chapter-num{background:linear-gradient(135deg,#c4b5fd,#7c3aed);}
+  .ch4 .chapter-num{background:linear-gradient(135deg,#6ee7b7,#059669);}
+  .ch5 .chapter-num{background:linear-gradient(135deg,#fda4af,#e11d48);}
+  .chapter-meta { flex:1; min-width:0; }
+  .chapter-tag { font-size:.7rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.35); margin-bottom:4px; }
+  .chapter-title { font-family:'Baloo 2',cursive; font-size:1.05rem; font-weight:700; color:var(--white); line-height:1.3; }
+  .btn-listen {
+    flex-shrink:0; display:inline-flex; align-items:center; gap:8px;
+    padding:10px 20px; border-radius:100px; border:none; cursor:pointer;
+    font-size:.82rem; font-weight:700; transition:all .2s; font-family:'Nunito',sans-serif;
+  }
+  .ch1 .btn-listen{background:rgba(186,230,253,.15);color:#bae6fd;border:1px solid rgba(186,230,253,.3);}
+  .ch2 .btn-listen{background:rgba(252,211,77,.15);color:#fde68a;border:1px solid rgba(252,211,77,.3);}
+  .ch3 .btn-listen{background:rgba(196,181,253,.15);color:#ddd6fe;border:1px solid rgba(196,181,253,.3);}
+  .ch4 .btn-listen{background:rgba(110,231,183,.15);color:#a7f3d0;border:1px solid rgba(110,231,183,.3);}
+  .ch5 .btn-listen{background:rgba(253,164,175,.15);color:#fecdd3;border:1px solid rgba(253,164,175,.3);}
+  .btn-listen:hover{filter:brightness(1.15);transform:scale(1.04);}
+  .btn-listen.playing::before{content:'⏸';margin-right:4px;}
+  .wave-bars{display:none;align-items:center;gap:2px;height:16px;}
+  .btn-listen.playing .wave-bars{display:flex;}
+  .wave-bar{width:3px;border-radius:2px;background:currentColor;animation:wave var(--dur,.5s) infinite alternate;}
+  @keyframes wave{from{height:3px;}to{height:14px;}}
+
+  .chapter-text {
+    font-size: 1rem; line-height: 1.95; color: rgba(255,255,255,.85);
+    padding: 20px 22px; background: rgba(0,0,0,.25);
+    border-radius: 16px; border: 1px solid rgba(255,255,255,.05);
+    position: relative; word-spacing: 2px;
+  }
+  .chapter-text .read-marker {
+    position:absolute; top:12px; right:14px;
+    font-size:.75rem; font-weight:700; color:#bae6fd;
+    opacity:0; transition:opacity .4s;
+  }
+  .chapter.done .chapter-text .read-marker { opacity:1; }
+
+  .w {
+    display: inline; border-radius: 5px; padding: 1px 2px;
+    cursor: pointer; transition: background 0.08s; white-space: normal;
+  }
+  .w:hover { background: rgba(186,230,253,0.2); }
+  .hl { color: #bae6fd; font-weight: 700; }
+
+  .vocab-box { margin-top:16px; padding:16px 20px; background:rgba(255,255,255,.04); border-radius:14px; border:1px solid rgba(255,255,255,.07); }
+  .vocab-title { font-size:.72rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:10px; }
+  .vocab-pills { display:flex; flex-wrap:wrap; gap:8px; }
+  .vocab-pill {
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
+    border-radius:100px; padding:5px 14px; font-size:.8rem; font-weight:600;
+    color:rgba(255,255,255,.65); cursor:pointer; transition:all .18s;
+  }
+  .vocab-pill:hover{background:rgba(255,255,255,.14);color:var(--white);transform:scale(1.06);}
+
+  .motivation-card {
+    background: linear-gradient(135deg,#060812 0%,#0e1230 60%,#060812 100%);
+    border: 1px solid rgba(186,230,253,.18); border-radius:28px;
+    padding:36px 32px; text-align:center; margin-top:40px;
+    position:relative; overflow:hidden; animation:fadeUp .7s ease .6s both;
+  }
+  .motivation-card .star-icon{font-size:2.8rem;margin-bottom:16px;display:block;animation:spin 6s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);}50%{transform:rotate(180deg);}to{transform:rotate(360deg);}}
+  .motivation-card h2{font-family:'Baloo 2',cursive;font-size:clamp(1.2rem,4vw,1.7rem);font-weight:800;color:#bae6fd;margin-bottom:14px;}
+  .motivation-card p{color:rgba(255,255,255,.7);font-size:.97rem;line-height:1.7;max-width:520px;margin:0 auto;}
+  .challenge-box{margin-top:24px;background:rgba(186,230,253,.07);border:1px solid rgba(186,230,253,.18);border-radius:16px;padding:18px 22px;}
+  .challenge-box p{font-size:.9rem;font-weight:600;color:rgba(255,255,255,.75);}
+  .challenge-box strong{color:#bae6fd;}
+  .footer{text-align:center;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.3);font-size:.82rem;font-weight:600;}
+
+  .word-toast {
+    position:fixed; bottom:28px; left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:rgba(0,0,0,.92); backdrop-filter:blur(12px);
+    color:#bae6fd; padding:12px 28px; border-radius:100px;
+    font-size:.9rem; font-weight:600;
+    box-shadow:0 8px 32px rgba(0,0,0,.4);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    z-index:9999; white-space:nowrap;
+    border:1px solid rgba(186,230,253,.28); font-family:monospace;
+  }
+  .word-toast.show{transform:translateX(-50%) translateY(0);}
+  .word-toast small{color:#aaa;font-size:0.7rem;margin-left:8px;}
+
+  @media(max-width:600px){
+    .chapter-inner{padding:20px 18px 18px;}
+    .btn-listen span{display:none;}
+    .chapter-num{width:44px;height:44px;font-size:1.1rem;}
+    .word-toast{white-space:normal;max-width:90vw;text-align:center;}
+    .speed-controls{gap:6px;}
+    .speed-btn{padding:7px 14px;font-size:.75rem;}
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<div class="stars" id="stars"></div>
+<div class="shoot"></div>
+
+<div class="wrapper">
+  <header class="hero">
+    <div class="hero-badge">⭐ Day 14 – Late Beginner | ✨ Click ANY word for Indonesian meaning</div>
+    <h1>The Lost<br><span class="accent">Star</span></h1>
+    <p class="hero-sub">A story about <strong style="color:#bae6fd">Aslan</strong> who finds a tiny glowing star that has fallen from the sky — and goes on a beautiful night journey to help it find its way home. 🌟🌙✨</p>
+    <div class="hero-tags">
+      <span class="tag">⭐ Late Beginner</span>
+      <span class="tag">🎧 Listen & Learn</span>
+      <span class="tag">📚 5 Chapters</span>
+      <span class="tag">🏆 Vocabulary</span>
+      <span class="tag">🔍 Click words for meaning</span>
+    </div>
+  </header>
+
+  <div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-label" id="progressLabel">0 of 5 chapters read</div>
+  </div>
+
+  <!-- ILLUSTRATION -->
+  <div class="illustration-card">
+    <svg class="illus-svg" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Deep night sky -->
+      <rect x="0" y="0" width="300" height="200" fill="#04060f" rx="14"/>
+
+      <!-- Milky Way wash -->
+      <ellipse cx="150" cy="60" rx="140" ry="35" fill="#0f172a" opacity=".7"/>
+      <ellipse cx="155" cy="58" rx="110" ry="22" fill="#1e3a5f" opacity=".25"/>
+
+      <!-- Background stars (many small) -->
+      <circle cx="12" cy="18" r="1" fill="white" opacity=".5"><animate attributeName="opacity" values=".1;.7;.1" dur="2.5s" repeatCount="indefinite"/></circle>
+      <circle cx="38" cy="10" r="1.3" fill="white" opacity=".7"><animate attributeName="opacity" values=".2;.9;.2" dur="2.1s" repeatCount="indefinite" begin=".3s"/></circle>
+      <circle cx="72" cy="22" r=".9" fill="white" opacity=".6"><animate attributeName="opacity" values=".1;.8;.1" dur="2.8s" repeatCount="indefinite" begin=".8s"/></circle>
+      <circle cx="105" cy="12" r="1.2" fill="white" opacity=".7"><animate attributeName="opacity" values=".3;.9;.3" dur="1.9s" repeatCount="indefinite" begin="1.1s"/></circle>
+      <circle cx="145" cy="8" r="1" fill="white" opacity=".5"><animate attributeName="opacity" values=".1;.7;.1" dur="3.2s" repeatCount="indefinite" begin=".5s"/></circle>
+      <circle cx="185" cy="16" r="1.3" fill="white" opacity=".8"><animate attributeName="opacity" values=".2;1;.2" dur="2.3s" repeatCount="indefinite" begin=".9s"/></circle>
+      <circle cx="220" cy="24" r="1" fill="white" opacity=".6"><animate attributeName="opacity" values=".2;.7;.2" dur="2.6s" repeatCount="indefinite" begin=".2s"/></circle>
+      <circle cx="258" cy="12" r="1.5" fill="white" opacity=".8"><animate attributeName="opacity" values=".3;.9;.3" dur="2s" repeatCount="indefinite" begin=".7s"/></circle>
+      <circle cx="285" cy="28" r="1" fill="white" opacity=".5"><animate attributeName="opacity" values=".1;.7;.1" dur="2.7s" repeatCount="indefinite" begin="1.3s"/></circle>
+      <circle cx="28" cy="45" r="1.1" fill="#bae6fd" opacity=".5"><animate attributeName="opacity" values=".1;.6;.1" dur="3s" repeatCount="indefinite" begin=".4s"/></circle>
+      <circle cx="250" cy="45" r="1.2" fill="#bae6fd" opacity=".5"><animate attributeName="opacity" values=".2;.7;.2" dur="2.4s" repeatCount="indefinite" begin="1s"/></circle>
+      <circle cx="130" cy="35" r="1" fill="#fcd34d" opacity=".5"><animate attributeName="opacity" values=".1;.8;.1" dur="2.8s" repeatCount="indefinite" begin=".6s"/></circle>
+
+      <!-- Moon (large, beautiful) -->
+      <circle cx="248" cy="42" r="24" fill="#fef9c3" opacity=".92"/>
+      <circle cx="256" cy="37" r="18" fill="#04060f" opacity=".25"/>
+      <!-- Moon craters -->
+      <circle cx="240" cy="48" r="3" fill="rgba(0,0,0,.08)"/>
+      <circle cx="252" cy="55" r="2" fill="rgba(0,0,0,.06)"/>
+      <circle cx="260" cy="40" r="1.5" fill="rgba(0,0,0,.07)"/>
+
+      <!-- Shooting star trail (the fallen star path) -->
+      <line x1="60" y1="30" x2="150" y2="115" stroke="#bae6fd" stroke-width="1.5" opacity=".3" stroke-dasharray="4,4"/>
+      <!-- Trail glow particles -->
+      <circle cx="80" cy="48" r="1.5" fill="#bae6fd" opacity=".4"/>
+      <circle cx="100" cy="65" r="1" fill="#bae6fd" opacity=".3"/>
+      <circle cx="118" cy="80" r="1.5" fill="#fcd34d" opacity=".35"/>
+      <circle cx="133" cy="95" r="1" fill="#fcd34d" opacity=".3"/>
+
+      <!-- Hill / ground -->
+      <path d="M0 165 Q75 138 150 148 Q225 158 300 140 L300 200 L0 200Z" fill="#0a0d20"/>
+      <path d="M0 178 Q80 162 150 168 Q220 174 300 158 L300 200 L0 200Z" fill="#060812"/>
+
+      <!-- Small trees silhouette on hill -->
+      <path d="M30 165 L30 145 M28 152 L32 152 M27 157 L33 157" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="30" cy="143" rx="7" ry="9" fill="#0f172a"/>
+      <path d="M272 158 L272 140 M270 147 L274 147 M269 152 L275 152" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="272" cy="138" rx="7" ry="9" fill="#0f172a"/>
+
+      <!-- THE LITTLE STAR (fallen, glowing on ground) -->
+      <!-- Glow halos -->
+      <circle cx="148" cy="148" rx="28" r="28" fill="none"/>
+      <ellipse cx="148" cy="152" rx="30" ry="12" fill="#fbbf24" opacity=".1"/>
+      <ellipse cx="148" cy="150" rx="22" ry="9" fill="#fcd34d" opacity=".12"/>
+      <ellipse cx="148" cy="149" rx="14" ry="6" fill="#fef08a" opacity=".15"/>
+      <!-- Star shape (5-pointed, cute) -->
+      <polygon points="148,122 152,137 168,137 155,146 160,161 148,152 136,161 141,146 128,137 144,137"
+               fill="#fef08a"/>
+      <polygon points="148,125 151,136 165,136 154,144 158,158 148,150 138,158 142,144 131,136 145,136"
+               fill="#fef9c3"/>
+      <!-- Star face (cute little face) -->
+      <circle cx="144" cy="140" r="2.2" fill="#1a1a2e"/>
+      <circle cx="152" cy="140" r="2.2" fill="#1a1a2e"/>
+      <circle cx="144.6" cy="139.4" r=".8" fill="white"/>
+      <circle cx="152.6" cy="139.4" r=".8" fill="white"/>
+      <path d="M144 145 Q148 148 152 145" stroke="#f59e0b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <!-- Star shimmer -->
+      <circle cx="148" cy="136" r="16" fill="none" stroke="#fcd34d" stroke-width="1" opacity=".5"><animate attributeName="r" values="16;20;16" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".5;.1;.5" dur="2s" repeatCount="indefinite"/></circle>
+      <circle cx="148" cy="136" r="22" fill="none" stroke="#fbbf24" stroke-width=".5" opacity=".3"><animate attributeName="r" values="22;26;22" dur="2.5s" repeatCount="indefinite" begin=".3s"/><animate attributeName="opacity" values=".3;.05;.3" dur="2.5s" repeatCount="indefinite" begin=".3s"/></circle>
+
+      <!-- ASLAN standing nearby, reaching toward the star -->
+      <circle cx="196" cy="145" r="9" fill="#c8956c"/>
+      <!-- Hair -->
+      <path d="M187 141 Q196 135 205 141 Q205 137 196 136 Q187 137 187 141Z" fill="#5c3a1e"/>
+      <!-- Body -->
+      <rect x="189" y="154" width="14" height="20" rx="4" fill="#4f46e5"/>
+      <!-- Left arm reaching toward star -->
+      <line x1="189" y1="157" x2="171" y2="150" stroke="#4f46e5" stroke-width="4" stroke-linecap="round"/>
+      <!-- Right arm down -->
+      <line x1="203" y1="157" x2="209" y2="165" stroke="#4f46e5" stroke-width="4" stroke-linecap="round"/>
+      <!-- Legs -->
+      <line x1="191" y1="174" x2="189" y2="185" stroke="#1e3a5f" stroke-width="4" stroke-linecap="round"/>
+      <line x1="201" y1="174" x2="203" y2="185" stroke="#1e3a5f" stroke-width="4" stroke-linecap="round"/>
+      <!-- Eyes - looking at star with wonder -->
+      <circle cx="193" cy="143" r="1.8" fill="#2d1a08"/>
+      <circle cx="199" cy="143" r="1.8" fill="#2d1a08"/>
+      <circle cx="193.5" cy="142.5" r=".7" fill="white"/>
+      <circle cx="199.5" cy="142.5" r=".7" fill="white"/>
+
+      <!-- Sparkles around star -->
+      <text x="115" y="128" fill="#fcd34d" font-size="9" opacity=".8">✦</text>
+      <text x="174" y="125" fill="#bae6fd" font-size="8" opacity=".7">✦</text>
+      <text x="130" y="168" fill="#fcd34d" font-size="7" opacity=".6">✦</text>
+      <text x="162" y="170" fill="#bae6fd" font-size="8" opacity=".6">✦</text>
+      <text x="108" y="148" fill="#fef9c3" font-size="10" opacity=".5">✦</text>
+      <text x="180" y="155" fill="#fcd34d" font-size="7" opacity=".5">✦</text>
+    </svg>
+    <p class="illus-quote">The little <strong>star blinked</strong> its tiny eyes and whispered, "Please take me home." 🌟🌙</p>
+  </div>
+
+  <!-- SPEED CONTROLS -->
+  <div class="speed-controls">
+    <span class="speed-label">🎚️ Speed:</span>
+    <button class="speed-btn" data-rate="0.65">🐢 Slow</button>
+    <button class="speed-btn active" data-rate="0.88">🚶 Normal</button>
+    <button class="speed-btn" data-rate="1.15">🚀 Fast</button>
+  </div>
+
+  <div class="master-controls">
+    <button class="btn-master btn-play-all" id="playAllBtn">🎧 <span>Listen to Whole Story</span></button>
+    <button class="btn-master btn-stop" id="stopBtn">⏹ <span>Stop Reading</span></button>
+  </div>
+
+  <div id="chapters">
+
+    <!-- CHAPTER 1 -->
+    <div class="chapter ch1" id="ch1">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">01</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter One</div>
+            <div class="chapter-title">🌠 The Falling Star</div>
+          </div>
+          <button class="btn-listen" data-ch="1">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.5s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text1">
+          <span class="read-marker">✅ Read!</span>
+          One clear night, Aslan was lying on the soft grass in his garden, looking up at the sky. The stars were bright and the moon was full and round. Aslan loved watching the sky. He could stay there for hours without getting bored. Then suddenly, he saw something <span class="hl">streak</span> across the sky — a bright line of gold and white, moving fast. It was a shooting star! But it did not disappear like the others. It came closer and closer. Aslan sat up quickly. The light got bigger. Then with a soft thud, something small landed in the flower bed near the garden wall. Aslan's heart beat fast. He stood up carefully, walked to the flower bed, and looked down. There, among the flowers, something was <span class="hl">glowing</span> — a warm, golden light, no bigger than his hand.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="streak">streak</span><span class="vocab-pill" data-word="glowing">glowing</span><span class="vocab-pill" data-word="shooting">shooting</span><span class="vocab-pill" data-word="thud">thud</span><span class="vocab-pill" data-word="bored">bored</span><span class="vocab-pill" data-word="flower">flower</span><span class="vocab-pill" data-word="garden">garden</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 2 -->
+    <div class="chapter ch2" id="ch2">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">02</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Two</div>
+            <div class="chapter-title">🌟 Finding the Lost Star</div>
+          </div>
+          <button class="btn-listen" data-ch="2">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text2">
+          <span class="read-marker">✅ Read!</span>
+          Aslan <span class="hl">knelt</span> down and gently pushed the flower stems apart. There it was — a small five-pointed star, about the size of his palm. It was made of pure light, soft and warm like a candle. It had two tiny blinking eyes and a small curved mouth. The little star looked up at Aslan and made a soft, bell-like sound. "Hello," Aslan whispered. "Are you okay?" The star made the sound again — a little higher this time, like a question. "I think you fell from the sky," said Aslan. The star <span class="hl">dimmed</span> a little, as if it was sad. Then it looked up, toward the dark night sky far above, and blinked its tiny eyes slowly. Aslan understood right away. "Don't worry," he said softly. "I will help you get back home."
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="knelt">knelt</span><span class="vocab-pill" data-word="dimmed">dimmed</span><span class="vocab-pill" data-word="palm">palm</span><span class="vocab-pill" data-word="pure">pure</span><span class="vocab-pill" data-word="curved">curved</span><span class="vocab-pill" data-word="stems">stems</span><span class="vocab-pill" data-word="understood">understood</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 3 -->
+    <div class="chapter ch3" id="ch3">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">03</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Three</div>
+            <div class="chapter-title">💫 The Star's Wish</div>
+          </div>
+          <button class="btn-listen" data-ch="3">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text3">
+          <span class="read-marker">✅ Read!</span>
+          Aslan held the little star gently in his cupped hands. The star was warm and <span class="hl">pulsed</span> softly with light — like a tiny heartbeat. As Aslan walked, the star made little sounds — happy bell tones when they moved toward the open field, and worried tones when Aslan turned the wrong way. It was like a musical compass. Aslan climbed to the top of the hill at the edge of the town. From up there, the sky felt much closer. He sat on a flat rock and held the star up high. The star began to <span class="hl">flicker</span> — its light going bright, then dim, then bright again. Small sparks flew off it like tiny fireworks. A warm breeze came from somewhere above, as if the sky itself was reaching down. The star made a long, beautiful tone — like a song — and its light turned from gold to white to silver.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="pulsed">pulsed</span><span class="vocab-pill" data-word="flicker">flicker</span><span class="vocab-pill" data-word="compass">compass</span><span class="vocab-pill" data-word="sparks">sparks</span><span class="vocab-pill" data-word="breeze">breeze</span><span class="vocab-pill" data-word="tone">tone</span><span class="vocab-pill" data-word="silver">silver</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 4 -->
+    <div class="chapter ch4" id="ch4">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">04</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Four</div>
+            <div class="chapter-title">🌌 Journey to the Sky</div>
+          </div>
+          <button class="btn-listen" data-ch="4">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.15s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text4">
+          <span class="read-marker">✅ Read!</span>
+          Something amazing happened next. The star rose slowly from Aslan's hands, floating upward by itself. It stopped at the height of his eyes and looked at him — really looked at him — for a long, quiet moment. Then it <span class="hl">darted</span> to the left, then right, then flew in a small circle around Aslan's head, leaving a ring of golden light in the air. Aslan laughed with surprise and <span class="hl">delight</span>. The star was saying thank you. Then it rose higher, faster. It left a long bright trail behind it, like a silver ribbon against the dark sky. Aslan watched, his mouth open and his eyes wide. The trail grew thinner and thinner until the star was just a tiny point of light — and then it settled into its place among the other stars. Aslan could still see it. It was the <span class="hl">brightest</span> one of all.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="darted">darted</span><span class="vocab-pill" data-word="delight">delight</span><span class="vocab-pill" data-word="brightest">brightest</span><span class="vocab-pill" data-word="trail">trail</span><span class="vocab-pill" data-word="ribbon">ribbon</span><span class="vocab-pill" data-word="floating">floating</span><span class="vocab-pill" data-word="settled">settled</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 5 -->
+    <div class="chapter ch5" id="ch5">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">05</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Five</div>
+            <div class="chapter-title">✨ A Bright New Friend</div>
+          </div>
+          <button class="btn-listen" data-ch="5">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text5">
+          <span class="read-marker">✅ Read!</span>
+          Aslan sat on the rock for a long time, looking up at the star he had helped. It seemed to <span class="hl">twinkle</span> a little more than the others — a quick, warm blink just for him. He smiled. He felt something he had not expected: not sadness that the star was gone, but a deep, quiet <span class="hl">happiness</span>. On his way home, Aslan thought about what had happened. The star had not said a single word. It had no arms to give a hug. But it had shared its light, its warmth, and its little bell song with him. And in return, Aslan had given his time, his care, and his courage. He had helped someone who could not help themselves. That night, before he went to sleep, Aslan looked out of his bedroom window. The bright star was still there — shining steadily, as if it was keeping watch over him too. Aslan <span class="hl">whispered</span>, "Goodnight, little star." And it blinked once. Just for him.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="twinkle">twinkle</span><span class="vocab-pill" data-word="happiness">happiness</span><span class="vocab-pill" data-word="whispered">whispered</span><span class="vocab-pill" data-word="courage">courage</span><span class="vocab-pill" data-word="steadily">steadily</span><span class="vocab-pill" data-word="expected">expected</span><span class="vocab-pill" data-word="warmth">warmth</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="motivation-card">
+    <span class="star-icon">🌟</span>
+    <h2>You are a shining star, Aslan! ⭐</h2>
+    <p>Just like the little star found its way home because of Aslan's kindness, your kindness and courage can light up the world for others. Every time you help someone — big or small — you leave a little trail of brightness behind. Remember: <strong style="color:#bae6fd">the most beautiful thing you can do is help someone find their way.</strong> 🌙✨</p>
+    <div class="challenge-box"><p>💪 <strong>Today's Challenge:</strong> Think of one person you can help this week — a friend, a family member, or even a stranger. Then tonight, go outside and find the brightest star in the sky. That one is yours! 🌟🔭</p></div>
+  </div>
+
+  <footer class="footer">Made with ❤️ for <span style="color:#bae6fd">Aslan</span> • Day 14 complete • Click any word for Indonesian meaning 🖱️</footer>
+</div>
+
+<div id="wordToast" class="word-toast">📖</div>
+
+<script>
+// ===== STARS + STARDUST =====
+(function(){
+  const wrap = document.getElementById('stars');
+  for(let i=0;i<95;i++){
+    const s=document.createElement('div'); s.className='star';
+    const size=Math.random()*2.6+0.6;
+    s.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--delay:-${(Math.random()*5).toFixed(1)}s;`;
+    wrap.appendChild(s);
+  }
+  for(let i=0;i<16;i++){
+    const sd=document.createElement('div'); sd.className='stardust';
+    const size=Math.random()*5+2;
+    const stx=(Math.random()*40-20).toFixed(0);
+    const sty=-(Math.random()*50+30);
+    const stx2=(Math.random()*30-15).toFixed(0);
+    const sty2=-(Math.random()*90+60);
+    sd.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*88}%;left:${Math.random()*100}%;--std:${(Math.random()*5+6).toFixed(1)}s;--stdelay:-${(Math.random()*8).toFixed(1)}s;--stx:${stx}px;--sty:${sty}px;--stx2:${stx2}px;--sty2:${sty2}px;`;
+    wrap.appendChild(sd);
+  }
+})();
+
+// ===== DICTIONARY =====
+const dictionary = {
+  "aslan":"Aslan (nama tokoh utama kita)",
+  "one":"satu / suatu",
+  "clear":"cerah / jernih",
+  "night":"malam",
+  "was":"adalah / sedang (masa lalu)",
+  "lying":"berbaring (sedang)",
+  "soft":"lembut",
+  "grass":"rumput",
+  "garden":"taman / kebun",
+  "looking":"melihat / memandang (sedang)",
+  "up":"ke atas",
+  "sky":"langit",
+  "stars":"bintang-bintang",
+  "bright":"cerah / terang",
+  "moon":"bulan",
+  "full":"penuh",
+  "round":"bulat",
+  "loved":"sangat suka (masa lalu love)",
+  "watching":"mengamati / melihat (sedang)",
+  "could":"bisa (masa lalu can)",
+  "stay":"tinggal / tetap",
+  "hours":"jam-jam (waktu)",
+  "without":"tanpa",
+  "getting":"menjadi (sedang)",
+  "bored":"bosan",
+  "then":"kemudian",
+  "suddenly":"tiba-tiba",
+  "saw":"melihat (masa lalu see)",
+  "something":"sesuatu",
+  "streak":"melintasi / garis cahaya cepat",
+  "across":"melintasi",
+  "line":"garis",
+  "gold":"emas",
+  "white":"putih",
+  "moving":"bergerak (sedang)",
+  "fast":"cepat",
+  "shooting":"meluncur / menembak",
+  "star":"bintang",
+  "did":"melakukan (masa lalu do)",
+  "not":"tidak",
+  "disappear":"menghilang",
+  "others":"yang lain",
+  "came":"datang (masa lalu come)",
+  "closer":"lebih dekat",
+  "sat":"duduk (masa lalu sit)",
+  "quickly":"dengan cepat",
+  "light":"cahaya",
+  "got":"menjadi (masa lalu get)",
+  "bigger":"lebih besar",
+  "thud":"bunyi gedebuk / bunyi benda jatuh",
+  "small":"kecil",
+  "landed":"mendarat (masa lalu land)",
+  "flower":"bunga",
+  "bed":"bedengan bunga / tempat tidur",
+  "near":"dekat",
+  "wall":"tembok / dinding",
+  "heart":"jantung / hati",
+  "beat":"berdenyut (masa lalu beat)",
+  "stood":"berdiri (masa lalu stand)",
+  "carefully":"dengan hati-hati",
+  "walked":"berjalan (masa lalu walk)",
+  "looked":"melihat (masa lalu look)",
+  "down":"ke bawah",
+  "among":"di antara",
+  "flowers":"bunga-bunga",
+  "glowing":"bercahaya / bersinar (sedang)",
+  "warm":"hangat",
+  "golden":"berwarna emas",
+  "bigger":"lebih besar",
+  "hand":"tangan",
+  "knelt":"berlutut (masa lalu kneel)",
+  "gently":"dengan lembut",
+  "pushed":"mendorong / membuka (masa lalu push)",
+  "stems":"batang-batang bunga",
+  "apart":"terpisah",
+  "five":"lima",
+  "pointed":"runcing / berbentuk bintang (pointed)",
+  "size":"ukuran",
+  "palm":"telapak tangan",
+  "made":"terbuat (masa lalu make)",
+  "pure":"murni",
+  "candle":"lilin",
+  "tiny":"sangat kecil",
+  "blinking":"berkedip (sedang)",
+  "eyes":"mata",
+  "curved":"melengkung",
+  "mouth":"mulut",
+  "little":"kecil",
+  "blinked":"berkedip (masa lalu blink)",
+  "whispered":"berbisik (masa lalu whisper)",
+  "hello":"halo",
+  "okay":"baik-baik saja",
+  "again":"lagi",
+  "higher":"lebih tinggi",
+  "time":"waktu / kali",
+  "fell":"jatuh (masa lalu fall)",
+  "dimmed":"meredup (masa lalu dim)",
+  "sad":"sedih",
+  "dark":"gelap",
+  "far":"jauh",
+  "above":"di atas",
+  "slowly":"perlahan-lahan",
+  "understood":"mengerti / memahami (masa lalu understand)",
+  "right":"tepat / langsung",
+  "away":"pergi",
+  "worry":"khawatir",
+  "help":"membantu",
+  "get":"kembali / mendapatkan",
+  "back":"kembali",
+  "home":"rumah",
+  "held":"memegang (masa lalu hold)",
+  "cupped":"berlekuk / cekung (cupped hands = tangan berlekuk)",
+  "hands":"tangan-tangan",
+  "pulsed":"berdenyut (masa lalu pulse)",
+  "softly":"dengan lembut",
+  "heartbeat":"detak jantung",
+  "walked":"berjalan (masa lalu walk)",
+  "happy":"gembira",
+  "bell":"lonceng",
+  "tones":"nada-nada",
+  "moved":"bergerak (masa lalu move)",
+  "toward":"ke arah",
+  "open":"terbuka",
+  "field":"ladang / lapangan",
+  "worried":"khawatir / cemas",
+  "wrong":"salah",
+  "way":"arah / jalan",
+  "musical":"musikal / seperti musik",
+  "compass":"kompas",
+  "climbed":"mendaki (masa lalu climb)",
+  "top":"puncak",
+  "hill":"bukit",
+  "edge":"tepi / pinggir",
+  "town":"kota kecil",
+  "felt":"merasa (masa lalu feel)",
+  "much":"sangat / banyak",
+  "rock":"batu",
+  "high":"tinggi",
+  "began":"mulai (masa lalu begin)",
+  "flicker":"berkedip-kedip / bersinar tidak stabil",
+  "going":"pergi / menjadi (sedang)",
+  "dim":"redup",
+  "sparks":"percikan-percikan api / cahaya",
+  "flew":"terbang (masa lalu fly)",
+  "fireworks":"kembang api",
+  "breeze":"angin sepoi-sepoi",
+  "somewhere":"di suatu tempat",
+  "reaching":"meraih / menjangkau (sedang)",
+  "long":"panjang",
+  "beautiful":"indah",
+  "tone":"nada",
+  "song":"lagu",
+  "turned":"berubah (masa lalu turn)",
+  "silver":"perak / berwarna perak",
+  "next":"selanjutnya / berikutnya",
+  "amazing":"menakjubkan",
+  "happened":"terjadi (masa lalu happen)",
+  "rose":"naik (masa lalu rise)",
+  "floating":"melayang (sedang)",
+  "upward":"ke atas",
+  "itself":"sendiri / dirinya",
+  "stopped":"berhenti (masa lalu stop)",
+  "height":"ketinggian",
+  "quiet":"tenang / hening",
+  "moment":"saat / sesaat",
+  "darted":"melesat (masa lalu dart)",
+  "left":"kiri",
+  "right":"kanan",
+  "flew":"terbang (masa lalu fly)",
+  "circle":"lingkaran",
+  "around":"sekitar",
+  "head":"kepala",
+  "leaving":"meninggalkan (sedang)",
+  "ring":"cincin / lingkaran",
+  "air":"udara",
+  "laughed":"tertawa (masa lalu laugh)",
+  "surprise":"kejutan",
+  "delight":"kegembiraan / kesenangan",
+  "saying":"mengucapkan / berkata (sedang)",
+  "thank":"berterima kasih",
+  "higher":"lebih tinggi",
+  "faster":"lebih cepat",
+  "trail":"jejak / garis cahaya",
+  "behind":"di belakang",
+  "ribbon":"pita",
+  "against":"melawan / di hadapan",
+  "watched":"mengamati (masa lalu watch)",
+  "open":"terbuka",
+  "wide":"lebar",
+  "grew":"tumbuh / menjadi (masa lalu grow)",
+  "thinner":"lebih tipis",
+  "point":"titik",
+  "settled":"menetap / menempatkan diri (masa lalu settle)",
+  "place":"tempat",
+  "among":"di antara",
+  "still":"masih",
+  "brightest":"paling terang",
+  "twinkle":"berkelap-kelip / bersinar",
+  "seemed":"tampak / sepertinya (masa lalu seem)",
+  "quick":"cepat",
+  "smiled":"tersenyum (masa lalu smile)",
+  "expected":"mengharapkan / menduga (masa lalu expect)",
+  "sadness":"kesedihan",
+  "gone":"pergi / hilang",
+  "deep":"dalam / mendalam",
+  "happiness":"kebahagiaan",
+  "thought":"berpikir (masa lalu think)",
+  "about":"tentang",
+  "single":"satu pun / tunggal",
+  "word":"kata",
+  "arms":"lengan-lengan",
+  "give":"memberikan",
+  "hug":"pelukan",
+  "shared":"berbagi (masa lalu share)",
+  "warmth":"kehangatan",
+  "return":"balasan / kembali",
+  "given":"memberikan (past participle give)",
+  "care":"kepedulian / perhatian",
+  "courage":"keberanian",
+  "helped":"membantu (masa lalu help)",
+  "could":"bisa",
+  "themselves":"diri mereka sendiri",
+  "before":"sebelum",
+  "went":"pergi (masa lalu go)",
+  "sleep":"tidur",
+  "bedroom":"kamar tidur",
+  "window":"jendela",
+  "shining":"bersinar (sedang)",
+  "steadily":"dengan stabil / terus-terusan",
+  "keeping":"menjaga (sedang)",
+  "watch":"mengawasi",
+  "over":"di atas / menjaga",
+  "goodnight":"selamat malam",
+  "just":"hanya / tepat",
+  "him":"dia (objek, laki-laki)"
+};
+
+function showMeaning(word) {
+  let clean = word.toLowerCase().replace(/[.,!?;:()'"«»""''—–\-]/g,'');
+  let meaning = dictionary[clean];
+  if(!meaning){
+    if(clean.endsWith('s') && dictionary[clean.slice(0,-1)]) meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ed') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('d') && dictionary[clean.slice(0,-1)]) meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ing') && dictionary[clean.slice(0,-3)]) meaning=dictionary[clean.slice(0,-3)];
+    else if(clean.endsWith('ly') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('er') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('est') && dictionary[clean.slice(0,-3)]) meaning=dictionary[clean.slice(0,-3)];
+    else meaning="❓ arti belum tersedia, coba cek kamus";
+  }
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `📖 <strong>${clean}</strong> → ${meaning} <small>🇮🇩</small>`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>toast.classList.remove('show'), 2800);
+}
+
+// ===== WORD WRAPPING =====
+function wrapWords(div) {
+  if(div.dataset.wrapped) return;
+  div.dataset.wrapped = "1";
+
+  function processNode(node) {
+    if(node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      if(!text.trim()) return;
+      const frag = document.createDocumentFragment();
+      const parts = text.split(/(\s+)/);
+      parts.forEach(part => {
+        if(/^\s+$/.test(part)) {
+          frag.appendChild(document.createTextNode(part));
+        } else if(part.length > 0) {
+          const match = part.match(/^([^a-zA-Z0-9']*)([a-zA-Z0-9'][a-zA-Z0-9']*)([^a-zA-Z0-9']*)$/);
+          if(match) {
+            if(match[1]) frag.appendChild(document.createTextNode(match[1]));
+            const span = document.createElement('span');
+            span.className = 'w';
+            span.textContent = match[2];
+            span.addEventListener('click', (e)=>{ e.stopPropagation(); showMeaning(match[2]); });
+            frag.appendChild(span);
+            if(match[3]) frag.appendChild(document.createTextNode(match[3]));
+          } else {
+            frag.appendChild(document.createTextNode(part));
+          }
+        }
+      });
+      node.parentNode.replaceChild(frag, node);
+    } else if(node.nodeType === Node.ELEMENT_NODE) {
+      if(node.classList && (node.classList.contains('read-marker') || node.classList.contains('w'))) return;
+      if(node.tagName === 'SCRIPT' || node.tagName === 'STYLE') return;
+      Array.from(node.childNodes).forEach(child => processNode(child));
+    }
+  }
+
+  const marker = div.querySelector('.read-marker');
+  const markerEl = marker ? marker.cloneNode(true) : null;
+  if(marker) marker.remove();
+  processNode(div);
+  if(markerEl) div.insertAdjacentElement('afterbegin', markerEl);
+}
+
+function wrapAllChapters() {
+  document.querySelectorAll('.chapter-text').forEach(div => wrapWords(div));
+}
+
+// ===== SPEED CONTROL =====
+let speechRate = 0.88;
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    speechRate = parseFloat(btn.dataset.rate);
+    if(currentUtt) { showSpeedChangeTip(); }
+  });
+});
+
+function showSpeedChangeTip() {
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `⚡ Speed changed! Press Stop then Listen again to apply.`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>toast.classList.remove('show'), 2500);
+}
+
+// ===== SPEECH =====
+let currentUtt = null;
+let isPlayingAll = false;
+let readChapters = new Set();
+
+const stories = {
+  1: "One clear night, Aslan was lying on the soft grass in his garden, looking up at the sky. The stars were bright and the moon was full and round. Aslan loved watching the sky. He could stay there for hours without getting bored. Then suddenly, he saw something streak across the sky, a bright line of gold and white, moving fast. It was a shooting star! But it did not disappear like the others. It came closer and closer. Aslan sat up quickly. The light got bigger. Then with a soft thud, something small landed in the flower bed near the garden wall. Aslan's heart beat fast. He stood up carefully, walked to the flower bed, and looked down. There, among the flowers, something was glowing, a warm, golden light, no bigger than his hand.",
+  2: "Aslan knelt down and gently pushed the flower stems apart. There it was, a small five-pointed star, about the size of his palm. It was made of pure light, soft and warm like a candle. It had two tiny blinking eyes and a small curved mouth. The little star looked up at Aslan and made a soft, bell-like sound. Hello, Aslan whispered. Are you okay? The star made the sound again, a little higher this time, like a question. I think you fell from the sky, said Aslan. The star dimmed a little, as if it was sad. Then it looked up, toward the dark night sky far above, and blinked its tiny eyes slowly. Aslan understood right away. Don't worry, he said softly. I will help you get back home.",
+  3: "Aslan held the little star gently in his cupped hands. The star was warm and pulsed softly with light, like a tiny heartbeat. As Aslan walked, the star made little sounds, happy bell tones when they moved toward the open field, and worried tones when Aslan turned the wrong way. It was like a musical compass. Aslan climbed to the top of the hill at the edge of the town. From up there, the sky felt much closer. He sat on a flat rock and held the star up high. The star began to flicker, its light going bright, then dim, then bright again. Small sparks flew off it like tiny fireworks. A warm breeze came from somewhere above, as if the sky itself was reaching down. The star made a long, beautiful tone, like a song, and its light turned from gold to white to silver.",
+  4: "Something amazing happened next. The star rose slowly from Aslan's hands, floating upward by itself. It stopped at the height of his eyes and looked at him, really looked at him, for a long, quiet moment. Then it darted to the left, then right, then flew in a small circle around Aslan's head, leaving a ring of golden light in the air. Aslan laughed with surprise and delight. The star was saying thank you. Then it rose higher, faster. It left a long bright trail behind it, like a silver ribbon against the dark sky. Aslan watched, his mouth open and his eyes wide. The trail grew thinner and thinner until the star was just a tiny point of light, and then it settled into its place among the other stars. Aslan could still see it. It was the brightest one of all.",
+  5: "Aslan sat on the rock for a long time, looking up at the star he had helped. It seemed to twinkle a little more than the others, a quick, warm blink just for him. He smiled. He felt something he had not expected: not sadness that the star was gone, but a deep, quiet happiness. On his way home, Aslan thought about what had happened. The star had not said a single word. It had no arms to give a hug. But it had shared its light, its warmth, and its little bell song with him. And in return, Aslan had given his time, his care, and his courage. He had helped someone who could not help themselves. That night, before he went to sleep, Aslan looked out of his bedroom window. The bright star was still there, shining steadily, as if it was keeping watch over him too. Aslan whispered, Goodnight, little star. And it blinked once. Just for him."
+};
+
+function pickVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v=>v.lang==='en-US'&&(v.name.includes('Google')||v.name.includes('Samantha')||v.name.includes('Microsoft')))
+    || voices.find(v=>v.lang.startsWith('en'))
+    || null;
+}
+
+function stopAll() {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  currentUtt = null;
+  isPlayingAll = false;
+  document.querySelectorAll('.btn-listen.playing').forEach(b=>b.classList.remove('playing'));
+}
+
+function speak(chId, btn, onEnd) {
+  if(!window.speechSynthesis) return;
+  stopAll();
+  const text = stories[chId];
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'en-US';
+  utt.rate = speechRate;
+  utt.pitch = 1.05;
+  const v = pickVoice();
+  if(v) utt.voice = v;
+  if(btn) btn.classList.add('playing');
+  utt.onend = () => {
+    if(btn) btn.classList.remove('playing');
+    currentUtt = null;
+    if(onEnd) onEnd();
+  };
+  utt.onerror = () => {
+    if(btn) btn.classList.remove('playing');
+    currentUtt = null;
+  };
+  currentUtt = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+// ===== LISTEN BUTTONS =====
+document.querySelectorAll('.btn-listen').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ch = btn.getAttribute('data-ch');
+    if(btn.classList.contains('playing')) { stopAll(); return; }
+    isPlayingAll = false;
+    speak(ch, btn, () => {
+      if(!readChapters.has(ch)) {
+        readChapters.add(ch);
+        document.getElementById('ch'+ch).classList.add('done');
+        updateProgress();
+      }
+    });
+  });
+});
+
+// ===== PLAY ALL =====
+document.getElementById('playAllBtn').addEventListener('click', () => {
+  stopAll();
+  isPlayingAll = true;
+  let keys = ['1','2','3','4','5'];
+  let idx = 0;
+  function next() {
+    if(!isPlayingAll || idx >= keys.length) { isPlayingAll=false; return; }
+    const k = keys[idx];
+    const btn = document.querySelector(`[data-ch="${k}"]`);
+    document.getElementById('ch'+k).scrollIntoView({behavior:'smooth',block:'center'});
+    speak(k, btn, () => {
+      if(!readChapters.has(k)) {
+        readChapters.add(k);
+        document.getElementById('ch'+k).classList.add('done');
+        updateProgress();
+      }
+      idx++;
+      setTimeout(next, 700);
+    });
+  }
+  next();
+});
+
+document.getElementById('stopBtn').addEventListener('click', stopAll);
+
+// ===== PROGRESS =====
+function updateProgress() {
+  const pct = (readChapters.size/5)*100;
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = readChapters.size+' of 5 chapters read'+(readChapters.size===5?' — You are a star! 🌟':'');
+}
+
+// ===== VOCAB PILLS =====
+document.querySelectorAll('.vocab-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const word = pill.getAttribute('data-word');
+    showMeaning(word);
+    if(window.speechSynthesis) {
+      const utt = new SpeechSynthesisUtterance(word);
+      utt.lang='en-US'; utt.rate=0.8;
+      const v=pickVoice(); if(v) utt.voice=v;
+      window.speechSynthesis.speak(utt);
+    }
+  });
+});
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', () => {
+  wrapAllChapters();
+  if(window.speechSynthesis) window.speechSynthesis.getVoices();
+  if(window.speechSynthesis) {
+    window.speechSynthesis.addEventListener('voiceschanged', () => {});
+  }
+});
+window.addEventListener('beforeunload', () => {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+});
+</script>
+</body>
+</html>

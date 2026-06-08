@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 22: Nyalakan Komputer – Apa yang Terjadi di Dalam?</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:    #0d9488;
+    --cyan:    #06b6d4;
+    --sky:     #38bdf8;
+    --green:   #22c55e;
+    --mint:    #34d399;
+    --yellow:  #fbbf24;
+    --orange:  #f97316;
+    --amber:   #f59e0b;
+    --bg:      #ecfdf5;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    font-family:'Nunito',sans-serif;
+    background:var(--bg);
+    background-image:
+      radial-gradient(circle at 8% 15%,  rgba(13,148,136,.15) 0%, transparent 45%),
+      radial-gradient(circle at 92% 60%,  rgba(249,115,22,.10) 0%, transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(34,197,94,.10)  0%, transparent 40%);
+    min-height:100vh; overflow-x:hidden;
+  }
+  h1,h2,h3 { font-family:'Fredoka One',cursive; }
+
+  /* ── Header ── */
+  .header-grad {
+    background:linear-gradient(135deg,#042f2e 0%,#0f766e 35%,#0d9488 70%,#5eead4 100%);
+    position:relative; overflow:hidden;
+  }
+  .header-grad::after {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,.03) 20px,rgba(255,255,255,.03) 40px);
+  }
+
+  /* ── Bubble ── */
+  .bubble {
+    position:relative; background:white;
+    border-radius:22px; border:3px solid #0d9488;
+    box-shadow:4px 4px 0 #0d9488;
+  }
+  .bubble::before { content:''; position:absolute; bottom:-22px; left:30px; border:12px solid transparent; border-top-color:#0d9488; }
+  .bubble::after  { content:''; position:absolute; bottom:-15px; left:33px; border:10px solid transparent; border-top-color:white; }
+
+  /* ── Aslan bounce ── */
+  @keyframes bounceAslan { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  .aslan-bounce { animation:bounceAslan 2.2s ease-in-out infinite; }
+
+  /* ── Power button glow ── */
+  @keyframes powerGlow {
+    0%,100% { box-shadow:0 0 10px rgba(34,197,94,.4), 0 0 20px rgba(34,197,94,.2); }
+    50%      { box-shadow:0 0 25px rgba(34,197,94,.9), 0 0 50px rgba(34,197,94,.5); }
+  }
+  .power-glow { animation:powerGlow 1.8s ease-in-out infinite; }
+
+  /* ── Fan spin ── */
+  @keyframes fanSpin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  .fan-spin  { animation:fanSpin .5s linear infinite; transform-origin:center; }
+  .fan-slow  { animation:fanSpin 3s linear infinite; transform-origin:center; }
+  .fan-stop  { animation:none; }
+
+  /* ── LED blink ── */
+  @keyframes ledBlink { 0%,100%{opacity:1;} 50%{opacity:.2;} }
+  .led-blink { animation:ledBlink .8s ease-in-out infinite; }
+  @keyframes ledSolid { 0%,100%{opacity:1;} }
+
+  /* ── Progress bar fill ── */
+  @keyframes fillBar { from{width:0%;} to{width:100%;} }
+
+  /* ── Screen flicker on ── */
+  @keyframes screenBoot {
+    0%   { opacity:0; transform:scaleY(.03); filter:brightness(4); }
+    25%  { opacity:1; transform:scaleY(1.04); filter:brightness(1.5); }
+    60%  { transform:scaleY(.98); filter:brightness(1); }
+    100% { opacity:1; transform:scaleY(1); filter:brightness(1); }
+  }
+
+  /* ── Scan line ── */
+  @keyframes scanLine { 0%{top:0%;} 100%{top:100%;} }
+  .scan-line {
+    position:absolute; left:0; right:0; height:3px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);
+    animation:scanLine 1.8s linear infinite; pointer-events:none;
+  }
+
+  /* ── Step card pop ── */
+  @keyframes stepPop {
+    0%   { transform:scale(.85) translateY(10px); opacity:0; }
+    70%  { transform:scale(1.05) translateY(-3px); }
+    100% { transform:scale(1)   translateY(0);     opacity:1; }
+  }
+  .step-pop { animation:stepPop .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+  /* ── Arrow bounce ── */
+  @keyframes arrowBounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(5px);} }
+  .arrow-bounce { animation:arrowBounce 1s ease-in-out infinite; }
+
+  /* ── Spark float ── */
+  @keyframes sparkFly {
+    0%   { transform:translate(0,0) scale(1); opacity:1; }
+    100% { transform:translate(var(--sx),var(--sy)) scale(.3); opacity:0; }
+  }
+  .spark {
+    position:fixed; font-size:1.2rem; pointer-events:none; z-index:99;
+    animation:sparkFly 1s ease-out forwards;
+  }
+
+  /* ── Confetti ── */
+  @keyframes confettiFly {
+    0%  { transform:translate(0,0) rotate(0deg); opacity:1; }
+    100%{ transform:translate(var(--tx),var(--ty)) rotate(720deg); opacity:0; }
+  }
+  .confetti-piece {
+    position:fixed; width:10px; height:10px; border-radius:2px;
+    pointer-events:none; z-index:100;
+    animation:confettiFly 1.3s ease-out forwards;
+  }
+
+  /* ── Pulse ring ── */
+  @keyframes pulseRing {
+    0%   { transform:scale(1);   opacity:.8; }
+    100% { transform:scale(2.5); opacity:0; }
+  }
+  .pulse-ring {
+    position:absolute; inset:0; border-radius:50%;
+    border:3px solid #22c55e;
+    animation:pulseRing 1.4s ease-out infinite;
+    pointer-events:none;
+  }
+
+  /* ── Glow text ── */
+  @keyframes glowText {
+    0%,100%{ text-shadow:0 0 8px rgba(34,197,94,.4); }
+    50%    { text-shadow:0 0 20px rgba(34,197,94,.9), 0 0 40px rgba(13,148,136,.5); }
+  }
+
+  /* ── Buttons ── */
+  .btn-power {
+    background:linear-gradient(135deg,#065f46,#059669,#34d399);
+    color:white; border:none; border-radius:50px;
+    padding:1rem 2.8rem; font-family:'Fredoka One',cursive;
+    font-size:1.4rem; cursor:pointer;
+    box-shadow:0 7px 0 #064e3b, 0 10px 24px rgba(5,150,105,.45);
+    transition:all .15s ease; position:relative;
+  }
+  .btn-power:hover  { transform:translateY(-4px); box-shadow:0 11px 0 #064e3b,0 14px 30px rgba(5,150,105,.55); }
+  .btn-power:active { transform:translateY(4px);  box-shadow:0 3px 0 #064e3b; }
+  .btn-power:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+  .btn-reset {
+    background:linear-gradient(135deg,#be123c,#f43f5e);
+    color:white; border:none; border-radius:50px;
+    padding:.7rem 1.8rem; font-family:'Fredoka One',cursive;
+    font-size:1rem; cursor:pointer;
+    box-shadow:0 5px 0 #9f1239, 0 7px 18px rgba(244,63,94,.4);
+    transition:all .15s ease;
+  }
+  .btn-reset:hover  { transform:translateY(-3px); }
+  .btn-reset:active { transform:translateY(3px); box-shadow:0 2px 0 #9f1239; }
+
+  .btn-secondary {
+    background:white; color:#0d9488; border:3px solid #0d9488;
+    border-radius:50px; padding:.65rem 1.6rem;
+    font-family:'Fredoka One',cursive; font-size:1rem;
+    cursor:pointer; transition:all .2s ease;
+    box-shadow:3px 3px 0 #0d9488;
+  }
+  .btn-secondary:hover { transform:translateY(-2px); box-shadow:5px 5px 0 #0d9488; }
+
+  /* ── Section title ── */
+  .sec-title { position:relative; display:inline-block; }
+  .sec-title::after {
+    content:''; position:absolute; bottom:-6px; left:0; right:0; height:5px;
+    border-radius:10px; background:linear-gradient(90deg,#0d9488,#f97316);
+  }
+
+  /* ── Day dot ── */
+  .day-dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  /* ── Step card ── */
+  .step-card {
+    border-radius:20px; padding:16px 18px;
+    border:3px solid transparent; cursor:pointer;
+    transition:all .25s cubic-bezier(.34,1.56,.64,1);
+    position:relative; overflow:hidden;
+  }
+  .step-card:hover { transform:scale(1.03) translateY(-4px); }
+  .step-card.active { transform:scale(1.05) translateY(-5px); }
+
+  /* ── Card hover ── */
+  .card-hover { transition:all .25s cubic-bezier(.34,1.56,.64,1); cursor:pointer; }
+  .card-hover:hover { transform:scale(1.04) translateY(-4px); }
+
+  /* ── Draw area ── */
+  .draw-area {
+    background:
+      repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(13,148,136,.15) 28px,rgba(13,148,136,.15) 30px),
+      repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(249,115,22,.08) 28px,rgba(249,115,22,.08) 30px);
+    border:3px dashed #0d9488; border-radius:20px; min-height:200px;
+  }
+
+  /* ── Quiz btn ── */
+  .qbtn {
+    padding:.5rem .8rem; border-radius:14px; font-size:.83rem; font-weight:700;
+    border:2px solid #e2e8f0; background:white; color:#374151;
+    cursor:pointer; transition:all .2s; text-align:left;
+  }
+  .qbtn:hover:not(:disabled) { border-color:#0d9488; background:#f0fdfa; }
+  .qbtn:disabled { opacity:.7; cursor:not-allowed; }
+
+  /* ── Slider ── */
+  input[type=range] {
+    -webkit-appearance:none; width:100%; height:10px;
+    border-radius:10px; outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none; width:24px; height:24px;
+    border-radius:50%; background:linear-gradient(135deg,#0d9488,#f97316);
+    cursor:pointer; box-shadow:0 2px 8px rgba(13,148,136,.5);
+    transition:transform .2s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
+
+  /* ── Boot monitor ── */
+  .boot-monitor {
+    border-radius:16px; overflow:hidden;
+    border:5px solid #1c4a3e;
+    box-shadow:0 0 0 3px #0d9488, 0 0 40px rgba(13,148,136,.3);
+    transition:box-shadow .5s ease;
+  }
+  .boot-monitor.booted {
+    box-shadow:0 0 0 3px #22c55e, 0 0 60px rgba(34,197,94,.6), 0 0 100px rgba(6,182,212,.3);
+  }
+
+  /* ── Progress bar ── */
+  #bootBar {
+    transition:width .4s ease;
+    background:linear-gradient(90deg,#06b6d4,#0d9488,#22c55e);
+    background-size:200% 100%;
+    animation:none;
+  }
+  @keyframes barShimmer {
+    0%   { background-position:100% 0; }
+    100% { background-position:-100% 0; }
+  }
+  #bootBar.running { animation:barShimmer 1.2s linear infinite; }
+
+  @media(max-width:640px){ .steps-grid{ grid-template-columns:1fr!important; } }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ══════ HEADER ══════ -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <div style="position:absolute;top:10px;left:4%;font-size:2.5rem;opacity:.2;animation:bounceAslan 9s ease-in-out infinite;">⚡</div>
+  <div style="position:absolute;top:16px;right:6%;font-size:2rem;opacity:.2;animation:bounceAslan 12s ease-in-out infinite .5s;">🖥️</div>
+  <div style="position:absolute;bottom:10px;left:28%;font-size:1.8rem;opacity:.18;animation:bounceAslan 11s ease-in-out infinite 1s;">💡</div>
+  <div style="position:absolute;bottom:14px;right:20%;font-size:1.6rem;opacity:.15;animation:bounceAslan 13s ease-in-out infinite 2s;">🔌</div>
+
+  <div class="max-w-3xl mx-auto relative z-10 text-center">
+    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-3 border border-white/30">
+      <span class="text-xl">🖥️</span>
+      <span style="font-family:'Fredoka One',cursive;font-size:.9rem;letter-spacing:.5px;">Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span class="text-xl">⚡</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl md:text-5xl mb-2 drop-shadow-lg" style="line-height:1.2;">
+      Hari 22: Nyalakan Komputer –<br>Apa yang Terjadi di Dalam? ⚡🖥️
+    </h1>
+    <p class="text-teal-100 text-base sm:text-lg font-semibold">Rahasia seru saat komputer bangun dari tidur! 😴→😎</p>
+
+    <!-- 22 progress dots -->
+    <div class="flex items-center justify-center gap-1 mt-4 flex-wrap">
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-yellow-300" style="width:14px;height:14px;box-shadow:0 0 10px #fbbf24;"></div>
+      <span class="text-white/70 text-xs ml-2 font-semibold">Hari 22 dari 30</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════ MAIN ══════ -->
+<main class="max-w-3xl mx-auto px-4 py-8">
+
+  <!-- ── Intro ── -->
+  <section class="mb-10">
+    <div class="flex flex-col sm:flex-row items-end gap-6">
+
+      <!-- Aslan SVG – pressing power button, excited face -->
+      <div class="flex-shrink-0 flex justify-center" style="min-width:130px;">
+        <div class="aslan-bounce">
+          <svg width="130" height="170" viewBox="0 0 130 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="65" cy="164" rx="30" ry="6" fill="rgba(0,0,0,.1)"/>
+            <!-- Body – teal shirt -->
+            <rect x="37" y="98" width="56" height="50" rx="14" fill="#0d9488"/>
+            <rect x="37" y="112" width="56" height="7" rx="2" fill="#5eead4" opacity=".6"/>
+            <!-- Left arm down-ish -->
+            <rect x="18" y="98" width="21" height="36" rx="10" fill="#0d9488" transform="rotate(5 18 98)"/>
+            <!-- Right arm pointing forward (pressing button) -->
+            <rect x="87" y="90" width="35" height="18" rx="9" fill="#0d9488" transform="rotate(-10 87 90)"/>
+            <!-- Finger tip -->
+            <ellipse cx="119" cy="93" rx="7" ry="6" fill="#f9a825"/>
+            <!-- Legs -->
+            <rect x="40" y="140" width="18" height="22" rx="9" fill="#134e4a"/>
+            <rect x="72" y="140" width="18" height="22" rx="9" fill="#134e4a"/>
+            <ellipse cx="49" cy="160" rx="12" ry="6" fill="#0f766e"/>
+            <ellipse cx="81" cy="160" rx="12" ry="6" fill="#0f766e"/>
+            <!-- Neck -->
+            <rect x="53" y="88" width="20" height="14" rx="7" fill="#f9a825"/>
+            <!-- Head -->
+            <ellipse cx="63" cy="68" rx="33" ry="31" fill="#f9a825"/>
+            <!-- Hair -->
+            <ellipse cx="65" cy="40" rx="31" ry="16" fill="#1c0a00"/>
+            <ellipse cx="34" cy="54" rx="9" ry="13" fill="#1c0a00"/>
+            <ellipse cx="92" cy="51" rx="7" ry="10" fill="#1c0a00"/>
+            <!-- Eyes – big and excited wide open -->
+            <circle cx="50" cy="66" r="7.5" fill="white"/>
+            <circle cx="77" cy="66" r="7.5" fill="white"/>
+            <circle cx="51" cy="67" r="4.5" fill="#1c0a00"/>
+            <circle cx="78" cy="67" r="4.5" fill="#1c0a00"/>
+            <circle cx="53" cy="65" r="1.8" fill="white"/>
+            <circle cx="80" cy="65" r="1.8" fill="white"/>
+            <!-- Eyebrows raised (excited) -->
+            <path d="M43 57 Q50 53 57 57" stroke="#1c0a00" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+            <path d="M70 57 Q77 53 84 57" stroke="#1c0a00" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+            <!-- Open smile big -->
+            <path d="M46 82 Q63 97 80 82" stroke="#1c0a00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M48 84 Q63 94 78 84" fill="#fff" stroke="none"/>
+            <!-- Cheeks -->
+            <ellipse cx="38" cy="75" rx="7" ry="5" fill="#ffb347" opacity=".55"/>
+            <ellipse cx="88" cy="75" rx="7" ry="5" fill="#ffb347" opacity=".55"/>
+            <!-- Stars / sparkles -->
+            <text x="94" y="46" font-size="13">✨</text>
+            <text x="2"  y="52" font-size="11">⚡</text>
+            <text x="98" y="72" font-size="10">😮</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Bubble -->
+      <div class="flex-1">
+        <div class="bubble p-5">
+          <p class="text-sm font-bold mb-1" style="color:#0d9488;">Aslan berkata:</p>
+          <p class="text-gray-700 text-base sm:text-lg leading-relaxed font-semibold">
+            "Halo teman-teman! Hari ini kita belajar
+            <strong style="color:#0d9488;">apa yang terjadi saat kita menyalakan komputer</strong>! 🖥️⚡
+            Banyak hal keren yang terjadi di dalamnya dalam waktu singkat —
+            kayak komputer lagi <strong style="color:#f97316;">bangun tidur</strong> dan nyiapin diri! 😴🌅"
+          </p>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#0d9488,#06b6d4);">⚡ Hari 22</span>
+            <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#f97316,#fbbf24);">🖥️ Topik: Boot Process</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ SIMULATOR INTERAKTIF ══════ -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#042f2e;">⚡ Coba Nyalakan Komputer!</h2>
+      <p class="text-gray-500 mt-3 text-sm">Tekan tombol besar dan lihat apa yang terjadi di dalam! 👇</p>
+    </div>
+
+    <!-- Computer casing SVG + interactive screen -->
+    <div class="rounded-3xl p-6" style="background:linear-gradient(135deg,#0f2922,#134e4a);border:4px solid #0d9488;">
+
+      <!-- Monitor area -->
+      <div class="flex justify-center mb-5">
+        <div class="boot-monitor relative" id="monitorEl" style="width:300px;height:185px;background:#080f0d;">
+          <!-- scan line (hidden until boot) -->
+          <div class="scan-line hidden" id="scanLineEl"></div>
+          <!-- Screen content -->
+          <div id="screenContent" class="w-full h-full flex items-center justify-center">
+            <div class="text-center">
+              <div class="text-5xl mb-2">🌑</div>
+              <div style="color:#1a3630;font-family:'Fredoka One',cursive;font-size:.9rem;">Layar mati... 😴</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Computer body (simplified casing indicators) -->
+      <div class="flex justify-center gap-4 mb-5 items-center">
+        <!-- Power LED -->
+        <div class="flex items-center gap-2">
+          <div id="powerLed" class="w-3 h-3 rounded-full" style="background:#333;box-shadow:none;"></div>
+          <span class="text-xs font-bold" style="color:#5eead4;">Power</span>
+        </div>
+        <!-- Fan indicator -->
+        <div class="flex items-center gap-2">
+          <svg id="fanSvg" width="24" height="24" viewBox="0 0 24 24">
+            <g id="fanBlades" style="transform-origin:12px 12px;" class="fan-stop">
+              <ellipse cx="12" cy="6"  rx="3.5" ry="5.5" fill="#5eead4" rx2="3" transform="rotate(0   12 12)" opacity=".9"/>
+              <ellipse cx="12" cy="6"  rx="3.5" ry="5.5" fill="#0d9488" transform="rotate(90  12 12)" opacity=".9"/>
+              <ellipse cx="12" cy="6"  rx="3.5" ry="5.5" fill="#5eead4" transform="rotate(180 12 12)" opacity=".9"/>
+              <ellipse cx="12" cy="6"  rx="3.5" ry="5.5" fill="#0d9488" transform="rotate(270 12 12)" opacity=".9"/>
+              <circle cx="12" cy="12" r="2.5" fill="#1a3630"/>
+            </g>
+          </svg>
+          <span class="text-xs font-bold" style="color:#5eead4;">Kipas</span>
+        </div>
+        <!-- HDD LED -->
+        <div class="flex items-center gap-2">
+          <div id="hddLed" class="w-3 h-3 rounded-full" style="background:#333;box-shadow:none;"></div>
+          <span class="text-xs font-bold" style="color:#5eead4;">HDD</span>
+        </div>
+      </div>
+
+      <!-- Boot progress bar -->
+      <div class="mb-5">
+        <div class="flex justify-between text-xs font-bold mb-1" style="color:#5eead4;">
+          <span id="bootLabel">Siap dinyalakan...</span>
+          <span id="bootPct">0%</span>
+        </div>
+        <div class="rounded-full overflow-hidden" style="height:14px;background:#1a3630;">
+          <div id="bootBar" class="h-full rounded-full" style="width:0%;"></div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex flex-wrap justify-center gap-3">
+        <button id="btnPower" class="btn-power" onclick="startBoot()">
+          ⏻ Nyalakan Komputer!
+        </button>
+        <button class="btn-reset" onclick="resetBoot()">🔄 Reset</button>
+      </div>
+      <p id="bootStatusMsg" class="text-center text-sm font-bold mt-3" style="color:#5eead4;">
+        👆 Tekan tombol hijau untuk mulai!
+      </p>
+    </div>
+
+    <!-- Step-by-step log (reveals during boot) -->
+    <div id="bootLog" class="mt-5 space-y-2 hidden">
+      <p class="text-center text-sm font-bold mb-3" style="color:#0d9488;">📋 Log Proses Booting:</p>
+    </div>
+  </section>
+
+  <!-- ══════ LANGKAH-LANGKAH BOOT (clickable) ══════ -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#042f2e;">📋 5 Langkah Saat Komputer Menyala</h2>
+      <p class="text-gray-500 mt-3 text-sm">Klik tiap langkah untuk tahu lebih banyak! 👆</p>
+    </div>
+
+    <div class="steps-grid grid gap-4" style="grid-template-columns:1fr 1fr;">
+
+      <!-- Step 1 -->
+      <div class="step-card" id="st1"
+           style="background:linear-gradient(135deg,#fff7ed,#ffedd5);border-color:#f97316;"
+           onclick="showStep(1)">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-lg flex-shrink-0"
+               style="background:linear-gradient(135deg,#ea580c,#f97316);font-family:'Fredoka One',cursive;">1</div>
+          <div>
+            <div class="font-bold text-sm" style="font-family:'Fredoka One',cursive;color:#92400e;">Power Supply</div>
+            <div class="text-xs text-orange-600 font-semibold">🔌 Kasih listrik!</div>
+          </div>
+        </div>
+        <div class="text-2xl text-center">🔌⚡</div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-card" id="st2"
+           style="background:linear-gradient(135deg,#fefce8,#fef9c3);border-color:#fbbf24;"
+           onclick="showStep(2)">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-lg flex-shrink-0"
+               style="background:linear-gradient(135deg,#d97706,#fbbf24);font-family:'Fredoka One',cursive;">2</div>
+          <div>
+            <div class="font-bold text-sm" style="font-family:'Fredoka One',cursive;color:#78350f;">Motherboard</div>
+            <div class="text-xs text-yellow-700 font-semibold">🧩 Bangunkan semua!</div>
+          </div>
+        </div>
+        <div class="text-2xl text-center">🧩🌐</div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step-card" id="st3"
+           style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#22c55e;"
+           onclick="showStep(3)">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-lg flex-shrink-0"
+               style="background:linear-gradient(135deg,#16a34a,#22c55e);font-family:'Fredoka One',cursive;">3</div>
+          <div>
+            <div class="font-bold text-sm" style="font-family:'Fredoka One',cursive;color:#14532d;">CPU Berpikir</div>
+            <div class="text-xs text-green-700 font-semibold">🧠 Otak komputer nyala!</div>
+          </div>
+        </div>
+        <div class="text-2xl text-center">🧠⚙️</div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="step-card" id="st4"
+           style="background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border-color:#38bdf8;"
+           onclick="showStep(4)">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-lg flex-shrink-0"
+               style="background:linear-gradient(135deg,#0284c7,#38bdf8);font-family:'Fredoka One',cursive;">4</div>
+          <div>
+            <div class="font-bold text-sm" style="font-family:'Fredoka One',cursive;color:#0c4a6e;">RAM Siap</div>
+            <div class="text-xs text-sky-700 font-semibold">⚡ Memori bersiap!</div>
+          </div>
+        </div>
+        <div class="text-2xl text-center">⚡💾</div>
+      </div>
+
+      <!-- Step 5 – full width -->
+      <div class="step-card col-span-2" id="st5"
+           style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border-color:#0d9488;"
+           onclick="showStep(5)">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-lg flex-shrink-0"
+               style="background:linear-gradient(135deg,#0d9488,#06b6d4);font-family:'Fredoka One',cursive;">5</div>
+          <div>
+            <div class="font-bold text-sm" style="font-family:'Fredoka One',cursive;color:#042f2e;">Layar Menyala!</div>
+            <div class="text-xs text-teal-700 font-semibold">🖥️ Logo Windows / startup muncul!</div>
+          </div>
+        </div>
+        <div class="text-3xl text-center">🖥️🌅✨</div>
+      </div>
+    </div>
+
+    <!-- Step popup -->
+    <div id="stepPopup" class="hidden mt-5 rounded-3xl p-5 step-pop" style="border:3px solid #0d9488;background:linear-gradient(135deg,#f0fdfa,#ecfdf5);">
+      <div class="flex gap-4 items-start">
+        <div id="popEmoji" class="text-5xl flex-shrink-0">⚡</div>
+        <div>
+          <div id="popTitle" class="text-xl font-bold mb-1" style="font-family:'Fredoka One',cursive;color:#042f2e;"></div>
+          <div id="popAslan" class="text-xs font-bold mb-2" style="color:#0d9488;">Aslan bilang:</div>
+          <div id="popDesc" class="text-sm text-gray-700 font-semibold leading-relaxed"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Perbandingan Bangun Tidur ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#042f2e;">😴 Mirip Bangun Tidur Pagi!</h2>
+    </div>
+    <div class="rounded-3xl p-5" style="background:linear-gradient(135deg,#fefce8,#fffbeb);border:3px solid #fbbf24;">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <!-- Manusia -->
+        <div>
+          <div class="text-center text-2xl font-bold mb-3" style="font-family:'Fredoka One',cursive;color:#92400e;">👦 Kamu Bangun Tidur</div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 p-2 rounded-xl" style="background:rgba(249,115,22,.1);">
+              <span>😴</span><span class="text-sm font-semibold text-gray-700">Alarm bunyi → Bangun!</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded-xl" style="background:rgba(251,191,36,.1);">
+              <span>🧘</span><span class="text-sm font-semibold text-gray-700">Regang dulu – tubuh siap</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded-xl" style="background:rgba(34,197,94,.1);">
+              <span>🚿</span><span class="text-sm font-semibold text-gray-700">Cuci muka – segar!</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded-xl" style="background:rgba(6,182,212,.1);">
+              <span>🍳</span><span class="text-sm font-semibold text-gray-700">Sarapan – dapat energi</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded-xl" style="background:rgba(13,148,136,.1);">
+              <span>🎒</span><span class="text-sm font-semibold text-gray-700">Siap berangkat sekolah!</span>
+            </div>
+          </div>
+        </div>
+        <!-- Komputer -->
+        <div>
+          <div class="text-center text-2xl font-bold mb-3" style="font-family:'Fredoka One',cursive;color:#042f2e;">🖥️ Komputer Menyala</div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 p-2 rounded-xl" style="background:rgba(249,115,22,.1);">
+              <span>🔌</span><span class="text-sm font-semibold text-gray-700">Tombol power → Listrik masuk</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded-xl" style="background:rgba(251,191,36,.1);">
+              <span>🧩</span><span class="text-sm font-semibold text-gray-700">Motherboard bangunkan semua</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded-xl" style="background:rgba(34,197,94,.1);">
+              <span>🧠</span><span class="text-sm font-semibold text-gray-700">CPU mulai berpikir</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded-xl" style="background:rgba(6,182,212,.1);">
+              <span>⚡</span><span class="text-sm font-semibold text-gray-700">RAM muat data – siap kerja</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded-xl" style="background:rgba(13,148,136,.1);">
+              <span>🖥️</span><span class="text-sm font-semibold text-gray-700">Layar menyala – siap dipakai!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4 rounded-2xl p-3 text-center font-bold text-sm" style="background:rgba(251,191,36,.2);color:#78350f;">
+        💡 Intinya sama: perlu pemanasan dulu baru siap beraksi! 😂🚀
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Fun Fact Cards ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#042f2e;">🤩 Fakta Keren Saat Booting!</h2>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="card-hover rounded-2xl p-5 text-center" style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border:3px solid #5eead4;">
+        <div class="text-4xl mb-2">⏱️</div>
+        <div class="font-bold text-sm mb-1" style="font-family:'Fredoka One',cursive;color:#042f2e;">Super Cepat!</div>
+        <div class="text-xs text-gray-600 font-semibold">Komputer modern bisa menyala hanya dalam <strong>10–20 detik</strong>! Dulu butuh beberapa menit! 😱</div>
+      </div>
+      <div class="card-hover rounded-2xl p-5 text-center" style="background:linear-gradient(135deg,#fff7ed,#ffedd5);border:3px solid #fed7aa;">
+        <div class="text-4xl mb-2">🧪</div>
+        <div class="font-bold text-sm mb-1" style="font-family:'Fredoka One',cursive;color:#92400e;">Test Mandiri!</div>
+        <div class="text-xs text-gray-600 font-semibold">Saat baru nyala, komputer cek dirinya sendiri — namanya <strong>POST (Power-On Self Test)</strong>!</div>
+      </div>
+      <div class="card-hover rounded-2xl p-5 text-center" style="background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border:3px solid #7dd3fc;">
+        <div class="text-4xl mb-2">🔔</div>
+        <div class="font-bold text-sm mb-1" style="font-family:'Fredoka One',cursive;color:#0c4a6e;">Bunyi "Bip"!</div>
+        <div class="text-xs text-gray-600 font-semibold">Komputer dulu bunyi <strong>"bip!"</strong> saat nyala — itu tandanya semua komponen aman dan sehat!</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Quiz ── -->
+  <section class="mb-10">
+    <div class="rounded-3xl p-6" style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border:3px solid #5eead4;">
+      <div class="text-center mb-5">
+        <h2 class="text-2xl sm:text-3xl sec-title" style="color:#042f2e;">🧠 Uji Pengetahuanmu!</h2>
+      </div>
+
+      <!-- Q1 -->
+      <div id="q1" class="mb-5 p-4 rounded-2xl bg-white border-2 border-teal-200">
+        <p class="font-bold text-gray-800 mb-3 text-sm">🔌 1. Apa langkah pertama yang terjadi saat komputer dinyalakan?</p>
+        <div class="grid grid-cols-1 gap-2">
+          <button class="qbtn" onclick="qa(1,'a',this)">A. Power Supply memberikan listrik ke semua komponen ⚡</button>
+          <button class="qbtn" onclick="qa(1,'b',this)">B. Layar langsung menyala 🖥️</button>
+          <button class="qbtn" onclick="qa(1,'c',this)">C. RAM langsung menyimpan data 💾</button>
+        </div>
+        <p id="q1r" class="hidden mt-2 font-bold text-sm"></p>
+      </div>
+
+      <!-- Q2 -->
+      <div id="q2" class="mb-5 p-4 rounded-2xl bg-white border-2 border-teal-200">
+        <p class="font-bold text-gray-800 mb-3 text-sm">🧪 2. Apa nama proses cek mandiri komputer saat baru dinyalakan?</p>
+        <div class="grid grid-cols-1 gap-2">
+          <button class="qbtn" onclick="qa(2,'b',this)">A. CPU Test 🧠</button>
+          <button class="qbtn" onclick="qa(2,'a',this)">B. POST (Power-On Self Test) 🧪</button>
+          <button class="qbtn" onclick="qa(2,'c',this)">C. RAM Check ⚡</button>
+        </div>
+        <p id="q2r" class="hidden mt-2 font-bold text-sm"></p>
+      </div>
+
+      <!-- Q3 -->
+      <div id="q3" class="mb-4 p-4 rounded-2xl bg-white border-2 border-teal-200">
+        <p class="font-bold text-gray-800 mb-3 text-sm">🧩 3. Komponen mana yang bertugas membangunkan semua bagian komputer?</p>
+        <div class="grid grid-cols-1 gap-2">
+          <button class="qbtn" onclick="qa(3,'b',this)">A. GPU 🎨</button>
+          <button class="qbtn" onclick="qa(3,'c',this)">B. RAM ⚡</button>
+          <button class="qbtn" onclick="qa(3,'a',this)">C. Motherboard 🧩</button>
+        </div>
+        <p id="q3r" class="hidden mt-2 font-bold text-sm"></p>
+      </div>
+
+      <!-- Final -->
+      <div id="qFinal" class="hidden mt-4 p-4 rounded-2xl text-center" style="background:linear-gradient(135deg,#ccfbf1,#a7f3d0);border:3px solid #0d9488;">
+        <div id="qfE" class="text-4xl mb-1"></div>
+        <div id="qfT" class="text-lg font-bold mb-1" style="font-family:'Fredoka One',cursive;"></div>
+        <div id="qfS" class="text-sm text-gray-600 font-semibold"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Aktivitas ── -->
+  <section class="mb-10">
+    <div class="rounded-3xl p-6" style="background:linear-gradient(135deg,#fffbeb,#fef9c3);border:3px solid #fbbf24;">
+      <div class="text-center mb-5">
+        <h2 class="text-2xl sm:text-3xl sec-title" style="color:#78350f;">✏️ Tugas Hari Ini!</h2>
+      </div>
+
+      <div class="bubble p-4 mb-5" style="border-color:#f97316;box-shadow:4px 4px 0 #f97316;">
+        <p class="text-sm font-bold mb-1" style="color:#ea580c;">Aslan berkata:</p>
+        <p class="text-gray-700 font-semibold text-sm leading-relaxed">
+          "Sekarang giliranmu! 🎨 Gambarlah <strong>komputer saat baru dinyalakan</strong>!
+          Apa yang kamu lihat di layarnya? Lampunya menyala warna apa?
+          Kalau kamu punya komputer di rumah, coba amati betul-betul! 🔍💡"
+        </p>
+      </div>
+
+      <!-- Checklist -->
+      <div class="space-y-3 mb-5">
+        <div id="ac1" onclick="actCk(1)" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer" style="background:rgba(249,115,22,.08);border:2px solid #fed7aa;">
+          <input type="checkbox" class="w-5 h-5 accent-orange-500" onclick="event.stopPropagation();actCk(1)">
+          <span class="font-semibold text-gray-700 text-sm">🖥️ Gambarkan komputer saat dinyalakan — lampunya, layarnya!</span>
+        </div>
+        <div id="ac2" onclick="actCk(2)" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer" style="background:rgba(13,148,136,.08);border:2px solid #99f6e4;">
+          <input type="checkbox" class="w-5 h-5 accent-teal-500" onclick="event.stopPropagation();actCk(2)">
+          <span class="font-semibold text-gray-700 text-sm">⚡ Sebutkan 5 langkah booting dari ingatan — tanpa buka buku!</span>
+        </div>
+        <div id="ac3" onclick="actCk(3)" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer" style="background:rgba(251,191,36,.08);border:2px solid #fde68a;">
+          <input type="checkbox" class="w-5 h-5 accent-yellow-500" onclick="event.stopPropagation();actCk(3)">
+          <span class="font-semibold text-gray-700 text-sm">😴 Ceritakan ke temanmu: "Komputer itu kayak bangun tidur, soalnya..."</span>
+        </div>
+        <div id="ac4" onclick="actCk(4)" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer" style="background:rgba(34,197,94,.08);border:2px solid #bbf7d0;">
+          <input type="checkbox" class="w-5 h-5 accent-green-500" onclick="event.stopPropagation();actCk(4)">
+          <span class="font-semibold text-gray-700 text-sm">🔔 Tanya orang tua: pernah dengar suara "bip" saat komputer nyala?</span>
+        </div>
+      </div>
+
+      <div id="actAllDone" class="hidden rounded-2xl p-4 text-center mb-4" style="background:linear-gradient(135deg,#fef9c3,#fef3c7);border:3px solid #fbbf24;">
+        <div class="text-3xl mb-1">🏆✨</div>
+        <div class="font-bold text-lg" style="font-family:'Fredoka One',cursive;color:#78350f;">Semua tugas selesai! Kamu ahli booting sekarang! 💻⚡</div>
+        <div class="text-sm text-amber-700 font-semibold">Besok petualangan baru menunggumu! 🚀</div>
+      </div>
+
+      <!-- Draw area -->
+      <p class="font-bold text-sm mb-2" style="color:#ea580c;">✏️ Area Menggambar (cetak atau gambar di kertas):</p>
+      <div class="draw-area flex items-center justify-center">
+        <div class="text-center text-gray-400">
+          <div class="text-5xl mb-3">🖍️</div>
+          <div class="font-bold text-sm">Gambar komputer saat dinyalakan di sini!</div>
+          <div class="text-xs mt-1">Lampu warna apa? Layarnya bagaimana? 💡🖥️</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="py-8 px-4 text-center mt-4" style="background:linear-gradient(135deg,#042f2e,#0f766e);">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex items-center justify-center gap-1 flex-wrap mb-3">
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-yellow-300" style="width:14px;height:14px;box-shadow:0 0 8px #fbbf24;"></div>
+      <span class="text-white/70 text-xs ml-1 font-semibold">Hari 22 dari 30</span>
+    </div>
+    <p style="font-family:'Fredoka One',cursive;color:#5eead4;font-size:1.3rem;">Hari 22 dari 30 ✨</p>
+    <p class="text-teal-300 text-sm mt-1 font-semibold">Petualangan Aslan di Dalam Komputer Ajaib 🖥️🚀</p>
+  </div>
+</footer>
+
+<!-- ══════ JAVASCRIPT ══════ -->
+<script>
+/* ═══════════════════════════════════
+   BOOT SIMULATOR
+═══════════════════════════════════ */
+const bootSteps = [
+  { pct:5,  label:'🔌 Power masuk...', msg:'Power Supply menyalurkan listrik!', color:'#f97316', screen:'power' },
+  { pct:20, label:'🧩 Motherboard bangun...', msg:'Motherboard membangunkan semua komponen!', color:'#fbbf24', screen:'mobo' },
+  { pct:40, label:'🧠 CPU berpikir...', msg:'CPU mulai berhitung dan mengecek semuanya!', color:'#22c55e', screen:'cpu' },
+  { pct:60, label:'🧪 POST – Self test...', msg:'Komputer mengecek semua komponen (POST)!', color:'#06b6d4', screen:'post' },
+  { pct:78, label:'⚡ RAM bersiap...', msg:'RAM memuat data yang diperlukan!', color:'#38bdf8', screen:'ram' },
+  { pct:92, label:'💾 Muat sistem operasi...', msg:'Windows / sistem operasi dimuat dari SSD!', color:'#0d9488', screen:'os' },
+  { pct:100, label:'✅ Siap digunakan!', msg:'Komputer siap! Yeay! 🎉', color:'#22c55e', screen:'ready' },
+];
+
+const screenStates = {
+  power: {
+    bg: 'linear-gradient(135deg,#1a1a0a,#2d1f05)',
+    html: `<div class="text-center p-3">
+      <div style="font-size:2rem;">⚡🔌</div>
+      <div style="font-family:'Fredoka One',cursive;color:#fbbf24;font-size:.85rem;margin-top:4px;">Listrik masuk...</div>
+      <div style="color:#f97316;font-size:.65rem;margin-top:2px;">Power Supply aktif!</div>
+    </div>`
+  },
+  mobo: {
+    bg: 'linear-gradient(135deg,#1a120a,#2d1f00)',
+    html: `<div class="text-center p-3">
+      <div style="font-size:2rem;">🧩</div>
+      <div style="font-family:'Fredoka One',cursive;color:#fbbf24;font-size:.85rem;margin-top:4px;">Motherboard aktif...</div>
+      <div style="color:#f97316;font-size:.65rem;">Semua bagian dibangunkan!</div>
+    </div>`
+  },
+  cpu: {
+    bg: 'linear-gradient(135deg,#0a1a0a,#0d2611)',
+    html: `<div class="text-center p-3">
+      <div style="font-size:2rem;">🧠⚙️</div>
+      <div style="font-family:'Fredoka One',cursive;color:#34d399;font-size:.85rem;margin-top:4px;">CPU berpikir keras...</div>
+      <div style="color:#22c55e;font-size:.65rem;">Otak komputer aktif!</div>
+    </div>`
+  },
+  post: {
+    bg: 'linear-gradient(135deg,#0a1a1a,#062626)',
+    html: `<div class="text-center p-3">
+      <div style="font-size:1.4rem;">🧪 POST Check</div>
+      <div style="color:#06b6d4;font-size:.65rem;margin-top:4px;">✓ CPU ... OK</div>
+      <div style="color:#06b6d4;font-size:.65rem;">✓ RAM ... OK</div>
+      <div style="color:#06b6d4;font-size:.65rem;">✓ Storage ... OK</div>
+      <div style="color:#38bdf8;font-size:.7rem;margin-top:4px;font-weight:bold;">Semua OK! 👍</div>
+    </div>`
+  },
+  ram: {
+    bg: 'linear-gradient(135deg,#070f1a,#0c1e38)',
+    html: `<div class="text-center p-3">
+      <div style="font-size:2rem;">⚡💾</div>
+      <div style="font-family:'Fredoka One',cursive;color:#38bdf8;font-size:.85rem;margin-top:4px;">RAM bersiap...</div>
+      <div style="color:#0ea5e9;font-size:.65rem;">Memori sedang dimuat!</div>
+    </div>`
+  },
+  os: {
+    bg: 'linear-gradient(135deg,#080f0d,#0a1f1a)',
+    html: `<div class="text-center p-3">
+      <div style="font-size:2rem;">💻</div>
+      <div style="font-family:'Fredoka One',cursive;color:#5eead4;font-size:.85rem;margin-top:4px;">Muat Windows...</div>
+      <div style="background:#0d9488;height:6px;border-radius:4px;margin:6px auto;width:80%;overflow:hidden;">
+        <div style="background:#5eead4;height:100%;width:75%;border-radius:4px;"></div>
+      </div>
+      <div style="color:#0d9488;font-size:.65rem;">Sistem operasi loading!</div>
+    </div>`
+  },
+  ready: {
+    bg: 'linear-gradient(135deg,#0a2a14,#0d3320)',
+    html: `<div class="text-center p-3">
+      <div style="font-size:2.2rem;">🖥️✨</div>
+      <div style="font-family:'Fredoka One',cursive;color:#4ade80;font-size:.9rem;margin-top:4px;animation:glowText 1.5s ease-in-out infinite;">Komputer Siap!</div>
+      <div style="color:#86efac;font-size:.65rem;margin-top:2px;">Desktop sedang dimuat... 🎉</div>
+    </div>`
+  }
+};
+
+let booting = false;
+let bootTimer = null;
+let currentStep = -1;
+const logDiv = document.getElementById('bootLog');
+
+function startBoot() {
+  if (booting) return;
+  booting = true;
+  currentStep = 0;
+  document.getElementById('btnPower').disabled = true;
+  logDiv.classList.remove('hidden');
+  logDiv.innerHTML = '<p class="text-center text-sm font-bold mb-3" style="color:#0d9488;">📋 Log Proses Booting:</p>';
+
+  // Power LED on
+  const led = document.getElementById('powerLed');
+  led.style.background = '#22c55e';
+  led.style.boxShadow = '0 0 8px #22c55e';
+  led.className = 'w-3 h-3 rounded-full led-blink';
+
+  // Fan spin
+  document.getElementById('fanBlades').className = 'fan-spin';
+
+  // HDD blink
+  const hdd = document.getElementById('hddLed');
+  hdd.style.background = '#f97316';
+  hdd.style.boxShadow = '0 0 6px #f97316';
+  hdd.className = 'w-3 h-3 rounded-full led-blink';
+
+  // Scan line
+  document.getElementById('scanLineEl').classList.remove('hidden');
+
+  runStep();
+}
+
+function runStep() {
+  if (currentStep >= bootSteps.length) {
+    finishBoot();
+    return;
+  }
+  const s = bootSteps[currentStep];
+  const bar = document.getElementById('bootBar');
+  const label = document.getElementById('bootLabel');
+  const pct = document.getElementById('bootPct');
+
+  bar.style.width = s.pct + '%';
+  bar.classList.add('running');
+  label.textContent = s.label;
+  pct.textContent = s.pct + '%';
+  label.style.color = s.color;
+  document.getElementById('bootStatusMsg').textContent = '⚡ ' + s.msg;
+  document.getElementById('bootStatusMsg').style.color = s.color;
+
+  // Update screen
+  const sc = screenStates[s.screen];
+  const content = document.getElementById('screenContent');
+  content.style.background = sc.bg;
+  content.innerHTML = sc.html;
+
+  // Add log entry
+  const entry = document.createElement('div');
+  entry.className = 'flex items-center gap-2 p-2 rounded-xl text-sm font-semibold step-pop';
+  entry.style.cssText = 'background:white;border:2px solid ' + s.color + ';color:#374151;';
+  entry.innerHTML = `<span style="color:${s.color};font-size:1rem;">${s.label.split(' ')[0]}</span><span>${s.msg}</span>`;
+  logDiv.appendChild(entry);
+  logDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
+
+  currentStep++;
+  bootTimer = setTimeout(runStep, 900);
+}
+
+function finishBoot() {
+  booting = false;
+  bar_running_off();
+
+  // Monitor glow
+  document.getElementById('monitorEl').classList.add('booted');
+
+  // Power LED solid
+  const led = document.getElementById('powerLed');
+  led.className = 'w-3 h-3 rounded-full';
+  led.style.background = '#22c55e';
+  led.style.boxShadow = '0 0 14px #22c55e, 0 0 28px rgba(34,197,94,.5)';
+
+  // Fan slow
+  document.getElementById('fanBlades').className = 'fan-slow';
+
+  // HDD off
+  const hdd = document.getElementById('hddLed');
+  hdd.className = 'w-3 h-3 rounded-full';
+  hdd.style.background = '#f97316';
+  hdd.style.boxShadow = '0 0 6px #f97316';
+
+  document.getElementById('bootStatusMsg').textContent = '🎉 Komputer sudah siap dipakai! Wah, cepat banget ya!';
+  document.getElementById('bootStatusMsg').style.color = '#22c55e';
+
+  spawnConfetti(['#22c55e','#06b6d4','#fbbf24','#f97316','#34d399']);
+
+  // Reenable after a moment
+  setTimeout(() => {
+    document.getElementById('btnPower').disabled = false;
+  }, 1500);
+}
+
+function bar_running_off() {
+  document.getElementById('bootBar').classList.remove('running');
+}
+
+function resetBoot() {
+  clearTimeout(bootTimer);
+  booting = false;
+  currentStep = -1;
+
+  // Reset UI
+  document.getElementById('bootBar').style.width = '0%';
+  document.getElementById('bootBar').classList.remove('running');
+  document.getElementById('bootLabel').textContent = 'Siap dinyalakan...';
+  document.getElementById('bootLabel').style.color = '#5eead4';
+  document.getElementById('bootPct').textContent = '0%';
+  document.getElementById('bootStatusMsg').textContent = '👆 Tekan tombol hijau untuk mulai!';
+  document.getElementById('bootStatusMsg').style.color = '#5eead4';
+  document.getElementById('btnPower').disabled = false;
+
+  // Screen off
+  const content = document.getElementById('screenContent');
+  content.style.background = 'linear-gradient(135deg,#080f0d,#0a1a14)';
+  content.innerHTML = `<div class="text-center">
+    <div class="text-5xl mb-2">🌑</div>
+    <div style="color:#1a3630;font-family:'Fredoka One',cursive;font-size:.9rem;">Layar mati... 😴</div>
+  </div>`;
+
+  document.getElementById('monitorEl').classList.remove('booted');
+  document.getElementById('scanLineEl').classList.add('hidden');
+
+  // LEDs off
+  const led = document.getElementById('powerLed');
+  led.className = 'w-3 h-3 rounded-full';
+  led.style.background = '#333';
+  led.style.boxShadow = 'none';
+
+  const hdd = document.getElementById('hddLed');
+  hdd.className = 'w-3 h-3 rounded-full';
+  hdd.style.background = '#333';
+  hdd.style.boxShadow = 'none';
+
+  document.getElementById('fanBlades').className = 'fan-stop';
+  logDiv.innerHTML = '<p class="text-center text-sm font-bold mb-3" style="color:#0d9488;">📋 Log Proses Booting:</p>';
+}
+
+/* ═══════════════════════════════════
+   STEP POPUP
+═══════════════════════════════════ */
+const stepData = {
+  1: {
+    emoji: '🔌',
+    title: 'Power Supply – Sumber Listrik!',
+    desc: '"Wah, ini kayak PLN-nya komputer! 😄 Power Supply tugasnya mengubah listrik dari colokan menjadi listrik yang aman buat semua komponen. Tanpa Power Supply, komputer tidak bisa hidup sama sekali! 🔌⚡"'
+  },
+  2: {
+    emoji: '🧩',
+    title: 'Motherboard – Bos Besar!',
+    desc: '"Motherboard itu kayak kepala sekolah — dia yang ngatur supaya semua komponen saling kerja sama! Begitu dapat listrik, Motherboard langsung bangunin CPU, RAM, dan teman-temannya! 🧩👑"'
+  },
+  3: {
+    emoji: '🧠',
+    title: 'CPU – Otak Komputer Berpikir!',
+    desc: '"CPU adalah otak komputer! Saat nyala, CPU langsung mulai berpikir: ngecek semua hardware, menjalankan instruksi pertama, dan menyiapkan komputer buat kerja. CPU bisa hitung miliaran hal per detik lho! 🧠💨"'
+  },
+  4: {
+    emoji: '⚡',
+    title: 'RAM – Memori Cepat Siap Kerja!',
+    desc: '"RAM itu kayak meja kerja — tempat komputer naruh barang yang lagi dipakai sekarang. Saat booting, sistem operasi (Windows) dimuat ke RAM biar bisa jalan cepat! Makin besar RAM, makin lega meja kerjanya! ⚡💾"'
+  },
+  5: {
+    emoji: '🖥️',
+    title: 'Layar Menyala – Siap Dipakai!',
+    desc: '"Akhirnya! Setelah semua siap, layar menyala dan muncul logo Windows atau gambar startup. Ini tandanya komputer sudah berhasil booting dan siap dipakai! Seluruh proses tadi cuma butuh belasan detik! 🖥️🎉✨"'
+  }
+};
+
+function showStep(n) {
+  const d = stepData[n];
+  const popup = document.getElementById('stepPopup');
+  document.getElementById('popEmoji').textContent = d.emoji;
+  document.getElementById('popTitle').textContent = d.title;
+  document.getElementById('popDesc').textContent = d.desc;
+  popup.classList.remove('hidden');
+  popup.className = 'mt-5 rounded-3xl p-5 step-pop';
+  void popup.offsetWidth; // reflow for re-trigger
+  popup.className = 'mt-5 rounded-3xl p-5 step-pop';
+
+  // Highlight active step
+  [1,2,3,4,5].forEach(i => document.getElementById('st'+i).classList.remove('active'));
+  document.getElementById('st'+n).classList.add('active');
+  popup.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  spawnConfetti(['#0d9488','#22c55e','#fbbf24','#f97316','#06b6d4']);
+}
+
+/* ═══════════════════════════════════
+   CONFETTI
+═══════════════════════════════════ */
+function spawnConfetti(colors) {
+  for (let i = 0; i < 14; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `
+      left:${20 + Math.random()*60}%; top:40%;
+      background:${colors[i % colors.length]};
+      --tx:${(Math.random()-.5)*250}px;
+      --ty:${-60-Math.random()*180}px;
+      animation-delay:${Math.random()*.4}s;
+      border-radius:${Math.random()>.5?'50%':'2px'};
+      position:fixed;
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
+  }
+}
+
+/* ═══════════════════════════════════
+   QUIZ
+═══════════════════════════════════ */
+let qD = {1:false, 2:false, 3:false}, qSc = 0;
+function qa(n, correct, btn) {
+  if (qD[n]) return;
+  qD[n] = true;
+  btn.closest('#q'+n).querySelectorAll('.qbtn').forEach(b => b.disabled = true);
+  const r = document.getElementById('q'+n+'r');
+  r.classList.remove('hidden');
+  if (correct === 'a') {
+    qSc++;
+    btn.style.background = '#dcfce7';
+    btn.style.borderColor = '#16a34a';
+    r.textContent = '✅ Betul banget! Kamu hebat! 🌟';
+    r.style.color = '#16a34a';
+    spawnConfetti(['#22c55e','#fbbf24','#0d9488','#f97316']);
+  } else {
+    btn.style.background = '#fee2e2';
+    btn.style.borderColor = '#dc2626';
+    const ans = ['A – Power Supply yang pertama kasih listrik! ⚡', 'B – POST (Power-On Self Test)! 🧪', 'C – Motherboard yang jadi bos besar! 🧩'];
+    r.textContent = '❌ Jawabannya ' + ans[n-1];
+    r.style.color = '#dc2626';
+  }
+  if (Object.values(qD).every(v => v)) {
+    setTimeout(() => {
+      const f = document.getElementById('qFinal');
+      f.classList.remove('hidden');
+      const e = document.getElementById('qfE'), t = document.getElementById('qfT'), s = document.getElementById('qfS');
+      if (qSc === 3) {
+        e.textContent = '🏆';
+        t.textContent = 'Sempurna! 3/3 – Ahli Booting!';
+        t.style.color = '#0d9488';
+        s.textContent = 'Wah! Kamu lebih paham soal booting dari banyak orang dewasa! 😎⚡';
+        spawnConfetti(['#22c55e','#fbbf24','#0d9488','#f97316','#06b6d4','#34d399']);
+      } else if (qSc === 2) {
+        e.textContent = '⭐';
+        t.textContent = 'Bagus! 2/3 Benar!';
+        t.style.color = '#0f766e';
+        s.textContent = 'Hampir sempurna! Scroll ke atas dan baca lagi yuk! 📖';
+      } else {
+        e.textContent = '💪';
+        t.textContent = qSc + '/3 – Semangat!';
+        t.style.color = '#0d9488';
+        s.textContent = 'Coba baca materinya lagi dari atas, pasti bisa! ⚡🖥️';
+      }
+    }, 400);
+  }
+}
+
+/* ═══════════════════════════════════
+   ACTIVITY CHECKS
+═══════════════════════════════════ */
+let actC = 0;
+function actCk(n) {
+  const el = document.getElementById('ac'+n);
+  const cb = el.querySelector('input');
+  if (cb.checked) {
+    actC++;
+    el.querySelector('span').style.textDecoration = 'line-through';
+    el.querySelector('span').style.opacity = '.5';
+  } else {
+    actC--;
+    el.querySelector('span').style.textDecoration = '';
+    el.querySelector('span').style.opacity = '';
+  }
+  if (actC >= 4) {
+    document.getElementById('actAllDone').classList.remove('hidden');
+    spawnConfetti(['#fbbf24','#f97316','#22c55e','#0d9488','#06b6d4']);
+  } else {
+    document.getElementById('actAllDone').classList.add('hidden');
+  }
+}
+</script>
+</body>
+</html>

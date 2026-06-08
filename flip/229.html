@@ -1,0 +1,1452 @@
+<!-- BUKU DIGITAL ASLAN - Hari 29: Rahasia Pelangi dan Warna-warni Cahaya -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rahasia Pelangi dan Warna-warni Cahaya · Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rb-red:     #e53935;
+    --rb-orange:  #fb8c00;
+    --rb-yellow:  #fdd835;
+    --rb-green:   #43a047;
+    --rb-blue:    #1e88e5;
+    --rb-indigo:  #3949ab;
+    --rb-violet:  #8e24aa;
+    --rb-cyan:    #00acc1;
+    --rb-teal:    #00897b;
+    --rb-sky:     #29b6f6;
+    --rb-gold:    #ffca28;
+    --dark-bg:    #050d14;
+    --mid-bg:     #081520;
+    --text-light: #e8f4fd;
+    --radius:     24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #050d14;
+    color: #e8f4fd;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  body.light-mode {
+    background: #f0f8ff;
+    color: #050d14;
+  }
+
+  /* ─── FLOATING PARTICLES ─── */
+  .rainbow-particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .rp {
+    position: absolute;
+    border-radius: 50%;
+    animation: rpFloat linear infinite;
+    opacity: 0;
+  }
+  @keyframes rpFloat {
+    0%   { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.8); }
+    15%  { opacity: 0.6; }
+    85%  { opacity: 0.3; }
+    100% { opacity: 0; transform: translateY(-108vh) rotate(360deg) scale(1.2); }
+  }
+  body.light-mode .rainbow-particles { opacity: 0.35; }
+
+  /* ─── TOP NAV ─── */
+  .top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(5,13,20,0.93);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(253,216,53,0.18);
+  }
+  body.light-mode .top-nav {
+    background: rgba(240,248,255,0.96);
+    border-color: rgba(30,136,229,0.2);
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--rb-blue), var(--rb-violet));
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 800;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(30,136,229,0.45);
+  }
+  .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(253,216,53,0.5); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .book-day-badge {
+    background: linear-gradient(135deg, var(--rb-orange), var(--rb-violet));
+    color: white;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  .mode-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,0.16); transform: rotate(20deg); }
+  body.light-mode .mode-btn { background: rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.1); color: #050d14; }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-wrap {
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    z-index: 99;
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--rb-red), var(--rb-orange), var(--rb-yellow), var(--rb-green), var(--rb-blue), var(--rb-violet));
+    transition: width 0.35s ease;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 10px rgba(253,216,53,0.5);
+  }
+
+  /* ─── MAIN CONTAINER ─── */
+  .book-container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 20px 40px;
+  }
+
+  /* ─── PAGES ─── */
+  .page { display: none; animation: fadeUp 0.5s ease forwards; }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── COVER ─── */
+  .cover-page {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    position: relative;
+  }
+
+  /* ── RAINBOW ILLUSTRATION ── */
+  .cover-rainbow-wrap {
+    width: 260px;
+    height: 220px;
+    position: relative;
+    margin: 0 auto 32px;
+    animation: floatRainbow 3.5s ease-in-out infinite;
+  }
+  @keyframes floatRainbow {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-13px); }
+  }
+
+  /* CSS Rainbow arcs */
+  .rb-arc {
+    position: absolute;
+    left: 50%;
+    bottom: 32px;
+    transform: translateX(-50%);
+    border-radius: 50% 50% 0 0;
+    border-bottom: none;
+  }
+
+  /* Ground and grass */
+  .rb-ground {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 34px;
+    background: linear-gradient(180deg, #2e7d32, #1b5e20);
+    border-radius: 50% 50% 0 0 / 14px 14px 0 0;
+  }
+  .rb-ground::after {
+    content: '';
+    position: absolute;
+    top: -8px; left: 10%;
+    width: 80%; height: 12px;
+    background: radial-gradient(ellipse at 50% 100%, #388e3c, transparent 70%);
+  }
+
+  /* Sun */
+  .rb-sun {
+    position: absolute;
+    top: 8px; right: 14px;
+    width: 44px; height: 44px;
+    background: radial-gradient(circle, #fff176, #fdd835);
+    border-radius: 50%;
+    box-shadow: 0 0 18px rgba(253,216,53,0.7);
+    animation: sunShine 3s ease-in-out infinite;
+  }
+  @keyframes sunShine {
+    0%,100% { box-shadow: 0 0 18px rgba(253,216,53,0.7); }
+    50%     { box-shadow: 0 0 30px rgba(253,216,53,0.95); }
+  }
+
+  /* Clouds */
+  .rb-cloud {
+    position: absolute;
+    background: rgba(200,220,240,0.85);
+    border-radius: 50px;
+  }
+  .rb-cloud::before, .rb-cloud::after {
+    content: '';
+    position: absolute;
+    background: inherit;
+    border-radius: 50%;
+  }
+
+  /* Rain drops */
+  .rb-rain {
+    position: absolute;
+    left: 10px; top: 68px;
+    display: flex; gap: 5px;
+  }
+  .rb-drop {
+    width: 2px;
+    background: linear-gradient(180deg, rgba(100,181,246,0.8), rgba(41,182,246,0.3));
+    border-radius: 2px;
+    animation: dropFall 1s ease-in infinite;
+  }
+  @keyframes dropFall {
+    0%   { opacity: 0; transform: translateY(-12px); height: 8px; }
+    30%  { opacity: 1; }
+    100% { opacity: 0; transform: translateY(22px); height: 14px; }
+  }
+
+  /* Terra Explorer */
+  .rb-terra {
+    position: absolute;
+    top: 16px; left: 14px;
+    animation: terraBounce 3s ease-in-out infinite;
+  }
+  @keyframes terraBounce {
+    0%,100% { transform: translateY(0) rotate(-5deg); }
+    50%     { transform: translateY(-8px) rotate(7deg); }
+  }
+  .ct-body {
+    width: 32px; height: 22px;
+    background: linear-gradient(135deg, #1565c0, #0d47a1);
+    border-radius: 10px 10px 5px 5px;
+    position: relative;
+    box-shadow: 0 0 14px rgba(41,182,246,0.55);
+  }
+  .ct-win {
+    width: 12px; height: 9px;
+    background: radial-gradient(circle, #e3f2fd, #29b6f6);
+    border-radius: 50%;
+    position: absolute;
+    top: 3px; left: 10px;
+  }
+  .ct-eng {
+    position: absolute;
+    bottom: -7px; left: 50%;
+    transform: translateX(-50%);
+    width: 9px; height: 8px;
+    background: linear-gradient(180deg, #ff7043, transparent);
+    clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+    animation: engGlow 0.4s ease-in-out infinite alternate;
+  }
+  @keyframes engGlow { from { opacity: 0.7; } to { opacity: 1; filter: brightness(1.5); } }
+
+  /* Floating emoji */
+  .floating-rb {
+    position: absolute;
+    font-size: 24px;
+    animation: rbFloat 4s ease-in-out infinite;
+  }
+  .floating-rb:nth-child(1) { top: 5%;  left: 5%;   animation-delay: 0s; }
+  .floating-rb:nth-child(2) { top: 8%;  right: 7%;  animation-delay: -1.5s; }
+  .floating-rb:nth-child(3) { bottom: 28%; left: 4%; animation-delay: -3s; }
+  .floating-rb:nth-child(4) { bottom: 22%; right: 5%; animation-delay: -2s; }
+  @keyframes rbFloat {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50%     { transform: translateY(-11px) rotate(8deg); }
+  }
+
+  .cover-badge {
+    background: linear-gradient(135deg, var(--rb-blue), var(--rb-violet));
+    color: white;
+    padding: 6px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: inline-block;
+    box-shadow: 0 0 16px rgba(253,216,53,0.3);
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(28px, 6vw, 50px);
+    line-height: 1.2;
+    background: linear-gradient(135deg, #ef5350, #fb8c00, #fdd835, #43a047, #1e88e5, #8e24aa, #ef5350);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease infinite;
+    margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+
+  .cover-subtitle { font-size: clamp(16px, 3vw, 22px); opacity: 0.75; margin-bottom: 24px; }
+
+  .cover-name-badge {
+    background: linear-gradient(135deg, rgba(30,136,229,0.09), rgba(142,36,170,0.09));
+    border: 2px solid rgba(253,216,53,0.22);
+    border-radius: 20px;
+    padding: 16px 32px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+  }
+  .cover-name-badge p { font-size: 14px; opacity: 0.7; margin-bottom: 4px; }
+  .cover-name-badge h2 { font-family: 'Fredoka One', cursive; font-size: clamp(22px,4vw,32px); color: var(--rb-gold); }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+  }
+  body.light-mode .card {
+    background: white;
+    border-color: rgba(30,136,229,0.14);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    color: #050d14;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent, linear-gradient(90deg, var(--rb-blue), var(--rb-violet)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .card-intro  { --accent: linear-gradient(90deg, #e53935, #fb8c00, #fdd835, #43a047, #1e88e5, #8e24aa); }
+  .card-form   { --accent: linear-gradient(90deg, #1e88e5, #00acc1, #43a047); }
+  .card-roygbiv{ --accent: linear-gradient(90deg, #e53935, #fb8c00, #fdd835, #43a047, #1e88e5, #3949ab, #8e24aa); }
+  .card-shape  { --accent: linear-gradient(90deg, #8e24aa, #3949ab, #1e88e5); }
+  .card-types  { --accent: linear-gradient(90deg, #fb8c00, #fdd835, #43a047); }
+  .card-diy    { --accent: linear-gradient(90deg, #00897b, #43a047, #fdd835); }
+
+  .card-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    display: block;
+    line-height: 1;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
+  }
+
+  .card h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(22px, 4vw, 30px);
+    margin-bottom: 8px;
+    color: var(--rb-gold);
+  }
+  body.light-mode .card h2 { color: var(--rb-blue); }
+
+  .card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 20px 0 10px;
+    color: var(--rb-gold);
+  }
+  body.light-mode .card h3 { color: var(--rb-blue); }
+
+  .card p {
+    font-size: clamp(15px, 2.5vw, 17px);
+    line-height: 1.85;
+    opacity: 0.9;
+    margin-bottom: 14px;
+  }
+
+  /* ─── ANALOGY BOX ─── */
+  .analogy-box {
+    background: linear-gradient(135deg, rgba(30,136,229,0.07), rgba(142,36,170,0.07));
+    border: 2px dashed rgba(253,216,53,0.28);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .analogy-box::before {
+    content: '💡 Analogi Keren!';
+    position: absolute;
+    top: -12px; left: 20px;
+    background: var(--dark-bg);
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--rb-gold);
+  }
+  body.light-mode .analogy-box { background: linear-gradient(135deg,rgba(30,136,229,0.05),rgba(142,36,170,0.05)); }
+  body.light-mode .analogy-box::before { background: white; }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header { text-align: center; margin-bottom: 32px; padding-top: 20px; }
+  .section-header .tag {
+    display: inline-block;
+    background: rgba(253,216,53,0.12);
+    border: 1px solid rgba(253,216,53,0.30);
+    color: var(--rb-gold);
+    padding: 4px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-header h1 { font-family: 'Fredoka One', cursive; font-size: clamp(24px,5vw,40px); line-height: 1.2; }
+
+  /* ─── SCENE BOX ─── */
+  .scene-box {
+    background: linear-gradient(135deg, rgba(5,13,20,0.94), rgba(30,136,229,0.10));
+    border: 1px solid rgba(253,216,53,0.13);
+    border-radius: 20px;
+    padding: 28px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .scene-box::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 80% 50%, rgba(253,216,53,0.04), transparent 60%);
+    pointer-events: none;
+  }
+  body.light-mode .scene-box {
+    background: linear-gradient(135deg, rgba(240,248,255,0.97), rgba(30,136,229,0.04));
+    border-color: rgba(30,136,229,0.16);
+  }
+  .scene-title {
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--rb-gold);
+    margin-bottom: 12px;
+    opacity: 0.85;
+  }
+  .scene-box p { font-size: clamp(15px,2.5vw,17px); line-height: 1.9; font-style: italic; opacity: 0.9; }
+
+  /* ─── RAINBOW COLOR STRIP ─── */
+  .roygbiv-strip {
+    display: flex;
+    border-radius: 16px;
+    overflow: hidden;
+    margin: 20px 0;
+    height: 70px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .color-band {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    transition: flex 0.3s;
+    cursor: default;
+    gap: 3px;
+  }
+  .color-band:hover { flex: 2; }
+  .color-band .cb-emoji { font-size: 18px; text-shadow: none; }
+
+  /* ─── STEP LIST ─── */
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .sl-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(253,216,53,0.10);
+    transition: transform 0.2s;
+  }
+  .sl-item:hover { transform: translateX(4px); }
+  body.light-mode .sl-item { background: rgba(30,136,229,0.04); border-color: rgba(30,136,229,0.12); }
+  .sl-num {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--rb-blue), var(--rb-violet));
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 15px;
+    flex-shrink: 0; margin-top: 2px;
+    box-shadow: 0 0 10px rgba(30,136,229,0.35);
+  }
+  .sl-content strong { display: block; font-size: 16px; font-weight: 900; margin-bottom: 5px; }
+  .sl-content p { font-size: 14px; line-height: 1.65; opacity: 0.88; margin: 0; }
+
+  /* ─── TWO COL ─── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+
+  .mini-card {
+    border-radius: 18px;
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mini-card-red    { background: rgba(229,57,53,0.09);  border: 1px solid rgba(229,57,53,0.22); }
+  .mini-card-orange { background: rgba(251,140,0,0.09);  border: 1px solid rgba(251,140,0,0.22); }
+  .mini-card-yellow { background: rgba(253,216,53,0.08); border: 1px solid rgba(253,216,53,0.22); }
+  .mini-card-green  { background: rgba(67,160,71,0.09);  border: 1px solid rgba(67,160,71,0.22); }
+  .mini-card-blue   { background: rgba(30,136,229,0.09); border: 1px solid rgba(30,136,229,0.22); }
+  .mini-card-violet { background: rgba(142,36,170,0.09); border: 1px solid rgba(142,36,170,0.22); }
+  .mini-card-teal   { background: rgba(0,137,123,0.09);  border: 1px solid rgba(0,137,123,0.22); }
+  body.light-mode .mini-card-red    { background: rgba(229,57,53,0.05); }
+  body.light-mode .mini-card-orange { background: rgba(251,140,0,0.05); }
+  body.light-mode .mini-card-yellow { background: rgba(253,216,53,0.05); }
+  body.light-mode .mini-card-green  { background: rgba(67,160,71,0.05); }
+  body.light-mode .mini-card-blue   { background: rgba(30,136,229,0.05); }
+  body.light-mode .mini-card-violet { background: rgba(142,36,170,0.05); }
+  body.light-mode .mini-card-teal   { background: rgba(0,137,123,0.05); }
+
+  .mini-card .mini-icon { font-size: 36px; }
+  .mini-card strong { font-size: 15px; font-weight: 900; }
+  .mini-card p { font-size: 14px; line-height: 1.6; opacity: 0.85; margin: 0; }
+
+  /* ─── FACT GRID ─── */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .fact-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .fact-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(253,216,53,0.12); }
+  body.light-mode .fact-card { background: #fff8e1; border-color: rgba(30,136,229,0.12); }
+  .fact-card .fact-emoji { font-size: 40px; margin-bottom: 10px; display: block; }
+  .fact-card .fact-number { font-family: 'Fredoka One', cursive; font-size: 20px; color: var(--rb-gold); display: block; margin-bottom: 4px; }
+  body.light-mode .fact-card .fact-number { color: var(--rb-blue); }
+  .fact-card .fact-label { font-size: 13px; opacity: 0.72; font-weight: 700; }
+
+  /* ─── DIY EXPERIMENT BOX ─── */
+  .experiment-box {
+    background: linear-gradient(135deg, rgba(0,137,123,0.10), rgba(67,160,71,0.10));
+    border: 2px solid rgba(67,160,71,0.25);
+    border-radius: 20px;
+    padding: 24px;
+    margin: 16px 0;
+    position: relative;
+  }
+  .experiment-box::before {
+    content: '🔬 Percobaan!';
+    position: absolute;
+    top: -13px; left: 20px;
+    background: var(--dark-bg);
+    padding: 2px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 900;
+    color: #69f0ae;
+  }
+  body.light-mode .experiment-box { background: linear-gradient(135deg,rgba(0,137,123,0.05),rgba(67,160,71,0.05)); }
+  body.light-mode .experiment-box::before { background: white; color: var(--rb-green); }
+  .experiment-box h4 { font-size: 16px; font-weight: 900; margin-bottom: 12px; color: #69f0ae; }
+  body.light-mode .experiment-box h4 { color: var(--rb-green); }
+  .experiment-box p { font-size: 14px; line-height: 1.7; opacity: 0.88; margin-bottom: 10px; }
+  .experiment-box p:last-child { margin-bottom: 0; }
+
+  /* ─── CHALLENGE ─── */
+  .challenge-card {
+    background: linear-gradient(135deg, rgba(5,13,20,0.92), rgba(30,136,229,0.10));
+    border: 2px solid rgba(253,216,53,0.20);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin: 20px 0;
+  }
+  body.light-mode .challenge-card {
+    background: linear-gradient(135deg, rgba(30,136,229,0.04), rgba(142,36,170,0.04));
+    border-color: rgba(30,136,229,0.18);
+  }
+
+  .challenge-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 24px;
+    color: var(--rb-gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  body.light-mode .challenge-title { color: var(--rb-blue); }
+
+  .challenge-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .challenge-item:last-child { border-bottom: none; }
+  body.light-mode .challenge-item { border-color: rgba(0,0,0,0.05); }
+
+  .challenge-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--rb-blue), var(--rb-violet));
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 14px;
+    flex-shrink: 0; margin-top: 2px;
+    box-shadow: 0 0 10px rgba(30,136,229,0.3);
+  }
+  .challenge-item p { font-size: 15px; line-height: 1.7; opacity: 0.9; }
+
+  /* ─── NAV BUTTONS ─── */
+  .nav-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  body.light-mode .nav-btns { border-color: rgba(0,0,0,0.05); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover  { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-prev {
+    background: rgba(255,255,255,0.06);
+    color: inherit;
+    border: 1px solid rgba(255,255,255,0.11);
+  }
+  body.light-mode .btn-prev { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.09); color: #050d14; }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--rb-blue), var(--rb-violet));
+    color: white;
+    box-shadow: 0 4px 16px rgba(30,136,229,0.4);
+    flex: 1; justify-content: center;
+    max-width: 300px;
+  }
+  .btn-next:hover { box-shadow: 0 6px 24px rgba(253,216,53,0.45); }
+
+  .btn-done {
+    background: linear-gradient(135deg, var(--rb-blue), var(--rb-violet));
+    color: white;
+    box-shadow: 0 4px 16px rgba(30,136,229,0.45);
+    width: 100%; max-width: 400px;
+    margin: 0 auto;
+    justify-content: center;
+    font-size: 17px;
+    padding: 18px 32px;
+  }
+  .btn-done:hover { box-shadow: 0 6px 24px rgba(253,216,53,0.5); }
+
+  .page-indicator { font-size: 13px; opacity: 0.5; font-weight: 700; white-space: nowrap; }
+
+  /* ─── CLOSING ─── */
+  .closing-content { text-align: center; padding: 40px 20px; }
+  .trophy-big {
+    font-size: 100px;
+    display: block; margin: 0 auto 24px;
+    animation: bounceIn 0.8s cubic-bezier(0.36,0.07,0.19,0.97);
+    filter: drop-shadow(0 0 24px rgba(253,216,53,0.6));
+  }
+  @keyframes bounceIn {
+    0%  { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); }
+    100%{ transform: scale(1); opacity: 1; }
+  }
+  .quote-box {
+    background: linear-gradient(135deg, rgba(30,136,229,0.08), rgba(142,36,170,0.08));
+    border-left: 4px solid var(--rb-orange);
+    border-radius: 0 16px 16px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+    text-align: left;
+  }
+  .quote-box p { font-size: 18px; font-style: italic; line-height: 1.8; }
+  .quote-box cite { font-size: 13px; opacity: 0.6; margin-top: 8px; display: block; font-style: normal; font-weight: 700; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .book-container { padding: 76px 16px 32px; }
+    .card { padding: 24px 20px; }
+    .nav-btns { flex-wrap: wrap; }
+    .btn-next { max-width: 100%; }
+    .fact-grid { grid-template-columns: 1fr 1fr; }
+    .cover-rainbow-wrap { width: 220px; height: 190px; }
+    .color-band { font-size: 9px; }
+    .color-band .cb-emoji { font-size: 14px; }
+  }
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .book-container { padding: 80px 32px 40px; }
+    .card p { font-size: 18px; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(253,216,53,0.28); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- RAINBOW PARTICLES -->
+<div class="rainbow-particles" id="rainbowParticles"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+  <div class="nav-right">
+    <span class="book-day-badge">🌈 Hari ke-29</span>
+    <button class="mode-btn" id="modeBtn" title="Ganti Mode">☀️</button>
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<!-- ═══════════════ BOOK CONTAINER ═══════════════ -->
+<div class="book-container">
+
+  <!-- ── PAGE 1: COVER ── -->
+  <div class="page active" id="page-1">
+    <div class="cover-page">
+      <span class="floating-rb">🌈</span>
+      <span class="floating-rb">☀️</span>
+      <span class="floating-rb">🌧️</span>
+      <span class="floating-rb">💧</span>
+
+      <!-- Rainbow illustration -->
+      <div class="cover-rainbow-wrap">
+
+        <!-- Rainbow arcs (outside to inside) -->
+        <div class="rb-arc" style="width:220px;height:110px;border:14px solid rgba(229,57,53,0.85);box-shadow:0 0 8px rgba(229,57,53,0.4);"></div>
+        <div class="rb-arc" style="width:196px;height:98px;border:12px solid rgba(251,140,0,0.85);box-shadow:0 0 8px rgba(251,140,0,0.4);"></div>
+        <div class="rb-arc" style="width:174px;height:87px;border:11px solid rgba(253,216,53,0.9);box-shadow:0 0 8px rgba(253,216,53,0.4);"></div>
+        <div class="rb-arc" style="width:154px;height:77px;border:10px solid rgba(67,160,71,0.85);box-shadow:0 0 8px rgba(67,160,71,0.4);"></div>
+        <div class="rb-arc" style="width:136px;height:68px;border:9px solid rgba(30,136,229,0.9);box-shadow:0 0 8px rgba(30,136,229,0.4);"></div>
+        <div class="rb-arc" style="width:120px;height:60px;border:8px solid rgba(57,73,171,0.85);box-shadow:0 0 8px rgba(57,73,171,0.4);"></div>
+        <div class="rb-arc" style="width:106px;height:53px;border:8px solid rgba(142,36,170,0.85);box-shadow:0 0 8px rgba(142,36,170,0.4);"></div>
+
+        <!-- Sun -->
+        <div class="rb-sun"></div>
+
+        <!-- Cloud with rain -->
+        <div class="rb-cloud" style="width:65px;height:22px;top:52px;left:6px;">
+          <div style="position:absolute;width:30px;height:30px;top:-18px;left:8px;border-radius:50%;background:inherit;"></div>
+          <div style="position:absolute;width:22px;height:22px;top:-12px;left:28px;border-radius:50%;background:inherit;"></div>
+        </div>
+        <div class="rb-rain">
+          <div class="rb-drop" style="height:10px;animation-delay:0s;"></div>
+          <div class="rb-drop" style="height:13px;animation-delay:-0.3s;"></div>
+          <div class="rb-drop" style="height:9px;animation-delay:-0.6s;"></div>
+          <div class="rb-drop" style="height:12px;animation-delay:-0.9s;"></div>
+        </div>
+
+        <!-- Terra Explorer -->
+        <div class="rb-terra">
+          <div class="ct-body">
+            <div class="ct-win"></div>
+            <div class="ct-eng"></div>
+          </div>
+        </div>
+
+        <!-- Ground -->
+        <div class="rb-ground"></div>
+      </div>
+
+      <div class="cover-badge">📚 Buku Sains Petualangan • Hari ke-29</div>
+      <h1 class="cover-title">Rahasia Pelangi dan<br>Warna-warni Cahaya!</h1>
+      <p class="cover-subtitle">🌈 Misteri Indah di Balik Setiap Tetes Hujan!</p>
+
+      <div class="cover-name-badge">
+        <p>Petualangan sains milik:</p>
+        <h2>🌟 Aslan 🌟</h2>
+        <p style="font-size:13px;margin-top:4px;">Pemburu Pelangi • Kelas 3 SD</p>
+      </div>
+
+      <div class="nav-btns" style="justify-content:center;border:none;padding-top:0;">
+        <button class="btn btn-next" onclick="goPage(2)" style="max-width:290px;font-size:17px;padding:16px 32px;">
+          🌈 Kejar Pelanginya!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE 2: PENGANTAR ── -->
+  <div class="page" id="page-2">
+    <div class="section-header">
+      <span class="tag">✉️ Hari Kedua Puluh Sembilan!</span>
+      <h1>Hei Aslan, Siap Mengejar<br>Pelangi Setelah Hujan? 🌈</h1>
+    </div>
+
+    <div class="card card-intro">
+      <span class="card-icon">🌈</span>
+      <p>Hei, <strong>Aslan</strong>! Kemarin kamu sudah menyelami misteri-misteri besar alam semesta. Hari ini petualanganmu berubah jadi jauh lebih berwarna — secara harfiah! Terra Explorer mengajak kamu mengejar sesuatu yang menghilang sebelum sempat kamu sentuh: <strong>pelangi!</strong></p>
+      <p>Pernah tidak kamu melihat pelangi muncul setelah hujan dan bertanya-tanya: <em>"Di mana ujung pelangi itu? Bisa tidak aku menyentuhnya?"</em> Hari ini kamu akan menemukan jawabannya — dan kamu akan terkejut betapa banyak sains yang tersembunyi di balik busur warna-warni yang indah itu! 🌤️</p>
+      <p>Petunjuknya: pelangi bukan benda fisik yang bisa disentuh — ia adalah <strong>fenomena optik</strong>, permainan cahaya dan air yang terjadi tepat di depan matamu. Dan rahasia di baliknya jauh lebih menakjubkan dari dongeng manapun! ✨</p>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Pesan Dari Terra Explorer</p>
+      <p>"Aslan! Hujan baru saja berhenti dan matahari muncul dari balik awan. Terra Explorer mendeteksi kondisi sempurna untuk pelangi — jutaan tetes air masih melayang di udara, sinar matahari menerpa dari belakang kita! Di kejauhan... tampak busur warna raksasa melengkung dari satu bukit ke bukit lainnya! Merah, oranye, kuning, hijau, biru, nila, ungu — sempurna! Terra Explorer siap meluncur mendekati pelangi itu. Tapi tunggu dulu — ada yang aneh. Semakin kita mendekatinya... semakin pelangi itu menjauh! Ayo kita cari tahu mengapa!"</p>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--rb-red),var(--rb-orange),var(--rb-yellow),var(--rb-green),var(--rb-blue),var(--rb-violet));">
+      <h3>🗺️ Yang Akan Kita Pelajari Hari Ini</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(30,136,229,0.12);border-radius:14px;">
+          <span style="font-size:28px;">💡</span>
+          <div><strong>Apa itu Cahaya Putih?</strong><p style="font-size:13px;margin:0;opacity:0.7;">Rahasia warna yang tersembunyi di balik cahaya matahari!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(67,160,71,0.10);border-radius:14px;">
+          <span style="font-size:28px;">💧</span>
+          <div><strong>Bagaimana Pelangi Terbentuk?</strong><p style="font-size:13px;margin:0;opacity:0.7;">Pembiasan, pemantulan, dan dispersi cahaya di tetes air!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(253,216,53,0.08);border-radius:14px;">
+          <span style="font-size:28px;">🎨</span>
+          <div><strong>Urutan Warna MEJIKUHIBINIU</strong><p style="font-size:13px;margin:0;opacity:0.7;">Kenapa urutannya selalu sama dan tidak pernah berubah?</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(142,36,170,0.10);border-radius:14px;">
+          <span style="font-size:28px;">🌀</span>
+          <div><strong>Mengapa Pelangi Berbentuk Busur?</strong><p style="font-size:13px;margin:0;opacity:0.7;">Matematika lingkaran di balik bentuk pelangi!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(0,137,123,0.10);border-radius:14px;">
+          <span style="font-size:28px;">🔬</span>
+          <div><strong>Buat Pelangi di Rumah!</strong><p style="font-size:13px;margin:0;opacity:0.7;">Tiga eksperimen seru yang bisa langsung dicoba hari ini!</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+      <span class="page-indicator">Halaman 2 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(3)">Rahasia Cahaya Putih! 💡 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 3: CAHAYA PUTIH ── -->
+  <div class="page" id="page-3">
+    <div class="section-header">
+      <span class="tag">💡 Bab Satu</span>
+      <h1>Cahaya Putih:<br><span style="color:var(--rb-gold)">Ternyata Bukan Putih!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Kamera Prisma Aktif!</p>
+      <p>"Aslan! Terra Explorer memasang prisma kaca di depan jendela dan mengarahkannya ke matahari. Lihat yang terjadi di dinding kapsul — sinar matahari yang masuk melewati prisma langsung berubah menjadi... PELANGI! Merah-oranye-kuning-hijau-biru-nila-ungu tersebar di seluruh dinding! Tapi tunggu — ini berarti warna-warna pelangi itu sudah ada DI DALAM cahaya matahari sejak awal? Bukan dari tetes air yang 'mewarnai' cahaya? Benar sekali Aslan — ini adalah penemuan yang ditemukan oleh Sir Isaac Newton lebih dari 350 tahun lalu!"</p>
+    </div>
+
+    <div class="card card-form">
+      <span class="card-icon">💡</span>
+      <h2>Cahaya Matahari: Campuran Semua Warna!</h2>
+      <p>Inilah kejutan terbesar dalam fisika cahaya: cahaya matahari yang tampak putih sebenarnya adalah <strong>campuran dari semua warna pelangi sekaligus!</strong> Ketika semua warna bergabung bersama, mereka membentuk cahaya yang tampak putih di mata kita. Tapi ketika mereka dipisahkan... muncullah pelangi!</p>
+
+      <h3>🔬 Newton dan Prisma Ajaibnya</h3>
+      <div class="step-list">
+        <div class="sl-item">
+          <div class="sl-num">1</div>
+          <div class="sl-content">
+            <strong>🌑 Eksperimen Newton (1666)</strong>
+            <p>Sir Isaac Newton melubangi tirai kamarnya kecil-kecil agar sinar matahari masuk. Ia menaruh prisma kaca di jalur sinar itu dan melihat tujuh warna muncul di dinding. Tapi apakah prisma yang "menambahkan" warna? Newton membuktikan tidak — ia menangkap spektrum warna itu dengan prisma kedua dan menggabungkan kembali semua warna. Hasilnya: cahaya putih kembali! Prisma memisahkan, bukan menciptakan warna.</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">2</div>
+          <div class="sl-content">
+            <strong>💧 Pembiasan: Cahaya Membelok Saat Pindah Medium</strong>
+            <p>Ketika cahaya melewati prisma kaca atau tetes air, ia melambat dan membelok. Fenomena ini disebut <strong>pembiasan (refraksi)</strong>. Setiap warna cahaya membelok dengan sudut yang sedikit berbeda. Merah membelok paling sedikit, ungu membelok paling banyak. Inilah yang memisahkan warna-warna dari cahaya putih!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">3</div>
+          <div class="sl-content">
+            <strong>🌊 Mengapa Tiap Warna Membelok Beda?</strong>
+            <p>Setiap warna cahaya punya frekuensi getaran yang berbeda. Merah bergetar paling lambat, ungu paling cepat. Cahaya yang bergetar lebih cepat berinteraksi lebih kuat dengan materi kaca atau air, sehingga melambat lebih banyak dan membelok lebih jauh. Ini adalah sifat dasar fisika gelombang! Alam sangat teratur dan matematis.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Bayangkan kamu dan teman-temanmu sedang berlari bersama di lapangan. Semua berlari dengan kecepatan berbeda — ada yang lambat (merah) dan ada yang cepat (ungu). Saat kalian semua masuk ke kolam lumpur bersama, yang berlari cepat melambat lebih banyak dan berbelok lebih jauh. Yang berlari lambat hampir tidak berbelok. Begitulah warna-warna cahaya berperilaku saat memasuki tetes air! 🏃‍♂️🏃‍♀️</p>
+      </div>
+
+      <h3>⚡ Spektrum Cahaya Tampak</h3>
+      <p>Warna-warna yang bisa dilihat mata manusia disebut <strong>spektrum cahaya tampak (visible light spectrum)</strong>. Di luar spektrum ini ada cahaya yang tidak bisa kita lihat — inframerah (di bawah merah) dan ultraviolet (di atas ungu). Pelangi hanya menampilkan bagian yang bisa kita lihat!</p>
+
+      <div class="roygbiv-strip">
+        <div class="color-band" style="background:#c62828;">
+          <span class="cb-emoji">🔴</span>Merah
+        </div>
+        <div class="color-band" style="background:#e65100;">
+          <span class="cb-emoji">🟠</span>Oranye
+        </div>
+        <div class="color-band" style="background:#f9a825;">
+          <span class="cb-emoji">🟡</span>Kuning
+        </div>
+        <div class="color-band" style="background:#2e7d32;">
+          <span class="cb-emoji">🟢</span>Hijau
+        </div>
+        <div class="color-band" style="background:#1565c0;">
+          <span class="cb-emoji">🔵</span>Biru
+        </div>
+        <div class="color-band" style="background:#283593;">
+          <span class="cb-emoji">💙</span>Nila
+        </div>
+        <div class="color-band" style="background:#6a1b9a;">
+          <span class="cb-emoji">🟣</span>Ungu
+        </div>
+      </div>
+      <p style="font-size:13px;text-align:center;opacity:0.65;margin-top:8px;">↑ Coba hover/sentuh setiap warna untuk memperbesar!</p>
+
+      <div style="background:rgba(253,216,53,0.08);border:1px solid rgba(253,216,53,0.22);border-radius:16px;padding:18px 20px;margin-top:12px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🎵 <strong>Cara Hafal Warna Pelangi — MEJIKUHIBINIU!</strong> Di Indonesia ada cara mudah menghafal tujuh warna pelangi: <strong>Me</strong>rah – <strong>Ji</strong>ngga – <strong>Ku</strong>ning – <strong>Hi</strong>jau – <strong>Bi</strong>ru – <strong>Ni</strong>la – <strong>U</strong>ngu. Coba ucapkan bersama: <em>ME-JI-KU-HI-BI-NI-U!</em> 🎶</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+      <span class="page-indicator">Halaman 3 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(4)">Bagaimana Pelangi Terbentuk? 💧 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 4: PROSES PEMBENTUKAN PELANGI ── -->
+  <div class="page" id="page-4">
+    <div class="section-header">
+      <span class="tag">💧 Bab Dua</span>
+      <h1>Perjalanan Cahaya<br><span style="color:var(--rb-gold)">di Dalam Tetes Air!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Micro Mode: Masuk ke Tetes Air!</p>
+      <p>"Aslan! Terra Explorer mengecil menjadi sebesar virus dan memasuki sebuah tetes air yang melayang di udara! Dari dalam tetes air, semuanya tampak seperti bola cermin kristal raksasa. Sinar matahari masuk dari satu sisi... dan aku bisa melihat bagaimana cahaya itu membelok, memantul di dinding belakang tetes air, lalu membelok lagi saat keluar. Dan saat keluar, warna-warnanya sudah terpisah! Merah di atas, ungu di bawah! Ini bukan sulap — ini adalah optika fisika yang sempurna di alam! 🔬"</p>
+    </div>
+
+    <div class="card card-form">
+      <span class="card-icon">💧</span>
+      <h2>Tiga Langkah Ajaib di Dalam Tetes Air!</h2>
+      <p>Setiap tetes air hujan yang melayang di udara bekerja seperti <strong>prisma mini</strong> — membiaskan dan memisahkan cahaya matahari menjadi spektrum warna yang indah. Prosesnya terjadi dalam tiga langkah cepat:</p>
+
+      <div class="step-list">
+        <div class="sl-item">
+          <div class="sl-num">1</div>
+          <div class="sl-content">
+            <strong>➡️ Refraksi Pertama — Cahaya Masuk dan Membelok</strong>
+            <p>Sinar matahari memasuki permukaan depan tetes air dan langsung melambat (karena air lebih rapat dari udara). Saat melambat, cahaya membelok — inilah refraksi pertama. Karena tiap warna membelok dengan sudut berbeda, warna-warna mulai memisahkan diri: merah membelok sedikit, ungu membelok lebih banyak.</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">2</div>
+          <div class="sl-content">
+            <strong>🔄 Refleksi Internal — Cahaya Memantul di Dalam</strong>
+            <p>Cahaya yang sudah masuk ke dalam tetes air menabrak permukaan belakang tetes. Di sini terjadi <strong>pemantulan internal (internal reflection)</strong> — cahaya memantul balik ke dalam tetes, seperti bola yang memantul dari dinding. Pada sudut tertentu (sekitar 42°), hampir semua cahaya dipantulkan — tidak ada yang lolos ke belakang!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">3</div>
+          <div class="sl-content">
+            <strong>⬅️ Refraksi Kedua — Cahaya Keluar dan Membelok Lagi</strong>
+            <p>Cahaya yang sudah dipantulkan sekarang menuju permukaan depan tetes dari dalam dan keluar. Saat keluar, ia melambat ke kecepatan udara (melambat, lalu membelok lagi). Refraksi kedua ini makin memisahkan warna-warna. Cahaya keluar dengan warna yang sudah terpisah sempurna — dan menuju matamu!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Bayangkan tetes air seperti bola disko kaca! 🪩 Cahaya masuk, membelok, memantul di dinding dalam, lalu keluar dari sisi yang berbeda — tapi warna-warnanya sudah "disortir" berdasarkan frekuensinya. Hasilnya adalah spektrum warna indah yang dikirim langsung ke matamu. Setiap tetes air yang kamu lihat setelah hujan adalah bola disko mini yang sedang bekerja! ✨</p>
+      </div>
+
+      <h3>📐 Kondisi yang Diperlukan untuk Pelangi</h3>
+      <div class="two-col">
+        <div class="mini-card mini-card-yellow">
+          <span class="mini-icon">☀️</span>
+          <strong>Matahari Harus di Belakangmu</strong>
+          <p>Kamu harus membelakangi matahari! Pelangi selalu muncul di sisi berlawanan dari matahari. Ini kenapa pelangi di pagi hari terlihat di barat, di sore hari di timur.</p>
+        </div>
+        <div class="mini-card mini-card-blue">
+          <span class="mini-icon">🌧️</span>
+          <strong>Ada Tetes Air di Depanmu</strong>
+          <p>Harus ada tetes air yang terkena sinar matahari — bisa dari hujan yang baru reda, kabut, percikan air terjun, atau bahkan selang air!</p>
+        </div>
+        <div class="mini-card mini-card-orange">
+          <span class="mini-icon">📐</span>
+          <strong>Sudut 40–42 Derajat</strong>
+          <p>Cahaya keluar dari tetes air pada sudut 40° (ungu) hingga 42° (merah). Ini kenapa pelangi selalu terlihat pada "ketinggian" yang sama relatif terhadap garis horizon-matahari.</p>
+        </div>
+        <div class="mini-card mini-card-green">
+          <span class="mini-icon">👁️</span>
+          <strong>Mata di Titik Tepat</strong>
+          <p>Hanya tetes air pada sudut yang tepat yang mengirim warna tertentu ke matamu. Pelangi yang kamu lihat adalah unik untukmu — tidak ada dua orang yang melihat pelangi yang persis sama!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+      <span class="page-indicator">Halaman 4 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(5)">Mengapa Berbentuk Busur? 🌀 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 5: BENTUK BUSUR ── -->
+  <div class="page" id="page-5">
+    <div class="section-header">
+      <span class="tag">🌀 Bab Tiga</span>
+      <h1>Mengapa Pelangi<br><span style="color:var(--rb-gold)">Berbentuk Busur?</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Terbang di Atas Pelangi!</p>
+      <p>"Aslan! Terra Explorer naik tinggi ke atas pelangi dan... WOW! Dari sini tampak jelas bahwa pelangi sebenarnya bukan busur setengah lingkaran — dari atas, pelangi tampak sebagai LINGKARAN PENUH! Setengah bagiannya tersembunyi oleh tanah! Penumpang pesawat kadang bisa melihat pelangi bulat sempurna di bawah mereka! Sensor geometri menghitung: pusat lingkaran pelangi selalu berada tepat di titik yang berlawanan dari matahari, dilihat dari mata pengamat. Ini matematika yang sangat elegan! 🎯"</p>
+    </div>
+
+    <div class="card card-shape">
+      <span class="card-icon">🌀</span>
+      <h2>Pelangi Sebenarnya Adalah Lingkaran Penuh!</h2>
+      <p>Ini adalah salah satu fakta yang paling mengejutkan: <strong>pelangi yang terlihat dari darat hanyalah setengah dari pelangi yang sesungguhnya!</strong> Bentuk aslinya adalah lingkaran sempurna — tapi tanah memotong setengahnya. Dari pesawat atau gunung yang sangat tinggi, kadang pelangi lingkaran penuh bisa terlihat!</p>
+
+      <h3>🔵 Mengapa Lingkaran?</h3>
+      <div class="step-list">
+        <div class="sl-item">
+          <div class="sl-num">1</div>
+          <div class="sl-content">
+            <strong>📍 Pusat Pelangi = Anti-Solar Point</strong>
+            <p>Ada titik imajiner di langit yang disebut <strong>anti-solar point</strong> — titik tepat di sisi berlawanan dari matahari, dilihat dari matamu. Bayangkan garis lurus dari matahari melewati kepalamu terus ke depan — di ujung garis itu adalah anti-solar point. Ini selalu menjadi pusat lingkaran pelangi!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">2</div>
+          <div class="sl-content">
+            <strong>📐 Sudut Konstan = Bentuk Lingkaran</strong>
+            <p>Cahaya merah selalu keluar dari tetes air pada sudut 42° dari garis sinar datang. Semua tetes air yang berada pada sudut 42° dari anti-solar point — berapa pun posisi vertikalnya — akan mengirim cahaya merah ke matamu. Kumpulan titik yang semuanya berjarak sudut sama dari satu titik pusat = lingkaran! Matematika alam bekerja dengan indah!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">3</div>
+          <div class="sl-content">
+            <strong>🌍 Tanah Memotong Setengahnya</strong>
+            <p>Anti-solar point selalu berada di bawah horizon ketika matahari ada di atas horizon. Artinya, setengah lingkaran pelangi berada di bawah permukaan tanah dan tidak bisa dilihat. Hanya saat kamu di ketinggian (pesawat, gunung tinggi) dan anti-solar point naik ke atas horizon, kamu bisa melihat lebih dari setengah — bahkan lingkaran penuh!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Bayangkan kamu berdiri di tengah lingkaran besar yang digambar di lapangan. 🔵 Semua titik di tepi lingkaran berjarak sama dari kamu (pusat). Nah, pelangi persis seperti itu — tapi "lingkaran" yang dimaksud adalah sudut pandang di langit, bukan jarak fisik. Matamu adalah pusat, dan pelangi adalah tepi lingkaran raksasa yang tercipta di langit dengan jari-jari sudut 42°. Kamu sendiri yang berada di pusat pelangimu! 👁️</p>
+      </div>
+
+      <h3>🎨 Urutan Warna: Merah di Luar, Ungu di Dalam</h3>
+      <p>Di pelangi utama, <strong>merah selalu di bagian luar (atas) dan ungu di bagian dalam (bawah)</strong>. Ini karena merah membutuhkan sudut 42° sedangkan ungu hanya 40°. Tetes air yang menghasilkan merah untuk matamu berada lebih tinggi di langit daripada tetes yang menghasilkan ungu.</p>
+
+      <div style="background:rgba(142,36,170,0.08);border:1px solid rgba(142,36,170,0.22);border-radius:16px;padding:18px 20px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🤯 <strong>Fakta Unik:</strong> Setiap orang melihat pelangi yang berbeda! Karena pelangi bergantung pada posisi matamu sebagai pusat, dan tidak ada dua orang yang berdiri di tempat yang persis sama, setiap orang secara teknis melihat pelangi yang dibentuk oleh tetes air berbeda. Pelangimu adalah <strong>pelangi pribadimu</strong>! 🌈</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+      <span class="page-indicator">Halaman 5 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(6)">Jenis-Jenis Pelangi! 🌈 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 6: JENIS-JENIS PELANGI ── -->
+  <div class="page" id="page-6">
+    <div class="section-header">
+      <span class="tag">🌈 Bab Empat</span>
+      <h1>Keluarga Besar Pelangi:<br><span style="color:var(--rb-gold)">Lebih dari Satu Jenis!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Menemukan Pelangi Ganda!</p>
+      <p>"Aslan! Terra Explorer mendeteksi sesuatu istimewa — di atas pelangi pertama yang terang, ada pelangi KEDUA yang lebih redup! Dan lihat — urutan warnanya terbalik! Merah di dalam, ungu di luar! Sensor optik menjelaskan: ini adalah pelangi sekunder, terbentuk dari cahaya yang memantul DUA kali di dalam tetes air, bukan satu kali. Setiap pemantulan tambahan membalik urutan dan mengurangi kecerahan. Di antara dua pelangi itu ada area lebih gelap — disebut Alexander's Dark Band! Fenomena optik yang sangat keren! 🌈🌈"</p>
+    </div>
+
+    <div class="card card-types">
+      <span class="card-icon">🌈</span>
+      <h2>Ternyata Ada Banyak Jenis Pelangi!</h2>
+      <p>Kebanyakan orang hanya tahu pelangi biasa yang muncul setelah hujan. Tapi alam punya banyak kejutan tersembunyi — ada berbagai jenis pelangi yang muncul dalam kondisi berbeda, beberapa sangat langka dan menakjubkan!</p>
+
+      <div class="two-col">
+        <div class="mini-card mini-card-blue">
+          <span class="mini-icon">🌈</span>
+          <strong>Pelangi Primer (Primary Rainbow)</strong>
+          <p>Yang paling umum! Cahaya memantul sekali di dalam tetes air. Merah di luar, ungu di dalam. Terlihat pada sudut 40–42° dari anti-solar point.</p>
+        </div>
+        <div class="mini-card mini-card-violet">
+          <span class="mini-icon">🌈🌈</span>
+          <strong>Pelangi Sekunder (Double Rainbow)</strong>
+          <p>Cahaya memantul DUA kali. Lebih redup dan warnanya terbalik — ungu di luar, merah di dalam! Terlihat di sudut 50–53°. Antara dua pelangi ada Alexander's Dark Band.</p>
+        </div>
+        <div class="mini-card mini-card-orange">
+          <span class="mini-icon">🌕</span>
+          <strong>Moonbow (Pelangi Bulan)</strong>
+          <p>Terbentuk dari cahaya bulan purnama, bukan matahari! Biasanya tampak putih karena cahaya bulan lemah. Sangat langka dan hanya terlihat malam hari di dekat air terjun atau setelah hujan deras!</p>
+        </div>
+        <div class="mini-card mini-card-teal">
+          <span class="mini-icon">🌫️</span>
+          <strong>Fogbow (Pelangi Kabut)</strong>
+          <p>Terbentuk di kabut (tetes air yang sangat kecil). Hampir tidak berwarna — tampak putih atau sangat pucat. Tetes kabut terlalu kecil untuk memisahkan warna dengan baik.</p>
+        </div>
+        <div class="mini-card mini-card-yellow">
+          <span class="mini-icon">🔴</span>
+          <strong>Red Rainbow</strong>
+          <p>Muncul saat matahari sangat rendah di horizon (terbit/terbenam). Cahaya biru dan hijau tersebar di atmosfer, hanya merah yang tersisa. Pelangi terlihat merah dan oranye saja!</p>
+        </div>
+        <div class="mini-card mini-card-green">
+          <span class="mini-icon">🌀</span>
+          <strong>Circumzenithal Arc</strong>
+          <p>Bukan pelangi sejati! Terbentuk dari kristal es di awan tinggi, bukan tetes air. Tampak seperti senyuman terbalik di langit dengan warna sangat jenuh. Sering disebut "pelangi api"!</p>
+        </div>
+      </div>
+
+      <h3>🎭 Alexander's Dark Band — Pita Gelap yang Misterius</h3>
+      <p>Saat pelangi ganda terbentuk, antara pelangi primer dan sekunder ada area yang tampak lebih gelap dari langit di sekitarnya. Ini disebut <strong>Alexander's Dark Band</strong>, dinamai dari Alexander of Aphrodisias yang mendeskripsikannya pertama kali sekitar tahun 200 M!</p>
+      <p>Mengapa gelap? Tetes air yang berada di area itu tidak bisa mengirimkan cahaya merah maupun ungu ke matamu pada sudut itu — mereka berada di antara dua zona cahaya. Hasilnya, area itu tampak lebih gelap dari langit biasa. Persis seperti bayangan di balik payung cahaya!</p>
+
+      <div style="background:rgba(251,140,0,0.08);border:1px solid rgba(251,140,0,0.22);border-radius:16px;padding:18px 20px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🌊 <strong>Tempat Terbaik Melihat Pelangi di Indonesia!</strong> Air terjun Niagara Indonesia — Air Terjun Madakaripura di Jawa Timur dan Air Terjun Tumpak Sewu — sering menghasilkan pelangi permanen sepanjang hari karena percikan airnya yang terus-menerus! Wisatawan sering melihat pelangi ganda di sana. Kita punya surga pelangi di Indonesia! 🇮🇩</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+      <span class="page-indicator">Halaman 6 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(7)">Fakta Keren & Buat Pelangi! 🔬 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 7: FAKTA + DIY ── -->
+  <div class="page" id="page-7">
+    <div class="section-header">
+      <span class="tag">🔬 Bab Lima</span>
+      <h1>Fakta Keren &<br><span style="color:var(--rb-gold)">Buat Pelangimu Sendiri!</span></h1>
+    </div>
+
+    <div class="card card-diy">
+      <span class="card-icon">🤯</span>
+      <h2>Fakta-Fakta Pelangi yang Bikin Melongo!</h2>
+      <div class="fact-grid">
+        <div class="fact-card">
+          <span class="fact-emoji">🌈</span>
+          <span class="fact-number">Lingkaran!</span>
+          <span class="fact-label">Pelangi sejati berbentuk lingkaran penuh — bukan busur. Tanah yang menyembunyikan setengahnya!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">👁️</span>
+          <span class="fact-number">Unik untukmu!</span>
+          <span class="fact-label">Tidak ada dua orang yang melihat pelangi yang sama persis — posisi mata yang berbeda = pelangi berbeda!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌙</span>
+          <span class="fact-number">Moonbow</span>
+          <span class="fact-label">Pelangi bisa terbentuk dari cahaya bulan! Biasanya tampak putih karena cahaya bulan lebih lemah.</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">⭕</span>
+          <span class="fact-number">42°</span>
+          <span class="fact-label">Sudut tepat antara anti-solar point dan cahaya merah yang sampai ke matamu — selalu sama!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🔢</span>
+          <span class="fact-number">7 warna</span>
+          <span class="fact-label">Newton memilih 7 warna (bukan 6 atau 8) karena analoginya dengan 7 not musik. Ada jutaan warna gradasi di antaranya!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌊</span>
+          <span class="fact-number">42 menit</span>
+          <span class="fact-label">Rata-rata durasi pelangi terlihat — tergantung kondisi cuaca. Yang terlama tercatat 6 jam di Yorkshire, UK (1994)!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--rb-green),var(--rb-teal),var(--rb-yellow));">
+      <span class="card-icon">🔬</span>
+      <h2>Buat Pelangimu Sendiri — 3 Cara!</h2>
+      <p>Kamu tidak perlu menunggu hujan untuk melihat pelangi. Dengan bahan-bahan di rumah, kamu bisa menciptakan pelangimu sendiri sekarang! Semua eksperimen ini aman untuk dicoba:</p>
+
+      <div class="experiment-box">
+        <h4>🌊 Eksperimen 1: Pelangi dengan Selang Air</h4>
+        <p><strong>Yang Dibutuhkan:</strong> Selang air, sinar matahari, halaman rumah.</p>
+        <p><strong>Cara:</strong> Keluar ke halaman saat sinar matahari terang. Posisikan dirimu sehingga matahari ada di belakangmu. Semprotkan air dari selang ke depanmu dengan nosel yang membentuk kabut halus. Gerak-gerakkan selang hingga kamu melihat pelangi muncul di kabut airnya!</p>
+        <p><strong>Mengapa Berhasil:</strong> Tetes air dari selang bekerja persis seperti tetes hujan — membiaskan dan memantulkan cahaya matahari. Posisi punggung ke matahari memastikan cahaya dari belakangmu melewati tetes air dan sampai ke matamu pada sudut yang tepat! 🌈</p>
+      </div>
+
+      <div class="experiment-box" style="margin-top:16px;">
+        <h4>🔮 Eksperimen 2: Pelangi dengan Gelas Air dan Senter</h4>
+        <p><strong>Yang Dibutuhkan:</strong> Gelas bening berisi air, senter atau HP, kertas putih.</p>
+        <p><strong>Cara:</strong> Taruh gelas air di tepi meja dekat jendela yang terkena sinar matahari langsung (atau gunakan senter). Taruh kertas putih di lantai di sisi yang berlawanan. Sinar matahari/senter yang melewati gelas akan memproyeksikan spektrum warna ke kertas! Coba gerakkan gelas untuk mendapatkan posisi pelangi terbaik.</p>
+        <p><strong>Mengapa Berhasil:</strong> Gelas berisi air berfungsi seperti prisma raksasa — membiaskan cahaya dan memisahkan warna-warnanya! 🔮</p>
+      </div>
+
+      <div class="experiment-box" style="margin-top:16px;">
+        <h4>💿 Eksperimen 3: Pelangi dari Kepingan CD/DVD</h4>
+        <p><strong>Yang Dibutuhkan:</strong> CD atau DVD lama, lampu atau sinar matahari.</p>
+        <p><strong>Cara:</strong> Pegang CD dengan sisi mengkilap menghadap cahaya. Putar perlahan dengan berbagai sudut dan lihat ke permukaan mengkilapnya. Kamu akan melihat spektrum warna pelangi bergerak-gerak! Coba pantulkan warna-warna itu ke dinding atau langit-langit.</p>
+        <p><strong>Mengapa Berhasil:</strong> CD punya jalur-jalur spiral sangat halus (lebih kecil dari panjang gelombang cahaya) yang mendifraksi cahaya — memisahkan warna dengan cara berbeda dari pembiasan, tapi hasilnya sama spektakulernya! 💿</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+      <span class="page-indicator">Halaman 7 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(8)">Tantangan Aslan! 🏆 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 8: TANTANGAN + PENUTUP ── -->
+  <div class="page" id="page-8">
+    <div class="section-header">
+      <span class="tag">🏆 Tantangan Aslan</span>
+      <h1>Buktikan Kamu<br>Ahli Optika Pelangi! 🌈</h1>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-title">🏆 Misi Pelangi Aslan</div>
+      <p style="font-size:15px;opacity:0.8;margin-bottom:20px;">Kamu sudah mengejar dan memahami rahasia pelangi bersama Terra Explorer! Sekarang waktunya membuktikan bahwa ilmu cahaya dan warna sudah masuk ke dalam otakmu yang luar biasa!</p>
+
+      <div class="challenge-item">
+        <div class="challenge-num">1</div>
+        <div>
+          <p><strong>Buat Pelangi dengan Selang Air!</strong> 🌊 Praktikkan Eksperimen 1 di rumahmu hari ini (atau besok kalau tidak ada matahari)! Ajak orang tua atau kakak untuk menyaksikan. Sambil menyemprotkan air, jelaskan kepada mereka mengapa pelangi bisa terbentuk — pembiasan, pemantulan internal, dan refraksi kedua! Coba juga buat pelangi dari sudut berbeda dan amati apakah warnanya berubah. Foto hasilnya dan tunjukkan! 📸</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">2</div>
+        <div>
+          <p><strong>Hafal MEJIKUHIBINIU + Jelaskan!</strong> 🎵 Hafal urutan warna pelangi: <strong>Me</strong>rah – <strong>Ji</strong>ngga – <strong>Ku</strong>ning – <strong>Hi</strong>jau – <strong>Bi</strong>ru – <strong>Ni</strong>la – <strong>U</strong>ngu. Kemudian jelaskan kepada teman atau anggota keluarga: (1) Mengapa urutannya selalu sama? (2) Warna apa yang ada di bagian luar pelangi? (3) Warna apa yang membelok paling banyak di dalam tetes air? Kalau bisa menjawab tiga pertanyaan itu tanpa melihat buku — kamu adalah ahli pelangi! ⭐</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">3</div>
+        <div>
+          <p><strong>Kuis Kilat Optika!</strong> ⚡ Jawab tanpa melihat buku: (a) Apa nama lengkap fenomena cahaya yang membelok saat masuk ke medium berbeda? (b) Berapa kali cahaya memantul di dalam tetes air untuk menghasilkan pelangi primer? (c) Apa nama area gelap antara pelangi primer dan sekunder? (d) Pelangi yang terbentuk dari cahaya bulan disebut apa? (e) Di mana posisi matahari saat kamu melihat pelangi — di depan atau belakangmu? (f) Apakah kamu dan temanmu melihat pelangi yang sama persis? Kenapa? 📝</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">4</div>
+        <div>
+          <p><strong>Lukis Pelangi Sains!</strong> 🎨 Buat dua lukisan pelangi di selembar kertas: (1) Pelangi primer — 7 warna dengan merah di luar, lengkap dengan matahari di belakang pengamat dan tetes air di depan. (2) Pelangi ganda — tambahkan pelangi sekunder di atasnya dengan warna terbalik, dan beri warna lebih gelap pada area Alexander's Dark Band di antaranya. Beri label nama setiap warna dan nama bagian-bagiannya. Ini karya seni sains yang sesungguhnya! 🖌️</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">5</div>
+        <div>
+          <p><strong>Pemburu Pelangi Selama Seminggu!</strong> 🌈 Selama 7 hari ke depan, setiap kali hujan berhenti dan matahari muncul, segera cari pelangi! Catat di buku kecil: tanggal, pukul berapa, kamu melihat pelangi di arah mana, apakah ada pelangi ganda, dan seberapa cerah warnanya. Di akhir seminggu, lihat pola yang kamu temukan — kapan pelangi paling sering muncul? Pagi atau sore? Setelah hujan berapa lama? Kamu akan menjadi peneliti cuaca sejati! 📔</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENUTUP -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--rb-red),var(--rb-orange),var(--rb-yellow),var(--rb-green),var(--rb-blue),var(--rb-violet));margin-top:32px;">
+      <div class="closing-content">
+        <span class="trophy-big">🌈</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(24px,5vw,36px);margin-bottom:16px;">
+          Luar Biasa, Aslan! 🎉
+        </h2>
+        <p style="font-size:clamp(15px,2.5vw,17px);max-width:500px;margin:0 auto 24px;line-height:1.8;opacity:0.9;">
+          Kamu telah menyelesaikan Hari ke-29 dan mengungkap rahasia di balik salah satu fenomena terindah di alam! Dari pembiasan Newton, perjalanan cahaya di dalam tetes air, hingga fakta bahwa pelangimu adalah pelangi yang unik hanya untukmu — kamu kini adalah <strong>Ahli Optika Pelangi</strong> sejati Indonesia!
+        </p>
+
+        <div class="quote-box" style="max-width:520px;margin:0 auto 28px;">
+          <p>"Pelangi adalah bukti bahwa bahkan setelah hujan yang paling deras sekalipun, cahaya tidak pernah menyerah untuk menemukan jalan menuju keindahan. Dan pikiran seorang anak yang penuh rasa ingin tahu — seperti Aslan — adalah pelangi yang paling berwarna dari semuanya."</p>
+          <cite>— Untuk Aslan, Pemburu Pelangi & Ahli Optika Cilik Indonesia 🌈</cite>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px;">
+          <span style="background:rgba(229,57,53,0.12);border:1px solid rgba(229,57,53,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🌈 Ahli Optika Cahaya</span>
+          <span style="background:rgba(67,160,71,0.12);border:1px solid rgba(67,160,71,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">💧 Master Refraksi</span>
+          <span style="background:rgba(30,136,229,0.12);border:1px solid rgba(30,136,229,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🔬 Ilmuwan Eksperimen</span>
+          <span style="background:rgba(142,36,170,0.12);border:1px solid rgba(142,36,170,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🎨 Seniman Sains</span>
+        </div>
+
+        <button class="btn btn-done" onclick="selesaiMembaca()">
+          ✅ Saya Sudah Selesai Membaca!
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(7)">← Kembali</button>
+      <span class="page-indicator">Halaman 8 dari 8</span>
+      <span></span>
+    </div>
+  </div>
+
+</div><!-- end book-container -->
+
+<script>
+  // ── RAINBOW PARTICLES ──
+  const container = document.getElementById('rainbowParticles');
+  const rbColors = ['#e53935','#fb8c00','#fdd835','#43a047','#1e88e5','#3949ab','#8e24aa','#ffffff','#80deea'];
+
+  for (let i = 0; i < 65; i++) {
+    const p = document.createElement('div');
+    p.className = 'rp';
+    const size = Math.random() * 6 + 2;
+    const color = rbColors[Math.floor(Math.random() * rbColors.length)];
+    const isDrop = Math.random() > 0.6;
+    p.style.cssText = `
+      width:${isDrop ? 2 : size}px;
+      height:${isDrop ? size * 4 : size}px;
+      left:${Math.random() * 100}%;
+      bottom:${Math.random() * 18}%;
+      background:${color};
+      box-shadow:0 0 ${size * 2}px ${color}88;
+      border-radius:${isDrop ? '2px' : '50%'};
+      animation-duration:${5 + Math.random() * 9}s;
+      animation-delay:${Math.random() * 10}s;
+      opacity:0;
+    `;
+    container.appendChild(p);
+  }
+
+  // ── PAGES ──
+  const TOTAL = 8;
+  let current = 1;
+
+  function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── DARK / LIGHT MODE ──
+  const modeBtn = document.getElementById('modeBtn');
+  let isLight = false;
+  modeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+    modeBtn.textContent = isLight ? '🌙' : '☀️';
+  });
+
+  // ── SELESAI MEMBACA ──
+  function selesaiMembaca() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.88);backdrop-filter:blur(10px);
+      z-index:999;display:flex;align-items:center;justify-content:center;
+      padding:20px;animation:fadeUp 0.3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="background:linear-gradient(135deg,#050d14,#081520);border:2px solid rgba(253,216,53,0.35);border-radius:28px;padding:40px;max-width:440px;width:100%;text-align:center;color:white;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#e53935,#fb8c00,#fdd835,#43a047,#1e88e5,#8e24aa);box-shadow:0 0 12px rgba(253,216,53,0.5);"></div>
+        <span style="font-size:80px;display:block;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(253,216,53,0.6));">🌈</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:12px;background:linear-gradient(135deg,#ef5350,#fb8c00,#fdd835,#43a047,#1e88e5,#8e24aa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Keren Banget, Aslan!</h2>
+        <p style="font-size:16px;line-height:1.8;opacity:0.9;margin-bottom:24px;">Hari ke-29 selesai! 🎉<br>Kamu sudah mengejar <strong>pelangi</strong> bersama Terra Explorer dan menemukan rahasia sains di balik setiap busur warna yang indah — dari pembiasan Newton hingga fakta bahwa pelangimu unik hanya untukmu!<br><br>Kamu kini adalah Pemburu Pelangi Indonesia yang sesungguhnya! 🇮🇩<br>Sampai jumpa di petualangan berikutnya! 🚀</p>
+        <button onclick="this.closest('div').parentElement.remove()" style="background:linear-gradient(135deg,#1e88e5,#8e24aa);color:white;border:none;padding:14px 32px;border-radius:50px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(30,136,229,0.5);">Mantap! Tutup 🌈</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+  }
+
+  // ── KEYBOARD NAV ──
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(current - 1);
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>

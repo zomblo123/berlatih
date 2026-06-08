@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 7: Review Minggu 1 🎉</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky:    #38bdf8;
+    --mint:   #34d399;
+    --sun:    #fbbf24;
+    --orange: #fb923c;
+    --pink:   #f472b6;
+    --purple: #a78bfa;
+    --teal:   #0d9488;
+    --bg:     #fffbeb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 8%  15%, rgba(251,191,36,.22)  0%, transparent 40%),
+      radial-gradient(circle at 90% 10%, rgba(56,189,248,.18)  0%, transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(52,211,153,.15)  0%, transparent 45%),
+      radial-gradient(circle at 20% 80%, rgba(244,114,182,.12) 0%, transparent 35%);
+    min-height: 100vh; overflow-x: hidden;
+  }
+  h1,h2,h3,.display { font-family: 'Fredoka One', cursive; }
+
+  /* ── Header ── */
+  .header-grad {
+    background: linear-gradient(135deg,#92400e 0%,#b45309 25%,#d97706 55%,#fbbf24 80%,#fde68a 100%);
+    position: relative; overflow: hidden;
+  }
+  .header-grad::after {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpolygon points='40,0 80,80 0,80'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* ── Confetti ── */
+  @keyframes confettiFly {
+    0%   { transform: translate(0,0) rotate(0deg) scale(1); opacity:1; }
+    100% { transform: translate(var(--tx), var(--ty)) rotate(720deg) scale(.3); opacity:0; }
+  }
+  .confetti-piece {
+    width:10px; height:10px; border-radius:2px;
+    animation: confettiFly 1.4s cubic-bezier(.25,.46,.45,.94) forwards;
+    pointer-events: none; z-index:9999;
+  }
+
+  /* ── Bounce Aslan ── */
+  @keyframes bounceAslan { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-12px);} }
+  .aslan-bounce { animation: bounceAslan 2.2s ease-in-out infinite; }
+
+  /* ── Spin Star ── */
+  @keyframes spinStar { 0%{transform:rotate(0);} 100%{transform:rotate(360deg);} }
+  .spin-star { animation: spinStar 4s linear infinite; display:inline-block; }
+
+  /* ── Pulse Ring ── */
+  @keyframes pulseRing {
+    0%  { box-shadow: 0 0 0 0 rgba(251,191,36,.7); }
+    70% { box-shadow: 0 0 0 14px rgba(251,191,36,0); }
+    100%{ box-shadow: 0 0 0 0 rgba(251,191,36,0); }
+  }
+  .pulse-ring { animation: pulseRing 2s ease-out infinite; }
+
+  /* ── Float ── */
+  @keyframes floatUp { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+  .float-up { animation: floatUp 3s ease-in-out infinite; }
+
+  /* ── Speech bubble ── */
+  .bubble {
+    position:relative; background:white;
+    border-radius:22px; border:3px solid var(--sun);
+    box-shadow: 4px 4px 0 var(--orange);
+  }
+  .bubble::before { content:''; position:absolute; bottom:-22px; left:32px; border:12px solid transparent; border-top-color:var(--orange); }
+  .bubble::after  { content:''; position:absolute; bottom:-15px; left:35px; border:10px solid transparent; border-top-color:white; }
+
+  /* ── Day cards ── */
+  .day-card {
+    cursor: pointer;
+    transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease;
+    border: 3px solid transparent;
+  }
+  .day-card:hover { transform: translateY(-5px) scale(1.03); }
+  .day-card.active { transform: scale(1.02); }
+
+  /* ── Quiz button ── */
+  .qbtn {
+    transition: transform .15s ease, background .15s ease;
+    border: 2.5px solid #d1d5db; border-radius:14px;
+    background: white; cursor: pointer; text-align:left;
+    padding: 10px 14px; font-family:'Nunito',sans-serif;
+    font-weight:700; font-size:.92rem; width:100%;
+  }
+  .qbtn:hover:not(:disabled) { transform: scale(1.02); border-color: var(--teal); background:#f0fdfa; }
+  .qbtn:disabled { cursor:default; }
+
+  /* ── SVG drawing area ── */
+  .draw-zone { cursor: crosshair; touch-action: none; }
+
+  /* ── Progress Bar ── */
+  .prog-fill {
+    background: linear-gradient(90deg, #fbbf24, #34d399);
+    border-radius:99px;
+    transition: width 1.2s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ── Pop animation ── */
+  @keyframes popIn {
+    0%  { transform:scale(0) rotate(-10deg); opacity:0; }
+    70% { transform:scale(1.12) rotate(3deg); }
+    100%{ transform:scale(1) rotate(0deg); opacity:1; }
+  }
+  .pop-in { animation: popIn .4s cubic-bezier(.34,1.56,.64,1) both; }
+
+  /* ── Slide down ── */
+  @keyframes slideDown {
+    from { opacity:0; transform:translateY(-14px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .slide-down { animation: slideDown .35s ease both; }
+
+  /* ── Trophy glow ── */
+  @keyframes trophyGlow {
+    0%,100% { filter: drop-shadow(0 0 6px rgba(251,191,36,.6)); }
+    50%      { filter: drop-shadow(0 0 18px rgba(251,191,36,1)); }
+  }
+  .trophy-glow { animation: trophyGlow 1.8s ease-in-out infinite; }
+
+  /* ── Tooltip chip ── */
+  .chip {
+    display:inline-flex; align-items:center; gap:4px;
+    border-radius:99px; padding:3px 10px;
+    font-size:.75rem; font-weight:800;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width:8px; }
+  ::-webkit-scrollbar-track { background:#fef3c7; border-radius:4px; }
+  ::-webkit-scrollbar-thumb { background:#fbbf24; border-radius:4px; }
+
+  /* ── Toolbar button ── */
+  .tool-btn {
+    border-radius:10px; padding:8px; cursor:pointer; border:2.5px solid transparent;
+    transition: border-color .15s ease, background .15s ease;
+    background:white;
+  }
+  .tool-btn.active, .tool-btn:hover { border-color: var(--teal); background:#f0fdfa; }
+
+  /* hover scale gentle */
+  .hover-scale { transition:transform .2s ease; }
+  .hover-scale:hover { transform:scale(1.04); }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ════════════════════════════════════ HEADER ════════════════════════════════════ -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <!-- Floating decoration -->
+  <div class="absolute top-3 right-6 text-3xl float-up" style="animation-delay:.3s;">🎉</div>
+  <div class="absolute top-6 right-20 text-2xl float-up" style="animation-delay:.8s;">⭐</div>
+  <div class="absolute bottom-3 left-8 text-2xl float-up" style="animation-delay:1.1s;">🌟</div>
+  <div class="absolute top-2 left-1/2 text-xl float-up" style="animation-delay:.5s;">✨</div>
+
+  <div class="max-w-3xl mx-auto relative z-10">
+    <!-- Series badge -->
+    <div class="flex items-center justify-center mb-3">
+      <div class="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur rounded-full px-4 py-1.5 border border-white border-opacity-30">
+        <span class="text-lg">🖥️</span>
+        <span class="font-bold text-sm" style="font-family:'Fredoka One',cursive; letter-spacing:.03em;">Petualangan Aslan di Dalam Komputer Ajaib</span>
+        <span class="text-lg">🚀</span>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <h1 class="text-center text-3xl md:text-4xl font-black mb-1" style="text-shadow:3px 3px 0 rgba(0,0,0,.2);">
+      🎊 Hari 7: Review Minggu 1 🎊
+    </h1>
+    <p class="text-center text-lg md:text-xl text-yellow-100 font-bold">Kita Sudah Belajar Apa Saja?</p>
+
+    <!-- Chips row -->
+    <div class="flex justify-center gap-2 mt-3 flex-wrap">
+      <span class="chip bg-white bg-opacity-20 text-white border border-white border-opacity-30">📅 Hari 7 dari 30</span>
+      <span class="chip bg-white bg-opacity-20 text-white border border-white border-opacity-30">🏁 Akhir Minggu 1</span>
+      <span class="chip bg-white bg-opacity-20 text-white border border-white border-opacity-30">🧠 5 Komponen Dipelajari</span>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════ MAIN ════════════════════════════════════ -->
+<main class="max-w-3xl mx-auto px-4 py-6">
+
+  <!-- ── PENGANTAR ── -->
+  <section class="mb-8">
+    <div class="flex flex-col sm:flex-row items-center gap-5 p-5 rounded-3xl" style="background:linear-gradient(135deg,#fef3c7,#fde68a); border:3px solid #fbbf24; box-shadow:5px 5px 0 #f59e0b;">
+
+      <!-- Aslan SVG karakter -->
+      <div class="aslan-bounce flex-shrink-0">
+        <svg width="130" height="140" viewBox="0 0 130 140" xmlns="http://www.w3.org/2000/svg">
+          <!-- Papan tulis -->
+          <rect x="68" y="62" width="52" height="38" rx="5" fill="#1e3a8a" stroke="#1e40af" stroke-width="2"/>
+          <rect x="71" y="65" width="46" height="31" rx="3" fill="#1d4ed8"/>
+          <text x="76" y="76" font-size="7" fill="white" font-weight="bold" font-family="sans-serif">✓ CPU</text>
+          <text x="76" y="84" font-size="7" fill="white" font-weight="bold" font-family="sans-serif">✓ RAM</text>
+          <text x="76" y="92" font-size="7" fill="#fbbf24" font-weight="bold" font-family="sans-serif">✓ Mobo</text>
+          <rect x="68" y="98" width="52" height="4" rx="2" fill="#92400e"/>
+          <!-- Body -->
+          <ellipse cx="48" cy="105" rx="28" ry="30" fill="#f97316"/>
+          <!-- Baju strip -->
+          <rect x="24" y="100" width="48" height="4" rx="2" fill="#ea580c" opacity=".6"/>
+          <rect x="24" y="112" width="48" height="4" rx="2" fill="#ea580c" opacity=".6"/>
+          <!-- Kepala -->
+          <ellipse cx="48" cy="55" rx="26" ry="24" fill="#fde68a"/>
+          <!-- Rambut -->
+          <ellipse cx="48" cy="34" rx="24" ry="11" fill="#1c1917"/>
+          <rect x="24" y="34" width="6" height="14" rx="3" fill="#1c1917"/>
+          <rect x="70" y="34" width="6" height="14" rx="3" fill="#1c1917"/>
+          <!-- Telinga -->
+          <ellipse cx="22" cy="56" rx="5" ry="6" fill="#fde68a"/>
+          <ellipse cx="22" cy="56" rx="2.5" ry="3.5" fill="#fca5a5"/>
+          <ellipse cx="74" cy="56" rx="5" ry="6" fill="#fde68a"/>
+          <ellipse cx="74" cy="56" rx="2.5" ry="3.5" fill="#fca5a5"/>
+          <!-- Mata -->
+          <ellipse cx="40" cy="53" rx="5" ry="5.5" fill="white"/>
+          <ellipse cx="56" cy="53" rx="5" ry="5.5" fill="white"/>
+          <ellipse cx="40" cy="54" rx="3.2" ry="3.5" fill="#1c1917"/>
+          <ellipse cx="56" cy="54" rx="3.2" ry="3.5" fill="#1c1917"/>
+          <ellipse cx="41.2" cy="52.5" rx="1.2" ry="1.2" fill="white"/>
+          <ellipse cx="57.2" cy="52.5" rx="1.2" ry="1.2" fill="white"/>
+          <!-- Alis bahagia -->
+          <path d="M36 47 Q40 44 44 47" stroke="#1c1917" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M52 47 Q56 44 60 47" stroke="#1c1917" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- Hidung -->
+          <ellipse cx="48" cy="60" rx="2.5" ry="1.5" fill="#fca5a5"/>
+          <!-- Senyum lebar -->
+          <path d="M38 65 Q48 76 58 65" stroke="#ef4444" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="48" cy="68" rx="6" ry="4" fill="#fca5a5" opacity=".5"/>
+          <!-- Pipi merona -->
+          <ellipse cx="31" cy="63" rx="5" ry="3.5" fill="#fca5a5" opacity=".6"/>
+          <ellipse cx="65" cy="63" rx="5" ry="3.5" fill="#fca5a5" opacity=".6"/>
+          <!-- Tangan kanan pegang papan -->
+          <rect x="72" y="78" width="8" height="18" rx="4" fill="#fde68a"/>
+          <!-- Tangan kiri -->
+          <rect x="16" y="88" width="10" height="20" rx="5" fill="#fde68a" transform="rotate(-20, 16, 88)"/>
+          <!-- Kaki -->
+          <rect x="33" y="130" width="12" height="10" rx="5" fill="#1e3a8a"/>
+          <rect x="50" y="130" width="12" height="10" rx="5" fill="#1e3a8a"/>
+        </svg>
+      </div>
+
+      <!-- Bubble + Teks -->
+      <div class="flex-1">
+        <div class="bubble p-4 mb-5">
+          <p class="text-gray-700 font-bold text-base leading-relaxed">
+            "Horeee! 🎉 Kamu sudah menyelesaikan <span class="text-orange-500">Minggu 1</span>! Sekarang ayo kita ingat lagi semua yang sudah kita pelajari bareng-bareng ya!" 😄
+          </p>
+        </div>
+        <p class="text-gray-600 font-semibold text-sm mt-7">
+          Selama 6 hari terakhir, kita sudah kenalan dengan <strong>5 bagian penting</strong> di dalam komputer! 🖥️<br>
+          Hari ini kita <span class="text-orange-500 font-black">review</span> semuanya — biar makin hafal dan makin jago! 💪
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── KARTU REVIEW HARI 2-6 ── -->
+  <section class="mb-8">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl font-black text-white" style="background:linear-gradient(135deg,#0d9488,#34d399);">1</div>
+      <h2 class="text-2xl text-gray-800">Rangkuman 6 Hari Kemarin 📚</h2>
+    </div>
+    <p class="text-gray-500 font-semibold mb-4 ml-14">👆 Klik setiap kartu untuk lihat penjelasan lengkapnya!</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+      <!-- HARI 2: CPU -->
+      <div class="day-card rounded-2xl overflow-hidden hover-scale" id="card2"
+           style="background:linear-gradient(135deg,#dbeafe,#bfdbfe); border-color:#3b82f6; box-shadow:4px 4px 0 #3b82f6;"
+           onclick="toggleCard(2)">
+        <div class="p-4">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-3xl">🧠</span>
+            <div>
+              <p class="text-xs font-bold text-blue-400">HARI 2</p>
+              <h3 class="text-lg text-blue-800">CPU – Otak Super Cepat</h3>
+            </div>
+            <span class="ml-auto text-blue-400 text-xl transition-transform" id="arr2">▼</span>
+          </div>
+          <p class="text-blue-700 font-semibold text-sm">Central Processing Unit · Otak komputer 🚀</p>
+        </div>
+        <!-- Detail panel -->
+        <div id="detail2" class="hidden slide-down px-4 pb-4 pt-0">
+          <div class="rounded-xl p-3 border-2 border-blue-200" style="background:rgba(255,255,255,.7);">
+            <p class="text-blue-800 font-bold text-sm mb-2">💡 Apa itu CPU?</p>
+            <p class="text-blue-700 text-sm">CPU adalah <strong>otak komputer</strong>! Dia yang menghitung, mengolah, dan memberi perintah ke semua bagian komputer. Semakin cepat CPU, semakin kencang komputermu! ⚡</p>
+            <div class="mt-2 flex items-center gap-2 text-blue-600 text-xs font-bold">
+              <span>🔬</span><span>Bisa berpikir miliaran kali per detik!</span>
+            </div>
+            <!-- Mini SVG CPU -->
+            <div class="mt-3 flex justify-center">
+              <svg width="100" height="70" viewBox="0 0 100 70">
+                <rect x="20" y="10" width="60" height="50" rx="6" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+                <rect x="28" y="18" width="44" height="34" rx="4" fill="#1d4ed8"/>
+                <text x="50" y="40" text-anchor="middle" fill="white" font-size="11" font-weight="bold" font-family="sans-serif">CPU</text>
+                <!-- Pins -->
+                <line x1="28" y1="10" x2="28" y2="3" stroke="#93c5fd" stroke-width="2"/>
+                <line x1="40" y1="10" x2="40" y2="3" stroke="#93c5fd" stroke-width="2"/>
+                <line x1="52" y1="10" x2="52" y2="3" stroke="#93c5fd" stroke-width="2"/>
+                <line x1="64" y1="10" x2="64" y2="3" stroke="#93c5fd" stroke-width="2"/>
+                <line x1="28" y1="60" x2="28" y2="67" stroke="#93c5fd" stroke-width="2"/>
+                <line x1="40" y1="60" x2="40" y2="67" stroke="#93c5fd" stroke-width="2"/>
+                <line x1="52" y1="60" x2="52" y2="67" stroke="#93c5fd" stroke-width="2"/>
+                <line x1="64" y1="60" x2="64" y2="67" stroke="#93c5fd" stroke-width="2"/>
+              </svg>
+            </div>
+            <p class="text-center text-blue-500 font-bold text-xs mt-1">🏅 Kamu sudah paham CPU!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- HARI 3: RAM -->
+      <div class="day-card rounded-2xl overflow-hidden hover-scale" id="card3"
+           style="background:linear-gradient(135deg,#ede9fe,#ddd6fe); border-color:#7c3aed; box-shadow:4px 4px 0 #7c3aed;"
+           onclick="toggleCard(3)">
+        <div class="p-4">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-3xl">🗂️</span>
+            <div>
+              <p class="text-xs font-bold text-purple-400">HARI 3</p>
+              <h3 class="text-lg text-purple-800">RAM – Meja Kerja Sementara</h3>
+            </div>
+            <span class="ml-auto text-purple-400 text-xl transition-transform" id="arr3">▼</span>
+          </div>
+          <p class="text-purple-700 font-semibold text-sm">Random Access Memory · Memori sementara 📋</p>
+        </div>
+        <div id="detail3" class="hidden slide-down px-4 pb-4 pt-0">
+          <div class="rounded-xl p-3 border-2 border-purple-200" style="background:rgba(255,255,255,.7);">
+            <p class="text-purple-800 font-bold text-sm mb-2">💡 Apa itu RAM?</p>
+            <p class="text-purple-700 text-sm">RAM adalah <strong>meja kerja komputer</strong>! Dia menyimpan data yang sedang dipakai. Kalau komputer dimatikan, semua data di RAM <em>hilang</em>! 💨</p>
+            <div class="mt-2 flex items-center gap-2 text-purple-600 text-xs font-bold">
+              <span>📏</span><span>RAM lebih besar = bisa buka lebih banyak app!</span>
+            </div>
+            <div class="mt-3 flex justify-center">
+              <svg width="110" height="55" viewBox="0 0 110 55">
+                <rect x="5" y="15" width="100" height="28" rx="4" fill="#7c3aed" stroke="#6d28d9" stroke-width="2"/>
+                <rect x="10" y="20" width="90" height="18" rx="3" fill="#6d28d9"/>
+                <!-- RAM chips -->
+                <rect x="14" y="22" width="10" height="14" rx="2" fill="#8b5cf6"/>
+                <rect x="28" y="22" width="10" height="14" rx="2" fill="#8b5cf6"/>
+                <rect x="42" y="22" width="10" height="14" rx="2" fill="#8b5cf6"/>
+                <rect x="56" y="22" width="10" height="14" rx="2" fill="#a78bfa"/>
+                <rect x="70" y="22" width="10" height="14" rx="2" fill="#a78bfa"/>
+                <rect x="84" y="22" width="10" height="14" rx="2" fill="#a78bfa"/>
+                <!-- Notch -->
+                <rect x="50" y="40" width="10" height="5" rx="1" fill="#4c1d95"/>
+                <!-- Pins bawah -->
+                <line x1="15" y1="43" x2="15" y2="50" stroke="#c4b5fd" stroke-width="1.5"/>
+                <line x1="25" y1="43" x2="25" y2="50" stroke="#c4b5fd" stroke-width="1.5"/>
+                <line x1="35" y1="43" x2="35" y2="50" stroke="#c4b5fd" stroke-width="1.5"/>
+                <line x1="45" y1="43" x2="45" y2="50" stroke="#c4b5fd" stroke-width="1.5"/>
+                <line x1="65" y1="43" x2="65" y2="50" stroke="#c4b5fd" stroke-width="1.5"/>
+                <line x1="75" y1="43" x2="75" y2="50" stroke="#c4b5fd" stroke-width="1.5"/>
+                <line x1="85" y1="43" x2="85" y2="50" stroke="#c4b5fd" stroke-width="1.5"/>
+                <line x1="95" y1="43" x2="95" y2="50" stroke="#c4b5fd" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <p class="text-center text-purple-500 font-bold text-xs mt-1">🏅 Kamu sudah paham RAM!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- HARI 4: MOTHERBOARD -->
+      <div class="day-card rounded-2xl overflow-hidden hover-scale" id="card4"
+           style="background:linear-gradient(135deg,#dcfce7,#bbf7d0); border-color:#16a34a; box-shadow:4px 4px 0 #16a34a;"
+           onclick="toggleCard(4)">
+        <div class="p-4">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-3xl">🏠</span>
+            <div>
+              <p class="text-xs font-bold text-green-500">HARI 4</p>
+              <h3 class="text-lg text-green-800">Motherboard – Rumah Besar & Jalan Tol</h3>
+            </div>
+            <span class="ml-auto text-green-500 text-xl" id="arr4">▼</span>
+          </div>
+          <p class="text-green-700 font-semibold text-sm">Papan Induk · Penghubung semua komponen 🔌</p>
+        </div>
+        <div id="detail4" class="hidden slide-down px-4 pb-4 pt-0">
+          <div class="rounded-xl p-3 border-2 border-green-200" style="background:rgba(255,255,255,.7);">
+            <p class="text-green-800 font-bold text-sm mb-2">💡 Apa itu Motherboard?</p>
+            <p class="text-green-700 text-sm">Motherboard adalah <strong>papan hijau besar</strong> yang menghubungkan semua komponen! CPU, RAM, Hard Disk — semuanya duduk di sini. Dia seperti jalan tol yang menghubungkan kota-kota! 🏙️</p>
+            <div class="mt-2 flex items-center gap-2 text-green-600 text-xs font-bold">
+              <span>⚡</span><span>Punya ratusan jalur listrik mikro!</span>
+            </div>
+            <div class="mt-3 flex justify-center">
+              <svg width="120" height="65" viewBox="0 0 120 65">
+                <rect x="5" y="5" width="110" height="55" rx="5" fill="#16a34a" stroke="#15803d" stroke-width="2"/>
+                <!-- Circuit traces -->
+                <line x1="20" y1="20" x2="100" y2="20" stroke="#4ade80" stroke-width="1.5" opacity=".6"/>
+                <line x1="20" y1="30" x2="100" y2="30" stroke="#4ade80" stroke-width="1.5" opacity=".6"/>
+                <line x1="20" y1="40" x2="100" y2="40" stroke="#4ade80" stroke-width="1" opacity=".4"/>
+                <line x1="30" y1="10" x2="30" y2="55" stroke="#4ade80" stroke-width="1" opacity=".4"/>
+                <line x1="60" y1="10" x2="60" y2="55" stroke="#4ade80" stroke-width="1" opacity=".4"/>
+                <line x1="90" y1="10" x2="90" y2="55" stroke="#4ade80" stroke-width="1" opacity=".4"/>
+                <!-- CPU slot -->
+                <rect x="12" y="12" width="30" height="30" rx="3" fill="#15803d" stroke="#4ade80" stroke-width="1.5"/>
+                <text x="27" y="31" text-anchor="middle" fill="#4ade80" font-size="9" font-weight="bold" font-family="sans-serif">CPU</text>
+                <!-- RAM slots -->
+                <rect x="52" y="8" width="8" height="28" rx="2" fill="#166534" stroke="#4ade80" stroke-width="1"/>
+                <rect x="62" y="8" width="8" height="28" rx="2" fill="#166534" stroke="#4ade80" stroke-width="1"/>
+                <!-- Connector -->
+                <rect x="90" y="12" width="22" height="14" rx="2" fill="#166534" stroke="#4ade80" stroke-width="1"/>
+                <text x="101" y="22" text-anchor="middle" fill="#4ade80" font-size="7" font-family="sans-serif">USB</text>
+              </svg>
+            </div>
+            <p class="text-center text-green-600 font-bold text-xs mt-1">🏅 Kamu sudah paham Motherboard!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- HARI 5: PSU -->
+      <div class="day-card rounded-2xl overflow-hidden hover-scale" id="card5"
+           style="background:linear-gradient(135deg,#fef3c7,#fde68a); border-color:#d97706; box-shadow:4px 4px 0 #d97706;"
+           onclick="toggleCard(5)">
+        <div class="p-4">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-3xl">⚡</span>
+            <div>
+              <p class="text-xs font-bold text-amber-500">HARI 5</p>
+              <h3 class="text-lg text-amber-800">Power Supply – Jantung Listrik</h3>
+            </div>
+            <span class="ml-auto text-amber-500 text-xl" id="arr5">▼</span>
+          </div>
+          <p class="text-amber-700 font-semibold text-sm">PSU · Sumber daya listrik komputer 🔋</p>
+        </div>
+        <div id="detail5" class="hidden slide-down px-4 pb-4 pt-0">
+          <div class="rounded-xl p-3 border-2 border-amber-200" style="background:rgba(255,255,255,.7);">
+            <p class="text-amber-800 font-bold text-sm mb-2">💡 Apa itu Power Supply?</p>
+            <p class="text-amber-700 text-sm">Power Supply mengubah listrik dari stop kontak (yang terlalu besar!) menjadi listrik kecil yang aman untuk komponen komputer. Tanpa PSU, komputer tidak bisa hidup! 💀</p>
+            <div class="mt-2 flex items-center gap-2 text-amber-600 text-xs font-bold">
+              <span>🔌</span><span>Mengubah AC → DC agar aman!</span>
+            </div>
+            <div class="mt-3 flex justify-center">
+              <svg width="100" height="60" viewBox="0 0 100 60">
+                <rect x="5" y="5" width="65" height="50" rx="6" fill="#d97706" stroke="#b45309" stroke-width="2"/>
+                <rect x="12" y="12" width="51" height="36" rx="4" fill="#b45309"/>
+                <text x="37" y="34" text-anchor="middle" fill="#fde68a" font-size="9" font-weight="bold" font-family="sans-serif">PSU</text>
+                <!-- Fan circle -->
+                <circle cx="37" cy="30" r="12" fill="none" stroke="#fbbf24" stroke-width="1.5" opacity=".5"/>
+                <!-- Cables -->
+                <line x1="70" y1="18" x2="95" y2="14" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="70" y1="28" x2="95" y2="24" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="70" y1="38" x2="95" y2="34" stroke="#1d4ed8" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="70" y1="48" x2="95" y2="44" stroke="#1c1917" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <p class="text-center text-amber-600 font-bold text-xs mt-1">🏅 Kamu sudah paham Power Supply!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- HARI 6: FAN -->
+      <div class="day-card rounded-2xl overflow-hidden hover-scale sm:col-span-2" id="card6"
+           style="background:linear-gradient(135deg,#ffe4e6,#fecdd3); border-color:#e11d48; box-shadow:4px 4px 0 #e11d48;"
+           onclick="toggleCard(6)">
+        <div class="p-4">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-3xl">🌀</span>
+            <div>
+              <p class="text-xs font-bold text-rose-400">HARI 6</p>
+              <h3 class="text-lg text-rose-800">Kipas Pendingin – Biar Tidak Panas!</h3>
+            </div>
+            <span class="ml-auto text-rose-400 text-xl" id="arr6">▼</span>
+          </div>
+          <p class="text-rose-700 font-semibold text-sm">Cooling Fan · Menjaga suhu komputer tetap dingin ❄️</p>
+        </div>
+        <div id="detail6" class="hidden slide-down px-4 pb-4 pt-0">
+          <div class="rounded-xl p-3 border-2 border-rose-200" style="background:rgba(255,255,255,.7);">
+            <p class="text-rose-800 font-bold text-sm mb-2">💡 Apa itu Kipas Pendingin?</p>
+            <p class="text-rose-700 text-sm">Komponen komputer menghasilkan panas saat bekerja. Kipas pendingin bertugas membuang panas itu keluar agar komputer tidak <em>overheat</em> dan rusak! Tanpanya, komputer bisa mati mendadak! 🔥</p>
+            <div class="mt-2 flex items-center gap-2 text-rose-600 text-xs font-bold">
+              <span>❄️</span><span>CPU bisa capai 90°C+ tanpa pendingin!</span>
+            </div>
+            <div class="mt-3 flex justify-center">
+              <!-- Spinning fan SVG -->
+              <div id="fanSpin" style="animation:spinStar 1s linear infinite;">
+                <svg width="70" height="70" viewBox="0 0 70 70">
+                  <circle cx="35" cy="35" r="30" fill="#e11d48" stroke="#be123c" stroke-width="2"/>
+                  <circle cx="35" cy="35" r="8" fill="#be123c"/>
+                  <ellipse cx="35" cy="15" rx="7" ry="12" fill="#fb7185" transform="rotate(0 35 35)"/>
+                  <ellipse cx="35" cy="15" rx="7" ry="12" fill="#fb7185" transform="rotate(90 35 35)"/>
+                  <ellipse cx="35" cy="15" rx="7" ry="12" fill="#fb7185" transform="rotate(180 35 35)"/>
+                  <ellipse cx="35" cy="15" rx="7" ry="12" fill="#fb7185" transform="rotate(270 35 35)"/>
+                  <circle cx="35" cy="35" r="5" fill="#be123c" stroke="#fecdd3" stroke-width="1.5"/>
+                </svg>
+              </div>
+            </div>
+            <p class="text-center text-rose-500 font-bold text-xs mt-1">🏅 Kamu sudah paham Kipas Pendingin!</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end grid -->
+  </section>
+
+  <!-- ── DIAGRAM INTERAKTIF KOMPUTER ── -->
+  <section class="mb-8">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl font-black text-white" style="background:linear-gradient(135deg,#f59e0b,#f97316);">2</div>
+      <h2 class="text-2xl text-gray-800">Klik Bagian-Bagian Komputer! 🖱️</h2>
+    </div>
+    <p class="text-gray-500 font-semibold mb-4 ml-14">Klik setiap komponen di dalam casing untuk review!</p>
+
+    <div class="rounded-3xl p-5 border-3" style="background:linear-gradient(135deg,#f0f9ff,#e0f2fe); border:3px solid #38bdf8; box-shadow:5px 5px 0 #0284c7;">
+      <!-- Tooltip area -->
+      <div id="compTooltip" class="hidden mb-3 rounded-2xl p-3 text-center slide-down" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe); border:2px solid #3b82f6;">
+        <span id="compEmoji" class="text-3xl">🧠</span>
+        <p id="compName" class="font-black text-lg text-blue-800"></p>
+        <p id="compDesc" class="text-blue-700 text-sm font-semibold"></p>
+      </div>
+
+      <!-- Interactive computer diagram -->
+      <div class="flex justify-center">
+        <svg width="100%" viewBox="0 0 380 300" style="max-width:420px; cursor:pointer;">
+
+          <!-- Case outer -->
+          <rect x="20" y="10" width="340" height="280" rx="15" fill="#374151" stroke="#1f2937" stroke-width="3"/>
+          <!-- Case inner bg (motherboard) -->
+          <rect x="35" y="25" width="310" height="250" rx="10" fill="#166534" stroke="#15803d" stroke-width="2"/>
+
+          <!-- Circuit trace decorations -->
+          <line x1="50" y1="40" x2="330" y2="40" stroke="#4ade80" stroke-width="1" opacity=".3"/>
+          <line x1="50" y1="260" x2="330" y2="260" stroke="#4ade80" stroke-width="1" opacity=".3"/>
+          <line x1="50" y1="40" x2="50" y2="260" stroke="#4ade80" stroke-width="1" opacity=".3"/>
+          <line x1="330" y1="40" x2="330" y2="260" stroke="#4ade80" stroke-width="1" opacity=".3"/>
+
+          <!-- ── CPU ── -->
+          <g id="svgCPU" onclick="clickComp('cpu')" style="cursor:pointer;">
+            <rect x="55" y="55" width="80" height="80" rx="8" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2.5" class="comp-rect"/>
+            <rect x="63" y="63" width="64" height="64" rx="5" fill="#1d4ed8"/>
+            <text x="95" y="98" text-anchor="middle" fill="white" font-size="16" font-weight="bold" font-family="sans-serif">CPU</text>
+            <text x="95" y="113" text-anchor="middle" fill="#93c5fd" font-size="9" font-family="sans-serif">🧠 Otak</text>
+            <!-- Pins CPU -->
+            <line x1="70" y1="55" x2="70" y2="46" stroke="#93c5fd" stroke-width="1.5"/>
+            <line x1="80" y1="55" x2="80" y2="46" stroke="#93c5fd" stroke-width="1.5"/>
+            <line x1="90" y1="55" x2="90" y2="46" stroke="#93c5fd" stroke-width="1.5"/>
+            <line x1="100" y1="55" x2="100" y2="46" stroke="#93c5fd" stroke-width="1.5"/>
+            <line x1="110" y1="55" x2="110" y2="46" stroke="#93c5fd" stroke-width="1.5"/>
+            <line x1="120" y1="55" x2="120" y2="46" stroke="#93c5fd" stroke-width="1.5"/>
+          </g>
+
+          <!-- ── RAM STICKS ── -->
+          <g id="svgRAM" onclick="clickComp('ram')" style="cursor:pointer;">
+            <rect x="165" y="45" width="22" height="100" rx="4" fill="#7c3aed" stroke="#6d28d9" stroke-width="2"/>
+            <rect x="169" y="50" width="14" height="85" rx="3" fill="#6d28d9"/>
+            <rect x="172" y="55" width="8" height="10" rx="1" fill="#8b5cf6"/>
+            <rect x="172" y="70" width="8" height="10" rx="1" fill="#8b5cf6"/>
+            <rect x="172" y="85" width="8" height="10" rx="1" fill="#a78bfa"/>
+            <text x="176" y="148" text-anchor="middle" fill="#c4b5fd" font-size="8" font-family="sans-serif">RAM</text>
+
+            <rect x="193" y="45" width="22" height="100" rx="4" fill="#7c3aed" stroke="#6d28d9" stroke-width="2"/>
+            <rect x="197" y="50" width="14" height="85" rx="3" fill="#6d28d9"/>
+            <rect x="200" y="55" width="8" height="10" rx="1" fill="#8b5cf6"/>
+            <rect x="200" y="70" width="8" height="10" rx="1" fill="#8b5cf6"/>
+            <rect x="200" y="85" width="8" height="10" rx="1" fill="#a78bfa"/>
+            <text x="204" y="148" text-anchor="middle" fill="#c4b5fd" font-size="8" font-family="sans-serif">RAM</text>
+          </g>
+
+          <!-- ── POWER SUPPLY ── -->
+          <g id="svgPSU" onclick="clickComp('psu')" style="cursor:pointer;">
+            <rect x="240" y="40" width="110" height="70" rx="8" fill="#d97706" stroke="#b45309" stroke-width="2.5"/>
+            <rect x="248" y="48" width="94" height="54" rx="5" fill="#b45309"/>
+            <text x="295" y="78" text-anchor="middle" fill="#fde68a" font-size="14" font-weight="bold" font-family="sans-serif">PSU</text>
+            <text x="295" y="92" text-anchor="middle" fill="#fbbf24" font-size="9" font-family="sans-serif">⚡ Listrik</text>
+            <!-- PSU cables going down -->
+            <line x1="260" y1="110" x2="260" y2="130" stroke="#fbbf24" stroke-width="2"/>
+            <line x1="275" y1="110" x2="275" y2="130" stroke="#ef4444" stroke-width="2"/>
+            <line x1="290" y1="110" x2="290" y2="130" stroke="#60a5fa" stroke-width="2"/>
+          </g>
+
+          <!-- ── FAN ── -->
+          <g id="svgFAN" onclick="clickComp('fan')" style="cursor:pointer;">
+            <circle cx="95" cy="210" r="45" fill="#1f2937" stroke="#374151" stroke-width="2.5"/>
+            <circle cx="95" cy="210" r="38" fill="#374151"/>
+            <circle cx="95" cy="210" r="8" fill="#6b7280"/>
+            <!-- Fan blades -->
+            <ellipse cx="95" cy="182" rx="9" ry="16" fill="#9ca3af" opacity=".9">
+              <animateTransform attributeName="transform" type="rotate" from="0 95 210" to="360 95 210" dur="2s" repeatCount="indefinite"/>
+            </ellipse>
+            <ellipse cx="95" cy="182" rx="9" ry="16" fill="#9ca3af" opacity=".9" transform="rotate(90 95 210)">
+              <animateTransform attributeName="transform" type="rotate" from="90 95 210" to="450 95 210" dur="2s" repeatCount="indefinite"/>
+            </ellipse>
+            <ellipse cx="95" cy="182" rx="9" ry="16" fill="#9ca3af" opacity=".9" transform="rotate(180 95 210)">
+              <animateTransform attributeName="transform" type="rotate" from="180 95 210" to="540 95 210" dur="2s" repeatCount="indefinite"/>
+            </ellipse>
+            <ellipse cx="95" cy="182" rx="9" ry="16" fill="#9ca3af" opacity=".9" transform="rotate(270 95 210)">
+              <animateTransform attributeName="transform" type="rotate" from="270 95 210" to="630 95 210" dur="2s" repeatCount="indefinite"/>
+            </ellipse>
+            <circle cx="95" cy="210" r="6" fill="#d1d5db" stroke="#9ca3af" stroke-width="1.5"/>
+            <text x="95" y="268" text-anchor="middle" fill="#9ca3af" font-size="9" font-family="sans-serif">🌀 Kipas</text>
+          </g>
+
+          <!-- ── HARD DISK (bonus) ── -->
+          <g id="svgHDD" onclick="clickComp('hdd')" style="cursor:pointer; opacity:.9;">
+            <rect x="175" y="175" width="80" height="55" rx="6" fill="#4b5563" stroke="#374151" stroke-width="2"/>
+            <rect x="182" y="183" width="66" height="39" rx="4" fill="#374151"/>
+            <circle cx="215" cy="202" r="14" fill="#6b7280" stroke="#4b5563" stroke-width="1.5"/>
+            <circle cx="215" cy="202" r="6" fill="#374151"/>
+            <text x="215" y="247" text-anchor="middle" fill="#9ca3af" font-size="9" font-family="sans-serif">💾 HDD</text>
+          </g>
+
+          <!-- ── Labels ── -->
+          <text x="20" y="295" fill="#6b7280" font-size="9" font-family="sans-serif">← Klik tiap komponen untuk review! 🖱️</text>
+
+          <!-- Highlight rects (hidden, shown on click) -->
+          <rect id="hl_cpu" x="52" y="52" width="86" height="86" rx="10" fill="none" stroke="#fbbf24" stroke-width="3" opacity="0"/>
+          <rect id="hl_ram" x="162" y="42" width="56" height="110" rx="6" fill="none" stroke="#fbbf24" stroke-width="3" opacity="0"/>
+          <rect id="hl_psu" x="237" y="37" width="116" height="76" rx="10" fill="none" stroke="#fbbf24" stroke-width="3" opacity="0"/>
+          <circle id="hl_fan" cx="95" cy="210" r="48" fill="none" stroke="#fbbf24" stroke-width="3" opacity="0"/>
+          <rect id="hl_hdd" x="172" y="172" width="86" height="61" rx="8" fill="none" stroke="#fbbf24" stroke-width="3" opacity="0"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── QUIZ ── -->
+  <section class="mb-8">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl font-black text-white" style="background:linear-gradient(135deg,#ec4899,#f43f5e);">3</div>
+      <h2 class="text-2xl text-gray-800">Quiz Kilat Minggu 1! 🎯</h2>
+    </div>
+
+    <div class="rounded-3xl p-5 border-3" style="background:linear-gradient(135deg,#fdf4ff,#fae8ff); border:3px solid #d946ef; box-shadow:5px 5px 0 #c026d3;">
+      <p class="text-center text-purple-700 font-bold mb-5 text-base">
+        🌟 Tes pengetahuanmu! Pilih jawaban yang benar!
+      </p>
+
+      <!-- Q1 -->
+      <div id="q1" class="mb-5 p-4 rounded-2xl" style="background:white; border:2px solid #e9d5ff;">
+        <p class="font-black text-gray-800 mb-3 text-base">1. 🧠 Bagian komputer yang disebut "Otak Komputer" adalah...</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <button class="qbtn" onclick="ans(1,'a',this)">A. CPU 🧠</button>
+          <button class="qbtn" onclick="ans(1,'b',this)">B. RAM 🗂️</button>
+          <button class="qbtn" onclick="ans(1,'c',this)">C. PSU ⚡</button>
+          <button class="qbtn" onclick="ans(1,'d',this)">D. Kipas 🌀</button>
+        </div>
+        <div id="q1r" class="hidden mt-2 text-sm font-bold rounded-lg p-2 text-center"></div>
+      </div>
+
+      <!-- Q2 -->
+      <div id="q2" class="mb-5 p-4 rounded-2xl" style="background:white; border:2px solid #e9d5ff;">
+        <p class="font-black text-gray-800 mb-3 text-base">2. 💨 Ketika komputer dimatikan, data yang hilang ada di...</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <button class="qbtn" onclick="ans(2,'b',this)">A. Hard Disk 💾</button>
+          <button class="qbtn" onclick="ans(2,'a',this)">B. RAM 🗂️</button>
+          <button class="qbtn" onclick="ans(2,'c',this)">C. Motherboard 🏠</button>
+          <button class="qbtn" onclick="ans(2,'d',this)">D. PSU ⚡</button>
+        </div>
+        <div id="q2r" class="hidden mt-2 text-sm font-bold rounded-lg p-2 text-center"></div>
+      </div>
+
+      <!-- Q3 -->
+      <div id="q3" class="mb-5 p-4 rounded-2xl" style="background:white; border:2px solid #e9d5ff;">
+        <p class="font-black text-gray-800 mb-3 text-base">3. 🏠 Komponen yang menghubungkan semua bagian komputer seperti "rumah besar" adalah...</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <button class="qbtn" onclick="ans(3,'b',this)">A. CPU 🧠</button>
+          <button class="qbtn" onclick="ans(3,'a',this)">B. Motherboard 🏠</button>
+          <button class="qbtn" onclick="ans(3,'c',this)">C. PSU ⚡</button>
+          <button class="qbtn" onclick="ans(3,'d',this)">D. Kipas 🌀</button>
+        </div>
+        <div id="q3r" class="hidden mt-2 text-sm font-bold rounded-lg p-2 text-center"></div>
+      </div>
+
+      <!-- Q4 -->
+      <div id="q4" class="mb-5 p-4 rounded-2xl" style="background:white; border:2px solid #e9d5ff;">
+        <p class="font-black text-gray-800 mb-3 text-base">4. 🌡️ Komputer bisa rusak kalau terlalu panas! Yang bertugas mendinginkannya adalah...</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <button class="qbtn" onclick="ans(4,'b',this)">A. RAM 🗂️</button>
+          <button class="qbtn" onclick="ans(4,'a',this)">B. Kipas Pendingin 🌀</button>
+          <button class="qbtn" onclick="ans(4,'c',this)">C. Hard Disk 💾</button>
+          <button class="qbtn" onclick="ans(4,'d',this)">D. Motherboard 🏠</button>
+        </div>
+        <div id="q4r" class="hidden mt-2 text-sm font-bold rounded-lg p-2 text-center"></div>
+      </div>
+
+      <!-- Q5 -->
+      <div id="q5" class="mb-3 p-4 rounded-2xl" style="background:white; border:2px solid #e9d5ff;">
+        <p class="font-black text-gray-800 mb-3 text-base">5. ⚡ Yang mengubah listrik dari stop kontak agar aman untuk komputer adalah...</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <button class="qbtn" onclick="ans(5,'b',this)">A. CPU 🧠</button>
+          <button class="qbtn" onclick="ans(5,'a',this)">B. Power Supply ⚡</button>
+          <button class="qbtn" onclick="ans(5,'c',this)">C. Kipas 🌀</button>
+          <button class="qbtn" onclick="ans(5,'d',this)">D. RAM 🗂️</button>
+        </div>
+        <div id="q5r" class="hidden mt-2 text-sm font-bold rounded-lg p-2 text-center"></div>
+      </div>
+
+      <!-- Quiz result -->
+      <div id="quizFinal" class="hidden mt-4 p-5 rounded-2xl text-center slide-down" style="background:linear-gradient(135deg,#fef3c7,#fde68a); border:3px solid #fbbf24;">
+        <div id="qfEmoji" class="text-5xl mb-2">🏆</div>
+        <p id="qfText" class="font-black text-xl mb-1"></p>
+        <p id="qfSub" class="text-gray-600 font-semibold text-sm"></p>
+        <button onclick="resetQuiz()" class="mt-3 px-5 py-2 rounded-full font-bold text-sm text-white" style="background:linear-gradient(135deg,#d97706,#f59e0b);">
+          🔄 Ulangi Quiz
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AKTIVITAS MENGGAMBAR ── -->
+  <section class="mb-8">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl font-black text-white" style="background:linear-gradient(135deg,#2563eb,#06b6d4);">4</div>
+      <h2 class="text-2xl text-gray-800">Tugas Hari Ini: Gambar Komputer dari Dalam! ✏️</h2>
+    </div>
+
+    <div class="rounded-3xl p-5 border-3" style="background:linear-gradient(135deg,#eff6ff,#dbeafe); border:3px solid #3b82f6; box-shadow:5px 5px 0 #2563eb;">
+      <!-- Instruksi -->
+      <div class="flex items-start gap-3 mb-4 p-3 rounded-2xl" style="background:white; border:2px solid #bfdbfe;">
+        <span class="text-3xl mt-1">📝</span>
+        <div>
+          <p class="font-black text-blue-800 text-base">Tugas Aslan:</p>
+          <p class="text-blue-700 font-semibold text-sm">Gambarlah komputer dari dalam! Taruh <strong>CPU</strong>, <strong>RAM</strong>, <strong>Motherboard</strong>, <strong>Power Supply</strong>, dan <strong>Kipas</strong> di tempatnya masing-masing. Gunakan warna yang berbeda untuk setiap komponen ya! 🎨</p>
+        </div>
+      </div>
+
+      <!-- Toolbar warna + alat -->
+      <div class="flex flex-wrap gap-2 mb-3 items-center justify-between">
+        <div class="flex gap-2 flex-wrap items-center">
+          <span class="text-sm font-bold text-blue-700">Warna:</span>
+          <button class="tool-btn active" id="clrBtn_blue" onclick="setColor('#3b82f6')" title="Biru"><div class="w-6 h-6 rounded-full bg-blue-500"></div></button>
+          <button class="tool-btn" id="clrBtn_purple" onclick="setColor('#7c3aed')" title="Ungu"><div class="w-6 h-6 rounded-full bg-purple-700"></div></button>
+          <button class="tool-btn" id="clrBtn_green" onclick="setColor('#16a34a')" title="Hijau"><div class="w-6 h-6 rounded-full bg-green-600"></div></button>
+          <button class="tool-btn" id="clrBtn_amber" onclick="setColor('#d97706')" title="Kuning"><div class="w-6 h-6 rounded-full bg-amber-500"></div></button>
+          <button class="tool-btn" id="clrBtn_red" onclick="setColor('#dc2626')" title="Merah"><div class="w-6 h-6 rounded-full bg-red-600"></div></button>
+          <button class="tool-btn" id="clrBtn_black" onclick="setColor('#1c1917')" title="Hitam"><div class="w-6 h-6 rounded-full bg-stone-900"></div></button>
+          <button class="tool-btn" id="clrBtn_white" onclick="setColor('#ffffff')" title="Putih"><div class="w-6 h-6 rounded-full bg-white border border-gray-300"></div></button>
+        </div>
+        <div class="flex gap-2 items-center">
+          <span class="text-sm font-bold text-blue-700">Ukuran:</span>
+          <input type="range" id="brushSize" min="2" max="20" value="5" class="w-20" oninput="setBrush(this.value)">
+          <span id="brushLabel" class="text-xs font-bold text-blue-600 w-5">5</span>
+        </div>
+      </div>
+
+      <!-- Canvas area with SVG template outline -->
+      <div class="rounded-2xl overflow-hidden border-3" style="border:3px solid #bfdbfe; background:white;">
+        <!-- Template outline (non-interactive layer) -->
+        <svg id="templateSVG" width="100%" viewBox="0 0 500 360" style="position:absolute; pointer-events:none; display:none;"></svg>
+        <canvas id="drawCanvas" class="draw-zone" width="500" height="360" style="width:100%; display:block; background:white;"></canvas>
+      </div>
+
+      <!-- Template toggle + clear -->
+      <div class="flex gap-2 mt-3 flex-wrap">
+        <button onclick="loadTemplate()" class="flex-1 py-2 px-4 rounded-xl font-bold text-sm text-white" style="background:linear-gradient(135deg,#2563eb,#3b82f6);">
+          🖥️ Tampilkan Template Kosong
+        </button>
+        <button onclick="clearCanvas()" class="py-2 px-4 rounded-xl font-bold text-sm text-white" style="background:linear-gradient(135deg,#dc2626,#ef4444);">
+          🗑️ Hapus Semua
+        </button>
+        <button onclick="downloadDrawing()" class="py-2 px-4 rounded-xl font-bold text-sm text-white" style="background:linear-gradient(135deg,#16a34a,#22c55e);">
+          💾 Simpan Gambar
+        </button>
+      </div>
+
+      <!-- Checklist label -->
+      <div class="mt-4 p-3 rounded-2xl" style="background:#f0f9ff; border:2px solid #bae6fd;">
+        <p class="font-black text-sky-700 text-sm mb-2">✅ Checklist Gambarmu:</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <label class="flex items-center gap-2 cursor-pointer" id="ac1" onclick="actCheck(1)">
+            <input type="checkbox" class="w-4 h-4 accent-blue-500">
+            <span class="text-sm font-bold text-gray-700">🧠 CPU digambar</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer" id="ac2" onclick="actCheck(2)">
+            <input type="checkbox" class="w-4 h-4 accent-purple-500">
+            <span class="text-sm font-bold text-gray-700">🗂️ RAM digambar</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer" id="ac3" onclick="actCheck(3)">
+            <input type="checkbox" class="w-4 h-4 accent-green-600">
+            <span class="text-sm font-bold text-gray-700">🏠 Motherboard</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer" id="ac4" onclick="actCheck(4)">
+            <input type="checkbox" class="w-4 h-4 accent-amber-500">
+            <span class="text-sm font-bold text-gray-700">⚡ PSU digambar</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer" id="ac5" onclick="actCheck(5)">
+            <input type="checkbox" class="w-4 h-4 accent-rose-500">
+            <span class="text-sm font-bold text-gray-700">🌀 Kipas digambar</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer" id="ac6" onclick="actCheck(6)">
+            <input type="checkbox" class="w-4 h-4 accent-sky-500">
+            <span class="text-sm font-bold text-gray-700">💾 HDD (bonus!)</span>
+          </label>
+        </div>
+        <div id="actDone" class="hidden mt-3 text-center p-2 rounded-xl font-black text-green-700 slide-down" style="background:#dcfce7; border:2px solid #86efac;">
+          🎉 Hebat banget! Semua komponen sudah digambar! Kamu luar biasa Aslan!
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PESAN ASLAN ── -->
+  <section class="mb-8">
+    <div class="rounded-3xl p-6 text-center" style="background:linear-gradient(135deg,#fef3c7,#fed7aa,#fecdd3); border:4px solid #f97316; box-shadow:6px 6px 0 #ea580c;">
+      <div class="text-6xl mb-3 trophy-glow">🏆</div>
+      <h2 class="text-3xl text-orange-800 mb-2">Selamat Aslan! 🎊</h2>
+      <p class="text-orange-700 font-bold text-lg mb-1">Kamu sudah menyelesaikan <span class="text-orange-900 font-black">Minggu 1</span>!</p>
+      <p class="text-orange-600 font-semibold text-base max-w-sm mx-auto">
+        Dalam 6 hari, kamu sudah belajar tentang <strong>5 bagian penting</strong> komputer. Itu bukan hal mudah, tapi kamu BISA! 💪
+      </p>
+      <div class="flex justify-center gap-4 mt-4 flex-wrap">
+        <span class="chip bg-blue-100 text-blue-700 border border-blue-200 text-base px-4 py-2">🧠 CPU ✓</span>
+        <span class="chip bg-purple-100 text-purple-700 border border-purple-200 text-base px-4 py-2">🗂️ RAM ✓</span>
+        <span class="chip bg-green-100 text-green-700 border border-green-200 text-base px-4 py-2">🏠 Motherboard ✓</span>
+        <span class="chip bg-amber-100 text-amber-700 border border-amber-200 text-base px-4 py-2">⚡ PSU ✓</span>
+        <span class="chip bg-rose-100 text-rose-700 border border-rose-200 text-base px-4 py-2">🌀 Kipas ✓</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PREVIEW MINGGU 2 ── -->
+  <section class="mb-8">
+    <div class="rounded-3xl p-5 border-3 text-center" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:3px dashed #16a34a;">
+      <p class="text-green-600 font-bold text-sm mb-1">🔭 Sneak peek: Minggu 2!</p>
+      <h3 class="text-2xl text-green-800 mb-2">Hari 8: Bit & Byte – Bahasa Komputer! 🔢</h3>
+      <p class="text-green-700 font-semibold text-sm max-w-sm mx-auto">Tahukah kamu komputer hanya mengerti angka <strong>0</strong> dan <strong>1</strong>? Minggu depan kita akan belajar bagaimana cara komputer bicara! Seru banget! 🚀</p>
+      <div class="flex justify-center gap-3 mt-3">
+        <span class="chip bg-green-200 text-green-800">01010011</span>
+        <span class="chip bg-green-200 text-green-800">= huruf "S"!</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ════════════════════════════════════ FOOTER ════════════════════════════════════ -->
+<footer class="mt-2 pb-8">
+  <div class="max-w-3xl mx-auto px-4">
+
+    <!-- Big encouragement -->
+    <div class="text-center mb-5 p-4 rounded-3xl" style="background:linear-gradient(135deg,#1e3a8a,#1d4ed8,#0ea5e9); box-shadow:4px 4px 0 #1e3a8a;">
+      <p class="text-white font-black text-xl md:text-2xl">
+        🎉 Kamu Hebat Aslan! 🎉
+      </p>
+      <p class="text-blue-200 font-bold text-base mt-1">
+        Kamu sudah mulai mengerti isi perut komputer! 🖥️💪
+      </p>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="bg-gray-200 rounded-full h-4 mb-2 overflow-hidden">
+      <div class="prog-fill h-4" style="width:23.33%;"></div>
+    </div>
+    <p class="text-center text-gray-400 text-xs mb-5">Progres Seri: Hari 7 dari 30 (23%) — Akhir Minggu 1 🎊</p>
+
+    
+    <p class="text-center text-gray-300 text-xs mt-6">
+      Made with ❤️ for Aslan · Buku Digital Seri Komputer · Hari 7 dari 30
+    </p>
+  </div>
+</footer>
+
+
+<!-- ════════════════════════════════════ JAVASCRIPT ════════════════════════════════════ -->
+<script>
+/* ══ CONFETTI ══ */
+const CC = ['#38bdf8','#34d399','#fbbf24','#fb923c','#f472b6','#a78bfa','#ef4444'];
+function launchConfetti(count=25, yStart='60%') {
+  for(let i=0; i<count; i++){
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `left:${15+Math.random()*70}%;top:${yStart};background:${CC[Math.floor(Math.random()*CC.length)]};--tx:${(Math.random()-.5)*220}px;--ty:${-60-Math.random()*160}px;animation-delay:${Math.random()*.4}s;position:fixed;z-index:9999;`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1600);
+  }
+}
+
+/* ══ DAY CARDS TOGGLE ══ */
+function toggleCard(n) {
+  const detail = document.getElementById('detail'+n);
+  const arr = document.getElementById('arr'+n);
+  const card = document.getElementById('card'+n);
+  const isOpen = !detail.classList.contains('hidden');
+
+  // Close all
+  [2,3,4,5,6].forEach(x => {
+    document.getElementById('detail'+x).classList.add('hidden');
+    document.getElementById('arr'+x).style.transform = '';
+  });
+
+  if (!isOpen) {
+    detail.classList.remove('hidden');
+    arr.style.transform = 'rotate(180deg)';
+    card.classList.add('active');
+    launchConfetti(10, '50%');
+  } else {
+    card.classList.remove('active');
+  }
+}
+
+/* ══ INTERACTIVE COMPUTER DIAGRAM ══ */
+const compData = {
+  cpu: { emoji:'🧠', name:'CPU – Otak Komputer', desc:'CPU mengolah semua perintah dan data. Tanpa CPU, komputer tidak bisa berpikir sama sekali! ⚡', hl:'hl_cpu', color:'linear-gradient(135deg,#dbeafe,#bfdbfe)', border:'#3b82f6' },
+  ram: { emoji:'🗂️', name:'RAM – Meja Kerja Sementara', desc:'RAM menyimpan data yang sedang dipakai. Kalau komputer mati, data di RAM langsung lenyap! 💨', hl:'hl_ram', color:'linear-gradient(135deg,#ede9fe,#ddd6fe)', border:'#7c3aed' },
+  psu: { emoji:'⚡', name:'Power Supply – Jantung Listrik', desc:'PSU mengubah listrik besar dari stop kontak menjadi listrik kecil yang aman untuk semua komponen! 🔋', hl:'hl_psu', color:'linear-gradient(135deg,#fef3c7,#fde68a)', border:'#d97706' },
+  fan: { emoji:'🌀', name:'Kipas Pendingin – Biar Tidak Panas!', desc:'Kipas membuang panas keluar agar komputer tidak overheat dan rusak. Berputar terus-menerus! ❄️', hl:'hl_fan', color:'linear-gradient(135deg,#ffe4e6,#fecdd3)', border:'#e11d48' },
+  hdd: { emoji:'💾', name:'Hard Disk – Lemari Penyimpanan', desc:'Hard Disk menyimpan semua file, foto, video, dan program secara permanen! Data tetap ada walau komputer dimatikan. 📂', hl:'hl_hdd', color:'linear-gradient(135deg,#f1f5f9,#e2e8f0)', border:'#475569' },
+};
+let lastHL = null;
+
+function clickComp(key) {
+  const d = compData[key];
+  if (!d) return;
+
+  const tooltip = document.getElementById('compTooltip');
+  document.getElementById('compEmoji').textContent = d.emoji;
+  document.getElementById('compName').textContent = d.name;
+  document.getElementById('compDesc').textContent = d.desc;
+  tooltip.style.background = d.color;
+  tooltip.style.borderColor = d.border;
+  tooltip.classList.remove('hidden');
+  tooltip.classList.add('slide-down');
+
+  // Reset previous highlight
+  if (lastHL) {
+    const prevHL = document.getElementById(lastHL);
+    if(prevHL) prevHL.style.opacity = '0';
+  }
+  // Show new highlight
+  const hlEl = document.getElementById(d.hl);
+  if(hlEl) { hlEl.style.opacity='1'; hlEl.style.transition='opacity .2s'; }
+  lastHL = d.hl;
+
+  launchConfetti(8, '45%');
+}
+
+/* ══ QUIZ ══ */
+let qAnswered = {1:false,2:false,3:false,4:false,5:false};
+let qScore = 0;
+const qFeedback = {
+  1: { a:'✅ Betul! CPU = Otak Komputer! 🧠🌟', wrong:'❌ Jawabannya A – CPU adalah otak komputer! 🧠' },
+  2: { a:'✅ Betul! RAM menyimpan data sementara, hilang saat mati! 💨🌟', wrong:'❌ Jawabannya B – RAM itu memorinya hilang kalau komputer mati!' },
+  3: { a:'✅ Tepat sekali! Motherboard seperti rumah besar! 🏠🌟', wrong:'❌ Jawabannya B – Motherboard menghubungkan semua komponen! 🏠' },
+  4: { a:'✅ Benar! Kipas Pendingin menjaga suhu komputer! ❄️🌟', wrong:'❌ Jawabannya B – Kipas Pendingin yang mendinginkan komputer! 🌀' },
+  5: { a:'✅ Betul banget! Power Supply yang mengubah listrik! ⚡🌟', wrong:'❌ Jawabannya B – Power Supply (PSU) yang mengubah listrik! ⚡' },
+};
+
+function ans(n, correct, btn) {
+  if (qAnswered[n]) return;
+  qAnswered[n] = true;
+
+  const btns = btn.closest('#q'+n).querySelectorAll('.qbtn');
+  btns.forEach(b => b.disabled = true);
+
+  const r = document.getElementById('q'+n+'r');
+  r.classList.remove('hidden');
+
+  if (correct === 'a') {
+    qScore++;
+    btn.style.background = '#dcfce7'; btn.style.borderColor = '#16a34a'; btn.style.color='#15803d';
+    r.textContent = qFeedback[n].a; r.style.color = '#16a34a'; r.style.background='#f0fdf4';
+    launchConfetti(12, '55%');
+  } else {
+    btn.style.background = '#fee2e2'; btn.style.borderColor = '#dc2626';
+    r.textContent = qFeedback[n].wrong; r.style.color = '#dc2626'; r.style.background='#fff1f2';
+    // Highlight correct answer
+    const allBtns = btn.closest('#q'+n).querySelectorAll('.qbtn');
+    allBtns.forEach(b => {
+      if (b.getAttribute('onclick').includes("'a'")) {
+        b.style.background='#dcfce7'; b.style.borderColor='#16a34a';
+      }
+    });
+  }
+
+  if (Object.values(qAnswered).every(v => v)) {
+    setTimeout(() => {
+      const f = document.getElementById('quizFinal');
+      f.classList.remove('hidden');
+      const e = document.getElementById('qfEmoji');
+      const t = document.getElementById('qfText');
+      const s = document.getElementById('qfSub');
+      if (qScore === 5)      { e.textContent='🏆'; t.textContent='Sempurna! 5/5 – Kamu Juara!'; t.style.color='#92400e'; s.textContent='Wah, otak Aslan kayak CPU tercepat di dunia! 🚀'; launchConfetti(40,'50%'); }
+      else if (qScore >= 4) { e.textContent='⭐'; t.textContent=`Keren! ${qScore}/5 – Hampir Sempurna!`; t.style.color='#0d9488'; s.textContent='Sedikit lagi! Coba baca ulang bagian yang salah ya!'; launchConfetti(20,'50%'); }
+      else if (qScore >= 3) { e.textContent='👍'; t.textContent=`Bagus! ${qScore}/5 – Terus Semangat!`; t.style.color='#7c3aed'; s.textContent='Scroll ke atas dan lihat lagi kartu reviewnya!'; }
+      else                  { e.textContent='💪'; t.textContent=`${qScore}/5 – Jangan Menyerah!`; t.style.color='#dc2626'; s.textContent='Coba lagi dari awal, pasti bisa! Review dulu kartu-kartunya!'; }
+    }, 400);
+  }
+}
+
+function resetQuiz() {
+  qAnswered = {1:false,2:false,3:false,4:false,5:false};
+  qScore = 0;
+  [1,2,3,4,5].forEach(n => {
+    document.getElementById('q'+n+'r').classList.add('hidden');
+    document.getElementById('q'+n).querySelectorAll('.qbtn').forEach(b => {
+      b.disabled=false; b.style.background=''; b.style.borderColor=''; b.style.color='';
+    });
+  });
+  document.getElementById('quizFinal').classList.add('hidden');
+}
+
+/* ══ CANVAS DRAWING ══ */
+const canvas = document.getElementById('drawCanvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+let currentColor = '#3b82f6';
+let brushSz = 5;
+let lastX = 0, lastY = 0;
+
+function getPos(e, canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  if (e.touches) {
+    return {
+      x: (e.touches[0].clientX - rect.left) * scaleX,
+      y: (e.touches[0].clientY - rect.top) * scaleY
+    };
+  }
+  return {
+    x: (e.clientX - rect.left) * scaleX,
+    y: (e.clientY - rect.top) * scaleY
+  };
+}
+
+canvas.addEventListener('mousedown', e => { drawing=true; const p=getPos(e,canvas); lastX=p.x; lastY=p.y; });
+canvas.addEventListener('mouseup', () => drawing=false);
+canvas.addEventListener('mouseleave', () => drawing=false);
+canvas.addEventListener('mousemove', e => {
+  if (!drawing) return;
+  const p = getPos(e, canvas);
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(p.x, p.y);
+  ctx.strokeStyle = currentColor;
+  ctx.lineWidth = brushSz;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+  lastX=p.x; lastY=p.y;
+});
+canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing=true; const p=getPos(e,canvas); lastX=p.x; lastY=p.y; }, {passive:false});
+canvas.addEventListener('touchend', () => drawing=false);
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (!drawing) return;
+  const p = getPos(e, canvas);
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(p.x, p.y);
+  ctx.strokeStyle = currentColor;
+  ctx.lineWidth = brushSz;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+  lastX=p.x; lastY=p.y;
+}, {passive:false});
+
+function setColor(c) {
+  currentColor = c;
+  document.querySelectorAll('[id^="clrBtn_"]').forEach(b => b.classList.remove('active'));
+}
+function setBrush(v) {
+  brushSz = parseInt(v);
+  document.getElementById('brushLabel').textContent = v;
+}
+
+function clearCanvas() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // Redraw template if loaded
+  if (templateLoaded) drawTemplate();
+}
+
+let templateLoaded = false;
+function drawTemplate() {
+  // Draw casing outline
+  ctx.save();
+  ctx.strokeStyle = '#374151';
+  ctx.lineWidth = 4;
+  ctx.fillStyle = '#f9fafb';
+  roundRect(ctx, 30, 20, 440, 320, 15);
+  ctx.fill();
+  ctx.stroke();
+
+  // Label: CASING
+  ctx.font = 'bold 13px Nunito, sans-serif';
+  ctx.fillStyle = '#6b7280';
+  ctx.fillText('CASING KOMPUTER', 180, 16);
+
+  // Motherboard area
+  ctx.strokeStyle = '#16a34a';
+  ctx.lineWidth = 3;
+  ctx.setLineDash([8,5]);
+  ctx.fillStyle = 'rgba(220,252,231,0.4)';
+  roundRect(ctx, 50, 40, 390, 270, 10);
+  ctx.fill();
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#16a34a';
+  ctx.font = 'bold 11px Nunito, sans-serif';
+  ctx.fillText('MOTHERBOARD (papan hijau besar)', 60, 57);
+
+  // CPU slot outline
+  ctx.strokeStyle = '#3b82f6';
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([6,4]);
+  ctx.fillStyle = 'rgba(219,234,254,0.3)';
+  roundRect(ctx, 65, 70, 100, 100, 8);
+  ctx.fill();
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#3b82f6';
+  ctx.font = 'bold 11px Nunito, sans-serif';
+  ctx.fillText('CPU', 100, 125);
+  ctx.font = '10px Nunito, sans-serif';
+  ctx.fillText('🧠 Gambarlah di sini', 68, 140);
+
+  // RAM slots outline
+  ctx.strokeStyle = '#7c3aed';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([5,4]);
+  ctx.fillStyle = 'rgba(237,233,254,0.3)';
+  roundRect(ctx, 190, 65, 30, 110, 5);
+  ctx.fill();
+  ctx.stroke();
+  roundRect(ctx, 228, 65, 30, 110, 5);
+  ctx.fill();
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#7c3aed';
+  ctx.font = 'bold 9px Nunito, sans-serif';
+  ctx.fillText('RAM', 196, 185);
+  ctx.fillText('RAM', 234, 185);
+
+  // PSU outline
+  ctx.strokeStyle = '#d97706';
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([6,4]);
+  ctx.fillStyle = 'rgba(254,243,199,0.4)';
+  roundRect(ctx, 285, 55, 140, 90, 8);
+  ctx.fill();
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#d97706';
+  ctx.font = 'bold 11px Nunito, sans-serif';
+  ctx.fillText('POWER SUPPLY (PSU)', 295, 100);
+  ctx.font = '10px Nunito, sans-serif';
+  ctx.fillText('⚡ Gambarlah di sini', 295, 116);
+
+  // FAN outline
+  ctx.strokeStyle = '#e11d48';
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([5,4]);
+  ctx.beginPath();
+  ctx.arc(120, 245, 55, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(255,228,230,0.3)';
+  ctx.fill();
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#e11d48';
+  ctx.font = 'bold 11px Nunito, sans-serif';
+  ctx.fillText('KIPAS', 100, 248);
+  ctx.font = '10px Nunito, sans-serif';
+  ctx.fillText('🌀 Gambarlah', 90, 263);
+
+  // HDD outline
+  ctx.strokeStyle = '#475569';
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([5,4]);
+  ctx.fillStyle = 'rgba(241,245,249,0.3)';
+  roundRect(ctx, 210, 210, 110, 70, 6);
+  ctx.fill();
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#475569';
+  ctx.font = 'bold 11px Nunito, sans-serif';
+  ctx.fillText('HARD DISK (HDD)', 215, 248);
+  ctx.font = '10px Nunito, sans-serif';
+  ctx.fillText('💾 Gambarlah di sini', 215, 263);
+
+  ctx.restore();
+  templateLoaded = true;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.arcTo(x+w, y, x+w, y+r, r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.arcTo(x+w, y+h, x+w-r, y+h, r);
+  ctx.lineTo(x+r, y+h);
+  ctx.arcTo(x, y+h, x, y+h-r, r);
+  ctx.lineTo(x, y+r);
+  ctx.arcTo(x, y, x+r, y, r);
+  ctx.closePath();
+}
+
+function loadTemplate() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  drawTemplate();
+  templateLoaded = true;
+}
+
+function downloadDrawing() {
+  const link = document.createElement('a');
+  link.download = 'gambar-komputer-aslan.png';
+  link.href = canvas.toDataURL();
+  link.click();
+}
+
+/* ══ CHECKLIST ══ */
+let actDone = 0;
+function actCheck(n) {
+  const el = document.getElementById('ac'+n);
+  const cb = el.querySelector('input');
+  const sp = el.querySelector('span');
+  if (cb.checked) {
+    actDone++;
+    sp.style.textDecoration = 'line-through';
+    sp.style.opacity = '.5';
+    launchConfetti(8, '70%');
+  } else {
+    actDone--;
+    sp.style.textDecoration = '';
+    sp.style.opacity = '';
+  }
+  if (actDone >= 5) {
+    document.getElementById('actDone').classList.remove('hidden');
+    launchConfetti(35, '65%');
+  } else {
+    document.getElementById('actDone').classList.add('hidden');
+  }
+}
+
+/* ══ INIT: load template on page load ══ */
+window.addEventListener('load', () => {
+  // Draw template automatically
+  setTimeout(drawTemplate, 300);
+
+  // Progress bar animate
+  setTimeout(() => {
+    document.querySelector('.prog-fill').style.width = '23.33%';
+  }, 600);
+});
+</script>
+</body>
+</html>

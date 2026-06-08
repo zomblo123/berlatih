@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robot Rumah yang Bisa Bantu Bunda — Flipbook Seri 15</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0EA5E9;
+  --blue-dark:#0369A1;
+  --blue-deep:#0C1A2E;
+  --blue-mid:#38BDF8;
+  --blue-pale:#E0F2FE;
+  --blue-glow:rgba(14,165,233,0.18);
+  --orange:#F97316;
+  --orange-dark:#C2410C;
+  --orange-pale:#FFF7ED;
+  --orange-glow:rgba(249,115,22,0.2);
+  --white:#FFFFFF;
+  --off-white:#F8FAFD;
+  --panel:#FFFFFF;
+  --text:#0C1A2E;
+  --text-muted:#4B6080;
+  --border:#C8E4F8;
+  --grid:rgba(14,165,233,0.07);
+  --orb:'Orbitron',sans-serif;
+  --body:'Quicksand',sans-serif;
+  --glow-shadow:0 0 20px rgba(14,165,233,0.15), 0 0 60px rgba(14,165,233,0.06);
+  --card-shadow:0 4px 24px rgba(14,165,233,0.12), 0 1px 4px rgba(0,0,0,0.06);
+}
+
+body{
+  font-family:var(--body);
+  background:var(--off-white);
+  min-height:100vh;
+  padding:16px;
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+/* ── TECH GRID BG ── */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    radial-gradient(ellipse at 20% 30%, rgba(14,165,233,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 70%, rgba(249,115,22,0.04) 0%, transparent 50%);
+  background-size:32px 32px, 32px 32px, 100% 100%, 100% 100%;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── SCANNING LINE ── */
+.scan-wrap{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+  overflow:hidden;
+}
+.scan-line{
+  position:absolute;
+  left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, transparent, rgba(14,165,233,0.4), rgba(56,189,248,0.6), rgba(14,165,233,0.4), transparent);
+  animation:scan 4s linear infinite;
+  opacity:0;
+}
+@keyframes scan{
+  0%{top:-2px;opacity:0}
+  5%{opacity:1}
+  95%{opacity:0.6}
+  100%{top:100%;opacity:0}
+}
+
+/* ── RADAR CORNER ── */
+.radar-corner{
+  position:fixed;
+  bottom:20px;
+  left:20px;
+  width:52px;height:52px;
+  z-index:5;
+  opacity:0.45;
+}
+.radar-corner svg{animation:radarSpin 3s linear infinite}
+@keyframes radarSpin{to{transform:rotate(360deg)}}
+
+.wrapper{
+  position:relative;
+  z-index:2;
+  max-width:800px;
+  margin:0 auto;
+}
+
+/* ── TOP BAR ── */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:16px;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.back-btn{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  background:var(--panel);
+  border:1.5px solid var(--border);
+  color:var(--text-muted);
+  font-family:var(--body);
+  font-weight:700;
+  font-size:13px;
+  padding:7px 16px;
+  border-radius:8px;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all .18s;
+  box-shadow:var(--card-shadow);
+}
+.back-btn:hover{
+  border-color:var(--blue);
+  color:var(--blue-dark);
+  box-shadow:0 0 12px var(--blue-glow), var(--card-shadow);
+  transform:translateY(-1px);
+}
+.brand-chip{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--blue-deep);
+  color:var(--blue-mid);
+  font-family:var(--orb);
+  font-weight:700;
+  font-size:11px;
+  padding:7px 14px;
+  border-radius:8px;
+  letter-spacing:1px;
+  box-shadow:0 0 16px rgba(14,165,233,0.25);
+  border:1px solid rgba(56,189,248,0.3);
+}
+.brand-chip .dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--blue-mid);
+  animation:blink 1.4s ease infinite;
+}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 6px var(--blue-mid)}50%{opacity:0.4;box-shadow:none}}
+.series-chip{
+  font-family:var(--orb);
+  font-size:10px;
+  font-weight:700;
+  color:var(--orange-dark);
+  background:var(--orange-pale);
+  border:1.5px solid rgba(249,115,22,0.3);
+  padding:6px 12px;
+  border-radius:8px;
+  letter-spacing:1.5px;
+  box-shadow:0 0 10px var(--orange-glow);
+}
+
+/* ── PROGRESS BAR ── */
+.progress-area{
+  margin-bottom:14px;
+  background:var(--panel);
+  border-radius:10px;
+  border:1.5px solid var(--border);
+  padding:10px 16px;
+  box-shadow:var(--card-shadow);
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.progress-track{
+  flex:1;
+  height:6px;
+  background:var(--blue-pale);
+  border-radius:3px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  border-radius:3px;
+  background:linear-gradient(90deg, var(--blue), var(--blue-mid), var(--orange));
+  transition:width .5s cubic-bezier(.22,1,.36,1);
+  position:relative;
+}
+.progress-fill::after{
+  content:'';
+  position:absolute;
+  right:0;top:0;bottom:0;
+  width:20px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5));
+  animation:shimmer 1.5s ease infinite;
+}
+@keyframes shimmer{0%,100%{opacity:1}50%{opacity:0.3}}
+.progress-info{
+  font-family:var(--orb);
+  font-size:11px;
+  font-weight:700;
+  color:var(--blue-dark);
+  white-space:nowrap;
+  letter-spacing:1px;
+}
+
+/* ── ROADMAP ── */
+.roadmap-wrap{
+  overflow-x:auto;
+  margin-bottom:16px;
+  padding-bottom:4px;
+}
+.roadmap{
+  display:flex;
+  align-items:center;
+  min-width:max-content;
+  gap:0;
+  padding:2px 2px;
+}
+.rm-node{
+  width:30px;height:30px;
+  border-radius:6px;
+  background:var(--panel);
+  border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--orb);font-size:9px;font-weight:700;
+  color:var(--text-muted);cursor:pointer;
+  transition:all .15s;flex-shrink:0;
+  box-shadow:var(--card-shadow);
+}
+.rm-node:hover{background:var(--blue-pale);border-color:var(--blue);color:var(--blue-dark);box-shadow:0 0 10px var(--blue-glow)}
+.rm-node.active{
+  background:var(--blue-deep);border-color:var(--blue);color:var(--blue-mid);
+  box-shadow:0 0 14px var(--blue-glow);
+}
+.rm-node.done{background:var(--blue-pale);border-color:var(--blue);color:var(--blue-dark)}
+.rm-conn{width:16px;height:2px;background:var(--border);flex-shrink:0}
+.rm-conn.done{background:var(--blue);box-shadow:0 0 4px var(--blue-glow)}
+
+/* ── PAGE CARD ── */
+.page-card{
+  background:var(--panel);
+  border-radius:16px;
+  border:1.5px solid var(--border);
+  overflow:hidden;
+  min-height:460px;
+  box-shadow:var(--card-shadow), 0 0 40px rgba(14,165,233,0.08);
+  animation:pageIn .4s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes pageIn{
+  from{opacity:0;transform:translateY(12px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* ── HEADER STRIP ── */
+.page-strip{height:6px}
+
+/* ── LAYOUT ── */
+.page-layout{
+  display:grid;
+  grid-template-columns:1fr;
+}
+@media(min-width:580px){
+  .page-layout{grid-template-columns:1fr 1fr}
+  .illus-col{border-right:1.5px solid var(--border)}
+}
+.illus-col{
+  padding:28px 22px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--blue-pale) 0%,#F0F8FF 60%,#fff 100%);
+  min-height:220px;
+  position:relative;
+  overflow:hidden;
+}
+.illus-col::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(14,165,233,0.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(14,165,233,0.05) 1px,transparent 1px);
+  background-size:20px 20px;
+  pointer-events:none;
+}
+.text-col{
+  padding:28px 26px 24px;
+  position:relative;
+}
+
+/* ── COVER ── */
+.cover-col{
+  background:var(--blue-deep);
+  padding:40px 28px 36px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  grid-column:1/-1;
+}
+.cover-col::before{
+  content:'';
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(14,165,233,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 70%, rgba(249,115,22,0.2) 0%, transparent 50%);
+  pointer-events:none;
+}
+/* Scanning lines in cover */
+.cover-col::after{
+  content:'';
+  position:absolute;inset:0;
+  background-image:repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(14,165,233,0.03) 3px,
+    rgba(14,165,233,0.03) 4px
+  );
+  pointer-events:none;
+}
+.cover-title{
+  font-family:var(--orb);
+  font-size:26px;font-weight:800;
+  color:var(--white);
+  line-height:1.2;margin-bottom:8px;
+  position:relative;z-index:1;
+  text-shadow:0 0 30px rgba(56,189,248,0.5);
+}
+.cover-sub{
+  font-family:var(--body);
+  font-size:14px;color:rgba(255,255,255,.75);
+  margin-bottom:10px;position:relative;z-index:1;
+  font-weight:600;
+}
+.cover-name{
+  font-family:var(--orb);font-size:16px;font-weight:700;
+  color:var(--orange);margin-bottom:8px;
+  position:relative;z-index:1;
+  text-shadow:0 0 20px var(--orange-glow);
+}
+.cover-badge{
+  display:inline-block;
+  background:rgba(14,165,233,0.15);
+  border:1px solid rgba(56,189,248,0.4);
+  color:var(--blue-mid);
+  font-family:var(--orb);font-size:10px;
+  padding:5px 16px;border-radius:20px;
+  letter-spacing:2px;
+  position:relative;z-index:1;
+}
+
+/* ── PAGE META ── */
+.page-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--blue-pale);
+  border:1px solid var(--border);
+  color:var(--blue-dark);
+  font-family:var(--orb);font-size:10px;font-weight:700;
+  padding:4px 12px;border-radius:20px;
+  margin-bottom:12px;
+  letter-spacing:1px;
+  box-shadow:0 0 8px var(--blue-glow);
+}
+.page-title{
+  font-family:var(--orb);
+  font-size:19px;font-weight:700;
+  color:var(--text);line-height:1.3;
+  margin-bottom:12px;
+}
+.page-title .hi{color:var(--blue-dark)}
+.page-title .lo{color:var(--orange)}
+.page-body{
+  font-family:var(--body);
+  font-size:14px;line-height:1.8;
+  color:var(--text-muted);
+  font-weight:500;
+}
+.page-body strong{color:var(--text);font-weight:700}
+.page-body em{color:var(--blue-dark);font-style:normal;font-weight:700}
+
+/* ── INFO PANELS ── */
+.tech-panel{
+  background:var(--blue-deep);
+  border-radius:10px;
+  border:1px solid rgba(56,189,248,0.25);
+  padding:14px 16px;
+  margin-top:14px;
+  font-family:'Courier New',monospace;
+  font-size:12px;
+  line-height:1.9;
+  box-shadow:0 0 20px rgba(14,165,233,0.1);
+  position:relative;
+  overflow:hidden;
+}
+.tech-panel::before{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:3px;
+  background:linear-gradient(180deg,var(--blue-mid),var(--orange));
+}
+.code-l{
+  display:flex;align-items:center;gap:8px;
+  opacity:0;transform:translateY(-8px);
+  animation:lineIn .28s ease forwards;
+}
+.code-l .kw{color:#60A5FA}
+.code-l .fn{color:#34D399}
+.code-l .str{color:#FCD34D}
+.code-l .cm{color:#4B5563;font-style:italic}
+.code-l .op{color:#F472B6}
+@keyframes lineIn{to{opacity:1;transform:translateY(0)}}
+
+.info-box{
+  border-radius:0 10px 10px 0;
+  padding:12px 14px;
+  margin-top:12px;
+  font-size:13.5px;font-weight:600;
+  line-height:1.65;
+  font-family:var(--body);
+}
+.info-box.blue{
+  background:var(--blue-pale);
+  border-left:4px solid var(--blue);
+  color:var(--blue-dark);
+  box-shadow:0 0 12px var(--blue-glow);
+}
+.info-box.orange{
+  background:var(--orange-pale);
+  border-left:4px solid var(--orange);
+  color:var(--orange-dark);
+  box-shadow:0 0 10px var(--orange-glow);
+}
+.info-box.dark{
+  background:var(--blue-deep);
+  border-left:4px solid var(--blue-mid);
+  color:var(--blue-mid);
+  font-family:'Courier New',monospace;
+  font-size:12.5px;
+}
+
+/* ── STEP LIST ── */
+.step-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:10px 14px;
+  background:var(--off-white);
+  border-radius:10px;
+  border:1.5px solid var(--border);
+  margin:6px 0;
+  opacity:0;transform:translateX(-12px);
+  animation:slideIn .32s ease forwards;
+  box-shadow:0 2px 8px rgba(14,165,233,0.06);
+  transition:box-shadow .18s;
+}
+.step-item:hover{box-shadow:0 0 12px var(--blue-glow)}
+@keyframes slideIn{to{opacity:1;transform:translateX(0)}}
+.step-num{
+  width:28px;height:28px;border-radius:7px;
+  background:var(--blue-deep);
+  color:var(--blue-mid);
+  font-family:var(--orb);font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  border:1px solid rgba(56,189,248,0.3);
+  box-shadow:0 0 8px rgba(14,165,233,0.2);
+}
+.step-text{font-family:var(--body);font-size:13.5px;font-weight:600;color:var(--text);line-height:1.5;padding-top:3px}
+
+/* ── SWITCH TOGGLE NAV ── */
+.nav-bar{
+  display:flex;align-items:center;gap:10px;
+  margin-top:16px;
+}
+.nav-btn{
+  display:flex;align-items:center;gap:8px;
+  background:var(--panel);
+  border:1.5px solid var(--border);
+  color:var(--text-muted);
+  font-family:var(--body);font-weight:700;font-size:14px;
+  padding:12px 22px;border-radius:10px;
+  cursor:pointer;transition:all .18s;flex:1;justify-content:center;
+  box-shadow:var(--card-shadow);
+  position:relative;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;user-select:none;
+}
+.nav-btn::before{
+  content:'';position:absolute;
+  inset:0;background:linear-gradient(135deg,rgba(14,165,233,0.06),transparent);
+  opacity:0;transition:opacity .18s;
+}
+.nav-btn:hover:not(:disabled)::before{opacity:1}
+.nav-btn:hover:not(:disabled){
+  border-color:var(--blue);color:var(--blue-dark);
+  box-shadow:0 0 16px var(--blue-glow), var(--card-shadow);
+  transform:translateY(-2px);
+}
+.nav-btn:active:not(:disabled){transform:translateY(0);box-shadow:var(--card-shadow)}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed}
+.nav-btn.primary{
+  background:var(--blue-deep);
+  border-color:rgba(56,189,248,0.4);
+  color:var(--blue-mid);flex:1.6;
+  box-shadow:0 0 20px rgba(14,165,233,0.2), var(--card-shadow);
+}
+.nav-btn.primary:hover:not(:disabled){
+  background:#0D2340;
+  color:var(--blue-mid);
+  box-shadow:0 0 30px rgba(14,165,233,0.3), var(--card-shadow);
+}
+.nav-btn.restart{
+  background:var(--orange-pale);
+  border-color:rgba(249,115,22,0.3);
+  color:var(--orange-dark);
+  font-family:var(--body);font-weight:700;
+  box-shadow:0 0 12px var(--orange-glow), var(--card-shadow);
+  width:100%;margin-top:8px;flex:none;
+}
+.nav-btn.restart:hover{
+  border-color:var(--orange);
+  box-shadow:0 0 20px var(--orange-glow), var(--card-shadow);
+}
+
+/* ── TOGGLE SWITCH VISUAL ── */
+.toggle-row{
+  display:flex;align-items:center;gap:10px;
+  margin-top:12px;
+}
+.toggle{
+  width:44px;height:24px;
+  background:var(--blue-pale);
+  border-radius:12px;
+  border:1.5px solid var(--border);
+  position:relative;
+  cursor:pointer;
+  transition:all .2s;
+}
+.toggle.on{background:var(--blue);border-color:var(--blue-dark);box-shadow:0 0 10px var(--blue-glow)}
+.toggle::after{
+  content:'';
+  position:absolute;
+  top:3px;left:3px;
+  width:16px;height:16px;border-radius:50%;
+  background:white;
+  transition:transform .2s;
+  box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+.toggle.on::after{transform:translateX(20px)}
+.toggle-label{font-family:var(--orb);font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px}
+
+/* ── END CARD ── */
+.end-wrap{
+  background:var(--blue-deep);
+  border-radius:12px;
+  padding:22px;
+  text-align:center;
+  border:1px solid rgba(56,189,248,0.25);
+  box-shadow:0 0 40px rgba(14,165,233,0.15);
+  position:relative;overflow:hidden;
+}
+.end-wrap::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%, rgba(14,165,233,0.2) 0%,transparent 60%);
+  pointer-events:none;
+}
+.end-title{
+  font-family:var(--orb);font-size:20px;font-weight:800;
+  color:var(--white);margin-bottom:8px;
+  text-shadow:0 0 20px rgba(56,189,248,0.6);
+  position:relative;
+}
+.end-text{
+  font-family:var(--body);font-size:13.5px;font-weight:600;
+  color:rgba(255,255,255,.85);line-height:1.75;
+  position:relative;
+}
+.next-panel{
+  background:var(--blue-pale);
+  border:1.5px solid var(--border);
+  border-left:4px solid var(--orange);
+  border-radius:0 10px 10px 0;
+  padding:14px 16px;margin-top:12px;
+  box-shadow:0 0 10px var(--orange-glow);
+}
+.next-label{
+  font-family:var(--orb);font-size:10px;font-weight:700;
+  color:var(--orange-dark);letter-spacing:1.5px;margin-bottom:4px;
+}
+.next-title{font-family:var(--body);font-weight:700;font-size:14px;color:var(--text)}
+
+/* ── AYAH SIGIT PANEL ── */
+.ayah-panel{
+  background:linear-gradient(135deg,#FFF7ED,#FFF);
+  border:1.5px solid rgba(249,115,22,0.25);
+  border-radius:10px;
+  padding:12px 16px;
+  margin-top:12px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:0 0 12px var(--orange-glow);
+}
+.ayah-avatar{
+  width:42px;height:42px;border-radius:50%;
+  background:var(--orange);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+  border:2px solid var(--orange-dark);
+  box-shadow:0 0 10px var(--orange-glow);
+}
+.ayah-text{font-family:var(--body);font-size:12.5px;font-weight:600;color:var(--orange-dark);line-height:1.55}
+.ayah-text strong{font-weight:700;color:var(--text)}
+
+/* ── SVG ILLUS ── */
+.illus-svg{width:100%;max-width:250px;height:auto;position:relative;z-index:1}
+
+/* ── ROBOT STATUS BAR ── */
+.status-bar{
+  display:flex;align-items:center;gap:10px;
+  padding:6px 12px;
+  background:var(--blue-deep);
+  font-family:var(--orb);font-size:9px;font-weight:700;
+  color:var(--blue-mid);
+  letter-spacing:1px;
+}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--blue-mid);animation:blink 1.4s ease infinite}
+.status-dot.orange{background:var(--orange);box-shadow:0 0 6px var(--orange-glow)}
+
+/* ── STAGGER ── */
+.step-item:nth-child(1),.code-l:nth-child(1){animation-delay:.04s}
+.step-item:nth-child(2),.code-l:nth-child(2){animation-delay:.15s}
+.step-item:nth-child(3),.code-l:nth-child(3){animation-delay:.26s}
+.step-item:nth-child(4),.code-l:nth-child(4){animation-delay:.37s}
+.step-item:nth-child(5),.code-l:nth-child(5){animation-delay:.48s}
+.step-item:nth-child(6){animation-delay:.59s}
+
+@media(max-width:420px){
+  .cover-title{font-size:20px}
+  .page-title{font-size:16px}
+  .nav-btn{font-size:13px;padding:10px 14px}
+  .brand-chip{font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<!-- Scanning line overlay -->
+<div class="scan-wrap"><div class="scan-line"></div></div>
+
+<!-- Radar corner decoration -->
+<div class="radar-corner">
+  <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="26" cy="26" r="24" stroke="rgba(14,165,233,0.5)" stroke-width="1.5"/>
+    <circle cx="26" cy="26" r="16" stroke="rgba(14,165,233,0.35)" stroke-width="1"/>
+    <circle cx="26" cy="26" r="8" stroke="rgba(14,165,233,0.4)" stroke-width="1"/>
+    <circle cx="26" cy="26" r="2.5" fill="rgba(14,165,233,0.8)"/>
+    <line x1="26" y1="26" x2="26" y2="2" stroke="rgba(14,165,233,0.6)" stroke-width="1.5"/>
+    <line x1="26" y1="26" x2="46" y2="30" stroke="rgba(14,165,233,0.3)" stroke-width="1"/>
+  </svg>
+</div>
+
+<div class="wrapper">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <a class="back-btn" href="..\/perpustakaan.html">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Perpustakaan
+    </a>
+    <div class="brand-chip">
+      <div class="dot"></div>
+      FLIPBOOK EDU
+    </div>
+    <div class="series-chip">SERI·15</div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-area">
+    <div style="font-family:var(--orb);font-size:9px;font-weight:700;color:var(--blue-dark);letter-spacing:1px;white-space:nowrap">PROGRESS</div>
+    <div class="progress-track"><div class="progress-fill" id="pgFill" style="width:7.7%"></div></div>
+    <div class="progress-info" id="pgLabel">01 / 13</div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="roadmap-wrap"><div class="roadmap" id="roadmap"></div></div>
+
+  <!-- PAGE CARD -->
+  <div class="page-card" id="pageCard"><div id="pageContent"></div></div>
+
+  <!-- NAV -->
+  <div class="nav-bar">
+    <button class="nav-btn" id="prevBtn" onclick="go(-1)">← PREV</button>
+    <button class="nav-btn primary" id="nextBtn" onclick="go(1)">NEXT →</button>
+  </div>
+
+</div>
+
+<script>
+const TOTAL = 13;
+let cur = 1;
+
+const pages = [
+
+/* 1 – COVER */
+{
+  strip:'background:linear-gradient(90deg,#0EA5E9,#F97316)',
+  cover:true,
+  illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Floor -->
+    <rect x="20" y="160" width="200" height="30" rx="5" fill="#E0F2FE" stroke="#BAE6FD" stroke-width="1.5"/>
+    <!-- Main robot body -->
+    <rect x="88" y="100" width="64" height="60" rx="10" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="2.5"/>
+    <rect x="96" y="108" width="48" height="30" rx="6" fill="#EFF6FF"/>
+    <!-- Screen elements -->
+    <circle cx="112" cy="123" r="6" fill="#0EA5E9"/>
+    <circle cx="128" cy="123" r="6" fill="#0EA5E9"/>
+    <circle cx="112" cy="123" r="3" fill="#38BDF8"/>
+    <circle cx="128" cy="123" r="3" fill="#38BDF8"/>
+    <rect x="100" y="141" width="40" height="8" rx="4" fill="#BAE6FD"/>
+    <text x="120" y="149" text-anchor="middle" fill="#0369A1" font-family="Orbitron,sans-serif" font-size="6" font-weight="700">READY</text>
+    <!-- Head -->
+    <rect x="96" y="60" width="48" height="42" rx="10" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="2.5"/>
+    <!-- Eyes glowing -->
+    <circle cx="112" cy="80" r="7" fill="#0C1A2E"/>
+    <circle cx="128" cy="80" r="7" fill="#0C1A2E"/>
+    <circle cx="112" cy="80" r="4" fill="#38BDF8"/>
+    <circle cx="128" cy="80" r="4" fill="#38BDF8"/>
+    <circle cx="114" cy="78" r="1.5" fill="white"/>
+    <circle cx="130" cy="78" r="1.5" fill="white"/>
+    <rect x="108" y="90" width="24" height="6" rx="3" fill="#BAE6FD"/>
+    <!-- Antenna -->
+    <rect x="118" y="48" width="4" height="14" rx="2" fill="#0EA5E9"/>
+    <circle cx="120" cy="46" r="6" fill="#F97316" stroke="#C2410C" stroke-width="1.5"/>
+    <!-- Broom arm -->
+    <rect x="40" y="115" width="50" height="10" rx="5" fill="#BAE6FD" stroke="#0EA5E9" stroke-width="1.5"/>
+    <rect x="24" y="148" width="30" height="6" rx="3" fill="#F97316" transform="rotate(-30,39,151)"/>
+    <rect x="10" y="153" width="36" height="8" rx="4" fill="#FED7AA"/>
+    <!-- Shopping basket arm -->
+    <rect x="150" y="112" width="50" height="10" rx="5" fill="#BAE6FD" stroke="#0EA5E9" stroke-width="1.5"/>
+    <rect x="186" y="124" width="30" height="24" rx="5" fill="#FEF3C7" stroke="#F97316" stroke-width="2"/>
+    <text x="201" y="140" text-anchor="middle" fill="#F97316" font-size="12">🛒</text>
+    <!-- Heart glow -->
+    <circle cx="120" cy="160" r="8" fill="rgba(249,115,22,0.15)" stroke="#F97316" stroke-width="1"/>
+    <text x="120" y="165" text-anchor="middle" fill="#F97316" font-size="10">♥</text>
+    <!-- WiFi symbol -->
+    <path d="M100,50 Q120,42 140,50" stroke="#38BDF8" stroke-width="2" fill="none"/>
+    <path d="M105,43 Q120,36 135,43" stroke="#38BDF8" stroke-width="1.5" fill="none"/>
+    <circle cx="120" cy="38" r="2.5" fill="#38BDF8"/>
+    <!-- Stars around -->
+    <text x="28" y="38" fill="#F97316" font-size="12" opacity=".7">✦</text>
+    <text x="202" y="50" fill="#38BDF8" font-size="10" opacity=".7">✦</text>
+    <text x="210" y="110" fill="#F97316" font-size="8" opacity=".5">✦</text>
+  </svg>`
+},
+
+/* 2 */
+{
+  strip:'background:linear-gradient(90deg,#0EA5E9,#38BDF8)',
+  illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Bunda cleaning -->
+    <circle cx="70" cy="70" r="24" fill="#FFCC80"/>
+    <path d="M49,61 Q57,43 70,40 Q83,43 91,61" fill="#4E342E"/>
+    <!-- Hair bun -->
+    <circle cx="84" cy="44" r="10" fill="#4E342E"/>
+    <circle cx="82" cy="56" r="4" fill="#4E342E"/>
+    <circle cx="63" cy="66" r="3.5" fill="#5D4037"/>
+    <circle cx="77" cy="66" r="3.5" fill="#5D4037"/>
+    <path d="M64,78 Q70,84 76,78" stroke="#E64A19" stroke-width="2" fill="none"/>
+    <rect x="56" y="94" width="28" height="36" rx="5" fill="#F97316"/>
+    <!-- Mop -->
+    <rect x="80" y="88" width="36" height="6" rx="3" fill="#8D6E63" transform="rotate(20,98,91)"/>
+    <rect x="96" y="100" width="28" height="10" rx="5" fill="#FED7AA"/>
+    <!-- Bucket -->
+    <rect x="116" y="130" width="26" height="22" rx="4" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="1.5"/>
+    <!-- Tired sweat -->
+    <text x="44" y="50" fill="#38BDF8" font-size="12">💧</text>
+    <!-- Aslan watching with concern -->
+    <circle cx="175" cy="100" r="20" fill="#FFCC80"/>
+    <path d="M158,91 Q165,76 175,73 Q185,76 192,91" fill="#5D4037"/>
+    <circle cx="169" cy="97" r="3" fill="#1A237E"/>
+    <circle cx="181" cy="97" r="3" fill="#1A237E"/>
+    <!-- Concerned eyebrows -->
+    <path d="M166,90 Q170,87 174,90" stroke="#5D4037" stroke-width="2" fill="none"/>
+    <path d="M176,90 Q180,87 184,90" stroke="#5D4037" stroke-width="2" fill="none"/>
+    <rect x="165" y="120" width="20" height="26" rx="4" fill="#0EA5E9"/>
+    <!-- Thought bubble -->
+    <circle cx="200" cy="65" r="4" fill="#E0F2FE" stroke="#0EA5E9" stroke-width="1"/>
+    <circle cx="210" cy="55" r="6" fill="#E0F2FE" stroke="#0EA5E9" stroke-width="1"/>
+    <circle cx="220" cy="42" r="10" fill="#E0F2FE" stroke="#0EA5E9" stroke-width="1.5"/>
+    <text x="220" y="47" text-anchor="middle" font-size="13">🤖</text>
+    <!-- Floor -->
+    <rect x="10" y="168" width="220" height="22" rx="4" fill="#E0F2FE" stroke="#BAE6FD" stroke-width="1"/>
+  </svg>`,
+  html:`<div class="page-tag">▶ 01 · MASALAH</div>
+    <div class="page-title">Bunda Kerja Keras <span class="hi">Setiap Hari</span></div>
+    <div class="page-body">Bunda setiap hari bekerja keras membersihkan rumah, masak, dan mengurus keluarga.<br><br>Aslan melihat betapa lelahnya Bunda... Bagaimana kalau ada yang bisa membantu?</div>
+    <div class="info-box blue" style="margin-top:14px">💡 <strong>Kabar Gembira!</strong> Sekarang sudah ada <em>robot rumah</em> yang bisa membantu Bunda. Dan ini bukan mimpi lagi!</div>
+    <div class="toggle-row">
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      <div class="toggle-label">ROBOT MODE: AKTIF</div>
+    </div>
+    <div class="ayah-panel" style="margin-top:12px">
+      <div class="ayah-avatar">👨‍💻</div>
+      <div class="ayah-text">Ada yang belum paham? Tanya <strong>Ayah Sigit</strong> yang gantengnya 1000× ya! 😄</div>
+    </div>`
+},
+
+/* 3 */
+{
+  strip:'background:linear-gradient(90deg,#0369A1,#0EA5E9)',
+  illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Floor -->
+    <rect x="10" y="158" width="220" height="32" rx="5" fill="#E0F2FE"/>
+    <!-- Floor tiles -->
+    <line x1="10" y1="174" x2="230" y2="174" stroke="#BAE6FD" stroke-width="1"/>
+    <line x1="60" y1="158" x2="60" y2="190" stroke="#BAE6FD" stroke-width="1"/>
+    <line x1="110" y1="158" x2="110" y2="190" stroke="#BAE6FD" stroke-width="1"/>
+    <line x1="160" y1="158" x2="160" y2="190" stroke="#BAE6FD" stroke-width="1"/>
+    <!-- Roomba robot -->
+    <circle cx="120" cy="135" r="38" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="2.5"/>
+    <circle cx="120" cy="135" r="30" fill="#EFF6FF" stroke="#BAE6FD" stroke-width="1.5"/>
+    <!-- Sensors -->
+    <circle cx="102" cy="117" r="5" fill="#0EA5E9"/>
+    <circle cx="120" cy="112" r="5" fill="#0EA5E9"/>
+    <circle cx="138" cy="117" r="5" fill="#0EA5E9"/>
+    <!-- Central display -->
+    <circle cx="120" cy="135" r="12" fill="#0C1A2E" stroke="#38BDF8" stroke-width="1.5"/>
+    <text x="120" y="140" text-anchor="middle" fill="#38BDF8" font-family="Orbitron,sans-serif" font-size="8" font-weight="700">ON</text>
+    <!-- Power button -->
+    <circle cx="104" cy="148" r="6" fill="#F97316" stroke="#C2410C" stroke-width="1.5"/>
+    <text x="104" y="152" text-anchor="middle" fill="white" font-size="8">⏻</text>
+    <!-- Side brush -->
+    <circle cx="84" cy="158" r="8" fill="rgba(14,165,233,0.2)" stroke="#0EA5E9" stroke-width="1" stroke-dasharray="4,2"/>
+    <!-- Charging dock -->
+    <rect x="185" y="110" width="40" height="46" rx="6" fill="#FFF7ED" stroke="#F97316" stroke-width="2"/>
+    <rect x="193" y="120" width="24" height="14" rx="3" fill="#FBBF24"/>
+    <text x="205" y="131" text-anchor="middle" fill="#C2410C" font-family="Orbitron,sans-serif" font-size="7" font-weight="700">CAS</text>
+    <text x="205" y="148" text-anchor="middle" fill="#F97316" font-size="14">⚡</text>
+    <!-- Arrows showing path -->
+    <path d="M50,145 Q38,130 44,115 Q50,100 70,100 Q90,100 98,118" stroke="#F97316" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+    <polygon points="96,114 98,118 102,116" fill="#F97316"/>
+    <!-- Dust particles being sucked -->
+    <circle cx="80" cy="155" r="3" fill="#94A3B8" opacity=".5"/>
+    <circle cx="70" cy="160" r="2" fill="#94A3B8" opacity=".4"/>
+    <circle cx="90" cy="162" r="2.5" fill="#94A3B8" opacity=".3"/>
+    <!-- Label -->
+    <rect x="15" y="20" width="130" height="22" rx="6" fill="#0C1A2E" stroke="rgba(56,189,248,0.3)" stroke-width="1"/>
+    <text x="80" y="35" text-anchor="middle" fill="#38BDF8" font-family="Orbitron,sans-serif" font-size="9" font-weight="700">ROBOT VACUUM v1.0</text>
+  </svg>`,
+  html:`<div class="page-tag">▶ 02 · ROBOT PERTAMA</div>
+    <div class="page-title">Robot <span class="hi">Penyedot Debu!</span></div>
+    <div class="page-body">Robot pertama yang banyak orang punya adalah <em>robot vacuum cleaner</em>. Dia sangat pintar:</div>
+    <div style="margin-top:10px">
+      <div class="step-item"><div class="step-num">01</div><div class="step-text">Menyedot lantai sendiri tanpa disuruh</div></div>
+      <div class="step-item"><div class="step-num">02</div><div class="step-text">Menghindari rintangan seperti kaki meja</div></div>
+      <div class="step-item"><div class="step-num">03</div><div class="step-text">Pulang ke tempat cas sendiri kalau baterai habis!</div></div>
+    </div>
+    <div class="info-box orange" style="margin-top:12px">🔋 Robot ini pakai sensor-sensor canggih supaya tidak nabrak dan bisa peta rumah sendiri!</div>`
+},
+
+/* 4 */
+{
+  strip:'background:linear-gradient(90deg,#F97316,#0EA5E9)',
+  illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Smart speaker -->
+    <rect x="75" y="60" width="90" height="110" rx="16" fill="#0C1A2E" stroke="#38BDF8" stroke-width="2.5"/>
+    <!-- Glow ring top -->
+    <ellipse cx="120" cy="62" rx="38" ry="8" fill="rgba(56,189,248,0.3)"/>
+    <!-- Speaker grille -->
+    <rect x="85" y="78" width="70" height="50" rx="6" fill="#132035"/>
+    <!-- Sound wave lines -->
+    <line x1="92" y1="87" x2="148" y2="87" stroke="#38BDF8" stroke-width="1.5" opacity=".4"/>
+    <line x1="90" y1="95" x2="150" y2="95" stroke="#38BDF8" stroke-width="1" opacity=".3"/>
+    <line x1="92" y1="103" x2="148" y2="103" stroke="#38BDF8" stroke-width="1.5" opacity=".4"/>
+    <line x1="94" y1="111" x2="146" y2="111" stroke="#38BDF8" stroke-width="1" opacity=".3"/>
+    <line x1="96" y1="119" x2="144" y2="119" stroke="#38BDF8" stroke-width="1.5" opacity=".4"/>
+    <!-- LED strip -->
+    <rect x="92" y="136" width="56" height="6" rx="3" fill="rgba(56,189,248,0)"/>
+    <circle cx="100" cy="139" r="3" fill="#38BDF8"/>
+    <circle cx="112" cy="139" r="3" fill="#F97316"/>
+    <circle cx="124" cy="139" r="3" fill="#38BDF8"/>
+    <circle cx="136" cy="139" r="3" fill="#34D399"/>
+    <circle cx="148" cy="139" r="3" fill="#38BDF8"/>
+    <!-- Logo -->
+    <circle cx="120" cy="156" r="8" fill="rgba(56,189,248,0.2)" stroke="#38BDF8" stroke-width="1.5"/>
+    <text x="120" y="161" text-anchor="middle" fill="#38BDF8" font-family="Orbitron,sans-serif" font-size="8" font-weight="700">AI</text>
+    <!-- Command bubbles -->
+    <rect x="10" y="20" width="140" height="24" rx="12" fill="#FFF7ED" stroke="#F97316" stroke-width="1.5"/>
+    <polygon points="50,44 60,44 55,52" fill="#FFF7ED" stroke="#F97316" stroke-width="1" stroke-linejoin="round"/>
+    <text x="80" y="36" text-anchor="middle" fill="#C2410C" font-family="Quicksand,sans-serif" font-size="10" font-weight="700">"Nyalakan lampu kamar!"</text>
+    <!-- Light icon -->
+    <circle cx="210" cy="65" r="16" fill="#FFFBEB" stroke="#FBBF24" stroke-width="2"/>
+    <text x="210" y="72" text-anchor="middle" font-size="16">💡</text>
+    <!-- Music note -->
+    <text x="198" y="120" fill="#34D399" font-size="16">♪</text>
+    <!-- WiFi -->
+    <path d="M185,140 Q198,132 211,140" stroke="#38BDF8" stroke-width="2" fill="none"/>
+    <path d="M189,134 Q198,127 207,134" stroke="#38BDF8" stroke-width="1.5" fill="none"/>
+    <circle cx="198" cy="128" r="2.5" fill="#38BDF8"/>
+  </svg>`,
+  html:`<div class="page-tag">▶ 03 · ASISTEN PINTAR</div>
+    <div class="page-title">Robot <span class="hi">Pendengar</span> yang Pintar</div>
+    <div class="page-body">Ada juga robot pintar seperti Google Home atau Alexa. Kamu cukup bilang:</div>
+    <div class="tech-panel" style="margin-top:12px">
+      <div class="code-l"><span class="str">"Nyalakan lampu kamar!"</span> <span class="fn">→ 💡 ON</span></div>
+      <div class="code-l"><span class="str">"Putar lagu favorit Bunda!"</span> <span class="fn">→ 🎵 play()</span></div>
+      <div class="code-l"><span class="str">"Berapa cuaca hari ini?"</span> <span class="fn">→ 🌤 cetak()</span></div>
+      <div class="code-l"><span class="str">"Matikan AC!"</span> <span class="fn">→ ❄️ OFF</span></div>
+    </div>
+    <div class="info-box blue" style="margin-top:12px">🎤 Robot ini pakai <strong>kecerdasan buatan (AI)</strong> untuk memahami bahasa manusia — keren kan?</div>`
+},
+
+/* 5 */
+{
+  strip:'background:linear-gradient(90deg,#0EA5E9,#34D399)',
+  illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Kitchen background -->
+    <rect x="10" y="130" width="220" height="60" rx="6" fill="#F0F9FF" stroke="#BAE6FD" stroke-width="1.5"/>
+    <rect x="10" y="115" width="220" height="20" rx="3" fill="#DBEAFE" stroke="#BAE6FD" stroke-width="1"/>
+    <!-- Stove -->
+    <rect x="30" y="118" width="50" height="12" rx="3" fill="#0EA5E9"/>
+    <circle cx="42" cy="124" r="5" fill="#FCA5A5"/>
+    <circle cx="57" cy="124" r="5" fill="#FCA5A5"/>
+    <!-- Pot on stove -->
+    <rect x="34" y="108" width="42" height="14" rx="5" fill="#94A3B8" stroke="#64748B" stroke-width="1.5"/>
+    <path d="M44,112 Q55,107 66,112" stroke="#C2410C" stroke-width="2" fill="none"/>
+    <!-- Plant being watered -->
+    <rect x="160" y="132" width="24" height="20" rx="4" fill="#4ADE80" stroke="#16A34A" stroke-width="1.5"/>
+    <!-- Robot arm watering -->
+    <circle cx="185" cy="120" r="10" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="1.5"/>
+    <text x="185" y="125" text-anchor="middle" fill="#0EA5E9" font-size="10">💧</text>
+    <!-- Main robot -->
+    <rect x="95" y="80" width="50" height="50" rx="9" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="2"/>
+    <rect x="102" y="87" width="36" height="22" rx="5" fill="#EFF6FF"/>
+    <circle cx="114" cy="98" r="5" fill="#0EA5E9"/>
+    <circle cx="126" cy="98" r="5" fill="#0EA5E9"/>
+    <rect x="102" y="113" width="36" height="8" rx="4" fill="#BAE6FD"/>
+    <text x="120" y="121" text-anchor="middle" fill="#0369A1" font-family="Orbitron,sans-serif" font-size="6" font-weight="700">HELPER</text>
+    <rect x="96" y="70" width="48" height="12" rx="5" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="1.5"/>
+    <circle cx="120" cy="76" r="4" fill="#0EA5E9"/>
+    <!-- Dish washing arm -->
+    <rect x="58" y="95" width="38" height="8" rx="4" fill="#BAE6FD" stroke="#0EA5E9" stroke-width="1"/>
+    <!-- Dishes -->
+    <ellipse cx="66" cy="116" rx="14" ry="5" fill="white" stroke="#BAE6FD" stroke-width="1.5"/>
+    <ellipse cx="66" cy="114" rx="10" ry="3.5" fill="#F0F9FF"/>
+    <!-- Medicine reminder -->
+    <rect x="180" y="60" width="50" height="34" rx="7" fill="#FFF7ED" stroke="#F97316" stroke-width="1.5"/>
+    <text x="205" y="75" text-anchor="middle" fill="#F97316" font-size="14">💊</text>
+    <text x="205" y="88" text-anchor="middle" fill="#C2410C" font-family="Orbitron,sans-serif" font-size="7" font-weight="700">08:00</text>
+    <!-- Baby/adik sleeping -->
+    <circle cx="35" cy="55" r="16" fill="#FFCC80"/>
+    <text x="35" y="60" text-anchor="middle" font-size="10">😴</text>
+    <rect x="22" y="70" width="26" height="18" rx="4" fill="#FFF9C4" stroke="#FCD34D" stroke-width="1.5"/>
+    <text x="35" y="83" text-anchor="middle" fill="#F59E0B" font-family="Orbitron,sans-serif" font-size="8" font-weight="700">ZZZ</text>
+  </svg>`,
+  html:`<div class="page-tag">▶ 04 · MASA DEPAN</div>
+    <div class="page-title">Robot Rumah <span class="lo">Masa Depan!</span></div>
+    <div class="page-body">Di masa depan, robot rumah bisa melakukan banyak sekali hal untuk membantu:</div>
+    <div style="margin-top:10px">
+      <div class="step-item"><div class="step-num">🍳</div><div class="step-text">Membantu masak dan menyiapkan bahan makanan</div></div>
+      <div class="step-item"><div class="step-num">🫧</div><div class="step-text">Mencuci dan merapikan piring</div></div>
+      <div class="step-item"><div class="step-num">🌿</div><div class="step-text">Menyiram tanaman secara otomatis</div></div>
+      <div class="step-item"><div class="step-num">💊</div><div class="step-text">Mengingatkan Bunda minum obat tepat waktu</div></div>
+      <div class="step-item"><div class="step-num">👶</div><div class="step-text">Menjaga adik kalau Bunda sedang sibuk</div></div>
+    </div>`
+},
+
+/* 6 */
+{
+  strip:'background:linear-gradient(90deg,#7C3AED,#0EA5E9)',
+  illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Laptop -->
+    <rect x="30" y="70" width="165" height="100" rx="10" fill="#E0F2FE" stroke="#0EA5E9" stroke-width="2"/>
+    <rect x="38" y="78" width="149" height="78" rx="5" fill="#0C1A2E"/>
+    <rect x="10" y="170" width="205" height="10" rx="4" fill="#BAE6FD" stroke="#0EA5E9" stroke-width="1.5"/>
+    <!-- Code on screen -->
+    <text x="48" y="96" fill="#60A5FA" font-family="Courier New,monospace" font-size="8" font-weight="700">// Robot Bunda v1.0</text>
+    <text x="48" y="108" fill="#34D399" font-family="Courier New,monospace" font-size="7">def sapu_lantai():</text>
+    <text x="56" y="118" fill="#FCD34D" font-family="Courier New,monospace" font-size="7">robot.gerak("maju")</text>
+    <text x="56" y="128" fill="#FCD34D" font-family="Courier New,monospace" font-size="7">robot.putar(180)</text>
+    <text x="48" y="138" fill="#34D399" font-family="Courier New,monospace" font-size="7">def masak_nasi():</text>
+    <text x="56" y="148" fill="#F472B6" font-family="Courier New,monospace" font-size="7">magic_pot.on()</text>
+    <!-- Aslan coding -->
+    <circle cx="196" cy="105" r="22" fill="#FFCC80"/>
+    <path d="M177,96 Q185,79 196,76 Q207,79 215,96" fill="#5D4037"/>
+    <circle cx="189" cy="101" r="3.5" fill="#1A237E"/>
+    <circle cx="203" cy="101" r="3.5" fill="#1A237E"/>
+    <path d="M190,114 Q196,120 202,114" stroke="#E64A19" stroke-width="2.5" fill="none"/>
+    <rect x="184" y="127" width="24" height="30" rx="4" fill="#0EA5E9"/>
+    <!-- Robot on screen executing -->
+    <rect x="155" y="82" width="18" height="18" rx="4" fill="rgba(56,189,248,0.15)" stroke="#38BDF8" stroke-width="1"/>
+    <circle cx="164" cy="91" r="4" fill="#38BDF8" opacity=".6"/>
+    <!-- Programmer label -->
+    <rect x="28" y="22" width="180" height="36" rx="8" fill="#0C1A2E" stroke="rgba(56,189,248,0.3)" stroke-width="1"/>
+    <text x="118" y="35" text-anchor="middle" fill="#38BDF8" font-family="Orbitron,sans-serif" font-size="9" font-weight="700">PROGRAMMER</text>
+    <text x="118" y="50" text-anchor="middle" fill="rgba(56,189,248,0.6)" font-family="Orbitron,sans-serif" font-size="8">= Pembuat Robot</text>
+  </svg>`,
+  html:`<div class="page-tag">▶ 05 · PROGRAMMER</div>
+    <div class="page-title">Siapa yang <span class="hi">Membuat Robot</span> Bisa Bekerja?</div>
+    <div class="page-body">Siapa yang membuat robot-robot ini bisa bekerja? <strong>Programmer!</strong></div>
+    <div class="page-body" style="margin-top:8px">Mereka menulis <em>algoritma dan coding</em> supaya robot tahu harus melakukan apa kapan saja.</div>
+    <div class="tech-panel" style="margin-top:14px">
+      <div class="code-l"><span class="cm">// Aslan menulis kode robot:</span></div>
+      <div class="code-l"><span class="kw">def</span> <span class="fn">bantu_bunda</span>():</div>
+      <div class="code-l">&nbsp;&nbsp;<span class="fn">sapu_lantai</span>()</div>
+      <div class="code-l">&nbsp;&nbsp;<span class="fn">masak_nasi</span>()</div>
+      <div class="code-l">&nbsp;&nbsp;<span class="str">print</span>(<span class="str">"Selesai! 🎉"</span>)</div>
+    </div>
+    <div class="info-box orange" style="margin-top:12px">⚡ Suatu hari, <strong>kamu bisa jadi programmer</strong> yang membuat robot untuk Bunda!</div>`
+},
+
+/* 7 */
+{
+  strip:'background:linear-gradient(90deg,#0EA5E9,#F97316)',
+  illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Robot with decision tree -->
+    <rect x="80" y="100" width="80" height="75" rx="10" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="2.5"/>
+    <rect x="88" y="108" width="64" height="38" rx="6" fill="#EFF6FF"/>
+    <circle cx="108" cy="124" r="6" fill="#0EA5E9"/>
+    <circle cx="132" cy="124" r="6" fill="#0EA5E9"/>
+    <circle cx="108" cy="124" r="3" fill="#38BDF8"/>
+    <circle cx="132" cy="124" r="3" fill="#38BDF8"/>
+    <rect x="96" y="136" width="48" height="8" rx="4" fill="#BAE6FD"/>
+    <rect x="82" y="90" width="76" height="12" rx="5" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="1.5"/>
+    <circle cx="120" cy="96" r="4.5" fill="#0EA5E9"/>
+    <!-- IF conditions -->
+    <rect x="10" y="28" width="220" height="60" rx="8" fill="#0C1A2E" stroke="rgba(56,189,248,0.3)" stroke-width="1"/>
+    <text x="20" y="46" fill="#38BDF8" font-family="Courier New,monospace" font-size="9" font-weight="700">kalau (lantai kotor) →</text>
+    <text x="28" y="58" fill="#34D399" font-family="Courier New,monospace" font-size="9">robot.sapu()</text>
+    <text x="20" y="70" fill="#F472B6" font-family="Courier New,monospace" font-size="9">kalau ada suara "Bantu!" →</text>
+    <text x="28" y="80" fill="#34D399" font-family="Courier New,monospace" font-size="9">robot.datang()</text>
+    <!-- Arrow from code to robot -->
+    <line x1="120" y1="88" x2="120" y2="96" stroke="#38BDF8" stroke-width="2"/>
+    <polygon points="117,94 120,96 123,94" fill="#38BDF8"/>
+    <!-- Scratch logo hint -->
+    <rect x="15" y="150" width="85" height="36" rx="7" fill="#FFF7ED" stroke="#F97316" stroke-width="1.5"/>
+    <text x="57" y="165" text-anchor="middle" fill="#F97316" font-family="Orbitron,sans-serif" font-size="8" font-weight="700">SCRATCH</text>
+    <text x="57" y="178" text-anchor="middle" fill="#C2410C" font-family="Orbitron,sans-serif" font-size="7">→ belajar di sini!</text>
+    <!-- Python hint -->
+    <rect x="140" y="150" width="85" height="36" rx="7" fill="#EFF6FF" stroke="#0EA5E9" stroke-width="1.5"/>
+    <text x="182" y="165" text-anchor="middle" fill="#0EA5E9" font-family="Orbitron,sans-serif" font-size="8" font-weight="700">PYTHON</text>
+    <text x="182" y="178" text-anchor="middle" fill="#0369A1" font-family="Orbitron,sans-serif" font-size="7">→ level berikutnya!</text>
+  </svg>`,
+  html:`<div class="page-tag">▶ 06 · PERINTAH ROBOT</div>
+    <div class="page-title">Robot Bekerja dengan <span class="hi">Perintah Jelas</span></div>
+    <div class="page-body">Robot bekerja dengan perintah yang spesifik dan jelas. Contoh sederhananya:</div>
+    <div class="tech-panel" style="margin-top:12px">
+      <div class="code-l"><span class="kw">kalau</span> (lantai kotor):</div>
+      <div class="code-l">&nbsp;&nbsp;<span class="fn">robot</span>.sapu()</div>
+      <div class="code-l"><span class="kw">kalau</span> (ada suara <span class="str">"Bantu!"</span>):</div>
+      <div class="code-l">&nbsp;&nbsp;<span class="fn">robot</span>.datang()</div>
+    </div>
+    <div class="page-body" style="margin-top:12px">Kamu bisa belajar membuat perintah-perintah itu di <em>Scratch</em> atau <em>Python</em> nanti!</div>
+    <div class="ayah-panel" style="margin-top:12px">
+      <div class="ayah-avatar">👨‍💻</div>
+      <div class="ayah-text">Masih bingung? <strong>Ayah Sigit</strong> yang gantengnya 1000× siap bantu jelasin! 🚀</div>
+    </div>`
+},
+
+/* 8 */
+{
+  strip:'background:linear-gradient(90deg,#F97316,#FBBF24)',
+  illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Shopping scene -->
+    <!-- Bunda figure -->
+    <circle cx="60" cy="80" r="22" fill="#FFCC80"/>
+    <path d="M41,71 Q49,53 60,50 Q71,53 79,71" fill="#4E342E"/>
+    <circle cx="85" cy="52" r="10" fill="#4E342E"/>
+    <circle cx="53" cy="76" r="3.5" fill="#5D4037"/>
+    <circle cx="67" cy="76" r="3.5" fill="#5D4037"/>
+    <path d="M54,90 Q60,96 66,90" stroke="#E64A19" stroke-width="2.5" fill="none"/>
+    <rect x="48" y="102" width="24" height="36" rx="5" fill="#EC4899"/>
+    <!-- Robot carrying bags -->
+    <rect x="140" y="85" width="56" height="65" rx="10" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="2.5"/>
+    <rect x="148" y="93" width="40" height="28" rx="5" fill="#EFF6FF"/>
+    <circle cx="162" cy="107" r="5.5" fill="#0EA5E9"/>
+    <circle cx="176" cy="107" r="5.5" fill="#0EA5E9"/>
+    <circle cx="162" cy="107" r="2.5" fill="#38BDF8"/>
+    <circle cx="176" cy="107" r="2.5" fill="#38BDF8"/>
+    <rect x="155" y="124" width="28" height="8" rx="4" fill="#BAE6FD"/>
+    <text x="169" y="132" text-anchor="middle" fill="#0369A1" font-family="Orbitron,sans-serif" font-size="6" font-weight="700">HELP!</text>
+    <rect x="142" y="76" width="52" height="12" rx="5" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="1.5"/>
+    <circle cx="168" cy="82" r="4" fill="#0EA5E9"/>
+    <!-- Shopping bags in robot arms -->
+    <rect x="100" y="112" width="40" height="10" rx="5" fill="#BAE6FD" stroke="#0EA5E9" stroke-width="1.5"/>
+    <rect x="82" y="122" width="26" height="30" rx="6" fill="#FFF7ED" stroke="#F97316" stroke-width="2"/>
+    <text x="95" y="141" text-anchor="middle" font-size="14">🛍️</text>
+    <rect x="196" y="110" width="40" height="10" rx="5" fill="#BAE6FD" stroke="#0EA5E9" stroke-width="1.5"/>
+    <rect x="208" y="120" width="26" height="30" rx="6" fill="#FFF7ED" stroke="#F97316" stroke-width="2"/>
+    <text x="221" y="139" text-anchor="middle" font-size="14">🛍️</text>
+    <!-- Heart connection -->
+    <path d="M82,88 Q110,72 140,90" stroke="#F97316" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+    <text x="112" y="78" fill="#F97316" font-size="14">♥</text>
+    <!-- Happy stars -->
+    <text x="28" y="38" fill="#FBBF24" font-size="12">★</text>
+    <text x="205" y="35" fill="#38BDF8" font-size="10">★</text>
+    <!-- Smile from Bunda -->
+    <text x="40" y="108" fill="#34D399" font-size="14">😊</text>
+  </svg>`,
+  html:`<div class="page-tag">▶ 07 · IMPIAN ASLAN</div>
+    <div class="page-title">Robot Buatan <span class="lo">Aslan</span> untuk Bunda</div>
+    <div class="page-body">Bayangkan suatu hari <strong>kamu membuat robot sendiri</strong> yang bisa membantu Bunda...</div>
+    <div style="margin-top:12px">
+      <div class="step-item"><div class="step-num">🛍️</div><div class="step-text">Membawakan belanjaan dari mobil ke rumah</div></div>
+      <div class="step-item"><div class="step-num">🧹</div><div class="step-text">Menyapu dan mengepel tanpa disuruh</div></div>
+      <div class="step-item"><div class="step-num">❤️</div><div class="step-text">Selalu siap sedia kapanpun Bunda butuh bantuan</div></div>
+    </div>
+    <div class="info-box orange" style="margin-top:12px">🌟 Bunda pasti sangat <strong>senang dan bangga</strong> sama kamu kalau kamu bisa mewujudkan ini!</div>`
+},
+
+/* 9 */
+{
+  strip:'background:linear-gradient(90deg,#0EA5E9,#34D399)',
+  illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Robot design board -->
+    <rect x="15" y="15" width="210" height="170" rx="10" fill="white" stroke="#E0F2FE" stroke-width="2"/>
+    <!-- Grid lines on design board -->
+    <line x1="15" y1="50" x2="225" y2="50" stroke="#E0F2FE" stroke-width="1"/>
+    <line x1="15" y1="90" x2="225" y2="90" stroke="#E0F2FE" stroke-width="1"/>
+    <line x1="15" y1="130" x2="225" y2="130" stroke="#E0F2FE" stroke-width="1"/>
+    <line x1="80" y1="15" x2="80" y2="185" stroke="#E0F2FE" stroke-width="1"/>
+    <line x1="155" y1="15" x2="155" y2="185" stroke="#E0F2FE" stroke-width="1"/>
+    <!-- Robot sketch center -->
+    <circle cx="118" cy="95" r="42" fill="#F0F9FF" stroke="#BAE6FD" stroke-width="2" stroke-dasharray="6,4"/>
+    <!-- Friendly robot -->
+    <rect x="96" y="68" width="44" height="50" rx="8" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="2"/>
+    <rect x="103" y="75" width="30" height="20" rx="5" fill="#EFF6FF"/>
+    <circle cx="113" cy="85" r="5" fill="#0EA5E9"/>
+    <circle cx="123" cy="85" r="5" fill="#0EA5E9"/>
+    <circle cx="113" cy="85" r="2.5" fill="#38BDF8"/>
+    <circle cx="123" cy="85" r="2.5" fill="#38BDF8"/>
+    <!-- Big smile -->
+    <path d="M104,100 Q118,110 132,100" stroke="#34D399" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Hugging arms extended wide -->
+    <rect x="60" y="80" width="38" height="10" rx="5" fill="#BAE6FD" stroke="#0EA5E9" stroke-width="1.5"/>
+    <circle cx="58" cy="85" r="7" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="1.5"/>
+    <rect x="140" y="80" width="38" height="10" rx="5" fill="#BAE6FD" stroke="#0EA5E9" stroke-width="1.5"/>
+    <circle cx="180" cy="85" r="7" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="1.5"/>
+    <!-- Heart in center -->
+    <text x="118" y="130" text-anchor="middle" fill="#F97316" font-size="18">♥</text>
+    <!-- Feature labels -->
+    <rect x="20" y="20" width="50" height="20" rx="5" fill="#FFF7ED" stroke="#F97316" stroke-width="1"/>
+    <text x="45" y="34" text-anchor="middle" fill="#C2410C" font-family="Orbitron,sans-serif" font-size="7" font-weight="700">RAMAH</text>
+    <rect x="168" y="20" width="50" height="20" rx="5" fill="#E0F2FE" stroke="#0EA5E9" stroke-width="1"/>
+    <text x="193" y="34" text-anchor="middle" fill="#0369A1" font-family="Orbitron,sans-serif" font-size="7" font-weight="700">AMAN</text>
+    <rect x="20" y="160" width="50" height="20" rx="5" fill="#F0FDF4" stroke="#34D399" stroke-width="1"/>
+    <text x="45" y="174" text-anchor="middle" fill="#065F46" font-family="Orbitron,sans-serif" font-size="6" font-weight="700">DENGAR</text>
+    <rect x="168" y="160" width="50" height="20" rx="5" fill="#FFF7ED" stroke="#F97316" stroke-width="1"/>
+    <text x="193" y="174" text-anchor="middle" fill="#C2410C" font-family="Orbitron,sans-serif" font-size="7" font-weight="700">SIAGA</text>
+    <!-- Connection lines from label to robot -->
+    <line x1="70" y1="40" x2="96" y2="68" stroke="rgba(14,165,233,.2)" stroke-width="1" stroke-dasharray="3,2"/>
+    <line x1="168" y1="40" x2="140" y2="68" stroke="rgba(14,165,233,.2)" stroke-width="1" stroke-dasharray="3,2"/>
+    <line x1="70" y1="160" x2="100" y2="118" stroke="rgba(14,165,233,.2)" stroke-width="1" stroke-dasharray="3,2"/>
+    <line x1="168" y1="160" x2="140" y2="118" stroke="rgba(14,165,233,.2)" stroke-width="1" stroke-dasharray="3,2"/>
+  </svg>`,
+  html:`<div class="page-tag">▶ 08 · DESAIN ROBOT</div>
+    <div class="page-title">Robot yang <span class="hi">Baik</span> Harus Seperti Apa?</div>
+    <div class="page-body">Robot rumah yang baik harus memenuhi spesifikasi penting ini:</div>
+    <div style="margin-top:10px">
+      <div class="step-item"><div class="step-num">😊</div><div class="step-text"><strong>Ramah</strong> — tidak membuat siapapun takut</div></div>
+      <div class="step-item"><div class="step-num">🛡️</div><div class="step-text"><strong>Aman</strong> — tidak merusak barang atau menyakiti orang</div></div>
+      <div class="step-item"><div class="step-num">👂</div><div class="step-text"><strong>Bisa mendengar</strong> perintah dengan tepat</div></div>
+      <div class="step-item"><div class="step-num">⚡</div><div class="step-text"><strong>Selalu siap</strong> membantu kapanpun dibutuhkan</div></div>
+    </div>
+    <div class="info-box blue" style="margin-top:10px">✏️ Kamu bisa mendesain robot impianmu sendiri — seperti apa bentuk dan kemampuannya?</div>`
+},
+
+/* 10 */
+{
+  strip:'background:linear-gradient(90deg,#F97316,#0EA5E9)',
+  illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Living room sofa -->
+    <rect x="20" y="140" width="200" height="50" rx="8" fill="#DBEAFE" stroke="#BAE6FD" stroke-width="2"/>
+    <rect x="20" y="130" width="200" height="18" rx="6" fill="#BAE6FD" stroke="#93C5FD" stroke-width="1.5"/>
+    <rect x="20" y="130" width="30" height="60" rx="8" fill="#93C5FD" stroke="#BAE6FD" stroke-width="1.5"/>
+    <rect x="190" y="130" width="30" height="60" rx="8" fill="#93C5FD" stroke="#BAE6FD" stroke-width="1.5"/>
+    <!-- Aslan sitting -->
+    <circle cx="85" cy="118" r="18" fill="#FFCC80"/>
+    <path d="M70,110 Q77,96 85,93 Q93,96 100,110" fill="#5D4037"/>
+    <circle cx="79" cy="115" r="2.8" fill="#1A237E"/>
+    <circle cx="91" cy="115" r="2.8" fill="#1A237E"/>
+    <path d="M80,126 Q85,131 90,126" stroke="#E64A19" stroke-width="2" fill="none"/>
+    <rect x="75" y="136" width="20" height="28" rx="4" fill="#0EA5E9"/>
+    <!-- Bunda sitting -->
+    <circle cx="155" cy="114" r="20" fill="#FFCC80"/>
+    <path d="M138,105 Q147,88 155,85 Q163,88 172,105" fill="#4E342E"/>
+    <circle cx="168" cy="86" r="9" fill="#4E342E"/>
+    <circle cx="148" cy="110" r="3" fill="#5D4037"/>
+    <circle cx="162" cy="110" r="3" fill="#5D4037"/>
+    <path d="M149,122 Q155,128 161,122" stroke="#E64A19" stroke-width="2.5" fill="none"/>
+    <rect x="143" y="134" width="24" height="32" rx="4" fill="#EC4899"/>
+    <!-- Robot small between them -->
+    <rect x="108" y="124" width="30" height="30" rx="6" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="2"/>
+    <rect x="113" y="129" width="20" height="12" rx="3" fill="#EFF6FF"/>
+    <circle cx="118" cy="135" r="3" fill="#38BDF8"/>
+    <circle cx="128" cy="135" r="3" fill="#38BDF8"/>
+    <rect x="115" y="144" width="16" height="6" rx="3" fill="#BAE6FD"/>
+    <text x="123" y="149" text-anchor="middle" fill="#0369A1" font-family="Orbitron,sans-serif" font-size="5" font-weight="700">HI!</text>
+    <!-- Laughing emojis -->
+    <text x="72" y="88" fill="#FBBF24" font-size="14">😄</text>
+    <text x="152" y="80" fill="#FBBF24" font-size="14">😄</text>
+    <!-- Heart above -->
+    <text x="120" y="70" fill="#F97316" font-size="18" text-anchor="middle">♥</text>
+    <!-- Stars -->
+    <text x="30" y="40" fill="#38BDF8" font-size="10">✦</text>
+    <text x="200" y="38" fill="#F97316" font-size="12">✦</text>
+  </svg>`,
+  html:`<div class="page-tag">▶ 09 · BERSAMA</div>
+    <div class="page-title">Robot <span class="hi">Bukan</span> Pengganti Manusia</div>
+    <div class="page-body">Robot bukan untuk <strong>menggantikan</strong> manusia, tapi untuk <em>membantu</em> manusia agar hidup lebih mudah dan bahagia.</div>
+    <div style="margin-top:12px">
+      <div class="step-item"><div class="step-num">❌</div><div class="step-text">Robot BUKAN pengganti kasih sayang Bunda</div></div>
+      <div class="step-item"><div class="step-num">✅</div><div class="step-text">Robot BISA bantu Bunda punya lebih banyak waktu untuk kita</div></div>
+    </div>
+    <div class="info-box orange" style="margin-top:12px">💛 Dengan robot membantu, Bunda bisa lebih banyak waktu tertawa dan bermain bersama keluarga!</div>`
+},
+
+/* 11 */
+{
+  strip:'background:linear-gradient(90deg,#0369A1,#0EA5E9)',
+  illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Grid layout of robot types -->
+    <!-- Robot 1: Vacuum -->
+    <rect x="12" y="12" width="68" height="80" rx="8" fill="#EFF6FF" stroke="#BAE6FD" stroke-width="1.5"/>
+    <circle cx="46" cy="52" r="24" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="2"/>
+    <circle cx="46" cy="52" r="16" fill="#EFF6FF" stroke="#BAE6FD" stroke-width="1"/>
+    <circle cx="46" cy="52" r="6" fill="#0C1A2E" stroke="#38BDF8" stroke-width="1.5"/>
+    <text x="46" y="84" text-anchor="middle" fill="#0369A1" font-family="Orbitron,sans-serif" font-size="7" font-weight="700">VACUUM</text>
+    <!-- Robot 2: Smart speaker -->
+    <rect x="86" y="12" width="68" height="80" rx="8" fill="#F5F3FF" stroke="#C4B5FD" stroke-width="1.5"/>
+    <rect x="103" y="24" width="34" height="52" rx="10" fill="#0C1A2E" stroke="#7C3AED" stroke-width="1.5"/>
+    <circle cx="120" cy="35" r="6" fill="rgba(124,58,237,0.4)"/>
+    <circle cx="120" cy="35" r="3" fill="#A78BFA"/>
+    <text x="120" y="78" text-anchor="middle" fill="#6D28D9" font-family="Orbitron,sans-serif" font-size="7" font-weight="700">ASISTEN</text>
+    <!-- Robot 3: Cook -->
+    <rect x="160" y="12" width="68" height="80" rx="8" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1.5"/>
+    <rect x="174" y="20" width="40" height="48" rx="8" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="1.5"/>
+    <rect x="180" y="27" width="28" height="16" rx="4" fill="#EFF6FF"/>
+    <circle cx="189" cy="35" r="3.5" fill="#0EA5E9"/>
+    <circle cx="199" cy="35" r="3.5" fill="#0EA5E9"/>
+    <text x="194" y="74" text-anchor="middle" fill="#C2410C" font-family="Orbitron,sans-serif" font-size="7" font-weight="700">MASAK</text>
+    <!-- Robot 4: Security -->
+    <rect x="12" y="106" width="68" height="80" rx="8" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5"/>
+    <circle cx="46" cy="138" r="22" fill="#DCFCE7" stroke="#22C55E" stroke-width="2"/>
+    <text x="46" y="145" text-anchor="middle" fill="#16A34A" font-size="22">🛡️</text>
+    <text x="46" y="176" text-anchor="middle" fill="#065F46" font-family="Orbitron,sans-serif" font-size="7" font-weight="700">KEAMANAN</text>
+    <!-- Robot 5: Care -->
+    <rect x="86" y="106" width="68" height="80" rx="8" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1.5"/>
+    <circle cx="120" cy="138" r="22" fill="#FEF3C7" stroke="#F97316" stroke-width="2"/>
+    <text x="120" y="145" text-anchor="middle" fill="#F97316" font-size="22">♥</text>
+    <text x="120" y="176" text-anchor="middle" fill="#C2410C" font-family="Orbitron,sans-serif" font-size="7" font-weight="700">PERAWAT</text>
+    <!-- Robot 6: Future -->
+    <rect x="160" y="106" width="68" height="80" rx="8" fill="#0C1A2E" border="1.5" stroke="rgba(56,189,248,0.4)" stroke-width="1.5"/>
+    <text x="194" y="148" text-anchor="middle" fill="#38BDF8" font-size="22">🚀</text>
+    <text x="194" y="172" text-anchor="middle" fill="#38BDF8" font-family="Orbitron,sans-serif" font-size="7" font-weight="700">MASA</text>
+    <text x="194" y="182" text-anchor="middle" fill="#38BDF8" font-family="Orbitron,sans-serif" font-size="7" font-weight="700">DEPAN</text>
+  </svg>`,
+  html:`<div class="page-tag">▶ 10 · JENIS ROBOT</div>
+    <div class="page-title">Ragam Robot <span class="hi">Rumah</span> Masa Kini</div>
+    <div class="page-body">Sekarang robot rumah sudah semakin canggih. Ada berbagai jenisnya:</div>
+    <div style="margin-top:10px">
+      <div class="step-item"><div class="step-num">🔵</div><div class="step-text"><strong>Vacuum</strong> — menyedot debu otomatis</div></div>
+      <div class="step-item"><div class="step-num">🟣</div><div class="step-text"><strong>Asisten Suara</strong> — Google Home, Alexa</div></div>
+      <div class="step-item"><div class="step-num">🟠</div><div class="step-text"><strong>Robot Masak</strong> — thermomix, smart cooker</div></div>
+      <div class="step-item"><div class="step-num">🟢</div><div class="step-text"><strong>Robot Keamanan</strong> — kamera & sensor pintar</div></div>
+    </div>
+    <div class="info-box blue" style="margin-top:10px">🔭 Di masa depan, mungkin <strong>kamu yang menciptakan</strong> robot rumah yang lebih hebat lagi!</div>`
+},
+
+/* 12 */
+{
+  strip:'background:linear-gradient(90deg,#F97316,#7C3AED)',
+  illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Laptop -->
+    <rect x="25" y="65" width="180" height="110" rx="10" fill="#E0F2FE" stroke="#0EA5E9" stroke-width="2"/>
+    <rect x="33" y="73" width="164" height="88" rx="5" fill="#0C1A2E"/>
+    <rect x="5" y="175" width="220" height="10" rx="4" fill="#BAE6FD" stroke="#0EA5E9" stroke-width="1.5"/>
+    <!-- Status bar -->
+    <rect x="33" y="73" width="164" height="14" rx="5 5 0 0" fill="#132035"/>
+    <circle cx="43" cy="80" r="3" fill="#EF4444"/>
+    <circle cx="53" cy="80" r="3" fill="#FBBF24"/>
+    <circle cx="63" cy="80" r="3" fill="#22C55E"/>
+    <text x="158" y="84" fill="#38BDF8" font-family="Orbitron,sans-serif" font-size="7">ROBOT IDE v1.0</text>
+    <!-- Coding -->
+    <text x="43" y="102" fill="#38BDF8" font-family="Courier New,monospace" font-size="8" font-weight="700">class RobotBunda:</text>
+    <text x="51" y="114" fill="#34D399" font-family="Courier New,monospace" font-size="7">def __init__(self):</text>
+    <text x="59" y="124" fill="#FCD34D" font-family="Courier New,monospace" font-size="7">self.nama = "Robo"</text>
+    <text x="59" y="134" fill="#FCD34D" font-family="Courier New,monospace" font-size="7">self.baterai = 100</text>
+    <text x="51" y="146" fill="#F472B6" font-family="Courier New,monospace" font-size="7">def bantu():</text>
+    <text x="59" y="156" fill="#FCD34D" font-family="Courier New,monospace" font-size="7">print("Siap Bunda! 💪")</text>
+    <!-- Cursor blinking -->
+    <rect x="180" y="151" width="7" height="10" rx="1" fill="#38BDF8" opacity=".8">
+      <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
+    </rect>
+    <!-- Aslan face excited -->
+    <circle cx="196" cy="110" r="22" fill="#FFCC80"/>
+    <path d="M177,100 Q185,83 196,80 Q207,83 215,100" fill="#5D4037"/>
+    <circle cx="189" cy="106" r="3.5" fill="#1A237E"/>
+    <circle cx="203" cy="106" r="3.5" fill="#1A237E"/>
+    <!-- Stars in eyes (excited) -->
+    <text x="188" y="109" fill="#FBBF24" font-size="5">★</text>
+    <text x="202" y="109" fill="#FBBF24" font-size="5">★</text>
+    <path d="M190,118 Q196,126 202,118" stroke="#E64A19" stroke-width="2.5" fill="none"/>
+    <!-- Speech bubble -->
+    <rect x="148" y="28" width="88" height="30" rx="8" fill="#FFF7ED" stroke="#F97316" stroke-width="1.5"/>
+    <polygon points="168,58 178,58 173,66" fill="#FFF7ED" stroke="#F97316" stroke-width="1" stroke-linejoin="round"/>
+    <text x="192" y="42" text-anchor="middle" fill="#C2410C" font-family="Quicksand,sans-serif" font-size="9" font-weight="700">Aku mau bikin</text>
+    <text x="192" y="53" text-anchor="middle" fill="#C2410C" font-family="Quicksand,sans-serif" font-size="9" font-weight="700">robot Bunda! 🤩</text>
+  </svg>`,
+  html:`<div class="page-tag">▶ 11 · LANGKAH PERTAMA</div>
+    <div class="page-title">Coding adalah <span class="lo">Langkah Pertama!</span></div>
+    <div class="page-body">Mulai dari <strong>sekarang</strong>, belajar coding adalah langkah pertama untuk menciptakan robot impianmu!</div>
+    <div class="tech-panel" style="margin-top:12px">
+      <div class="code-l"><span class="kw">class</span> <span class="fn">RobotBunda</span>:</div>
+      <div class="code-l">&nbsp;&nbsp;<span class="fn">nama</span> = <span class="str">"Robo Aslan"</span></div>
+      <div class="code-l">&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">bantu_bunda</span>():</div>
+      <div class="code-l">&nbsp;&nbsp;&nbsp;&nbsp;<span class="op">sapu()</span> <span class="cm">→ masak()</span></div>
+      <div class="code-l">&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">print</span>(<span class="str">"Siap Bunda! 💪"</span>)</div>
+    </div>
+    <div class="info-box blue" style="margin-top:12px">🚀 Setiap programmer hebat dimulai dari kode pertama yang sederhana. <strong>Aslan bisa!</strong></div>
+    <div class="ayah-panel" style="margin-top:10px">
+      <div class="ayah-avatar">👨‍💻</div>
+      <div class="ayah-text">Kalau ada yang bikin bingung, tanya <strong>Ayah Sigit</strong> yang gantengnya 1000× ya! 😎</div>
+    </div>`
+},
+
+/* 13 – ENDING */
+{
+  strip:'background:linear-gradient(90deg,#0EA5E9,#F97316,#34D399)',
+  ending:true,
+  illus:`<svg class="illus-svg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Living room photo scene -->
+    <!-- Photo frame -->
+    <rect x="15" y="20" width="210" height="155" rx="12" fill="#EFF6FF" stroke="#0EA5E9" stroke-width="2.5"/>
+    <rect x="15" y="20" width="210" height="155" rx="12" fill="none" stroke="#BAE6FD" stroke-width="6"/>
+    <!-- Sofa -->
+    <rect x="30" y="130" width="180" height="40" rx="8" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
+    <rect x="30" y="120" width="180" height="18" rx="5" fill="#BAE6FD"/>
+    <rect x="30" y="120" width="26" height="50" rx="7" fill="#93C5FD"/>
+    <rect x="184" y="120" width="26" height="50" rx="7" fill="#93C5FD"/>
+    <!-- Aslan -->
+    <circle cx="78" cy="105" r="20" fill="#FFCC80"/>
+    <path d="M61,96 Q68,80 78,77 Q88,80 95,96" fill="#5D4037"/>
+    <circle cx="72" cy="101" r="3" fill="#1A237E"/>
+    <circle cx="84" cy="101" r="3" fill="#1A237E"/>
+    <path d="M73,113 Q78,119 83,113" stroke="#E64A19" stroke-width="2" fill="none"/>
+    <rect x="68" y="125" width="20" height="28" rx="4" fill="#0EA5E9"/>
+    <!-- Bunda -->
+    <circle cx="162" cy="100" r="22" fill="#FFCC80"/>
+    <path d="M143,91 Q151,73 162,70 Q173,73 181,91" fill="#4E342E"/>
+    <circle cx="176" cy="72" r="10" fill="#4E342E"/>
+    <circle cx="155" cy="96" r="3.5" fill="#5D4037"/>
+    <circle cx="169" cy="96" r="3.5" fill="#5D4037"/>
+    <path d="M156,110 Q162,117 168,110" stroke="#E64A19" stroke-width="2.5" fill="none"/>
+    <rect x="150" y="122" width="24" height="30" rx="4" fill="#EC4899"/>
+    <!-- Robot between them -->
+    <rect x="106" y="108" width="28" height="30" rx="7" fill="#DBEAFE" stroke="#0EA5E9" stroke-width="2"/>
+    <rect x="111" y="113" width="18" height="12" rx="4" fill="#EFF6FF"/>
+    <circle cx="116" cy="119" r="3" fill="#38BDF8"/>
+    <circle cx="124" cy="119" r="3" fill="#38BDF8"/>
+    <rect x="113" y="128" width="14" height="6" rx="3" fill="#BAE6FD"/>
+    <!-- Robot arms touching them -->
+    <rect x="80" y="120" width="26" height="7" rx="3" fill="#BAE6FD" stroke="#0EA5E9" stroke-width="1"/>
+    <rect x="134" y="120" width="26" height="7" rx="3" fill="#BAE6FD" stroke="#0EA5E9" stroke-width="1"/>
+    <!-- Hearts and stars -->
+    <text x="120" y="72" text-anchor="middle" fill="#F97316" font-size="16">♥</text>
+    <text x="40" y="50" fill="#FBBF24" font-size="12">★</text>
+    <text x="192" y="42" fill="#38BDF8" font-size="10">★</text>
+    <text x="78" y="44" fill="#F97316" font-size="8">✦</text>
+    <text x="156" y="48" fill="#34D399" font-size="8">✦</text>
+    <!-- Photo label -->
+    <rect x="64" y="170" width="112" height="16" rx="4" fill="white" stroke="#E0F2FE" stroke-width="1"/>
+    <text x="120" y="182" text-anchor="middle" fill="#0369A1" font-family="Orbitron,sans-serif" font-size="8" font-weight="700">KELUARGA BAHAGIA 📸</text>
+  </svg>`
+}
+
+]; // end pages
+
+function buildRoadmap(){
+  const rm = document.getElementById('roadmap');
+  rm.innerHTML = '';
+  for(let i=1;i<=TOTAL;i++){
+    const n = document.createElement('div');
+    n.className = 'rm-node' + (i===cur?' active':i<cur?' done':'');
+    n.textContent = String(i).padStart(2,'0');
+    n.onclick = ()=>goTo(i);
+    rm.appendChild(n);
+    if(i<TOTAL){
+      const c = document.createElement('div');
+      c.className = 'rm-conn' + (i<cur?' done':'');
+      rm.appendChild(c);
+    }
+  }
+  const active = rm.querySelector('.active');
+  if(active) active.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
+}
+
+function render(){
+  const p = pages[cur-1];
+  const card = document.getElementById('pageCard');
+
+  // Status bar
+  const statusBar = `<div class="status-bar">
+    <div class="status-dot"></div>
+    <span>ROBOT RUMAH · SERI 15</span>
+    <div style="flex:1"></div>
+    <div class="status-dot orange"></div>
+    <span>HAL ${String(cur).padStart(2,'0')} AKTIF</span>
+  </div>`;
+
+  if(p.cover){
+    card.innerHTML = statusBar + `
+      <div class="page-strip" style="${p.strip}"></div>
+      <div class="cover-col">
+        ${p.illus || ''}
+        <div class="cover-title" style="margin-top:16px">Robot Rumah<br>yang Bisa<br>Bantu Bunda</div>
+        <div class="cover-sub">Petualangan Teknologi Bersama</div>
+        <div class="cover-name">✨ Aslan ✨</div>
+        <div class="cover-badge">FLIPBOOK EDUKASI · SERI 15</div>
+      </div>`;
+  } else if(p.ending){
+    card.innerHTML = statusBar + `
+      <div class="page-strip" style="${p.strip}"></div>
+      <div class="page-layout">
+        <div class="illus-col">${p.illus || ''}</div>
+        <div class="text-col">
+          <div class="end-wrap">
+            <div class="end-title">🎉 Luar Biasa, Aslan!</div>
+            <div class="end-text">Kamu sudah belajar tentang <strong style="color:#38BDF8">Robot Rumah</strong> yang bisa membantu Bunda!<br><br>Suatu hari, dengan belajar coding mulai sekarang — <em style="color:#FCD34D">kamu bisa mewujudkannya!</em></div>
+          </div>
+          <div class="next-panel">
+            <div class="next-label">📚 Flipbook Selanjutnya — Seri 16</div>
+            <div class="next-title">🎮 "Bagaimana Game Bisa Bergerak?"</div>
+          </div>
+          <button class="nav-btn restart" onclick="reset()">↺ Baca Ulang dari Halaman 1</button>
+          <div class="ayah-panel" style="margin-top:12px">
+            <div class="ayah-avatar">👨‍💻</div>
+            <div class="ayah-text">Ada yang belum paham? Tanya <strong>Ayah Sigit</strong> yang gantengnya 1000× ya! Beliau siap bantu! 😄✨</div>
+          </div>
+          <div style="text-align:center;margin-top:14px;font-family:var(--orb);font-size:10px;color:var(--text-muted);letter-spacing:1px">❤️ DARI AYAH &amp; BUNDA — KAMI BANGGA PADAMU!</div>
+        </div>
+      </div>`;
+  } else {
+    card.innerHTML = statusBar + `
+      <div class="page-strip" style="${p.strip}"></div>
+      <div class="page-layout">
+        <div class="illus-col">${p.illus || ''}</div>
+        <div class="text-col">${p.html || ''}</div>
+      </div>`;
+  }
+
+  // Re-trigger animation
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = '';
+
+  // Progress
+  const pct = (cur / TOTAL * 100).toFixed(1);
+  document.getElementById('pgFill').style.width = pct + '%';
+  document.getElementById('pgLabel').textContent = String(cur).padStart(2,'0') + ' / ' + String(TOTAL).padStart(2,'0');
+
+  // Nav
+  document.getElementById('prevBtn').disabled = (cur === 1);
+  const nb = document.getElementById('nextBtn');
+  nb.disabled = (cur === TOTAL);
+  nb.textContent = cur === TOTAL ? '✓ SELESAI' : 'NEXT →';
+
+  buildRoadmap();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function go(d){
+  const n = cur + d;
+  if(n >= 1 && n <= TOTAL){ cur = n; render(); }
+}
+function goTo(n){ cur = n; render(); }
+function reset(){ cur = 1; render(); }
+
+render();
+</script>
+</body>
+</html>
+

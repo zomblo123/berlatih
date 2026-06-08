@@ -1,0 +1,1174 @@
+<!-- BUKU DIGITAL ASLAN - Petualangan ke Pusat Bumi -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan ke Pusat Bumi — Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #2d6a4f;
+    --moss: #40916c;
+    --leaf: #74c69d;
+    --sky: #1a6985;
+    --ocean: #2196a0;
+    --sand: #d4a574;
+    --earth: #8b5e3c;
+    --lava: #e85d04;
+    --orange: #f4a261;
+    --cream: #fefae0;
+    --dark-bg: #0d1b2a;
+    --card-light: #ffffff;
+    --text-main: #1b2a1e;
+    --text-light: #f0fdf4;
+    --shadow: 0 8px 32px rgba(0,0,0,0.15);
+    --radius: 24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #0d1b2a;
+    color: #f0fdf4;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  body.light-mode {
+    background: #f0fdf4;
+    color: #1b2a1e;
+  }
+
+  /* ─── STARFIELD ─── */
+  .stars {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    opacity: 0.5;
+    animation: twinkle 3s infinite alternate;
+  }
+  @keyframes twinkle { from { opacity: 0.2; transform: scale(1); } to { opacity: 0.8; transform: scale(1.3); } }
+
+  body.light-mode .stars { opacity: 0; }
+
+  /* ─── TOP NAV ─── */
+  .top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(13, 27, 42, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(116,198,157,0.2);
+  }
+  body.light-mode .top-nav {
+    background: rgba(240,253,244,0.9);
+    border-color: rgba(45,106,79,0.2);
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--moss), var(--forest));
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 800;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(64,145,108,0.4);
+  }
+  .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(64,145,108,0.5); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .mode-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,0.2); transform: rotate(20deg); }
+  body.light-mode .mode-btn { background: rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.15); color: #1b2a1e; }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-wrap {
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    z-index: 99;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--leaf), var(--orange), var(--lava));
+    transition: width 0.3s ease;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* ─── MAIN CONTAINER ─── */
+  .book-container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 20px 40px;
+  }
+
+  /* ─── PAGES ─── */
+  .page {
+    display: none;
+    animation: fadeUp 0.5s ease forwards;
+  }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── COVER PAGE ─── */
+  .cover-page {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    position: relative;
+  }
+
+  .cover-planet {
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #74c69d, #2d6a4f 40%, #1a3a2a 70%, #0d1f12);
+    box-shadow:
+      0 0 0 12px rgba(116,198,157,0.15),
+      0 0 0 28px rgba(116,198,157,0.08),
+      0 0 80px rgba(64,145,108,0.4),
+      inset -30px -20px 60px rgba(0,0,0,0.5);
+    margin: 0 auto 32px;
+    position: relative;
+    animation: floatPlanet 4s ease-in-out infinite;
+  }
+  @keyframes floatPlanet {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-14px) rotate(3deg); }
+  }
+
+  .cover-planet::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: -30px; right: -30px;
+    height: 30px;
+    background: rgba(116,198,157,0.15);
+    border-radius: 50%;
+    transform: translateY(-50%) rotateX(70deg);
+  }
+
+  .cover-emoji-layer {
+    position: absolute;
+    font-size: 32px;
+    animation: orbit 8s linear infinite;
+  }
+  .cover-emoji-layer:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+  .cover-emoji-layer:nth-child(2) { top: 15%; right: 12%; animation-delay: -2s; }
+  .cover-emoji-layer:nth-child(3) { bottom: 20%; left: 8%; animation-delay: -4s; }
+  .cover-emoji-layer:nth-child(4) { bottom: 15%; right: 10%; animation-delay: -6s; }
+  @keyframes orbit {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-10px) scale(1.1); }
+  }
+
+  .cover-badge {
+    background: linear-gradient(135deg, var(--lava), var(--orange));
+    color: white;
+    padding: 6px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: inline-block;
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(28px, 6vw, 52px);
+    line-height: 1.2;
+    background: linear-gradient(135deg, #74c69d, #f4a261, #74c69d);
+    background-size: 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease infinite;
+    margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+
+  .cover-subtitle {
+    font-size: clamp(16px, 3vw, 22px);
+    opacity: 0.7;
+    margin-bottom: 24px;
+  }
+
+  .cover-name-badge {
+    background: linear-gradient(135deg, rgba(116,198,157,0.2), rgba(244,162,97,0.2));
+    border: 2px solid rgba(116,198,157,0.4);
+    border-radius: 20px;
+    padding: 16px 32px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+  }
+  .cover-name-badge p { font-size: 14px; opacity: 0.7; margin-bottom: 4px; }
+  .cover-name-badge h2 { font-family: 'Fredoka One', cursive; font-size: clamp(22px, 4vw, 32px); color: var(--orange); }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+  }
+  body.light-mode .card {
+    background: white;
+    border-color: rgba(45,106,79,0.15);
+    box-shadow: 0 4px 24px rgba(45,106,79,0.1);
+    color: #1b2a1e;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent, linear-gradient(90deg, var(--leaf), var(--ocean)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .card-crust { --accent: linear-gradient(90deg, #8b5e3c, #d4a574); }
+  .card-mantle { --accent: linear-gradient(90deg, #e85d04, #f4a261); }
+  .card-outercore { --accent: linear-gradient(90deg, #e85d04, #dc2f02); }
+  .card-innercore { --accent: linear-gradient(90deg, #dc2f02, #9d0208); }
+
+  .card-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    display: block;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  }
+
+  .card h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(22px, 4vw, 30px);
+    margin-bottom: 8px;
+    color: var(--orange);
+  }
+  body.light-mode .card h2 { color: var(--forest); }
+
+  .card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 20px 0 10px;
+    color: var(--leaf);
+  }
+  body.light-mode .card h3 { color: var(--moss); }
+
+  .card p {
+    font-size: clamp(15px, 2.5vw, 17px);
+    line-height: 1.8;
+    opacity: 0.9;
+    margin-bottom: 14px;
+  }
+
+  /* ─── LAYER DEPTH INDICATOR ─── */
+  .depth-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232, 93, 4, 0.2);
+    border: 1px solid rgba(232, 93, 4, 0.4);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--orange);
+    margin-bottom: 16px;
+  }
+
+  /* ─── ANALOGY BOX ─── */
+  .analogy-box {
+    background: linear-gradient(135deg, rgba(116,198,157,0.1), rgba(244,162,97,0.1));
+    border: 2px dashed rgba(116,198,157,0.3);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .analogy-box::before {
+    content: '💡 Analogi Keren!';
+    position: absolute;
+    top: -12px; left: 20px;
+    background: var(--dark-bg);
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--orange);
+  }
+  body.light-mode .analogy-box::before { background: white; }
+
+  /* ─── EARTH CROSS SECTION ─── */
+  .earth-diagram {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 24px;
+    display: block;
+    position: relative;
+  }
+
+  .earth-cross {
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    margin: 0 auto;
+    position: relative;
+    background: radial-gradient(circle at center,
+      #9d0208 0%, #9d0208 15%,
+      #dc2f02 15%, #dc2f02 30%,
+      #e85d04 30%, #e85d04 55%,
+      #8b5e3c 55%, #8b5e3c 70%,
+      #40916c 70%, #40916c 85%,
+      #2d6a4f 85%, #2d6a4f 100%
+    );
+    box-shadow: 0 0 0 3px rgba(116,198,157,0.3), 0 8px 40px rgba(0,0,0,0.4);
+    overflow: hidden;
+  }
+
+  .earth-cross::after {
+    content: '';
+    position: absolute;
+    top: -5%; left: 50%;
+    width: 2px; height: 110%;
+    background: rgba(255,255,255,0.3);
+  }
+
+  .layer-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 20px;
+  }
+
+  .layer-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .label-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ─── FACT BOXES ─── */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .fact-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .fact-card:hover { transform: translateY(-4px); }
+  body.light-mode .fact-card { background: #f8fffe; border-color: rgba(45,106,79,0.15); }
+
+  .fact-card .fact-emoji { font-size: 44px; margin-bottom: 12px; display: block; }
+  .fact-card .fact-number {
+    font-family: 'Fredoka One', cursive;
+    font-size: 26px;
+    color: var(--orange);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .fact-card .fact-label { font-size: 13px; opacity: 0.7; font-weight: 700; }
+
+  /* ─── CHALLENGE ─── */
+  .challenge-card {
+    background: linear-gradient(135deg, rgba(26,105,133,0.3), rgba(45,106,79,0.3));
+    border: 2px solid rgba(116,198,157,0.3);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin: 20px 0;
+  }
+  body.light-mode .challenge-card { background: linear-gradient(135deg, rgba(26,105,133,0.08), rgba(45,106,79,0.08)); }
+
+  .challenge-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 24px;
+    color: var(--leaf);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .challenge-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .challenge-item:last-child { border-bottom: none; }
+  body.light-mode .challenge-item { border-color: rgba(0,0,0,0.06); }
+
+  .challenge-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--moss), var(--forest));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .challenge-item p { font-size: 15px; line-height: 1.7; opacity: 0.9; }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-top: 20px;
+  }
+
+  .section-header .tag {
+    display: inline-block;
+    background: rgba(116,198,157,0.15);
+    border: 1px solid rgba(116,198,157,0.3);
+    color: var(--leaf);
+    padding: 4px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(24px, 5vw, 40px);
+    line-height: 1.2;
+  }
+
+  /* ─── STORY SCENE ─── */
+  .scene-box {
+    background: linear-gradient(135deg, rgba(13,27,42,0.8), rgba(45,106,79,0.3));
+    border: 1px solid rgba(116,198,157,0.2);
+    border-radius: 20px;
+    padding: 28px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  body.light-mode .scene-box {
+    background: linear-gradient(135deg, rgba(240,253,244,0.9), rgba(116,198,157,0.1));
+    border-color: rgba(45,106,79,0.2);
+  }
+
+  .scene-box::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; right: -20px;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(116,198,157,0.1), transparent);
+    border-radius: 50%;
+  }
+
+  .scene-title {
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--leaf);
+    margin-bottom: 12px;
+    opacity: 0.8;
+  }
+
+  .scene-box p {
+    font-size: clamp(15px, 2.5vw, 17px);
+    line-height: 1.9;
+    font-style: italic;
+    opacity: 0.9;
+  }
+
+  /* ─── NAVIGATION BUTTONS ─── */
+  .nav-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  body.light-mode .nav-btns { border-color: rgba(0,0,0,0.06); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-prev {
+    background: rgba(255,255,255,0.08);
+    color: inherit;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  body.light-mode .btn-prev { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); color: #1b2a1e; }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--moss), var(--forest));
+    color: white;
+    box-shadow: 0 4px 16px rgba(64,145,108,0.35);
+    flex: 1;
+    justify-content: center;
+    max-width: 280px;
+  }
+  .btn-next:hover { box-shadow: 0 6px 24px rgba(64,145,108,0.5); }
+
+  .btn-done {
+    background: linear-gradient(135deg, var(--lava), var(--orange));
+    color: white;
+    box-shadow: 0 4px 16px rgba(232,93,4,0.35);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    justify-content: center;
+    font-size: 17px;
+    padding: 18px 32px;
+  }
+  .btn-done:hover { box-shadow: 0 6px 24px rgba(232,93,4,0.5); }
+
+  .page-indicator {
+    font-size: 13px;
+    opacity: 0.5;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* ─── CLOSING PAGE ─── */
+  .closing-content {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .trophy-big {
+    font-size: 100px;
+    display: block;
+    margin: 0 auto 24px;
+    animation: bounceIn 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    filter: drop-shadow(0 8px 24px rgba(244,162,97,0.5));
+  }
+  @keyframes bounceIn {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .quote-box {
+    background: linear-gradient(135deg, rgba(116,198,157,0.1), rgba(244,162,97,0.1));
+    border-left: 4px solid var(--orange);
+    border-radius: 0 16px 16px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+    text-align: left;
+  }
+  .quote-box p { font-size: 18px; font-style: italic; line-height: 1.8; }
+  .quote-box cite { font-size: 13px; opacity: 0.6; margin-top: 8px; display: block; font-style: normal; font-weight: 700; }
+
+  /* ─── WELCOME/INTRO ─── */
+  .capsule-box {
+    background: linear-gradient(135deg, rgba(26,105,133,0.2), rgba(13,27,42,0.5));
+    border: 2px solid rgba(26,105,133,0.3);
+    border-radius: 24px;
+    padding: 32px;
+    margin: 24px 0;
+    text-align: center;
+  }
+  body.light-mode .capsule-box {
+    background: linear-gradient(135deg, rgba(26,105,133,0.08), rgba(240,253,244,0.9));
+    border-color: rgba(26,105,133,0.2);
+  }
+
+  .capsule-box .capsule-emoji { font-size: 72px; display: block; margin-bottom: 16px; animation: shake 2s ease-in-out infinite; }
+  @keyframes shake {
+    0%,100%{transform:rotate(0deg)} 25%{transform:rotate(-5deg)} 75%{transform:rotate(5deg)}
+  }
+  .capsule-box h3 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    color: var(--ocean);
+    margin-bottom: 12px;
+  }
+  body.light-mode .capsule-box h3 { color: var(--sky); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .book-container { padding: 76px 16px 32px; }
+    .card { padding: 24px 20px; }
+    .nav-btns { flex-wrap: wrap; }
+    .btn-next { max-width: 100%; }
+    .cover-planet { width: 180px; height: 180px; }
+    .fact-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .book-container { padding: 80px 32px 40px; }
+    .card p { font-size: 18px; }
+    .cover-title { font-size: 46px; }
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(116,198,157,0.3); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- STARFIELD -->
+<div class="stars" id="stars"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">
+    ← Perpustakaan
+  </a>
+  <div class="nav-right">
+    <button class="mode-btn" id="modeBtn" title="Ganti Mode">☀️</button>
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<!-- ═══════════════ BOOK CONTAINER ═══════════════ -->
+<div class="book-container">
+
+  <!-- ── PAGE 1: COVER ── -->
+  <div class="page active" id="page-1">
+    <div class="cover-page">
+      <span class="cover-emoji-layer">🌋</span>
+      <span class="cover-emoji-layer">⛏️</span>
+      <span class="cover-emoji-layer">🔬</span>
+      <span class="cover-emoji-layer">💎</span>
+
+      <div class="cover-badge">📚 Buku Sains Petualangan</div>
+
+      <div class="cover-planet"></div>
+
+      <h1 class="cover-title">Petualangan ke<br>Pusat Bumi</h1>
+      <p class="cover-subtitle">🌍 Rahasia Lapisan Bumi</p>
+
+      <div class="cover-name-badge">
+        <p>Buku ini dipersembahkan untuk:</p>
+        <h2>🌟 Aslan 🌟</h2>
+        <p style="font-size:13px; margin-top:4px;">Penjelajah Bumi Sejati • Kelas 3 SD</p>
+      </div>
+
+      <div class="nav-btns" style="justify-content:center; border:none; padding-top:0;">
+        <button class="btn btn-next" onclick="goPage(2)" style="max-width:260px; font-size:17px; padding: 16px 32px;">
+          🚀 Mulai Petualangan!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE 2: PENGANTAR ── -->
+  <div class="page" id="page-2">
+    <div class="section-header">
+      <span class="tag">✉️ Pesan untuk Aslan</span>
+      <h1>Halo, Aslan! 👋</h1>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <span class="card-icon">🌍</span>
+      <p>Hei, <strong>Aslan</strong>! Selamat datang di petualangan paling keren yang pernah ada. Hari ini, kamu tidak akan pergi ke luar angkasa — tapi ke <strong>dalam Bumi</strong>! 🎉</p>
+      <p>Bayangkan kamu punya kapsul ajaib yang bisa menembus batuan, melewati cairan super panas, dan sampai ke jantung planet tempat kita tinggal.</p>
+      <p>Siap? Kapsul itu sudah menunggu. Namanya…</p>
+    </div>
+
+    <div class="capsule-box">
+      <span class="capsule-emoji">🛸</span>
+      <h3>TERRA EXPLORER</h3>
+      <p style="font-size:15px; line-height:1.8; opacity:0.8;">Kapsul ajaib buatan para ilmuwan terbaik dunia. Terbuat dari bahan terkuat di jagad raya, mampu bertahan di suhu ribuan derajat, dan dilengkapi kamera super canggih untuk melihat semua keajaiban di dalam Bumi!</p>
+    </div>
+
+    <div class="card" style="--accent: linear-gradient(90deg, var(--sky), var(--ocean));">
+      <h3>🗺️ Rencana Perjalanan Kita</h3>
+      <p>Dalam buku petualangan ini, kamu akan mengunjungi <strong>4 lapisan Bumi</strong> bersama Terra Explorer:</p>
+      <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(139,94,60,0.15);border-radius:14px;">
+          <span style="font-size:28px;">🏔️</span>
+          <div><strong>Lapisan 1: Kerak Bumi</strong><p style="font-size:13px;margin:0;opacity:0.7;">Tempat kita berpijak sehari-hari</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(232,93,4,0.15);border-radius:14px;">
+          <span style="font-size:28px;">🌋</span>
+          <div><strong>Lapisan 2: Mantel Bumi</strong><p style="font-size:13px;margin:0;opacity:0.7;">Lautan batu cair yang mengalir pelan</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(220,47,2,0.15);border-radius:14px;">
+          <span style="font-size:28px;">🔥</span>
+          <div><strong>Lapisan 3: Inti Luar</strong><p style="font-size:13px;margin:0;opacity:0.7;">Lautan besi dan nikel cair yang super panas</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(157,2,8,0.15);border-radius:14px;">
+          <span style="font-size:28px;">💎</span>
+          <div><strong>Lapisan 4: Inti Dalam</strong><p style="font-size:13px;margin:0;opacity:0.7;">Bola padat terpanas di seluruh Bumi</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+      <span class="page-indicator" id="pi-2">Halaman 2 dari 7</span>
+      <button class="btn btn-next" onclick="goPage(3)">Naik Terra Explorer! 🛸 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 3: LAPISAN 1 - KERAK ── -->
+  <div class="page" id="page-3">
+    <div class="section-header">
+      <span class="tag">🏔️ Lapisan Pertama</span>
+      <h1>Kerak Bumi<br><span style="color:var(--sand)">Crust</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Laporan Perjalanan</p>
+      <p>"Terra Explorer mulai bergerak! Kamu duduk di kursi empuk sambil melihat layar. Di luar jendela titanium, tanah mulai terbuka... kita masuk ke dalam! Kedalaman: 5 kilometer... 10 kilometer... batu-batu besar mulai terlihat di sekelilingmu. Selamat datang di Kerak Bumi, Aslan!"</p>
+    </div>
+
+    <div class="card card-crust">
+      <span class="card-icon">🏔️</span>
+      <span class="depth-badge">📏 Kedalaman: 0 – 70 km dari permukaan</span>
+      <h2>Kerak Bumi</h2>
+      <p>Kerak Bumi adalah lapisan paling luar — tempat kita berdiri, bermain, dan tinggal setiap hari. Di sinilah ada gunung-gunung tinggi, lautan yang dalam, dan semua makhluk hidup di Bumi!</p>
+
+      <div class="analogy-box">
+        <p>Bayangkan Bumi seperti telur rebus 🥚. Kerak Bumi itu seperti <strong>cangkang telurnya</strong> — tipis, keras, tapi sangat penting. Atau bayangkan seperti <strong>kulit apel</strong> 🍎 yang melapisi buah di dalamnya!</p>
+      </div>
+
+      <h3>🔍 Fakta Seru!</h3>
+      <p>Kerak Bumi ada dua jenis: <strong>Kerak Benua</strong> (di bawah daratan, tebalnya 30–70 km) dan <strong>Kerak Samudra</strong> (di bawah laut, lebih tipis, hanya 5–10 km). Jadi lapisan Bumi di bawah lautan itu lebih tipis daripada di bawah gunung!</p>
+
+      <h3>🌡️ Suhunya Berapa?</h3>
+      <p>Di permukaan, suhunya normal seperti yang kita rasakan. Tapi semakin dalam, semakin panas! Di bagian bawah kerak, suhunya bisa sampai <strong>300–500°C</strong>. Itu seperti oven pizza yang super duper panas! 🍕🔥</p>
+
+      <h3>💎 Ada Apa di Sini?</h3>
+      <p>Kerak Bumi penuh dengan batuan dan mineral berharga seperti berlian 💎, emas, besi, dan batu bara. Semua barang tambang yang berguna bagi manusia berasal dari lapisan ini!</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+      <span class="page-indicator">Halaman 3 dari 7</span>
+      <button class="btn btn-next" onclick="goPage(4)">Lanjut ke Mantel! 🌋 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 4: LAPISAN 2 - MANTEL ── -->
+  <div class="page" id="page-4">
+    <div class="section-header">
+      <span class="tag">🌋 Lapisan Kedua</span>
+      <h1>Mantel Bumi<br><span style="color:var(--orange)">Mantle</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Laporan Perjalanan</p>
+      <p>"Batu-batu semakin besar dan semakin panas! Terra Explorer bergetar sedikit saat menembus lapisan yang lebih dalam. Suhu mulai naik... 500°C... 1000°C! Di luar jendela, batu-batu mulai meleleh perlahan seperti es krim di terik matahari. Kita sudah masuk ke Mantel Bumi, Aslan! 🌋"</p>
+    </div>
+
+    <div class="card card-mantle">
+      <span class="card-icon">🌋</span>
+      <span class="depth-badge" style="border-color:rgba(232,93,4,0.4); color:var(--lava); background:rgba(232,93,4,0.15);">📏 Kedalaman: 70 – 2.900 km</span>
+      <h2>Mantel Bumi</h2>
+      <p>Mantel Bumi adalah lapisan tebaaaal sekali! Bayangkan, tebalnya hampir 2.900 kilometer. Ini adalah lapisan terbesar di Bumi — mengisi sekitar <strong>84% dari volume Bumi!</strong> 😲</p>
+
+      <div class="analogy-box">
+        <p>Pernah main plastisin 🎨? Mantel Bumi itu seperti <strong>plastisin yang dipanaskan</strong>! Dia bukan cair, tapi bukan padat juga. Dia bisa bergerak pelan-pelan seperti caramel panas yang mengalir. Ilmuwan menyebutnya "plastis" — bisa berubah bentuk dengan sangat lambat!</p>
+      </div>
+
+      <h3>🔥 Seberapa Panas?</h3>
+      <p>Suhu di mantel berkisar antara <strong>500°C sampai 4.000°C</strong>! Itu jauh lebih panas dari magma gunung berapi. Bahkan titanium dan baja pun akan meleleh di sini — untungnya Terra Explorer kita terbuat dari bahan ajaib!</p>
+
+      <h3>🏄 Pergerakan Mantel</h3>
+      <p>Walaupun seperti batu, mantel bergerak sangat lambat. Pergerakannya disebut <strong>konveksi</strong> — bagian yang panas naik ke atas, bagian yang dingin turun ke bawah, seperti air mendidih dalam panci 🫕. Gerakan inilah yang membuat lempeng-lempeng Bumi bergerak dan menyebabkan gempa bumi serta gunung berapi!</p>
+
+      <h3>🌍 Kenapa Ini Penting?</h3>
+      <p>Pergerakan mantel adalah "mesin" yang menggerakkan seluruh permukaan Bumi. Benua-benua terus bergerak karena mantel — walaupun sangat sangat lambat, hanya beberapa sentimeter per tahun. Tapi jutaan tahun lagi, peta dunia akan berbeda dari sekarang!</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+      <span class="page-indicator">Halaman 4 dari 7</span>
+      <button class="btn btn-next" onclick="goPage(5)">Ke Inti Luar! 🔥 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 5: LAPISAN 3 - INTI LUAR ── -->
+  <div class="page" id="page-5">
+    <div class="section-header">
+      <span class="tag">🔥 Lapisan Ketiga</span>
+      <h1>Inti Luar Bumi<br><span style="color:var(--lava)">Outer Core</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Laporan Perjalanan</p>
+      <p>"WOOOOAH! 🤩 Di luar jendela, semuanya berubah jadi lautan besi yang menyala! Warnanya seperti matahari terbenam — merah, oranye, kuning. Terra Explorer berenang menembus cairan logam panas. Kompas di dalam kapsul berputar-putar... kita sangat dekat dengan sumber kekuatan magnet Bumi!"</p>
+    </div>
+
+    <div class="card card-outercore">
+      <span class="card-icon">🔥</span>
+      <span class="depth-badge" style="border-color:rgba(220,47,2,0.4); color:#ff6b35; background:rgba(220,47,2,0.15);">📏 Kedalaman: 2.900 – 5.100 km</span>
+      <h2>Inti Luar</h2>
+      <p>Sekarang kita benar-benar masuk ke bagian dalam Bumi! Inti luar adalah lautan logam cair yang super panas — terutama terdiri dari <strong>besi dan nikel cair</strong>. Bayangkan kolam renang yang isinya bukan air, tapi logam yang meleleh! 🏊</p>
+
+      <div class="analogy-box">
+        <p>Bayangkan <strong>kamu membuat cokelat panas ☕</strong>. Saat cokelat meleleh dan mengalir, itulah yang terjadi di inti luar Bumi — tapi bukan cokelat, melainkan besi dan nikel cair pada suhu ribuan derajat Celsius!</p>
+      </div>
+
+      <h3>🧲 Sang Pembuat Magnet Bumi!</h3>
+      <p>Ini adalah rahasia terbesar inti luar: <strong>ini adalah tempat lahirnya medan magnet Bumi!</strong> 🌐 Saat logam cair berputar, ia menciptakan arus listrik yang menghasilkan medan magnet raksasa. Medan magnet inilah yang membuat jarum kompas selalu menunjuk ke Utara!</p>
+
+      <h3>🛡️ Pelindung Kehidupan!</h3>
+      <p>Tanpa medan magnet dari inti luar, radiasi berbahaya dari Matahari akan langsung menghantam permukaan Bumi dan menghancurkan semua makhluk hidup. Jadi, inti luar adalah pahlawan tersembunyi yang melindungi kita semua! 🦸</p>
+
+      <h3>🌡️ Suhu yang Luar Biasa</h3>
+      <p>Suhu di inti luar mencapai <strong>4.000–6.000°C</strong>! Lebih panas dari permukaan Matahari! Dan tekanannya sangat besar sehingga besi tidak bisa menguap, hanya mencair.</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+      <span class="page-indicator">Halaman 5 dari 7</span>
+      <button class="btn btn-next" onclick="goPage(6)">Ke Jantung Bumi! 💎 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 6: LAPISAN 4 - INTI DALAM + FAKTA + DIAGRAM ── -->
+  <div class="page" id="page-6">
+    <div class="section-header">
+      <span class="tag">💎 Lapisan Terakhir!</span>
+      <h1>Inti Dalam Bumi<br><span style="color:#ff4444)">Inner Core</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Laporan Perjalanan</p>
+      <p>"Kita sudah mencapai bagian terdalam Bumi, Aslan! Di luar jendela, tidak ada lagi lautan cair. Sebaliknya, ada bola padat yang sangat terang — seperti berlian raksasa yang membara! Inilah jantung Bumi. Ini adalah tempat yang belum pernah diinjak siapapun. Hanya kamu dan Terra Explorer!" 💎🔥</p>
+    </div>
+
+    <div class="card card-innercore">
+      <span class="card-icon">💎</span>
+      <span class="depth-badge" style="border-color:rgba(157,2,8,0.4); color:#ff4444; background:rgba(157,2,8,0.15);">📏 Kedalaman: 5.100 – 6.371 km (pusat Bumi!)</span>
+      <h2>Inti Dalam</h2>
+      <p>Selamat! Kamu sudah sampai di jantung Bumi! 🎊 Inti dalam adalah bola padat yang ada tepat di tengah-tengah Bumi. Ukurannya kira-kira sebesar bulan kita — dengan jari-jari sekitar 1.200 km!</p>
+
+      <div class="analogy-box">
+        <p>Walaupun suhunya super panas, inti dalam itu <strong>PADAT</strong> seperti bola besi raksasa! Bagaimana bisa? Karena tekanan dari semua lapisan di atasnya begitu besar, sehingga besi tidak bisa mencair meski suhunya ribuan derajat. Ibarat es batu yang ditekan sangat keras tidak mau meleleh! 🧊</p>
+      </div>
+
+      <h3>🌡️ Terpanas di Bumi!</h3>
+      <p>Suhu inti dalam diperkirakan mencapai <strong>5.400°C</strong> — hampir sama dengan suhu permukaan Matahari! Tapi karena tekanannya luar biasa besar (3,6 juta kali tekanan udara di permukaan!), besinya tetap padat dan tidak meleleh.</p>
+
+      <h3>🔄 Berputar Sendiri!</h3>
+      <p>Fakta mengejutkan: inti dalam Bumi <strong>berputar sedikit lebih cepat</strong> dari bagian Bumi lainnya! Ilmuwan menemukan bahwa inti dalam kadang berputar lebih cepat, dan kadang lebih lambat dari permukaan Bumi. Seperti roda di dalam roda! 🎡</p>
+    </div>
+
+    <!-- EARTH DIAGRAM -->
+    <div class="card" style="--accent: linear-gradient(90deg, var(--leaf), var(--sky));">
+      <span class="card-icon">🌍</span>
+      <h2>Diagram Lapisan Bumi</h2>
+      <p style="margin-bottom:20px;">Ini penampang melintang Bumi dari atas sampai ke pusatnya!</p>
+
+      <div class="earth-diagram">
+        <div class="earth-cross"></div>
+        <div class="layer-labels">
+          <div class="layer-label">
+            <div class="label-dot" style="background:#40916c;"></div>
+            <span><strong>Kerak Bumi</strong> — 0–70 km (tempat kita tinggal!)</span>
+          </div>
+          <div class="layer-label">
+            <div class="label-dot" style="background:#e85d04;"></div>
+            <span><strong>Mantel</strong> — 70–2.900 km (batu plastis panas)</span>
+          </div>
+          <div class="layer-label">
+            <div class="label-dot" style="background:#dc2f02;"></div>
+            <span><strong>Inti Luar</strong> — 2.900–5.100 km (besi cair)</span>
+          </div>
+          <div class="layer-label">
+            <div class="label-dot" style="background:#9d0208;"></div>
+            <span><strong>Inti Dalam</strong> — 5.100–6.371 km (bola besi padat)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAKTA KEREN -->
+    <div class="card" style="--accent: linear-gradient(90deg, var(--ocean), var(--leaf));">
+      <span class="card-icon">🤯</span>
+      <h2>Fakta Keren Tentang Bumi!</h2>
+
+      <div class="fact-grid">
+        <div class="fact-card">
+          <span class="fact-emoji">📏</span>
+          <span class="fact-number">6.371 km</span>
+          <span class="fact-label">Jari-jari Bumi dari permukaan ke pusatnya</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌡️</span>
+          <span class="fact-number">5.400°C</span>
+          <span class="fact-label">Suhu di inti dalam Bumi</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">⏱️</span>
+          <span class="fact-number">4,5 Miliar</span>
+          <span class="fact-label">Tahun umur Bumi kita</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🧲</span>
+          <span class="fact-number">100%</span>
+          <span class="fact-label">Bergantung pada inti luar untuk medan magnet</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌋</span>
+          <span class="fact-number">84%</span>
+          <span class="fact-label">Volume Bumi adalah mantel</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">💎</span>
+          <span class="fact-number">1.220 km</span>
+          <span class="fact-label">Jari-jari inti dalam Bumi</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+      <span class="page-indicator">Halaman 6 dari 7</span>
+      <button class="btn btn-next" onclick="goPage(7)">Tantangan Aslan! ⚡ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 7: TANTANGAN + PENUTUP ── -->
+  <div class="page" id="page-7">
+    <div class="section-header">
+      <span class="tag">⚡ Tantangan Aslan</span>
+      <h1>Uji Kemampuanmu!</h1>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-title">🏆 Misi Aslan — Penjelajah Bumi</div>
+      <p style="font-size:15px; opacity:0.8; margin-bottom:20px;">Kamu sudah membaca semuanya! Sekarang coba tantangan ini untuk membuktikan kamu adalah Penjelajah Bumi sejati!</p>
+
+      <div class="challenge-item">
+        <div class="challenge-num">1</div>
+        <div>
+          <p><strong>Gambar Bumi!</strong> 🖍️ Ambil kertas dan pensil warna. Gambar lingkaran besar, lalu bagi menjadi 4 lapisan dari dalam ke luar. Beri warna dan nama masing-masing lapisan. Gunakan merah untuk inti dalam, oranye untuk inti luar, kuning untuk mantel, dan hijau/cokelat untuk kerak!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">2</div>
+        <div>
+          <p><strong>Buat Model Bumi dari Makanan!</strong> 🥚 Minta bantuan orang tuamu untuk membuat model Bumi dari telur rebus. Kulit telur = Kerak Bumi, putih telur = Mantel, dan kuning telur = Inti Bumi. Coba jelaskan ke ayah atau ibumu!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">3</div>
+        <div>
+          <p><strong>Kuis Kilat!</strong> ⚡ Jawab pertanyaan ini tanpa melihat buku: (a) Lapisan apa yang menghasilkan medan magnet Bumi? (b) Lapisan mana yang paling tebal? (c) Mengapa inti dalam padat padahal suhunya sangat panas?</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">4</div>
+        <div>
+          <p><strong>Ceritakan ke Temanmu!</strong> 👫 Coba ceritakan tentang 4 lapisan Bumi kepada teman atau saudaramu. Kalau kamu bisa menjelaskannya dengan mudah, artinya kamu sudah benar-benar paham!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">5</div>
+        <div>
+          <p><strong>Eksplorasi Lanjutan!</strong> 🔭 Tanya orang tuamu untuk mencari video di YouTube tentang "cara ilmuwan mengetahui lapisan Bumi" — jawabannya mengejutkan: mereka menggunakan gelombang gempa bumi, bukan dengan menggali!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENUTUP -->
+    <div class="card" style="--accent: linear-gradient(90deg, var(--orange), var(--leaf)); margin-top:32px;">
+      <div class="closing-content">
+        <span class="trophy-big">🏆</span>
+        <h2 style="font-family:'Fredoka One',cursive; font-size:clamp(24px,5vw,36px); margin-bottom:16px;">
+          Selamat, Aslan! 🎉
+        </h2>
+        <p style="font-size:clamp(15px,2.5vw,17px); max-width:500px; margin:0 auto 24px; line-height:1.8; opacity:0.9;">
+          Kamu telah menyelesaikan petualangan ke pusat Bumi bersama Terra Explorer! Kamu sekarang tahu rahasia terdalam planet kita. Kamu adalah seorang <strong>Geolog Muda</strong> sejati!
+        </p>
+
+        <div class="quote-box" style="max-width:520px; margin:0 auto 28px;">
+          <p>"Rasa ingin tahu adalah kompas terbaik seorang penjelajah. Teruslah bertanya, teruslah belajar — dunia ini penuh keajaiban yang menunggumu!"</p>
+          <cite>— Untuk Aslan, Penjelajah Bumi Sejati 🌍</cite>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-bottom:32px;">
+          <span style="background:rgba(116,198,157,0.15);border:1px solid rgba(116,198,157,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🏔️ Penakluk Kerak Bumi</span>
+          <span style="background:rgba(232,93,4,0.15);border:1px solid rgba(232,93,4,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🌋 Penjelajah Mantel</span>
+          <span style="background:rgba(220,47,2,0.15);border:1px solid rgba(220,47,2,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🔥 Master Inti Luar</span>
+          <span style="background:rgba(157,2,8,0.15);border:1px solid rgba(157,2,8,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">💎 Penakluk Inti Dalam</span>
+        </div>
+
+        <button class="btn btn-done" onclick="selesaiMembaca()">
+          ✅ Saya Sudah Selesai Membaca!
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+      <span class="page-indicator">Halaman 7 dari 7</span>
+      <span></span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── STARS ──
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 3 + 1;
+    s.style.cssText = `
+      width:${size}px; height:${size}px;
+      top:${Math.random()*100}%; left:${Math.random()*100}%;
+      animation-delay:${Math.random()*3}s;
+      animation-duration:${2+Math.random()*3}s;
+    `;
+    starsEl.appendChild(s);
+  }
+
+  // ── PAGES ──
+  const TOTAL = 7;
+  let current = 1;
+
+  function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── DARK/LIGHT MODE ──
+  const modeBtn = document.getElementById('modeBtn');
+  let isLight = false;
+  modeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+    modeBtn.textContent = isLight ? '🌙' : '☀️';
+  });
+
+  // ── SELESAI MEMBACA ──
+  function selesaiMembaca() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed; top:0; left:0; right:0; bottom:0;
+      background:rgba(0,0,0,0.8); backdrop-filter:blur(8px);
+      z-index:999; display:flex; align-items:center; justify-content:center;
+      padding:20px; animation:fadeIn 0.3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="background:linear-gradient(135deg,#1b3a2a,#0d1b2a);border:2px solid rgba(116,198,157,0.4);border-radius:28px;padding:40px;max-width:440px;width:100%;text-align:center;color:white;position:relative;">
+        <span style="font-size:80px;display:block;margin-bottom:16px;animation:bounceIn 0.8s ease;">🎉</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:12px;background:linear-gradient(135deg,#74c69d,#f4a261);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Luar Biasa, Aslan!</h2>
+        <p style="font-size:16px;line-height:1.8;opacity:0.9;margin-bottom:24px;">Kamu telah menyelesaikan buku <strong>"Petualangan ke Pusat Bumi"</strong> dengan sempurna! 🏆<br><br>Kamu sekarang adalah Penjelajah Bumi sejati!</p>
+        <button onclick="this.closest('div').parentElement.remove()" style="background:linear-gradient(135deg,#40916c,#2d6a4f);color:white;border:none;padding:14px 32px;border-radius:50px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(64,145,108,0.4);">Keren! Tutup 🌍</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) modal.remove();
+    });
+  }
+
+  // ── KEYBOARD NAV ──
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goPage(current - 1);
+  });
+
+  // Init
+  updateProgress();
+</script>
+</body>
+</html>

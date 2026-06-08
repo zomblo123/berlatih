@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petualangan Aslan di Negeri AI – Hari 30: Pahlawan AI!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --emas:       #F59E0B;
+      --emas-muda:  #FCD34D;
+      --emas-gelap: #D97706;
+      --biru:       #2563EB;
+      --biru-muda:  #60A5FA;
+      --biru-tua:   #1E3A8A;
+      --ungu:       #7C3AED;
+      --hijau:      #10B981;
+      --merah:      #EF4444;
+      --pink:       #EC4899;
+      --oranye:     #F97316;
+      --bg:         #FFFBEB;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 0%  0%,  #FDE68A70 0%, transparent 40%),
+        radial-gradient(ellipse at 100% 0%,  #BFDBFE60 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 100%, #FEF9EE50 0%, transparent 50%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .font-kartun { font-family: 'Fredoka One', cursive; }
+
+    /* ===== CONFETTI CANVAS ===== */
+    #confettiCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ===== FLOATING SHAPES ===== */
+    .shapes-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .shape {
+      position: absolute;
+      animation: floatShape linear infinite;
+      opacity: 0.13;
+    }
+    @keyframes floatShape {
+      0%   { transform: translateY(110vh) rotate(0deg);   opacity: 0; }
+      10%  { opacity: 0.13; }
+      90%  { opacity: 0.13; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ===== TOP BACK LINK ===== */
+    .top-back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.25);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      padding: 8px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      border: 2px solid rgba(255,255,255,0.40);
+      backdrop-filter: blur(8px);
+      transition: background 0.2s, transform 0.2s;
+    }
+    .top-back-link:hover { background: rgba(255,255,255,0.35); transform: translateX(-4px); }
+
+    /* ===== HEADER GRAND FINALE ===== */
+    .header-bar {
+      background: linear-gradient(135deg,
+        #1E3A8A 0%, #1D4ED8 20%, #2563EB 40%,
+        #D97706 65%, #F59E0B 80%, #FCD34D 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .header-bar::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        repeating-linear-gradient(45deg, transparent 0px, transparent 28px, rgba(255,255,255,0.04) 28px, rgba(255,255,255,0.04) 56px);
+    }
+    .header-glow {
+      position: absolute; top: -60px; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 180px;
+      background: radial-gradient(ellipse, rgba(252,211,77,0.35) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .badge-hari {
+      background: linear-gradient(135deg, #FCD34D, #F59E0B);
+      color: #1E3A8A;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      padding: 5px 20px;
+      border-radius: 999px;
+      display: inline-block;
+      box-shadow: 0 4px 0 #92400E, 0 6px 20px rgba(245,158,11,0.4);
+      animation: bounceIn 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes bounceIn {
+      0%   { transform: scale(0.3); opacity: 0; }
+      60%  { transform: scale(1.15); }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    .hero-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2.2rem, 7vw, 5rem);
+      color: #fff;
+      text-shadow: 0 6px 0 #92400E, 0 10px 30px rgba(0,0,0,0.4);
+      letter-spacing: 2px;
+      animation: titleReveal 0.8s ease both 0.2s;
+      line-height: 1.1;
+    }
+    @keyframes titleReveal {
+      from { transform: translateY(-50px) scale(0.8); opacity: 0; }
+      to   { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .subtitle-hdr {
+      color: #FEF9EE;
+      font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+      font-weight: 800;
+      animation: titleReveal 0.8s ease both 0.4s;
+    }
+    .progress-track {
+      height: 12px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FCD34D, #F97316, #EC4899);
+      border-radius: 999px;
+      width: 100%;
+      animation: progressGrow 1.5s ease both 0.5s;
+      background-size: 200% 100%;
+      animation: progressGrow 1.5s ease both 0.5s, shimmer 2s linear infinite 2s;
+    }
+    @keyframes progressGrow {
+      from { width: 0%; }
+      to   { width: 100%; }
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+
+    /* ===== CARD BASE ===== */
+    .card {
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 8px 32px rgba(37,99,235,0.10), 0 2px 8px rgba(0,0,0,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; }
+    .card-gold::before   { background: linear-gradient(90deg, #F59E0B, #FCD34D, #F97316); }
+    .card-blue::before   { background: linear-gradient(90deg, #2563EB, #60A5FA); }
+    .card-green::before  { background: linear-gradient(90deg, #10B981, #6EE7B7); }
+    .card-purple::before { background: linear-gradient(90deg, #7C3AED, #C4B5FD); }
+    .card-pink::before   { background: linear-gradient(90deg, #EC4899, #F9A8D4); }
+    .card-rainbow::before {
+      background: linear-gradient(90deg, #EF4444,#F97316,#EAB308,#10B981,#2563EB,#7C3AED,#EC4899);
+    }
+
+    /* ===== MAIN ILLUSTRATION ===== */
+    .main-ilus {
+      background: linear-gradient(160deg, #FEF3C7 0%, #DBEAFE 50%, #EDE9FE 100%);
+      border-radius: 24px;
+      border: 4px solid #fff;
+      box-shadow: 0 12px 40px rgba(37,99,235,0.15), 0 4px 0 #F59E0B;
+      position: relative;
+      overflow: hidden;
+      min-height: 380px;
+    }
+    .main-ilus::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 15% 25%, #FDE68A50 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, #BFDBFE50 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, #EDE9FE30 0%, transparent 55%);
+    }
+
+    /* ===== CHAR ANIMATIONS ===== */
+    .char-float { animation: charFloat 3s ease-in-out infinite; }
+    .char-float-2 { animation: charFloat 3s ease-in-out infinite 1.5s; }
+    @keyframes charFloat {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-14px); }
+    }
+
+    /* ===== TROPHY SPIN ===== */
+    .trophy-spin { animation: trophySpin 2s ease-in-out infinite; }
+    @keyframes trophySpin {
+      0%,100% { transform: scale(1) rotate(-5deg); }
+      50%      { transform: scale(1.12) rotate(5deg); }
+    }
+
+    /* ===== STORY TEXT ===== */
+    .story-text {
+      font-size: clamp(1rem, 2.4vw, 1.18rem);
+      line-height: 2;
+      color: #374151;
+      font-weight: 600;
+    }
+    .hl-gold   { background: linear-gradient(120deg,#FEF3C7,#FCD34D); padding:2px 8px; border-radius:8px; color:#92400E; font-weight:800; }
+    .hl-blue   { background: linear-gradient(120deg,#DBEAFE,#93C5FD); padding:2px 8px; border-radius:8px; color:#1E40AF; font-weight:800; }
+    .hl-green  { background: linear-gradient(120deg,#ECFDF5,#6EE7B7); padding:2px 8px; border-radius:8px; color:#065F46; font-weight:800; }
+
+    /* ===== CERTIFICATE ===== */
+    .sertifikat-wrap {
+      background: linear-gradient(150deg, #FFFBEB 0%, #FEF3C7 40%, #FFF9EF 100%);
+      border-radius: 28px;
+      padding: 4px;
+      box-shadow: 0 16px 60px rgba(245,158,11,0.30), 0 4px 0 #D97706;
+    }
+    .sertifikat-inner {
+      border-radius: 24px;
+      border: 3px solid #F59E0B;
+      background: linear-gradient(150deg, #FFFDF5 0%, #FFFBEB 100%);
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .sertifikat-inner::before {
+      content: '';
+      position: absolute; inset: 8px;
+      border: 2px dashed #FCD34D;
+      border-radius: 18px;
+      pointer-events: none;
+    }
+    .sertifikat-inner::after {
+      content: '🌟 AI HERO 🌟 AI HERO 🌟 AI HERO 🌟 AI HERO 🌟 AI HERO 🌟 AI HERO 🌟';
+      position: absolute;
+      bottom: 12px; left: 0; right: 0;
+      font-size: 0.62rem;
+      color: #F59E0B;
+      letter-spacing: 4px;
+      text-align: center;
+      font-weight: 800;
+      opacity: 0.45;
+    }
+    .cert-corners {
+      position: absolute;
+      font-size: 1.8rem;
+      opacity: 0.5;
+    }
+    .sertifikat-title {
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(1.6rem, 5vw, 2.8rem);
+      background: linear-gradient(135deg, #D97706, #F59E0B, #FCD34D, #F97316);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 2px 4px rgba(245,158,11,0.3));
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .cert-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2.2rem, 7vw, 4rem);
+      color: #1E3A8A;
+      text-shadow: 0 4px 0 #BFDBFE, 0 6px 20px rgba(37,99,235,0.2);
+      letter-spacing: 3px;
+      animation: nameGlow 2s ease-in-out infinite;
+    }
+    @keyframes nameGlow {
+      0%,100% { text-shadow: 0 4px 0 #BFDBFE, 0 6px 20px rgba(37,99,235,0.2); }
+      50%      { text-shadow: 0 4px 0 #BFDBFE, 0 6px 30px rgba(37,99,235,0.5); }
+    }
+    .cert-seal {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1E3A8A, #2563EB, #60A5FA);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      box-shadow: 0 6px 20px rgba(37,99,235,0.4), 0 0 0 4px #FCD34D, 0 0 0 7px #F59E0B;
+      animation: sealSpin 6s linear infinite;
+    }
+    @keyframes sealSpin {
+      0%   { box-shadow: 0 6px 20px rgba(37,99,235,0.4), 0 0 0 4px #FCD34D, 0 0 0 7px #F59E0B; }
+      50%  { box-shadow: 0 6px 30px rgba(37,99,235,0.6), 0 0 0 4px #F97316, 0 0 0 7px #EF4444; }
+      100% { box-shadow: 0 6px 20px rgba(37,99,235,0.4), 0 0 0 4px #FCD34D, 0 0 0 7px #F59E0B; }
+    }
+    .cert-stars-row { letter-spacing: 2px; }
+    .cert-badge-row {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      flex-wrap: wrap;
+      margin: 14px 0;
+    }
+    .cert-badge {
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      font-family: 'Fredoka One', cursive;
+      border: 2px solid transparent;
+    }
+
+    /* ===== KOMIK PANELS ===== */
+    .komik-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 500px) {
+      .komik-grid { grid-template-columns: 1fr; }
+    }
+    .panel {
+      border-radius: 18px;
+      border: 4px solid #F59E0B;
+      overflow: hidden;
+      background: #fff;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+      box-shadow: 0 6px 0 #92400E;
+    }
+    .panel:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 12px 0 #92400E; }
+    .panel:nth-child(2) { border-color: #2563EB; box-shadow: 0 6px 0 #1E3A8A; }
+    .panel:nth-child(2):hover { box-shadow: 0 12px 0 #1E3A8A; }
+    .panel:nth-child(3) { border-color: #10B981; box-shadow: 0 6px 0 #065F46; }
+    .panel:nth-child(3):hover { box-shadow: 0 12px 0 #065F46; }
+    .panel-scene {
+      width: 100%; height: 165px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .panel-num {
+      position: absolute; top: 8px; left: 8px;
+      width: 28px; height: 28px;
+      background: #F59E0B; color: #fff;
+      font-family: 'Fredoka One', cursive;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 0 #92400E;
+      z-index: 2;
+    }
+    .panel:nth-child(2) .panel-num { background: #2563EB; box-shadow: 0 2px 0 #1E3A8A; }
+    .panel:nth-child(3) .panel-num { background: #10B981; box-shadow: 0 2px 0 #065F46; }
+    .panel-dialog {
+      position: absolute; top: 8px; right: 6px;
+      background: #fff;
+      border: 2px solid #F59E0B;
+      border-radius: 10px 10px 10px 2px;
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 3px 7px;
+      max-width: 65%;
+      color: #1E1B4B;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+      z-index: 2;
+      line-height: 1.35;
+    }
+    .panel:nth-child(2) .panel-dialog { border-color: #2563EB; }
+    .panel:nth-child(3) .panel-dialog { border-color: #10B981; }
+    .panel-caption {
+      padding: 10px 12px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #374151;
+      text-align: center;
+      min-height: 52px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ===== ACHIEVEMENT BADGES ===== */
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    @media (min-width: 580px) {
+      .badge-grid { grid-template-columns: repeat(6, 1fr); }
+    }
+    .achievement {
+      border-radius: 18px;
+      padding: 14px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.12);
+      animation: badgePop 0.4s ease both;
+    }
+    .achievement:hover { transform: translateY(-5px) scale(1.05); }
+    @keyframes badgePop {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .achievement-icon {
+      font-size: 2.4rem;
+      display: block;
+      margin-bottom: 6px;
+      animation: iconBounce 2.5s ease-in-out infinite;
+    }
+    @keyframes iconBounce {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50%      { transform: translateY(-8px) rotate(3deg); }
+    }
+    .achievement:nth-child(2) .achievement-icon { animation-delay: 0.4s; }
+    .achievement:nth-child(3) .achievement-icon { animation-delay: 0.8s; }
+    .achievement:nth-child(4) .achievement-icon { animation-delay: 1.2s; }
+    .achievement:nth-child(5) .achievement-icon { animation-delay: 1.6s; }
+    .achievement:nth-child(6) .achievement-icon { animation-delay: 2s; }
+
+    /* ===== CHALLENGE SECTION ===== */
+    .challenge-box {
+      background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 40%, #F59E0B 100%);
+      border-radius: 24px;
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .challenge-box::before {
+      content: '🚀 ⭐ 🏆 🤖 🌟 💡 🎯 🔥';
+      position: absolute;
+      top: 10px; right: 14px;
+      font-size: 1.1rem; letter-spacing: 5px; opacity: 0.18;
+    }
+    .challenge-card {
+      background: rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 16px 18px;
+      border: 2px solid rgba(255,255,255,0.25);
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      backdrop-filter: blur(4px);
+    }
+    .challenge-card:hover {
+      background: rgba(255,255,255,0.22);
+      transform: translateX(6px);
+    }
+    .challenge-card.done {
+      background: rgba(16,185,129,0.25);
+      border-color: rgba(16,185,129,0.5);
+    }
+    .challenge-card.done::after {
+      content: ' ✅';
+    }
+    .challenge-check {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      border: 3px solid rgba(255,255,255,0.6);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 1rem;
+      transition: all 0.2s;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* ===== FINAL MESSAGE ===== */
+    .final-message {
+      background: linear-gradient(150deg, #1E3A8A 0%, #1D4ED8 30%, #D97706 70%, #F59E0B 100%);
+      border-radius: 28px;
+      padding: 36px 28px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .final-message::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(252,211,77,0.2) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(147,197,253,0.2) 0%, transparent 50%);
+    }
+    .firework-emoji {
+      font-size: 2rem;
+      animation: firework 1.5s ease-in-out infinite;
+    }
+    @keyframes firework {
+      0%,100% { transform: scale(1) rotate(-10deg); opacity: 1; }
+      50%      { transform: scale(1.3) rotate(10deg); opacity: 0.8; }
+    }
+
+    /* ===== QUIZ ===== */
+    .quiz-option {
+      border: 3px solid #FDE68A;
+      border-radius: 16px;
+      padding: 13px 18px;
+      cursor: pointer;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #1E1B4B;
+      background: #fff;
+      transition: all 0.2s;
+      display: flex; align-items: center; gap: 12px;
+      text-align: left; width: 100%;
+      font-family: 'Nunito', sans-serif;
+    }
+    .quiz-option:hover { border-color: #F59E0B; background: #FFFBEB; transform: translateX(6px); }
+    .quiz-option.correct { border-color: #10B981; background: #ECFDF5; animation: correctPop 0.4s ease; }
+    .quiz-option.wrong   { border-color: #EF4444; background: #FEF2F2; animation: shake 0.4s ease; }
+    @keyframes correctPop { 0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)} }
+    @keyframes shake { 0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)} }
+    .quiz-result {
+      display: none;
+      border-radius: 14px; padding: 14px 18px;
+      font-size: 1rem; font-weight: 800; text-align: center;
+      animation: fadeUp 0.4s ease;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)} }
+
+    /* ===== SCROLL REVEAL ===== */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .revealed { opacity: 1; transform: translateY(0); }
+
+    /* ===== SPARKLE ===== */
+    .sparkle { display: inline-block; animation: sparkleAnim 1.5s ease-in-out infinite; }
+    @keyframes sparkleAnim { 0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.3) rotate(15deg)} }
+
+    /* ===== SECTION TITLE ===== */
+    .section-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      color: #1E1B4B;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    /* ===== STARS FLOATING ===== */
+    .stars-wrap { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; }
+    .star { position: absolute; animation: starTwinkle 3s ease-in-out infinite; opacity: 0.5; font-size: 1.1rem; }
+    @keyframes starTwinkle { 0%,100%{opacity:0.3;transform:scale(1)}50%{opacity:0.8;transform:scale(1.4)} }
+
+    /* ===== FIREWORKS BG ===== */
+    .fw { position: absolute; animation: fwAnim 2s ease-in-out infinite; font-size: 1.5rem; }
+    @keyframes fwAnim { 0%{opacity:0;transform:scale(0.5)}50%{opacity:1;transform:scale(1.2)}100%{opacity:0;transform:scale(0.5)} }
+  </style>
+</head>
+<body>
+
+<canvas id="confettiCanvas"></canvas>
+
+<!-- FLOATING SHAPES -->
+<div class="shapes-bg" aria-hidden="true">
+  <div class="shape" style="left:5%;  width:26px;height:26px;background:#FCD34D;border-radius:50%;  animation-duration:13s;animation-delay:0s;"></div>
+  <div class="shape" style="left:18%; width:18px;height:18px;background:#60A5FA;border-radius:4px;  animation-duration:11s;animation-delay:2s;"></div>
+  <div class="shape" style="left:33%; width:30px;height:30px;background:#F97316;border-radius:50%;  animation-duration:16s;animation-delay:4s;"></div>
+  <div class="shape" style="left:50%; width:22px;height:22px;background:#10B981;border-radius:50%;  animation-duration:14s;animation-delay:1s;"></div>
+  <div class="shape" style="left:67%; width:20px;height:20px;background:#EC4899;border-radius:6px;  animation-duration:12s;animation-delay:3s;"></div>
+  <div class="shape" style="left:82%; width:28px;height:28px;background:#7C3AED;border-radius:50%;  animation-duration:17s;animation-delay:5s;"></div>
+  <div class="shape" style="left:43%; width:16px;height:16px;background:#FCD34D;border-radius:4px;  animation-duration:15s;animation-delay:7s;"></div>
+  <div class="shape" style="left:73%; width:24px;height:24px;background:#F59E0B;border-radius:50%;  animation-duration:18s;animation-delay:6s;"></div>
+  <div class="shape" style="left:25%; width:14px;height:14px;background:#2563EB;border-radius:50%;  animation-duration:10s;animation-delay:8s;"></div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header class="header-bar">
+  <div class="header-glow"></div>
+  <div class="relative z-10 max-w-3xl mx-auto px-5 pt-5 pb-10 text-center">
+
+    <!-- BACK LINK -->
+    <div class="flex justify-start mb-5">
+      <a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+    </div>
+
+    <!-- FIREWORKS DECO -->
+    <div class="fw" style="top:20px;left:8%;animation-delay:0s">🎆</div>
+    <div class="fw" style="top:14px;right:10%;animation-delay:0.7s">🎇</div>
+    <div class="fw" style="top:50px;left:20%;animation-delay:1.3s">✨</div>
+    <div class="fw" style="top:40px;right:22%;animation-delay:0.4s">🌟</div>
+
+    <!-- BADGE -->
+    <div class="badge-hari mb-4">🏆 HARI 30 dari 30 — SELESAI! 🏆</div>
+
+    <!-- TITLE -->
+    <h1 class="hero-title mb-2">
+      <span class="sparkle">🌟</span> Aslan Jadi<br>Pahlawan AI! <span class="sparkle">🤖</span>
+    </h1>
+    <p class="subtitle-hdr mb-6">"30 Hari Penuh Keberanian, Keingintahuan, dan Keajaiban!"</p>
+
+    <!-- CONFETTI BUTTON -->
+    <button
+      onclick="launchConfetti()"
+      style="background:linear-gradient(135deg,#FCD34D,#F59E0B);color:#1E3A8A;font-family:'Fredoka One',cursive;font-size:1.05rem;padding:10px 28px;border-radius:999px;border:none;cursor:pointer;box-shadow:0 5px 0 #92400E;transition:transform 0.2s,box-shadow 0.2s;margin-bottom:20px;"
+      onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 0 #92400E'"
+      onmouseout="this.style.transform='';this.style.boxShadow='0 5px 0 #92400E'"
+    >🎉 Rayakan Sekarang!</button>
+
+    <!-- PROGRESS COMPLETE -->
+    <div class="max-w-xs mx-auto">
+      <div class="flex justify-between mb-1">
+        <span style="color:rgba(255,255,255,0.8);font-size:0.8rem;font-weight:800">Petualangan Selesai!</span>
+        <span style="color:#FCD34D;font-size:0.8rem;font-weight:800">30/30 ✅</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill"></div></div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main class="relative z-10 max-w-3xl mx-auto px-4 py-8 space-y-8">
+
+  <!-- ===== 1. ILUSTRASI HERO ===== -->
+  <section class="reveal card card-gold">
+    <div class="p-5 pb-0">
+      <div class="main-ilus">
+        <div class="stars-wrap">
+          <span class="star" style="top:8%;left:6%;animation-delay:0s">🌟</span>
+          <span class="star" style="top:12%;right:8%;animation-delay:1s">⭐</span>
+          <span class="star" style="top:55%;left:4%;animation-delay:2s">✨</span>
+          <span class="star" style="top:65%;right:5%;animation-delay:0.5s">💫</span>
+          <span class="star" style="top:30%;left:48%;animation-delay:1.5s">🎊</span>
+          <span class="star" style="top:80%;left:30%;animation-delay:0.8s">🎉</span>
+          <span class="star" style="top:75%;right:28%;animation-delay:1.2s">🏆</span>
+        </div>
+
+        <!-- CONFETTI EMOJIS BG -->
+        <div style="position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden">
+          <span style="position:absolute;top:18%;left:3%;font-size:1.3rem;animation:fwAnim 2.2s ease-in-out infinite;animation-delay:0.3s">🎊</span>
+          <span style="position:absolute;top:25%;right:5%;font-size:1.1rem;animation:fwAnim 1.8s ease-in-out infinite;animation-delay:0.9s">🎈</span>
+          <span style="position:absolute;top:70%;left:8%;font-size:1.2rem;animation:fwAnim 2s ease-in-out infinite;animation-delay:1.4s">🎉</span>
+          <span style="position:absolute;top:60%;right:9%;font-size:1rem;animation:fwAnim 2.4s ease-in-out infinite;animation-delay:0.5s">⭐</span>
+          <span style="position:absolute;top:5%;left:42%;font-size:1.5rem;animation:fwAnim 1.6s ease-in-out infinite">🏆</span>
+          <span style="position:absolute;top:82%;left:55%;font-size:1rem;animation:fwAnim 2.1s ease-in-out infinite;animation-delay:0.7s">🌟</span>
+          <span style="position:absolute;top:40%;left:1%;font-size:1rem;animation:fwAnim 1.9s ease-in-out infinite;animation-delay:1.1s">💫</span>
+          <span style="position:absolute;top:40%;right:2%;font-size:1rem;animation:fwAnim 2.3s ease-in-out infinite;animation-delay:0.2s">✨</span>
+        </div>
+
+        <!-- CHARACTERS -->
+        <div style="display:flex;align-items:flex-end;justify-content:center;gap:clamp(10px,4vw,50px);padding:20px 10px 0;position:relative;z-index:2;width:100%">
+
+          <!-- MINI ROBOT 1 applauding -->
+          <div class="char-float" style="margin-bottom:10px">
+            <svg width="62" height="88" viewBox="0 0 62 88" fill="none">
+              <rect x="14" y="30" width="34" height="36" rx="10" fill="#06B6D4"/>
+              <rect x="18" y="34" width="26" height="18" rx="6" fill="#0EA5E9"/>
+              <text x="19" y="47" font-size="11" fill="#FCD34D">👏</text>
+              <rect x="22" y="14" width="18" height="18" rx="8" fill="#CBD5E1"/>
+              <circle cx="27" cy="22" r="3" fill="#0D1117"/>
+              <circle cx="35" cy="22" r="3" fill="#0D1117"/>
+              <circle cx="28" cy="21" r="1" fill="white"/>
+              <circle cx="36" cy="21" r="1" fill="white"/>
+              <line x1="31" y1="14" x2="31" y2="7" stroke="#94A3B8" stroke-width="2"/>
+              <circle cx="31" cy="5" r="4" fill="#FCD34D"/>
+              <rect x="0"  y="38" width="16" height="8" rx="4" fill="#06B6D4"/>
+              <rect x="46" y="38" width="16" height="8" rx="4" fill="#06B6D4"/>
+              <rect x="18" y="64" width="12" height="20" rx="6" fill="#0EA5E9"/>
+              <rect x="32" y="64" width="12" height="20" rx="6" fill="#0EA5E9"/>
+              <text x="24" y="28" font-size="8" fill="#FCD34D">:D</text>
+            </svg>
+          </div>
+
+          <!-- ASLAN HERO (main, center) -->
+          <div class="char-float" style="z-index:3;position:relative">
+            <svg width="175" height="265" viewBox="0 0 175 265" fill="none">
+              <!-- CAPE -->
+              <path d="M55 125 Q30 180 28 230 Q50 220 70 215 Q87 212 87 212 Q87 212 104 215 Q124 220 146 230 Q144 180 119 125 Z" fill="#EF4444"/>
+              <path d="M55 125 Q35 165 32 210 Q50 205 72 200 Q87 198 87 198 Q87 198 102 200 Q124 205 142 210 Q139 165 119 125 Z" fill="#DC2626"/>
+              <!-- Cape inner -->
+              <path d="M65 130 Q50 175 48 215 Q65 212 80 210 Q87 209 87 209 Q87 209 94 210 Q109 212 126 215 Q124 175 109 130 Z" fill="#FCD34D" opacity="0.9"/>
+              <!-- Cape star -->
+              <text x="74" y="185" font-size="28" opacity="0.9">⭐</text>
+              <!-- Cape collar -->
+              <path d="M55 125 Q75 118 87 120 Q99 118 119 125 Q110 132 87 128 Q64 132 55 125Z" fill="#B91C1C"/>
+
+              <!-- Body -->
+              <rect x="58" y="118" width="59" height="58" rx="16" fill="#2563EB"/>
+              <!-- Shirt medal -->
+              <circle cx="87" cy="135" r="10" fill="#FCD34D"/>
+              <text x="80" y="140" font-size="13">🏆</text>
+              <!-- AI badge on shirt -->
+              <rect x="60" y="152" width="55" height="16" rx="8" fill="#1E3A8A"/>
+              <text x="75" y="163" font-size="9" fill="#60A5FA" font-weight="bold">AI HERO</text>
+
+              <!-- Neck -->
+              <rect x="80" y="100" width="15" height="20" rx="4" fill="#FBBF24"/>
+
+              <!-- Head -->
+              <ellipse cx="87" cy="82" rx="32" ry="30" fill="#FBBF24"/>
+
+              <!-- Hair explorer style -->
+              <path d="M57 75 Q60 48 87 46 Q114 48 117 75" fill="#92400E"/>
+              <ellipse cx="62" cy="68" rx="10" ry="8" fill="#92400E"/>
+              <ellipse cx="112" cy="68" rx="10" ry="8" fill="#92400E"/>
+
+              <!-- Eyes (proud/happy, slightly squinted) -->
+              <ellipse cx="76" cy="80" rx="8" ry="9" fill="white"/>
+              <ellipse cx="98" cy="80" rx="8" ry="9" fill="white"/>
+              <ellipse cx="77" cy="81" rx="5" ry="6" fill="#1E3A8A"/>
+              <ellipse cx="99" cy="81" rx="5" ry="6" fill="#1E3A8A"/>
+              <circle cx="79" cy="79" r="2" fill="white"/>
+              <circle cx="101" cy="79" r="2" fill="white"/>
+              <!-- Happy eyebrows -->
+              <path d="M68 68 Q76 63 84 67" stroke="#92400E" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path d="M90 67 Q98 63 106 68" stroke="#92400E" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+              <!-- Nose -->
+              <ellipse cx="87" cy="89" rx="4" ry="3" fill="#F59E0B"/>
+              <!-- Big proud smile -->
+              <path d="M75 98 Q87 110 99 98" stroke="#92400E" stroke-width="3" stroke-linecap="round" fill="none"/>
+              <!-- Cheeks glow -->
+              <ellipse cx="68" cy="94" rx="7" ry="5" fill="#F97316" opacity="0.3"/>
+              <ellipse cx="106" cy="94" rx="7" ry="5" fill="#F97316" opacity="0.3"/>
+
+              <!-- Explorer hat (heroic) -->
+              <ellipse cx="87" cy="56" rx="34" ry="10" fill="#92400E"/>
+              <rect x="58" y="43" width="58" height="20" rx="10" fill="#B45309"/>
+              <ellipse cx="87" cy="43" rx="28" ry="7" fill="#92400E"/>
+              <!-- Hat gold stripe -->
+              <rect x="58" y="54" width="58" height="5" rx="2.5" fill="#FCD34D"/>
+              <!-- Star on hat -->
+              <text x="78" y="52" font-size="14">⭐</text>
+
+              <!-- Arms - victory pose (raised) -->
+              <rect x="20" y="90" width="42" height="14" rx="7" fill="#2563EB" transform="rotate(-35 20 90)"/>
+              <ellipse cx="18" cy="82" rx="12" ry="12" fill="#FBBF24"/>
+              <!-- Fist left -->
+              <rect x="10" y="74" width="16" height="14" rx="6" fill="#FBBF24"/>
+              <rect x="10" y="70" width="16" height="8" rx="4" fill="#FBBF24"/>
+
+              <rect x="113" y="90" width="42" height="14" rx="7" fill="#2563EB" transform="rotate(35 155 90)"/>
+              <ellipse cx="157" cy="82" rx="12" ry="12" fill="#FBBF24"/>
+              <!-- Fist right pointing up -->
+              <rect x="149" y="74" width="16" height="14" rx="6" fill="#FBBF24"/>
+              <rect x="149" y="68" width="16" height="8" rx="4" fill="#FBBF24"/>
+              <!-- Thumb up right -->
+              <rect x="158" y="62" width="8" height="12" rx="4" fill="#FBBF24"/>
+
+              <!-- Legs -->
+              <rect x="64" y="172" width="24" height="50" rx="12" fill="#1E40AF"/>
+              <rect x="87" y="172" width="24" height="50" rx="12" fill="#1E40AF"/>
+              <!-- Shoes -->
+              <ellipse cx="76"  cy="222" rx="17" ry="10" fill="#1E1B4B"/>
+              <ellipse cx="99"  cy="222" rx="17" ry="10" fill="#1E1B4B"/>
+              <!-- Shoe shine -->
+              <ellipse cx="71" cy="218" rx="6" ry="3" fill="white" opacity="0.2"/>
+              <ellipse cx="94" cy="218" rx="6" ry="3" fill="white" opacity="0.2"/>
+
+              <!-- Trophy above hand left -->
+              <text x="0" y="70" font-size="26" class="trophy-spin" style="transform-origin:13px 57px">🏆</text>
+            </svg>
+          </div>
+
+          <!-- ROBO celebrating -->
+          <div class="char-float-2" style="z-index:2;position:relative">
+            <svg width="110" height="190" viewBox="0 0 110 190" fill="none">
+              <!-- Party hat on Robo -->
+              <polygon points="55,2 38,38 72,38" fill="#EC4899"/>
+              <polygon points="55,2 38,38 72,38" fill="none" stroke="#F9A8D4" stroke-width="1.5"/>
+              <text x="45" y="30" font-size="12">🎉</text>
+
+              <!-- Body -->
+              <rect x="22" y="72" width="66" height="68" rx="16" fill="#0EA5E9"/>
+              <rect x="28" y="78" width="54" height="38" rx="10" fill="#38BDF8"/>
+              <!-- Screen showing party -->
+              <text x="35" y="100" font-size="20">🎊</text>
+              <text x="35" y="115" font-size="9" fill="#FCD34D" font-weight="bold">SELAMAT!</text>
+
+              <!-- Neck -->
+              <rect x="46" y="58" width="18" height="16" rx="5" fill="#7DD3FC"/>
+
+              <!-- Head -->
+              <rect x="20" y="20" width="70" height="42" rx="16" fill="#CBD5E1"/>
+
+              <!-- Eyes happy arcs -->
+              <path d="M30 36 Q38 28 46 36" stroke="#0D1117" stroke-width="3" stroke-linecap="round" fill="none"/>
+              <path d="M64 36 Q72 28 80 36" stroke="#0D1117" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+              <!-- Antenna -->
+              <line x1="55" y1="20" x2="55" y2="7" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="55" cy="4" r="5" fill="#FCD34D"/>
+
+              <!-- Speakers / ears -->
+              <rect x="5"  y="28" width="17" height="22" rx="8" fill="#0EA5E9"/>
+              <circle cx="13" cy="39" r="5" fill="#38BDF8"/>
+              <rect x="88" y="28" width="17" height="22" rx="8" fill="#0EA5E9"/>
+              <circle cx="97" cy="39" r="5" fill="#38BDF8"/>
+
+              <!-- Smile big -->
+              <rect x="36" y="46" width="38" height="10" rx="5" fill="#0D1117"/>
+              <text x="37" y="55" font-size="8" fill="#10B981">▐ ∧ ▌</text>
+
+              <!-- Arms raised applauding -->
+              <rect x="0"  y="80" width="26" height="12" rx="6" fill="#0EA5E9" transform="rotate(-40 0 80)"/>
+              <rect x="-8" y="58" width="22" height="22" rx="8" fill="#CBD5E1"/>
+              <text x="-7" y="75" font-size="16">👏</text>
+
+              <rect x="84" y="80" width="26" height="12" rx="6" fill="#0EA5E9" transform="rotate(40 110 80)"/>
+              <rect x="96" y="58" width="22" height="22" rx="8" fill="#CBD5E1"/>
+              <text x="97" y="75" font-size="16">👏</text>
+
+              <!-- Legs -->
+              <rect x="32" y="138" width="20" height="38" rx="10" fill="#38BDF8"/>
+              <rect x="58" y="138" width="20" height="38" rx="10" fill="#38BDF8"/>
+              <!-- Feet -->
+              <rect x="26" y="170" width="28" height="14" rx="7" fill="#0EA5E9"/>
+              <rect x="56" y="170" width="28" height="14" rx="7" fill="#0EA5E9"/>
+              <!-- Confetti from Robo -->
+              <text x="15" y="140" font-size="12" opacity="0.8">🎊</text>
+              <text x="78" y="128" font-size="10" opacity="0.7">🎉</text>
+            </svg>
+          </div>
+
+          <!-- MINI ROBOT 2 -->
+          <div class="char-float" style="margin-bottom:6px;animation-delay:0.8s">
+            <svg width="60" height="86" viewBox="0 0 60 86" fill="none">
+              <rect x="12" y="28" width="36" height="36" rx="10" fill="#7C3AED"/>
+              <rect x="16" y="32" width="28" height="18" rx="6" fill="#8B5CF6"/>
+              <text x="17" y="46" font-size="11" fill="#FCD34D">🌟</text>
+              <rect x="20" y="12" width="20" height="18" rx="8" fill="#C4B5FD"/>
+              <circle cx="26" cy="20" r="3" fill="#1E1B4B"/>
+              <circle cx="34" cy="20" r="3" fill="#1E1B4B"/>
+              <circle cx="27" cy="19" r="1" fill="white"/>
+              <circle cx="35" cy="19" r="1" fill="white"/>
+              <path d="M24 26 Q30 30 36 26" stroke="#1E1B4B" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <line x1="30" y1="12" x2="30" y2="5" stroke="#9CA3AF" stroke-width="2"/>
+              <circle cx="30" cy="3" r="3.5" fill="#F59E0B"/>
+              <rect x="0"  y="36" width="14" height="8" rx="4" fill="#7C3AED"/>
+              <rect x="46" y="36" width="14" height="8" rx="4" fill="#7C3AED"/>
+              <rect x="16" y="62" width="12" height="20" rx="6" fill="#8B5CF6"/>
+              <rect x="32" y="62" width="12" height="20" rx="6" fill="#8B5CF6"/>
+              <text x="20" y="26" font-size="8" fill="#FCD34D">^_^</text>
+            </svg>
+          </div>
+
+        </div><!-- end char-wrap -->
+      </div><!-- end main-ilus -->
+    </div>
+    <div class="p-5 pt-3 text-center">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#D97706;">
+        🎊 Aslan berdiri gagah sebagai Pahlawan AI sementara Robo dan robot-robot kecil merayakan bersama!
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== 2. PENJELASAN ===== -->
+  <section class="reveal card card-gold">
+    <div class="p-6">
+      <div class="section-title mb-4">
+        <span style="background:linear-gradient(135deg,#F59E0B,#FCD34D);width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">📖</span>
+        Selamat, Aslan! Kamu Luar Biasa!
+      </div>
+      <p style="font-size:clamp(1rem,2.4vw,1.18rem);line-height:2;color:#374151;font-weight:600;">
+        <span style="font-family:'Fredoka One',cursive;font-size:3.8rem;color:#F59E0B;float:left;line-height:1;margin-right:8px;margin-top:4px;text-shadow:0 4px 0 #FDE68A;">W</span>
+        ow, Aslan! Kamu telah menyelesaikan <span class="hl-gold">30 hari petualangan luar biasa</span> di Negeri AI! Kamu sudah belajar banyak hal keren — mulai dari sejarah AI yang dimulai oleh Alan Turing, sampai cara kerja Neural Network yang seperti otak robot!
+        <br><br>
+        Sekarang kamu tahu apa itu <span class="hl-blue">Deep Learning, ChatGPT, AlphaGo</span>, dan bahkan perbedaan antara AI biasa dengan <span class="hl-gold">AGI dan ASI</span> masa depan. Kamu juga tahu bahwa AI adalah alat yang sangat hebat di tangan anak pintar sepertimu!
+        <br><br>
+        <strong style="color:#D97706">Selamat ya, Aslan — kamu resmi menjadi Pahlawan AI! 🦸‍♂️🤖🌟</strong>
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== 3. SERTIFIKAT ===== -->
+  <section class="reveal">
+    <div class="section-title mb-4">
+      <span style="background:linear-gradient(135deg,#F59E0B,#FCD34D);width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">📜</span>
+      Sertifikat Resmi Pahlawan AI
+    </div>
+
+    <div class="sertifikat-wrap">
+      <div class="sertifikat-inner">
+        <!-- Corner decorations -->
+        <span class="cert-corners" style="top:14px;left:14px">🌟</span>
+        <span class="cert-corners" style="top:14px;right:14px">🌟</span>
+        <span class="cert-corners" style="bottom:28px;left:14px">⭐</span>
+        <span class="cert-corners" style="bottom:28px;right:14px">⭐</span>
+
+        <div style="text-align:center;position:relative;z-index:2">
+          <!-- Header cert -->
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px">
+            <span style="font-size:1.3rem">🤖</span>
+            <span style="font-family:'Fredoka One',cursive;font-size:0.85rem;color:#92400E;letter-spacing:3px;text-transform:uppercase;">Petualangan Aslan di Negeri AI</span>
+            <span style="font-size:1.3rem">🤖</span>
+          </div>
+
+          <div class="cert-stars-row" style="font-size:1.2rem;margin-bottom:10px">⭐ ⭐ ⭐ ⭐ ⭐</div>
+
+          <div class="sertifikat-title">Sertifikat Kehormatan</div>
+          <p style="color:#92400E;font-size:0.9rem;font-weight:700;margin-bottom:16px;">Dengan bangga diberikan kepada</p>
+
+          <!-- NAME -->
+          <div class="cert-name mb-2">✦ ASLAN ✦</div>
+
+          <p style="color:#374151;font-size:0.9rem;font-weight:700;line-height:1.8;max-width:380px;margin:0 auto 20px;">
+            Telah berhasil menyelesaikan <strong style="color:#D97706">30 Hari Petualangan Belajar AI</strong> dengan penuh semangat, keberanian, dan keingintahuan yang luar biasa.
+          </p>
+
+          <!-- BADGES ROW -->
+          <div class="cert-badge-row">
+            <span class="cert-badge" style="background:#DBEAFE;border-color:#93C5FD;color:#1E40AF;">🧠 AI Historian</span>
+            <span class="cert-badge" style="background:#FEF3C7;border-color:#FCD34D;color:#92400E;">🏆 AI Champion</span>
+            <span class="cert-badge" style="background:#ECFDF5;border-color:#6EE7B7;color:#065F46;">🌱 Future Builder</span>
+            <span class="cert-badge" style="background:#EDE9FE;border-color:#C4B5FD;color:#4C1D95;">🤖 Robo Friend</span>
+          </div>
+
+          <!-- SEAL + SIGNATURE LINE -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:22px;flex-wrap:wrap;gap:14px">
+            <div style="text-align:left">
+              <div style="font-family:'Pacifico',cursive;font-size:1.4rem;color:#D97706;line-height:1.1">Aslan</div>
+              <div style="width:120px;height:2px;background:linear-gradient(90deg,#F59E0B,#FCD34D);margin:4px 0;border-radius:1px"></div>
+              <p style="font-size:0.72rem;color:#6B7280;font-weight:700">Nama Penerima Sertifikat</p>
+            </div>
+
+            <div class="cert-seal">
+              <span style="font-size:1.8rem;line-height:1">🤖</span>
+              <span style="font-family:'Fredoka One',cursive;font-size:0.5rem;color:#FCD34D;letter-spacing:1px;text-align:center;margin-top:2px">AI HERO</span>
+            </div>
+
+            <div style="text-align:right">
+              <div style="font-family:'Fredoka One',cursive;font-size:1rem;color:#1E3A8A" id="cert-date">—</div>
+              <div style="width:120px;height:2px;background:linear-gradient(90deg,#60A5FA,#2563EB);margin:4px 0 4px auto;border-radius:1px"></div>
+              <p style="font-size:0.72rem;color:#6B7280;font-weight:700">Tanggal Lulus</p>
+            </div>
+          </div>
+
+          <!-- Print button -->
+          <button
+            onclick="window.print()"
+            style="margin-top:18px;background:linear-gradient(135deg,#2563EB,#60A5FA);color:#fff;font-family:'Fredoka One',cursive;font-size:0.9rem;padding:9px 24px;border-radius:999px;border:none;cursor:pointer;box-shadow:0 4px 0 #1E3A8A;transition:transform 0.2s;"
+            onmouseover="this.style.transform='translateY(-2px)'"
+            onmouseout="this.style.transform=''"
+          >🖨️ Cetak Sertifikat</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 4. ACHIEVEMENT BADGES ===== -->
+  <section class="reveal card card-rainbow">
+    <div class="p-6">
+      <div class="section-title mb-5">
+        <span style="background:linear-gradient(135deg,#EC4899,#F9A8D4);width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🏅</span>
+        Semua Pencapaianmu Selama 30 Hari!
+      </div>
+      <div class="badge-grid">
+        <div class="achievement" style="background:linear-gradient(160deg,#FEF3C7,#FCD34D);border:3px solid #F59E0B;animation-delay:0.1s">
+          <span class="achievement-icon">🕰️</span>
+          <p style="font-family:'Fredoka One',cursive;font-size:0.88rem;color:#92400E">Sejarawan AI</p>
+          <p style="font-size:0.7rem;color:#B45309;font-weight:700">Belajar sejarah AI sejak 1950!</p>
+        </div>
+        <div class="achievement" style="background:linear-gradient(160deg,#DBEAFE,#BFDBFE);border:3px solid #60A5FA;animation-delay:0.2s">
+          <span class="achievement-icon">🧠</span>
+          <p style="font-family:'Fredoka One',cursive;font-size:0.88rem;color:#1E40AF">Ahli Neural</p>
+          <p style="font-size:0.7rem;color:#1D4ED8;font-weight:700">Paham cara kerja otak AI!</p>
+        </div>
+        <div class="achievement" style="background:linear-gradient(160deg,#ECFDF5,#D1FAE5);border:3px solid #6EE7B7;animation-delay:0.3s">
+          <span class="achievement-icon">🤖</span>
+          <p style="font-family:'Fredoka One',cursive;font-size:0.88rem;color:#065F46">Sahabat Robo</p>
+          <p style="font-size:0.7rem;color:#047857;font-weight:700">Petualangan bersama Robo!</p>
+        </div>
+        <div class="achievement" style="background:linear-gradient(160deg,#EDE9FE,#DDD6FE);border:3px solid #C4B5FD;animation-delay:0.4s">
+          <span class="achievement-icon">🎨</span>
+          <p style="font-family:'Fredoka One',cursive;font-size:0.88rem;color:#4C1D95">Kreator AI</p>
+          <p style="font-size:0.7rem;color:#5B21B6;font-weight:700">Tahu AI buat gambar & musik!</p>
+        </div>
+        <div class="achievement" style="background:linear-gradient(160deg,#FDF2F8,#FCE7F3);border:3px solid #F9A8D4;animation-delay:0.5s">
+          <span class="achievement-icon">🔮</span>
+          <p style="font-family:'Fredoka One',cursive;font-size:0.88rem;color:#9D174D">Futurist</p>
+          <p style="font-size:0.7rem;color:#BE185D;font-weight:700">Kenal AGI & ASI masa depan!</p>
+        </div>
+        <div class="achievement" style="background:linear-gradient(160deg,#FFFBEB,#FEF3C7);border:3px solid #FCD34D;animation-delay:0.6s">
+          <span class="achievement-icon">🏆</span>
+          <p style="font-family:'Fredoka One',cursive;font-size:0.88rem;color:#92400E">AI Hero!</p>
+          <p style="font-size:0.7rem;color:#B45309;font-weight:700">Tamat 30 hari penuh! LUAR BIASA!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 5. KOMIK 3 PANEL ===== -->
+  <section class="reveal">
+    <div class="section-title mb-4">
+      <span style="background:linear-gradient(135deg,#F97316,#FCD34D);width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🎬</span>
+      Komik: Perpisahan yang Mengharukan!
+    </div>
+    <div class="komik-grid">
+
+      <!-- Panel 1 -->
+      <div class="panel">
+        <div class="panel-scene" style="background:linear-gradient(160deg,#FEF3C7,#FDE68A)">
+          <div class="panel-num">1</div>
+          <div class="panel-dialog" style="color:#92400E;border-color:#F59E0B">Aslan, hari ini hari terakhir kita! 🥹</div>
+          <div style="display:flex;align-items:flex-end;gap:8px">
+            <span style="font-size:3rem;animation:charFloat 3s ease-in-out infinite">🧒</span>
+            <span style="font-size:2.6rem;animation:charFloat 3s ease-in-out infinite 1s">🤖</span>
+          </div>
+        </div>
+        <div class="panel-caption">Robo memberitahu Aslan bahwa perjalanan 30 hari hampir usai. Aslan terdiam sejenak…</div>
+      </div>
+
+      <!-- Panel 2 -->
+      <div class="panel">
+        <div class="panel-scene" style="background:linear-gradient(160deg,#DBEAFE,#BFDBFE)">
+          <div class="panel-num">2</div>
+          <div class="panel-dialog" style="color:#1E40AF;border-color:#2563EB">Makasih ya, Robo! Aku jadi pintar AI! 🏆</div>
+          <div style="position:relative;text-align:center">
+            <span style="font-size:3rem;animation:charFloat 2.5s ease-in-out infinite">🧒</span>
+            <span style="font-size:1.5rem;position:absolute;top:-10px;right:-12px;animation:charFloat 1.5s ease-in-out infinite">🌟</span>
+            <span style="font-size:1.2rem;position:absolute;top:0;left:-14px;animation:charFloat 2s ease-in-out infinite 0.5s">⭐</span>
+          </div>
+        </div>
+        <div class="panel-caption">Aslan tersenyum lebar sambil memegang trofi kecil. Robo langsung ikut berteriak kegirangan!</div>
+      </div>
+
+      <!-- Panel 3 -->
+      <div class="panel">
+        <div class="panel-scene" style="background:linear-gradient(160deg,#ECFDF5,#D1FAE5)">
+          <div class="panel-num">3</div>
+          <div class="panel-dialog" style="color:#065F46;border-color:#10B981">Kamu AI Hero sekarang, Aslan! 🦸‍♂️✨</div>
+          <div style="display:flex;align-items:flex-end;gap:4px">
+            <span style="font-size:2.5rem;animation:charFloat 3s ease-in-out infinite">🤖</span>
+            <span style="font-size:1.5rem">🤝</span>
+            <span style="font-size:2.5rem;animation:charFloat 3s ease-in-out infinite 1s">🧒</span>
+          </div>
+        </div>
+        <div class="panel-caption">Robo dan Aslan berjabat tangan. Petualangan berakhir — tapi semangat belajar AI terus menyala! 🔥</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== 6. TANTANGAN AKHIR ===== -->
+  <section class="reveal">
+    <div class="challenge-box">
+      <div class="relative z-10">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+          <span style="font-size:2.5rem;animation:charFloat 2.5s ease-in-out infinite">🚀</span>
+          <div>
+            <h3 style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:#FCD34D">Tantangan Pahlawan AI!</h3>
+            <p style="color:#93C5FD;font-size:0.85rem;font-weight:700">Centang tantangan yang sudah kamu terima!</p>
+          </div>
+        </div>
+
+        <div id="challenges">
+          <div class="challenge-card" onclick="toggleChallenge(this)">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="challenge-check" id="ck1">□</div>
+              <div>
+                <p style="color:#FCD34D;font-family:'Fredoka One',cursive;font-size:1rem">🎓 Ceritakan AI ke Teman atau Adik</p>
+                <p style="color:#93C5FD;font-size:0.8rem;font-weight:700">Jelaskan apa itu AI kepada seseorang yang belum tahu!</p>
+              </div>
+            </div>
+          </div>
+          <div class="challenge-card" onclick="toggleChallenge(this)">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="challenge-check">□</div>
+              <div>
+                <p style="color:#FCD34D;font-family:'Fredoka One',cursive;font-size:1rem">🤖 Coba Satu Alat AI Hari Ini</p>
+                <p style="color:#93C5FD;font-size:0.8rem;font-weight:700">Gunakan ChatGPT, Gemini, atau alat AI lain bersama orang tua!</p>
+              </div>
+            </div>
+          </div>
+          <div class="challenge-card" onclick="toggleChallenge(this)">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="challenge-check">□</div>
+              <div>
+                <p style="color:#FCD34D;font-family:'Fredoka One',cursive;font-size:1rem">📝 Buat Daftar Mimpi AI-mu</p>
+                <p style="color:#93C5FD;font-size:0.8rem;font-weight:700">Tulis 3 hal yang ingin kamu buat dengan AI saat besar nanti!</p>
+              </div>
+            </div>
+          </div>
+          <div class="challenge-card" onclick="toggleChallenge(this)">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="challenge-check">□</div>
+              <div>
+                <p style="color:#FCD34D;font-family:'Fredoka One',cursive;font-size:1rem">🌟 Jadilah Pahlawan AI di Sekolah</p>
+                <p style="color:#93C5FD;font-size:0.8rem;font-weight:700">Tunjukkan sertifikatmu dan bagikan semangatmu kepada teman-teman!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="challenge-score" style="text-align:center;margin-top:14px;color:#FCD34D;font-family:'Fredoka One',cursive;font-size:1.1rem;background:rgba(255,255,255,0.1);border-radius:14px;padding:10px">
+          0 dari 4 tantangan diselesaikan 💪
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 7. KUIS FINAL ===== -->
+  <section class="reveal card card-blue">
+    <div class="p-6">
+      <div class="section-title mb-2">
+        <span style="background:linear-gradient(135deg,#2563EB,#60A5FA);width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🧩</span>
+        Kuis Final Pahlawan AI!
+      </div>
+      <p style="color:#6B7280;font-size:0.88rem;font-weight:700;margin-bottom:20px">Buktikan kamu sudah jadi Pahlawan AI sejati!</p>
+
+      <div id="qf1" class="mb-6">
+        <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#1E1B4B;margin-bottom:12px">
+          🌟 Siapakah yang disebut "Bapak AI Dunia" yang menciptakan Tes Turing?
+        </p>
+        <div class="space-y-3">
+          <button class="quiz-option" onclick="jawabFinal('qf1','A','B')"><span style="font-size:1.3rem">🧑‍💻</span> A. Elon Musk</button>
+          <button class="quiz-option" onclick="jawabFinal('qf1','B','B')"><span style="font-size:1.3rem">🧠</span> B. Alan Turing</button>
+          <button class="quiz-option" onclick="jawabFinal('qf1','C','B')"><span style="font-size:1.3rem">🤖</span> C. Sam Altman</button>
+        </div>
+        <div id="qf1-result" class="quiz-result mt-3"></div>
+      </div>
+
+      <div id="qf2">
+        <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#1E1B4B;margin-bottom:12px">
+          🏆 AI yang bisa melakukan SEMUA hal seperti manusia disebut apa?
+        </p>
+        <div class="space-y-3">
+          <button class="quiz-option" onclick="jawabFinal('qf2','A','A')"><span style="font-size:1.3rem">🌍</span> A. AGI (Artificial General Intelligence)</button>
+          <button class="quiz-option" onclick="jawabFinal('qf2','B','A')"><span style="font-size:1.3rem">🔒</span> B. Narrow AI</button>
+          <button class="quiz-option" onclick="jawabFinal('qf2','C','A')"><span style="font-size:1.3rem">💻</span> C. Deep Blue</button>
+        </div>
+        <div id="qf2-result" class="quiz-result mt-3"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 8. PESAN INSPIRASI FINAL ===== -->
+  <section class="reveal">
+    <div class="final-message">
+      <div style="position:relative;z-index:2">
+        <!-- Fireworks row -->
+        <div style="display:flex;justify-content:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+          <span class="firework-emoji" style="animation-delay:0s">🎆</span>
+          <span class="firework-emoji" style="animation-delay:0.3s">🌟</span>
+          <span class="firework-emoji" style="animation-delay:0.6s">🏆</span>
+          <span class="firework-emoji" style="animation-delay:0.9s">🎊</span>
+          <span class="firework-emoji" style="animation-delay:1.2s">🚀</span>
+          <span class="firework-emoji" style="animation-delay:1.5s">🌟</span>
+          <span class="firework-emoji" style="animation-delay:1.8s">🎇</span>
+        </div>
+
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(1.6rem,5vw,3rem);color:#FCD34D;text-shadow:0 4px 0 #92400E,0 6px 20px rgba(245,158,11,0.4);margin-bottom:16px;">
+          Pesan untuk Aslan
+        </h2>
+
+        <div style="background:rgba(255,255,255,0.12);border-radius:20px;padding:22px 20px;margin-bottom:18px;border:2px solid rgba(252,211,77,0.35);backdrop-filter:blur(4px)">
+          <p style="color:#FEF9EE;font-size:clamp(0.95rem,2.3vw,1.15rem);font-weight:700;line-height:1.9">
+            Aslan, kamu baru saja membuktikan bahwa anak 9 tahun pun bisa memahami hal-hal yang luar biasa.
+            AI memang hebat — tapi <strong style="color:#FCD34D">kamu jauh lebih hebat</strong>, karena kamu punya rasa ingin tahu, keberanian untuk belajar, dan hati yang hangat. 💛
+          </p>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.10);border-radius:20px;padding:20px;margin-bottom:18px;border:2px solid rgba(147,197,253,0.3)">
+          <p style="color:#BFDBFE;font-weight:800;font-size:0.9rem;margin-bottom:10px;">💡 Ingat selalu tiga hal ini:</p>
+          <div style="display:grid;gap:10px">
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <span style="font-size:1.3rem;flex-shrink:0">🧠</span>
+              <p style="color:#E0F2FE;font-weight:700;font-size:0.9rem;line-height:1.6"><strong style="color:#FCD34D">AI adalah alat, bukan pengganti.</strong> Kamu yang menentukan tujuannya!</p>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <span style="font-size:1.3rem;flex-shrink:0">❤️</span>
+              <p style="color:#E0F2FE;font-weight:700;font-size:0.9rem;line-height:1.6"><strong style="color:#FCD34D">Perasaan, kreativitas, dan kasih sayang</strong> adalah milikmu — sesuatu yang tidak bisa ditiru AI.</p>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <span style="font-size:1.3rem;flex-shrink:0">🚀</span>
+              <p style="color:#E0F2FE;font-weight:700;font-size:0.9rem;line-height:1.6"><strong style="color:#FCD34D">Masa depan AI ada di tanganmu.</strong> Jadilah pembuat, bukan hanya pengguna!</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:18px;margin-bottom:20px;border:2px solid rgba(252,211,77,0.4);text-align:center">
+          <p style="font-family:'Pacifico',cursive;font-size:1.5rem;color:#FCD34D;line-height:1.4;text-shadow:0 2px 8px rgba(0,0,0,0.3)">
+            "Belajar hari ini untuk<br>mengubah dunia esok hari."
+          </p>
+          <p style="color:#C4B5FD;font-size:0.82rem;font-weight:700;margin-top:8px">— Pesan dari Robo untuk Aslan 🤖💙</p>
+        </div>
+
+        <button
+          onclick="launchConfetti();showCelebration()"
+          style="background:linear-gradient(135deg,#FCD34D,#F59E0B);color:#1E3A8A;font-family:'Fredoka One',cursive;font-size:1.2rem;padding:14px 38px;border-radius:999px;border:none;cursor:pointer;box-shadow:0 6px 0 #92400E,0 8px 25px rgba(245,158,11,0.4);transition:transform 0.2s,box-shadow 0.2s;display:block;margin:0 auto;"
+          onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 10px 0 #92400E,0 12px 30px rgba(245,158,11,0.5)'"
+          onmouseout="this.style.transform='';this.style.boxShadow='0 6px 0 #92400E,0 8px 25px rgba(245,158,11,0.4)'"
+        >🎆 Rayakan Bersama Robo! 🤖</button>
+
+        <div id="celebration-msg" style="display:none;margin-top:16px;text-align:center;animation:fadeUp 0.5s ease">
+          <p style="font-family:'Fredoka One',cursive;font-size:1.6rem;color:#FCD34D;text-shadow:0 3px 10px rgba(245,158,11,0.5)">
+            🎊 SELAMAT ASLAN! 🎊<br>
+            <span style="font-size:1.1rem;color:#BFDBFE">Kamu resmi menjadi Pahlawan AI! 🦸‍♂️🌟</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer style="background:linear-gradient(135deg,#1E3A8A,#1D4ED8,#D97706,#F59E0B);margin-top:32px;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:repeating-linear-gradient(-55deg,transparent 0,transparent 25px,rgba(255,255,255,0.03) 25px,rgba(255,255,255,0.03) 50px)"></div>
+  <div style="relative z-10 max-w-3xl margin:0 auto;padding:24px 20px;text-align:center">
+    <div style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#FCD34D;margin-bottom:6px">
+      🌟 Petualangan Aslan di Negeri AI — TAMAT! 🌟
+    </div>
+    <div style="color:rgba(255,255,255,0.75);font-size:0.82rem;font-weight:700;margin-bottom:12px">
+      30 Hari · 30 Pelajaran · 1 Pahlawan AI yang Luar Biasa!
+    </div>
+    <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
+      <span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:4px 14px;color:#FEF9EE;font-size:0.78rem;font-weight:700">🏆 30/30 Selesai</span>
+      <span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:4px 14px;color:#FEF9EE;font-size:0.78rem;font-weight:700">🤖 AI Hero Certified</span>
+      <span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:4px 14px;color:#FEF9EE;font-size:0.78rem;font-weight:700">🚀 Future Builder</span>
+    </div>
+    <div style="margin-top:14px;font-size:1.5rem;letter-spacing:6px;opacity:0.5">🤖 ⭐ 🏆 🌟 🎊 🚀 ❤️</div>
+  </div>
+</footer>
+
+<script>
+  // ===== SCROLL REVEAL =====
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer  = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('revealed'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.10 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // ===== CERTIFICATE DATE =====
+  (function(){
+    const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    const d = new Date();
+    document.getElementById('cert-date').textContent = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  })();
+
+  // ===== CONFETTI =====
+  const canvas  = document.getElementById('confettiCanvas');
+  const ctx     = canvas.getContext('2d');
+  let confetti  = [];
+  let animating = false;
+
+  function resizeCanvas() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  const COLORS = ['#FCD34D','#F59E0B','#2563EB','#60A5FA','#EC4899','#10B981','#F97316','#7C3AED','#EF4444','#FFF'];
+
+  function makeConfetti(n) {
+    for (let i = 0; i < n; i++) {
+      confetti.push({
+        x:    Math.random() * canvas.width,
+        y:    -20 - Math.random() * 200,
+        w:    6 + Math.random() * 10,
+        h:    4 + Math.random() * 8,
+        r:    Math.random() * Math.PI * 2,
+        dr:   (Math.random() - 0.5) * 0.15,
+        dy:   3 + Math.random() * 5,
+        dx:   (Math.random() - 0.5) * 3,
+        c:    COLORS[Math.floor(Math.random() * COLORS.length)],
+        life: 1,
+      });
+    }
+  }
+
+  function drawConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    for (const p of confetti) {
+      p.x += p.dx;
+      p.y += p.dy;
+      p.r += p.dr;
+      p.life -= 0.006;
+      if (p.y < canvas.height + 30) alive = true;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.life);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.r);
+      ctx.fillStyle = p.c;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    }
+    confetti = confetti.filter(p => p.y < canvas.height + 40 && p.life > 0);
+    if (confetti.length > 0) requestAnimationFrame(drawConfetti);
+    else animating = false;
+  }
+
+  function launchConfetti() {
+    makeConfetti(260);
+    if (!animating) { animating = true; drawConfetti(); }
+    // second burst
+    setTimeout(() => { makeConfetti(160); }, 800);
+    setTimeout(() => { makeConfetti(120); }, 1600);
+  }
+
+  // Auto-launch on load
+  window.addEventListener('load', () => setTimeout(launchConfetti, 800));
+
+  // ===== CELEBRATION MSG =====
+  function showCelebration() {
+    const el = document.getElementById('celebration-msg');
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // ===== CHALLENGE TOGGLE =====
+  let doneCount = 0;
+  function toggleChallenge(card) {
+    const check = card.querySelector('.challenge-check');
+    const done  = card.classList.toggle('done');
+    check.textContent = done ? '✅' : '□';
+    check.style.background = done ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.1)';
+    doneCount += done ? 1 : -1;
+    const score = document.getElementById('challenge-score');
+    score.textContent = `${doneCount} dari 4 tantangan diselesaikan ${doneCount === 4 ? '🏆🎉' : '💪'}`;
+    if (doneCount === 4) {
+      launchConfetti();
+      score.style.background = 'rgba(16,185,129,0.3)';
+      score.style.color = '#6EE7B7';
+    }
+  }
+
+  // ===== QUIZ FINAL =====
+  const answered = {};
+  function jawabFinal(qId, pilihan, benar) {
+    if (answered[qId]) return;
+    answered[qId] = true;
+    const container = document.getElementById(qId);
+    const buttons   = container.querySelectorAll('.quiz-option');
+    const result    = document.getElementById(qId + '-result');
+    buttons.forEach(btn => {
+      btn.style.pointerEvents = 'none';
+      if (btn.textContent.trim().charAt(0) === benar) btn.classList.add('correct');
+    });
+    const sel = Array.from(buttons).find(b => b.textContent.trim().charAt(0) === pilihan);
+    if (pilihan !== benar && sel) sel.classList.add('wrong');
+    result.style.display = 'block';
+    if (pilihan === benar) {
+      result.style.background = '#ECFDF5';
+      result.style.color       = '#065F46';
+      result.style.border      = '2px solid #6EE7B7';
+      result.innerHTML = '🏆 Benar! Kamu memang Pahlawan AI sejati, Aslan! Luar biasa!';
+      launchConfetti();
+    } else {
+      result.style.background = '#FEF2F2';
+      result.style.color       = '#991B1B';
+      result.style.border      = '2px solid #FCA5A5';
+      result.innerHTML = '🤔 Hampir! Lihat jawaban hijau — kamu pasti ingat waktu belajar 30 hari ini!';
+    }
+  }
+</script>
+</body>
+</html>

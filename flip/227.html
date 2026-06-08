@@ -1,0 +1,1269 @@
+<!-- BUKU DIGITAL ASLAN - Hari 27: Tumbuhan yang Bisa Makan Serangga -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tumbuhan yang Bisa Makan Serangga — Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest:  #2d6a4f;
+    --moss:    #40916c;
+    --leaf:    #74c69d;
+    --sky:     #1a6985;
+    --ocean:   #2196a0;
+    --earth:   #8b5e3c;
+    /* Day-27 carnivore-plant palette */
+    --emerald: #059669;
+    --jungle:  #065f46;
+    --lime:    #84cc16;
+    --acid:    #a3e635;
+    --crimson: #dc2626;
+    --blood:   #991b1b;
+    --violet:  #7c3aed;
+    --purple:  #a855f7;
+    --amber:   #f59e0b;
+    --gold:    #fbbf24;
+    --dark-bg: #030f07;
+    --stardust:#ecfdf5;
+    --radius:  24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #030f07;
+    color: #ecfdf5;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background .4s, color .4s;
+  }
+  body.light-mode { background: #f0fdf4; color: #052e16; }
+
+  /* ── FLOATING BUGS (background particles) ── */
+  .bugfield {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .bug-p {
+    position: absolute; font-size: 14px; opacity: 0;
+    animation: bug-fly ease-in-out infinite;
+  }
+  @keyframes bug-fly {
+    0%   { transform: translate(0,0) rotate(0deg);   opacity: 0; }
+    15%  { opacity: .55; }
+    85%  { opacity: .35; }
+    100% { transform: translate(80px,-80vh) rotate(180deg); opacity: 0; }
+  }
+  /* Bioluminescent glow dots */
+  .glowfield {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .glow-p {
+    position: absolute; border-radius: 50%; opacity: 0;
+    animation: glow-pulse ease-in-out infinite alternate;
+  }
+  @keyframes glow-pulse {
+    from { opacity: .08; transform: scale(1); }
+    to   { opacity: .45; transform: scale(1.6); }
+  }
+  body.light-mode .bugfield { opacity: .3; }
+  body.light-mode .glowfield { opacity: .2; }
+
+  /* ── TOP NAV ── */
+  .top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(3,15,7,.9);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(5,150,105,.28);
+  }
+  body.light-mode .top-nav {
+    background: rgba(240,253,244,.94);
+    border-color: rgba(5,150,105,.2);
+  }
+
+  .back-btn {
+    display: flex; align-items: center; gap: 8px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--moss), var(--forest));
+    color: white; padding: 10px 18px; border-radius: 50px;
+    font-size: 14px; font-weight: 800;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 14px rgba(64,145,108,.4);
+  }
+  .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(64,145,108,.5); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .book-day-badge {
+    background: linear-gradient(135deg, var(--jungle), var(--emerald));
+    color: #ecfdf5; padding: 6px 14px; border-radius: 50px;
+    font-size: 12px; font-weight: 800; letter-spacing: .5px;
+  }
+
+  .mode-btn {
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+    color: var(--acid); width: 40px; height: 40px; border-radius: 50%;
+    font-size: 18px; cursor: pointer;
+    transition: background .2s, transform .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,.2); transform: rotate(20deg); }
+  body.light-mode .mode-btn { background: rgba(0,0,0,.07); border-color: rgba(0,0,0,.12); color: var(--jungle); }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    position: fixed; top: 64px; left: 0; right: 0;
+    z-index: 99; height: 6px; background: rgba(255,255,255,.07);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--lime), var(--emerald), var(--crimson), var(--purple));
+    transition: width .35s ease; border-radius: 0 4px 4px 0;
+  }
+
+  /* ── BOOK CONTAINER ── */
+  .book-container {
+    position: relative; z-index: 1;
+    max-width: 860px; margin: 0 auto;
+    padding: 80px 20px 40px;
+  }
+
+  /* ── PAGES ── */
+  .page { display: none; animation: fadeUp .5s ease forwards; }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ═══════ COVER ═══════ */
+  .cover-page {
+    min-height: calc(100vh - 80px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 20px; position: relative;
+  }
+
+  /* Venus Flytrap CSS illustration */
+  .cover-plant-wrap {
+    width: 240px; height: 240px;
+    position: relative; margin: 0 auto 32px;
+    animation: float-plant 3.6s ease-in-out infinite;
+  }
+  @keyframes float-plant {
+    0%,100% { transform: translateY(0) rotate(-.5deg); }
+    50%      { transform: translateY(-14px) rotate(.8deg); }
+  }
+
+  /* Stem */
+  .plant-stem {
+    position: absolute;
+    bottom: 30px; left: 50%; transform: translateX(-50%);
+    width: 12px; height: 110px;
+    background: linear-gradient(180deg, #16a34a, #15803d, #14532d);
+    border-radius: 6px;
+  }
+  /* Left leaf-trap */
+  .trap-left {
+    position: absolute;
+    bottom: 130px; left: 50%;
+    transform-origin: right center;
+    width: 70px; height: 50px;
+    background: radial-gradient(ellipse at 60% 50%, #22c55e, #15803d 60%, #14532d);
+    border-radius: 50% 0 0 50% / 50% 50% 50% 50%;
+    transform: translateX(-100%) rotate(-20deg);
+    box-shadow: inset 0 0 12px rgba(0,0,0,.3);
+    animation: snap-open 4s ease-in-out infinite;
+  }
+  /* Right leaf-trap */
+  .trap-right {
+    position: absolute;
+    bottom: 130px; left: 50%;
+    transform-origin: left center;
+    width: 70px; height: 50px;
+    background: radial-gradient(ellipse at 40% 50%, #22c55e, #15803d 60%, #14532d);
+    border-radius: 0 50% 50% 0 / 50% 50% 50% 50%;
+    transform: rotate(20deg);
+    box-shadow: inset 0 0 12px rgba(0,0,0,.3);
+    animation: snap-open 4s ease-in-out infinite;
+  }
+  @keyframes snap-open {
+    0%,30%,100% { transform: rotate(0deg); }
+    10%,20%     { transform: rotate(-5deg); }
+    50%  { transform: rotate(25deg); }
+    55%  { transform: rotate(0deg); }
+  }
+  /* Teeth on traps */
+  .trap-left::before, .trap-right::before {
+    content: '';
+    position: absolute;
+    top: -4px; left: 10px; right: 10px; height: 8px;
+    background: repeating-linear-gradient(90deg, #16a34a 0px, #16a34a 6px, transparent 6px, transparent 12px);
+    border-radius: 4px;
+  }
+  /* Inner red coloring */
+  .trap-left::after, .trap-right::after {
+    content: '';
+    position: absolute;
+    top: 8px; left: 8px; right: 8px; bottom: 8px;
+    background: radial-gradient(ellipse, rgba(220,38,38,.5), transparent 70%);
+    border-radius: inherit;
+  }
+  /* Bug flying toward trap */
+  .cover-bug {
+    position: absolute;
+    bottom: 170px; left: 50%; transform: translateX(-50%);
+    font-size: 22px;
+    animation: bug-approach 4s ease-in-out infinite;
+  }
+  @keyframes bug-approach {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    40%     { transform: translateX(-50%) translateY(-20px); }
+    70%     { transform: translateX(-50%) translateY(0) scale(.5); opacity:0; }
+    75%     { transform: translateX(-50%) translateY(0) scale(1); opacity:1; }
+  }
+  /* Leaves at base */
+  .plant-base-leaf {
+    position: absolute;
+    bottom: 20px;
+    width: 60px; height: 30px;
+    background: linear-gradient(135deg, #16a34a, #14532d);
+    border-radius: 50% 0 50% 0;
+    box-shadow: inset 0 0 8px rgba(0,0,0,.25);
+  }
+  .pbl-l { left: 20%; transform: rotate(-30deg); }
+  .pbl-r { right: 20%; transform: rotate(30deg) scaleX(-1); }
+
+  /* Floating debris (forest theme) */
+  .forest-float {
+    position: absolute; font-size: 26px;
+    animation: ffloat ease-in-out infinite;
+  }
+  .forest-float:nth-child(1){ top:3%;  left:5%;  animation-duration:5s; animation-delay:0s; }
+  .forest-float:nth-child(2){ top:6%;  right:8%; animation-duration:4.5s; animation-delay:-2s; }
+  .forest-float:nth-child(3){ bottom:22%; left:4%; animation-duration:6s; animation-delay:-4s; }
+  .forest-float:nth-child(4){ bottom:20%; right:6%; animation-duration:5s; animation-delay:-1s; }
+  @keyframes ffloat {
+    0%,100%{ transform:translateY(0) rotate(0deg); }
+    50%    { transform:translateY(-12px) rotate(10deg); }
+  }
+
+  .cover-badge {
+    background: linear-gradient(135deg, var(--jungle), var(--emerald));
+    color: #ecfdf5; padding: 6px 20px; border-radius: 50px;
+    font-size: 13px; font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 16px; display: inline-block;
+  }
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(26px, 6vw, 48px); line-height: 1.2;
+    background: linear-gradient(135deg, var(--acid), var(--emerald), var(--crimson), var(--purple));
+    background-size: 300%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease infinite; margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+  .cover-subtitle { font-size: clamp(15px,3vw,21px); opacity: .75; margin-bottom: 24px; }
+
+  .cover-name-badge {
+    background: linear-gradient(135deg, rgba(5,150,105,.16), rgba(124,58,237,.14));
+    border: 2px solid rgba(5,150,105,.38);
+    border-radius: 20px; padding: 16px 32px; margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+  }
+  .cover-name-badge p  { font-size: 14px; opacity: .7; margin-bottom: 4px; }
+  .cover-name-badge h2 { font-family:'Fredoka One',cursive; font-size:clamp(22px,4vw,32px); color:var(--acid); }
+
+  /* ═══════ CARDS ═══════ */
+  .card {
+    background: rgba(236,253,245,.05);
+    border: 1px solid rgba(5,150,105,.18);
+    border-radius: var(--radius); padding: 32px; margin-bottom: 24px;
+    backdrop-filter: blur(8px); position: relative; overflow: hidden;
+  }
+  body.light-mode .card {
+    background: white; border-color: rgba(5,150,105,.14);
+    box-shadow: 0 4px 24px rgba(5,150,105,.09); color: #052e16;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: var(--accent, linear-gradient(90deg, var(--emerald), var(--lime)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .card-why    { --accent: linear-gradient(90deg, #052e16, #059669); }
+  .card-venus  { --accent: linear-gradient(90deg, #dc2626, #16a34a); }
+  .card-nep    { --accent: linear-gradient(90deg, #7c3aed, #059669); }
+  .card-sun    { --accent: linear-gradient(90deg, #f59e0b, #dc2626); }
+  .card-safe   { --accent: linear-gradient(90deg, var(--moss), var(--leaf)); }
+  .card-facts  { --accent: linear-gradient(90deg, var(--purple), var(--lime)); }
+
+  .card-icon { font-size:56px; margin-bottom:16px; display:block; line-height:1; filter:drop-shadow(0 4px 8px rgba(0,0,0,.35)); }
+  .card h2   { font-family:'Fredoka One',cursive; font-size:clamp(22px,4vw,30px); margin-bottom:8px; color:var(--acid); }
+  body.light-mode .card h2 { color: var(--jungle); }
+  .card h3   { font-size:18px; font-weight:800; margin:20px 0 10px; color:var(--lime); }
+  body.light-mode .card h3 { color: var(--emerald); }
+  .card p    { font-size:clamp(15px,2.5vw,17px); line-height:1.85; opacity:.9; margin-bottom:14px; }
+
+  .depth-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(5,150,105,.14); border:1px solid rgba(5,150,105,.36);
+    border-radius:50px; padding:6px 16px;
+    font-size:13px; font-weight:800; color:var(--acid); margin-bottom:16px;
+  }
+
+  .analogy-box {
+    background: linear-gradient(135deg, rgba(5,150,105,.08), rgba(124,58,237,.1));
+    border: 2px dashed rgba(5,150,105,.32);
+    border-radius: 16px; padding: 20px 24px; margin: 20px 0; position: relative;
+  }
+  .analogy-box::before {
+    content: '💡 Analogi Keren!';
+    position: absolute; top: -12px; left: 20px;
+    background: var(--dark-bg); padding: 2px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 800; color: var(--acid);
+  }
+  body.light-mode .analogy-box::before { background: white; color: var(--emerald); }
+  body.light-mode .analogy-box { background: rgba(5,150,105,.04); }
+
+  /* section header */
+  .section-header { text-align:center; margin-bottom:32px; padding-top:20px; }
+  .section-header .tag {
+    display:inline-block; background:rgba(5,150,105,.12);
+    border:1px solid rgba(5,150,105,.32); color:var(--acid);
+    padding:4px 16px; border-radius:50px;
+    font-size:12px; font-weight:800; letter-spacing:1px; text-transform:uppercase; margin-bottom:12px;
+  }
+  .section-header h1 { font-family:'Fredoka One',cursive; font-size:clamp(24px,5vw,40px); line-height:1.2; }
+
+  /* scene box */
+  .scene-box {
+    background: linear-gradient(135deg, rgba(3,15,7,.88), rgba(5,46,22,.35));
+    border: 1px solid rgba(5,150,105,.28); border-radius:20px;
+    padding:28px; margin:20px 0; position:relative; overflow:hidden;
+  }
+  body.light-mode .scene-box {
+    background: linear-gradient(135deg, rgba(240,253,244,.96), rgba(5,150,105,.07));
+    border-color: rgba(5,150,105,.22);
+  }
+  .scene-title { font-weight:900; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--acid); margin-bottom:12px; opacity:.85; }
+  .scene-box p { font-size:clamp(15px,2.5vw,17px); line-height:1.9; font-style:italic; opacity:.92; }
+
+  /* ── PLANT DIAGRAM (Venus Flytrap cross-section) ── */
+  .plant-diagram {
+    width: 100%; max-width: 380px; margin: 20px auto;
+    position: relative;
+  }
+  /* Mini flytrap inline */
+  .mini-trap-wrap {
+    display: flex; justify-content: center; align-items: flex-end;
+    gap: 0; height: 160px; position: relative; margin: 0 auto 12px;
+  }
+  .mt-stem {
+    width: 10px; height: 80px; background: linear-gradient(180deg, #16a34a, #14532d);
+    border-radius: 5px; margin: 0 auto; position: relative;
+  }
+  .mt-left {
+    width: 65px; height: 44px;
+    background: radial-gradient(ellipse at 65% 50%, #22c55e, #15803d 65%, #14532d);
+    border-radius: 50% 0 0 50%;
+    position: absolute; right: calc(50% + 5px); bottom: 80px;
+    transform-origin: right center;
+    animation: mt-snap 5s ease-in-out infinite;
+  }
+  .mt-right {
+    width: 65px; height: 44px;
+    background: radial-gradient(ellipse at 35% 50%, #22c55e, #15803d 65%, #14532d);
+    border-radius: 0 50% 50% 0;
+    position: absolute; left: calc(50% + 5px); bottom: 80px;
+    transform-origin: left center;
+    animation: mt-snap-r 5s ease-in-out infinite;
+  }
+  .mt-left::after, .mt-right::after {
+    content: '';
+    position: absolute; top: 6px; left: 6px; right: 6px; bottom: 6px;
+    background: radial-gradient(ellipse, rgba(220,38,38,.4), transparent 70%);
+    border-radius: inherit;
+  }
+  @keyframes mt-snap   { 0%,40%,100%{transform:rotate(-22deg)} 55%,75%{transform:rotate(-2deg)} }
+  @keyframes mt-snap-r { 0%,40%,100%{transform:rotate(22deg)}  55%,75%{transform:rotate(2deg)} }
+  .mt-bug {
+    position: absolute;
+    bottom: 130px; left: 50%; transform: translateX(-50%);
+    font-size: 18px;
+    animation: mt-bug-fall 5s ease-in-out infinite;
+  }
+  @keyframes mt-bug-fall {
+    0%    { transform: translateX(-50%) translateY(0); opacity:1; }
+    35%   { transform: translateX(-50%) translateY(20px); opacity:1; }
+    55%   { transform: translateX(-50%) translateY(0); opacity:0; }
+    70%   { transform: translateX(-50%) translateY(0); opacity:0; }
+    80%   { opacity:1; }
+    100%  { transform: translateX(-50%) translateY(0); opacity:1; }
+  }
+
+  /* ── HOW IT WORKS STEPS ── */
+  .how-steps { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+  .how-step {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(5,150,105,.15);
+    border-radius: 16px; padding: 16px 18px;
+    position: relative; overflow: hidden;
+  }
+  body.light-mode .how-step { background: rgba(5,150,105,.04); }
+  .how-step::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: var(--step-color, var(--emerald));
+    border-radius: 4px 0 0 4px;
+  }
+  .how-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--step-color, var(--emerald));
+    color: white; font-weight: 900; font-size: 15px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .how-step p { font-size: 14px; line-height: 1.7; opacity: .9; margin: 0; }
+  .how-step strong { display: block; font-size: 15px; margin-bottom: 3px; }
+
+  /* ── NEPENTHES DIAGRAM ── */
+  .pitcher-wrap {
+    display: flex; justify-content: center; margin: 20px 0;
+  }
+  .pitcher-plant {
+    width: 80px; height: 130px; position: relative;
+    animation: pitcher-sway 4s ease-in-out infinite;
+  }
+  @keyframes pitcher-sway { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+  .pitcher-body {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 70px; height: 100px;
+    background: linear-gradient(180deg, #7c3aed 0%, #059669 40%, #14532d 100%);
+    border-radius: 10px 10px 40px 40px;
+    box-shadow: inset -10px 0 20px rgba(0,0,0,.3), 0 0 20px rgba(5,150,105,.3);
+  }
+  .pitcher-lid {
+    position: absolute; bottom: 96px; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 25px;
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    border-radius: 50% 50% 0 0;
+    transform-origin: center bottom;
+    animation: lid-open 4s ease-in-out infinite;
+  }
+  @keyframes lid-open { 0%,100%{transform:translateX(-50%) rotate(0deg)} 30%,70%{transform:translateX(-50%) rotate(-30deg)} }
+  .pitcher-liquid {
+    position: absolute; bottom: 8px; left: 10px; right: 10px; height: 35px;
+    background: radial-gradient(ellipse, rgba(220,38,38,.4), rgba(124,58,237,.3));
+    border-radius: 0 0 30px 30px;
+    animation: liquid-bubble 2s ease-in-out infinite alternate;
+  }
+  @keyframes liquid-bubble { from{transform:scaleY(1)} to{transform:scaleY(1.08)} }
+  .pitcher-bug {
+    position: absolute; bottom: 108px; left: 50%; transform: translateX(-50%);
+    font-size: 14px;
+    animation: bug-drop 4s ease-in-out infinite;
+  }
+  @keyframes bug-drop {
+    0%,100%{ transform: translateX(-50%) translateY(0); opacity:1; }
+    35%    { transform: translateX(-50%) translateY(15px); opacity:1; }
+    50%    { transform: translateX(-50%) translateY(20px); opacity:0; }
+    60%    { opacity: 0; }
+    70%    { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* ── SUNDEW DIAGRAM ── */
+  .sundew-wrap {
+    display: flex; justify-content: center; margin: 20px 0;
+  }
+  .sundew-plant {
+    width: 100px; height: 100px; position: relative;
+    animation: sundew-wave 3s ease-in-out infinite;
+  }
+  @keyframes sundew-wave { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(3deg)} }
+  .sundew-leaf {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 20px;
+    background: linear-gradient(90deg, #14532d, #16a34a);
+    border-radius: 10px;
+  }
+  .tentacle {
+    position: absolute; bottom: 38px;
+    width: 3px; border-radius: 2px;
+    background: linear-gradient(180deg, #f59e0b, #16a34a);
+    transform-origin: bottom center;
+    animation: tentacle-wave 2.5s ease-in-out infinite alternate;
+  }
+  @keyframes tentacle-wave { from{transform:rotate(-8deg)} to{transform:rotate(8deg)} }
+  .tentacle::after {
+    content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+    width: 7px; height: 7px; border-radius: 50%;
+    background: radial-gradient(circle, #fbbf24, #f59e0b);
+    box-shadow: 0 0 6px rgba(251,191,36,.6);
+  }
+
+  /* ── COMPARISON PLANT CARDS ── */
+  .plant-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; margin: 20px 0; }
+  .plant-card {
+    border-radius: 20px; padding: 24px 20px; text-align: center;
+    transition: transform .2s;
+  }
+  .plant-card:hover { transform: translateY(-4px); }
+  .plant-card .plant-icon { font-size: 52px; display: block; margin-bottom: 12px; }
+  .plant-card strong { font-family: 'Fredoka One', cursive; font-size: 19px; display: block; margin-bottom: 6px; }
+  .plant-card .plant-tag { font-size: 12px; font-weight: 800; padding: 3px 12px; border-radius: 50px; display: inline-block; margin-bottom: 10px; }
+  .plant-card p { font-size: 13px; line-height: 1.65; opacity: .85; }
+  .pc-venus  { background: rgba(220,38,38,.12); border: 2px solid rgba(220,38,38,.28); }
+  .pc-nep    { background: rgba(124,58,237,.12); border: 2px solid rgba(124,58,237,.26); }
+  .pc-sun    { background: rgba(245,158,11,.12); border: 2px solid rgba(245,158,11,.26); }
+  body.light-mode .pc-venus { background: rgba(220,38,38,.06); }
+  body.light-mode .pc-nep   { background: rgba(124,58,237,.06); }
+  body.light-mode .pc-sun   { background: rgba(245,158,11,.06); }
+
+  /* two-col */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  @media(max-width:520px){ .two-col{ grid-template-columns: 1fr; } }
+  .mini-card { border-radius: 18px; padding: 20px 18px; display: flex; flex-direction: column; gap: 8px; }
+  .mc-green  { background: rgba(5,150,105,.12); border: 1px solid rgba(5,150,105,.26); }
+  .mc-red    { background: rgba(220,38,38,.12);  border: 1px solid rgba(220,38,38,.24); }
+  .mc-purple { background: rgba(124,58,237,.12); border: 1px solid rgba(124,58,237,.24); }
+  .mc-amber  { background: rgba(245,158,11,.1);  border: 1px solid rgba(245,158,11,.22); }
+  body.light-mode .mc-green  { background: rgba(5,150,105,.05); }
+  body.light-mode .mc-red    { background: rgba(220,38,38,.05); }
+  body.light-mode .mc-purple { background: rgba(124,58,237,.05); }
+  body.light-mode .mc-amber  { background: rgba(245,158,11,.05); }
+  .mini-card .mini-icon { font-size: 36px; }
+  .mini-card strong { font-size: 15px; font-weight: 900; }
+  .mini-card p { font-size: 14px; line-height: 1.6; opacity: .85; margin: 0; }
+
+  /* fact grid */
+  .fact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 16px; margin: 20px 0; }
+  .fact-card { background: rgba(236,253,245,.05); border: 1px solid rgba(5,150,105,.16); border-radius: 20px; padding: 24px 20px; text-align: center; transition: transform .2s; }
+  .fact-card:hover { transform: translateY(-4px); }
+  body.light-mode .fact-card { background: #f0fdf4; border-color: rgba(5,150,105,.14); }
+  .fact-card .fact-emoji  { font-size: 40px; margin-bottom: 10px; display: block; }
+  .fact-card .fact-number { font-family: 'Fredoka One', cursive; font-size: 23px; color: var(--acid); display: block; margin-bottom: 4px; }
+  .fact-card .fact-label  { font-size: 13px; opacity: .7; font-weight: 700; }
+
+  /* challenge */
+  .challenge-card {
+    background: linear-gradient(135deg, rgba(5,150,105,.16), rgba(124,58,237,.12));
+    border: 2px solid rgba(5,150,105,.26); border-radius: var(--radius); padding: 32px; margin: 20px 0;
+  }
+  body.light-mode .challenge-card { background: linear-gradient(135deg, rgba(5,150,105,.06), rgba(124,58,237,.04)); }
+  .challenge-title { font-family: 'Fredoka One', cursive; font-size: 24px; color: var(--acid); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  body.light-mode .challenge-title { color: var(--emerald); }
+  .challenge-item { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid rgba(5,150,105,.12); }
+  .challenge-item:last-child { border-bottom: none; }
+  body.light-mode .challenge-item { border-color: rgba(0,0,0,.06); }
+  .challenge-num { width: 32px; height: 32px; background: linear-gradient(135deg, var(--jungle), var(--emerald)); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; flex-shrink: 0; margin-top: 2px; }
+  .challenge-item p { font-size: 15px; line-height: 1.7; opacity: .9; }
+
+  /* nav */
+  .nav-btns { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(5,150,105,.16); }
+  body.light-mode .nav-btns { border-color: rgba(0,0,0,.06); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px; border-radius: 50px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; border: none; transition: transform .2s, box-shadow .2s; }
+  .btn:hover  { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+  .btn-prev { background: rgba(236,253,245,.08); color: inherit; border: 1px solid rgba(5,150,105,.22); }
+  body.light-mode .btn-prev { background: rgba(0,0,0,.05); border-color: rgba(0,0,0,.1); color: #052e16; }
+  .btn-next { background: linear-gradient(135deg, var(--jungle), var(--emerald)); color: white; box-shadow: 0 4px 16px rgba(5,150,105,.38); flex: 1; justify-content: center; max-width: 280px; }
+  .btn-next:hover { box-shadow: 0 6px 24px rgba(5,150,105,.55); }
+  .btn-done { background: linear-gradient(135deg, var(--moss), var(--forest)); color: white; box-shadow: 0 4px 16px rgba(64,145,108,.35); width: 100%; max-width: 400px; margin: 0 auto; justify-content: center; font-size: 17px; padding: 18px 32px; }
+  .btn-done:hover { box-shadow: 0 6px 24px rgba(64,145,108,.5); }
+  .page-indicator { font-size: 13px; opacity: .5; font-weight: 700; white-space: nowrap; }
+
+  /* closing */
+  .closing-content { text-align: center; padding: 40px 20px; }
+  .trophy-big { font-size: 100px; display: block; margin: 0 auto 24px; animation: bounceIn .8s cubic-bezier(.36,.07,.19,.97); filter: drop-shadow(0 8px 24px rgba(5,150,105,.5)); }
+  @keyframes bounceIn { 0%{transform:scale(0);opacity:0} 60%{transform:scale(1.2)} 100%{transform:scale(1);opacity:1} }
+  .quote-box { background: linear-gradient(135deg, rgba(5,150,105,.1), rgba(124,58,237,.1)); border-left: 4px solid var(--emerald); border-radius: 0 16px 16px 0; padding: 20px 24px; margin: 24px 0; text-align: left; }
+  .quote-box p { font-size: 18px; font-style: italic; line-height: 1.8; }
+  .quote-box cite { font-size: 13px; opacity: .6; margin-top: 8px; display: block; font-style: normal; font-weight: 700; }
+
+  /* info row */
+  .info-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid rgba(5,150,105,.1); }
+  .info-row:last-child { border-bottom: none; }
+  .info-row .info-icon { font-size: 32px; flex-shrink: 0; margin-top: 2px; }
+  .info-row p { font-size: clamp(15px,2.5vw,17px); line-height: 1.75; opacity: .9; }
+
+  /* responsive */
+  @media(max-width:600px){
+    .book-container{ padding:76px 16px 32px; }
+    .card{ padding:24px 20px; }
+    .nav-btns{ flex-wrap:wrap; }
+    .btn-next{ max-width:100%; }
+    .fact-grid{ grid-template-columns:1fr 1fr; }
+    .plant-grid{ grid-template-columns:1fr; }
+  }
+  @media(min-width:768px) and (max-width:1024px){
+    .book-container{ padding:80px 32px 40px; }
+    .card p{ font-size:18px; }
+  }
+  ::-webkit-scrollbar{ width:6px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  ::-webkit-scrollbar-thumb{ background:rgba(5,150,105,.35); border-radius:4px; }
+</style>
+</head>
+<body>
+
+<div class="bugfield" id="bugfield"></div>
+<div class="glowfield" id="glowfield"></div>
+
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+  <div class="nav-right">
+    <span class="book-day-badge">🌿 Hari ke-27</span>
+    <button class="mode-btn" id="modeBtn" title="Ganti Mode">☀️</button>
+  </div>
+</nav>
+
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<div class="book-container">
+
+  <!-- ══ PAGE 1: COVER ══ -->
+  <div class="page active" id="page-1">
+    <div class="cover-page">
+      <span class="forest-float">🌿</span>
+      <span class="forest-float">🦋</span>
+      <span class="forest-float">🍃</span>
+      <span class="forest-float">✨</span>
+
+      <div class="cover-plant-wrap">
+        <div class="plant-base-leaf pbl-l"></div>
+        <div class="plant-base-leaf pbl-r"></div>
+        <div class="plant-stem"></div>
+        <div class="trap-left"></div>
+        <div class="trap-right"></div>
+        <div class="cover-bug">🦟</div>
+      </div>
+
+      <div class="cover-badge">📚 Buku Sains Petualangan • Hari ke-27</div>
+      <h1 class="cover-title">Tumbuhan yang<br>Bisa Makan Serangga!</h1>
+      <p class="cover-subtitle">🌿 Rahasia Tumbuhan Karnivora</p>
+
+      <div class="cover-name-badge">
+        <p>Petualangan hutan milik:</p>
+        <h2>🌟 Aslan 🌟</h2>
+        <p style="font-size:13px;margin-top:4px;">Penjelajah Alam Sejati • Kelas 3 SD</p>
+      </div>
+
+      <div class="nav-btns" style="justify-content:center;border:none;padding-top:0;">
+        <button class="btn btn-next" onclick="goPage(2)" style="max-width:290px;font-size:17px;padding:16px 32px;">
+          🌿 Masuk ke Hutan!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 2: PENGANTAR ══ -->
+  <div class="page" id="page-2">
+    <div class="section-header">
+      <span class="tag">✉️ Petualangan Hari 27</span>
+      <h1>Hei Aslan, Hari Ini<br>Kita Kembali ke Bumi! 🌿</h1>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🌱</span>
+      <p>Hei, <strong>Aslan</strong>! Setelah menjelajahi luar angkasa — Mars, Saturnus, dan bintang-bintang — hari ini Terra Explorer membawa kita kembali ke planet kita tercinta. Tapi bukan ke kota atau pantai…</p>
+      <p>Kita mendarat di <strong>hutan tropis yang lebat dan lembap</strong> — tempat di mana ada makhluk hidup yang melanggar semua aturan yang kita kira kita tahu tentang tumbuhan. Tumbuhan yang seharusnya dimakan… tapi justru <strong>MEMAKAN balik!</strong> 😱</p>
+      <p>Ya! Ada tumbuhan di Bumi yang bisa menangkap, membunuh, dan mencerna serangga. Dan hari ini kita akan bertemu langsung dengan mereka. Siap? 🪤</p>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Mendarat di Hutan Tropis</p>
+      <p>"Aslan! Terra Explorer mendarat dengan sempurna di tepi rawa hutan tropis. Di luar, udaranya hangat dan lembap — bau tanah basah dan dedaunan memenuhi sensor-ku. Di sekitar kita tumbuh tanaman-tanaman yang tidak biasa… Ada yang bentuknya seperti cangkir berisi cairan merah misterius… Ada yang daunnya penuh dengan bola-bola lem yang berkilau… Dan ada satu yang tampak menunggu mangsanya dengan mulut terbuka lebar! 🤫"</p>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--sky),var(--lime));">
+      <h3>🗺️ Yang Akan Kita Pelajari Hari Ini</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(5,150,105,.12);border-radius:14px;">
+          <span style="font-size:28px;">❓</span>
+          <div><strong>Kenapa Tumbuhan Makan Serangga?</strong><p style="font-size:13px;margin:0;opacity:.7;">Alasan ilmiah di balik kebiasaan "berbahaya" ini</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(220,38,38,.12);border-radius:14px;">
+          <span style="font-size:28px;">🪤</span>
+          <div><strong>Venus Flytrap — Si Perangkap Kilat</strong><p style="font-size:13px;margin:0;opacity:.7;">Tumbuhan tercepat di dunia tumbuhan</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(124,58,237,.12);border-radius:14px;">
+          <span style="font-size:28px;">🏺</span>
+          <div><strong>Nepenthes — Jebakan Cangkir Maut</strong><p style="font-size:13px;margin:0;opacity:.7;">Kantong semar Indonesia yang terkenal</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(245,158,11,.12);border-radius:14px;">
+          <span style="font-size:28px;">✨</span>
+          <div><strong>Sundew — Lem Bintang-Bintang</strong><p style="font-size:13px;margin:0;opacity:.7;">Tumbuhan paling cantik sekaligus paling mematikan</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(64,145,108,.12);border-radius:14px;">
+          <span style="font-size:28px;">🛡️</span>
+          <div><strong>Apakah Berbahaya bagi Manusia?</strong><p style="font-size:13px;margin:0;opacity:.7;">Spoiler: kamu aman! 😄</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+      <span class="page-indicator">Halaman 2 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(3)">Kenapa Makan Serangga? ❓ →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 3: KENAPA MAKAN SERANGGA ══ -->
+  <div class="page" id="page-3">
+    <div class="section-header">
+      <span class="tag">❓ Bab Satu</span>
+      <h1>Kenapa Tumbuhan<br><span style="color:var(--acid)">Makan Serangga?</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Menganalisis Tanah</p>
+      <p>"Aslan, sensor tanahku menunjukkan sesuatu yang menarik. Tanah di rawa ini sangat… miskin! Hampir tidak ada nitrogen dan fosfor — nutrisi penting yang dibutuhkan semua tumbuhan. Tanah normal punya nutrisi ini, tapi tanah di sini seperti makanan tanpa gizi. Pantas saja tumbuhan di sini punya strategi yang sangat tidak biasa untuk bertahan hidup! 🔬"</p>
+    </div>
+
+    <div class="card card-why">
+      <span class="card-icon">🌱</span>
+      <span class="depth-badge">🌍 Habitat: Rawa, lahan gambut — tanah miskin nutrisi</span>
+      <h2>Tumbuhan yang Punya Cara Sendiri!</h2>
+      <p>Semua tumbuhan butuh <strong>nutrisi</strong> untuk tumbuh — terutama <strong>nitrogen</strong> (untuk membuat protein) dan <strong>fosfor</strong> (untuk energi). Biasanya, tumbuhan mendapat nutrisi ini dari tanah melalui akarnya.</p>
+      <p>Tapi tumbuhan karnivora hidup di tempat yang tanahnya sangat miskin nutrisi — seperti rawa-rawa, lahan gambut, dan tepi sungai berbatu. Tanah di sana hampir tidak punya nitrogen dan fosfor sama sekali. Lalu bagaimana mereka bertahan?</p>
+      <p>Mereka menjadi <strong>pemburu!</strong> Serangga, laba-laba, bahkan kadang katak kecil — semuanya kaya nitrogen dan fosfor. Dengan memakan serangga, tumbuhan karnivora mendapat nutrisi yang tidak bisa mereka dapatkan dari tanah. 🧠</p>
+
+      <div class="analogy-box">
+        <p>Bayangkan kamu tinggal di desa yang tidak ada warung makanan sama sekali 🏡. Orang lain bisa beli makanan di warung (nutrisi dari tanah), tapi kamu tidak bisa. Jadi kamu harus berburu dan memancing sendiri (berburu serangga) untuk mendapat makanan. Itulah yang dilakukan tumbuhan karnivora setiap hari! 🎣</p>
+      </div>
+
+      <h3>☀️ Tapi Mereka Tetap Berfotosintesis!</h3>
+      <p>Penting diingat: tumbuhan karnivora <strong>tetap melakukan fotosintesis</strong> — menyerap cahaya Matahari untuk membuat gula sebagai sumber energi utama mereka. Memakan serangga hanya untuk mendapatkan <strong>nutrisi tambahan</strong> yang tidak bisa mereka dapatkan dari tanah. Jadi mereka tetap tumbuhan sungguhan — hanya dengan suplemen protein ekstra! 💪</p>
+
+      <h3>🌍 Di Mana Mereka Hidup?</h3>
+      <p>Tumbuhan karnivora ditemukan di seluruh dunia — tapi paling banyak di <strong>Asia Tenggara</strong> (termasuk Indonesia!), Amerika Utara, dan Eropa. Indonesia sendiri kaya dengan tumbuhan karnivora jenis Nepenthes (kantong semar) yang tumbuh di hutan-hutan Kalimantan, Sumatra, dan Sulawesi. 🇮🇩</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+      <span class="page-indicator">Halaman 3 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(4)">Venus Flytrap! 🪤 →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 4: VENUS FLYTRAP ══ -->
+  <div class="page" id="page-4">
+    <div class="section-header">
+      <span class="tag">🪤 Bab Dua</span>
+      <h1>Venus Flytrap:<br><span style="color:var(--crimson)">Perangkap Kilat!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Mengamati dari Dekat</p>
+      <p>"SSSST Aslan, jangan bergerak! Di depan kita ada Venus Flytrap — tumbuhan paling terkenal di dunia tumbuhan karnivora. Lihat daunnya yang terbuka seperti mulut dengan gigi-gigi hijau… dan di dalam mulut itu ada warna merah yang menarik perhatian serangga. Seekor lalat sedang mendekat… 🦟 …mendekati pusat daun… SNAP! 💥 Dalam sepersepuluh detik, perangkap itu menutup! Luar biasa!"</p>
+    </div>
+
+    <div class="card card-venus">
+      <span class="card-icon">🪤</span>
+      <span class="depth-badge">📍 Asli dari: Carolina Utara & Selatan, Amerika</span>
+      <h2>Si Penggigit Tercepat!</h2>
+      <p>Venus Flytrap (<em>Dionaea muscipula</em>) adalah tumbuhan karnivora paling terkenal di dunia. Daunnya terdiri dari dua bagian yang bisa menutup dengan sangat cepat — seperti mulut yang menggigit!</p>
+
+      <!-- Mini flytrap animation -->
+      <div class="mini-trap-wrap">
+        <div class="mt-stem"></div>
+        <div class="mt-left"></div>
+        <div class="mt-right"></div>
+        <div class="mt-bug">🦟</div>
+      </div>
+      <p style="text-align:center;font-size:12px;opacity:.6;margin-bottom:16px;">Perangkap Venus Flytrap menunggu dan menangkap mangsanya!</p>
+
+      <h3>⚡ Bagaimana Cara Kerjanya?</h3>
+      <div class="how-steps">
+        <div class="how-step" style="--step-color:#16a34a;">
+          <div class="how-num" style="background:#16a34a;">1</div>
+          <div>
+            <p><strong>Penarik Perhatian</strong><br>Bagian dalam perangkap berwarna merah cerah dan menghasilkan nektar manis yang wangi. Serangga tertarik dan mendarat di dalam daun.</p>
+          </div>
+        </div>
+        <div class="how-step" style="--step-color:#f59e0b;">
+          <div class="how-num" style="background:#f59e0b;">2</div>
+          <div>
+            <p><strong>Rambut Pemicu (Trigger Hairs)</strong><br>Di dalam daun ada 3–6 rambut kecil yang sangat sensitif. Kalau serangga menyentuh rambut ini DIIIA kali dalam waktu 20 detik — alarm berbunyi!</p>
+          </div>
+        </div>
+        <div class="how-step" style="--step-color:#dc2626;">
+          <div class="how-num" style="background:#dc2626;">3</div>
+          <div>
+            <p><strong>SNAP! Dalam 0,1 Detik!</strong><br>Sel-sel di daun berubah tekanan cairan secara mendadak — dan KLEK! Dua bagian daun menutup dalam sepersepuluh detik. Lebih cepat dari kedipan mata! Serangga terperangkap di balik "gigi" yang saling mengunci.</p>
+          </div>
+        </div>
+        <div class="how-step" style="--step-color:#7c3aed;">
+          <div class="how-num" style="background:#7c3aed;">4</div>
+          <div>
+            <p><strong>Pencernaan (5–12 Hari)</strong><br>Daun tertutup rapat membentuk "perut" sementara. Tumbuhan menyekresikan cairan pencerna (seperti asam lambung) yang melarutkan serangga perlahan. Setelah 5–12 hari, perangkap terbuka kembali, hanya menyisakan cangkang keras serangga yang tertiup angin.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Sistem rambut pemicu Venus Flytrap seperti <strong>alarm pencuri yang canggih</strong> 🚨. Satu kali sentuhan tidak cukup — harus dua kali! Ini mencegah "alarm palsu" dari tetesan hujan atau angin. Tumbuhan ini sudah "berpikir" seperti sistem komputer sejak jutaan tahun lalu! 💻🌱</p>
+      </div>
+
+      <h3>♻️ Berapa Kali Bisa Dipakai?</h3>
+      <p>Setiap perangkap Venus Flytrap hanya bisa digunakan <strong>3–5 kali</strong> sebelum mati dan rontok. Tapi tumbuhan terus menumbuhkan perangkap baru. Dan kalau perangkap terus-menerus dipicu tanpa ada serangga yang masuk (misalnya oleh orang iseng yang suka menyentuhnya!), tumbuhan akan membuang energi berharga dan bisa melemah. 🥺</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+      <span class="page-indicator">Halaman 4 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(5)">Nepenthes! 🏺 →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 5: NEPENTHES & SUNDEW ══ -->
+  <div class="page" id="page-5">
+    <div class="section-header">
+      <span class="tag">🏺 Bab Tiga</span>
+      <h1>Nepenthes &amp; Sundew:<br><span style="color:var(--acid)">Dua Cara Berbeda!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Menemukan Lebih Banyak Tumbuhan</p>
+      <p>"Aslan! Aku menemukan dua tumbuhan karnivora lagi yang sama menakjubkannya dengan Venus Flytrap — tapi cara berburunya sangat berbeda! Yang satu menggunakan jebakan cangkir berisi cairan berbahaya… yang satu lagi menggunakan lem bintang-bintang yang sangat cantik tapi mematikan! Mari kita selidiki keduanya! 🔍"</p>
+    </div>
+
+    <div class="card card-nep">
+      <span class="card-icon">🏺</span>
+      <span class="depth-badge">📍 Asli dari: Asia Tenggara — Kalimantan, Sumatra, Filipina</span>
+      <h2>Nepenthes — Kantong Semar Indonesia!</h2>
+      <p>Nepenthes atau <strong>Kantong Semar</strong> adalah tumbuhan karnivora yang paling banyak ditemukan di Indonesia! Ia bukan menggunakan perangkap aktif seperti Venus Flytrap — ia menggunakan strategi yang lebih licik: <strong>menjebak mangsa di dalam kantong berisi cairan!</strong></p>
+
+      <div class="pitcher-wrap">
+        <div class="pitcher-plant">
+          <div class="pitcher-lid"></div>
+          <div class="pitcher-body">
+            <div class="pitcher-liquid"></div>
+          </div>
+          <div class="pitcher-bug">🐜</div>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:12px;opacity:.6;margin-bottom:16px;">Kantong Nepenthes dengan tutup dan cairan pencerna di dalamnya</p>
+
+      <h3>🏺 Bagaimana Cara Kerjanya?</h3>
+      <div class="how-steps">
+        <div class="how-step" style="--step-color:#7c3aed;">
+          <div class="how-num" style="background:#7c3aed;">1</div>
+          <div><p><strong>Umpan Nektar</strong><br>Di bibir kantong ada kelenjar nektar yang menghasilkan cairan manis. Semut, lalat, dan serangga lain tertarik dan merangkak mendekati bibir kantong.</p></div>
+        </div>
+        <div class="how-step" style="--step-color:#dc2626;">
+          <div class="how-num" style="background:#dc2626;">2</div>
+          <div><p><strong>Tergelincir Masuk!</strong><br>Bibir kantong dilapisi lapisan lilin yang sangat licin. Saat serangga berjalan di sana… SLIP! Mereka tergelincir dan jatuh ke dalam kantong. Tidak ada jalan keluar — dinding dalamnya terlalu licin untuk dipanjat!</p></div>
+        </div>
+        <div class="how-step" style="--step-color:#059669;">
+          <div class="how-num" style="background:#059669;">3</div>
+          <div><p><strong>Tenggelam dalam Asam</strong><br>Di dasar kantong ada cairan asam yang berfungsi seperti asam lambung. Serangga tenggelam dan perlahan-lahan dicerna selama beberapa hari hingga hanya tersisa kerangkanya.</p></div>
+        </div>
+      </div>
+
+      <h3>🤯 Ukuran Raksasa!</h3>
+      <p>Beberapa jenis Nepenthes di Kalimantan ukurannya bisa sangat besar — kantongnya cukup untuk menampung <strong>1–2 liter cairan!</strong> Nepenthes raksasa seperti <em>N. rajah</em> pernah ditemukan menelan <strong>tikus, katak, dan bahkan ular kecil!</strong> Ini bukan lagi tumbuhan pemakan serangga — ini tumbuhan pemakan hewan! 😱🐀</p>
+    </div>
+
+    <div class="card card-sun">
+      <span class="card-icon">✨</span>
+      <span class="depth-badge">📍 Tersebar luas di seluruh dunia — bahkan di Arktika!</span>
+      <h2>Sundew — Tumbuhan Bintang Mematikan!</h2>
+
+      <div class="sundew-wrap">
+        <div class="sundew-plant">
+          <div class="sundew-leaf">
+            <div class="tentacle" style="height:24px;left:12px;animation-delay:0s;"></div>
+            <div class="tentacle" style="height:28px;left:22px;animation-delay:.3s;"></div>
+            <div class="tentacle" style="height:30px;left:32px;animation-delay:.6s;"></div>
+            <div class="tentacle" style="height:28px;left:42px;animation-delay:.9s;"></div>
+            <div class="tentacle" style="height:24px;left:52px;animation-delay:1.2s;"></div>
+          </div>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:12px;opacity:.6;margin-bottom:16px;">Tentakel Sundew dengan bola lem emas yang berkilau</p>
+
+      <p>Sundew (<em>Drosera</em>) adalah tumbuhan karnivora yang paling cantik. Daunnya dipenuhi dengan <strong>tentakel-tentakel kecil berbentuk rambut</strong>, di ujung setiap rambut ada <strong>bola cairan lengket yang berkilau seperti embun pagi</strong> — inilah yang membuat namanya "Sundew" (embun Matahari).</p>
+
+      <h3>🕸️ Cara Kerja Lem Bintang</h3>
+      <p>Bola-bola lem di ujung tentakel mengandung <strong>mucilage</strong> — zat lengket yang sangat kuat. Serangga yang mendarat mengira bola berkilau itu adalah tetesan embun atau nektar. Saat mereka mendarat, <strong>kaki mereka langsung terjebak seperti di lem terkuat</strong>! Semakin mereka berjuang, semakin banyak tentakel yang melengkung mendekat dan membungkus mereka sepenuhnya. Dalam 15–30 menit, serangga sudah terbungkus rapat dan mulai dicerna! 🕷️</p>
+
+      <div class="analogy-box">
+        <p>Bayangkan kamu berjalan dan tiba-tiba menginjak permen karet raksasa yang tidak terlihat 🍬. Semakin kamu tarik kakimu, semakin kuat menempelnya. Dan tiba-tiba permen karet itu mulai melilit ke seluruh tubuhmu… Itulah pengalaman serangga yang mendekati Sundew! Indah dari jauh, berbahaya dari dekat!</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+      <span class="page-indicator">Halaman 5 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(6)">Berbahaya bagi Manusia? 🛡️ →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 6: BAHAYA + PERBANDINGAN ══ -->
+  <div class="page" id="page-6">
+    <div class="section-header">
+      <span class="tag">🛡️ Bab Empat</span>
+      <h1>Apakah Berbahaya<br><span style="color:var(--acid)">bagi Manusia?</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Pemeriksaan Keamanan</p>
+      <p>"Aslan, aku tahu kamu mungkin bertanya-tanya — apakah tumbuhan-tumbuhan ini bisa memakanku? 😅 Tenang dulu! Aku sudah menganalisis semua data dan hasilnya cukup mengejutkan. Mari kita bahas dengan tenang… Spoiler: kamu aman! Tapi ada penjelasan ilmiahnya yang menarik! 🔬"</p>
+    </div>
+
+    <div class="card card-safe">
+      <span class="card-icon">🛡️</span>
+      <h2>Aman! Tapi Ada Syaratnya…</h2>
+      <p>Jawaban singkatnya: <strong>tumbuhan karnivora TIDAK berbahaya bagi manusia!</strong> Tapi kenapa? Mari kita pahami alasannya:</p>
+
+      <div class="two-col">
+        <div class="mini-card mc-green">
+          <span class="mini-icon">📏</span>
+          <strong>Masalah Ukuran</strong>
+          <p>Venus Flytrap terbesar yang pernah ada hanya berdiameter sekitar 3–4 cm — cukup untuk lalat, tapi jarimu sekalipun hanya bisa masuk sedikit. Otot tumbuhan jauh terlalu lemah untuk menekan dengan kuat.</p>
+        </div>
+        <div class="mini-card mc-amber">
+          <span class="mini-icon">⚗️</span>
+          <strong>Asam yang Lemah</strong>
+          <p>Cairan pencerna tumbuhan karnivora jauh lebih lemah dari asam lambung manusia. Ia bisa melarutkan serangga lunak, tapi kulit manusia sangat tebal dan terlindungi — tidak terpengaruh.</p>
+        </div>
+        <div class="mini-card mc-purple">
+          <span class="mini-icon">🧠</span>
+          <strong>Tidak "Mengincar" Manusia</strong>
+          <p>Tumbuhan ini berevolusi untuk menangkap serangga dan arthropoda kecil — bukan hewan besar. Sistem sensornya tidak bereaksi pada sesuatu sebesar tangan manusia.</p>
+        </div>
+        <div class="mini-card mc-red">
+          <span class="mini-icon">⚠️</span>
+          <strong>Pengecualian: Nepenthes Raksasa!</strong>
+          <p>Nepenthes rajah dan beberapa spesies raksasa pernah mencerna tikus dan katak. Cairan asamnya cukup kuat — tapi terlalu kecil untuk melukai manusia. Tetap jangan masukkan jari ke dalamnya! 😄</p>
+        </div>
+      </div>
+
+      <h3>🌿 Perbandingan Tiga Tumbuhan Karnivora</h3>
+      <div class="plant-grid">
+        <div class="plant-card pc-venus">
+          <span class="plant-icon">🌱</span>
+          <strong>Venus Flytrap</strong>
+          <span class="plant-tag" style="background:rgba(220,38,38,.2);color:#fca5a5;">⚡ Perangkap Aktif</span>
+          <p>Daun menutup aktif dalam 0,1 detik. Harus ada 2 sentuhan dalam 20 detik. Mencerna dalam 5–12 hari. Berasal dari Amerika.</p>
+        </div>
+        <div class="plant-card pc-nep">
+          <span class="plant-icon">🏺</span>
+          <strong>Nepenthes</strong>
+          <span class="plant-tag" style="background:rgba(124,58,237,.2);color:#c4b5fd;">🏺 Jebakan Pasif</span>
+          <p>Mangsa tergelincir ke kantong berisi asam. Tidak ada gerakan aktif. Bisa menangkap hewan besar. Asli Indonesia dan Asia Tenggara!</p>
+        </div>
+        <div class="plant-card pc-sun">
+          <span class="plant-icon">✨</span>
+          <strong>Sundew (Drosera)</strong>
+          <span class="plant-tag" style="background:rgba(245,158,11,.2);color:#fde68a;">🕸️ Perangkap Lem</span>
+          <p>Tentakel melengkung perlahan membungkus mangsa. Cairan lem sangat kuat. Tersebar paling luas — ada di semua benua kecuali Antartika!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+      <span class="page-indicator">Halaman 6 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(7)">Fakta Keren! 🤯 →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 7: FAKTA KEREN ══ -->
+  <div class="page" id="page-7">
+    <div class="section-header">
+      <span class="tag">🤯 Bab Lima</span>
+      <h1>Fakta Paling Keren<br><span style="color:var(--acid)">Tentang Tumbuhan Ini!</span></h1>
+    </div>
+
+    <div class="card card-facts">
+      <span class="card-icon">🤯</span>
+      <h2>Fakta yang Akan Membuatmu Geleng-Geleng!</h2>
+      <div class="fact-grid">
+        <div class="fact-card">
+          <span class="fact-emoji">⚡</span>
+          <span class="fact-number">0,1 detik</span>
+          <span class="fact-label">Kecepatan Venus Flytrap menutup perangkapnya!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌿</span>
+          <span class="fact-number">700+</span>
+          <span class="fact-label">Jumlah spesies tumbuhan karnivora di seluruh dunia</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🏺</span>
+          <span class="fact-number">2 Liter</span>
+          <span class="fact-label">Volume cairan maksimum kantong Nepenthes raksasa</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🦟</span>
+          <span class="fact-number">5–12 hari</span>
+          <span class="fact-label">Waktu Venus Flytrap mencerna satu serangga</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🇮🇩</span>
+          <span class="fact-number">100+ spesies</span>
+          <span class="fact-label">Jumlah Nepenthes yang ditemukan di Indonesia!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🏆</span>
+          <span class="fact-number">Sundew</span>
+          <span class="fact-label">Genus tumbuhan karnivora terbanyak — ada di semua benua!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--crimson),var(--purple));">
+      <span class="card-icon">🦆</span>
+      <h2>Fakta Mengejutkan Lainnya!</h2>
+
+      <div class="info-row">
+        <span class="info-icon">🦟</span>
+        <div>
+          <p><strong>Tumbuhan Karnivora Membantu Manusia!</strong> Di daerah rawa yang penuh nyamuk pembawa penyakit, tumbuhan karnivora seperti Nepenthes dan Sundew adalah "pembasmi nyamuk alami" yang sangat efektif. Mereka menangkap ribuan serangga termasuk nyamuk Anopheles pembawa malaria. Tumbuhan yang menyelamatkan nyawa! 🦟🌱</p>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-icon">🐜</span>
+        <div>
+          <p><strong>Ada yang Bekerja Sama dengan Serangga!</strong> Beberapa Nepenthes tidak memakan semua serangga yang datang — beberapa malah <strong>bersimbiosis dengan semut!</strong> Semut hidup di dalam dan sekitar kantong, membuang bangkai mangsa yang busuk, dan sebagai gantinya kantong Nepenthes memberikan tempat tinggal dan sedikit nektar. Alam selalu penuh kejutan! 🤯</p>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-icon">🔬</span>
+        <div>
+          <p><strong>Ilmuwan Belajar dari Tumbuhan Ini!</strong> Para insinyur mempelajari lapisan licin di bibir kantong Nepenthes untuk membuat <strong>permukaan anti-air dan anti-noda</strong> di dunia teknologi. Misalnya untuk membuat botol saus yang tidak ada sausnya yang tersisa di dinding botol! Alam adalah laboratorium terhebat manusia. 🧪</p>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-icon">🧬</span>
+        <div>
+          <p><strong>Berevolusi Mandiri di Berbagai Tempat!</strong> Yang paling menakjubkan: tumbuhan karnivora berevolusi <strong>secara independen setidaknya 12 kali</strong> di tempat berbeda di seluruh dunia! Artinya, "ide" untuk memakan serangga adalah solusi yang begitu bagus sehingga alam "menemukan" solusi ini berulang-ulang kali. Evolusi yang paralel! 🌍</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+      <span class="page-indicator">Halaman 7 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(8)">Tantangan Aslan! ⚡ →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 8: TANTANGAN + PENUTUP ══ -->
+  <div class="page" id="page-8">
+    <div class="section-header">
+      <span class="tag">⚡ Tantangan Aslan</span>
+      <h1>Buktikan Kamu<br>Ahli Botani! 🌿</h1>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-title">🏆 Misi Botani Aslan</div>
+      <p style="font-size:15px;opacity:.8;margin-bottom:20px;">Kamu baru saja menjelajahi dunia tumbuhan karnivora yang luar biasa! Sekarang buktikan keahlianmu sebagai ahli botani muda!</p>
+
+      <div class="challenge-item">
+        <div class="challenge-num">1</div>
+        <div>
+          <p><strong>Buat Model Perangkap Venus Flytrap!</strong> 🌱 Ambil dua lembar kertas hijau tebal. Lipat masing-masing menjadi setengah lingkaran. Buat "gigi" dengan menggunting pinggirnya. Hubungkan kedua bagian dengan engsel (selotip di bagian tengah). Hiasi bagian dalam dengan warna merah. Voila — kamu punya Venus Flytrap kertas! Sekarang coba jelaskan cara kerjanya ke temanmu! 🎨</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">2</div>
+        <div>
+          <p><strong>Eksperimen Tanah Miskin Nutrisi!</strong> 🪴 Ambil dua pot kecil. Pot pertama isi dengan tanah subur, pot kedua isi dengan pasir dan tanah rawa (kalau ada). Tanam biji kacang hijau di masing-masing pot. Siram secukupnya dan amati selama 2 minggu — mana yang tumbuh lebih subur? Ini akan membantumu memahami MENGAPA tumbuhan karnivora butuh "makan" serangga!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">3</div>
+        <div>
+          <p><strong>Kuis Tumbuhan Karnivora!</strong> 🌿 Jawab tanpa melihat buku: (a) Berapa kali serangga harus menyentuh rambut Venus Flytrap sebelum perangkap menutup? (b) Bagaimana Nepenthes menjebak mangsanya tanpa bergerak? (c) Tumbuhan karnivora jenis apa yang tersebar di hampir semua benua? (d) Kenapa tumbuhan karnivora tidak berbahaya bagi manusia?</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">4</div>
+        <div>
+          <p><strong>Cari Kantong Semar Indonesia!</strong> 🇮🇩 Minta bantuan orang tuamu untuk mencari foto Nepenthes (Kantong Semar) dari Kalimantan atau Sumatra di internet. Tumbuhan ini adalah kebanggaan Indonesia! Ada lebih dari 100 spesies unik yang hanya ada di Indonesia. Coba temukan nama-nama spesies Nepenthes Indonesia yang paling unik dan tuliskan di bukumu!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">5</div>
+        <div>
+          <p><strong>Gambar Petualangan Rawa!</strong> 🖍️ Gambar sebuah adegan di rawa tropis dengan Terra Explorer kecil di sudut gambar. Tambahkan Venus Flytrap, Nepenthes, dan Sundew yang sudah kamu pelajari hari ini. Gambarkan juga serangga-serangga yang mendekati setiap tumbuhan. Beri label setiap tumbuhan dan tandai bagian-bagiannya! Ini akan menjadi karya seni sains yang keren! 🎨</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENUTUP -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--emerald),var(--crimson),var(--purple));margin-top:32px;">
+      <div class="closing-content">
+        <span class="trophy-big">🌿</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(24px,5vw,36px);margin-bottom:16px;">
+          Luar Biasa, Aslan! 🎉
+        </h2>
+        <p style="font-size:clamp(15px,2.5vw,17px);max-width:520px;margin:0 auto 24px;line-height:1.85;opacity:.92;">
+          Kamu telah menyelesaikan Hari ke-27! Kini kamu tahu bahwa alam penuh dengan kejutan — bahkan tumbuhan pun bisa menjadi pemburu yang cerdik. Dan Indonesia adalah rumah bagi ratusan spesies tumbuhan ajaib ini. Kamu adalah <strong>Botanis Muda</strong> yang sesungguhnya! 🌱
+        </p>
+
+        <div class="quote-box" style="max-width:540px;margin:0 auto 28px;">
+          <p>"Alam tidak pernah menciptakan sesuatu yang sia-sia. Setiap tumbuhan, setiap hewan, setiap organisme punya caranya sendiri untuk bertahan dan bersinar. Tugasmu adalah terus penasaran dan terus belajar tentang keajaiban di sekelilingmu."</p>
+          <cite>— Untuk Aslan, Botanis Muda Petualang 🌿✨</cite>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px;">
+          <span style="background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.32);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🪤 Master Venus Flytrap</span>
+          <span style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.32);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🏺 Ahli Kantong Semar</span>
+          <span style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.32);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">✨ Penakluk Sundew</span>
+          <span style="background:rgba(5,150,105,.15);border:1px solid rgba(5,150,105,.32);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🌿 Botanis Muda Indonesia</span>
+        </div>
+
+        <button class="btn btn-done" onclick="selesaiMembaca()">
+          ✅ Saya Sudah Selesai Membaca!
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(7)">← Kembali</button>
+      <span class="page-indicator">Halaman 8 dari 8</span>
+      <span></span>
+    </div>
+  </div>
+
+</div><!-- /.book-container -->
+
+<script>
+  // ── FLOATING BUGS (background) ──
+  const bf = document.getElementById('bugfield');
+  const bugEmojis = ['🦟','🪲','🪳','🦋','🐝','🪰','🐛'];
+  for (let i = 0; i < 20; i++) {
+    const b = document.createElement('div');
+    b.className = 'bug-p';
+    b.textContent = bugEmojis[Math.floor(Math.random() * bugEmojis.length)];
+    b.style.cssText = `
+      left:${Math.random()*100}%;
+      bottom:${Math.random()*10}%;
+      animation-duration:${12+Math.random()*16}s;
+      animation-delay:${Math.random()*12}s;
+      font-size:${10+Math.random()*10}px;
+    `;
+    bf.appendChild(b);
+  }
+
+  // ── BIOLUMINESCENT GLOW DOTS ──
+  const gf = document.getElementById('glowfield');
+  const glowColors = ['#16a34a','#84cc16','#a3e635','#22c55e','#4ade80'];
+  for (let i = 0; i < 30; i++) {
+    const g = document.createElement('div');
+    g.className = 'glow-p';
+    const sz = Math.random() * 6 + 2;
+    const col = glowColors[Math.floor(Math.random() * glowColors.length)];
+    g.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      top:${Math.random()*100}%; left:${Math.random()*100}%;
+      background:${col};
+      box-shadow:0 0 ${sz*3}px ${col};
+      animation-duration:${2+Math.random()*4}s;
+      animation-delay:${Math.random()*5}s;
+    `;
+    gf.appendChild(g);
+  }
+
+  // ── PAGES ──
+  const TOTAL = 8;
+  let current = 1;
+
+  function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── DARK / LIGHT MODE ──
+  const modeBtn = document.getElementById('modeBtn');
+  let isLight = false;
+  modeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+    modeBtn.textContent = isLight ? '🌙' : '☀️';
+  });
+
+  // ── SELESAI MEMBACA ──
+  function selesaiMembaca() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,.86);backdrop-filter:blur(14px);
+      z-index:999;display:flex;align-items:center;justify-content:center;
+      padding:20px;animation:fadeUp .3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="
+        background:linear-gradient(135deg,#031a0a,#030f07);
+        border:2px solid rgba(5,150,105,.48);
+        border-radius:28px;padding:40px;max-width:440px;width:100%;
+        text-align:center;color:#ecfdf5;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;
+          background:linear-gradient(90deg,#84cc16,#059669,#dc2626,#7c3aed);"></div>
+        <span style="font-size:80px;display:block;margin-bottom:16px;">🌿</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:12px;
+          background:linear-gradient(135deg,#a3e635,#4ade80);
+          -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+          background-clip:text;">Ahli Botani Sejati, Aslan!</h2>
+        <p style="font-size:16px;line-height:1.85;opacity:.92;margin-bottom:24px;">
+          Hari ke-27 selesai! 🎉<br>
+          Kamu sudah belajar tentang tumbuhan yang<br>
+          <strong>membalikkan aturan alam!</strong><br>
+          Tumbuhan yang memakan serangga, bukan dimakan.<br><br>
+          Alam sungguh luar biasa, kan? 🌱✨
+        </p>
+        <button onclick="this.closest('div').parentElement.remove()" style="
+          background:linear-gradient(135deg,#065f46,#059669);
+          color:white;border:none;padding:14px 32px;border-radius:50px;
+          font-size:16px;font-weight:800;cursor:pointer;
+          font-family:'Nunito',sans-serif;
+          box-shadow:0 4px 16px rgba(5,150,105,.5);">
+          Mantap! Tutup 🌿
+        </button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  }
+
+  // ── KEYBOARD ──
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(current - 1);
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>

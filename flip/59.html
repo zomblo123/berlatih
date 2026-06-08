@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 29: Cara Tambah Storage (Menambah GB dan TB)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:   #14b8a6;
+    --sky:    #38bdf8;
+    --green:  #22c55e;
+    --yellow: #fbbf24;
+    --orange: #f97316;
+    --pink:   #ec4899;
+    --purple: #a855f7;
+    --bg:     #f0fdfa;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    font-family:'Nunito',sans-serif;
+    background:var(--bg);
+    background-image:
+      radial-gradient(circle at 8% 15%,  rgba(20,184,166,.17)  0%,transparent 45%),
+      radial-gradient(circle at 88% 70%,  rgba(34,197,94,.13)   0%,transparent 40%),
+      radial-gradient(circle at 50% 95%,  rgba(168,85,247,.10)  0%,transparent 40%);
+    min-height:100vh; overflow-x:hidden;
+  }
+  h1,h2,h3 { font-family:'Fredoka One',cursive; }
+
+  /* ── Header ── */
+  .header-grad {
+    background:linear-gradient(135deg,#134e4a 0%,#0f766e 35%,#0d9488 65%,#2dd4bf 100%);
+    position:relative; overflow:hidden;
+  }
+  .header-grad::after {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Crect x='0' y='0' width='20' height='20'/%3E%3Crect x='20' y='20' width='20' height='20'/%3E%3Crect x='40' y='0' width='20' height='20'/%3E%3Crect x='0' y='40' width='20' height='20'/%3E%3Crect x='40' y='40' width='20' height='20'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* ── Speech bubble ── */
+  .bubble {
+    position:relative; background:white;
+    border-radius:22px; border:3px solid #0d9488;
+    box-shadow:4px 4px 0 #0d9488;
+  }
+  .bubble::before { content:''; position:absolute; bottom:-22px; left:30px; border:12px solid transparent; border-top-color:#0d9488; }
+  .bubble::after  { content:''; position:absolute; bottom:-15px; left:33px; border:10px solid transparent; border-top-color:white; }
+
+  /* ── Aslan bounce ── */
+  @keyframes bounceAslan { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-10px);} }
+  .aslan-bounce { animation:bounceAslan 2.2s ease-in-out infinite; }
+
+  /* ── HDD shimmer ── */
+  @keyframes hddShimmer {
+    0%   { background-position:-200% center; }
+    100% { background-position:200% center; }
+  }
+  .hdd-shimmer {
+    background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.7) 45%,transparent 100%) center/200% auto;
+    animation:hddShimmer 2.5s linear infinite;
+  }
+
+  /* ── Step cards ── */
+  .step-card {
+    cursor:pointer;
+    transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    border:3px solid transparent;
+  }
+  .step-card:hover { transform:scale(1.04) translateY(-3px); }
+  .step-card.done {
+    border-color:#22c55e;
+    box-shadow:0 0 0 4px rgba(34,197,94,.25),0 6px 20px rgba(34,197,94,.2);
+  }
+
+  /* ── Big button ── */
+  .btn-magic {
+    background:linear-gradient(135deg,#f97316,#ec4899);
+    color:white; border:none; border-radius:50px;
+    padding:1rem 2.5rem;
+    font-family:'Fredoka One',cursive; font-size:1.3rem;
+    cursor:pointer;
+    box-shadow:0 6px 0 #c23a7a,0 8px 20px rgba(236,72,153,.4);
+    transition:all .15s ease; letter-spacing:.5px;
+  }
+  .btn-magic:hover { transform:translateY(-3px); box-shadow:0 9px 0 #c23a7a,0 12px 28px rgba(236,72,153,.5); }
+  .btn-magic:active { transform:translateY(3px); box-shadow:0 3px 0 #c23a7a; }
+  .btn-magic:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+  /* ── Storage button ── */
+  .btn-storage {
+    background:linear-gradient(135deg,#0d9488,#14b8a6);
+    color:white; border:none; border-radius:50px;
+    padding:.9rem 2.2rem;
+    font-family:'Fredoka One',cursive; font-size:1.2rem;
+    cursor:pointer;
+    box-shadow:0 5px 0 #0f766e,0 7px 18px rgba(13,148,136,.4);
+    transition:all .15s ease;
+  }
+  .btn-storage:hover { transform:translateY(-3px); box-shadow:0 8px 0 #0f766e,0 10px 24px rgba(13,148,136,.5); }
+  .btn-storage:active { transform:translateY(3px); box-shadow:0 2px 0 #0f766e; }
+  .btn-storage:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+  /* ── Confetti ── */
+  @keyframes confettiFly {
+    0%   { transform:translate(0,0) rotate(0deg) scale(1); opacity:1; }
+    100% { transform:translate(var(--tx),var(--ty)) rotate(720deg) scale(0); opacity:0; }
+  }
+  .confetti-piece {
+    position:fixed; width:10px; height:10px; border-radius:2px;
+    pointer-events:none; z-index:200;
+    animation:confettiFly 1.3s ease-out forwards;
+  }
+
+  /* ── Drag styles ── */
+  .item-draggable {
+    cursor:grab; transition:transform .2s, filter .2s; user-select:none;
+  }
+  .item-draggable:active { cursor:grabbing; }
+  .item-draggable.dragging {
+    opacity:.85; transform:scale(1.1);
+    filter:drop-shadow(0 8px 16px rgba(13,148,136,.6));
+    z-index:999;
+  }
+  .drop-slot {
+    transition:all .3s;
+    border:3px dashed #5eead4;
+    border-radius:12px;
+  }
+  .drop-slot.highlight { border-color:#0d9488; background:rgba(13,148,136,.12); box-shadow:0 0 16px rgba(13,148,136,.4); }
+  .drop-slot.filled    { border-style:solid; border-color:#22c55e; background:rgba(34,197,94,.1); }
+
+  /* ── Storage bar ── */
+  @keyframes fillBar { from{width:0} to{width:var(--fill-w)} }
+  .storage-bar { animation:fillBar .8s ease-out both; }
+
+  /* ── Section enter ── */
+  @keyframes fadeSlideUp {
+    from{ opacity:0; transform:translateY(28px); }
+    to  { opacity:1; transform:translateY(0); }
+  }
+  .sec { animation:fadeSlideUp .55s ease-out both; }
+
+  /* ── Glow pulse ── */
+  @keyframes glowPulse {
+    0%,100%{ filter:drop-shadow(0 0 4px rgba(13,148,136,.3)); }
+    50%    { filter:drop-shadow(0 0 18px rgba(13,148,136,.9)); }
+  }
+  .item-glow { animation:glowPulse 2s ease-in-out infinite; }
+
+  /* ── Spin loading ── */
+  @keyframes spinAnim { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .spin { animation:spinAnim .6s linear infinite; transform-origin:center; }
+  .spin-slow { animation:spinAnim 3s linear infinite; transform-origin:center; }
+
+  /* ── Tooltip ── */
+  .tip-box {
+    position:absolute; bottom:calc(100%+8px); left:50%; transform:translateX(-50%);
+    background:#1e293b; color:white; border-radius:10px; padding:.4rem .8rem;
+    font-size:.75rem; white-space:nowrap; pointer-events:none;
+    opacity:0; transition:opacity .2s; z-index:50; font-weight:700;
+  }
+  .tip-box::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:#1e293b; }
+  .has-tip:hover .tip-box { opacity:1; }
+  .has-tip { position:relative; }
+
+  /* ── Sparkle ── */
+  @keyframes sparkAnim { 0%,100%{opacity:0;transform:scale(0) rotate(0deg);} 50%{opacity:1;transform:scale(1) rotate(180deg);} }
+  .spark { animation:sparkAnim 1.6s ease-in-out infinite; }
+  .spark:nth-child(2){animation-delay:.4s;}
+  .spark:nth-child(3){animation-delay:.8s;}
+
+  /* ── Shake ── */
+  @keyframes shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-7px);} 40%{transform:translateX(7px);} 60%{transform:translateX(-4px);} 80%{transform:translateX(4px);} }
+  @keyframes popIn  { from{transform:scale(.85);opacity:.5;} to{transform:scale(1);opacity:1;} }
+
+  /* ── Shimmer bar ── */
+  @keyframes shimBar { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body class="min-h-screen">
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <div class="absolute top-4 right-8 opacity-15 text-5xl pointer-events-none select-none">☁️</div>
+  <div class="absolute top-8 left-12 opacity-10 text-3xl pointer-events-none select-none">☁️</div>
+  <div class="absolute bottom-2 right-1/4 opacity-10 text-4xl pointer-events-none select-none">⭐</div>
+
+  <div class="max-w-3xl mx-auto text-center relative z-10">
+    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-3 border border-white/30">
+      <span class="text-lg">🖥️</span>
+      <span class="font-bold text-sm tracking-wide">Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span class="text-white/70 text-xs ml-2 font-semibold">Hari 29 dari 30</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl md:text-5xl mb-2 drop-shadow-lg" style="line-height:1.2;">
+      Hari 29: Cara Tambah Storage 💾<br>
+      <span class="text-yellow-300">(Menambah GB dan TB!)</span>
+    </h1>
+    <p class="text-teal-100 font-semibold text-base sm:text-lg mt-2">
+      ✨ Hampir selesai! Tinggal 1 hari lagi! ✨
+    </p>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-8 space-y-10">
+
+<!-- ═══════════════════ INTRO ═══════════════════ -->
+<section class="sec flex flex-col sm:flex-row items-center gap-6">
+  <!-- Aslan SVG memegang HDD besar -->
+  <div class="flex-shrink-0 aslan-bounce">
+    <svg viewBox="0 0 180 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-40 sm:w-48 drop-shadow-xl">
+      <!-- Body: baju oranye -->
+      <rect x="48" y="116" width="76" height="70" rx="20" fill="#F97316"/>
+      <rect x="48" y="124" width="76" height="9"  fill="#EA580C" opacity=".45"/>
+      <rect x="48" y="139" width="76" height="9"  fill="#EA580C" opacity=".45"/>
+      <!-- Lengan kiri membawa HDD -->
+      <rect x="10" y="118" width="42" height="15" rx="7" fill="#FBBF24" transform="rotate(-10 10 118)"/>
+      <!-- Lengan kanan -->
+      <rect x="120" y="118" width="38" height="15" rx="7" fill="#FBBF24" transform="rotate(12 120 118)"/>
+      <!-- HDD besar di tangan kiri -->
+      <g transform="translate(-8, 126) rotate(-8)">
+        <!-- HDD body -->
+        <rect x="0" y="0" width="60" height="38" rx="6" fill="#1E293B"/>
+        <rect x="3" y="3" width="54" height="32" rx="5" fill="#334155"/>
+        <!-- HDD platter (lingkaran) -->
+        <circle cx="30" cy="19" r="13" fill="#475569"/>
+        <circle cx="30" cy="19" r="9"  fill="#64748B"/>
+        <circle cx="30" cy="19" r="4"  fill="#94A3B8"/>
+        <circle cx="30" cy="19" r="2"  fill="#CBD5E1"/>
+        <!-- HDD arm -->
+        <rect x="38" y="8" width="14" height="4" rx="2" fill="#F97316" transform="rotate(30 38 8)"/>
+        <!-- Label -->
+        <rect x="4" y="4" width="16" height="8" rx="2" fill="#0D9488"/>
+        <text x="5" y="11" fill="white" font-size="5" font-family="monospace" font-weight="bold">1 TB</text>
+        <!-- Shimmer -->
+        <rect x="0" y="0" width="60" height="38" rx="6" fill="white" opacity=".05"/>
+      </g>
+      <!-- Kaki -->
+      <rect x="58"  y="178" width="24" height="26" rx="11" fill="#FBBF24"/>
+      <rect x="90"  y="178" width="24" height="26" rx="11" fill="#FBBF24"/>
+      <!-- Sepatu -->
+      <ellipse cx="70"  cy="204" rx="15" ry="7" fill="#0F766E"/>
+      <ellipse cx="102" cy="204" rx="15" ry="7" fill="#0F766E"/>
+      <!-- Kepala -->
+      <circle cx="84" cy="78" r="46" fill="#FBBF24"/>
+      <!-- Rambut -->
+      <ellipse cx="84" cy="36"  rx="40" ry="17" fill="#1C1917"/>
+      <ellipse cx="50" cy="54"  rx="13" ry="19" fill="#1C1917"/>
+      <ellipse cx="118" cy="54" rx="13" ry="19" fill="#1C1917"/>
+      <ellipse cx="66"  cy="39"  rx="13" ry="11" fill="#292524"/>
+      <ellipse cx="100" cy="39"  rx="13" ry="11" fill="#292524"/>
+      <!-- Mata -->
+      <ellipse cx="69" cy="80" rx="9" ry="10" fill="white"/>
+      <ellipse cx="99" cy="80" rx="9" ry="10" fill="white"/>
+      <circle cx="71" cy="82" r="5" fill="#1C1917"/>
+      <circle cx="101" cy="82" r="5" fill="#1C1917"/>
+      <circle cx="73" cy="80" r="2" fill="white"/>
+      <circle cx="103" cy="80" r="2" fill="white"/>
+      <!-- Kilap mata -->
+      <circle cx="62" cy="71" r="2" fill="#FBBF24" class="spark"/>
+      <circle cx="106" cy="71" r="2" fill="#FBBF24" class="spark"/>
+      <!-- Alis -->
+      <path d="M62 69 Q69 63 76 67" stroke="#1C1917" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <path d="M92 67 Q99 63 106 69" stroke="#1C1917" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <!-- Senyum lebar -->
+      <path d="M62 96 Q84 118 106 96" stroke="#92400E" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M66 98 Q84 114 102 98" fill="#FF8C42" opacity=".5"/>
+      <rect x="72" y="99" width="10" height="9" rx="3" fill="white"/>
+      <rect x="86" y="99" width="10" height="9" rx="3" fill="white"/>
+      <!-- Pipi -->
+      <ellipse cx="57"  cy="94" rx="11" ry="7" fill="#FCA5A5" opacity=".6"/>
+      <ellipse cx="111" cy="94" rx="11" ry="7" fill="#FCA5A5" opacity=".6"/>
+      <!-- Telinga -->
+      <ellipse cx="39"  cy="80" rx="7" ry="9" fill="#FBBF24"/>
+      <ellipse cx="129" cy="80" rx="7" ry="9" fill="#FBBF24"/>
+      <!-- Tanda seru excited -->
+      <circle cx="130" cy="48" r="10" fill="#FBBF24" opacity=".9"/>
+      <text x="127" y="52" font-size="11" font-weight="bold" fill="#F97316">!</text>
+    </svg>
+  </div>
+
+  <!-- Speech bubble -->
+  <div class="bubble p-5 flex-1">
+    <p class="text-teal-800 font-bold text-base sm:text-lg leading-relaxed">
+      Halo Aslan! 👋 Hari ini kita belajar <span class="text-teal-600 font-extrabold">Cara Tambah Storage</span> agar komputer bisa menyimpan lebih banyak foto, video, dan game! 🎉
+    </p>
+    <p class="text-gray-600 mt-2 text-sm sm:text-base leading-relaxed">
+      Storage itu seperti <span class="text-orange-600 font-bold">lemari</span> — kita bisa tambah agar bisa menyimpan lebih banyak barang! 🗄️
+    </p>
+    <p class="text-green-600 font-bold text-sm mt-3">
+      💬 Kata Aslan: <em>"Sekarang aku bisa simpan banyak video kartun dan game di komputerku! 🎮📺"</em>
+    </p>
+    <div class="mt-3">
+      <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#0d9488,#14b8a6);">💾 Hari 29</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ APA ITU STORAGE? ═══════════════════ -->
+<section class="sec bg-white rounded-3xl shadow-md p-6 border-t-4 border-teal-400">
+  <h2 class="text-2xl sm:text-3xl mb-4 text-teal-700">🗄️ Storage Itu Apa?</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+    <!-- HDD -->
+    <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 has-tip hover:scale-105 transition-transform cursor-default">
+      <div class="tip-box">Hard Disk Drive – HDD</div>
+      <div class="text-4xl mb-2 text-center">💿</div>
+      <p class="font-bold text-slate-700 text-base text-center">Hard Disk (HDD)</p>
+      <svg viewBox="0 0 160 100" class="w-full max-w-xs mx-auto mt-2">
+        <rect x="10" y="15" width="140" height="70" rx="8" fill="#1E293B"/>
+        <rect x="14" y="19" width="132" height="62" rx="6" fill="#334155"/>
+        <circle cx="80" cy="50" r="26" fill="#475569"/>
+        <circle cx="80" cy="50" r="18" fill="#64748B"/>
+        <circle cx="80" cy="50" r="8"  fill="#94A3B8"/>
+        <circle cx="80" cy="50" r="3"  fill="#CBD5E1"/>
+        <!-- arm -->
+        <rect x="95" y="24" width="30" height="5" rx="2.5" fill="#F97316" transform="rotate(20 95 24)"/>
+        <circle cx="95" cy="24" r="4" fill="#FB923C"/>
+        <!-- screws -->
+        <circle cx="20" cy="25" r="4" fill="#475569"/><line x1="18" y1="25" x2="22" y2="25" stroke="#94A3B8" stroke-width="1.5"/><line x1="20" y1="23" x2="20" y2="27" stroke="#94A3B8" stroke-width="1.5"/>
+        <circle cx="140" cy="25" r="4" fill="#475569"/><line x1="138" y1="25" x2="142" y2="25" stroke="#94A3B8" stroke-width="1.5"/><line x1="140" y1="23" x2="140" y2="27" stroke="#94A3B8" stroke-width="1.5"/>
+        <circle cx="20" cy="75" r="4" fill="#475569"/><line x1="18" y1="75" x2="22" y2="75" stroke="#94A3B8" stroke-width="1.5"/><line x1="20" y1="73" x2="20" y2="77" stroke="#94A3B8" stroke-width="1.5"/>
+        <circle cx="140" cy="75" r="4" fill="#475569"/><line x1="138" y1="75" x2="142" y2="75" stroke="#94A3B8" stroke-width="1.5"/><line x1="140" y1="73" x2="140" y2="77" stroke="#94A3B8" stroke-width="1.5"/>
+        <!-- SATA connector -->
+        <rect x="110" y="55" width="30" height="8" rx="2" fill="#0D9488"/>
+        <text x="113" y="61" fill="white" font-size="5" font-family="monospace">SATA</text>
+      </svg>
+      <div class="mt-3 space-y-1 text-xs">
+        <div class="flex justify-between bg-slate-100 rounded-lg px-3 py-1.5"><span class="font-semibold text-slate-600">Kapasitas</span><span class="font-bold text-teal-600">1–8 TB 💾</span></div>
+        <div class="flex justify-between bg-slate-100 rounded-lg px-3 py-1.5"><span class="font-semibold text-slate-600">Kecepatan</span><span class="font-bold text-orange-500">Sedang 🏃</span></div>
+        <div class="flex justify-between bg-slate-100 rounded-lg px-3 py-1.5"><span class="font-semibold text-slate-600">Harga</span><span class="font-bold text-green-600">Lebih Murah 💰</span></div>
+      </div>
+    </div>
+
+    <!-- SSD -->
+    <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4 has-tip hover:scale-105 transition-transform cursor-default">
+      <div class="tip-box">Solid State Drive – SSD</div>
+      <div class="text-4xl mb-2 text-center">⚡</div>
+      <p class="font-bold text-blue-700 text-base text-center">SSD (Lebih Cepat!)</p>
+      <svg viewBox="0 0 160 100" class="w-full max-w-xs mx-auto mt-2">
+        <!-- SSD body -->
+        <rect x="10" y="25" width="140" height="50" rx="6" fill="#1E3A8A"/>
+        <rect x="14" y="29" width="132" height="42" rx="5" fill="#1E40AF"/>
+        <!-- Memory chips -->
+        <rect x="18" y="33" width="22" height="16" rx="3" fill="#3B82F6"/>
+        <rect x="20" y="35" width="18" height="12" rx="2" fill="#60A5FA"/>
+        <rect x="44" y="33" width="22" height="16" rx="3" fill="#3B82F6"/>
+        <rect x="46" y="35" width="18" height="12" rx="2" fill="#60A5FA"/>
+        <rect x="70" y="33" width="22" height="16" rx="3" fill="#3B82F6"/>
+        <rect x="72" y="35" width="18" height="12" rx="2" fill="#60A5FA"/>
+        <rect x="96" y="33" width="22" height="16" rx="3" fill="#3B82F6"/>
+        <rect x="98" y="35" width="18" height="12" rx="2" fill="#60A5FA"/>
+        <!-- Controller -->
+        <rect x="18" y="53" width="30" height="14" rx="3" fill="#1D4ED8"/>
+        <text x="21" y="63" fill="#93C5FD" font-size="6" font-family="monospace">CTRL</text>
+        <!-- M.2 label -->
+        <rect x="52" y="53" width="40" height="14" rx="3" fill="#0F172A"/>
+        <text x="57" y="63" fill="#38BDF8" font-size="7" font-family="monospace" font-weight="bold">M.2 NVMe</text>
+        <!-- SATA -->
+        <rect x="110" y="53" width="30" height="14" rx="3" fill="#0D9488"/>
+        <text x="113" y="63" fill="white" font-size="6" font-family="monospace">SATA</text>
+        <!-- Edge connector gold -->
+        <rect x="16" y="68" width="128" height="5" rx="2" fill="#B45309"/>
+        <rect x="18" y="68" width="8" height="5" rx="1" fill="#FCD34D"/>
+        <rect x="30" y="68" width="8" height="5" rx="1" fill="#FCD34D"/>
+        <rect x="42" y="68" width="8" height="5" rx="1" fill="#FCD34D"/>
+        <rect x="54" y="68" width="8" height="5" rx="1" fill="#FCD34D"/>
+        <rect x="66" y="68" width="8" height="5" rx="1" fill="#FCD34D"/>
+        <rect x="78" y="68" width="8" height="5" rx="1" fill="#FCD34D"/>
+        <rect x="90" y="68" width="8" height="5" rx="1" fill="#FCD34D"/>
+        <rect x="102" y="68" width="8" height="5" rx="1" fill="#FCD34D"/>
+        <rect x="114" y="68" width="8" height="5" rx="1" fill="#FCD34D"/>
+        <rect x="126" y="68" width="8" height="5" rx="1" fill="#FCD34D"/>
+      </svg>
+      <div class="mt-3 space-y-1 text-xs">
+        <div class="flex justify-between bg-blue-100 rounded-lg px-3 py-1.5"><span class="font-semibold text-blue-600">Kapasitas</span><span class="font-bold text-teal-600">256 GB–4 TB 💾</span></div>
+        <div class="flex justify-between bg-blue-100 rounded-lg px-3 py-1.5"><span class="font-semibold text-blue-600">Kecepatan</span><span class="font-bold text-blue-600">Super Cepat ⚡</span></div>
+        <div class="flex justify-between bg-blue-100 rounded-lg px-3 py-1.5"><span class="font-semibold text-blue-600">Harga</span><span class="font-bold text-orange-500">Lebih Mahal 💳</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analogi lemari -->
+  <div class="mt-5 bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-5">
+    <p class="font-bold text-yellow-700 text-base mb-3 text-center">🗄️ Analogi Lemari Kamar!</p>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="bg-red-50 border-2 border-red-200 rounded-xl p-3 text-center">
+        <p class="text-3xl mb-1">😖</p>
+        <p class="font-bold text-red-600 text-sm">256 GB</p>
+        <p class="text-red-400 text-xs">Lemari kecil,<br>penuh sesak!</p>
+        <svg viewBox="0 0 100 80" class="w-full max-w-20 mx-auto mt-2">
+          <rect x="10" y="5"  width="80" height="70" rx="5" fill="#EF4444" opacity=".8"/>
+          <rect x="14" y="9"  width="36" height="28" rx="3" fill="#FCA5A5"/>
+          <rect x="54" y="9"  width="32" height="28" rx="3" fill="#FCA5A5"/>
+          <rect x="14" y="41" width="72" height="30" rx="3" fill="#FCA5A5"/>
+          <!-- Stuff falling out -->
+          <rect x="38" y="0" width="10" height="10" rx="2" fill="#FBBF24" transform="rotate(15 38 0)"/>
+          <rect x="72" y="-2" width="8"  height="8"  rx="2" fill="#A855F7" transform="rotate(-20 72 -2)"/>
+          <circle cx="90" cy="8" r="5" fill="#22C55E"/>
+          <!-- X -->
+          <circle cx="85" cy="70" r="10" fill="#DC2626"/>
+          <text x="81" y="75" fill="white" font-size="12" font-weight="bold">!</text>
+        </svg>
+      </div>
+      <div class="bg-green-50 border-2 border-green-200 rounded-xl p-3 text-center">
+        <p class="text-3xl mb-1">😄</p>
+        <p class="font-bold text-green-600 text-sm">2 TB</p>
+        <p class="text-green-400 text-xs">Lemari besar,<br>lega dan rapi!</p>
+        <svg viewBox="0 0 100 80" class="w-full max-w-20 mx-auto mt-2">
+          <rect x="5"  y="5"  width="90" height="70" rx="5" fill="#22C55E" opacity=".8"/>
+          <rect x="9"  y="9"  width="38" height="28" rx="3" fill="#BBF7D0"/>
+          <rect x="53" y="9"  width="38" height="28" rx="3" fill="#BBF7D0"/>
+          <rect x="9"  y="41" width="82" height="30" rx="3" fill="#BBF7D0"/>
+          <!-- Neat items -->
+          <rect x="12" y="12" width="10" height="18" rx="2" fill="#14B8A6"/>
+          <rect x="25" y="12" width="10" height="18" rx="2" fill="#F59E0B"/>
+          <rect x="38" y="12" width="6"  height="18" rx="2" fill="#A855F7"/>
+          <!-- Checkmark -->
+          <circle cx="85" cy="70" r="10" fill="#16A34A"/>
+          <text x="81" y="75" fill="white" font-size="12" font-weight="bold">✓</text>
+        </svg>
+      </div>
+    </div>
+    <p class="text-center text-yellow-600 font-bold text-sm mt-3">
+      💡 Menambah storage seperti menambah lemari baru di kamar supaya bisa simpan lebih banyak mainan! 🧸
+    </p>
+  </div>
+
+  <!-- Ukuran storage visual -->
+  <div class="mt-5 bg-teal-50 border-2 border-teal-200 rounded-2xl p-4">
+    <p class="text-center font-bold text-teal-700 text-sm mb-3">📊 Berapa Banyak yang Bisa Disimpan?</p>
+    <div class="space-y-2.5">
+      <div>
+        <div class="flex justify-between text-xs font-bold mb-1"><span class="text-orange-600">256 GB — Laptop murah</span><span class="text-orange-500">~25%</span></div>
+        <div class="h-4 bg-gray-200 rounded-full overflow-hidden"><div class="h-4 rounded-full bg-gradient-to-r from-orange-400 to-red-500" style="width:25%;transition:width 1s;"></div></div>
+        <p class="text-xs text-gray-400 mt-0.5">± 50 ribu foto 📷</p>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs font-bold mb-1"><span class="text-yellow-600">500 GB — Standar</span><span class="text-yellow-500">~50%</span></div>
+        <div class="h-4 bg-gray-200 rounded-full overflow-hidden"><div class="h-4 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400" style="width:50%;transition:width 1s;"></div></div>
+        <p class="text-xs text-gray-400 mt-0.5">± 100 ribu foto 📷</p>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs font-bold mb-1"><span class="text-teal-600">1 TB — Bagus</span><span class="text-teal-500">~75%</span></div>
+        <div class="h-4 bg-gray-200 rounded-full overflow-hidden"><div class="h-4 rounded-full bg-gradient-to-r from-teal-400 to-green-500" style="width:75%;transition:width 1s;"></div></div>
+        <p class="text-xs text-gray-400 mt-0.5">± 200 ribu foto atau 500 jam video 🎬</p>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs font-bold mb-1"><span class="text-purple-600">4 TB — Wah banget!</span><span class="text-purple-500">100%</span></div>
+        <div class="h-4 bg-gray-200 rounded-full overflow-hidden"><div class="h-4 rounded-full bg-gradient-to-r from-purple-400 to-pink-500" style="width:100%;transition:width 1s;"></div></div>
+        <p class="text-xs text-gray-400 mt-0.5">± 800 ribu foto atau 2000 jam video 🎬🎬</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ LANGKAH-LANGKAH ═══════════════════ -->
+<section class="sec bg-white rounded-3xl shadow-md p-6 border-t-4 border-orange-400">
+  <h2 class="text-2xl sm:text-3xl mb-2 text-orange-600">🛠️ Langkah Tambah Storage</h2>
+  <p class="text-gray-500 text-sm mb-5">Klik setiap langkah buat mempelajarinya! ✨</p>
+
+  <div id="stepsContainer" class="space-y-3">
+    <div class="step-card bg-orange-50 rounded-2xl p-4 flex items-start gap-4" onclick="doStep(1)" data-step="1">
+      <div class="w-12 h-12 flex-shrink-0 rounded-2xl bg-orange-400 flex items-center justify-center text-white font-black text-xl">1</div>
+      <div class="flex-1">
+        <p class="font-bold text-orange-700 text-base">🔌 Matikan Komputer Dulu!</p>
+        <p class="text-orange-500 text-sm mt-1 hidden step-desc" id="d1">Ini wajib! Kalau masih menyala dan kita pasang storage baru, bisa konslet! Cabut juga kabel listriknya, ya. Tunggu 5–10 menit sampai tidak panas. ⚠️</p>
+        <div class="hidden mt-2" id="b1"><span class="inline-block bg-orange-100 text-orange-600 text-xs font-bold px-3 py-1 rounded-full">✅ Oke, ngerti!</span></div>
+      </div>
+      <div class="text-2xl flex-shrink-0" id="i1">🖥️</div>
+    </div>
+
+    <div class="step-card bg-blue-50 rounded-2xl p-4 flex items-start gap-4" onclick="doStep(2)" data-step="2">
+      <div class="w-12 h-12 flex-shrink-0 rounded-2xl bg-blue-400 flex items-center justify-center text-white font-black text-xl">2</div>
+      <div class="flex-1">
+        <p class="font-bold text-blue-700 text-base">🔧 Buka Casing Komputer</p>
+        <p class="text-blue-500 text-sm mt-1 hidden step-desc" id="d2">Casing adalah "baju" komputer. Buka sekrup di bagian belakang, lalu geser panelnya. Di dalam ada banyak komponen seru! Hati-hati bagian yang tajam. 🔍</p>
+        <div class="hidden mt-2" id="b2"><span class="inline-block bg-blue-100 text-blue-600 text-xs font-bold px-3 py-1 rounded-full">✅ Oke, ngerti!</span></div>
+      </div>
+      <div class="text-2xl flex-shrink-0" id="i2">🔧</div>
+    </div>
+
+    <div class="step-card bg-teal-50 rounded-2xl p-4 flex items-start gap-4" onclick="doStep(3)" data-step="3">
+      <div class="w-12 h-12 flex-shrink-0 rounded-2xl bg-teal-500 flex items-center justify-center text-white font-black text-xl">3</div>
+      <div class="flex-1">
+        <p class="font-bold text-teal-700 text-base">💾 Pasang SSD atau Hard Disk Baru!</p>
+        <p class="text-teal-500 text-sm mt-1 hidden step-desc" id="d3">Cari slot yang kosong — untuk HDD/SSD SATA ada bracket & kabel data. Untuk M.2 SSD tinggal masuk ke slot M.2 di motherboard lalu kencangkan sekrup kecilnya. Hati-hati jangan bengkok! 💡</p>
+        <div class="hidden mt-2" id="b3"><span class="inline-block bg-teal-100 text-teal-600 text-xs font-bold px-3 py-1 rounded-full">✅ Oke, ngerti!</span></div>
+      </div>
+      <div class="text-2xl flex-shrink-0" id="i3">💾</div>
+    </div>
+
+    <div class="step-card bg-yellow-50 rounded-2xl p-4 flex items-start gap-4" onclick="doStep(4)" data-step="4">
+      <div class="w-12 h-12 flex-shrink-0 rounded-2xl bg-yellow-400 flex items-center justify-center text-white font-black text-xl">4</div>
+      <div class="flex-1">
+        <p class="font-bold text-yellow-700 text-base">🔒 Tutup Kembali Casingnya</p>
+        <p class="text-yellow-500 text-sm mt-1 hidden step-desc" id="d4">Setelah storage terpasang rapi, hubungkan kabel SATA dan kabel power, lalu pasang kembali panel casing. Kencangkan semua sekrup. Pastikan tidak ada kabel yang terjepit! 🛡️</p>
+        <div class="hidden mt-2" id="b4"><span class="inline-block bg-yellow-100 text-yellow-600 text-xs font-bold px-3 py-1 rounded-full">✅ Oke, ngerti!</span></div>
+      </div>
+      <div class="text-2xl flex-shrink-0" id="i4">🔒</div>
+    </div>
+
+    <div class="step-card bg-green-50 rounded-2xl p-4 flex items-start gap-4" onclick="doStep(5)" data-step="5">
+      <div class="w-12 h-12 flex-shrink-0 rounded-2xl bg-green-500 flex items-center justify-center text-white font-black text-xl">5</div>
+      <div class="flex-1">
+        <p class="font-bold text-green-700 text-base">⚡ Nyalakan → Sekarang Ada Ruang Lebih!</p>
+        <p class="text-green-500 text-sm mt-1 hidden step-desc" id="d5">Colok kabel, tekan power, dan... Storage baru terdeteksi! Komputer biasanya otomatis mendeteksi storage baru. Kamu bisa cek di File Explorer atau Disk Management. Sekarang simpan sepuasnya! 🎉</p>
+        <div class="hidden mt-2" id="b5"><span class="inline-block bg-green-100 text-green-600 text-xs font-bold px-3 py-1 rounded-full">✅ Oke, ngerti!</span></div>
+      </div>
+      <div class="text-2xl flex-shrink-0" id="i5">⚡</div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="mt-5 bg-gray-50 rounded-2xl p-4">
+    <div class="flex justify-between items-center mb-2">
+      <span class="text-sm font-bold text-gray-600">Progress belajar:</span>
+      <span class="text-sm font-bold text-teal-600" id="stepProg">0 / 5 langkah</span>
+    </div>
+    <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
+      <div id="stepBar" class="h-4 rounded-full transition-all duration-500 bg-gradient-to-r from-teal-400 to-green-500" style="width:0%"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ ANIMASI UPGRADE ═══════════════════ -->
+<section class="sec bg-white rounded-3xl shadow-md p-6 border-t-4 border-purple-400">
+  <h2 class="text-2xl sm:text-3xl mb-2 text-purple-700">🎬 Animasi Tambah Storage!</h2>
+  <p class="text-gray-500 text-sm mb-5">Klik tombol untuk melihat proses tambah storage secara animasi! 🎮</p>
+
+  <div class="bg-gray-900 rounded-2xl p-5 relative overflow-hidden" id="animArea" style="min-height:230px;">
+    <svg id="compSvg" viewBox="0 0 380 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-lg mx-auto block">
+      <!-- Casing -->
+      <rect x="55" y="15" width="270" height="190" rx="16" fill="#374151" stroke="#4B5563" stroke-width="3"/>
+      <rect x="65" y="25" width="250" height="170" rx="12" fill="#1F2937"/>
+      <!-- Drive bays -->
+      <rect x="75" y="38" width="90" height="14" rx="4" fill="#374151"/>
+      <rect x="75" y="56" width="90" height="14" rx="4" fill="#374151"/>
+      <!-- Power button -->
+      <circle cx="298" cy="46" r="11" fill="#22C55E" id="pBtn"/>
+      <circle cx="298" cy="46" r="6"  fill="#16A34A"/>
+      <!-- Power LED -->
+      <circle cx="312" cy="46" r="5" fill="#374151" id="pLed"/>
+      <!-- Motherboard -->
+      <rect x="168" y="30" width="152" height="142" rx="8" fill="#14532D" id="moboPlate"/>
+      <!-- Mobo traces -->
+      <path d="M178 55 L308 55 M178 75 L308 75 M178 95 L308 95" stroke="#16A34A" stroke-width="1" opacity=".4"/>
+      <!-- CPU -->
+      <rect x="188" y="38" width="52" height="52" rx="4" fill="#1C1C1C"/>
+      <rect x="193" y="43" width="42" height="42" rx="3" fill="#374151"/>
+      <text x="200" y="67" fill="#9CA3AF" font-size="8" font-family="monospace">CPU</text>
+      <!-- M.2 slot empty -->
+      <rect x="250" y="38" width="62" height="10" rx="3" fill="#1E3A8A" id="m2slot" stroke="#3B82F6" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="252" y="46" fill="#6B7280" font-size="5" font-family="monospace">M.2 SLOT</text>
+      <!-- SATA slot 1 occupied -->
+      <rect x="250" y="55" width="62" height="16" rx="3" fill="#065F46" id="sata1"/>
+      <rect x="253" y="58" width="56" height="10" rx="2" fill="#059669"/>
+      <text x="256" y="65" fill="#A7F3D0" font-size="5" font-family="monospace">SATA: 500 GB ✓</text>
+      <!-- SATA slot 2 empty -->
+      <rect x="250" y="76" width="62" height="16" rx="3" fill="#1F2937" id="sata2" stroke="#6B7280" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="253" y="86" fill="#6B7280" font-size="5" font-family="monospace">SATA: KOSONG</text>
+      <!-- RAM slots -->
+      <rect x="188" y="100" width="10" height="58" rx="3" fill="#1E3A8A" stroke="#3B82F6" stroke-width="1"/>
+      <rect x="202" y="100" width="10" height="58" rx="3" fill="#1E3A8A" stroke="#3B82F6" stroke-width="1"/>
+      <!-- Fan -->
+      <circle cx="105" cy="140" r="28" fill="#111827" stroke="#374151" stroke-width="2"/>
+      <circle cx="105" cy="140" r="5" fill="#4B5563"/>
+      <g id="fanBlades" style="transform-origin:105px 140px;">
+        <path d="M105 135 Q114 126 121 132 Q116 143 105 140 Z" fill="#6B7280"/>
+        <path d="M110 140 Q119 149 114 156 Q104 151 105 140 Z" fill="#6B7280"/>
+        <path d="M105 145 Q96 154 89 148 Q94 138 105 140 Z" fill="#6B7280"/>
+        <path d="M100 140 Q91 131 97 124 Q107 129 105 140 Z" fill="#6B7280"/>
+      </g>
+      <!-- New storage to be inserted -->
+      <g id="newHdd" transform="translate(70, 160)">
+        <rect x="0" y="0" width="70" height="42" rx="6" fill="#0D9488"/>
+        <rect x="3" y="3" width="64" height="36" rx="5" fill="#14B8A6"/>
+        <circle cx="35" cy="21" r="14" fill="#0F766E"/>
+        <circle cx="35" cy="21" r="9"  fill="#134E4A"/>
+        <circle cx="35" cy="21" r="4"  fill="#0D9488"/>
+        <circle cx="35" cy="21" r="2"  fill="#5EEAD4"/>
+        <rect x="44" y="7" width="16" height="4" rx="2" fill="#FBBF24" transform="rotate(25 44 7)"/>
+        <rect x="4" y="4" width="22" height="10" rx="2" fill="#134E4A"/>
+        <text x="5" y="12" fill="#5EEAD4" font-size="6" font-family="monospace" font-weight="bold">1 TB HDD</text>
+        <!-- glow -->
+        <ellipse cx="35" cy="21" rx="36" ry="22" fill="#0D9488" opacity=".12"/>
+      </g>
+      <!-- Status bar -->
+      <rect x="70" y="172" width="240" height="20" rx="5" fill="#111827"/>
+      <text x="76" y="186" fill="#6B7280" font-size="8" font-family="monospace" id="statusTxt">Klik "Tambah Storage!" untuk mulai...</text>
+    </svg>
+
+    <!-- Overlay message -->
+    <div id="animMsg" class="absolute top-3 left-3 right-3 text-center hidden">
+      <span id="animTxt" class="bg-black/70 text-white font-bold text-sm px-4 py-2 rounded-full backdrop-blur-sm"></span>
+    </div>
+  </div>
+
+  <div class="text-center mt-5">
+    <button class="btn-storage" id="storageBtn" onclick="startStorageAnim()">
+      💾 Tambah Storage!
+    </button>
+    <p class="text-gray-400 text-xs mt-2" id="storeTip">Klik untuk memulai animasi tambah storage!</p>
+  </div>
+</section>
+
+<!-- ═══════════════════ DRAG & DROP ═══════════════════ -->
+<section class="sec bg-white rounded-3xl shadow-md p-6 border-t-4 border-yellow-400">
+  <h2 class="text-2xl sm:text-3xl mb-2 text-yellow-700">🕹️ Pasang Storage Sendiri!</h2>
+  <p class="text-gray-500 text-sm mb-5">Seret HDD berwarna hijau ke slot kosong di komputer! 🎯</p>
+
+  <div class="relative bg-gray-800 rounded-2xl p-5 select-none" id="dragArea" style="min-height:280px;">
+    <!-- Computer visual -->
+    <div class="bg-gray-900 rounded-xl p-4 mb-4">
+      <p class="text-teal-300 text-xs font-bold mb-3 font-mono">KOMPUTER 🖥️ — Bay Storage</p>
+      <div class="grid grid-cols-3 gap-3">
+
+        <!-- Slot 1 — sudah ada SSD -->
+        <div class="text-center">
+          <div class="w-full h-20 bg-blue-900 border-2 border-blue-500 rounded-xl flex flex-col items-center justify-center gap-1 p-2">
+            <div class="w-full h-2 bg-blue-300 rounded-sm"></div>
+            <div class="w-full h-2 bg-blue-300 rounded-sm"></div>
+            <div class="w-10 h-10 bg-blue-700 rounded-lg flex items-center justify-center">
+              <span class="text-blue-200 font-mono font-bold" style="font-size:9px;">SSD</span>
+            </div>
+          </div>
+          <p class="text-blue-300 text-xs mt-1 font-bold">500 GB ✅</p>
+        </div>
+
+        <!-- Slot 2 — drop target -->
+        <div class="text-center">
+          <div class="w-full h-20 drop-slot rounded-xl flex flex-col items-center justify-center relative" id="dropTarget">
+            <span class="text-gray-400 text-xs font-bold text-center leading-tight" id="slotLbl">BAY<br>KOSONG</span>
+            <div id="insItem" class="hidden absolute inset-1 rounded-lg flex flex-col items-center justify-center gap-1 p-1"></div>
+          </div>
+          <p class="text-gray-400 text-xs mt-1 font-bold" id="slotCapLabel">--- GB</p>
+        </div>
+
+        <!-- Slot 3 — kosong (tidak bisa diisi) -->
+        <div class="text-center">
+          <div class="w-full h-20 bg-gray-700 border-2 border-dashed border-gray-600 rounded-xl flex flex-col items-center justify-center">
+            <span class="text-gray-500 text-xs font-bold text-center leading-tight">BAY<br>RESERVED</span>
+          </div>
+          <p class="text-gray-500 text-xs mt-1 font-bold">— —</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Draggable HDD -->
+    <div class="flex justify-center gap-6 mt-2">
+      <div id="dragHdd" class="item-draggable item-glow" style="touch-action:none;">
+        <svg viewBox="0 0 80 52" class="w-20 h-14 drop-shadow-lg">
+          <rect x="1" y="1" width="78" height="50" rx="7" fill="#065F46"/>
+          <rect x="4" y="4" width="72" height="44" rx="6" fill="#047857"/>
+          <circle cx="40" cy="26" r="17" fill="#065F46"/>
+          <circle cx="40" cy="26" r="12" fill="#0F766E"/>
+          <circle cx="40" cy="26" r="5"  fill="#14B8A6"/>
+          <circle cx="40" cy="26" r="2"  fill="#99F6E4"/>
+          <rect x="53" y="10" width="18" height="5" rx="2.5" fill="#F97316" transform="rotate(20 53 10)"/>
+          <circle cx="53" cy="10" r="4" fill="#FB923C"/>
+          <rect x="5"  y="5"  width="25" height="12" rx="3" fill="#014D2D"/>
+          <text x="6"  y="14" fill="#5EEAD4" font-size="7" font-family="monospace" font-weight="bold">1 TB HDD</text>
+          <rect x="2"  y="40" width="76" height="9" rx="4" fill="#0F766E"/>
+          <rect x="5"  y="41" width="8" height="7" rx="1.5" fill="#99F6E4" opacity=".8"/>
+          <rect x="16" y="41" width="8" height="7" rx="1.5" fill="#99F6E4" opacity=".8"/>
+          <rect x="27" y="41" width="8" height="7" rx="1.5" fill="#99F6E4" opacity=".8"/>
+          <rect x="38" y="41" width="8" height="7" rx="1.5" fill="#99F6E4" opacity=".8"/>
+          <rect x="49" y="41" width="8" height="7" rx="1.5" fill="#99F6E4" opacity=".8"/>
+          <rect x="60" y="41" width="8" height="7" rx="1.5" fill="#99F6E4" opacity=".8"/>
+          <rect x="1" y="1" width="78" height="50" rx="7" fill="white" opacity=".04"/>
+        </svg>
+        <p class="text-center mt-1"><span class="bg-teal-100 text-teal-700 text-xs font-bold px-2 py-0.5 rounded-full">1 TB HDD</span></p>
+      </div>
+    </div>
+
+    <p class="text-center text-gray-400 text-xs mt-3" id="dragInstr">👆 Seret HDD hijau ke BAY KOSONG di atas!</p>
+
+    <!-- Success -->
+    <div id="dragOk" class="hidden mt-4 bg-teal-50 border-2 border-teal-300 rounded-2xl p-4 text-center">
+      <p class="text-3xl mb-1">🎉</p>
+      <p class="text-teal-700 font-bold text-base">Yeyyy! Storage berhasil dipasang!</p>
+      <p class="text-teal-500 text-sm mt-1">Total storage sekarang: <span class="font-bold">500 GB + 1 TB = 1.5 TB</span> — Lega banget! 🗄️</p>
+      <p class="text-teal-600 text-sm font-bold mt-1">💬 Aslan: <em>"Hore! Sekarang aku bisa simpan 300 ribu foto dan ribuan lagu!"</em></p>
+      <button onclick="resetDragItem()" class="mt-3 bg-teal-500 text-white font-bold px-4 py-2 rounded-full text-sm hover:bg-teal-600 transition-colors">🔄 Ulangi Lagi</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ BEFORE & AFTER ═══════════════════ -->
+<section class="sec bg-white rounded-3xl shadow-md p-6 border-t-4 border-pink-400">
+  <h2 class="text-2xl sm:text-3xl mb-2 text-pink-700">⚖️ Sebelum & Sesudah Tambah Storage!</h2>
+  <p class="text-gray-500 text-sm mb-5">Lihat perbedaannya! Klik tombol untuk bandingkan 👇</p>
+
+  <div class="grid grid-cols-2 gap-4">
+    <!-- Before -->
+    <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-4 text-center" id="bfCard">
+      <p class="font-black text-red-600 text-sm mb-2">😩 SEBELUM<br><span class="text-xs font-semibold">Storage 256 GB</span></p>
+      <!-- Visual storage bar full -->
+      <div class="bg-red-100 rounded-xl p-3">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs font-bold text-red-600">Terpakai:</span>
+          <div class="flex-1 h-5 bg-gray-200 rounded-full overflow-hidden">
+            <div class="h-5 rounded-full bg-gradient-to-r from-red-400 to-red-600" style="width:95%"></div>
+          </div>
+          <span class="text-xs font-bold text-red-600">95%</span>
+        </div>
+        <p class="text-red-500 text-xs font-bold">Hampir penuh! 🚨</p>
+      </div>
+      <svg viewBox="0 0 120 100" class="w-full max-w-28 mx-auto mt-3">
+        <!-- Monitor kecil sad -->
+        <rect x="10" y="5"  width="100" height="68" rx="7" fill="#374151" stroke="#EF4444" stroke-width="2"/>
+        <rect x="15" y="10" width="90"  height="58" rx="5" fill="#111827"/>
+        <!-- Error screen -->
+        <rect x="18" y="13" width="84"  height="52" rx="4" fill="#1F0000"/>
+        <text x="30" y="40" fill="#EF4444" font-size="10" font-family="monospace">DISK</text>
+        <text x="22" y="52" fill="#EF4444" font-size="10" font-family="monospace">FULL! 🚨</text>
+        <!-- Stand -->
+        <rect x="48" y="73" width="24" height="6" rx="3" fill="#374151"/>
+        <rect x="38" y="79" width="44" height="5" rx="3" fill="#4B5563"/>
+        <!-- Sad face -->
+        <text x="2" y="52" font-size="22">😭</text>
+      </svg>
+      <div class="space-y-1 mt-2">
+        <div class="flex justify-between bg-red-100 rounded-xl px-2 py-1.5 text-xs"><span class="font-semibold text-red-600">📷 Foto baru</span><span class="font-bold text-red-500">Tidak muat!</span></div>
+        <div class="flex justify-between bg-red-100 rounded-xl px-2 py-1.5 text-xs"><span class="font-semibold text-red-600">🎮 Game baru</span><span class="font-bold text-red-500">Error! 🚫</span></div>
+      </div>
+    </div>
+
+    <!-- After -->
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-4 text-center" id="afCard">
+      <p class="font-black text-green-600 text-sm mb-2">😄 SESUDAH<br><span class="text-xs font-semibold">Storage 256+1 TB</span></p>
+      <!-- Visual storage bar ok -->
+      <div class="bg-green-100 rounded-xl p-3">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs font-bold text-green-600">Terpakai:</span>
+          <div class="flex-1 h-5 bg-gray-200 rounded-full overflow-hidden">
+            <div class="h-5 rounded-full bg-gradient-to-r from-green-400 to-teal-500" style="width:20%"></div>
+          </div>
+          <span class="text-xs font-bold text-green-600">20%</span>
+        </div>
+        <p class="text-green-500 text-xs font-bold">Lega banget! 🎉</p>
+      </div>
+      <svg viewBox="0 0 120 100" class="w-full max-w-28 mx-auto mt-3">
+        <!-- Monitor besar happy -->
+        <rect x="10" y="5"  width="100" height="68" rx="7" fill="#1E3A8A" stroke="#22C55E" stroke-width="2"/>
+        <rect x="15" y="10" width="90"  height="58" rx="5" fill="#0F172A"/>
+        <!-- Happy screen -->
+        <rect x="18" y="13" width="84"  height="52" rx="4" fill="#001A00"/>
+        <text x="25" y="38" fill="#4ADE80" font-size="9" font-family="monospace">READY!</text>
+        <text x="20" y="52" fill="#22C55E" font-size="9" font-family="monospace">1.3 TB free ✅</text>
+        <!-- Stand -->
+        <rect x="48" y="73" width="24" height="6" rx="3" fill="#1E3A8A"/>
+        <rect x="38" y="79" width="44" height="5" rx="3" fill="#2563EB"/>
+        <!-- Happy stars -->
+        <text x="2" y="24" font-size="14">⭐</text>
+        <text x="102" y="24" font-size="14">🚀</text>
+      </svg>
+      <div class="space-y-1 mt-2">
+        <div class="flex justify-between bg-green-100 rounded-xl px-2 py-1.5 text-xs"><span class="font-semibold text-green-600">📷 Foto baru</span><span class="font-bold text-green-500">Simpan! ✅</span></div>
+        <div class="flex justify-between bg-green-100 rounded-xl px-2 py-1.5 text-xs"><span class="font-semibold text-green-600">🎮 Game baru</span><span class="font-bold text-green-500">Install! 🎯</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-5">
+    <button class="btn-magic" onclick="doCompare()">⚡ Bandingkan Sekarang!</button>
+    <div id="cmpResult" class="hidden mt-4 bg-teal-50 border-2 border-teal-200 rounded-2xl p-4">
+      <p class="text-teal-700 font-bold text-base">🎉 Wow! Bedanya luar biasa!</p>
+      <p class="text-teal-500 text-sm mt-1">Dengan tambahan 1 TB, storage bertambah <span class="font-black text-xl text-teal-600">5×</span> lebih banyak dari sebelumnya!</p>
+      <p class="text-teal-600 font-bold text-sm mt-2">💬 Aslan bertepuk tangan: <em>"Yeyyy! Sekarang aku bisa simpan semua video kartun favoritku! 📺🥳"</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ FAKTA SERU ═══════════════════ -->
+<section class="sec bg-gradient-to-br from-yellow-50 to-orange-50 rounded-3xl p-6 border-2 border-yellow-200 shadow-md">
+  <h2 class="text-2xl sm:text-3xl mb-4 text-orange-700">💡 Fakta Seru Storage!</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-yellow-100 hover:scale-105 transition-transform has-tip cursor-default">
+      <div class="tip-box">1 TB = 1.000 GB = 1.000.000 MB!</div>
+      <p class="text-2xl mb-1">🔢</p>
+      <p class="font-bold text-gray-800 text-sm">1 TB = 1.000 GB!</p>
+      <p class="text-gray-500 text-xs mt-1">Kalau 1 GB bisa simpan 200 foto, 1 TB bisa simpan 200 RIBU foto! Bayangkan! 😮</p>
+    </div>
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-yellow-100 hover:scale-105 transition-transform has-tip cursor-default">
+      <div class="tip-box">SSD = Solid State Drive, tidak ada bagian bergerak!</div>
+      <p class="text-2xl mb-1">⚡</p>
+      <p class="font-bold text-gray-800 text-sm">SSD lebih cepat dari HDD!</p>
+      <p class="text-gray-500 text-xs mt-1">SSD tidak punya piringan berputar seperti HDD, jadi baca-tulisnya jauh lebih cepat! 🚀</p>
+    </div>
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-yellow-100 hover:scale-105 transition-transform cursor-default">
+      <p class="text-2xl mb-1">☁️</p>
+      <p class="font-bold text-gray-800 text-sm">Ada juga cloud storage!</p>
+      <p class="text-gray-500 text-xs mt-1">Google Drive, iCloud, OneDrive — kita bisa simpan file di internet tanpa hardware tambahan! 🌐</p>
+    </div>
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-yellow-100 hover:scale-105 transition-transform cursor-default">
+      <p class="text-2xl mb-1">📱</p>
+      <p class="font-bold text-gray-800 text-sm">HP juga punya storage!</p>
+      <p class="text-gray-500 text-xs mt-1">Hp-mu punya internal storage juga! Biasanya 64–512 GB. Kalau penuh bisa pakai microSD card! 💳</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ AKTIVITAS ═══════════════════ -->
+<section class="sec bg-white rounded-3xl shadow-md p-6 border-t-4 border-teal-400">
+  <h2 class="text-2xl sm:text-3xl mb-2 text-teal-700">✏️ Tugas Hari Ini!</h2>
+
+  <div class="bg-teal-50 border-2 border-teal-200 rounded-2xl p-5 mb-5">
+    <div class="flex items-start gap-3">
+      <div class="text-4xl flex-shrink-0">🧒</div>
+      <div>
+        <p class="font-bold text-teal-700 text-base">"Hei teman-teman!"</p>
+        <p class="text-teal-600 text-sm mt-1 leading-relaxed">
+          Kata Aslan: <span class="font-bold">"Tugasmu hari ini: Gambarlah komputer impianmu yang sudah ditambah storage! Mau tambah berapa TB? Mau simpan apa saja di dalamnya?"</span> 🎨
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawing area -->
+  <div class="border-4 border-dashed border-teal-300 rounded-2xl bg-teal-50/40 relative overflow-hidden" style="min-height:230px;">
+    <svg class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="dotGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="10" cy="10" r="1" fill="#CCFBF1"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#dotGrid)"/>
+    </svg>
+
+    <div class="relative z-10 p-5">
+      <p class="text-center text-teal-400 font-bold text-base mb-4">🖼️ Area Gambar — Cetak & Gambar di Sini!</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+        <!-- Kolom kiri: isian -->
+        <div class="bg-white/85 rounded-xl p-3 border border-teal-200">
+          <p class="text-teal-600 font-bold text-xs mb-2">🖥️ KOMPUTER IMPIANKU:</p>
+          <div class="space-y-1.5">
+            <div class="border-b border-teal-200 pb-0.5"><p class="text-teal-300 text-xs">Storage: ___ GB / ___ TB</p></div>
+            <div class="border-b border-teal-200 h-6"></div>
+            <div class="border-b border-teal-200 pb-0.5"><p class="text-teal-300 text-xs">Jenis: HDD / SSD / Keduanya</p></div>
+            <div class="border-b border-teal-200 h-6"></div>
+          </div>
+        </div>
+
+        <!-- Kolom kanan: checklist -->
+        <div class="bg-white/85 rounded-xl p-3 border border-teal-200">
+          <p class="text-teal-600 font-bold text-xs mb-2">📦 MAU SIMPAN APA?</p>
+          <div class="space-y-1.5">
+            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="w-4 h-4 accent-teal-500"><span class="text-gray-600 text-xs">📷 Ribuan foto keluarga</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="w-4 h-4 accent-teal-500"><span class="text-gray-600 text-xs">🎮 Banyak game seru</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="w-4 h-4 accent-teal-500"><span class="text-gray-600 text-xs">📺 Video kartun favorit</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="w-4 h-4 accent-teal-500"><span class="text-gray-600 text-xs">🎵 Koleksi musik</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="w-4 h-4 accent-teal-500"><span class="text-gray-600 text-xs">💻 Proyek coding keren</span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outline komputer untuk digambar -->
+      <div class="mt-4 flex justify-center">
+        <svg viewBox="0 0 200 140" class="w-48 opacity-20">
+          <rect x="10" y="5"  width="180" height="105" rx="8" fill="none" stroke="#0D9488" stroke-width="2" stroke-dasharray="5,3"/>
+          <rect x="15" y="10" width="170" height="95"  rx="5" fill="none" stroke="#0D9488" stroke-width="1.5"/>
+          <rect x="75" y="110" width="50" height="8"  rx="3" fill="none" stroke="#0D9488" stroke-width="2" stroke-dasharray="4,2"/>
+          <rect x="55" y="118" width="90" height="6"  rx="3" fill="none" stroke="#0D9488" stroke-width="2" stroke-dasharray="4,2"/>
+          <text x="38" y="62" fill="#0D9488" font-size="11" font-family="Nunito" opacity=".8">Gambarlah di sini! ✏️</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pertanyaan renungan -->
+  <div class="mt-4 bg-purple-50 border-2 border-purple-200 rounded-2xl p-4">
+    <p class="font-bold text-purple-700 text-sm mb-2">🤔 Pertanyaan Seru:</p>
+    <div class="space-y-2">
+      <div class="flex items-start gap-2"><span class="text-purple-400 font-bold text-sm">1.</span><p class="text-purple-600 text-sm">Kalau storage seperti lemari, RAM seperti apa? Bedanya apa? 🤷‍♂️</p></div>
+      <div class="flex items-start gap-2"><span class="text-purple-400 font-bold text-sm">2.</span><p class="text-purple-600 text-sm">Mana yang lebih bagus untuk game: HDD atau SSD? Kenapa? 🎮</p></div>
+      <div class="flex items-start gap-2"><span class="text-purple-400 font-bold text-sm">3.</span><p class="text-purple-600 text-sm">Kamu lebih suka simpan file di komputer atau cloud? Kenapa? ☁️</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ RANGKUMAN ═══════════════════ -->
+<section class="sec bg-gradient-to-br from-teal-600 to-green-600 rounded-3xl p-6 text-white shadow-xl">
+  <h2 class="text-2xl sm:text-3xl mb-4 text-yellow-300">📝 Rangkuman Hari Ini!</h2>
+  <div class="space-y-3">
+    <div class="flex items-start gap-3 bg-white/15 rounded-2xl p-3 backdrop-blur-sm">
+      <span class="text-2xl">💾</span>
+      <p class="text-sm font-semibold leading-relaxed">Storage seperti <strong>lemari</strong> — bisa ditambah agar komputer bisa menyimpan lebih banyak file!</p>
+    </div>
+    <div class="flex items-start gap-3 bg-white/15 rounded-2xl p-3 backdrop-blur-sm">
+      <span class="text-2xl">⚡</span>
+      <p class="text-sm font-semibold leading-relaxed"><strong>SSD lebih cepat</strong> tapi lebih mahal. <strong>HDD lebih besar</strong> kapasitasnya tapi lebih lambat.</p>
+    </div>
+    <div class="flex items-start gap-3 bg-white/15 rounded-2xl p-3 backdrop-blur-sm">
+      <span class="text-2xl">🔧</span>
+      <p class="text-sm font-semibold leading-relaxed">Langkah: <strong>Matikan → Buka → Pasang → Tutup → Nyalakan</strong> — storage baru langsung terdeteksi!</p>
+    </div>
+    <div class="flex items-start gap-3 bg-white/15 rounded-2xl p-3 backdrop-blur-sm">
+      <span class="text-2xl">📏</span>
+      <p class="text-sm font-semibold leading-relaxed">Ukuran: KB → MB → GB → <strong>TB</strong>. 1 TB = 1.000 GB. Sekarang sudah ada yang 20 TB! 🤯</p>
+    </div>
+  </div>
+  <div class="text-center mt-5 bg-yellow-400/20 rounded-2xl p-4 border border-yellow-300/30">
+    <p class="text-yellow-300 font-black text-base">🎊 Aslan bertepuk tangan!</p>
+    <p class="text-white font-bold mt-1 text-sm">"Yeyyy! Aku sekarang tahu cara tambah storage sendiri! Besok hari terakhir — kita akan belajar sesuatu yang sangat spesial untuk menutup seri ini! Sampai besok! 👋🎉"</p>
+  </div>
+</section>
+</main>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer class="pb-8">
+  <div class="max-w-3xl mx-auto px-4">
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-teal-100 mb-4 text-center">
+      <p class="font-bold text-teal-600 text-lg mb-1" style="font-family:'Fredoka One',cursive;">
+        🗄️ Luar biasa, Aslan! Hampir tamat! 🎉
+      </p>
+      <p class="text-gray-500 text-sm">Sekarang kamu tahu cara tambah storage agar komputer bisa simpan lebih banyak! 💾✨</p>
+    </div>
+
+    <div class="bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
+      <div class="h-3 rounded-full relative overflow-hidden" style="width:96.7%; background:linear-gradient(90deg,#0d9488,#14b8a6,#22c55e);">
+        <div class="absolute inset-0" style="background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);background-size:200% 100%;animation:shimBar 2s linear infinite;"></div>
+      </div>
+    </div>
+    <p class="text-center text-gray-400 text-xs mb-5">Progres Seri: Hari 29 dari 30 (96.7%) — <span class="text-pink-500 font-bold">Hampir Tamat! 🏆</span></p>
+
+    <div class="flex items-center justify-center">
+      <div class="text-center">
+        <p class="text-gray-400 text-xs">Hari 29 dari 30</p>
+        <p class="text-gray-500 text-xs font-bold">💾 Tambah Storage</p>
+      </div>
+    </div>
+    <p class="text-center text-gray-300 text-xs mt-5">Made with ❤️ for Aslan · Seri Komputer Ajaib</p>
+  </div>
+</footer>
+
+<!-- ═══════════════════ JAVASCRIPT ═══════════════════ -->
+<script>
+// ──────────────── STEPS ────────────────
+const doneSteps = new Set();
+function doStep(n) {
+  if (doneSteps.has(n)) return;
+  doneSteps.add(n);
+  const card = document.querySelector(`[data-step="${n}"]`);
+  card.classList.add('done');
+  document.getElementById(`d${n}`).classList.remove('hidden');
+  document.getElementById(`b${n}`).classList.remove('hidden');
+  document.getElementById(`i${n}`).textContent = '✅';
+  spawnConfetti(8, card);
+  const pct = (doneSteps.size / 5) * 100;
+  document.getElementById('stepBar').style.width = pct + '%';
+  document.getElementById('stepProg').textContent =
+    doneSteps.size === 5 ? '5 / 5 langkah ✅ Selesai!' : `${doneSteps.size} / 5 langkah`;
+  if (doneSteps.size === 5) spawnConfetti(22);
+}
+
+// ──────────────── STORAGE ANIMATION ────────────────
+let animRunning = false;
+function startStorageAnim() {
+  if (animRunning) return;
+  animRunning = true;
+  const btn      = document.getElementById('storageBtn');
+  const msg      = document.getElementById('animMsg');
+  const txt      = document.getElementById('animTxt');
+  const status   = document.getElementById('statusTxt');
+  const fan      = document.getElementById('fanBlades');
+  const pLed     = document.getElementById('pLed');
+  const pBtn     = document.getElementById('pBtn');
+  const sata2    = document.getElementById('sata2');
+  const newHdd   = document.getElementById('newHdd');
+
+  btn.disabled = true; btn.textContent = '⏳ Loading...';
+  msg.classList.remove('hidden');
+
+  const steps = [
+    { t:0,    m:'🔌 Step 1: Matikan komputer...', s:'Mematikan komputer...', fn(){
+        pBtn.setAttribute('fill','#374151');
+        fan.style.animation = 'none';
+      }},
+    { t:1800, m:'🔧 Step 2: Membuka casing...', s:'Membuka casing komputer...', fn(){}},
+    { t:3600, m:'💾 Step 3: Memasang HDD baru...', s:'Memasang 1 TB HDD ke bay...', fn(){
+        let sy=160, tx0=70, tx1=250, ty0=160, ty1=76;
+        let frame=0; const total=45;
+        function af() {
+          frame++;
+          const e = 1 - Math.pow(1-frame/total,3);
+          newHdd.setAttribute('transform',
+            `translate(${tx0+(tx1-tx0)*e}, ${ty0+(ty1-ty0)*e}) scale(${1-e*.15})`);
+          if (frame < total) requestAnimationFrame(af);
+          else {
+            sata2.setAttribute('stroke','#22c55e');
+            sata2.setAttribute('stroke-dasharray','none');
+            sata2.setAttribute('fill','#065F46');
+            sata2.innerHTML='';
+            // Update text inside sata2 rect
+            const txt2 = document.createElementNS('http://www.w3.org/2000/svg','text');
+            txt2.setAttribute('x','253'); txt2.setAttribute('y','86');
+            txt2.setAttribute('fill','#A7F3D0'); txt2.setAttribute('font-size','5');
+            txt2.setAttribute('font-family','monospace');
+            txt2.textContent = 'SATA: 1TB HDD ✓';
+            sata2.parentNode.insertBefore(txt2, sata2.nextSibling);
+          }
+        }
+        requestAnimationFrame(af);
+      }},
+    { t:5400, m:'🔒 Step 4: Menutup casing...', s:'Menutup kembali casing...', fn(){}},
+    { t:7200, m:'⚡ Step 5: Menyalakan komputer!', s:'Booting dengan storage baru...', fn(){
+        pBtn.setAttribute('fill','#22C55E');
+        pLed.setAttribute('fill','#4ADE80');
+        fan.style.animation='spinAnim 0.5s linear infinite';
+        fan.style.transformOrigin='105px 140px';
+      }},
+    { t:9000, m:'🎉 BERHASIL! Storage 1 TB terpasang!', s:'✅ Total storage: 1.5 TB! Siap dipakai!', fn(){
+        spawnConfetti(28);
+        btn.disabled=false; btn.textContent='🔄 Ulangi Animasi!';
+        animRunning=false;
+      }},
+  ];
+  steps.forEach(s => setTimeout(() => { txt.textContent=s.m; status.textContent=s.s; s.fn(); }, s.t));
+}
+
+// ──────────────── DRAG & DROP ────────────────
+const dragHdd    = document.getElementById('dragHdd');
+const dropTarget = document.getElementById('dropTarget');
+const dragOk     = document.getElementById('dragOk');
+const slotLbl    = document.getElementById('slotLbl');
+const slotCap    = document.getElementById('slotCapLabel');
+const dragInstr  = document.getElementById('dragInstr');
+const insItem    = document.getElementById('insItem');
+
+let dragging=false, sx,sy,ox,oy;
+
+function gp(e){ return e.touches?{x:e.touches[0].clientX,y:e.touches[0].clientY}:{x:e.clientX,y:e.clientY}; }
+
+dragHdd.addEventListener('mousedown',  startDrag);
+dragHdd.addEventListener('touchstart', startDrag, {passive:true});
+
+function startDrag(e) {
+  if (!dragOk.classList.contains('hidden')) return;
+  dragging=true;
+  dragHdd.classList.add('dragging');
+  const p=gp(e), r=dragHdd.getBoundingClientRect();
+  sx=p.x-r.left; sy=p.y-r.top; ox=r.left; oy=r.top;
+  dragHdd.style.cssText=`position:fixed;left:${r.left}px;top:${r.top}px;z-index:999;width:${r.width}px;transition:none;`;
+  document.addEventListener('mousemove',  onDrag);
+  document.addEventListener('touchmove',  onDrag, {passive:false});
+  document.addEventListener('mouseup',    endDrag);
+  document.addEventListener('touchend',   endDrag);
+}
+function onDrag(e) {
+  if(!dragging) return;
+  if(e.cancelable) e.preventDefault();
+  const p=gp(e);
+  dragHdd.style.left=(p.x-sx)+'px';
+  dragHdd.style.top =(p.y-sy)+'px';
+  const dr=dragHdd.getBoundingClientRect(), tr=dropTarget.getBoundingClientRect();
+  const ov=!(dr.right<tr.left||dr.left>tr.right||dr.bottom<tr.top||dr.top>tr.bottom);
+  dropTarget.classList.toggle('highlight', ov);
+}
+function endDrag() {
+  if(!dragging) return;
+  dragging=false;
+  dragHdd.classList.remove('dragging');
+  const dr=dragHdd.getBoundingClientRect(), tr=dropTarget.getBoundingClientRect();
+  const ov=!(dr.right<tr.left||dr.left>tr.right||dr.bottom<tr.top||dr.top>tr.bottom);
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('touchmove', onDrag);
+  document.removeEventListener('mouseup',   endDrag);
+  document.removeEventListener('touchend',  endDrag);
+
+  if(ov){
+    // success
+    dragHdd.style.display='none';
+    dropTarget.classList.remove('highlight'); dropTarget.classList.add('filled');
+    slotLbl.classList.add('hidden');
+    slotCap.textContent='1 TB ✅'; slotCap.className='text-teal-300 text-xs mt-1 font-bold';
+    insItem.classList.remove('hidden');
+    insItem.innerHTML=`
+      <div class="w-full h-2 bg-teal-300 rounded-sm"></div>
+      <div class="w-full h-2 bg-teal-300 rounded-sm"></div>
+      <div class="w-12 h-12 bg-teal-700 rounded-lg flex items-center justify-center">
+        <span class="text-teal-200 font-mono font-bold" style="font-size:9px;">1TB<br>HDD</span>
+      </div>`;
+    dragInstr.classList.add('hidden');
+    dragOk.classList.remove('hidden');
+    spawnConfetti(22);
+    Object.assign(dragHdd.style,{position:'',left:'',top:'',zIndex:'',width:'',transition:''});
+  } else {
+    // return
+    dragHdd.style.transition='all .4s cubic-bezier(0.34,1.56,0.64,1)';
+    dragHdd.style.left=ox+'px'; dragHdd.style.top=oy+'px';
+    setTimeout(()=>Object.assign(dragHdd.style,{position:'',left:'',top:'',zIndex:'',width:'',transition:''}), 400);
+    dropTarget.classList.remove('highlight');
+  }
+}
+function resetDragItem() {
+  Object.assign(dragHdd.style,{display:'',position:'',left:'',top:'',zIndex:'',width:'',transition:''});
+  dropTarget.classList.remove('filled','highlight');
+  slotLbl.classList.remove('hidden');
+  slotCap.textContent='--- GB'; slotCap.className='text-gray-400 text-xs mt-1 font-bold';
+  insItem.classList.add('hidden'); insItem.innerHTML='';
+  dragInstr.classList.remove('hidden');
+  dragOk.classList.add('hidden');
+}
+
+// ──────────────── COMPARE ────────────────
+let cmpDone=false;
+function doCompare() {
+  if(cmpDone) return; cmpDone=true;
+  document.getElementById('bfCard').style.animation='shake .5s ease-in-out';
+  document.getElementById('afCard').style.animation='popIn .5s cubic-bezier(0.34,1.56,0.64,1) .3s both';
+  setTimeout(()=>{ document.getElementById('cmpResult').classList.remove('hidden'); spawnConfetti(20); },650);
+}
+
+// ──────────────── CONFETTI ────────────────
+function spawnConfetti(count=15, src=null) {
+  const cc=['#14b8a6','#22c55e','#f59e0b','#ec4899','#a855f7','#f97316','#38bdf8'];
+  let cx=innerWidth/2, cy=innerHeight/2;
+  if(src){ const r=src.getBoundingClientRect(); cx=r.left+r.width/2; cy=r.top+r.height/2; }
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    p.className='confetti-piece';
+    const col=cc[i%cc.length], tx=(Math.random()-.5)*340, ty=-90-Math.random()*230, d=Math.random()*.5;
+    const isCirc=Math.random()>.5;
+    p.style.cssText=`left:${cx}px;top:${cy}px;background:${col};border-radius:${isCirc?'50%':'2px'};--tx:${tx}px;--ty:${ty}px;animation-delay:${d}s;position:fixed;`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(), 1600+d*1000);
+  }
+}
+
+// ──────────────── EXTRA STYLES ────────────────
+const st=document.createElement('style');
+st.textContent=`
+  @keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-7px);}40%{transform:translateX(7px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+  @keyframes popIn{from{transform:scale(.85);opacity:.5;}to{transform:scale(1);opacity:1;}}
+  @keyframes spinAnim{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+`;
+document.head.appendChild(st);
+
+// Fan spin
+const fb=document.getElementById('fanBlades');
+if(fb){ fb.style.animation='spinAnim 2s linear infinite'; fb.style.transformOrigin='105px 140px'; }
+
+// Intersection Observer entrance
+document.querySelectorAll('.sec').forEach((s,i)=>{
+  s.style.animationPlayState='paused';
+  new IntersectionObserver(([e])=>{ if(e.isIntersecting) s.style.animationPlayState='running'; },{threshold:.08}).observe(s);
+});
+</script>
+</body>
+</html>

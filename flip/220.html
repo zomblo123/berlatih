@@ -1,0 +1,1284 @@
+<!-- BUKU DIGITAL ASLAN - Hari 20: Perang Melawan Kuman Jahat di Tubuh -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perang Melawan Kuman Jahat di Tubuh — Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #2d6a4f;
+    --moss: #40916c;
+    --leaf: #74c69d;
+    --sky: #1a6985;
+    --ocean: #2196a0;
+    --earth: #8b5e3c;
+    --germ-green: #39d353;
+    --germ-dark: #1a7a2e;
+    --germ-toxic: #7fff00;
+    --attack-red: #e63946;
+    --attack-orange: #f4a261;
+    --wbc-blue: #4895ef;
+    --wbc-light: #90e0ef;
+    --antibody: #f9c74f;
+    --virus-purple: #9b5de5;
+    --bacteria-teal: #00b4d8;
+    --shield-gold: #ffd700;
+    --neon-green: #39ff14;
+    --dark-bg: #0a1a0d;
+    --text-light: #e8ffe8;
+    --radius: 24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #0a1a0d;
+    color: #e8ffe8;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.4s, color 0.4s;
+  }
+  body.light-mode {
+    background: #f0fff4;
+    color: #0a200d;
+  }
+
+  /* ─── BATTLE PARTICLES ─── */
+  .particles {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .germ-particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: germ-float linear infinite;
+    opacity: 0;
+  }
+  @keyframes germ-float {
+    0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.6; }
+    50%  { opacity: 0.3; }
+    100% { transform: translateY(-100vh) rotate(360deg) scale(0.4); opacity: 0; }
+  }
+  body.light-mode .particles { opacity: 0.2; }
+
+  /* ─── TOP NAV ─── */
+  .top-nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(10, 26, 13, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(57, 211, 83, 0.25);
+  }
+  body.light-mode .top-nav {
+    background: rgba(240, 255, 244, 0.95);
+    border-color: rgba(57, 211, 83, 0.2);
+  }
+
+  .back-btn {
+    display: flex; align-items: center; gap: 8px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--moss), var(--forest));
+    color: white; padding: 10px 18px; border-radius: 50px;
+    font-size: 14px; font-weight: 800;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(64,145,108,0.4);
+  }
+  .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(64,145,108,0.5); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .book-day-badge {
+    background: linear-gradient(135deg, var(--germ-dark), var(--germ-green));
+    color: white; padding: 6px 14px; border-radius: 50px;
+    font-size: 12px; font-weight: 800; letter-spacing: 0.5px;
+  }
+
+  .mode-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white; width: 40px; height: 40px; border-radius: 50%;
+    font-size: 18px; cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,0.2); transform: rotate(20deg); }
+  body.light-mode .mode-btn { background: rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.15); color: #0a200d; }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-wrap {
+    position: fixed; top: 64px; left: 0; right: 0;
+    z-index: 99; height: 6px;
+    background: rgba(255,255,255,0.08);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--germ-green), var(--wbc-blue), var(--antibody), var(--attack-red), var(--germ-green));
+    background-size: 300%;
+    animation: progressShimmer 4s linear infinite;
+    transition: width 0.35s ease;
+    border-radius: 0 4px 4px 0;
+  }
+  @keyframes progressShimmer { 0%{background-position:0%} 100%{background-position:300%} }
+
+  /* ─── MAIN CONTAINER ─── */
+  .book-container {
+    position: relative; z-index: 1;
+    max-width: 860px; margin: 0 auto;
+    padding: 80px 20px 40px;
+  }
+
+  /* ─── PAGES ─── */
+  .page { display: none; animation: fadeUp 0.5s ease forwards; }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── COVER ─── */
+  .cover-page {
+    min-height: calc(100vh - 80px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 20px; position: relative;
+  }
+
+  /* ── BATTLE SCENE ILLUSTRATION ── */
+  .cover-battle-wrap {
+    width: 220px; height: 200px;
+    position: relative; margin: 0 auto 32px;
+    animation: battleFloat 3s ease-in-out infinite;
+  }
+  @keyframes battleFloat {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-10px); }
+  }
+
+  /* Shield icon */
+  .battle-shield {
+    position: absolute; top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100px; height: 120px;
+    background: linear-gradient(180deg, #4895ef, #1a5fb4);
+    clip-path: polygon(50% 0%, 100% 20%, 100% 60%, 50% 100%, 0% 60%, 0% 20%);
+    box-shadow: 0 0 30px rgba(72,149,239,0.6);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .shield-cross {
+    width: 16px; height: 50px;
+    background: rgba(255,255,255,0.9);
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 4px;
+  }
+  .shield-cross::after {
+    content: '';
+    width: 50px; height: 16px;
+    background: rgba(255,255,255,0.9);
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 4px;
+  }
+
+  /* Germ blobs around shield */
+  .germ-blob {
+    position: absolute;
+    border-radius: 50%;
+    animation: germ-attack 2s ease-in-out infinite;
+  }
+  .gb1 {
+    width: 44px; height: 44px;
+    background: radial-gradient(circle, #7fff00, #2d9200);
+    top: 20px; left: 10px;
+    box-shadow: 0 0 14px rgba(127,255,0,0.7);
+    animation-delay: 0s;
+  }
+  .gb2 {
+    width: 36px; height: 36px;
+    background: radial-gradient(circle, #9b5de5, #5a189a);
+    top: 10px; right: 10px;
+    box-shadow: 0 0 12px rgba(155,93,229,0.7);
+    animation-delay: -0.7s;
+  }
+  .gb3 {
+    width: 32px; height: 32px;
+    background: radial-gradient(circle, #00b4d8, #005f73);
+    bottom: 40px; left: 20px;
+    box-shadow: 0 0 10px rgba(0,180,216,0.7);
+    animation-delay: -1.4s;
+  }
+  .gb4 {
+    width: 28px; height: 28px;
+    background: radial-gradient(circle, #e63946, #9d0208);
+    bottom: 30px; right: 20px;
+    box-shadow: 0 0 10px rgba(230,57,70,0.7);
+    animation-delay: -0.4s;
+  }
+  /* Spikes on germs */
+  .gb1::before, .gb2::before, .gb3::before {
+    content: '★';
+    position: absolute; top: -8px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px; opacity: 0.8;
+  }
+  @keyframes germ-attack {
+    0%,100% { transform: scale(1) rotate(0deg); }
+    50%     { transform: scale(1.15) rotate(15deg); }
+  }
+
+  /* WBC soldier */
+  .wbc-soldier {
+    position: absolute; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    font-size: 52px;
+    animation: soldier-bounce 1.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 12px rgba(72,149,239,0.6));
+  }
+  @keyframes soldier-bounce {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50%     { transform: translateX(-50%) translateY(-6px); }
+  }
+
+  .floating-icons {
+    position: absolute; font-size: 22px;
+    animation: icon-float 4s ease-in-out infinite;
+  }
+  .floating-icons:nth-child(1) { top: 5%;  left: 7%;  animation-delay: 0s; }
+  .floating-icons:nth-child(2) { top: 8%;  right: 8%; animation-delay: -1.5s; }
+  .floating-icons:nth-child(3) { bottom: 22%; left: 5%; animation-delay: -3s; }
+  .floating-icons:nth-child(4) { bottom: 18%; right: 6%; animation-delay: -2s; }
+  @keyframes icon-float {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50%     { transform: translateY(-10px) rotate(12deg); }
+  }
+
+  .cover-badge {
+    background: linear-gradient(135deg, var(--germ-dark), var(--germ-green));
+    color: white; padding: 6px 20px; border-radius: 50px;
+    font-size: 13px; font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 16px; display: inline-block;
+  }
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(28px, 6vw, 50px); line-height: 1.2;
+    background: linear-gradient(135deg, #39d353, #7fff00, #39ff14, #39d353);
+    background-size: 300%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease infinite; margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+
+  .cover-subtitle { font-size: clamp(16px,3vw,22px); opacity: 0.75; margin-bottom: 24px; }
+
+  .cover-name-badge {
+    background: linear-gradient(135deg, rgba(57,211,83,0.12), rgba(72,149,239,0.12));
+    border: 2px solid rgba(57,211,83,0.3);
+    border-radius: 20px; padding: 16px 32px;
+    margin-bottom: 40px; backdrop-filter: blur(8px);
+  }
+  .cover-name-badge p { font-size: 14px; opacity: 0.7; margin-bottom: 4px; }
+  .cover-name-badge h2 { font-family: 'Fredoka One', cursive; font-size: clamp(22px,4vw,32px); color: var(--germ-green); }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius); padding: 32px;
+    margin-bottom: 24px; backdrop-filter: blur(8px);
+    position: relative; overflow: hidden;
+  }
+  body.light-mode .card {
+    background: white; border-color: rgba(57,211,83,0.15);
+    box-shadow: 0 4px 24px rgba(57,211,83,0.08); color: #0a200d;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: var(--accent, linear-gradient(90deg, var(--germ-green), var(--wbc-blue)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .card-enemy   { --accent: linear-gradient(90deg, #7fff00, #9b5de5); }
+  .card-immune  { --accent: linear-gradient(90deg, #4895ef, #90e0ef); }
+  .card-battle  { --accent: linear-gradient(90deg, #e63946, #f4a261); }
+  .card-antibody{ --accent: linear-gradient(90deg, #f9c74f, #ffd700); }
+  .card-defense { --accent: linear-gradient(90deg, var(--moss), var(--germ-green)); }
+
+  .card-icon {
+    font-size: 56px; margin-bottom: 16px;
+    display: block; line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  }
+  .card h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(22px,4vw,30px); margin-bottom: 8px;
+    color: var(--germ-green);
+  }
+  body.light-mode .card h2 { color: var(--germ-dark); }
+  .card h3 {
+    font-size: 18px; font-weight: 800; margin: 20px 0 10px;
+    color: var(--germ-green);
+  }
+  body.light-mode .card h3 { color: var(--forest); }
+  .card p {
+    font-size: clamp(15px,2.5vw,17px); line-height: 1.85;
+    opacity: 0.9; margin-bottom: 14px;
+  }
+
+  /* ─── ANALOGY BOX ─── */
+  .analogy-box {
+    background: linear-gradient(135deg, rgba(57,211,83,0.08), rgba(72,149,239,0.1));
+    border: 2px dashed rgba(57,211,83,0.3);
+    border-radius: 16px; padding: 20px 24px; margin: 20px 0;
+    position: relative;
+  }
+  .analogy-box::before {
+    content: '💡 Analogi Keren!';
+    position: absolute; top: -12px; left: 20px;
+    background: var(--dark-bg); padding: 2px 12px;
+    border-radius: 20px; font-size: 12px; font-weight: 800;
+    color: var(--germ-green);
+  }
+  body.light-mode .analogy-box { background: rgba(57,211,83,0.04); }
+  body.light-mode .analogy-box::before { background: white; }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header { text-align: center; margin-bottom: 32px; padding-top: 20px; }
+  .section-header .tag {
+    display: inline-block;
+    background: rgba(57,211,83,0.12); border: 1px solid rgba(57,211,83,0.3);
+    color: var(--germ-green); padding: 4px 16px; border-radius: 50px;
+    font-size: 12px; font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .section-header h1 { font-family: 'Fredoka One', cursive; font-size: clamp(24px,5vw,40px); line-height: 1.2; }
+
+  /* ─── SCENE BOX ─── */
+  .scene-box {
+    background: linear-gradient(135deg, rgba(10,26,13,0.88), rgba(26,122,46,0.2));
+    border: 1px solid rgba(57,211,83,0.25);
+    border-radius: 20px; padding: 28px; margin: 20px 0;
+    position: relative; overflow: hidden;
+  }
+  body.light-mode .scene-box {
+    background: linear-gradient(135deg, rgba(240,255,244,0.96), rgba(57,211,83,0.06));
+    border-color: rgba(57,211,83,0.2);
+  }
+  .scene-title {
+    font-weight: 900; font-size: 12px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--germ-green);
+    margin-bottom: 12px; opacity: 0.85;
+  }
+  .scene-box p { font-size: clamp(15px,2.5vw,17px); line-height: 1.9; font-style: italic; opacity: 0.92; }
+
+  /* ─── ENEMY ROSTER ─── */
+  .enemy-roster {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr));
+    gap: 14px; margin-top: 16px;
+  }
+  .enemy-card {
+    border-radius: 20px; padding: 20px 18px; text-align: center;
+    transition: transform 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .enemy-card:hover { transform: translateY(-4px); }
+  .ec-bacteria { background: rgba(0,180,216,0.15); border: 2px solid rgba(0,180,216,0.3); }
+  .ec-virus    { background: rgba(155,93,229,0.15); border: 2px solid rgba(155,93,229,0.3); }
+  .ec-fungi    { background: rgba(249,199,79,0.12); border: 2px solid rgba(249,199,79,0.25); }
+  .enemy-card .ec-icon { font-size: 48px; display: block; margin-bottom: 10px;
+    animation: germ-attack 2s ease-in-out infinite; }
+  .enemy-card strong { font-size: 16px; font-weight: 900; display: block; margin-bottom: 6px; }
+  .enemy-card span { font-size: 13px; opacity: 0.8; display: block; margin-bottom: 8px; }
+  .ec-badge {
+    display: inline-block; padding: 3px 12px; border-radius: 50px;
+    font-size: 11px; font-weight: 800;
+  }
+  .badge-blue   { background: rgba(0,180,216,0.2);  color: #90e0ef; border: 1px solid rgba(0,180,216,0.3); }
+  .badge-purple { background: rgba(155,93,229,0.2); color: #c9a7f5; border: 1px solid rgba(155,93,229,0.3); }
+  .badge-yellow { background: rgba(249,199,79,0.2); color: #f9c74f; border: 1px solid rgba(249,199,79,0.3); }
+
+  /* ─── ARMY CARDS ─── */
+  .army-cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+    gap: 14px; margin-top: 16px;
+  }
+  .army-card {
+    border-radius: 20px; padding: 20px 18px; text-align: center;
+    transition: transform 0.2s;
+  }
+  .army-card:hover { transform: translateY(-4px); }
+  .ac-neutro  { background: rgba(72,149,239,0.15); border: 1px solid rgba(72,149,239,0.3); }
+  .ac-macrop  { background: rgba(230,57,70,0.12);  border: 1px solid rgba(230,57,70,0.25); }
+  .ac-lympho  { background: rgba(57,211,83,0.12);  border: 1px solid rgba(57,211,83,0.25); }
+  .ac-nk      { background: rgba(249,199,79,0.1);  border: 1px solid rgba(249,199,79,0.25); }
+  .army-card .ac-icon { font-size: 42px; display: block; margin-bottom: 10px; }
+  .army-card strong { font-size: 15px; font-weight: 900; display: block; margin-bottom: 4px; }
+  .army-card .ac-role {
+    font-size: 11px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.5px; opacity: 0.65; margin-bottom: 8px; display: block;
+  }
+  .army-card p { font-size: 13px; line-height: 1.6; opacity: 0.85; margin: 0; }
+
+  /* ─── BATTLE TIMELINE ─── */
+  .battle-timeline {
+    display: flex; flex-direction: column; gap: 0; margin-top: 16px;
+  }
+  .bt-step {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 16px 20px; border-radius: 16px; margin-bottom: 4px;
+  }
+  .bt-arrow {
+    text-align: center; font-size: 20px; padding: 2px 0;
+    color: var(--germ-green); opacity: 0.5;
+  }
+  .bt-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 15px; flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .bt-content strong { font-size: 15px; display: block; margin-bottom: 4px; }
+  .bt-content span { font-size: 13px; opacity: 0.8; line-height: 1.6; }
+
+  .bts1 { background: rgba(230,57,70,0.12); border: 1px solid rgba(230,57,70,0.2); }
+  .bts2 { background: rgba(72,149,239,0.12); border: 1px solid rgba(72,149,239,0.2); }
+  .bts3 { background: rgba(249,199,79,0.1);  border: 1px solid rgba(249,199,79,0.2); }
+  .bts4 { background: rgba(57,211,83,0.12);  border: 1px solid rgba(57,211,83,0.2); }
+  .bts5 { background: rgba(155,93,229,0.12); border: 1px solid rgba(155,93,229,0.2); }
+
+  /* ─── TWO COL ─── */
+  .two-col {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; margin: 16px 0;
+  }
+  @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+
+  .mini-card {
+    border-radius: 18px; padding: 18px 16px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .mini-green  { background: rgba(57,211,83,0.12);  border: 1px solid rgba(57,211,83,0.25); }
+  .mini-blue   { background: rgba(72,149,239,0.12); border: 1px solid rgba(72,149,239,0.25); }
+  .mini-yellow { background: rgba(249,199,79,0.1);  border: 1px solid rgba(249,199,79,0.25); }
+  .mini-red    { background: rgba(230,57,70,0.1);   border: 1px solid rgba(230,57,70,0.2); }
+  body.light-mode .mini-green  { background: rgba(57,211,83,0.06); }
+  body.light-mode .mini-blue   { background: rgba(72,149,239,0.06); }
+  body.light-mode .mini-yellow { background: rgba(249,199,79,0.05); }
+  body.light-mode .mini-red    { background: rgba(230,57,70,0.05); }
+  .mini-card .mini-icon { font-size: 34px; }
+  .mini-card strong { font-size: 15px; font-weight: 900; }
+  .mini-card p { font-size: 14px; line-height: 1.6; opacity: 0.85; margin: 0; }
+
+  /* ─── DEFENSE TIPS ─── */
+  .defense-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+    gap: 14px; margin-top: 16px;
+  }
+  .defense-tip {
+    border-radius: 20px; padding: 22px 18px; text-align: center;
+    transition: transform 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .defense-tip:hover { transform: translateY(-4px); }
+  .dt1 { background: rgba(57,211,83,0.15);  border: 1px solid rgba(57,211,83,0.3); }
+  .dt2 { background: rgba(72,149,239,0.12); border: 1px solid rgba(72,149,239,0.25); }
+  .dt3 { background: rgba(249,199,79,0.1);  border: 1px solid rgba(249,199,79,0.2); }
+  .dt4 { background: rgba(230,57,70,0.1);   border: 1px solid rgba(230,57,70,0.2); }
+  .dt5 { background: rgba(155,93,229,0.12); border: 1px solid rgba(155,93,229,0.25); }
+  .dt6 { background: rgba(0,180,216,0.12);  border: 1px solid rgba(0,180,216,0.25); }
+  .defense-tip .dt-icon { font-size: 40px; display: block; margin-bottom: 10px; }
+  .defense-tip strong { font-size: 14px; font-weight: 900; display: block; margin-bottom: 6px; }
+  .defense-tip p { font-size: 12px; line-height: 1.6; opacity: 0.85; margin: 0; }
+
+  /* ─── FACT GRID ─── */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px,1fr));
+    gap: 14px; margin: 20px 0;
+  }
+  .fact-card {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; padding: 22px 18px; text-align: center;
+    transition: transform 0.2s;
+  }
+  .fact-card:hover { transform: translateY(-4px); }
+  body.light-mode .fact-card { background: #f0fff4; border-color: rgba(57,211,83,0.15); }
+  .fact-card .fact-emoji { font-size: 38px; margin-bottom: 10px; display: block; }
+  .fact-card .fact-number { font-family: 'Fredoka One', cursive; font-size: 21px; color: var(--germ-green); display: block; margin-bottom: 4px; }
+  .fact-card .fact-label { font-size: 12px; opacity: 0.7; font-weight: 700; }
+
+  /* ─── CHALLENGE ─── */
+  .challenge-card {
+    background: linear-gradient(135deg, rgba(10,26,13,0.85), rgba(26,122,46,0.2));
+    border: 2px solid rgba(57,211,83,0.3);
+    border-radius: var(--radius); padding: 32px; margin: 20px 0;
+  }
+  body.light-mode .challenge-card {
+    background: linear-gradient(135deg, rgba(240,255,244,0.96), rgba(57,211,83,0.05));
+  }
+  .challenge-title {
+    font-family: 'Fredoka One', cursive; font-size: 24px;
+    color: var(--germ-green); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  body.light-mode .challenge-title { color: var(--germ-dark); }
+  .challenge-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .challenge-item:last-child { border-bottom: none; }
+  body.light-mode .challenge-item { border-color: rgba(0,0,0,0.06); }
+  .challenge-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--germ-dark), var(--germ-green));
+    color: white; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 14px; flex-shrink: 0; margin-top: 2px;
+  }
+  .challenge-item p { font-size: 15px; line-height: 1.7; opacity: 0.9; }
+
+  /* ─── NAV BUTTONS ─── */
+  .nav-btns {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; margin-top: 40px; padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  body.light-mode .nav-btns { border-color: rgba(0,0,0,0.06); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 24px; border-radius: 50px;
+    font-family: 'Nunito', sans-serif; font-size: 15px;
+    font-weight: 800; cursor: pointer; border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover  { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+  .btn-prev {
+    background: rgba(255,255,255,0.08); color: inherit;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  body.light-mode .btn-prev { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); color: #0a200d; }
+  .btn-next {
+    background: linear-gradient(135deg, var(--germ-dark), var(--germ-green));
+    color: white; box-shadow: 0 4px 16px rgba(57,211,83,0.3);
+    flex: 1; justify-content: center; max-width: 280px;
+  }
+  .btn-next:hover { box-shadow: 0 6px 24px rgba(57,211,83,0.5); }
+  .btn-done {
+    background: linear-gradient(135deg, var(--moss), var(--forest));
+    color: white; box-shadow: 0 4px 16px rgba(64,145,108,0.35);
+    width: 100%; max-width: 400px; margin: 0 auto;
+    justify-content: center; font-size: 17px; padding: 18px 32px;
+  }
+  .btn-done:hover { box-shadow: 0 6px 24px rgba(64,145,108,0.5); }
+  .page-indicator { font-size: 13px; opacity: 0.5; font-weight: 700; white-space: nowrap; }
+
+  /* ─── CLOSING ─── */
+  .closing-content { text-align: center; padding: 40px 20px; }
+  .trophy-big {
+    font-size: 96px; display: block; margin: 0 auto 24px;
+    animation: bounceIn 0.8s cubic-bezier(0.36,0.07,0.19,0.97);
+    filter: drop-shadow(0 8px 24px rgba(57,211,83,0.5));
+  }
+  @keyframes bounceIn {
+    0%  { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); }
+    100%{ transform: scale(1); opacity: 1; }
+  }
+  .quote-box {
+    background: linear-gradient(135deg, rgba(57,211,83,0.1), rgba(72,149,239,0.08));
+    border-left: 4px solid var(--germ-green);
+    border-radius: 0 16px 16px 0; padding: 20px 24px; margin: 24px 0; text-align: left;
+  }
+  .quote-box p { font-size: 18px; font-style: italic; line-height: 1.8; }
+  .quote-box cite { font-size: 13px; opacity: 0.6; margin-top: 8px; display: block; font-style: normal; font-weight: 700; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .book-container { padding: 76px 16px 32px; }
+    .card { padding: 24px 18px; }
+    .nav-btns { flex-wrap: wrap; }
+    .btn-next { max-width: 100%; }
+    .fact-grid { grid-template-columns: 1fr 1fr; }
+    .enemy-roster { grid-template-columns: 1fr; }
+    .army-cards { grid-template-columns: 1fr 1fr; }
+    .cover-battle-wrap { width: 180px; height: 165px; }
+    .battle-shield { width: 80px; height: 96px; }
+    .wbc-soldier { font-size: 42px; }
+  }
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .book-container { padding: 80px 32px 40px; }
+    .card p { font-size: 18px; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(57,211,83,0.3); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- BATTLE PARTICLES -->
+<div class="particles" id="particles"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+  <div class="nav-right">
+    <span class="book-day-badge">🛡️ Hari ke-20</span>
+    <button class="mode-btn" id="modeBtn" title="Ganti Mode">☀️</button>
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<!-- ═══════════════════ BOOK CONTAINER ═══════════════════ -->
+<div class="book-container">
+
+  <!-- ── PAGE 1: COVER ── -->
+  <div class="page active" id="page-1">
+    <div class="cover-page">
+      <span class="floating-icons">🦠</span>
+      <span class="floating-icons">🛡️</span>
+      <span class="floating-icons">⚔️</span>
+      <span class="floating-icons">💉</span>
+
+      <!-- Battle illustration -->
+      <div class="cover-battle-wrap">
+        <div class="germ-blob gb1"></div>
+        <div class="germ-blob gb2"></div>
+        <div class="germ-blob gb3"></div>
+        <div class="germ-blob gb4"></div>
+        <div class="battle-shield">
+          <div class="shield-cross"></div>
+        </div>
+        <div class="wbc-soldier">🧬</div>
+      </div>
+
+      <div class="cover-badge">📚 Buku Sains Petualangan • Hari ke-20</div>
+      <h1 class="cover-title">Perang Melawan<br>Kuman Jahat di Tubuh!</h1>
+      <p class="cover-subtitle">🛡️ Pasukan Imun yang Tak Pernah Tidur</p>
+
+      <div class="cover-name-badge">
+        <p>Petualangan sains milik:</p>
+        <h2>🌟 Aslan 🌟</h2>
+        <p style="font-size:13px;margin-top:4px;">Penjelajah Tubuh Sejati • Kelas 3 SD</p>
+      </div>
+
+      <div class="nav-btns" style="justify-content:center;border:none;padding-top:0;">
+        <button class="btn btn-next" onclick="goPage(2)" style="max-width:290px;font-size:17px;padding:16px 32px;">
+          ⚔️ Mulai Perang!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE 2: PENGANTAR ── -->
+  <div class="page" id="page-2">
+    <div class="section-header">
+      <span class="tag">✉️ Hari ke-20!</span>
+      <h1>Hei Aslan, Hari Ini Kita<br>Ikut Berperang! ⚔️</h1>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🛡️</span>
+      <p>Hei, <strong>Aslan</strong>! Di Hari ke-17 lalu kamu sudah menjelajahi jantung dan aliran darah yang menakjubkan. Kamu sudah tahu betapa hebatnya tubuhmu bekerja dari dalam. Tapi ada satu rahasia besar yang belum kita ungkap...</p>
+      <p>Tahukah kamu bahwa setiap hari, <strong>jutaan bahkan miliaran musuh tak kasat mata</strong> mencoba menyerang tubuhmu? Mereka adalah kuman jahat — bakteri, virus, jamur — yang berusaha masuk dan merusak tubuhmu. Dan tahukah kamu? Di dalam tubuhmu sudah ada <strong>pasukan pertahanan terhebat di dunia</strong> yang siap berperang 24 jam sehari, 7 hari seminggu! 💪</p>
+      <p>Hari ini Terra Explorer akan kembali mengecil dan memasuki tubuhmu untuk menyaksikan <strong>pertempuran epik</strong> antara pasukan imunmu dan kuman-kuman jahat! Bersiaplah untuk pertarungan paling seru yang pernah ada! ⚔️🛡️</p>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Pesan Dari Terra Explorer</p>
+      <p>"Aslan! Terra Explorer siap tempur! Sistem pengecilan sudah aktif — kita menyusut ke ukuran yang lebih kecil dari bakteri! Mode PERANG diaktifkan. Sinyal radar mendeteksi sekelompok bakteri jahat yang baru saja masuk melalui luka kecil di jarimu. Alarm merah berbunyi! Sel darah putihmu sudah bergerak ke lokasi. Kita harus segera ikut — MISI PERANG MELAWAN KUMAN dimulai! Kencangkan sabuk!"</p>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--germ-green),var(--wbc-blue),var(--attack-red));">
+      <h3>🗺️ Yang Akan Kita Pelajari Hari Ini</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(0,180,216,0.12);border-radius:14px;">
+          <span style="font-size:28px;">🦠</span>
+          <div><strong>Mengenal Musuh: Kuman, Bakteri & Virus</strong><p style="font-size:13px;margin:0;opacity:0.7;">Siapa saja penyusup berbahaya di tubuhmu?</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(72,149,239,0.12);border-radius:14px;">
+          <span style="font-size:28px;">🧬</span>
+          <div><strong>Sistem Kekebalan Tubuh</strong><p style="font-size:13px;margin:0;opacity:0.7;">Tentara canggih yang menjaga tubuhmu 24 jam</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(57,211,83,0.12);border-radius:14px;">
+          <span style="font-size:28px;">🫡</span>
+          <div><strong>Pasukan Sel Darah Putih</strong><p style="font-size:13px;margin:0;opacity:0.7;">4 jenis prajurit spesialis yang beraksi!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(249,199,79,0.1);border-radius:14px;">
+          <span style="font-size:28px;">🎯</span>
+          <div><strong>Antibodi: Senjata Presisi Tubuhmu</strong><p style="font-size:13px;margin:0;opacity:0.7;">Cara tubuh mengenali dan menghancurkan musuh</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(155,93,229,0.12);border-radius:14px;">
+          <span style="font-size:28px;">💉</span>
+          <div><strong>Vaksin: Latihan Perang untuk Tubuhmu</strong><p style="font-size:13px;margin:0;opacity:0.7;">Kenapa vaksin membuatmu lebih kuat?</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(64,145,108,0.12);border-radius:14px;">
+          <span style="font-size:28px;">🏋️</span>
+          <div><strong>Cara Memperkuat Pertahanan Tubuhmu</strong><p style="font-size:13px;margin:0;opacity:0.7;">Tips seru agar pasukanmu selalu siap tempur!</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+      <span class="page-indicator">Halaman 2 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(3)">Kenali Musuhnya! 🦠 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 3: MENGENAL MUSUH ── -->
+  <div class="page" id="page-3">
+    <div class="section-header">
+      <span class="tag">🦠 Bab Satu</span>
+      <h1>Mengenal Musuh:<br><span style="color:var(--germ-green)">Kuman, Bakteri & Virus!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Radar Musuh Aktif!</p>
+      <p>"Terra Explorer sudah mengecil dan melayang di dalam darahmu, Aslan! Radar musuh berbunyi keras — BEEP BEEP BEEP! Di layar terlihat makhluk-makhluk aneh: ada yang berbentuk bulat dengan duri di mana-mana, ada yang panjang seperti tongkat, ada yang bentuknya seperti monster berkepala banyak. Mereka bergerak cepat dan agresif. Ini adalah MUSUH NYATA-nya tubuhmu — dan sekarang kita lihat mereka langsung!"</p>
+    </div>
+
+    <div class="card card-enemy">
+      <span class="card-icon">🦠</span>
+      <h2>Para Penyusup Berbahaya!</h2>
+      <p>Kuman adalah istilah umum untuk makhluk hidup sangat kecil yang bisa menyebabkan penyakit. Mereka terlalu kecil untuk dilihat mata telanjang — butuh mikroskop khusus! Ada tiga jenis utama musuh yang harus kita ketahui:</p>
+
+      <div class="enemy-roster">
+        <div class="enemy-card ec-bacteria">
+          <span class="ec-icon">🔵</span>
+          <strong>Bakteri</strong>
+          <span>Makhluk bersel satu yang bisa hidup mandiri. Ada yang berbentuk bulat (coccus), tongkat (bacillus), atau spiral.</span>
+          <span class="ec-badge badge-blue">🧫 Makhluk hidup sejati</span>
+          <p style="font-size:13px;line-height:1.6;margin-top:10px;opacity:0.85;">Contoh bakteri jahat: <strong>Streptococcus</strong> penyebab radang tenggorokan, <strong>Salmonella</strong> penyebab keracunan makanan. Bakteri bisa dilawan dengan <strong>antibiotik</strong>. Tapi ingat — tidak semua bakteri jahat! Ada bakteri baik di perutmu yang membantu pencernaan! 😊</p>
+        </div>
+        <div class="enemy-card ec-virus">
+          <span class="ec-icon">🟣</span>
+          <strong>Virus</strong>
+          <span>Bukan makhluk hidup sejati — hanya "paket DNA" yang butuh sel hidup untuk berkembang biak. Ukurannya jauh lebih kecil dari bakteri!</span>
+          <span class="ec-badge badge-purple">💀 Peretas sel tubuh</span>
+          <p style="font-size:13px;line-height:1.6;margin-top:10px;opacity:0.85;">Virus bekerja seperti <strong>peretas komputer</strong> — mereka menyusup ke sel tubuhmu, membajak "mesin" sel, dan memaksa sel itu membuat jutaan salinan virus baru! Contoh: virus flu, COVID, cacar. Antibiotik tidak mempan lawan virus — yang melawan adalah sistem imunmu sendiri! 🛡️</p>
+        </div>
+        <div class="enemy-card ec-fungi">
+          <span class="ec-icon">🍄</span>
+          <strong>Jamur Patogen</strong>
+          <span>Makhluk yang mirip jamur makanan tapi mikroskopis. Biasanya menyerang kulit, kuku, atau area lembab tubuh.</span>
+          <span class="ec-badge badge-yellow">🌿 Penyebab gatal & infeksi</span>
+          <p style="font-size:13px;line-height:1.6;margin-top:10px;opacity:0.85;">Jamur patogen suka tempat lembab dan hangat. Contoh: <strong>kutu air</strong> di sela jari kaki, panu, kurap. Bisa dicegah dengan menjaga kebersihan dan mengeringkan tubuh setelah mandi. Diatasi dengan obat antijamur. 🧴</p>
+        </div>
+      </div>
+
+      <div class="analogy-box" style="margin-top:20px;">
+        <p>Bakteri itu seperti <strong>pencuri biasa</strong> 🦹 — bisa ditangkap polisi (antibiotik). Virus itu seperti <strong>peretas komputer canggih</strong> 💻 — polisi biasa susah menangkapnya, butuh ahli khusus (sistem imunmu). Dan jamur seperti <strong>tumbuhan liar yang tumbuh di tempat kotor</strong> 🌿 — bersih-bersih adalah cara terbaiknya!</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+      <span class="page-indicator">Halaman 3 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(4)">Pasukan Imun! 🧬 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 4: SISTEM IMUN & PASUKAN WBC ── -->
+  <div class="page" id="page-4">
+    <div class="section-header">
+      <span class="tag">🧬 Bab Dua</span>
+      <h1>Sistem Kekebalan Tubuh:<br><span style="color:var(--germ-green)">Tentara Terhebatmu!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Bertemu Pasukan Imun!</p>
+      <p>"Sinyal darurat menyala di seluruh tubuhmu, Aslan! Terra Explorer melihat sesuatu yang luar biasa — dari jauh, kita bisa melihat ribuan sel darah putih bergerak cepat MENUJU lokasi serangan! Mereka bergerak seperti tentara yang berparade ke medan perang. Beberapa dari mereka sudah MENGELILINGI bakteri yang menyusup dan mulai... MEMAKANNYA? Wow, ini bukan sekadar pertempuran — ini adalah PERANG TOTAL!"</p>
+    </div>
+
+    <div class="card card-immune">
+      <span class="card-icon">🧬</span>
+      <h2>Sistem Imun: Angkatan Bersenjata Tubuhmu!</h2>
+      <p>Sistem kekebalan tubuh (sistem imun) adalah jaringan sel, jaringan, dan organ yang bekerja bersama untuk <strong>mendeteksi, menyerang, dan menghancurkan</strong> semua penyusup berbahaya. Ini adalah sistem pertahanan paling canggih yang pernah ada!</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;">
+        <div style="background:rgba(57,211,83,0.12);border:1px solid rgba(57,211,83,0.25);border-radius:16px;padding:18px;text-align:center;">
+          <span style="font-size:44px;display:block;margin-bottom:8px;">🏰</span>
+          <strong style="font-size:14px;display:block;margin-bottom:6px;color:var(--germ-green);">IMUN BAWAAN (Innate)</strong>
+          <p style="font-size:13px;line-height:1.6;margin:0;opacity:0.85;">Pertahanan PERTAMA — langsung bereaksi dalam hitungan menit! Tidak perlu "mengenal" musuh dulu. Seperti penjaga gerbang yang menyerang semua orang asing.</p>
+        </div>
+        <div style="background:rgba(72,149,239,0.12);border:1px solid rgba(72,149,239,0.25);border-radius:16px;padding:18px;text-align:center;">
+          <span style="font-size:44px;display:block;margin-bottom:8px;">🎯</span>
+          <strong style="font-size:14px;display:block;margin-bottom:6px;color:var(--wbc-light);">IMUN ADAPTIF (Adaptive)</strong>
+          <p style="font-size:13px;line-height:1.6;margin:0;opacity:0.85;">Pertahanan KEDUA — butuh beberapa hari tapi lebih presisi. Mempelajari musuh lalu membuat senjata khusus. Juga INGAT musuh untuk serangan berikutnya! 🧠</p>
+        </div>
+      </div>
+
+      <h3>🫡 4 Jenis Prajurit Sel Darah Putih!</h3>
+      <div class="army-cards">
+        <div class="army-card ac-neutro">
+          <span class="ac-icon">💪</span>
+          <strong>Neutrofil</strong>
+          <span class="ac-role">🪖 Infanteri Garis Depan</span>
+          <p>Prajurit pertama yang datang ke lokasi infeksi. Langsung MENELAN dan menghancurkan bakteri dalam hitungan menit! Paling banyak jumlahnya — 60% dari semua sel darah putih. Hidupnya singkat tapi heroik! ⚔️</p>
+        </div>
+        <div class="army-card ac-macrop">
+          <span class="ac-icon">😤</span>
+          <strong>Makrofag</strong>
+          <span class="ac-role">🎖️ Pemakan Besar</span>
+          <p>Namanya berarti "pemakan besar" dalam bahasa Yunani! Bisa menelan musuh yang jauh lebih besar. Setelah memakan musuh, makrofag "melaporkan" informasi musuh ke tentara lain agar bisa dibuat senjata khusus. 🗣️</p>
+        </div>
+        <div class="army-card ac-lympho">
+          <span class="ac-icon">🧠</span>
+          <strong>Limfosit (Sel B & T)</strong>
+          <span class="ac-role">🎯 Unit Intelijen</span>
+          <p><strong>Sel B</strong> membuat antibodi (senjata presisi). <strong>Sel T</strong> langsung menyerang dan membunuh sel yang sudah terinfeksi virus. Yang paling penting: mereka MENGINGAT musuh untuk serangan berikutnya! 🧬</p>
+        </div>
+        <div class="army-card ac-nk">
+          <span class="ac-icon">🥷</span>
+          <strong>Sel NK (Natural Killer)</strong>
+          <span class="ac-role">☠️ Pembunuh Alami</span>
+          <p>Agen rahasia yang membunuh sel tubuh yang sudah disusupi virus atau sel kanker! Tidak butuh tanda pengenal khusus — jika sel terlihat "mencurigakan", NK langsung menghancurkannya. Tanpa ampun! ⚡</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+      <span class="page-indicator">Halaman 4 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(5)">Pertempuran Epik! ⚔️ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 5: PERTEMPURAN EPIK & ANTIBODI ── -->
+  <div class="page" id="page-5">
+    <div class="section-header">
+      <span class="tag">⚔️ Bab Tiga</span>
+      <h1>Pertempuran Epik &<br><span style="color:var(--germ-green)">Senjata Antibodi!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Di Tengah Medan Perang!</p>
+      <p>"LUAR BIASA! Terra Explorer mengapung di tengah pertempuran paling epik yang pernah ada! Di kiri kita: neutrofil sedang mengejar bakteri dengan kecepatan tinggi! Di kanan: makrofag raksasa baru saja 'menelan' tiga bakteri sekaligus! Dan dari atas... ribuan molekul berbentuk Y berwarna keemasan berhamburan ke seluruh medan perang — itu ANTIBODI! Mereka mencari musuh dengan presisi luar biasa. Ini seperti nonton film aksi tapi NYATA dan ada di dalam tubuhmu sendiri!"</p>
+    </div>
+
+    <div class="card card-battle">
+      <span class="card-icon">⚔️</span>
+      <h2>Tahapan Pertempuran Saat Kamu Sakit!</h2>
+      <p>Ketika kuman berhasil masuk ke tubuhmu, tubuh langsung menggelar operasi pertahanan yang terkoordinasi dengan sempurna. Inilah yang terjadi langkah demi langkah:</p>
+
+      <div class="battle-timeline">
+        <div class="bt-step bts1">
+          <div class="bt-num" style="background:linear-gradient(135deg,#e63946,#9d0208);color:white;">1</div>
+          <div class="bt-content">
+            <strong>🚨 Kuman Masuk — Alarm Berbunyi!</strong>
+            <span>Kuman menembus pertahanan pertama (kulit, lendir). Sel tubuh yang rusak langsung melepaskan sinyal kimia darurat bernama "sitokin" — ini adalah tanda SOS yang memicu semua prajurit bergerak!</span>
+          </div>
+        </div>
+        <div class="bt-arrow">↓</div>
+        <div class="bt-step bts2">
+          <div class="bt-num" style="background:linear-gradient(135deg,#4895ef,#1a5fb4);color:white;">2</div>
+          <div class="bt-content">
+            <strong>🏃 Neutrofil Bergegas ke Lokasi</strong>
+            <span>Dalam hitungan MENIT, ribuan neutrofil merembes keluar dari pembuluh darah dan menyerbu lokasi infeksi. Mereka langsung menelan dan menghancurkan bakteri. Area infeksi menjadi merah, bengkak, dan panas — itu tanda perang sedang berlangsung! (Namanya: INFLAMASI)</span>
+          </div>
+        </div>
+        <div class="bt-arrow">↓</div>
+        <div class="bt-step bts3">
+          <div class="bt-num" style="background:linear-gradient(135deg,#f9c74f,#e9a800);color:#000;">3</div>
+          <div class="bt-content">
+            <strong>🔬 Makrofag Mengumpulkan Intel</strong>
+            <span>Makrofag datang, menelan sisa-sisa musuh, lalu "memajang" penanda musuh di permukaannya untuk ditunjukkan ke Sel T. Ini seperti detektif yang membawa foto buronan ke markas!</span>
+          </div>
+        </div>
+        <div class="bt-arrow">↓</div>
+        <div class="bt-step bts4">
+          <div class="bt-num" style="background:linear-gradient(135deg,#39d353,#1a7a2e);color:white;">4</div>
+          <div class="bt-content">
+            <strong>🎯 Sel B Produksi Antibodi — Senjata Presisi!</strong>
+            <span>Sel B yang sudah mendapat informasi musuh mulai memproduksi antibodi dalam jumlah jutaan! Antibodi berbentuk huruf Y dan dirancang KHUSUS untuk mengunci dan menonaktifkan musuh tertentu.</span>
+          </div>
+        </div>
+        <div class="bt-arrow">↓</div>
+        <div class="bt-step bts5">
+          <div class="bt-num" style="background:linear-gradient(135deg,#9b5de5,#5a189a);color:white;">5</div>
+          <div class="bt-content">
+            <strong>🏆 Kemenangan & Pembentukan Memori</strong>
+            <span>Kuman dikalahkan! Tapi ada yang lebih keren: sebagian Sel B dan T berubah menjadi "Sel Memori" yang INGAT musuh ini seumur hidup. Jika musuh yang sama datang lagi, tubuh bisa menghancurkannya dalam hitungan JAM sebelum kamu sempat sakit!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="analogy-box" style="margin-top:20px;">
+        <p>Sistem imunmu seperti <strong>game Tower Defense</strong> 🎮! Musuh (kuman) mencoba memasuki kastilmu (tubuh). Ada menara pertahanan otomatis (imun bawaan) yang langsung menyerang. Tapi jika musuh kuat, datanglah "hero" spesial (sel T & B) yang mempelajari musuh dan membuat serangan khusus. Dan setelah menang, game menyimpan data musuh itu — kalau mereka datang lagi, kamu sudah punya counter-nya! 🏆</p>
+      </div>
+    </div>
+
+    <div class="card card-antibody">
+      <span class="card-icon">🎯</span>
+      <h2>Antibodi: Senjata Paling Presisi!</h2>
+      <p>Antibodi adalah protein berbentuk <strong>huruf Y</strong> yang dibuat oleh Sel B. Setiap antibodi dirancang khusus untuk satu jenis musuh tertentu — seperti kunci dan gembok! Satu antibodi HANYA bisa mengunci satu jenis kuman tertentu.</p>
+      <p>Saat antibodi berhasil menempel pada kuman, beberapa hal terjadi: kuman menjadi tidak aktif, kuman "ditandai" agar dimakan oleh makrofag, atau kuman langsung hancur. Tubuhmu bisa membuat <strong>miliaran jenis antibodi berbeda</strong> — satu untuk setiap musuh yang pernah ditemuinya!</p>
+      <div style="background:rgba(249,199,79,0.1);border:1px solid rgba(249,199,79,0.2);border-radius:16px;padding:18px 20px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">💉 <strong>Inilah mengapa vaksin bekerja!</strong> Vaksin memasukkan versi kuman yang sudah "dilumpuhkan" atau bagian dari kuman ke tubuhmu. Tubuhmu berlatih melawan "musuh palsu" ini, membuat antibodi, dan menyimpan memorinya. Jika musuh asli datang suatu hari — tubuhmu sudah siap! 🏋️ Vaksin adalah <em>sesi latihan perang</em> untuk sistem imunmu!</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+      <span class="page-indicator">Halaman 5 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(6)">Pertahanan Tubuh! 🏰 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 6: GARIS PERTAHANAN & MENJAGA IMUN ── -->
+  <div class="page" id="page-6">
+    <div class="section-header">
+      <span class="tag">🏰 Bab Empat</span>
+      <h1>Tiga Lapis Benteng<br><span style="color:var(--germ-green)">Pertahananmu!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Melihat Seluruh Sistem Pertahanan</p>
+      <p>"Terra Explorer mengambil posisi tinggi untuk melihat gambaran besar pertahanan tubuhmu. Dan WOW — ternyata ada TIGA LAPIS benteng pertahanan yang saling mendukung! Lapisan pertama: dinding fisik (kulit, air liur, lendir). Lapisan kedua: patroli darurat (neutrofil, makrofag). Lapisan ketiga: unit elit presisi (limfosit dengan antibodi). Tubuhmu ini benar-benar seperti benteng raksasa yang didesain sempurna! 🏰"</p>
+    </div>
+
+    <div class="card card-defense">
+      <span class="card-icon">🏰</span>
+      <h2>Pertahanan Berlapis Tubuhmu!</h2>
+
+      <div style="display:flex;flex-direction:column;gap:14px;margin:16px 0;">
+        <div style="background:rgba(139,94,60,0.15);border:2px solid rgba(139,94,60,0.3);border-radius:18px;padding:20px 22px;display:flex;gap:16px;align-items:flex-start;">
+          <span style="font-size:44px;flex-shrink:0;">🧱</span>
+          <div>
+            <strong style="font-size:17px;display:block;margin-bottom:6px;color:#d4a574;">LAPIS 1: Barikade Fisik</strong>
+            <p style="margin:0;font-size:14px;line-height:1.7;opacity:0.9;"><strong>Kulit</strong> adalah tembok raksasamu — menghalangi hampir semua kuman. <strong>Lendir</strong> di hidung dan tenggorokan menangkap kuman seperti lem. <strong>Air liur, air mata, dan asam lambung</strong> mengandung bahan kimia yang membunuh kuman. <strong>Rambut halus di hidung</strong> menyaring partikel berbahaya. Semua ini adalah pertahanan SEBELUM kuman sempat masuk!</p>
+          </div>
+        </div>
+        <div style="background:rgba(230,57,70,0.12);border:2px solid rgba(230,57,70,0.25);border-radius:18px;padding:20px 22px;display:flex;gap:16px;align-items:flex-start;">
+          <span style="font-size:44px;flex-shrink:0;">⚡</span>
+          <div>
+            <strong style="font-size:17px;display:block;margin-bottom:6px;color:#ff8c8c;">LAPIS 2: Respons Cepat Darurat</strong>
+            <p style="margin:0;font-size:14px;line-height:1.7;opacity:0.9;">Jika kuman berhasil masuk, neutrofil dan makrofag langsung bertindak dalam hitungan menit. Ini menimbulkan <strong>peradangan (demam, kemerahan, bengkak)</strong> — itu bukan tanda bahwa kamu kalah, itu tanda TUBUHMU SEDANG BERPERANG! Demam ringan bahkan membantu memperlambat gerak kuman dan mempercepat kerja sel imun! 🌡️</p>
+          </div>
+        </div>
+        <div style="background:rgba(72,149,239,0.12);border:2px solid rgba(72,149,239,0.25);border-radius:18px;padding:20px 22px;display:flex;gap:16px;align-items:flex-start;">
+          <span style="font-size:44px;flex-shrink:0;">🎯</span>
+          <div>
+            <strong style="font-size:17px;display:block;margin-bottom:6px;color:var(--wbc-light);">LAPIS 3: Unit Elite & Memori Abadi</strong>
+            <p style="margin:0;font-size:14px;line-height:1.7;opacity:0.9;">Limfosit dan antibodi yang presisi. Butuh 3–7 hari untuk siap, tapi sangat efektif! Dan setelah menang, sistem imun menyimpan "foto" musuh seumur hidup. Inilah mengapa kamu biasanya hanya <strong>sekali seumur hidup</strong> terkena cacar air — setelah sembuh, tubuhmu tidak akan membiarkan virus itu menang lagi! 🏆</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>💪 Cara Memperkuat Pasukanmu!</h3>
+      <div class="defense-grid">
+        <div class="defense-tip dt1">
+          <span class="dt-icon">🤲</span>
+          <strong>Cuci Tangan!</strong>
+          <p>Cara nomor 1 mencegah kuman masuk. Cuci dengan sabun 20 detik terutama sebelum makan dan setelah ke toilet. Kuman langsung rontok! 🧼</p>
+        </div>
+        <div class="defense-tip dt2">
+          <span class="dt-icon">💉</span>
+          <strong>Vaksinasi!</strong>
+          <p>Latihan perang yang aman untuk sistem imunmu. Vaksin mengajarkan tubuh cara mengalahkan penyakit SEBELUM penyakit itu datang sungguhan! 🏋️</p>
+        </div>
+        <div class="defense-tip dt3">
+          <span class="dt-icon">🥗</span>
+          <strong>Makan Bergizi!</strong>
+          <p>Vitamin C (jeruk, jambu), Zinc (kacang-kacangan), dan protein (telur, ikan) adalah "amunisi" untuk sel imunmu. Makan pelangi warna! 🌈</p>
+        </div>
+        <div class="defense-tip dt4">
+          <span class="dt-icon">😴</span>
+          <strong>Tidur Cukup!</strong>
+          <p>Saat tidur, tubuh memproduksi paling banyak sel imun dan sitokin pelindung. Kurang tidur = pasukan kelelahan dan mudah kalah! 🌙</p>
+        </div>
+        <div class="defense-tip dt5">
+          <span class="dt-icon">🏃</span>
+          <strong>Aktif Bergerak!</strong>
+          <p>Olahraga sedang meningkatkan sirkulasi sel imun ke seluruh tubuh. 30 menit per hari sudah sangat membantu pasukan imu berpatroli! 🚴</p>
+        </div>
+        <div class="defense-tip dt6">
+          <span class="dt-icon">😊</span>
+          <strong>Bahagia & Tidak Stres!</strong>
+          <p>Stres berlebihan melemahkan sistem imun secara nyata! Tertawa, bermain, dan waktu bersama keluarga adalah "suplemen" imunmu! 🎉</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+      <span class="page-indicator">Halaman 6 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(7)">Fakta Keren! 🤯 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 7: FAKTA KEREN ── -->
+  <div class="page" id="page-7">
+    <div class="section-header">
+      <span class="tag">🤯 Bab Lima</span>
+      <h1>Fakta Keren yang<br><span style="color:var(--germ-green)">Bikin Melongo!</span></h1>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--germ-green),var(--wbc-blue),var(--attack-orange));">
+      <span class="card-icon">🤯</span>
+      <h2>Fakta Keren Sistem Imun & Kuman!</h2>
+      <div class="fact-grid">
+        <div class="fact-card">
+          <span class="fact-emoji">🦠</span>
+          <span class="fact-number">37 Triliun</span>
+          <span class="fact-label">Sel dalam tubuhmu yang dilindungi imun</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🧬</span>
+          <span class="fact-number">1 Miliar+</span>
+          <span class="fact-label">Jenis antibodi yang bisa dibuat tubuhmu</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">⚡</span>
+          <span class="fact-number">30 Menit</span>
+          <span class="fact-label">Waktu neutrofil tiba di lokasi infeksi</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">😤</span>
+          <span class="fact-number">100 Bakteri</span>
+          <span class="fact-label">Bisa dimakan satu makrofag sekaligus!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🤧</span>
+          <span class="fact-number">160 km/jam</span>
+          <span class="fact-label">Kecepatan bersin mengeluarkan kuman</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🧫</span>
+          <span class="fact-number">39 Triliun</span>
+          <span class="fact-label">Bakteri baik yang hidup di tubuhmu!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BAKTERI BAIK VS JAHAT -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--germ-green),var(--leaf));">
+      <span class="card-icon">🤝</span>
+      <h2>Tidak Semua Kuman Itu Jahat!</h2>
+      <p>Ini adalah fakta yang mengejutkan: di dalam tubuhmu, terutama di usus, hidup <strong>triliunan bakteri BAIK</strong> yang disebut <strong>mikrobioma</strong>! Mereka adalah sekutu tubuhmu, bukan musuh!</p>
+      <div class="two-col">
+        <div class="mini-card mini-green">
+          <span class="mini-icon">🥛</span>
+          <strong>Lactobacillus</strong>
+          <p>Bakteri baik dalam yogurt dan susu fermentasi. Membantu mencerna makanan dan melindungi usus dari bakteri jahat. Makan yogurt = memperkuat pasukan baikmu! 🍶</p>
+        </div>
+        <div class="mini-card mini-blue">
+          <span class="mini-icon">🦠</span>
+          <strong>Bifidobacterium</strong>
+          <p>Bakteri baik di usus besar yang membantu membuat vitamin, melawan peradangan, dan melatih sistem imunmu untuk tidak terlalu "lebay" bereaksi terhadap hal yang aman. 🧬</p>
+        </div>
+        <div class="mini-card mini-yellow">
+          <span class="mini-icon">🫁</span>
+          <strong>Bakteri di Paru-Paru</strong>
+          <p>Dulu dikira steril, ternyata ada bakteri baik yang membantu menjaga kesehatan paru-paru dan mencegah infeksi berbahaya masuk ke dalam. 🌬️</p>
+        </div>
+        <div class="mini-card mini-red">
+          <span class="mini-icon">🧑‍⚕️</span>
+          <strong>Pesan untuk Aslan</strong>
+          <p>Jangan sembarangan minum antibiotik! Antibiotik bisa membunuh bakteri baik sekaligus bakteri jahat. Selalu ikuti petunjuk dokter! 💊</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENYAKIT AUTOIMMUN -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--virus-purple),var(--wbc-blue));">
+      <span class="card-icon">😵</span>
+      <h2>Ketika Sistem Imun Salah Sasaran!</h2>
+      <p>Sistem imun yang canggih kadang bisa "bingung" dan menyerang sel tubuh sendiri — ini disebut <strong>penyakit autoimun</strong>. Contohnya alergi (sistem imun bereaksi berlebihan terhadap debu atau makanan yang sebenarnya tidak berbahaya) atau lupus (sistem imun menyerang organ tubuh sendiri).</p>
+      <p>Ini mengingatkan kita bahwa sistem imun harus "dilatih" dengan baik — tidak terlalu lemah, tidak terlalu lebay. Salah satu cara melatihnya adalah dengan membiarkan anak-anak bermain di luar, terpapar lingkungan alami, dan mendapat vaksinasi yang tepat! 🌿</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+      <span class="page-indicator">Halaman 7 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(8)">Tantangan Aslan! ⚡ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 8: TANTANGAN + PENUTUP ── -->
+  <div class="page" id="page-8">
+    <div class="section-header">
+      <span class="tag">⚡ Tantangan Aslan</span>
+      <h1>Buktikan Kamu<br>Ahli Imunologi Muda! 🛡️</h1>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-title">🏆 Misi Imunologi Aslan</div>
+      <p style="font-size:15px;opacity:0.8;margin-bottom:20px;">Kamu sudah menyaksikan perang epik dalam tubuhmu! Saatnya buktikan bahwa kamu adalah Komandan Imun Muda terhebat dengan tantangan-tantangan berikut!</p>
+
+      <div class="challenge-item">
+        <div class="challenge-num">1</div>
+        <div>
+          <p><strong>Eksperimen Cuci Tangan!</strong> 🤲 Ambil dua buah roti tawar dari satu kemasan yang sama. Roti pertama: pegang dengan tangan yang belum dicuci, lalu masukkan ke kantong plastik. Roti kedua: pegang dengan tangan yang sudah dicuci bersih, masukkan ke kantong plastik berbeda. Tunggu 5–7 hari dan amati perbedaannya! Mana yang lebih banyak jamurnya? Ini membuktikan betapa pentingnya mencuci tangan! (Minta izin orang tua ya!)</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">2</div>
+        <div>
+          <p><strong>Buat Peta Pasukan Imunmu!</strong> 🗺️ Gambar tubuh manusia besar di kertas. Tandai: tempat kulit sebagai benteng pertama, lokasi kelenjar getah bening (di leher, ketiak, selangkangan) sebagai "markas pasukan", paru-paru dan usus sebagai "zona penting yang dijaga". Gambar juga sel-sel imun dengan warna berbeda dan beri keterangan tugasnya masing-masing!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">3</div>
+        <div>
+          <p><strong>Kuis Kilat Imunologi!</strong> ⚡ Jawab tanpa melihat buku: (a) Apa bedanya bakteri dan virus? (b) Sel darah putih apa yang langsung datang ke lokasi infeksi paling cepat? (c) Apa bentuk antibodi? (d) Mengapa demam sebenarnya bisa jadi hal baik? (e) Kenapa kita jarang terkena cacar air dua kali?</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">4</div>
+        <div>
+          <p><strong>Jadilah Dokter Imunologi Mini!</strong> 🩺 Wawancarai anggota keluargamu: (a) Vaksin apa saja yang pernah mereka terima? (b) Kapan terakhir kali mereka sakit flu dan bagaimana cara mereka sembuh? (c) Apa makanan favorit mereka untuk menjaga imunitas? Catat jawabannya dan buat laporan "Kesehatan Imun Keluargaku"! 📝</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">5</div>
+        <div>
+          <p><strong>Bikin Menu Imun Boost!</strong> 🥗 Rancang satu hari menu makanan yang bisa memperkuat sistem imun. Sarapan, makan siang, makan malam, dan camilan — semua harus ada alasannya mengapa makanan itu baik untuk imun! Contoh: jeruk (Vitamin C), bayam (zat besi dan antioksidan), telur (protein), yogurt (bakteri baik). Presentasikan menu-mu ke keluarga dan masak bersama-sama! 👨‍🍳</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENUTUP -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--germ-green),var(--wbc-blue),var(--antibody),var(--leaf));margin-top:32px;">
+      <div class="closing-content">
+        <span class="trophy-big">🛡️</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(24px,5vw,36px);margin-bottom:16px;">
+          Luar Biasa, Aslan! 🎉
+        </h2>
+        <p style="font-size:clamp(15px,2.5vw,17px);max-width:540px;margin:0 auto 24px;line-height:1.8;opacity:0.9;">
+          Kamu telah menyelesaikan Hari ke-20 petualangan sainsmu! Sekarang kamu tahu bahwa di dalam tubuhmu ada <strong>pasukan paling canggih di dunia</strong> — sistem imun yang bekerja tanpa henti, belajar setiap hari, dan tidak pernah menyerah. Kamu adalah <strong>Komandan Imunologi Muda</strong> sejati!
+        </p>
+
+        <div class="quote-box" style="max-width:540px;margin:0 auto 28px;">
+          <p>"Tubuhmu adalah benteng paling canggih yang pernah ada. Jagalah ia dengan baik — makan bergizi, tidur cukup, bergerak aktif — dan pasukanmu akan selalu siap melindungimu dari musuh mana pun yang datang."</p>
+          <cite>— Untuk Aslan, Komandan Imunologi Muda 🛡️</cite>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px;">
+          <span style="background:rgba(0,180,216,0.15);border:1px solid rgba(0,180,216,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🦠 Ahli Kuman & Virus</span>
+          <span style="background:rgba(72,149,239,0.15);border:1px solid rgba(72,149,239,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🧬 Master Sistem Imun</span>
+          <span style="background:rgba(249,199,79,0.15);border:1px solid rgba(249,199,79,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🎯 Pakar Antibodi</span>
+          <span style="background:rgba(57,211,83,0.15);border:1px solid rgba(57,211,83,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">💪 Penjaga Kesehatan Imun</span>
+        </div>
+
+        <button class="btn btn-done" onclick="selesaiMembaca()">
+          ✅ Saya Sudah Selesai Membaca!
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(7)">← Kembali</button>
+      <span class="page-indicator">Halaman 8 dari 8</span>
+      <span></span>
+    </div>
+  </div>
+
+</div><!-- end book-container -->
+
+<script>
+  // ── BATTLE PARTICLES ──
+  const pc = document.getElementById('particles');
+  const types = [
+    { color: '#39d353', shadow: '#39d353', w: [5,10], h: [5,10] },
+    { color: '#9b5de5', shadow: '#9b5de5', w: [4,8],  h: [4,8] },
+    { color: '#00b4d8', shadow: '#00b4d8', w: [4,7],  h: [4,7] },
+    { color: '#e63946', shadow: '#e63946', w: [3,6],  h: [3,6] },
+    { color: '#f9c74f', shadow: '#f9c74f', w: [3,5],  h: [3,5] },
+  ];
+  for (let i = 0; i < 45; i++) {
+    const e = document.createElement('div');
+    e.className = 'germ-particle';
+    const t = types[Math.floor(Math.random() * types.length)];
+    const w = Math.random() * (t.w[1] - t.w[0]) + t.w[0];
+    const h = Math.random() * (t.h[1] - t.h[0]) + t.h[0];
+    e.style.cssText = `
+      width:${w}px; height:${h}px;
+      left:${Math.random()*100}%;
+      bottom:${Math.random()*20}%;
+      background:${t.color};
+      box-shadow:0 0 ${w*2}px ${t.shadow};
+      animation-duration:${4+Math.random()*8}s;
+      animation-delay:${Math.random()*7}s;
+      border-radius:${Math.random() > 0.5 ? '50%' : '30% 70% 60% 40%'};
+    `;
+    pc.appendChild(e);
+  }
+
+  // ── PAGES ──
+  const TOTAL = 8;
+  let current = 1;
+
+  function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── DARK / LIGHT MODE ──
+  const modeBtn = document.getElementById('modeBtn');
+  let isLight = false;
+  modeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+    modeBtn.textContent = isLight ? '🌙' : '☀️';
+  });
+
+  // ── SELESAI MEMBACA ──
+  function selesaiMembaca() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.84);backdrop-filter:blur(8px);
+      z-index:999;display:flex;align-items:center;justify-content:center;
+      padding:20px;animation:fadeUp 0.3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="background:linear-gradient(135deg,#0a1a0d,#0d2a1a);border:2px solid rgba(57,211,83,0.5);border-radius:28px;padding:40px;max-width:440px;width:100%;text-align:center;color:#e8ffe8;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#39d353,#4895ef,#f9c74f,#e63946,#39d353);background-size:200%;animation:progressShimmer 2s linear infinite;"></div>
+        <span style="font-size:80px;display:block;margin-bottom:16px;">🛡️</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:12px;background:linear-gradient(135deg,#39d353,#7fff00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Keren Banget, Aslan!</h2>
+        <p style="font-size:16px;line-height:1.8;opacity:0.9;margin-bottom:24px;">Hari ke-20 selesai! 🎉<br>Kamu sudah menyaksikan <strong>perang epik sistem imun</strong> melawan kuman jahat — dari neutrofil yang heroik, antibodi yang presisi, sampai sel memori yang tidak pernah lupa!<br><br>Sampai jumpa di Hari ke-21! 🚀</p>
+        <button onclick="this.closest('div').parentElement.remove()" style="background:linear-gradient(135deg,#1a7a2e,#39d353);color:white;border:none;padding:14px 32px;border-radius:50px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(57,211,83,0.5);">Mantap! Tutup 🛡️</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+  }
+
+  // ── KEYBOARD NAV ──
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(current - 1);
+  });
+
+  // Init
+  updateProgress();
+</script>
+</body>
+</html>

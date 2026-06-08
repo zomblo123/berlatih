@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Aslan's English Adventure — Day 1: The Magic Red Backpack (Click any word for meaning)</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #0b1437;
+    --deep:    #0f2057;
+    --blue:    #1a56db;
+    --sky:     #3b82f6;
+    --amber:   #f59e0b;
+    --gold:    #fbbf24;
+    --emerald: #10b981;
+    --coral:   #f97316;
+    --purple:  #8b5cf6;
+    --rose:    #f43f5e;
+    --white:   #ffffff;
+    --glass:   rgba(255,255,255,0.06);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star {
+    position: absolute; border-radius: 50%; background: white;
+    animation: twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:.15;transform:scale(1);}50%{opacity:.9;transform:scale(1.4);} }
+  .shoot {
+    position: fixed; top: 15%; left: -10%;
+    width: 140px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    animation: shoot 8s linear infinite 3s; z-index: 0;
+  }
+  @keyframes shoot {
+    0%{left:-10%;top:15%;opacity:0;}5%{opacity:1;}40%{left:110%;top:35%;opacity:0;}100%{left:110%;top:35%;opacity:0;}
+  }
+  .wrapper { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 36px 20px 60px; }
+  .hero { text-align: center; margin-bottom: 44px; animation: fadeDown .8s ease both; }
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
+  .hero-badge {
+    display: inline-flex; gap: 8px;
+    background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.35);
+    color: var(--gold); padding: 7px 22px; border-radius: 100px;
+    font-size: .8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Baloo 2', cursive; font-size: clamp(2rem,6vw,3.2rem);
+    font-weight: 800; color: var(--white); line-height: 1.15; margin-bottom: 12px;
+  }
+  .hero h1 .accent { background: linear-gradient(135deg,var(--rose),var(--coral)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero-sub { color: rgba(255,255,255,.55); font-size: 1rem; max-width: 480px; margin: 0 auto 28px; line-height: 1.6; }
+  .hero-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .tag { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.7); padding:6px 16px; border-radius:100px; font-size:.78rem; font-weight:600; backdrop-filter:blur(8px); }
+  .progress-wrap { background:rgba(255,255,255,.07); border-radius:100px; height:8px; margin-bottom:40px; overflow:hidden; border:1px solid rgba(255,255,255,.08); }
+  .progress-bar { height:100%; background:linear-gradient(90deg,var(--rose),var(--amber)); border-radius:100px; width:0%; transition:width .6s ease; }
+  .progress-label { text-align:right; font-size:.75rem; color:rgba(255,255,255,.4); margin-top:6px; font-weight:600; }
+
+  .illustration-card {
+    background: linear-gradient(135deg,#1a0a2e 0%,#2d1060 50%,#1a0a3e 100%);
+    border-radius: 32px; padding: 32px 24px 24px; margin-bottom: 40px;
+    text-align: center; position: relative; overflow: hidden; animation: fadeUp .9s ease .1s both;
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+  .illus-svg { max-width: 260px; width: 100%; position: relative; z-index: 1; }
+  .illus-quote { color:rgba(255,255,255,.75); font-size:.95rem; font-weight:600; margin-top:16px; font-style:italic; }
+  .illus-quote strong { color:var(--gold); font-style:normal; }
+
+  /* SPEED CONTROLS */
+  .speed-controls {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 16px; animation: fadeUp .9s ease .15s both;
+  }
+  .speed-label { color: rgba(255,255,255,.5); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .speed-btn {
+    padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06); color: rgba(255,255,255,.6);
+    font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s;
+    backdrop-filter: blur(8px);
+  }
+  .speed-btn:hover { background: rgba(255,255,255,.12); color: white; }
+  .speed-btn.active {
+    background: linear-gradient(135deg, var(--rose), var(--coral));
+    color: white; border-color: transparent;
+    box-shadow: 0 4px 16px rgba(244,63,94,.4);
+  }
+
+  .master-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:40px; animation:fadeUp .9s ease .2s both; }
+  .btn-master { display:inline-flex; align-items:center; gap:10px; padding:13px 28px; border-radius:100px; border:none; cursor:pointer; font-weight:700; transition:transform .15s; font-family:'Nunito',sans-serif; font-size:1rem; }
+  .btn-master:active { transform:scale(.97); }
+  .btn-play-all { background:linear-gradient(135deg,var(--rose),var(--coral)); color:white; box-shadow:0 6px 24px rgba(244,63,94,.45); }
+  .btn-stop { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:rgba(255,255,255,.75); backdrop-filter:blur(8px); }
+
+  .chapter {
+    background: linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.09); border-radius: 28px;
+    margin-bottom: 24px; overflow: hidden; backdrop-filter: blur(12px);
+    transition: transform .2s; animation: fadeUp .7s ease both;
+  }
+  .chapter:hover { transform: translateY(-3px); }
+  .chapter:nth-child(1){animation-delay:.1s;}.chapter:nth-child(2){animation-delay:.2s;}
+  .chapter:nth-child(3){animation-delay:.3s;}.chapter:nth-child(4){animation-delay:.4s;}
+  .chapter:nth-child(5){animation-delay:.5s;}
+  .chapter-accent { height: 4px; }
+  .ch1 .chapter-accent{background:linear-gradient(90deg,var(--sky),var(--blue));}
+  .ch2 .chapter-accent{background:linear-gradient(90deg,var(--emerald),#0f9f72);}
+  .ch3 .chapter-accent{background:linear-gradient(90deg,var(--amber),var(--coral));}
+  .ch4 .chapter-accent{background:linear-gradient(90deg,var(--purple),#6d28d9);}
+  .ch5 .chapter-accent{background:linear-gradient(90deg,var(--rose),#e11d48);}
+  .chapter-inner { padding: 28px 28px 24px; }
+  .chapter-head { display:flex; align-items:center; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+  .chapter-num {
+    width:52px; height:52px; border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2',cursive; font-size:1.3rem; font-weight:800; color:white;
+    flex-shrink:0;
+  }
+  .ch1 .chapter-num{background:linear-gradient(135deg,var(--sky),var(--blue));}
+  .ch2 .chapter-num{background:linear-gradient(135deg,var(--emerald),#0f9f72);}
+  .ch3 .chapter-num{background:linear-gradient(135deg,var(--amber),var(--coral));}
+  .ch4 .chapter-num{background:linear-gradient(135deg,var(--purple),#6d28d9);}
+  .ch5 .chapter-num{background:linear-gradient(135deg,var(--rose),#e11d48);}
+  .chapter-meta { flex:1; min-width:0; }
+  .chapter-tag { font-size:.7rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.35); margin-bottom:4px; }
+  .chapter-title { font-family:'Baloo 2',cursive; font-size:1.05rem; font-weight:700; color:var(--white); line-height:1.3; }
+  .btn-listen {
+    flex-shrink:0; display:inline-flex; align-items:center; gap:8px;
+    padding:10px 20px; border-radius:100px; border:none; cursor:pointer;
+    font-size:.82rem; font-weight:700; transition:all .2s; font-family:'Nunito',sans-serif;
+  }
+  .ch1 .btn-listen{background:rgba(59,130,246,.18);color:#7db8ff;border:1px solid rgba(59,130,246,.3);}
+  .ch2 .btn-listen{background:rgba(16,185,129,.15);color:#6ee7c0;border:1px solid rgba(16,185,129,.3);}
+  .ch3 .btn-listen{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3);}
+  .ch4 .btn-listen{background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.3);}
+  .ch5 .btn-listen{background:rgba(244,63,94,.15);color:#fda4af;border:1px solid rgba(244,63,94,.3);}
+  .btn-listen:hover{filter:brightness(1.15);transform:scale(1.04);}
+  .btn-listen.playing .icon-play{display:none;}
+  .btn-listen.playing::before{content:'⏸';margin-right:4px;}
+  .wave-bars{display:none;align-items:center;gap:2px;height:16px;}
+  .btn-listen.playing .wave-bars{display:flex;}
+  .wave-bar{width:3px;border-radius:2px;background:currentColor;animation:wave var(--dur,.5s) infinite alternate;}
+  @keyframes wave{from{height:3px;}to{height:14px;}}
+
+  .chapter-text {
+    font-size: 1rem; line-height: 1.95; color: rgba(255,255,255,.85);
+    padding: 20px 22px; background: rgba(0,0,0,.22);
+    border-radius: 16px; border: 1px solid rgba(255,255,255,.05);
+    position: relative; word-spacing: 2px;
+  }
+  .chapter-text .read-marker {
+    position:absolute; top:12px; right:14px;
+    font-size:.75rem; font-weight:700; color:var(--emerald);
+    opacity:0; transition:opacity .4s;
+  }
+  .chapter.done .chapter-text .read-marker { opacity:1; }
+
+  .w {
+    display: inline;
+    border-radius: 5px;
+    padding: 1px 2px;
+    cursor: pointer;
+    transition: background 0.08s;
+    white-space: normal;
+  }
+  .w:hover { background: rgba(245,158,11,0.22); }
+
+  .hl { color: var(--gold); font-weight: 700; }
+
+  .vocab-box { margin-top:16px; padding:16px 20px; background:rgba(255,255,255,.04); border-radius:14px; border:1px solid rgba(255,255,255,.07); }
+  .vocab-title { font-size:.72rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:10px; }
+  .vocab-pills { display:flex; flex-wrap:wrap; gap:8px; }
+  .vocab-pill {
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
+    border-radius:100px; padding:5px 14px; font-size:.8rem; font-weight:600;
+    color:rgba(255,255,255,.65); cursor:pointer; transition:all .18s;
+  }
+  .vocab-pill:hover{background:rgba(255,255,255,.14);color:var(--white);transform:scale(1.06);}
+
+  .motivation-card {
+    background: linear-gradient(135deg,#2a0a1c 0%,#1f0f30 60%,#0c1a4a 100%);
+    border: 1px solid rgba(244,63,94,.25); border-radius:28px;
+    padding:36px 32px; text-align:center; margin-top:40px;
+    position:relative; overflow:hidden; animation:fadeUp .7s ease .6s both;
+  }
+  .motivation-card .star-icon{font-size:2.8rem;margin-bottom:16px;display:block;animation:spin 6s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);}50%{transform:rotate(180deg);}to{transform:rotate(360deg);}}
+  .motivation-card h2{font-family:'Baloo 2',cursive;font-size:clamp(1.2rem,4vw,1.7rem);font-weight:800;color:var(--gold);margin-bottom:14px;}
+  .motivation-card p{color:rgba(255,255,255,.7);font-size:.97rem;line-height:1.7;max-width:520px;margin:0 auto;}
+  .challenge-box{margin-top:24px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.22);border-radius:16px;padding:18px 22px;}
+  .challenge-box p{font-size:.9rem;font-weight:600;color:rgba(255,255,255,.75);}
+  .challenge-box strong{color:var(--gold);}
+  .footer{text-align:center;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.3);font-size:.82rem;font-weight:600;}
+
+  .word-toast {
+    position:fixed; bottom:28px; left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:rgba(0,0,0,.9); backdrop-filter:blur(12px);
+    color:#fbbf24; padding:12px 28px; border-radius:100px;
+    font-size:.9rem; font-weight:600;
+    box-shadow:0 8px 32px rgba(0,0,0,.35);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    z-index:9999; white-space:nowrap;
+    border:1px solid rgba(251,191,36,.3); font-family:monospace;
+  }
+  .word-toast.show{transform:translateX(-50%) translateY(0);}
+  .word-toast small{color:#ccc;font-size:0.7rem;margin-left:8px;}
+
+  @media(max-width:600px){
+    .chapter-inner{padding:20px 18px 18px;}
+    .btn-listen span{display:none;}
+    .chapter-num{width:44px;height:44px;font-size:1.1rem;}
+    .word-toast{white-space:normal;max-width:90vw;text-align:center;}
+    .speed-controls{gap:6px;}
+    .speed-btn{padding:7px 14px;font-size:.75rem;}
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<div class="stars" id="stars"></div>
+<div class="shoot"></div>
+
+<div class="wrapper">
+  <header class="hero">
+    <div class="hero-badge">📘 Day 1 – Late Beginner | ✨ Click ANY word for Indonesian meaning</div>
+    <h1>The Magic<br><span class="accent">Red Backpack</span></h1>
+    <p class="hero-sub">A story about a boy named <strong style="color:var(--gold)">Aslan</strong> who finds a magical red backpack in the attic — and discovers that the greatest power in the world fits inside a small bag. 🎒✨</p>
+    <div class="hero-tags">
+      <span class="tag">⭐ Late Beginner</span>
+      <span class="tag">🎧 Listen &amp; Learn</span>
+      <span class="tag">📚 5 Chapters</span>
+      <span class="tag">🏆 Vocabulary</span>
+      <span class="tag">🔍 Click words for meaning</span>
+    </div>
+  </header>
+
+  <div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-label" id="progressLabel">0 of 5 chapters read</div>
+  </div>
+
+  <!-- ILLUSTRATION -->
+  <div class="illustration-card">
+    <svg class="illus-svg" viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg">
+      <!-- Attic background -->
+      <rect x="0" y="0" width="300" height="180" fill="#1a0a2e" opacity="0.01"/>
+      <!-- Wooden floor -->
+      <rect x="0" y="145" width="300" height="35" fill="#3b1f0a" rx="0"/>
+      <line x1="0" y1="155" x2="300" y2="155" stroke="#2a1506" stroke-width="1.5"/>
+      <line x1="60" y1="145" x2="60" y2="180" stroke="#2a1506" stroke-width="1"/>
+      <line x1="140" y1="145" x2="140" y2="180" stroke="#2a1506" stroke-width="1"/>
+      <line x1="220" y1="145" x2="220" y2="180" stroke="#2a1506" stroke-width="1"/>
+      <!-- Attic roof beams -->
+      <line x1="0" y1="60" x2="150" y2="10" stroke="#4a2f10" stroke-width="5" stroke-linecap="round"/>
+      <line x1="300" y1="60" x2="150" y2="10" stroke="#4a2f10" stroke-width="5" stroke-linecap="round"/>
+      <!-- Dusty boxes -->
+      <rect x="20" y="118" width="35" height="27" rx="3" fill="#5a3e1e"/>
+      <rect x="22" y="120" width="31" height="8" rx="2" fill="#6b4a22"/>
+      <rect x="215" y="110" width="40" height="35" rx="3" fill="#5a3e1e"/>
+      <rect x="217" y="112" width="36" height="8" rx="2" fill="#6b4a22"/>
+      <!-- THE MAGIC RED BACKPACK - main subject -->
+      <!-- Backpack body -->
+      <rect x="108" y="75" width="64" height="70" rx="14" fill="#dc2626"/>
+      <rect x="110" y="77" width="60" height="66" rx="12" fill="#ef4444"/>
+      <!-- Backpack top flap -->
+      <path d="M108 90 Q140 72 172 90" fill="#b91c1c" stroke="#991b1b" stroke-width="1"/>
+      <!-- Front pocket -->
+      <rect x="120" y="108" width="40" height="28" rx="8" fill="#b91c1c"/>
+      <rect x="122" y="110" width="36" height="24" rx="6" fill="#dc2626"/>
+      <!-- Zipper lines -->
+      <line x1="122" y1="119" x2="158" y2="119" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <circle cx="158" cy="119" r="2.5" fill="#fbbf24"/>
+      <!-- Main zipper -->
+      <path d="M112 92 Q140 86 168 92" stroke="#fbbf24" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>
+      <circle cx="168" cy="92" r="2.5" fill="#fbbf24"/>
+      <!-- Straps -->
+      <rect x="122" y="143" width="8" height="18" rx="4" fill="#991b1b"/>
+      <rect x="150" y="143" width="8" height="18" rx="4" fill="#991b1b"/>
+      <!-- MAGIC SPARKLES coming from backpack -->
+      <circle cx="140" cy="65" r="3" fill="#fbbf24" opacity=".9"/>
+      <circle cx="175" cy="70" r="2" fill="#fbbf24" opacity=".7"/>
+      <circle cx="185" cy="55" r="2.5" fill="#c4b5fd" opacity=".8"/>
+      <circle cx="100" cy="68" r="2" fill="#fbbf24" opacity=".6"/>
+      <circle cx="95" cy="52" r="1.5" fill="#6ee7c0" opacity=".8"/>
+      <!-- Stars sparkle around -->
+      <text x="82" y="75" fill="#fbbf24" font-size="10" opacity=".9">✨</text>
+      <text x="178" y="65" fill="#c4b5fd" font-size="11" opacity=".8">⭐</text>
+      <text x="155" y="52" fill="#fbbf24" font-size="9" opacity=".7">✨</text>
+      <!-- Small items floating out of backpack (magic!) -->
+      <!-- A tiny star -->
+      <polygon points="140,42 142,48 148,48 143,52 145,58 140,54 135,58 137,52 132,48 138,48" fill="#fbbf24" opacity=".8" transform="scale(0.5) translate(140,30)"/>
+      <!-- Moon -->
+      <path d="M168 38 Q175 32 182 38 Q175 44 168 38Z" fill="#fef3c7" opacity=".85"/>
+      <!-- Boy silhouette (Aslan, looking at backpack) -->
+      <circle cx="72" cy="105" r="7" fill="#1e3a5f"/>
+      <rect x="66" y="112" width="12" height="22" rx="4" fill="#1e3a5f"/>
+      <!-- arm pointing at backpack -->
+      <line x1="78" y1="118" x2="100" y2="115" stroke="#1e3a5f" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="63" y1="118" x2="57" y2="128" stroke="#1e3a5f" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="68" y1="134" x2="66" y2="145" stroke="#1e3a5f" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="74" y1="134" x2="76" y2="145" stroke="#1e3a5f" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- Wide eyes -->
+      <circle cx="70" cy="103" r="2.5" fill="white"/>
+      <circle cx="75" cy="103" r="2.5" fill="white"/>
+    </svg>
+    <p class="illus-quote">The <strong>red backpack</strong> glowed with a warm golden light — Aslan knew this was no ordinary bag. 🎒⭐</p>
+  </div>
+
+  <!-- SPEED CONTROLS -->
+  <div class="speed-controls">
+    <span class="speed-label">🎚️ Speed:</span>
+    <button class="speed-btn" data-rate="0.65">🐢 Slow</button>
+    <button class="speed-btn active" data-rate="0.88">🚶 Normal</button>
+    <button class="speed-btn" data-rate="1.15">🚀 Fast</button>
+  </div>
+
+  <div class="master-controls">
+    <button class="btn-master btn-play-all" id="playAllBtn">🎧 <span>Listen to Whole Story</span></button>
+    <button class="btn-master btn-stop" id="stopBtn">⏹ <span>Stop Reading</span></button>
+  </div>
+
+  <div id="chapters">
+
+    <!-- CHAPTER 1 -->
+    <div class="chapter ch1" id="ch1">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">01</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter One</div>
+            <div class="chapter-title">🎒 The Magic Red Backpack</div>
+          </div>
+          <button class="btn-listen" data-ch="1"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.5s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text1">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('One')">One</span> <span class="w" onclick="showMeaning('rainy')">rainy</span> <span class="w" onclick="showMeaning('Saturday')">Saturday</span>, <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('bored')">bored</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('had')">had</span> <span class="w" onclick="showMeaning('nothing')">nothing</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('do')">do</span>. <span class="w" onclick="showMeaning('His')">His</span> <span class="w" onclick="showMeaning('mother')">mother</span> <span class="w" onclick="showMeaning('said')">said</span>, <span class="w" onclick="showMeaning('Go')">"Go</span> <span class="w" onclick="showMeaning('explore')">explore</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('attic')">attic</span>. <span class="w" onclick="showMeaning('Maybe')">Maybe</span> <span class="w" onclick="showMeaning('you')">you</span> <span class="w" onclick="showMeaning('will')">will</span> <span class="w" onclick="showMeaning('find')">find</span> <span class="w" onclick="showMeaning('something')">something</span> <span class="w" onclick="showMeaning('interesting')">interesting</span>!" <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('climbed')">climbed</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('old')">old</span> <span class="w" onclick="showMeaning('wooden')">wooden</span> <span class="w" onclick="showMeaning('stairs')">stairs</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('attic')">attic</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('dark')">dark</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('dusty')">dusty</span>. <span class="w" onclick="showMeaning('There')">There</span> <span class="w" onclick="showMeaning('were')">were</span> <span class="w" onclick="showMeaning('old')">old</span> <span class="w" onclick="showMeaning('boxes')">boxes</span>, <span class="w" onclick="showMeaning('broken')">broken</span> <span class="w" onclick="showMeaning('chairs')">chairs</span>, <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('forgotten')">forgotten</span> <span class="w" onclick="showMeaning('toys')">toys</span>. <span class="w" onclick="showMeaning('But')">But</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('corner')">corner</span>, <span class="w" onclick="showMeaning('something')">something</span> <span class="w" onclick="showMeaning('glowed')">glowed</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('bright')">bright</span> <span class="w" onclick="showMeaning('red')">red</span> <span class="w" onclick="showMeaning('backpack')">backpack</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('looked')">looked</span> <span class="w" onclick="showMeaning('brand')">brand</span> <span class="w" onclick="showMeaning('new')">new</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('walked')">walked</span> <span class="w" onclick="showMeaning('closer')">closer</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('backpack')">backpack</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('warm')">warm</span>, <span class="w" onclick="showMeaning('as')">as</span> <span class="w" onclick="showMeaning('if')">if</span> <span class="w" onclick="showMeaning('it')">it</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('alive')">alive</span>. <span class="w" onclick="showMeaning('A')">A</span> <span class="w" onclick="showMeaning('small')">small</span> <span class="w" onclick="showMeaning('golden')">golden</span> <span class="w" onclick="showMeaning('tag')">tag</span> <span class="w" onclick="showMeaning('said')">said</span>: <span class="hl">"For the brave explorer."</span> <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('smiled')">smiled</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('put')">put</span> <span class="w" onclick="showMeaning('it')">it</span> <span class="w" onclick="showMeaning('on')">on</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('fitted')">fitted</span> <span class="w" onclick="showMeaning('perfectly')">perfectly</span>.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="attic">attic</span>
+            <span class="vocab-pill" data-word="dusty">dusty</span>
+            <span class="vocab-pill" data-word="glowed">glowed</span>
+            <span class="vocab-pill" data-word="backpack">backpack</span>
+            <span class="vocab-pill" data-word="explore">explore</span>
+            <span class="vocab-pill" data-word="brave">brave</span>
+            <span class="vocab-pill" data-word="perfectly">perfectly</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 2 -->
+    <div class="chapter ch2" id="ch2">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">02</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Two</div>
+            <div class="chapter-title">⭐ The First Wish</div>
+          </div>
+          <button class="btn-listen" data-ch="2"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text2">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('sat')">sat</span> <span class="w" onclick="showMeaning('on')">on</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('dusty')">dusty</span> <span class="w" onclick="showMeaning('attic')">attic</span> <span class="w" onclick="showMeaning('floor')">floor</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('opened')">opened</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('backpack')">backpack</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('empty')">empty</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('thought')">thought</span> <span class="w" onclick="showMeaning('for')">for</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('moment')">moment</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('whispered')">whispered</span>, <span class="w" onclick="showMeaning('I')">"I</span> <span class="w" onclick="showMeaning('wish')">wish</span> <span class="w" onclick="showMeaning('I')">I</span> <span class="w" onclick="showMeaning('had')">had</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('telescope')">telescope</span>." <span class="w" onclick="showMeaning('Suddenly')">Suddenly</span>, <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('backpack')">backpack</span> <span class="w" onclick="showMeaning('shook')">shook</span>! <span class="w" onclick="showMeaning('A')">A</span> <span class="w" onclick="showMeaning('warm')">warm</span> <span class="w" onclick="showMeaning('golden')">golden</span> <span class="w" onclick="showMeaning('light')">light</span> <span class="w" onclick="showMeaning('flashed')">flashed</span> <span class="w" onclick="showMeaning('inside')">inside</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('reached')">reached</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('pulled')">pulled</span> <span class="w" onclick="showMeaning('out')">out</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('beautiful')">beautiful</span> <span class="w" onclick="showMeaning('brass')">brass</span> <span class="w" onclick="showMeaning('telescope')">telescope</span>. <span class="w" onclick="showMeaning('His')">His</span> <span class="w" onclick="showMeaning('eyes')">eyes</span> <span class="w" onclick="showMeaning('went')">went</span> <span class="w" onclick="showMeaning('wide')">wide</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('ran')">ran</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('small')">small</span> <span class="w" onclick="showMeaning('attic')">attic</span> <span class="w" onclick="showMeaning('window')">window</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('looked')">looked</span> <span class="w" onclick="showMeaning('through')">through</span> <span class="w" onclick="showMeaning('it')">it</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('could')">could</span> <span class="w" onclick="showMeaning('see')">see</span> <span class="w" onclick="showMeaning('faraway')">faraway</span> <span class="w" onclick="showMeaning('mountains')">mountains</span>, <span class="w" onclick="showMeaning('green')">green</span> <span class="w" onclick="showMeaning('forests')">forests</span>, <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('even')">even</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('sparkling')">sparkling</span> <span class="w" onclick="showMeaning('blue')">blue</span> <span class="w" onclick="showMeaning('ocean')">ocean</span>. <span class="w" onclick="showMeaning('Then')">Then</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('backpack')">backpack</span> <span class="w" onclick="showMeaning('began')">began</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('float')">float</span>! <span class="hl">It was pulling Aslan into the sky.</span>
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="telescope">telescope</span>
+            <span class="vocab-pill" data-word="whispered">whispered</span>
+            <span class="vocab-pill" data-word="shook">shook</span>
+            <span class="vocab-pill" data-word="flashed">flashed</span>
+            <span class="vocab-pill" data-word="brass">brass</span>
+            <span class="vocab-pill" data-word="sparkling">sparkling</span>
+            <span class="vocab-pill" data-word="float">float</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 3 -->
+    <div class="chapter ch3" id="ch3">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">03</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Three</div>
+            <div class="chapter-title">🏙️ Flying Over The City</div>
+          </div>
+          <button class="btn-listen" data-ch="3"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text3">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('backpack')">backpack</span> <span class="w" onclick="showMeaning('lifted')">lifted</span> <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('gently')">gently</span> <span class="w" onclick="showMeaning('into')">into</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('air')">air</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('flew')">flew</span> <span class="w" onclick="showMeaning('out')">out</span> <span class="w" onclick="showMeaning('through')">through</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('attic')">attic</span> <span class="w" onclick="showMeaning('window')">window</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('up')">up</span> <span class="w" onclick="showMeaning('into')">into</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('clouds')">clouds</span>. <span class="w" onclick="showMeaning('Below')">Below</span> <span class="w" onclick="showMeaning('him')">him</span>, <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('city')">city</span> <span class="w" onclick="showMeaning('looked')">looked</span> <span class="w" onclick="showMeaning('tiny')">tiny</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('houses')">houses</span> <span class="w" onclick="showMeaning('were')">were</span> <span class="w" onclick="showMeaning('like')">like</span> <span class="w" onclick="showMeaning('toy')">toy</span> <span class="w" onclick="showMeaning('blocks')">blocks</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('cars')">cars</span> <span class="w" onclick="showMeaning('were')">were</span> <span class="w" onclick="showMeaning('like')">like</span> <span class="w" onclick="showMeaning('little')">little</span> <span class="w" onclick="showMeaning('ants')">ants</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('laughed')">laughed</span> <span class="w" onclick="showMeaning('with')">with</span> <span class="w" onclick="showMeaning('joy')">joy</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('wind')">wind</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('cool')">cool</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('fresh')">fresh</span>. <span class="w" onclick="showMeaning('White')">White</span> <span class="w" onclick="showMeaning('clouds')">clouds</span> <span class="w" onclick="showMeaning('floated')">floated</span> <span class="w" onclick="showMeaning('past')">past</span> <span class="w" onclick="showMeaning('him')">him</span> <span class="w" onclick="showMeaning('like')">like</span> <span class="w" onclick="showMeaning('giant')">giant</span> <span class="w" onclick="showMeaning('pillows')">pillows</span>. <span class="w" onclick="showMeaning('A')">A</span> <span class="w" onclick="showMeaning('friendly')">friendly</span> <span class="w" onclick="showMeaning('eagle')">eagle</span> <span class="w" onclick="showMeaning('flew')">flew</span> <span class="w" onclick="showMeaning('beside')">beside</span> <span class="w" onclick="showMeaning('him')">him</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('nodded')">nodded</span> <span class="w" onclick="showMeaning('its')">its</span> <span class="w" onclick="showMeaning('head')">head</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('felt')">felt</span> <span class="w" onclick="showMeaning('completely')">completely</span> <span class="w" onclick="showMeaning('free')">free</span>. <span class="w" onclick="showMeaning('After')">After</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('while')">while</span>, <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('backpack')">backpack</span> <span class="w" onclick="showMeaning('began')">began</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('descend')">descend</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('carried')">carried</span> <span class="w" onclick="showMeaning('him')">him</span> <span class="w" onclick="showMeaning('gently')">gently</span> <span class="w" onclick="showMeaning('down')">down</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('beautiful')">beautiful</span> <span class="w" onclick="showMeaning('beach')">beach</span>. <span class="hl">The adventure was just beginning!</span>
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="clouds">clouds</span>
+            <span class="vocab-pill" data-word="gently">gently</span>
+            <span class="vocab-pill" data-word="pillows">pillows</span>
+            <span class="vocab-pill" data-word="eagle">eagle</span>
+            <span class="vocab-pill" data-word="descended">descended</span>
+            <span class="vocab-pill" data-word="joy">joy</span>
+            <span class="vocab-pill" data-word="free">free</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 4 -->
+    <div class="chapter ch4" id="ch4">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">04</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Four</div>
+            <div class="chapter-title">🏝️ The Hidden Treasure Island</div>
+          </div>
+          <button class="btn-listen" data-ch="4"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.15s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text4">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('beach')">beach</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('beautiful')">beautiful</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('sand')">sand</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('white')">white</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('warm')">warm</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('sea')">sea</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('bright')">bright</span> <span class="w" onclick="showMeaning('turquoise')">turquoise</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('noticed')">noticed</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('strange')">strange</span> <span class="w" onclick="showMeaning('map')">map</span> <span class="w" onclick="showMeaning('drawn')">drawn</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('sand')">sand</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('whispered')">whispered</span>, <span class="w" onclick="showMeaning('I')">"I</span> <span class="w" onclick="showMeaning('wish')">wish</span> <span class="w" onclick="showMeaning('I')">I</span> <span class="w" onclick="showMeaning('had')">had</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('shovel')">shovel</span>." <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('backpack')">backpack</span> <span class="w" onclick="showMeaning('glowed')">glowed</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('shiny')">shiny</span> <span class="w" onclick="showMeaning('golden')">golden</span> <span class="w" onclick="showMeaning('shovel')">shovel</span> <span class="w" onclick="showMeaning('appeared')">appeared</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('dug')">dug</span> <span class="w" onclick="showMeaning('deep')">deep</span> <span class="w" onclick="showMeaning('into')">into</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('sand')">sand</span>. <span class="w" onclick="showMeaning('After')">After</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('few')">few</span> <span class="w" onclick="showMeaning('minutes')">minutes</span>, <span class="w" onclick="showMeaning('he')">he</span> <span class="w" onclick="showMeaning('found')">found</span> <span class="w" onclick="showMeaning('a')">a</span> <span class="w" onclick="showMeaning('wooden')">wooden</span> <span class="w" onclick="showMeaning('chest')">chest</span>. <span class="w" onclick="showMeaning('Inside')">Inside</span> <span class="w" onclick="showMeaning('were')">were</span> <span class="w" onclick="showMeaning('hundreds')">hundreds</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('colorful')">colorful</span> <span class="w" onclick="showMeaning('seeds')">seeds</span>. <span class="w" onclick="showMeaning('A')">A</span> <span class="w" onclick="showMeaning('note')">note</span> <span class="w" onclick="showMeaning('inside')">inside</span> <span class="w" onclick="showMeaning('said')">said</span>: <span class="hl">"Plant these and share the fruits with everyone."</span> <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('carefully')">carefully</span> <span class="w" onclick="showMeaning('placed')">placed</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('seeds')">seeds</span> <span class="w" onclick="showMeaning('into')">into</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('red')">red</span> <span class="w" onclick="showMeaning('backpack')">backpack</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('knew')">knew</span> <span class="w" onclick="showMeaning('exactly')">exactly</span> <span class="w" onclick="showMeaning('what')">what</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('do')">do</span> <span class="w" onclick="showMeaning('with')">with</span> <span class="w" onclick="showMeaning('them')">them</span>.
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="turquoise">turquoise</span>
+            <span class="vocab-pill" data-word="map">map</span>
+            <span class="vocab-pill" data-word="shovel">shovel</span>
+            <span class="vocab-pill" data-word="chest">chest</span>
+            <span class="vocab-pill" data-word="seeds">seeds</span>
+            <span class="vocab-pill" data-word="appeared">appeared</span>
+            <span class="vocab-pill" data-word="treasure">treasure</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 5 -->
+    <div class="chapter ch5" id="ch5">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">05</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Five</div>
+            <div class="chapter-title">🌟 The Real Magic</div>
+          </div>
+          <button class="btn-listen" data-ch="5"><span class="icon-play">🔊</span> <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text5">
+          <span class="read-marker">✅ Read!</span>
+          <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('landed')">landed</span> <span class="w" onclick="showMeaning('back')">back</span> <span class="w" onclick="showMeaning('home')">home</span> <span class="w" onclick="showMeaning('just')">just</span> <span class="w" onclick="showMeaning('before')">before</span> <span class="w" onclick="showMeaning('dinner')">dinner</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('ran')">ran</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('garden')">garden</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('planted')">planted</span> <span class="w" onclick="showMeaning('all')">all</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('seeds')">seeds</span> <span class="w" onclick="showMeaning('from')">from</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('chest')">chest</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('next')">next</span> <span class="w" onclick="showMeaning('morning')">morning</span>, <span class="w" onclick="showMeaning('something')">something</span> <span class="w" onclick="showMeaning('incredible')">incredible</span> <span class="w" onclick="showMeaning('happened')">happened</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('garden')">garden</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('full')">full</span> <span class="w" onclick="showMeaning('of')">of</span> <span class="w" onclick="showMeaning('colorful')">colorful</span> <span class="w" onclick="showMeaning('flowers')">flowers</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('fruit')">fruit</span> <span class="w" onclick="showMeaning('trees')">trees</span>. <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('invited')">invited</span> <span class="w" onclick="showMeaning('all')">all</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('neighbors')">neighbors</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('share')">share</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('fruits')">fruits</span>. <span class="w" onclick="showMeaning('Everyone')">Everyone</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('happy')">happy</span>. <span class="w" onclick="showMeaning('That')">That</span> <span class="w" onclick="showMeaning('evening')">evening</span>, <span class="w" onclick="showMeaning('Aslan')">Aslan</span> <span class="w" onclick="showMeaning('sat')">sat</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('garden')">garden</span> <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('held')">held</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('red')">red</span> <span class="w" onclick="showMeaning('backpack')">backpack</span>. <span class="w" onclick="showMeaning('He')">He</span> <span class="w" onclick="showMeaning('understood')">understood</span> <span class="w" onclick="showMeaning('something')">something</span> <span class="w" onclick="showMeaning('important')">important</span>. <span class="w" onclick="showMeaning('The')">The</span> <span class="w" onclick="showMeaning('real')">real</span> <span class="w" onclick="showMeaning('magic')">magic</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('not')">not</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('the')">the</span> <span class="w" onclick="showMeaning('backpack')">backpack</span>. <span class="w" onclick="showMeaning('It')">It</span> <span class="w" onclick="showMeaning('was')">was</span> <span class="w" onclick="showMeaning('in')">in</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('courage')">courage</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('explore')">explore</span>, <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('kindness')">kindness</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('share')">share</span>, <span class="w" onclick="showMeaning('and')">and</span> <span class="w" onclick="showMeaning('his')">his</span> <span class="w" onclick="showMeaning('imagination')">imagination</span> <span class="w" onclick="showMeaning('to')">to</span> <span class="w" onclick="showMeaning('dream')">dream</span>. <span class="hl">Those things could never fit in any backpack — they lived inside Aslan, forever.</span>
+        </div>
+        <div class="vocab-box">
+          <div class="vocab-title">🔑 Key Words — tap to hear</div>
+          <div class="vocab-pills">
+            <span class="vocab-pill" data-word="planted">planted</span>
+            <span class="vocab-pill" data-word="neighbors">neighbors</span>
+            <span class="vocab-pill" data-word="courage">courage</span>
+            <span class="vocab-pill" data-word="kindness">kindness</span>
+            <span class="vocab-pill" data-word="imagination">imagination</span>
+            <span class="vocab-pill" data-word="forever">forever</span>
+            <span class="vocab-pill" data-word="incredible">incredible</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end #chapters -->
+
+  <div class="motivation-card">
+    <span class="star-icon">🎒</span>
+    <h2>Amazing work, Aslan! 🦁⭐</h2>
+    <p>Aslan learned that real magic comes from inside you — your <strong style="color:var(--gold)">courage</strong>, your <strong style="color:var(--gold)">kindness</strong>, and your <strong style="color:var(--gold)">imagination</strong>. You are already a brave explorer, just like Aslan! Every new English word you learn is a step into a bigger, more exciting world. Keep going — your adventure has just begun!</p>
+    <div class="challenge-box"><p>💪 <strong>Today's Challenge:</strong> Think about your own magic backpack. If it could give you anything, what would you wish for? Write or say three wishes in English! You are incredible! 🌟</p></div>
+  </div>
+
+  <footer class="footer">Made with ❤️ for <span style="color:var(--amber)">Aslan</span> • Day 1 complete • Click any word to see Indonesian meaning! 🖱️</footer>
+</div>
+
+<div id="wordToast" class="word-toast">📖</div>
+
+<script>
+// ===== STARS =====
+(function(){
+  const wrap = document.getElementById('stars');
+  for(let i=0;i<90;i++){
+    const s=document.createElement('div'); s.className='star';
+    const size=Math.random()*2.5+0.8;
+    s.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--delay:-${(Math.random()*5).toFixed(1)}s;`;
+    wrap.appendChild(s);
+  }
+})();
+
+// ===== DICTIONARY =====
+const dictionary = {
+  // Story-specific & common
+  "one":"satu / suatu","rainy":"hujan (sedang hujan)","saturday":"hari Sabtu","aslan":"Aslan (nama tokoh)","was":"adalah / sedang (masa lalu)","bored":"bosan","he":"dia (laki-laki)","had":"punya / telah (masa lalu)","nothing":"tidak ada apa-apa","to":"untuk","do":"melakukan","his":"miliknya (laki-laki)","mother":"ibu","said":"berkata (masa lalu say)","go":"pergi","explore":"menjelajahi","the":"itu / sang","attic":"loteng","maybe":"mungkin","you":"kamu","will":"akan","find":"menemukan","something":"sesuatu","interesting":"menarik","aslan":"Aslan (nama)","climbed":"memanjat / menaiki (masa lalu)","old":"tua / lama","wooden":"terbuat dari kayu","stairs":"tangga","dark":"gelap","dusty":"berdebu","there":"di sana","were":"adalah (jamak masa lalu)","boxes":"kotak-kotak","broken":"rusak","chairs":"kursi-kursi","forgotten":"terlupakan","toys":"mainan-mainan","but":"tetapi","in":"di dalam","corner":"sudut","glowed":"bersinar (masa lalu glow)","it":"itu","bright":"cerah / terang","red":"merah","backpack":"tas ransel","looked":"terlihat / melihat (masa lalu)","brand":"baru sekali (brand new)","new":"baru","walked":"berjalan (masa lalu)","closer":"lebih dekat","warm":"hangat","as":"seperti","if":"jika","alive":"hidup","small":"kecil","golden":"berwarna emas","tag":"label / label kecil","smiled":"tersenyum (masa lalu)","put":"memakai / menaruh","on":"di atas / memakai","fitted":"pas / cocok (masa lalu)","perfectly":"dengan sempurna",
+  "sat":"duduk (masa lalu sit)","floor":"lantai","opened":"membuka (masa lalu)","empty":"kosong","thought":"berpikir (masa lalu think)","moment":"sebentar / momen","whispered":"berbisik (masa lalu)","wish":"harap / inginkan","telescope":"teleskop","suddenly":"tiba-tiba","shook":"berguncang (masa lalu shake)","light":"cahaya","flashed":"berkilat (masa lalu flash)","inside":"di dalam","reached":"meraih (masa lalu)","pulled":"menarik (masa lalu)","out":"keluar","beautiful":"indah","brass":"kuningan (logam)","eyes":"mata","went":"pergi / menjadi (masa lalu go)","wide":"lebar","ran":"berlari (masa lalu run)","window":"jendela","looked":"melihat","through":"melalui","could":"bisa (masa lalu can)","see":"melihat","faraway":"jauh","mountains":"gunung-gunung","green":"hijau","forests":"hutan-hutan","even":"bahkan","sparkling":"berkilauan","blue":"biru","ocean":"lautan","then":"kemudian","began":"mulai (masa lalu begin)","float":"melayang","began":"mulai (masa lalu begin)",
+  "lifted":"mengangkat (masa lalu lift)","gently":"dengan lembut","into":"ke dalam","air":"udara","flew":"terbang (masa lalu fly)","clouds":"awan-awan","below":"di bawah","him":"dia (objek laki-laki)","city":"kota","tiny":"sangat kecil","houses":"rumah-rumah","like":"seperti","toy":"mainan","blocks":"balok-balok","cars":"mobil-mobil","little":"kecil","ants":"semut-semut","laughed":"tertawa (masa lalu)","with":"dengan","joy":"kegembiraan","wind":"angin","cool":"sejuk","fresh":"segar","white":"putih","floated":"melayang (masa lalu)","past":"melewati","giant":"raksasa","pillows":"bantal-bantal","friendly":"ramah","eagle":"elang","beside":"di sebelah","nodded":"mengangguk (masa lalu)","head":"kepala","felt":"merasa (masa lalu feel)","completely":"sepenuhnya","free":"bebas","after":"setelah","while":"sebentar / ketika","descend":"turun / mendarat","carried":"membawa (masa lalu carry)","down":"ke bawah","beach":"pantai",
+  "sand":"pasir","turquoise":"biru kehijauan (warna laut)","sea":"laut","noticed":"memperhatikan (masa lalu notice)","strange":"aneh","map":"peta","drawn":"digambar (masa lalu draw)","shovel":"sekop","shiny":"mengkilap","appeared":"muncul (masa lalu appear)","dug":"menggali (masa lalu dig)","deep":"dalam","few":"beberapa","minutes":"menit-menit","found":"menemukan (masa lalu find)","chest":"peti / dada","hundreds":"ratusan","of":"dari","colorful":"berwarna-warni","seeds":"biji-bijian","note":"catatan","plant":"tanam","share":"bagikan","fruits":"buah-buahan","everyone":"semua orang","carefully":"dengan hati-hati","placed":"meletakkan (masa lalu place)","knew":"mengetahui (masa lalu know)","exactly":"persis / tepat","what":"apa","them":"mereka / itu",
+  "landed":"mendarat (masa lalu)","back":"kembali","home":"rumah","just":"tepat / baru saja","before":"sebelum","dinner":"makan malam","garden":"kebun","planted":"menanam (masa lalu)","all":"semua","morning":"pagi","incredible":"luar biasa","happened":"terjadi (masa lalu happen)","full":"penuh","flowers":"bunga-bunga","fruit":"buah","trees":"pohon-pohon","invited":"mengundang (masa lalu)","neighbors":"tetangga-tetangga","everyone":"semua orang","happy":"senang","evening":"sore / malam","held":"memegang (masa lalu hold)","understood":"memahami (masa lalu understand)","important":"penting","real":"nyata / sebenarnya","magic":"keajaiban / sihir","not":"tidak","courage":"keberanian","kindness":"kebaikan hati","imagination":"imajinasi","dream":"bermimpi / impian","forever":"selamanya","never":"tidak pernah",
+  // General common words
+  "a":"sebuah / seorang","and":"dan","is":"adalah","are":"adalah (jamak)","i":"saya / aku","this":"ini","that":"itu / yang","they":"mereka","we":"kami / kita","from":"dari","for":"untuk","at":"pada","an":"sebuah","be":"menjadi","have":"mempunyai","not":"tidak","with":"dengan","by":"oleh / dengan","her":"dia (perempuan) / miliknya","she":"dia (perempuan)","or":"atau","was":"adalah (masa lalu)","its":"miliknya (benda)","can":"bisa","more":"lebih","about":"tentang","up":"ke atas","your":"milikmu","when":"ketika","my":"milikku","our":"milik kami","also":"juga","some":"beberapa","so":"jadi / sangat","these":"ini (jamak)","time":"waktu","people":"orang-orang","two":"dua","way":"cara / jalan","day":"hari","use":"gunakan","very":"sangat","look":"lihat","come":"datang","their":"milik mereka","no":"tidak","make":"membuat","know":"mengetahui","take":"mengambil","great":"luar biasa / besar","think":"berpikir","say":"berkata","help":"tolong / membantu","again":"lagi","world":"dunia","over":"di atas / selesai","year":"tahun","right":"benar / kanan","here":"di sini","need":"butuh","long":"panjang","place":"tempat","large":"besar","big":"besar","give":"memberi","most":"paling","tell":"memberitahu","hand":"tangan","high":"tinggi","every":"setiap","next":"berikutnya","never":"tidak pernah","last":"terakhir","those":"itu (jamak)","between":"di antara","own":"sendiri","under":"di bawah","might":"mungkin","such":"seperti itu","well":"dengan baik / sumur","open":"buka","seem":"tampak","together":"bersama","always":"selalu","stop":"berhenti","keep":"jaga / terus","children":"anak-anak","love":"cinta","heart":"hati","story":"cerita","first":"pertama","second":"kedua","page":"halaman","real":"nyata","done":"selesai"
+};
+
+function showMeaning(word) {
+  let clean = word.toLowerCase().replace(/[.,!?;:()'"«»""''—–\-]/g,'');
+  let meaning = dictionary[clean];
+  if(!meaning){
+    if(clean.endsWith('s') && dictionary[clean.slice(0,-1)]) meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ed') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('ed') && dictionary[clean.slice(0,-1)]) meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ing') && dictionary[clean.slice(0,-3)]) meaning=dictionary[clean.slice(0,-3)];
+    else if(clean.endsWith('ly') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('er') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else meaning="❓ arti belum tersedia, coba cek kamus";
+  }
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `📖 <strong>${clean}</strong> → ${meaning} <small>🇮🇩</small>`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>toast.classList.remove('show'), 2800);
+}
+
+// ===== SPEED =====
+let speechRate = 0.88;
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    speechRate = parseFloat(btn.dataset.rate);
+  });
+});
+
+// ===== SPEECH =====
+const stories = {
+  1: "One rainy Saturday, Aslan was bored. He had nothing to do. His mother said, Go explore the attic. Maybe you will find something interesting! Aslan climbed the old wooden stairs. The attic was dark and dusty. There were old boxes, broken chairs, and forgotten toys. But in the corner, something glowed. It was a bright red backpack. It looked brand new. Aslan walked closer. The backpack was warm, as if it was alive. A small golden tag said: For the brave explorer. Aslan smiled and put it on. It fitted perfectly.",
+  2: "Aslan sat on the dusty attic floor and opened the backpack. It was empty. He thought for a moment and whispered, I wish I had a telescope. Suddenly, the backpack shook! A warm golden light flashed inside. Aslan reached in and pulled out a beautiful brass telescope. His eyes went wide. He ran to the small attic window and looked through it. He could see faraway mountains, green forests, and even a sparkling blue ocean. Then the backpack began to float! It was pulling Aslan into the sky.",
+  3: "The backpack lifted Aslan gently into the air. He flew out through the attic window and up into the clouds. Below him, the city looked tiny. The houses were like toy blocks. The cars were like little ants. Aslan laughed with joy. The wind was cool and fresh. White clouds floated past him like giant pillows. A friendly eagle flew beside him and nodded its head. Aslan felt completely free. After a while, the backpack began to descend. It carried him gently down to a beautiful beach. The adventure was just beginning!",
+  4: "The beach was beautiful. The sand was white and warm. The sea was bright turquoise. Aslan noticed a strange map drawn in the sand. He whispered, I wish I had a shovel. The backpack glowed and a shiny golden shovel appeared. Aslan dug deep into the sand. After a few minutes, he found a wooden chest. Inside were hundreds of colorful seeds. A note inside said: Plant these and share the fruits with everyone. Aslan carefully placed the seeds into the red backpack. He knew exactly what to do with them.",
+  5: "Aslan landed back home just before dinner. He ran to the garden and planted all the seeds from the chest. The next morning, something incredible happened. The garden was full of colorful flowers and fruit trees. Aslan invited all his neighbors to share the fruits. Everyone was happy. That evening, Aslan sat in the garden and held the red backpack. He understood something important. The real magic was not in the backpack. It was in his courage to explore, his kindness to share, and his imagination to dream. Those things could never fit in any backpack. They lived inside Aslan, forever."
+};
+
+let currentUtt = null;
+let isPlayingAll = false;
+let readChapters = new Set();
+
+function pickVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v=>v.lang==='en-US'&&(v.name.includes('Google')||v.name.includes('Samantha')||v.name.includes('Microsoft')))
+    || voices.find(v=>v.lang.startsWith('en')) || null;
+}
+
+function stopAll() {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  currentUtt = null;
+  isPlayingAll = false;
+  document.querySelectorAll('.btn-listen.playing').forEach(b=>b.classList.remove('playing'));
+}
+
+function speak(chId, btn, onEnd) {
+  if(!window.speechSynthesis) return;
+  stopAll();
+  const text = stories[chId];
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'en-US'; utt.rate = speechRate; utt.pitch = 1.05;
+  const v = pickVoice(); if(v) utt.voice = v;
+  if(btn) btn.classList.add('playing');
+  utt.onend = () => { if(btn) btn.classList.remove('playing'); currentUtt=null; if(onEnd) onEnd(); };
+  utt.onerror = () => { if(btn) btn.classList.remove('playing'); currentUtt=null; };
+  currentUtt = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+// Listen buttons
+document.querySelectorAll('.btn-listen').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ch = btn.getAttribute('data-ch');
+    if(btn.classList.contains('playing')){ stopAll(); return; }
+    isPlayingAll = false;
+    speak(ch, btn, () => {
+      if(!readChapters.has(ch)){
+        readChapters.add(ch);
+        document.getElementById('ch'+ch).classList.add('done');
+        updateProgress();
+      }
+    });
+  });
+});
+
+// Play All
+document.getElementById('playAllBtn').addEventListener('click', () => {
+  stopAll(); isPlayingAll = true;
+  let keys=['1','2','3','4','5'], idx=0;
+  function next(){
+    if(!isPlayingAll || idx>=keys.length){ isPlayingAll=false; return; }
+    const k=keys[idx];
+    const btn=document.querySelector(`[data-ch="${k}"]`);
+    document.getElementById('ch'+k).scrollIntoView({behavior:'smooth',block:'center'});
+    speak(k, btn, ()=>{
+      if(!readChapters.has(k)){
+        readChapters.add(k);
+        document.getElementById('ch'+k).classList.add('done');
+        updateProgress();
+      }
+      idx++;
+      setTimeout(next, 700);
+    });
+  }
+  next();
+});
+
+document.getElementById('stopBtn').addEventListener('click', stopAll);
+
+function updateProgress() {
+  const pct = (readChapters.size/5)*100;
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = readChapters.size+' of 5 chapters read'+(readChapters.size===5?' — Great job! 🏆':'');
+}
+
+// Vocab pills
+document.querySelectorAll('.vocab-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const word = pill.getAttribute('data-word');
+    showMeaning(word);
+    if(window.speechSynthesis){
+      const utt = new SpeechSynthesisUtterance(word);
+      utt.lang='en-US'; utt.rate=0.8;
+      const v=pickVoice(); if(v) utt.voice=v;
+      window.speechSynthesis.speak(utt);
+    }
+  });
+});
+
+if(window.speechSynthesis) window.speechSynthesis.getVoices();
+window.addEventListener('beforeunload',()=>{ if(window.speechSynthesis) window.speechSynthesis.cancel(); });
+</script>
+</body>
+</html>

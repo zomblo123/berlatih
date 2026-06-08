@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 24: Data Mengalir Seperti Air di Dalam Komputer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:   #0d9488;
+    --cyan:   #06b6d4;
+    --sky:    #38bdf8;
+    --mint:   #34d399;
+    --blue:   #3b82f6;
+    --yellow: #fbbf24;
+    --orange: #f97316;
+    --pink:   #ec4899;
+    --bg:     #ecfeff;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    font-family:'Nunito',sans-serif;
+    background:var(--bg);
+    background-image:
+      radial-gradient(circle at 8% 15%,  rgba(6,182,212,.14) 0%,transparent 45%),
+      radial-gradient(circle at 90% 68%, rgba(52,211,153,.12) 0%,transparent 42%),
+      radial-gradient(circle at 50% 96%, rgba(56,189,248,.11) 0%,transparent 40%);
+    min-height:100vh; overflow-x:hidden;
+  }
+  h1,h2,h3{ font-family:'Fredoka One',cursive; }
+
+  /* ── Header ── */
+  .header-grad{
+    background:linear-gradient(135deg,#134e4a 0%,#0f766e 30%,#0d9488 60%,#06b6d4 85%,#67e8f9 100%);
+    position:relative; overflow:hidden;
+  }
+  .header-grad::after{
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,.03) 20px,rgba(255,255,255,.03) 40px);
+  }
+
+  /* ── Bubble ── */
+  .bubble{
+    position:relative; background:white;
+    border-radius:22px; border:3px solid #06b6d4;
+    box-shadow:4px 4px 0 #06b6d4;
+  }
+  .bubble::before{ content:''; position:absolute; bottom:-22px; left:30px; border:12px solid transparent; border-top-color:#06b6d4; }
+  .bubble::after { content:''; position:absolute; bottom:-15px; left:33px; border:10px solid transparent; border-top-color:white; }
+
+  /* ── Aslan bounce ── */
+  @keyframes bounceAslan{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  .aslan-bounce{ animation:bounceAslan 2.2s ease-in-out infinite; }
+
+  /* ── Floating stars ── */
+  @keyframes floatStar{ 0%,100%{transform:translateY(0) rotate(0deg);opacity:.7;} 50%{transform:translateY(-12px) rotate(20deg);opacity:1;} }
+  .float-star{ animation:floatStar var(--d,3s) ease-in-out infinite; }
+
+  /* ══ RIVER / DATA FLOW CANAL ══ */
+
+  /* Pipe segments */
+  .pipe{
+    position:relative; overflow:hidden;
+    border-radius:40px;
+  }
+
+  /* Water surface shimmer */
+  @keyframes shimmer{
+    0%  { background-position:200% center; }
+    100%{ background-position:-200% center; }
+  }
+  .water-fill{
+    position:absolute; inset:0; border-radius:inherit;
+    background:linear-gradient(90deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,.45) 40%,
+      rgba(255,255,255,.6) 50%,
+      rgba(255,255,255,.45) 60%,
+      rgba(255,255,255,0) 100%);
+    background-size:200% 100%;
+    animation:shimmer 2.5s linear infinite;
+    pointer-events:none;
+  }
+
+  /* Flowing particles in pipe */
+  @keyframes flowRight{
+    0%  {left:-28px; opacity:0;}
+    8%  {opacity:1;}
+    92% {opacity:1;}
+    100%{left:calc(100% + 28px); opacity:0;}
+  }
+  @keyframes flowDown{
+    0%  {top:-28px; opacity:0;}
+    8%  {opacity:1;}
+    92% {opacity:1;}
+    100%{top:calc(100% + 28px); opacity:0;}
+  }
+  .particle-h{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:22px; height:14px; border-radius:50%;
+    animation:flowRight var(--spd,1.4s) linear var(--dly,0s) infinite;
+    pointer-events:none;
+  }
+  .particle-v{
+    position:absolute; left:50%; transform:translateX(-50%);
+    width:14px; height:22px; border-radius:50%;
+    animation:flowDown var(--spd,1.4s) linear var(--dly,0s) infinite;
+    pointer-events:none;
+  }
+
+  /* fast/slow state */
+  .fast .particle-h, .fast .particle-v{ animation-duration:.55s !important; }
+  .slow .particle-h, .slow .particle-v{ animation-duration:3.2s !important; }
+
+  /* ── Node (component circle) ── */
+  .node{
+    border-radius:50%; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    cursor:pointer; transition:all .3s cubic-bezier(.34,1.56,.64,1);
+    border:4px solid transparent; position:relative;
+    user-select:none;
+  }
+  .node:hover{ transform:scale(1.12); }
+  @keyframes nodeGlow{
+    0%,100%{ box-shadow:0 0 0 0 transparent; }
+    50%    { box-shadow:0 0 28px 10px var(--ng,rgba(6,182,212,.5)); }
+  }
+  .node.lit{ animation:nodeGlow .9s ease-in-out 3 forwards; }
+
+  /* ── Section title ── */
+  .sec-title{ position:relative; display:inline-block; }
+  .sec-title::after{
+    content:''; position:absolute; bottom:-6px; left:0; right:0; height:5px;
+    border-radius:10px; background:linear-gradient(90deg,#06b6d4,#34d399);
+  }
+
+  /* ── Buttons ── */
+  .btn-main{
+    background:linear-gradient(135deg,#0891b2,#06b6d4);
+    color:white; border:none; border-radius:50px;
+    padding:.85rem 2.2rem; font-family:'Fredoka One',cursive;
+    font-size:1.15rem; cursor:pointer;
+    box-shadow:0 6px 0 #0e7490,0 8px 20px rgba(6,182,212,.4);
+    transition:all .15s ease;
+  }
+  .btn-main:hover { transform:translateY(-3px); box-shadow:0 9px 0 #0e7490,0 12px 26px rgba(6,182,212,.5); }
+  .btn-main:active{ transform:translateY(3px); box-shadow:0 3px 0 #0e7490; }
+  .btn-main:disabled{ opacity:.55; cursor:not-allowed; transform:none; box-shadow:0 4px 0 #0e7490; }
+
+  .btn-fast{
+    background:linear-gradient(135deg,#f97316,#ef4444);
+    color:white; border:none; border-radius:50px;
+    padding:.85rem 2.2rem; font-family:'Fredoka One',cursive;
+    font-size:1.15rem; cursor:pointer;
+    box-shadow:0 6px 0 #b91c1c,0 8px 20px rgba(239,68,68,.4);
+    transition:all .15s ease;
+  }
+  .btn-fast:hover { transform:translateY(-3px); }
+  .btn-fast:active{ transform:translateY(3px); box-shadow:0 3px 0 #b91c1c; }
+
+  .btn-slow{
+    background:linear-gradient(135deg,#a855f7,#7c3aed);
+    color:white; border:none; border-radius:50px;
+    padding:.85rem 2.2rem; font-family:'Fredoka One',cursive;
+    font-size:1.15rem; cursor:pointer;
+    box-shadow:0 6px 0 #5b21b6;
+    transition:all .15s ease;
+  }
+  .btn-slow:hover { transform:translateY(-3px); }
+  .btn-slow:active{ transform:translateY(3px); box-shadow:0 3px 0 #5b21b6; }
+
+  /* ── Draw area ── */
+  .draw-area{
+    background:
+      repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(6,182,212,.15) 28px,rgba(6,182,212,.15) 30px),
+      repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(6,182,212,.08) 28px,rgba(6,182,212,.08) 30px);
+    border:3px dashed #06b6d4; border-radius:20px; min-height:200px;
+  }
+
+  /* ── Tooltip card ── */
+  .tip-card{
+    position:fixed; inset:0; z-index:200;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.42); backdrop-filter:blur(4px);
+    opacity:0; pointer-events:none; transition:opacity .25s;
+  }
+  .tip-card.show{ opacity:1; pointer-events:all; }
+  .tip-box{
+    background:white; border-radius:28px; padding:2rem;
+    max-width:400px; width:90%; position:relative;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);
+    transform:scale(.8); transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .tip-card.show .tip-box{ transform:scale(1); }
+
+  /* ── Confetti ── */
+  @keyframes confettiFly{
+    0%  {transform:translate(0,0) rotate(0deg);opacity:1;}
+    100%{transform:translate(var(--tx),var(--ty)) rotate(720deg);opacity:0;}
+  }
+  .confetti-piece{
+    position:fixed; width:10px; height:10px; border-radius:2px;
+    pointer-events:none; z-index:100;
+    animation:confettiFly 1.4s ease-out forwards;
+  }
+
+  /* ── Quiz btn ── */
+  .qbtn{
+    padding:.55rem .9rem; border-radius:14px; font-size:.85rem; font-weight:700;
+    border:2px solid #e2e8f0; background:white; color:#374151;
+    cursor:pointer; transition:all .2s; text-align:left; width:100%;
+  }
+  .qbtn:hover:not(:disabled){ border-color:#06b6d4; background:#ecfeff; }
+  .qbtn:disabled{ opacity:.7; cursor:not-allowed; }
+
+  /* ── Ripple on node click ── */
+  @keyframes rippleOut{
+    0%  { transform:translate(-50%,-50%) scale(0); opacity:.8; }
+    100%{ transform:translate(-50%,-50%) scale(3);  opacity:0; }
+  }
+  .ripple{
+    position:absolute; width:100%; height:100%; border-radius:50%;
+    top:50%; left:50%; pointer-events:none;
+    animation:rippleOut .6s ease-out forwards;
+    border:3px solid rgba(255,255,255,.6);
+  }
+
+  /* Pipe hover glow */
+  .pipe-seg:hover{ filter:brightness(1.18); cursor:pointer; }
+
+  /* day-dot */
+  .day-dot{ width:12px; height:12px; border-radius:50%; display:inline-block; }
+
+  @media(max-width:640px){
+    .flow-diagram{ flex-direction:column !important; align-items:center !important; }
+    .pipe-h{ width:12px !important; height:50px !important; border-radius:40px !important; }
+    .pipe-h .particle-h{
+      width:14px; height:22px;
+      animation-name:flowDown !important;
+      top:auto; left:50% !important;
+      transform:translateX(-50%) !important;
+    }
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ══════ HEADER ══════ -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <span class="float-star absolute text-3xl" style="--d:2.8s;top:10px;left:10%;">💧</span>
+  <span class="float-star absolute text-2xl" style="--d:3.4s;top:14px;right:13%;">🌊</span>
+  <span class="float-star absolute text-xl" style="--d:2.1s;bottom:12px;left:28%;">✨</span>
+  <span class="float-star absolute text-2xl" style="--d:3.8s;bottom:10px;right:20%;">⭐</span>
+
+  <div class="relative z-10 max-w-3xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 mb-3 text-sm font-bold">
+      <span>🖥️</span>
+      <span>Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span class="bg-white/30 rounded-full px-2 py-0.5 text-xs">Hari 24 dari 30</span>
+    </div>
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight mb-1"
+        style="font-family:'Fredoka One',cursive; text-shadow:2px 3px 0 rgba(0,0,0,.2);">
+      Hari 24: Data Mengalir<br class="hidden sm:block"> Seperti Air di Dalam Komputer 💧🌊
+    </h1>
+    <p class="text-white/80 text-sm sm:text-base mt-2 font-semibold">
+      Sungai Data yang Ajaib di Dalam Komputer! 🚿⚡
+    </p>
+  </div>
+</header>
+
+<!-- ══════ MAIN ══════ -->
+<main class="max-w-3xl mx-auto px-4 py-8 space-y-10">
+
+  <!-- ── 1. INTRO ── -->
+  <section>
+    <div class="flex flex-col sm:flex-row items-center gap-6">
+
+      <!-- Bubble + badges -->
+      <div class="flex-1 order-2 sm:order-1">
+        <div class="bubble p-4 mb-6">
+          <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+            <strong class="text-teal-600">Halo Aslan!</strong> 👋 Hari ini kita belajar sesuatu yang super keren —
+            bagaimana <strong class="text-cyan-500">data mengalir seperti air</strong> di dalam komputer!
+            Data itu seperti air yang mengalir cepat dari satu tempat ke tempat lain melalui
+            <strong class="text-blue-500">kabel dan komponen</strong>. Seru banget! 💧⚡
+          </p>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white"
+                style="background:linear-gradient(135deg,#0891b2,#06b6d4);">💧 Hari 24</span>
+          <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white"
+                style="background:linear-gradient(135deg,#06b6d4,#34d399);">🌊 Topik: Aliran Data</span>
+        </div>
+      </div>
+
+      <!-- Aslan SVG -->
+      <div class="order-1 sm:order-2 flex-shrink-0">
+        <div class="aslan-bounce">
+          <svg width="165" height="210" viewBox="0 0 165 210" xmlns="http://www.w3.org/2000/svg">
+            <!-- Water ripples bg -->
+            <ellipse cx="82" cy="198" rx="55" ry="10" fill="rgba(6,182,212,.15)"/>
+            <!-- Body -->
+            <ellipse cx="82" cy="150" rx="38" ry="42" fill="#0d9488"/>
+            <ellipse cx="82" cy="157" rx="30" ry="32" fill="#0f766e"/>
+            <!-- Arms – holding water droplets -->
+            <ellipse cx="40" cy="147" rx="14" ry="9" fill="#0d9488" transform="rotate(-20 40 147)"/>
+            <ellipse cx="124" cy="147" rx="14" ry="9" fill="#0d9488" transform="rotate(20 124 147)"/>
+            <!-- Water droplets in hands -->
+            <ellipse cx="30" cy="140" rx="8" ry="11" fill="#38bdf8"/>
+            <ellipse cx="134" cy="140" rx="8" ry="11" fill="#38bdf8"/>
+            <ellipse cx="30" cy="137" rx="5" ry="4" fill="rgba(255,255,255,.5)"/>
+            <ellipse cx="134" cy="137" rx="5" ry="4" fill="rgba(255,255,255,.5)"/>
+            <!-- Legs -->
+            <rect x="60" y="182" width="16" height="22" rx="8" fill="#1d4ed8"/>
+            <rect x="88" y="182" width="16" height="22" rx="8" fill="#1d4ed8"/>
+            <!-- Shoes -->
+            <ellipse cx="68" cy="203" rx="11" ry="6" fill="#1e293b"/>
+            <ellipse cx="96" cy="203" rx="11" ry="6" fill="#1e293b"/>
+            <!-- Neck -->
+            <rect x="72" y="102" width="20" height="16" rx="6" fill="#f9a87c"/>
+            <!-- Head -->
+            <ellipse cx="82" cy="84" rx="36" ry="34" fill="#f9a87c"/>
+            <!-- Hair -->
+            <ellipse cx="82" cy="54" rx="34" ry="18" fill="#1a1a2e"/>
+            <ellipse cx="60" cy="62" rx="12" ry="14" fill="#1a1a2e"/>
+            <ellipse cx="104" cy="62" rx="12" ry="14" fill="#1a1a2e"/>
+            <!-- Eyes -->
+            <ellipse cx="70" cy="82" rx="7" ry="8" fill="white"/>
+            <ellipse cx="94" cy="82" rx="7" ry="8" fill="white"/>
+            <circle cx="72" cy="83" r="4" fill="#1a1a2e"/>
+            <circle cx="96" cy="83" r="4" fill="#1a1a2e"/>
+            <circle cx="73.5" cy="81.5" r="1.5" fill="white"/>
+            <circle cx="97.5" cy="81.5" r="1.5" fill="white"/>
+            <!-- Wide smile -->
+            <path d="M68 97 Q82 111 96 97" stroke="#e07040" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <!-- Cheeks -->
+            <ellipse cx="60" cy="92" rx="7" ry="5" fill="#ffb3a7" opacity=".7"/>
+            <ellipse cx="104" cy="92" rx="7" ry="5" fill="#ffb3a7" opacity=".7"/>
+            <!-- Mini data particles floating -->
+            <circle cx="18" cy="90" r="5" fill="#fbbf24" opacity=".8"/>
+            <circle cx="148" cy="75" r="4" fill="#34d399" opacity=".8"/>
+            <circle cx="10" cy="130" r="3" fill="#06b6d4" opacity=".7"/>
+            <circle cx="155" cy="115" r="3" fill="#f97316" opacity=".7"/>
+            <text x="5"  y="55" font-size="16" opacity=".8">💧</text>
+            <text x="137" y="60" font-size="14" opacity=".8">🌊</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 2. INTERACTIVE FLOW DIAGRAM ── -->
+  <section>
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#134e4a;">🌊 Sungai Data di Dalam Komputer!</h2>
+      <p class="text-gray-500 mt-4 text-sm">Klik komponen untuk tahu lebih lanjut! Tekan tombol untuk lihat aliran! 💧</p>
+    </div>
+
+    <!-- Flow diagram card -->
+    <div class="rounded-3xl p-5 sm:p-7 relative overflow-hidden"
+         style="background:linear-gradient(135deg,#0c4a6e,#075985,#0369a1,#0284c7); border:3px solid #0891b2;">
+
+      <!-- Underwater ambience -->
+      <div class="absolute inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute inset-0 opacity-10"
+             style="background:repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(255,255,255,.06) 30px,rgba(255,255,255,.06) 32px);"></div>
+        <!-- Floating bubbles bg -->
+        <span class="absolute text-2xl opacity-20 float-star" style="--d:3s;left:5%;top:20%;">🫧</span>
+        <span class="absolute text-xl opacity-20 float-star" style="--d:4s;left:20%;top:70%;">🫧</span>
+        <span class="absolute text-xl opacity-20 float-star" style="--d:2.5s;right:8%;top:30%;">🫧</span>
+        <span class="absolute text-2xl opacity-20 float-star" style="--d:3.7s;right:18%;top:65%;">🫧</span>
+      </div>
+
+      <!-- STATUS DISPLAY -->
+      <div class="relative z-10 text-center mb-4">
+        <div class="inline-block bg-white/15 backdrop-blur-sm rounded-2xl px-5 py-2">
+          <p class="text-white font-bold text-sm" id="flowStatus">💧 Tekan tombol untuk memulai aliran data!</p>
+        </div>
+      </div>
+
+      <!-- DIAGRAM -->
+      <div class="relative z-10 flex items-center justify-center gap-0 flow-diagram" id="flowDiagram"
+           style="min-height:160px;">
+
+        <!-- NODE: Storage -->
+        <div class="flex flex-col items-center gap-1" id="nodeStorage">
+          <div class="node w-20 h-20 sm:w-24 sm:h-24"
+               id="nd-storage"
+               style="background:linear-gradient(135deg,#1d4ed8,#3b82f6); border-color:#60a5fa; --ng:rgba(59,130,246,.6);"
+               onclick="nodeClick('storage')" title="Storage">
+            <span class="text-3xl sm:text-4xl">🗄️</span>
+          </div>
+          <span class="text-white text-xs font-bold">Storage</span>
+          <span class="text-blue-300 text-xs">Lemari Data</span>
+        </div>
+
+        <!-- PIPE H1 -->
+        <div class="pipe pipe-h pipe-seg relative"
+             id="pipe1"
+             style="width:60px;height:22px;background:linear-gradient(180deg,#7dd3fc,#38bdf8,#0284c7);"
+             onclick="pipeClick(1)">
+          <div class="water-fill"></div>
+          <div class="particle-h" style="background:#fbbf24;--spd:1.4s;--dly:0s;"></div>
+          <div class="particle-h" style="background:#34d399;--spd:1.4s;--dly:.47s;"></div>
+          <div class="particle-h" style="background:#f97316;--spd:1.4s;--dly:.93s;"></div>
+        </div>
+
+        <!-- NODE: RAM -->
+        <div class="flex flex-col items-center gap-1" id="nodeRAM">
+          <div class="node w-20 h-20 sm:w-24 sm:h-24"
+               id="nd-ram"
+               style="background:linear-gradient(135deg,#be185d,#ec4899); border-color:#f9a8d4; --ng:rgba(236,72,153,.6);"
+               onclick="nodeClick('ram')" title="RAM">
+            <span class="text-3xl sm:text-4xl">📋</span>
+          </div>
+          <span class="text-white text-xs font-bold">RAM</span>
+          <span class="text-pink-300 text-xs">Meja Kerja</span>
+        </div>
+
+        <!-- PIPE H2 -->
+        <div class="pipe pipe-h pipe-seg relative"
+             id="pipe2"
+             style="width:60px;height:22px;background:linear-gradient(180deg,#f9a8d4,#ec4899,#be185d);"
+             onclick="pipeClick(2)">
+          <div class="water-fill"></div>
+          <div class="particle-h" style="background:#fbbf24;--spd:1.4s;--dly:.2s;"></div>
+          <div class="particle-h" style="background:#a855f7;--spd:1.4s;--dly:.67s;"></div>
+          <div class="particle-h" style="background:#06b6d4;--spd:1.4s;--dly:1.1s;"></div>
+        </div>
+
+        <!-- NODE: CPU -->
+        <div class="flex flex-col items-center gap-1" id="nodeCPU">
+          <div class="node w-20 h-20 sm:w-24 sm:h-24"
+               id="nd-cpu"
+               style="background:linear-gradient(135deg,#5b21b6,#7c3aed); border-color:#c4b5fd; --ng:rgba(168,85,247,.6);"
+               onclick="nodeClick('cpu')" title="CPU">
+            <span class="text-3xl sm:text-4xl">🧠</span>
+          </div>
+          <span class="text-white text-xs font-bold">CPU</span>
+          <span class="text-purple-300 text-xs">Otak</span>
+        </div>
+
+        <!-- PIPE H3 -->
+        <div class="pipe pipe-h pipe-seg relative"
+             id="pipe3"
+             style="width:60px;height:22px;background:linear-gradient(180deg,#c4b5fd,#a855f7,#5b21b6);"
+             onclick="pipeClick(3)">
+          <div class="water-fill"></div>
+          <div class="particle-h" style="background:#34d399;--spd:1.4s;--dly:.35s;"></div>
+          <div class="particle-h" style="background:#fbbf24;--spd:1.4s;--dly:.82s;"></div>
+          <div class="particle-h" style="background:#f97316;--spd:1.4s;--dly:1.25s;"></div>
+        </div>
+
+        <!-- NODE: Monitor -->
+        <div class="flex flex-col items-center gap-1" id="nodeMonitor">
+          <div class="node w-20 h-20 sm:w-24 sm:h-24"
+               id="nd-monitor"
+               style="background:linear-gradient(135deg,#065f46,#059669); border-color:#6ee7b7; --ng:rgba(52,211,153,.6);"
+               onclick="nodeClick('monitor')" title="Monitor">
+            <span class="text-3xl sm:text-4xl">🖥️</span>
+          </div>
+          <span class="text-white text-xs font-bold">Layar</span>
+          <span class="text-green-300 text-xs">Tampil!</span>
+        </div>
+
+      </div><!-- /flowDiagram -->
+
+      <!-- speed bar -->
+      <div class="relative z-10 mt-4 bg-white/10 rounded-full h-3 overflow-hidden">
+        <div id="speedBar" class="h-full rounded-full transition-all duration-700"
+             style="width:50%;background:linear-gradient(90deg,#38bdf8,#34d399,#fbbf24);"></div>
+      </div>
+      <div class="relative z-10 flex justify-between text-white/60 text-xs mt-1 px-1">
+        <span>🐢 Lambat</span>
+        <span id="speedLabel" class="font-bold text-white/80">Normal 💧</span>
+        <span>⚡ Cepat</span>
+      </div>
+
+      <!-- Buttons -->
+      <div class="relative z-10 flex flex-wrap gap-3 justify-center mt-5">
+        <button class="btn-main" id="btnFlow" onclick="startFlow()">💧 Lihat Aliran Data!</button>
+        <button class="btn-fast" onclick="setSpeed('fast')">⚡ Percepat!</button>
+        <button class="btn-slow" onclick="setSpeed('slow')">🐢 Perlambat!</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 3. ANALOGI SUNGAI ── -->
+  <section>
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#134e4a;">🏞️ Data = Air di Sungai!</h2>
+    </div>
+
+    <!-- Analogy river visual -->
+    <div class="rounded-3xl p-5 sm:p-6 relative overflow-hidden mb-5"
+         style="background:linear-gradient(135deg,#ecfdf5,#d1fae5); border:3px solid #34d399;">
+
+      <!-- River SVG illustration -->
+      <svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg" class="w-full rounded-2xl mb-4" style="max-height:160px;">
+        <!-- Sky -->
+        <rect width="700" height="160" fill="#e0f2fe"/>
+        <!-- Mountains bg -->
+        <polygon points="0,160 80,60 160,160" fill="#86efac"/>
+        <polygon points="60,160 170,40 280,160" fill="#4ade80"/>
+        <polygon points="520,160 630,50 700,160" fill="#86efac"/>
+        <polygon points="580,160 680,30 700,160" fill="#4ade80"/>
+        <!-- Clouds -->
+        <ellipse cx="120" cy="30" rx="45" ry="22" fill="white" opacity=".8"/>
+        <ellipse cx="150" cy="25" rx="35" ry="18" fill="white" opacity=".8"/>
+        <ellipse cx="560" cy="35" rx="40" ry="20" fill="white" opacity=".8"/>
+        <!-- River banks -->
+        <path d="M0,100 Q175,80 350,100 Q525,120 700,100 L700,160 L0,160 Z" fill="#65a30d"/>
+        <!-- River water -->
+        <path d="M0,108 Q175,88 350,108 Q525,128 700,108 L700,140 L0,140 Z" fill="#38bdf8"/>
+        <!-- River shimmer -->
+        <path d="M0,115 Q175,95 350,115 Q525,135 700,115 L700,125 L0,125 Z" fill="rgba(255,255,255,.3)"/>
+        <!-- Data particles in river -->
+        <circle cx="80"  cy="122" r="7" fill="#fbbf24"/>
+        <circle cx="200" cy="110" r="6" fill="#34d399"/>
+        <circle cx="330" cy="118" r="7" fill="#f97316"/>
+        <circle cx="460" cy="112" r="6" fill="#a855f7"/>
+        <circle cx="590" cy="120" r="7" fill="#ec4899"/>
+        <circle cx="650" cy="116" r="5" fill="#06b6d4"/>
+        <!-- Labels -->
+        <text x="40"  y="95" fill="#134e4a" font-size="11" font-weight="bold" font-family="Nunito,sans-serif">⛰️ Storage</text>
+        <text x="315" y="75" fill="#134e4a" font-size="11" font-weight="bold" font-family="Nunito,sans-serif">🧠 CPU</text>
+        <text x="620" y="95" fill="#134e4a" font-size="11" font-weight="bold" font-family="Nunito,sans-serif">🖥️ Layar</text>
+        <!-- Arrow -->
+        <path d="M100,72 L580,72" stroke="#0891b2" stroke-width="2" stroke-dasharray="8,5" fill="none"/>
+        <polygon points="580,68 592,72 580,76" fill="#0891b2"/>
+        <text x="300" y="68" fill="#0891b2" font-size="10" font-family="Nunito,sans-serif" text-anchor="middle">Data mengalir seperti air! 💧</text>
+        <!-- RAM label midway -->
+        <text x="180" y="95" fill="#9d174d" font-size="11" font-weight="bold" font-family="Nunito,sans-serif">📋 RAM</text>
+      </svg>
+
+      <!-- Analogy cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="bg-white rounded-2xl p-4 shadow-sm flex items-start gap-3 border-l-4" style="border-color:#38bdf8;">
+          <span class="text-3xl">💧</span>
+          <div>
+            <p class="font-bold text-cyan-700 text-sm">Air di Selang</p>
+            <p class="text-gray-600 text-xs mt-1">Kalau selangnya lancar, airnya mengalir cepat. Kalau tersumbat, lambat deh! Sama seperti data di komputer.</p>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm flex items-start gap-3 border-l-4" style="border-color:#34d399;">
+          <span class="text-3xl">🏞️</span>
+          <div>
+            <p class="font-bold text-green-700 text-sm">Sungai yang Lebar</p>
+            <p class="text-gray-600 text-xs mt-1">Sungai lebar = bisa mengalirkan banyak air sekaligus. RAM besar = bisa tampung banyak data sekaligus!</p>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm flex items-start gap-3 border-l-4" style="border-color:#fbbf24;">
+          <span class="text-3xl">⛏️</span>
+          <div>
+            <p class="font-bold text-yellow-700 text-sm">Mata Air = Storage</p>
+            <p class="text-gray-600 text-xs mt-1">Mata air adalah sumber air, seperti Storage yang menyimpan semua data. Dari sanalah semuanya berawal!</p>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm flex items-start gap-3 border-l-4" style="border-color:#f97316;">
+          <span class="text-3xl">🌊</span>
+          <div>
+            <p class="font-bold text-orange-700 text-sm">Muara = Layar/Speaker</p>
+            <p class="text-gray-600 text-xs mt-1">Muara sungai adalah tujuan akhir, seperti layar, speaker, atau printer yang menampilkan hasilnya!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aslan quote -->
+    <div class="rounded-2xl p-4 flex items-start gap-3"
+         style="background:linear-gradient(135deg,#ecfeff,#cffafe); border:2px solid #67e8f9;">
+      <span class="text-3xl flex-shrink-0">😄</span>
+      <p class="text-teal-800 font-semibold text-sm sm:text-base">
+        <strong>Aslan berseru:</strong> "Wah, datanya mengalir cepat sekali seperti air di sungai!
+        Pantesan kalau komputerku banyak program kebuka, jadi lambat — karena sungai datanya penuh! 🌊💧"
+      </p>
+    </div>
+  </section>
+
+  <!-- ── 4. JENIS-JENIS ALIRAN ── -->
+  <section>
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#134e4a;">🔀 Ke Mana Data Bisa Mengalir?</h2>
+      <p class="text-gray-500 mt-4 text-sm">Klik setiap kartu untuk info lebih seru! 💧</p>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+
+      <!-- To Monitor -->
+      <div class="rounded-2xl p-4 text-center cursor-pointer hover:scale-105 transition-transform duration-300 border-3"
+           style="background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:3px solid #22c55e;"
+           onclick="showTip('monitor')">
+        <div class="text-4xl mb-2">🖥️</div>
+        <p class="font-bold text-green-700 text-sm">→ Layar</p>
+        <p class="text-green-600 text-xs mt-1">Gambar & Teks</p>
+      </div>
+
+      <!-- To Speaker -->
+      <div class="rounded-2xl p-4 text-center cursor-pointer hover:scale-105 transition-transform duration-300 border-3"
+           style="background:linear-gradient(135deg,#fff7ed,#ffedd5); border:3px solid #f97316;"
+           onclick="showTip('speaker')">
+        <div class="text-4xl mb-2">🔊</div>
+        <p class="font-bold text-orange-700 text-sm">→ Speaker</p>
+        <p class="text-orange-600 text-xs mt-1">Suara & Musik</p>
+      </div>
+
+      <!-- To Internet -->
+      <div class="rounded-2xl p-4 text-center cursor-pointer hover:scale-105 transition-transform duration-300 border-3"
+           style="background:linear-gradient(135deg,#eff6ff,#dbeafe); border:3px solid #3b82f6;"
+           onclick="showTip('internet')">
+        <div class="text-4xl mb-2">🌐</div>
+        <p class="font-bold text-blue-700 text-sm">→ Internet</p>
+        <p class="text-blue-600 text-xs mt-1">Kirim ke dunia!</p>
+      </div>
+
+      <!-- To Printer -->
+      <div class="rounded-2xl p-4 text-center cursor-pointer hover:scale-105 transition-transform duration-300 border-3"
+           style="background:linear-gradient(135deg,#fdf4ff,#fae8ff); border:3px solid #a855f7;"
+           onclick="showTip('printer')">
+        <div class="text-4xl mb-2">🖨️</div>
+        <p class="font-bold text-purple-700 text-sm">→ Printer</p>
+        <p class="text-purple-600 text-xs mt-1">Cetak di kertas!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 5. BANDWIDTH EXPLANATION ── -->
+  <section>
+    <div class="rounded-3xl p-5 sm:p-7 border-3"
+         style="background:linear-gradient(135deg,#0c4a6e,#075985); border:3px solid #0891b2;">
+      <h2 class="text-xl sm:text-2xl font-bold text-white text-center mb-5"
+          style="font-family:'Fredoka One',cursive;">💡 Apa itu Bandwidth?</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white/10 rounded-2xl p-4 text-center">
+          <div class="text-4xl mb-2">🚿</div>
+          <p class="font-bold text-cyan-300 mb-1 text-sm">Selang Kecil</p>
+          <p class="text-white/80 text-xs">Bandwidth kecil = data mengalir sedikit sekaligus. Koneksi internet lambat!</p>
+        </div>
+        <div class="bg-white/10 rounded-2xl p-4 text-center">
+          <div class="text-4xl mb-2">🪣</div>
+          <p class="font-bold text-yellow-300 mb-1 text-sm">Selang Sedang</p>
+          <p class="text-white/80 text-xs">Bandwidth sedang = cukup untuk streaming video biasa. OK lah!</p>
+        </div>
+        <div class="bg-white/10 rounded-2xl p-4 text-center">
+          <div class="text-4xl mb-2">🌊</div>
+          <p class="font-bold text-green-300 mb-1 text-sm">Pipa Besar!</p>
+          <p class="text-white/80 text-xs">Bandwidth besar = data mengalir super deras! Download game cepat! ⚡</p>
+        </div>
+      </div>
+
+      <!-- Interactive bandwidth meter -->
+      <div class="mt-5 bg-white/10 rounded-2xl p-4">
+        <p class="text-white font-bold text-sm mb-3 text-center">🎮 Coba Simulasi Bandwidth!</p>
+        <div class="flex gap-3 justify-center flex-wrap mb-3">
+          <button onclick="setBandwidth(1)" class="px-3 py-1 rounded-full text-xs font-bold bg-red-400 text-white hover:bg-red-500 transition-colors">🚿 Kecil</button>
+          <button onclick="setBandwidth(2)" class="px-3 py-1 rounded-full text-xs font-bold bg-yellow-400 text-gray-800 hover:bg-yellow-500 transition-colors">🪣 Sedang</button>
+          <button onclick="setBandwidth(3)" class="px-3 py-1 rounded-full text-xs font-bold bg-green-400 text-white hover:bg-green-500 transition-colors">🌊 Besar!</button>
+        </div>
+        <!-- Meter visual -->
+        <div class="relative bg-white/10 rounded-full h-6 overflow-hidden">
+          <div id="bwBar" class="h-full rounded-full transition-all duration-1000"
+               style="width:33%;background:linear-gradient(90deg,#ef4444,#fbbf24);">
+          </div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <span id="bwLabel" class="text-white text-xs font-bold">🚿 Lambat – 1 Mbps</span>
+          </div>
+        </div>
+        <p id="bwDesc" class="text-white/70 text-xs text-center mt-2">
+          Koneksi lambat... menonton video akan buffering terus! 😅
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 6. MINI QUIZ ── -->
+  <section>
+    <div class="rounded-3xl p-5 sm:p-7 border-3"
+         style="background:linear-gradient(135deg,#ecfeff,#cffafe); border:3px solid #06b6d4;">
+      <div class="text-center mb-5">
+        <h2 class="text-2xl sm:text-3xl sec-title" style="color:#0e7490;">🧩 Kuis Aliran Data!</h2>
+        <p class="text-gray-500 mt-4 text-sm">Yuk jawab! Kamu pasti bisa! 💪</p>
+      </div>
+
+      <div class="space-y-4" id="quizCont">
+
+        <!-- Q1 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm" id="q1B">
+          <p class="font-bold text-gray-800 mb-3 text-sm sm:text-base">
+            1️⃣ Data di komputer diumpamakan seperti apa?
+          </p>
+          <div class="space-y-2">
+            <button class="qbtn" onclick="ck(1,'air','air')">💧 Air yang mengalir</button>
+            <button class="qbtn" onclick="ck(1,'batu','air')">🪨 Batu yang diam</button>
+            <button class="qbtn" onclick="ck(1,'api','air')">🔥 Api yang membakar</button>
+          </div>
+          <div id="q1M" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm" id="q2B">
+          <p class="font-bold text-gray-800 mb-3 text-sm sm:text-base">
+            2️⃣ Bandwidth itu seperti apa dalam analogi air?
+          </p>
+          <div class="space-y-2">
+            <button class="qbtn" onclick="ck(2,'warna','pipa')">🎨 Warna air</button>
+            <button class="qbtn" onclick="ck(2,'pipa','pipa')">🪣 Besar-kecilnya pipa</button>
+            <button class="qbtn" onclick="ck(2,'rasa','pipa')">😋 Rasa air</button>
+          </div>
+          <div id="q2M" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm" id="q3B">
+          <p class="font-bold text-gray-800 mb-3 text-sm sm:text-base">
+            3️⃣ Setelah CPU memproses data, ke mana data mengalir?
+          </p>
+          <div class="space-y-2">
+            <button class="qbtn" onclick="ck(3,'storage','layar')">🗄️ Kembali ke Storage saja</button>
+            <button class="qbtn" onclick="ck(3,'layar','layar')">🖥️ Ke layar, speaker, internet, dll</button>
+            <button class="qbtn" onclick="ck(3,'hilang','layar')">💨 Langsung menghilang</button>
+          </div>
+          <div id="q3M" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+      </div>
+
+      <div id="qScore" class="hidden mt-5 text-center bg-white rounded-2xl p-4 shadow-sm">
+        <div class="text-4xl mb-2" id="qStar"></div>
+        <p class="font-bold text-lg text-teal-700" id="qText"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 7. AKTIVITAS ── -->
+  <section>
+    <div class="rounded-3xl p-5 sm:p-7 border-3"
+         style="background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:3px solid #22c55e;">
+      <div class="flex items-start gap-3 mb-4">
+        <span class="text-4xl">✏️</span>
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold" style="color:#15803d;">Tugas Hari Ini! 🎨</h2>
+          <p class="text-green-700 font-semibold mt-1 text-sm sm:text-base">
+            <strong>Gambarlah</strong> aliran data seperti sungai di dalam komputer impianmu! 🌊
+          </p>
+          <p class="text-green-600 text-sm mt-2">
+            Dari mana airnya berasal dan ke mana mengalir?
+            Beri label setiap bagian sungai datamu!
+          </p>
+        </div>
+      </div>
+
+      <!-- Guide hints -->
+      <div class="grid grid-cols-4 gap-2 mb-4 text-center text-xs">
+        <div class="bg-white rounded-xl p-2 shadow-sm border-2 border-blue-300">
+          <div class="text-xl">⛰️</div>
+          <div class="font-bold text-blue-600">Sumber</div>
+          <div class="text-gray-500">= Storage</div>
+        </div>
+        <div class="bg-white rounded-xl p-2 shadow-sm border-2 border-pink-300">
+          <div class="text-xl">🏊</div>
+          <div class="font-bold text-pink-600">Kolam</div>
+          <div class="text-gray-500">= RAM</div>
+        </div>
+        <div class="bg-white rounded-xl p-2 shadow-sm border-2 border-purple-300">
+          <div class="text-xl">🏭</div>
+          <div class="font-bold text-purple-600">Pabrik</div>
+          <div class="text-gray-500">= CPU</div>
+        </div>
+        <div class="bg-white rounded-xl p-2 shadow-sm border-2 border-green-300">
+          <div class="text-xl">🌊</div>
+          <div class="font-bold text-green-600">Muara</div>
+          <div class="text-gray-500">= Layar</div>
+        </div>
+      </div>
+
+      <div class="draw-area flex flex-col items-center justify-center text-center p-6">
+        <span class="text-5xl mb-3">🖊️</span>
+        <p class="text-teal-400 font-bold text-lg">Area Menggambar</p>
+        <p class="text-teal-300 text-sm mt-1">Cetak halaman ini dan gambarlah sungai data komputer impianmu!</p>
+        <p class="text-teal-200 text-xs mt-3">( Kosong untuk kamu isi dengan gambar seru! )</p>
+      </div>
+      <p class="text-green-600 text-sm text-center mt-3 font-semibold">
+        💡 Tip: Gunakan warna biru untuk air datanya, dan warna-warni untuk ikon komponennya! 🌈
+      </p>
+    </div>
+  </section>
+
+  <!-- ── 8. RANGKUMAN ── -->
+  <section>
+    <div class="rounded-3xl p-5 sm:p-7 border-3"
+         style="background:linear-gradient(135deg,#0c4a6e,#075985,#0369a1); border:3px solid #0891b2;">
+      <h2 class="text-xl sm:text-2xl font-bold text-white text-center mb-5"
+          style="font-family:'Fredoka One',cursive;">✨ Rangkuman Hari Ini!</h2>
+      <div class="space-y-3">
+        <div class="flex items-start gap-3 bg-white/10 rounded-xl p-3">
+          <span class="text-2xl flex-shrink-0">💧</span>
+          <p class="text-white text-sm"><strong class="text-cyan-300">Data</strong> mengalir seperti air di dalam komputer — dari Storage ke RAM, lalu ke CPU, lalu ke layar!</p>
+        </div>
+        <div class="flex items-start gap-3 bg-white/10 rounded-xl p-3">
+          <span class="text-2xl flex-shrink-0">🪣</span>
+          <p class="text-white text-sm"><strong class="text-yellow-300">Bandwidth</strong> = besar-kecilnya pipa. Makin besar pipa, makin banyak data yang bisa mengalir sekaligus!</p>
+        </div>
+        <div class="flex items-start gap-3 bg-white/10 rounded-xl p-3">
+          <span class="text-2xl flex-shrink-0">🌊</span>
+          <p class="text-white text-sm"><strong class="text-green-300">Data bisa mengalir ke mana saja:</strong> layar, speaker, printer, atau bahkan internet ke seluruh dunia!</p>
+        </div>
+        <div class="flex items-start gap-3 bg-white/10 rounded-xl p-3">
+          <span class="text-2xl flex-shrink-0">⚡</span>
+          <p class="text-white text-sm"><strong class="text-orange-300">Semakin cepat</strong> data mengalir, semakin cepat komputer bekerja. Makanya komputer bagus terasa ringan!</p>
+        </div>
+      </div>
+      <div class="mt-5 bg-white/10 rounded-2xl p-4 text-center">
+        <div class="text-3xl mb-2">🌊</div>
+        <p class="text-white font-semibold text-sm sm:text-base">
+          <strong class="text-yellow-300">Aslan berteriak:</strong><br>
+          "Aku sekarang tahu kenapa internet cepat itu penting —
+          karena dataku harus mengalir deras kayak air terjun, bukan menetes kayak keran bocor! 💧🌊⚡"
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="mt-10 py-6 px-4 text-center"
+        style="background:linear-gradient(135deg,#134e4a,#0f766e);">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex items-center justify-center gap-1.5 flex-wrap mb-3">
+      <!-- 30 dots: 23 green done, 1 yellow current (24), 6 grey -->
+      <script>
+        for(let i=1;i<=30;i++){
+          let c = i<=23 ? '#34d399' : i===24 ? '#fbbf24' : 'rgba(255,255,255,.25)';
+          let extra = i===24 ? 'box-shadow:0 0 0 3px rgba(251,191,36,.4);' : '';
+          document.write(`<span style="width:12px;height:12px;border-radius:50%;display:inline-block;background:${c};${extra}"></span>`);
+        }
+      </script>
+    </div>
+    <p class="text-white/80 font-bold text-base" style="font-family:'Fredoka One',cursive;">
+      💧 Hari 24 dari 30 💧
+    </p>
+    <p class="text-white/50 text-xs mt-1">Petualangan Aslan di Dalam Komputer Ajaib</p>
+  </div>
+</footer>
+
+<!-- ══════ TOOLTIP POPUP ══════ -->
+<div class="tip-card" id="tipCard" onclick="closeTip(event)">
+  <div class="tip-box" id="tipBox">
+    <button onclick="closeTip(null,true)"
+            class="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 text-xl font-bold">✕</button>
+    <div class="text-center text-5xl mb-3" id="tipIcon"></div>
+    <h3 class="text-xl font-bold text-center mb-2" id="tipTitle" style="font-family:'Fredoka One',cursive;"></h3>
+    <div id="tipContent" class="text-gray-700 text-sm leading-relaxed space-y-2"></div>
+  </div>
+</div>
+
+<!-- ══════ JAVASCRIPT ══════ -->
+<script>
+/* ════ TIP DATA ════ */
+const tips = {
+  storage:{
+    icon:'🗄️', color:'#3b82f6', title:'Storage – Mata Air Data!',
+    facts:[
+      '📂 Storage menyimpan semua file kamu: foto, video, game, dokumen.',
+      '🌊 Storage adalah "mata air" atau sumber data di komputer.',
+      '💾 Ada SSD (cepat) dan HDD (lebih lambat tapi murah).',
+      '✅ Data di Storage tetap ada walaupun komputer dimatikan!',
+      '📦 Kapasitas biasanya 256GB sampai beberapa Terabyte.'
+    ]
+  },
+  ram:{
+    icon:'📋', color:'#ec4899', title:'RAM – Kolam Penampung Sementara!',
+    facts:[
+      '⚡ RAM sangat cepat dibaca — jauh lebih cepat dari Storage.',
+      '🏊 RAM seperti kolam penampung air sebelum diproses CPU.',
+      '❌ Kalau komputer mati, semua data di RAM langsung hilang!',
+      '📱 Makin besar RAM, makin banyak program yang bisa dibuka sekaligus.',
+      '🎮 Kalau RAM penuh, komputer akan terasa lemot dan lag!'
+    ]
+  },
+  cpu:{
+    icon:'🧠', color:'#7c3aed', title:'CPU – Pabrik Pengolah Data!',
+    facts:[
+      '⚡ CPU memproses miliaran instruksi setiap detiknya!',
+      '🏭 Seperti pabrik yang mengubah bahan baku jadi produk jadi.',
+      '🌡️ CPU bisa panas karena kerja keras, makanya butuh pendingin.',
+      '🔢 CPU mengambil data dari RAM, bukan langsung dari Storage.',
+      '💪 CPU yang kuat = komputer yang cepat dan responsif!'
+    ]
+  },
+  monitor:{
+    icon:'🖥️', color:'#059669', title:'Layar – Muara Data!',
+    facts:[
+      '🖼️ Layar menampilkan hasil kerja CPU dalam bentuk gambar dan teks.',
+      '📺 Data yang mengalir ke layar berupa piksel warna-warni.',
+      '⚡ Layar gaming bisa menampilkan 144 frame per detik!',
+      '🌊 Seperti muara sungai, data berakhir dan ditampilkan di sini.',
+      '🎨 Resolusi layar makin tinggi = gambar makin tajam dan jelas!'
+    ]
+  },
+  speaker:{
+    icon:'🔊', color:'#f97316', title:'Speaker – Data Jadi Suara!',
+    facts:[
+      '🎵 CPU mengirim data audio ke speaker sebagai gelombang suara.',
+      '🌊 Data suara mengalir sebagai sinyal elektronik di kabel.',
+      '🎶 Speaker mengubah sinyal listrik menjadi getaran udara = suara!',
+      '🎸 Kualitas speaker menentukan seberapa jernih suara yang kamu dengar.',
+      '🔉 Volume = seberapa besar aliran data audio yang dikirim CPU!'
+    ]
+  },
+  internet:{
+    icon:'🌐', color:'#3b82f6', title:'Internet – Data ke Seluruh Dunia!',
+    facts:[
+      '🌏 Data bisa mengalir dari komputermu ke mana saja di dunia!',
+      '📡 Data dikirim melalui kabel fiber optik atau sinyal WiFi.',
+      '⚡ Kecepatan internet diukur dalam Mbps (Megabit per detik).',
+      '🌊 Internet seperti sungai besar yang menghubungkan semua komputer!',
+      '📧 Saat kamu kirim email, data mengalir dari komputermu ke server!'
+    ]
+  },
+  printer:{
+    icon:'🖨️', color:'#a855f7', title:'Printer – Data Jadi Nyata!',
+    facts:[
+      '📄 Printer mengubah data digital menjadi tulisan/gambar di kertas.',
+      '🖨️ Data mengalir dari CPU ke printer melalui kabel USB atau WiFi.',
+      '🌈 Printer berwarna menggunakan 4 tinta: CMYK untuk semua warna.',
+      '⚡ Printer modern bisa mencetak sampai 30 halaman per menit!',
+      '📐 3D Printer bahkan bisa mencetak objek nyata dari data digital!'
+    ]
+  },
+  pipe1:{
+    icon:'🌊', color:'#3b82f6', title:'Jalur Storage → RAM',
+    facts:[
+      '⚡ Data dari Storage mengalir ke RAM saat program dibuka.',
+      '🏎️ Jalur ini disebut "bus data" — seperti jalan tol data.',
+      '📦 Hanya data yang dibutuhkan sekarang yang dikirim ke RAM.',
+      '🐢 Storage lebih lambat dari RAM, jadi ada jeda saat loading.',
+      '💡 SSD jauh lebih cepat mengirim data ke RAM dibanding HDD!'
+    ]
+  },
+  pipe2:{
+    icon:'💧', color:'#ec4899', title:'Jalur RAM → CPU',
+    facts:[
+      '⚡ Jalur RAM ke CPU adalah yang paling cepat di komputer!',
+      '🚀 CPU terus-menerus menarik data dari RAM untuk diproses.',
+      '🔄 Proses ini terjadi miliaran kali setiap detik!',
+      '🏎️ Kecepatan RAM (GHz) menentukan seberapa cepat data bisa diambil.',
+      '🧠 CPU selalu lapar akan data — terus minta kiriman dari RAM!'
+    ]
+  },
+  pipe3:{
+    icon:'🌈', color:'#7c3aed', title:'Jalur CPU → Layar',
+    facts:[
+      '🖥️ Setelah CPU memproses, hasilnya dikirim ke kartu grafis dulu.',
+      '🎨 Kartu grafis (GPU) yang "menggambar" piksel di layar.',
+      '📺 Layar gaming menerima data sangat cepat — 144 kali per detik!',
+      '🔌 Kabel HDMI atau DisplayPort menjadi jalur data ke layar.',
+      '🌈 Satu frame gambar bisa berisi jutaan piksel data warna!'
+    ]
+  }
+};
+
+/* ── show/close tip ── */
+function showTip(key){
+  const d = tips[key]; if(!d) return;
+  document.getElementById('tipIcon').textContent = d.icon;
+  document.getElementById('tipTitle').textContent = d.title;
+  document.getElementById('tipTitle').style.color = d.color;
+  document.getElementById('tipBox').style.borderTop = `5px solid ${d.color}`;
+  document.getElementById('tipContent').innerHTML = d.facts.map(f=>`<p>${f}</p>`).join('');
+  document.getElementById('tipCard').classList.add('show');
+}
+function pipeClick(n){ showTip('pipe'+n); }
+function nodeClick(k){
+  // ripple
+  const nd = document.getElementById('nd-'+k);
+  const rip = document.createElement('div');
+  rip.className = 'ripple';
+  nd.appendChild(rip);
+  setTimeout(()=>rip.remove(), 700);
+  showTip(k);
+}
+function closeTip(e, force=false){
+  if(force || e.target===document.getElementById('tipCard'))
+    document.getElementById('tipCard').classList.remove('show');
+}
+
+/* ════ FLOW ANIMATION ════ */
+let flowing=false;
+const statuses=[
+  '🗄️ Storage membuka data... seperti air dari mata air!',
+  '💧 Data mengalir dari Storage ke RAM...',
+  '📋 RAM menampung data sementara... seperti kolam!',
+  '🌊 Data mengalir dari RAM ke CPU...',
+  '🧠 CPU memproses data dengan cepat!',
+  '⚡ Data hasil proses mengalir ke layar...',
+  '🖥️ Selesai! Data tampil di layar! 🎉✨'
+];
+
+function startFlow(){
+  if(flowing) return;
+  flowing=true;
+  document.getElementById('btnFlow').disabled=true;
+
+  const ids=['nd-storage','nd-ram','nd-cpu','nd-monitor'];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);
+    el.classList.remove('lit');
+  });
+
+  let step=0;
+  function next(){
+    document.getElementById('flowStatus').textContent = statuses[step]||statuses[statuses.length-1];
+    if(step<ids.length){
+      const el=document.getElementById(ids[step]);
+      el.classList.add('lit');
+      setTimeout(()=>el.classList.remove('lit'),2800);
+    }
+    step++;
+    if(step<statuses.length){
+      setTimeout(next,1300);
+    } else {
+      spawnConfetti();
+      setTimeout(()=>{
+        flowing=false;
+        document.getElementById('btnFlow').disabled=false;
+        document.getElementById('btnFlow').textContent='🔄 Ulangi Aliran!';
+        document.getElementById('flowStatus').textContent='✅ Aliran selesai! Luar biasa! 🎉';
+      },400);
+    }
+  }
+  next();
+}
+
+/* ── speed control ── */
+function setSpeed(mode){
+  const pipes=['pipe1','pipe2','pipe3'];
+  const bar=document.getElementById('speedBar');
+  const lbl=document.getElementById('speedLabel');
+  pipes.forEach(id=>{
+    const el=document.getElementById(id);
+    el.classList.remove('fast','slow');
+    if(mode==='fast') el.classList.add('fast');
+    else if(mode==='slow') el.classList.add('slow');
+  });
+  if(mode==='fast'){
+    bar.style.width='90%';
+    bar.style.background='linear-gradient(90deg,#f97316,#ef4444,#fbbf24)';
+    lbl.textContent='⚡ Super Cepat!';
+  } else if(mode==='slow'){
+    bar.style.width='18%';
+    bar.style.background='linear-gradient(90deg,#a855f7,#7c3aed)';
+    lbl.textContent='🐢 Lambat...';
+  } else {
+    bar.style.width='50%';
+    bar.style.background='linear-gradient(90deg,#38bdf8,#34d399,#fbbf24)';
+    lbl.textContent='Normal 💧';
+  }
+}
+
+/* ── bandwidth sim ── */
+const bwData=[
+  {w:'22%',bg:'linear-gradient(90deg,#ef4444,#f97316)',lbl:'🚿 Lambat – 1 Mbps',desc:'Koneksi lambat... menonton video akan buffering terus! 😅'},
+  {w:'55%',bg:'linear-gradient(90deg,#fbbf24,#34d399)',lbl:'🪣 Sedang – 20 Mbps',desc:'Cukup untuk streaming HD! Kalau ada yang download, bisa pelan. 😊'},
+  {w:'94%',bg:'linear-gradient(90deg,#34d399,#06b6d4,#3b82f6)',lbl:'🌊 Cepat – 1 Gbps',desc:'Super cepat! Download film HD cuma butuh beberapa detik! ⚡🚀'}
+];
+function setBandwidth(n){
+  const d=bwData[n-1];
+  const bar=document.getElementById('bwBar');
+  bar.style.width=d.w;
+  bar.style.background=d.bg;
+  document.getElementById('bwLabel').textContent=d.lbl;
+  document.getElementById('bwDesc').textContent=d.desc;
+  if(n===3) spawnConfetti();
+}
+
+/* ════ QUIZ ════ */
+const answered={1:false,2:false,3:false};
+let score=0;
+
+function ck(num,chosen,correct){
+  if(answered[num]) return;
+  answered[num]=true;
+  const bl=document.getElementById('q'+num+'B');
+  const msg=document.getElementById('q'+num+'M');
+  const btns=bl.querySelectorAll('.qbtn');
+  btns.forEach(b=>b.disabled=true);
+
+  if(chosen===correct){
+    score++;
+    msg.textContent='🎉 Betul sekali! Kamu hebat!';
+    msg.style.color='#16a34a';
+    bl.style.background='#f0fdf4';
+    bl.style.borderLeft='4px solid #22c55e';
+  } else {
+    msg.innerHTML='😅 Belum tepat! Jawaban yang benar sudah diwarnai. Semangat! 💪';
+    msg.style.color='#dc2626';
+    bl.style.background='#fff1f2';
+    bl.style.borderLeft='4px solid #f43f5e';
+    btns.forEach(b=>{
+      if(b.onclick.toString().includes(`'${correct}'`)){
+        b.style.background='#dcfce7';
+        b.style.borderColor='#22c55e';
+        b.style.color='#15803d';
+      }
+    });
+  }
+  msg.classList.remove('hidden');
+  if(Object.values(answered).every(v=>v)) showScore();
+}
+
+function showScore(){
+  const s=document.getElementById('qScore');
+  s.classList.remove('hidden');
+  let star,text;
+  if(score===3){ star='🌟🌟🌟'; text='Sempurna! 3/3! Kamu master aliran data!'; spawnConfetti(); }
+  else if(score===2){ star='⭐⭐'; text='Bagus! 2/3! Hampir sempurna!'; }
+  else { star='⭐'; text='Tetap semangat! 1/3. Baca lagi ya, pasti bisa!'; }
+  document.getElementById('qStar').textContent=star;
+  document.getElementById('qText').textContent=text;
+}
+
+/* ── confetti ── */
+function spawnConfetti(){
+  const cols=['#06b6d4','#34d399','#fbbf24','#f97316','#ec4899','#a855f7','#38bdf8'];
+  for(let i=0;i<28;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.cssText=`
+      left:${15+Math.random()*70}vw;
+      top:${10+Math.random()*35}vh;
+      background:${cols[Math.floor(Math.random()*cols.length)]};
+      border-radius:${Math.random()>.5?'50%':'3px'};
+      --tx:${(Math.random()-.5)*220}px;
+      --ty:${80+Math.random()*200}px;
+      animation-delay:${Math.random()*.4}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1900);
+  }
+}
+</script>
+</body>
+</html>

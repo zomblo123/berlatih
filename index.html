@@ -1,0 +1,2450 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6c63ff">
+<title>BERLATIH — Personal Growth App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f5f6fa;
+  --white:#ffffff;
+  --surface:#ffffff;
+  --surface2:#f0f1f7;
+  --surface3:#e8eaf2;
+  --border:rgba(0,0,0,0.06);
+  --border2:rgba(0,0,0,0.1);
+  --text:#1a1a2e;
+  --text2:#555770;
+  --text3:#9496a8;
+  --accent:#6c63ff;
+  --accent2:#8b84ff;
+  --accent-light:rgba(108,99,255,0.1);
+  --green:#00c896;
+  --green-bg:rgba(0,200,150,0.1);
+  --red:#ff4757;
+  --red-bg:rgba(255,71,87,0.1);
+  --amber:#ffa502;
+  --amber-bg:rgba(255,165,2,0.1);
+  --blue:#2e86de;
+  --blue-bg:rgba(46,134,222,0.1);
+  --purple:#a78bfa;
+  --purple-bg:rgba(167,139,250,0.1);
+  --gold:#f59e0b;
+  --gold-bg:rgba(245,158,11,0.1);
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --serif:'Playfair Display',serif;
+  --shadow:0 2px 16px rgba(0,0,0,0.06);
+  --shadow-md:0 4px 24px rgba(0,0,0,0.1);
+  --radius:16px;
+  --radius-sm:12px;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:90px;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+
+/* ── SYNC INDICATOR ── */
+.sync-indicator{position:fixed;top:8px;right:8px;z-index:999;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;transition:all 0.3s;}
+.sync-indicator.syncing{background:var(--amber-bg);color:var(--amber);}
+.sync-indicator.synced{background:var(--green-bg);color:var(--green);}
+.sync-indicator.error{background:var(--red-bg);color:var(--red);}
+
+/* ── LOADING SCREEN ── */
+.loading-screen{position:fixed;inset:0;background:linear-gradient(135deg,#1a1a2e,#0f3460);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s;}
+.loading-screen.hide{opacity:0;pointer-events:none;}
+.loading-logo{font-family:var(--serif);font-size:36px;font-weight:800;color:white;margin-bottom:8px;}
+.loading-logo span{color:#a78bfa;}
+.loading-sub{font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:32px;}
+.loading-dots{display:flex;gap:8px;}
+.loading-dots span{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:ldot 1.2s ease infinite;}
+.loading-dots span:nth-child(2){animation-delay:0.2s;}
+.loading-dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes ldot{0%,80%,100%{transform:scale(0.6);opacity:0.4;}40%{transform:scale(1);opacity:1;}}
+
+/* ── HEADER ── */
+.header{background:var(--white);padding:20px 18px 16px;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);}
+.header-row{display:flex;align-items:center;justify-content:space-between;}
+.brand{font-family:var(--serif);font-size:26px;font-weight:800;color:var(--text);letter-spacing:-1px;}
+.brand span{color:var(--accent);}
+.header-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;overflow:hidden;cursor:pointer;}
+.header-avatar img{width:100%;height:100%;object-fit:cover;}
+.xp-row{display:flex;align-items:center;gap:10px;margin-top:12px;}
+.xp-label{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:0.5px;}
+.xp-track{flex:1;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),#a78bfa);border-radius:3px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+.xp-val{font-size:11px;font-weight:700;color:var(--accent);}
+
+/* ── NAV ── */
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(6,1fr);z-index:200;padding:10px 4px 14px;max-width:640px;margin:0 auto;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 2px;border-radius:10px;transition:all 0.2s;}
+.nav-icon{font-size:20px;color:var(--text3);transition:all 0.2s;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;}
+.nav-label{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:0.3px;text-transform:uppercase;}
+.nav-item.active .nav-icon{background:var(--accent-light);color:var(--accent);}
+.nav-item.active .nav-label{color:var(--accent);}
+
+/* ── MAIN ── */
+.main{max-width:640px;margin:0 auto;padding:16px 14px;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ── SECTION TITLE ── */
+.sec-title{font-size:18px;font-weight:800;color:var(--text);margin-bottom:14px;}
+.sec-sub{font-size:12px;color:var(--text3);font-weight:500;margin-left:8px;}
+
+/* ── MINI APP GRID ── */
+.mini-section{margin-bottom:24px;}
+.mini-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.mini-more{font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;}
+.mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.mini-card{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;}
+.mini-icon{width:60px;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:var(--shadow);transition:transform 0.2s,box-shadow 0.2s;}
+.mini-card:active .mini-icon{transform:scale(0.92);}
+.mini-label{font-size:11px;font-weight:600;color:var(--text);text-align:center;}
+.mini-icon.c1{background:linear-gradient(135deg,#6c63ff,#a78bfa);}
+.mini-icon.c2{background:linear-gradient(135deg,#00c896,#00b09b);}
+.mini-icon.c3{background:linear-gradient(135deg,#ffa502,#ff6348);}
+.mini-icon.c4{background:linear-gradient(135deg,#2e86de,#48a9f8);}
+.mini-icon.c5{background:linear-gradient(135deg,#ff4757,#ff6b81);}
+.mini-icon.c6{background:linear-gradient(135deg,#a78bfa,#7c3aed);}
+.mini-icon.c7{background:linear-gradient(135deg,#11998e,#38ef7d);}
+.mini-icon.c8{background:linear-gradient(135deg,#1a1a2e,#16213e);}
+
+/* ── REMINDER CARD (HOME) ── */
+.reminder-section{margin-bottom:20px;}
+.reminder-card{background:var(--white);border-radius:14px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);cursor:pointer;transition:transform 0.15s;}
+.reminder-card:active{transform:scale(0.97);}
+.reminder-icon{width:36px;height:36px;border-radius:10px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.reminder-icon.urgent{background:var(--red-bg);}
+.reminder-icon.soon{background:var(--amber-bg);}
+.reminder-info{flex:1;min-width:0;}
+.reminder-title{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.reminder-time{font-size:10px;color:var(--text3);margin-top:2px;font-weight:500;}
+.reminder-badge{font-size:9px;padding:3px 8px;border-radius:20px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.reminder-badge.urgent{background:var(--red-bg);color:var(--red);}
+.reminder-badge.soon{background:var(--amber-bg);color:var(--amber);}
+.reminder-badge.normal{background:var(--purple-bg);color:var(--purple);}
+
+/* ── QUEST GRID ── */
+.quest-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;}
+.quest-card{background:var(--white);border:2px solid var(--border);border-radius:18px;padding:16px;cursor:pointer;transition:all 0.2s;text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow);}
+.quest-card.done{border-color:var(--green);background:linear-gradient(135deg,rgba(0,200,150,0.05),rgba(0,200,150,0.02));}
+.quest-card:active{transform:scale(0.96);}
+.quest-check{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:var(--green);display:none;align-items:center;justify-content:center;font-size:11px;color:white;font-weight:700;}
+.quest-card.done .quest-check{display:flex;}
+.quest-icon-wrap{width:54px;height:54px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px;}
+.quest-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.quest-dur{font-size:11px;color:var(--text3);font-weight:500;}
+.quest-timer-btn{margin-top:10px;background:var(--surface2);border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;width:100%;font-family:var(--sans);transition:all 0.15s;}
+.quest-timer-btn:hover{background:var(--surface3);}
+.quest-card.done .quest-timer-btn{display:none;}
+
+/* ── SUBMIT ── */
+.submit-wrap{background:var(--white);border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow);text-align:center;}
+.submit-progress{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:12px;}
+.submit-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;border-radius:12px;padding:14px 32px;font-family:var(--sans);font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;width:100%;letter-spacing:0.3px;}
+.submit-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(108,99,255,0.35);}
+.submit-btn:disabled{background:var(--surface2);color:var(--text3);cursor:not-allowed;}
+
+/* ── GREETING ── */
+.greeting-card{background:linear-gradient(135deg,var(--accent) 0%,#a78bfa 100%);border-radius:20px;padding:20px;margin-bottom:20px;position:relative;overflow:hidden;}
+.greeting-bg{position:absolute;top:-20px;right:-20px;font-size:80px;opacity:0.15;transform:rotate(15deg);}
+.greeting-name{font-family:var(--serif);font-size:22px;color:white;margin-bottom:6px;}
+.greeting-msg{font-size:12px;color:rgba(255,255,255,0.8);line-height:1.7;}
+
+/* ── STAT CHIPS ── */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.stat-chip{background:var(--white);border-radius:16px;padding:14px;text-align:center;box-shadow:var(--shadow);}
+.stat-val{font-size:22px;font-weight:800;color:var(--text);}
+.stat-label{font-size:10px;color:var(--text3);font-weight:600;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* ── CARDS ── */
+.card{background:var(--white);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
+.card-sm{background:var(--white);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:10px;box-shadow:var(--shadow);}
+
+/* ── STREAK ── */
+.streak-hero{background:linear-gradient(135deg,#ffa502,#ff6348);border-radius:20px;padding:24px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;}
+.streak-bg{position:absolute;top:-10px;right:-10px;font-size:100px;opacity:0.15;}
+.streak-num{font-family:var(--serif);font-size:56px;color:white;font-weight:700;line-height:1;}
+.streak-label{font-size:12px;color:rgba(255,255,255,0.85);margin-top:6px;font-weight:600;}
+.week-row{display:flex;gap:6px;margin-top:16px;}
+.day-dot{flex:1;padding:10px 4px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface2);display:flex;flex-direction:column;align-items:center;gap:4px;}
+.day-dot.done{background:rgba(255,165,2,0.12);border-color:var(--amber);}
+.day-dot.today{border-color:var(--accent);border-width:2px;}
+.day-name{font-size:8px;color:var(--text3);font-weight:700;text-transform:uppercase;}
+.day-dot.done .day-name{color:var(--amber);}
+.day-ico{font-size:14px;}
+
+/* ── BADGES ── */
+.badges-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+.badge-item{text-align:center;}
+.badge-icon{width:52px;height:52px;border-radius:14px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 5px;filter:grayscale(1) brightness(0.7);transition:all 0.3s;}
+.badge-icon.unlocked{background:linear-gradient(135deg,rgba(108,99,255,0.15),rgba(167,139,250,0.15));filter:none;box-shadow:0 4px 12px rgba(108,99,255,0.2);}
+.badge-name{font-size:9px;color:var(--text3);font-weight:600;}
+.badge-item.unlocked .badge-name{color:var(--accent);}
+
+/* ── FINANCE ── */
+.fin-hero-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.fin-hero{border-radius:18px;padding:18px;position:relative;overflow:hidden;}
+.fin-hero.savings{background:linear-gradient(135deg,var(--green) 0%,#00b09b 100%);}
+.fin-hero.debt{background:linear-gradient(135deg,var(--red) 0%,#ff6b81 100%);}
+.fin-hero-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-bottom:6px;}
+.fin-hero-amount{font-family:var(--serif);font-size:22px;color:white;font-weight:700;}
+.fin-tabs{display:flex;gap:8px;margin-bottom:16px;}
+.fin-tab{flex:1;padding:10px;background:var(--white);border:1.5px solid var(--border);border-radius:12px;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;text-align:center;transition:all 0.2s;box-shadow:var(--shadow);}
+.fin-tab.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+.fin-section{display:none;}
+.fin-section.active{display:block;}
+.fin-btn{flex:1;padding:12px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);border:none;transition:all 0.2s;box-shadow:var(--shadow);}
+.fin-btn.add{background:var(--green-bg);color:var(--green);}
+.fin-btn.sub{background:var(--red-bg);color:var(--red);}
+.fin-btn.pay{background:var(--amber-bg);color:var(--amber);}
+.txn-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.txn-row:last-child{border-bottom:none;}
+.txn-ico{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.txn-ico.in{background:var(--green-bg);}
+.txn-ico.out{background:var(--red-bg);}
+.txn-info{flex:1;}
+.txn-desc{font-size:13px;font-weight:600;color:var(--text);}
+.txn-date{font-size:10px;color:var(--text3);margin-top:2px;}
+.txn-amount{font-size:12px;font-weight:700;}
+.txn-amount.in{color:var(--green);}
+.txn-amount.out{color:var(--red);}
+.txn-actions{display:flex;gap:4px;}
+.txn-act{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+
+/* ── DEBT CARDS ── */
+.debt-card{background:var(--white);border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:var(--shadow);}
+.debt-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.debt-name{font-size:14px;font-weight:700;color:var(--text);}
+.debt-badge{font-size:10px;padding:3px 10px;border-radius:20px;font-weight:700;}
+.debt-badge.hutang{background:var(--red-bg);color:var(--red);}
+.debt-badge.cicilan{background:var(--amber-bg);color:var(--amber);}
+.debt-progress{height:5px;background:var(--surface2);border-radius:3px;margin-bottom:8px;overflow:hidden;}
+.debt-fill{height:100%;border-radius:3px;}
+.debt-fill.hutang{background:var(--red);}
+.debt-fill.cicilan{background:var(--amber);}
+.debt-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-weight:500;}
+.debt-actions{display:flex;gap:8px;margin-top:12px;}
+.debt-act-btn{flex:1;padding:9px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);border:none;transition:all 0.15s;}
+.debt-act-btn.pay-btn{background:var(--amber-bg);color:var(--amber);}
+.debt-act-btn.del-btn{background:var(--red-bg);color:var(--red);}
+
+/* ── WISHLIST ── */
+.wish-card{background:var(--white);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:var(--shadow);}
+.wish-priority{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.wish-priority.rendah{background:var(--text3);}
+.wish-priority.sedang{background:var(--blue);}
+.wish-priority.penting{background:var(--amber);}
+.wish-priority.mendesak{background:var(--red);}
+.wish-info{flex:1;}
+.wish-name{font-size:13px;font-weight:600;color:var(--text);}
+.wish-detail{font-size:10px;color:var(--text3);margin-top:2px;}
+.wish-tag{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.wish-tag.rendah{background:var(--surface2);color:var(--text3);}
+.wish-tag.sedang{background:var(--blue-bg);color:var(--blue);}
+.wish-tag.penting{background:var(--amber-bg);color:var(--amber);}
+.wish-tag.mendesak{background:var(--red-bg);color:var(--red);}
+
+/* ── NOTES ── */
+.note-card{background:var(--white);border-radius:16px;padding:16px;margin-bottom:10px;cursor:pointer;box-shadow:var(--shadow);transition:all 0.2s;}
+.note-card:active{transform:scale(0.98);}
+.note-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;gap:10px;}
+.note-title{font-size:15px;font-weight:700;color:var(--text);}
+.note-remind-badge{font-size:9px;padding:3px 8px;border-radius:20px;background:var(--purple-bg);color:var(--purple);font-weight:600;white-space:nowrap;}
+.note-body{font-size:12px;color:var(--text2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.note-meta{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
+.note-date{font-size:10px;color:var(--text3);font-weight:500;}
+.note-tag{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--surface2);color:var(--text3);}
+.note-actions{display:flex;gap:4px;margin-top:8px;}
+
+/* ── PROFILE ── */
+.profile-hero{background:linear-gradient(135deg,var(--accent),#a78bfa);border-radius:20px;padding:24px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;}
+.profile-photo{width:80px;height:80px;border-radius:50%;border:3px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:36px;overflow:hidden;margin:0 auto 12px;}
+.profile-photo img{width:100%;height:100%;object-fit:cover;}
+.profile-name{font-family:var(--serif);font-size:24px;color:white;margin-bottom:4px;}
+.profile-role{font-size:12px;color:rgba(255,255,255,0.7);font-weight:500;}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;}
+.p-stat{background:rgba(255,255,255,0.15);border-radius:12px;padding:12px;text-align:center;}
+.p-stat-val{font-size:20px;font-weight:800;color:white;}
+.p-stat-label{font-size:9px;color:rgba(255,255,255,0.7);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* ── INPUTS ── */
+.modal-label{font-size:11px;color:var(--text3);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;display:block;margin-top:14px;}
+.modal-input{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text);font-size:14px;font-family:var(--sans);outline:none;transition:border-color 0.2s;font-weight:500;}
+.modal-input:focus{border-color:var(--accent);background:var(--white);}
+.modal-textarea{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text);font-size:14px;font-family:var(--sans);outline:none;resize:vertical;min-height:80px;line-height:1.6;transition:border-color 0.2s;font-weight:500;}
+.modal-textarea:focus{border-color:var(--accent);background:var(--white);}
+.modal-select{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text);font-size:14px;font-family:var(--sans);outline:none;appearance:none;}
+
+/* ── TIMER MODAL ── */
+.timer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.timer-overlay.open{display:flex;}
+.timer-modal{background:var(--white);border-radius:28px;padding:36px 28px;width:300px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+.timer-emoji{font-size:48px;margin-bottom:8px;}
+.timer-title{font-family:var(--serif);font-size:20px;color:var(--text);margin-bottom:6px;font-weight:700;}
+.timer-subtitle{font-size:12px;color:var(--text3);margin-bottom:24px;}
+.timer-ring{position:relative;width:140px;height:140px;margin:0 auto 24px;}
+.timer-ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg);}
+.timer-ring-bg{stroke:var(--surface2);}
+.timer-ring-fill{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1s linear;}
+.timer-time{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:32px;font-weight:800;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-1px;}
+.timer-time.urgent{color:var(--red);}
+.timer-btns{display:flex;gap:10px;}
+.timer-ctrl{flex:1;padding:14px;border-radius:14px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all 0.2s;}
+.timer-ctrl.start{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;}
+.timer-ctrl.start:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(108,99,255,0.4);}
+.timer-ctrl.close{background:var(--red-bg);color:var(--red);}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:400;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--white);border-radius:24px 24px 0 0;padding:24px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;}
+.modal-handle{width:40px;height:4px;background:var(--surface3);border-radius:2px;margin:0 auto 18px;}
+.modal-title{font-family:var(--serif);font-size:22px;color:var(--text);margin-bottom:6px;font-weight:700;}
+.modal-row{display:flex;gap:10px;margin-top:20px;}
+.modal-confirm{flex:1;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sans);}
+.modal-cancel{flex:1;padding:14px;background:var(--surface2);color:var(--text3);border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans);}
+.priority-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
+.priority-opt{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface2);color:var(--text3);transition:all 0.15s;}
+.priority-opt.sel-rendah{background:var(--surface3);color:var(--text);}
+.priority-opt.sel-sedang{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}
+.priority-opt.sel-penting{background:var(--amber-bg);border-color:var(--amber);color:var(--amber);}
+.priority-opt.sel-mendesak{background:var(--red-bg);border-color:var(--red);color:var(--red);}
+.type-row{display:flex;gap:8px;margin-top:6px;}
+.type-opt{flex:1;padding:11px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface2);color:var(--text3);text-align:center;transition:all 0.2s;}
+.type-opt.sel-hutang{background:var(--red-bg);border-color:var(--red);color:var(--red);}
+.type-opt.sel-cicilan{background:var(--amber-bg);border-color:var(--amber);color:var(--amber);}
+
+/* ── FAB ── */
+.fab{position:fixed;bottom:84px;right:16px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;z-index:150;box-shadow:0 6px 24px rgba(108,99,255,0.45);transition:all 0.2s;}
+.fab:hover{transform:scale(1.05);}
+.fab:active{transform:scale(0.95);}
+
+/* ── NOTE EXPAND ── */
+.note-full-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:600;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);}
+.note-full-overlay.open{display:flex;}
+.note-full-box{background:var(--white);border-radius:24px 24px 0 0;padding:24px;width:100%;max-width:640px;max-height:85vh;overflow-y:auto;}
+.note-full-title{font-family:var(--serif);font-size:22px;color:var(--text);margin-bottom:4px;font-weight:700;}
+.note-full-meta{font-size:11px;color:var(--text3);margin-bottom:16px;font-weight:500;}
+.note-full-body{font-size:14px;color:var(--text2);line-height:1.8;white-space:pre-wrap;}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:76px;left:50%;transform:translateX(-50%) translateY(-120px);background:var(--text);color:white;padding:10px 22px;border-radius:50px;font-size:12px;font-weight:600;transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);z-index:700;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.success{background:var(--green);}
+.toast.danger{background:var(--red);}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:32px 16px;color:var(--text3);}
+.empty-ico{font-size:36px;margin-bottom:10px;opacity:0.4;}
+.empty-txt{font-size:13px;font-weight:500;}
+
+/* QUEST MANAGER */
+.qm-row{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface2);margin-bottom:8px;}
+
+/* ═══════ DREAM BOOK STYLES ═══════ */
+.db-header{background:linear-gradient(135deg,#1a1a2e 0%,#0f3460 60%,#533483 100%);border-radius:20px;padding:24px 20px;margin-bottom:16px;position:relative;overflow:hidden;}
+.db-header-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.db-header-bg svg{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.15;}
+.db-header-content{position:relative;z-index:1;}
+.db-title{font-family:var(--serif);font-size:26px;color:white;font-weight:700;line-height:1.2;margin-bottom:6px;}
+.db-subtitle{font-size:12px;color:rgba(255,255,255,0.65);margin-bottom:18px;}
+.db-new-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.25);color:white;padding:10px 20px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all 0.2s;}
+.db-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;}
+.db-stat{background:rgba(255,255,255,0.1);border-radius:12px;padding:12px;text-align:center;}
+.db-stat-val{font-size:20px;font-weight:800;color:white;}
+.db-stat-label{font-size:9px;color:rgba(255,255,255,0.6);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+.dream-card{background:var(--white);border-radius:18px;margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:all 0.2s;}
+.dream-card:active{transform:scale(0.98);}
+.dream-card-top{height:120px;position:relative;display:flex;align-items:center;justify-content:center;font-size:56px;}
+.dream-card-body{padding:14px 16px;}
+.dream-card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.dream-card-desc{font-size:11px;color:var(--text3);line-height:1.5;}
+.dream-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.dream-progress-bar{height:6px;background:var(--surface2);border-radius:3px;flex:1;margin:0 10px;overflow:hidden;}
+.dream-progress-fill{height:100%;border-radius:3px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+.dream-pct{font-size:11px;font-weight:700;}
+.dream-cat-chip{font-size:10px;padding:3px 10px;border-radius:20px;font-weight:700;}
+.dream-actions{display:flex;gap:6px;margin-top:10px;}
+.dream-act-btn{flex:1;padding:8px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);border:none;transition:all 0.15s;text-align:center;}
+.dream-detail-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:800;overflow-y:auto;}
+.dream-detail-overlay.open{display:block;}
+.dd-back{position:sticky;top:0;background:var(--white);padding:14px 18px;display:flex;align-items:center;gap:12px;z-index:10;border-bottom:1px solid var(--border);}
+.dd-back-btn{width:36px;height:36px;border-radius:10px;background:var(--surface2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;font-family:var(--sans);}
+.dd-back-title{font-size:15px;font-weight:700;color:var(--text);flex:1;}
+.dd-share-btn{padding:7px 14px;border-radius:10px;background:var(--green-bg);border:none;color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);}
+.dd-body{padding:16px 14px;max-width:640px;margin:0 auto;}
+.vision-board{border-radius:20px;overflow:hidden;margin-bottom:16px;position:relative;}
+.vision-board-inner{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto;gap:4px;}
+.vb-main{grid-column:1/-1;height:180px;position:relative;display:flex;align-items:center;justify-content:center;background:var(--surface2);border-radius:16px 16px 0 0;overflow:hidden;cursor:pointer;}
+.vb-main img{width:100%;height:100%;object-fit:cover;}
+.vb-main .vb-placeholder{font-size:60px;opacity:0.3;}
+.vb-sub{height:90px;background:var(--surface2);display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;position:relative;}
+.vb-sub:first-child{border-radius:0 0 0 16px;}
+.vb-sub:last-child{border-radius:0 0 16px 0;}
+.vb-sub img{width:100%;height:100%;object-fit:cover;}
+.vb-sub .vb-placeholder-sm{font-size:28px;opacity:0.3;}
+.vb-add-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;opacity:0;transition:opacity 0.2s;}
+.vb-main:hover .vb-add-overlay,.vb-sub:hover .vb-add-overlay{opacity:1;}
+.vb-delete-btn{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:rgba(255,71,87,0.9);border:none;color:white;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;opacity:0;transition:opacity 0.2s;}
+.vb-main:hover .vb-delete-btn,.vb-sub:hover .vb-delete-btn{opacity:1;}
+.progress-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.circular-card{background:var(--white);border-radius:16px;padding:16px;box-shadow:var(--shadow);text-align:center;}
+.circ-wrap{position:relative;width:90px;height:90px;margin:0 auto 10px;}
+.circ-wrap svg{transform:rotate(-90deg);}
+.circ-bg{stroke:var(--surface2);}
+.circ-fill{stroke-linecap:round;transition:stroke-dashoffset 1s ease;}
+.circ-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+.circ-pct{font-size:18px;font-weight:800;color:var(--text);}
+.circ-label{font-size:10px;color:var(--text3);font-weight:600;margin-top:4px;}
+.countdown-card{background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:16px;padding:16px;box-shadow:var(--shadow);color:white;}
+.cd-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.75;margin-bottom:8px;}
+.cd-nums{display:flex;gap:8px;justify-content:center;}
+.cd-block{text-align:center;background:rgba(255,255,255,0.15);border-radius:10px;padding:8px 10px;min-width:44px;}
+.cd-num{font-size:22px;font-weight:800;line-height:1;}
+.cd-unit{font-size:8px;font-weight:600;opacity:0.7;margin-top:2px;}
+.milestone-section{margin-bottom:16px;}
+.milestone-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.milestone-title{font-size:15px;font-weight:800;color:var(--text);}
+.milestone-add{font-size:12px;font-weight:700;color:var(--accent);cursor:pointer;}
+.milestone-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--white);border-radius:14px;margin-bottom:8px;box-shadow:var(--shadow);cursor:pointer;transition:all 0.2s;}
+.milestone-item.done-ms{opacity:0.6;}
+.milestone-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all 0.2s;margin-top:1px;}
+.milestone-item.done-ms .milestone-check{background:var(--green);border-color:var(--green);color:white;}
+.milestone-info{flex:1;}
+.milestone-text{font-size:13px;font-weight:600;color:var(--text);line-height:1.4;}
+.milestone-item.done-ms .milestone-text{text-decoration:line-through;color:var(--text3);}
+.milestone-meta{font-size:10px;color:var(--text3);margin-top:3px;}
+.ms-delete{width:24px;height:24px;border-radius:8px;border:none;background:var(--red-bg);color:var(--red);font-size:11px;cursor:pointer;display:none;flex-shrink:0;}
+.milestone-item:hover .ms-delete{display:block;}
+.affirmation-card{background:linear-gradient(135deg,#1a1a2e,#0f3460);border-radius:16px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden;}
+.aff-deco{position:absolute;top:-10px;right:-10px;font-size:60px;opacity:0.1;}
+.aff-quote{font-family:var(--serif);font-size:16px;color:white;line-height:1.6;font-style:italic;position:relative;z-index:1;}
+.aff-quote::before{content:'"';font-size:32px;color:var(--gold);line-height:0.5;display:block;margin-bottom:8px;}
+.fin-summary-card{background:var(--white);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
+.fin-sum-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.fin-sum-box{border-radius:12px;padding:12px;text-align:center;}
+.fin-sum-box.collected{background:var(--green-bg);}
+.fin-sum-box.target{background:var(--accent-light);}
+.fin-sum-val{font-size:16px;font-weight:800;}
+.fin-sum-val.g{color:var(--green);}
+.fin-sum-val.a{color:var(--accent);}
+.fin-sum-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-top:3px;color:var(--text3);}
+.fin-big-bar{height:10px;background:var(--surface2);border-radius:5px;overflow:hidden;margin-bottom:8px;}
+.fin-big-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--accent));border-radius:5px;transition:width 0.8s cubic-bezier(0.34,1.56,0.64,1);}
+.ai-bstorm-section{margin-bottom:16px;}
+.ai-bstorm-card{background:linear-gradient(135deg,#0f2027,#2c5364);border-radius:18px;padding:18px;box-shadow:var(--shadow);}
+.ai-bstorm-title{font-size:13px;font-weight:700;color:rgba(255,255,255,0.85);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.ai-bstorm-input-row{display:flex;gap:8px;}
+.ai-bstorm-input{flex:1;padding:12px 14px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.1);color:white;font-size:13px;font-family:var(--sans);outline:none;}
+.ai-bstorm-input::placeholder{color:rgba(255,255,255,0.4);}
+.ai-bstorm-btn{padding:12px 16px;background:var(--gold);border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);color:#1a1a2e;white-space:nowrap;transition:all 0.2s;}
+.ai-bstorm-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.ai-result{margin-top:14px;display:none;}
+.ai-result.show{display:block;}
+.ai-result-section{margin-bottom:14px;}
+.ai-section-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.ai-milestone-item{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
+.ai-milestone-item:last-child{border-bottom:none;}
+.ai-ms-num{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--gold);flex-shrink:0;}
+.ai-ms-text{font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5;}
+.ai-affirmation{font-size:12px;color:rgba(255,255,255,0.8);font-style:italic;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
+.ai-budget-box{background:rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;font-size:12px;color:rgba(255,255,255,0.85);line-height:1.7;}
+.ai-keywords{display:flex;flex-wrap:wrap;gap:6px;}
+.ai-kw{padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);font-size:11px;font-weight:600;cursor:pointer;}
+.ai-loading{text-align:center;padding:20px;color:rgba(255,255,255,0.6);font-size:13px;}
+.ai-loading .ai-dots{display:inline-flex;gap:4px;margin-left:6px;}
+.ai-dots span{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:ai-bounce 1.2s ease infinite;}
+.ai-dots span:nth-child(2){animation-delay:0.2s;}
+.ai-dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes ai-bounce{0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-6px);}}
+.ms-add-inline{display:flex;gap:8px;align-items:center;padding:10px 14px;background:var(--surface2);border-radius:14px;margin-bottom:8px;}
+.ms-inline-input{flex:1;border:none;background:transparent;font-family:var(--sans);font-size:13px;color:var(--text);outline:none;}
+.ms-inline-confirm{padding:6px 12px;background:var(--accent);border:none;border-radius:8px;color:white;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);}
+.ms-inline-cancel{padding:6px;border:none;background:var(--red-bg);color:var(--red);border-radius:8px;font-size:11px;cursor:pointer;}
+.db-list-empty{text-align:center;padding:40px 20px;}
+.db-list-empty-ico{font-size:60px;opacity:0.25;margin-bottom:14px;}
+.db-list-empty-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.db-list-empty-desc{font-size:13px;color:var(--text3);line-height:1.6;}
+.db-list-empty-btn{margin-top:20px;display:inline-block;padding:12px 28px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sans);}
+#vbFileInput{display:none;}
+
+@media(max-width:380px){
+  .mini-grid{grid-template-columns:repeat(4,1fr);gap:10px;}
+  .badges-grid{grid-template-columns:repeat(4,1fr);}
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.tab-content.active{animation:slideUp 0.3s ease;}
+</style>
+</head>
+<body>
+
+<button id="installPWABtn" onclick="installPWA()" style="display:none;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;border:none;background:rgba(108,99,255,0.12);color:#6c63ff;font-size:11px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">📲 Pasang App</button>
+
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">Ber<span>Latih</span></div>
+  <div class="loading-sub">Memuat data dari cloud...</div>
+  <div class="loading-dots"><span></span><span></span><span></span></div>
+</div>
+
+<!-- SYNC INDICATOR -->
+<div class="sync-indicator synced" id="syncIndicator">☁️ Tersinkron</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-row">
+    <div class="brand">Ber<span>Latih</span></div>
+    <div class="header-avatar" id="headerAvatar" onclick="switchTab('profile')">B</div>
+  </div>
+  <div class="xp-row">
+    <span class="xp-label">XP Hari Ini</span>
+    <div class="xp-track"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+    <span class="xp-val" id="xpText">0 XP</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TODAY / HOME -->
+  <div class="tab-content active" id="tab-today">
+    <div class="greeting-card">
+      <div class="greeting-bg">🎯</div>
+      <div class="greeting-name" id="greetingName">Selamat Datang!</div>
+      <div class="greeting-msg" id="greetingMsg">Mulailah dengan satu langkah kecil. Konsistensi adalah kunci kesuksesan.</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-chip"><div class="stat-val" id="homeStreak">0</div><div class="stat-label">🔥 Streak</div></div>
+      <div class="stat-chip"><div class="stat-val" id="homeXP">0</div><div class="stat-label">⚡ Total XP</div></div>
+      <div class="stat-chip"><div class="stat-val" id="homeBadge">0</div><div class="stat-label">🏆 Badge</div></div>
+    </div>
+
+    <!-- ── REMINDER SECTION (3 terdekat) ── -->
+    <div class="reminder-section" id="reminderSection" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <span class="sec-title" style="margin-bottom:0;font-size:16px;">Reminder</span>
+        <span style="font-size:11px;color:var(--accent);font-weight:600;cursor:pointer;" onclick="switchTab('notes')">Lihat Semua →</span>
+      </div>
+      <div id="reminderList"></div>
+    </div>
+
+    <div class="mini-section" style="margin-top:4px;">
+      <div class="mini-header"><span class="sec-title" style="margin-bottom:0;">Mini App</span></div>
+      <div class="mini-grid">
+        <div class="mini-card" onclick="switchTab('dreambook')"><div class="mini-icon" style="background:linear-gradient(135deg,#1a1a2e,#533483);">📖</div><div class="mini-label">Dream Book</div></div>
+        <div class="mini-card" onclick="switchTab('streak')"><div class="mini-icon c1">🔥</div><div class="mini-label">Streak</div></div>
+        <div class="mini-card" onclick="switchTab('finance');switchFinTab('tabungan')"><div class="mini-icon c2">💰</div><div class="mini-label">Tabungan</div></div>
+        <div class="mini-card" onclick="switchTab('finance');switchFinTab('hutang')"><div class="mini-icon c3">📋</div><div class="mini-label">Hutang</div></div>
+        <div class="mini-card" onclick="switchTab('notes')"><div class="mini-icon c4">📝</div><div class="mini-label">Catatan</div></div>
+        <div class="mini-card" onclick="switchTab('badges')"><div class="mini-icon c5">🏆</div><div class="mini-label">Badge</div></div>
+        <div class="mini-card" onclick="switchTab('finance');switchFinTab('wishlist')"><div class="mini-icon c6">🛒</div><div class="mini-label">Wish List</div></div>
+        <div class="mini-card" onclick="switchTab('profile')"><div class="mini-icon c8">👤</div><div class="mini-label">Profil</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:4px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <span class="sec-title" style="margin-bottom:0;">Misi Hari Ini</span>
+        <span style="font-size:12px;color:var(--text3);font-weight:500;">Rutinitas Hari Ini</span>
+      </div>
+      <div class="quest-grid" id="questGrid"></div>
+      <p style="text-align:center;font-size:11px;color:var(--text3);margin-bottom:12px;font-weight:500;">Ketuk kartu untuk menandai selesai</p>
+      <div class="submit-wrap">
+        <div class="submit-progress" id="statusText">0 dari 0 tugas selesai</div>
+        <button class="submit-btn" id="submitBtn" onclick="submitDay()" disabled>Selesaikan Hari Ini ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DREAM BOOK -->
+  <div class="tab-content" id="tab-dreambook">
+    <div class="db-header">
+      <div class="db-header-bg"><svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><circle cx="350" cy="30" r="80" fill="rgba(255,215,0,0.15)"/><circle cx="300" cy="160" r="50" fill="rgba(167,139,250,0.15)"/></svg></div>
+      <div class="db-header-content">
+        <div class="db-title">Dream Book ✦</div>
+        <div class="db-subtitle">Tuliskan mimpimu, lacak kemajuanmu, wujudkan satu per satu</div>
+        <button class="db-new-btn" onclick="openNewDreamModal()">+ Tambah Mimpi Baru</button>
+        <div class="db-stats-row">
+          <div class="db-stat"><div class="db-stat-val" id="dbTotalDreams">0</div><div class="db-stat-label">Total Mimpi</div></div>
+          <div class="db-stat"><div class="db-stat-val" id="dbActiveDreams">0</div><div class="db-stat-label">Aktif</div></div>
+          <div class="db-stat"><div class="db-stat-val" id="dbDoneDreams">0</div><div class="db-stat-label">Terwujud ✓</div></div>
+        </div>
+      </div>
+    </div>
+    <div id="dreamList"></div>
+  </div>
+
+  <!-- STREAK (FIX: sekarang punya tab sendiri yang dirender dengan benar) -->
+  <div class="tab-content" id="tab-streak">
+    <div class="streak-hero">
+      <div class="streak-bg">🔥</div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-bottom:8px;">Streak Aktif</div>
+      <div class="streak-num" id="streakNum">0</div>
+      <div class="streak-label">hari berturut-turut</div>
+      <div class="week-row" id="weekRow" style="margin-top:20px;"></div>
+    </div>
+    <div class="card">
+      <div style="font-size:12px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Total XP</div>
+      <div style="font-size:36px;font-weight:800;color:var(--accent);" id="totalXpDisplay">0 XP</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:8px;line-height:1.7;">Setiap tugas = <strong>+20 XP</strong> · Semua selesai = <strong>+10 XP bonus</strong></div>
+    </div>
+    <div class="card">
+      <div style="font-size:12px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Aktivitas 30 Hari Terakhir</div>
+      <div id="streakCalendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:12px;">
+        <span style="font-size:10px;color:var(--text3);font-weight:500;">Kurang</span>
+        <div style="display:flex;gap:3px;">
+          <div style="width:10px;height:10px;border-radius:3px;background:var(--surface3);"></div>
+          <div style="width:10px;height:10px;border-radius:3px;background:rgba(255,165,2,0.3);"></div>
+          <div style="width:10px;height:10px;border-radius:3px;background:rgba(255,165,2,0.6);"></div>
+          <div style="width:10px;height:10px;border-radius:3px;background:var(--amber);"></div>
+        </div>
+        <span style="font-size:10px;color:var(--text3);font-weight:500;">Lebih</span>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:12px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Statistik</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="background:var(--surface2);border-radius:12px;padding:12px;text-align:center;">
+          <div style="font-size:24px;font-weight:800;color:var(--accent);" id="statTotalDays">0</div>
+          <div style="font-size:10px;color:var(--text3);font-weight:600;margin-top:2px;">Hari Aktif</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:12px;padding:12px;text-align:center;">
+          <div style="font-size:24px;font-weight:800;color:var(--amber);" id="statBestStreak">0</div>
+          <div style="font-size:10px;color:var(--text3);font-weight:600;margin-top:2px;">Streak Terbaik</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:12px;padding:12px;text-align:center;">
+          <div style="font-size:24px;font-weight:800;color:var(--green);" id="statTotalTasks">0</div>
+          <div style="font-size:10px;color:var(--text3);font-weight:600;margin-top:2px;">Total Tugas</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:12px;padding:12px;text-align:center;">
+          <div style="font-size:24px;font-weight:800;color:var(--purple);" id="statPerfectDays">0</div>
+          <div style="font-size:10px;color:var(--text3);font-weight:600;margin-top:2px;">Hari Sempurna</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BADGES -->
+  <div class="tab-content" id="tab-badges">
+    <div class="card" style="margin-bottom:12px;">
+      <div class="sec-title" style="font-size:16px;margin-bottom:16px;">Pencapaian 🏆</div>
+      <div class="badges-grid">
+        <div class="badge-item" id="bitem-first"><div class="badge-icon" id="bicon-first">⭐</div><div class="badge-name">Pertama</div></div>
+        <div class="badge-item" id="bitem-perfect"><div class="badge-icon" id="bicon-perfect">👑</div><div class="badge-name">Sempurna</div></div>
+        <div class="badge-item" id="bitem-streak3"><div class="badge-icon" id="bicon-streak3">🔥</div><div class="badge-name">3 Hari</div></div>
+        <div class="badge-item" id="bitem-streak7"><div class="badge-icon" id="bicon-streak7">💎</div><div class="badge-name">7 Hari</div></div>
+        <div class="badge-item" id="bitem-streak14"><div class="badge-icon" id="bicon-streak14">🚀</div><div class="badge-name">14 Hari</div></div>
+        <div class="badge-item" id="bitem-streak30"><div class="badge-icon" id="bicon-streak30">🏆</div><div class="badge-name">30 Hari</div></div>
+        <div class="badge-item" id="bitem-xp100"><div class="badge-icon" id="bicon-xp100">⚡</div><div class="badge-name">100 XP</div></div>
+        <div class="badge-item" id="bitem-xp500"><div class="badge-icon" id="bicon-xp500">💡</div><div class="badge-name">500 XP</div></div>
+        <div class="badge-item" id="bitem-xp1000"><div class="badge-icon" id="bicon-xp1000">🌟</div><div class="badge-name">1000 XP</div></div>
+        <div class="badge-item" id="bitem-task50"><div class="badge-icon" id="bicon-task50">🏅</div><div class="badge-name">50 Tugas</div></div>
+      </div>
+    </div>
+    <div class="card" id="customBadgesSection" style="display:none;">
+      <div class="sec-title" style="font-size:16px;margin-bottom:14px;">Badge Kustom</div>
+      <div class="badges-grid" id="customBadgesGrid"></div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="tab-content" id="tab-profile">
+    <div class="profile-hero">
+      <div class="profile-photo" id="profilePhotoDisplay">👤</div>
+      <div class="profile-name" id="profileNameDisplay">—</div>
+      <div class="profile-role" id="profileRole">—</div>
+      <div class="profile-stats">
+        <div class="p-stat"><div class="p-stat-val" id="pStatXP">0</div><div class="p-stat-label">Total XP</div></div>
+        <div class="p-stat"><div class="p-stat-val" id="pStatStreak">0</div><div class="p-stat-label">Streak 🔥</div></div>
+        <div class="p-stat"><div class="p-stat-val" id="pStatBadges">0</div><div class="p-stat-label">Badge</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-title" style="font-size:16px;margin-bottom:14px;">Edit Profil</div>
+      <label class="modal-label" style="margin-top:0;">Nama</label>
+      <input type="text" id="editName" class="modal-input" placeholder="Nama Anda" maxlength="50">
+      <label class="modal-label">Jabatan / Info</label>
+      <input type="text" id="editRole" class="modal-input" placeholder="Software Engineer" maxlength="50">
+      <label class="modal-label">Tanggal Lahir</label>
+      <input type="date" id="editBirthdate" class="modal-input">
+      <label class="modal-label">Foto Profil</label>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:6px;">
+        <div id="adminPhotoPreview" style="width:54px;height:54px;border-radius:50%;border:2px solid var(--border2);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;flex-shrink:0;">👤</div>
+        <div style="flex:1;">
+          <input type="file" id="photoFileInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">
+          <button onclick="document.getElementById('photoFileInput').click()" style="width:100%;padding:10px;background:var(--surface2);border:1.5px solid var(--border2);border-radius:10px;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);">📁 Pilih Foto</button>
+        </div>
+      </div>
+      <label class="modal-label">Pesan / Motivasi Harian</label>
+      <textarea id="profileMsgEditor" class="modal-textarea" placeholder="Tulis pesan motivasi untuk diri sendiri..." rows="3"></textarea>
+      <button onclick="saveProfile()" style="width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sans);margin-top:16px;">Simpan Profil</button>
+    </div>
+    <div class="card">
+      <div class="sec-title" style="font-size:16px;margin-bottom:14px;">Kelola Rutinitas</div>
+      <div id="questManagerList" style="margin-bottom:12px;"></div>
+      <div style="background:var(--surface2);border-radius:14px;padding:14px;">
+        <div style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">+ Tambah Rutinitas</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <input type="text" id="aqEmoji" class="modal-input" placeholder="🎯" maxlength="4" style="width:60px;flex:none;text-align:center;font-size:18px;">
+          <input type="text" id="aqName" class="modal-input" placeholder="Nama rutinitas" maxlength="30" style="flex:1;">
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
+          <input type="number" id="aqDur" class="modal-input" placeholder="30" min="1" max="240" value="30" style="width:70px;flex:none;text-align:center;">
+          <span style="font-size:12px;color:var(--text3);font-weight:500;">menit</span>
+        </div>
+        <button onclick="addQuest()" style="width:100%;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);">+ Tambah</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-title" style="font-size:16px;margin-bottom:14px;">Badge Kustom</div>
+      <div id="customBadgeList" style="margin-bottom:12px;"></div>
+      <div style="background:var(--surface2);border-radius:14px;padding:14px;">
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <input type="text" id="abEmoji" class="modal-input" placeholder="🌟" maxlength="4" style="width:60px;flex:none;text-align:center;font-size:18px;">
+          <input type="text" id="abName" class="modal-input" placeholder="Nama badge" maxlength="30" style="flex:1;">
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
+          <input type="number" id="abXP" class="modal-input" placeholder="500" min="1" value="500" style="width:80px;flex:none;text-align:center;">
+          <span style="font-size:12px;color:var(--text3);font-weight:500;">XP untuk unlock</span>
+        </div>
+        <button onclick="addCustomBadge()" style="width:100%;padding:11px;background:var(--purple-bg);border:1.5px solid rgba(167,139,250,0.4);color:var(--purple);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);">+ Tambah Badge</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-title" style="font-size:16px;margin-bottom:14px;">Kelola Misi per Tanggal</div>
+      <input type="date" id="adminDatePicker" class="modal-input" onchange="renderAdminQuests()" style="margin-bottom:12px;">
+      <div id="adminQuestList" style="margin-bottom:10px;"></div>
+      <button onclick="cancelWholeDay()" style="width:100%;padding:12px;background:var(--red-bg);border:1.5px solid rgba(255,71,87,0.3);color:var(--red);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);">🗑️ Batalkan Seluruh Hari</button>
+    </div>
+    <div class="card">
+      <div class="sec-title" style="font-size:16px;margin-bottom:14px;">Kelola XP</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <span style="font-size:13px;color:var(--text2);font-weight:500;">Total XP Saat Ini</span>
+        <span style="font-size:18px;font-weight:800;color:var(--accent);" id="adminXpDisplay">0 XP</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="number" id="xpAdjustInput" class="modal-input" placeholder="100" min="1" value="100" style="flex:1;text-align:center;">
+        <button onclick="adjustXP(1)" style="padding:11px 16px;background:var(--green-bg);border:1.5px solid rgba(0,200,150,0.3);color:var(--green);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sans);">+</button>
+        <button onclick="adjustXP(-1)" style="padding:11px 16px;background:var(--red-bg);border:1.5px solid rgba(255,71,87,0.3);color:var(--red);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sans);">−</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINANCE -->
+  <div class="tab-content" id="tab-finance">
+    <div class="fin-hero-row">
+      <div class="fin-hero savings"><div class="fin-hero-label">Tabungan</div><div class="fin-hero-amount" id="savingsBalanceDisplay">Rp 0</div></div>
+      <div class="fin-hero debt"><div class="fin-hero-label">Total Hutang</div><div class="fin-hero-amount" id="debtTotalDisplay">Rp 0</div></div>
+    </div>
+    <div class="fin-tabs">
+      <div class="fin-tab active" onclick="switchFinTab('tabungan')">💰 Tabungan</div>
+      <div class="fin-tab" onclick="switchFinTab('hutang')">📋 Hutang</div>
+      <div class="fin-tab" onclick="switchFinTab('wishlist')">🛒 Beli</div>
+    </div>
+    <div class="fin-section active" id="fin-tabungan">
+      <div style="display:flex;gap:10px;margin-bottom:14px;">
+        <button class="fin-btn add" onclick="openSavingsModal('credit')">+ Tabung</button>
+        <button class="fin-btn sub" onclick="openSavingsModal('debit')">− Ambil</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:14px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;">Riwayat Transaksi</div>
+        <div id="savingsLedger" style="padding:8px 14px 12px;"></div>
+      </div>
+    </div>
+    <div class="fin-section" id="fin-hutang">
+      <div style="display:flex;gap:10px;margin-bottom:14px;">
+        <button class="fin-btn sub" onclick="openDebtModal('hutang')">+ Catat Hutang</button>
+        <button class="fin-btn pay" onclick="openDebtModal('cicilan')">+ Catat Cicilan</button>
+      </div>
+      <div id="debtList"></div>
+    </div>
+    <div class="fin-section" id="fin-wishlist">
+      <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;">
+        <button class="fin-btn add" style="flex:none;padding:12px 16px;" onclick="openWishModal()">+ Tambah</button>
+        <div style="display:flex;gap:6px;flex:1;justify-content:flex-end;">
+          <button onclick="filterWish('all')" id="wf-all" style="padding:8px 12px;border-radius:8px;font-size:11px;font-weight:600;border:1.5px solid var(--accent);background:var(--accent-light);color:var(--accent);cursor:pointer;font-family:var(--sans);">Semua</button>
+          <button onclick="filterWish('mendesak')" id="wf-mendesak" style="padding:8px 12px;border-radius:8px;font-size:11px;font-weight:600;border:1.5px solid var(--border);background:var(--surface2);color:var(--text3);cursor:pointer;font-family:var(--sans);">🔴</button>
+        </div>
+      </div>
+      <div id="wishList"></div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="tab-content" id="tab-notes">
+    <div class="sec-title">Catatan Pribadi 📝</div>
+    <div id="noteList"></div>
+  </div>
+
+</div>
+
+<!-- NAV BAR -->
+<nav class="nav-bar" id="navBar">
+  <div class="nav-item active" onclick="switchTab('today')"><div class="nav-icon">🏠</div><span class="nav-label">Beranda</span></div>
+  <div class="nav-item" onclick="switchTab('dreambook')"><div class="nav-icon">📖</div><span class="nav-label">Dream</span></div>
+  <div class="nav-item" onclick="switchTab('finance')"><div class="nav-icon">💰</div><span class="nav-label">Finansial</span></div>
+  <div class="nav-item" onclick="switchTab('notes')"><div class="nav-icon">📝</div><span class="nav-label">Catatan</span></div>
+  <div class="nav-item" onclick="switchTab('badges')"><div class="nav-icon">🏆</div><span class="nav-label">Badge</span></div>
+  <div class="nav-item" onclick="switchTab('profile')"><div class="nav-icon">👤</div><span class="nav-label">Profil</span></div>
+</nav>
+
+<!-- FAB -->
+<button class="fab" id="fabBtn" onclick="fabAction()" style="display:none;">+</button>
+
+<!-- DREAM DETAIL OVERLAY -->
+<div class="dream-detail-overlay" id="dreamDetailOverlay">
+  <div class="dd-back">
+    <button class="dd-back-btn" onclick="closeDreamDetail()">←</button>
+    <span class="dd-back-title" id="ddTitle">—</span>
+    <button class="dd-share-btn" onclick="markDreamDone()">✓ Terwujud!</button>
+  </div>
+  <div class="dd-body">
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <span style="font-size:15px;font-weight:800;color:var(--text);">Vision Board</span>
+        <span style="font-size:11px;color:var(--text3);">Tap untuk ubah · Hover untuk hapus</span>
+      </div>
+      <div class="vision-board">
+        <div class="vision-board-inner">
+          <div class="vb-main" id="vbMain">
+            <div class="vb-placeholder">🌟</div>
+            <div class="vb-add-overlay">📷 Tambah Foto</div>
+          </div>
+          <div class="vb-sub" id="vbSub1">
+            <div class="vb-placeholder-sm">✨</div>
+            <div class="vb-add-overlay">📷</div>
+          </div>
+          <div class="vb-sub" id="vbSub2">
+            <div class="vb-placeholder-sm">🎯</div>
+            <div class="vb-add-overlay">📷</div>
+          </div>
+        </div>
+      </div>
+      <input type="file" id="vbFileInput" accept="image/*" onchange="handleVBUpload(this)">
+    </div>
+    <div class="progress-grid">
+      <div class="circular-card">
+        <div class="circ-wrap">
+          <svg width="90" height="90" viewBox="0 0 90 90"><circle class="circ-bg" cx="45" cy="45" r="36" fill="none" stroke-width="7"/><circle class="circ-fill" id="circProgress" cx="45" cy="45" r="36" fill="none" stroke-width="7" stroke="#6c63ff" stroke-dasharray="226.2" stroke-dashoffset="226.2"/></svg>
+          <div class="circ-center"><div class="circ-pct" id="circPct">0%</div></div>
+        </div>
+        <div class="circ-label">Milestone Selesai</div>
+      </div>
+      <div class="circular-card">
+        <div class="circ-wrap">
+          <svg width="90" height="90" viewBox="0 0 90 90"><circle class="circ-bg" cx="45" cy="45" r="36" fill="none" stroke-width="7"/><circle class="circ-fill" id="circFinance" cx="45" cy="45" r="36" fill="none" stroke-width="7" stroke="#00c896" stroke-dasharray="226.2" stroke-dashoffset="226.2"/></svg>
+          <div class="circ-center"><div class="circ-pct" id="circFinPct" style="color:var(--green);">0%</div></div>
+        </div>
+        <div class="circ-label">Dana Terkumpul</div>
+      </div>
+    </div>
+    <div class="countdown-card" style="margin-bottom:16px;">
+      <div class="cd-title">⏳ Hitung Mundur Deadline</div>
+      <div id="cdContent">
+        <div id="cdNums" class="cd-nums" style="display:none;"></div>
+        <div id="cdNoDeadline" style="font-size:12px;color:rgba(255,255,255,0.6);text-align:center;padding:8px;">Belum ada deadline — <span onclick="openEditDreamModal()" style="cursor:pointer;text-decoration:underline;font-weight:600;">Atur sekarang</span></div>
+      </div>
+    </div>
+
+    <!-- FIX: Dana Impian section dipindah ke sini dengan ID yang jelas -->
+    <div class="fin-summary-card" id="dreamFinSummaryCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <span style="font-size:15px;font-weight:800;color:var(--text);">Dana Impian 💰</span>
+        <button id="dreamFinAddBtn" class="dream-fin-add-btn" style="padding:6px 12px;border-radius:8px;background:var(--green-bg);border:1.5px solid rgba(0,200,150,0.3);color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);">+ Tambah</button>
+      </div>
+      <div class="fin-sum-row">
+        <div class="fin-sum-box collected"><div class="fin-sum-val g" id="ddCollected">Rp 0</div><div class="fin-sum-label">Terkumpul</div></div>
+        <div class="fin-sum-box target"><div class="fin-sum-val a" id="ddTarget">Rp 0</div><div class="fin-sum-label">Target</div></div>
+      </div>
+      <div class="fin-big-bar"><div class="fin-big-fill" id="ddFinBar" style="width:0%"></div></div>
+      <div style="font-size:11px;color:var(--text3);font-weight:500;" id="ddFinMeta">0% terkumpul</div>
+    </div>
+
+    <div class="milestone-section">
+      <div class="milestone-header">
+        <span class="milestone-title">Langkah Menuju Mimpi 🚀</span>
+        <span class="milestone-add" onclick="showAddMilestoneInput()">+ Tambah</span>
+      </div>
+      <div id="msAddInline" style="display:none;">
+        <div class="ms-add-inline">
+          <input type="text" class="ms-inline-input" id="msInlineInput" placeholder="Tulis langkah konkret..." maxlength="100">
+          <button class="ms-inline-confirm" onclick="addMilestoneInline()">✓</button>
+          <button class="ms-inline-cancel" onclick="hideAddMilestoneInput()">✕</button>
+        </div>
+      </div>
+      <div id="milestoneList"></div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <span style="font-size:15px;font-weight:800;color:var(--text);">Afirmasi 🌟</span>
+      </div>
+      <div id="affirmationsList"></div>
+      <div id="affNoData" style="font-size:12px;color:var(--text3);text-align:center;padding:16px;">Gunakan AI Brainstorm di bawah untuk membuat afirmasi otomatis ✨</div>
+    </div>
+    <div class="ai-bstorm-section">
+      <div class="ai-bstorm-card">
+        <div class="ai-bstorm-title"><span>🤖</span><span>AI Brainstorm — Ditenagai Claude</span></div>
+        <div class="ai-bstorm-input-row">
+          <input type="text" id="aiBstormInput" class="ai-bstorm-input" placeholder="Ceritakan mimpimu..." maxlength="150">
+          <button id="aiBstormBtn" class="ai-bstorm-btn" onclick="runAIBrainstorm()">✦ Generate</button>
+        </div>
+        <div id="aiResult" class="ai-result">
+          <div id="aiLoading" class="ai-loading" style="display:none;">Sedang berpikir <div class="ai-dots"><span></span><span></span><span></span></div></div>
+          <div id="aiResultContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEW DREAM MODAL -->
+<div class="modal-overlay" id="newDreamOverlay">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="newDreamModalTitle">Mimpi Baru ✦</div>
+    <label class="modal-label" style="margin-top:0;">Emoji Mimpi</label>
+    <input type="text" id="dreamEmoji" class="modal-input" placeholder="🎯" maxlength="4" style="text-align:center;font-size:28px;">
+    <label class="modal-label">Judul Mimpi</label>
+    <input type="text" id="dreamTitle" class="modal-input" placeholder="Contoh: Beli Laptop Gaming 20 Juta" maxlength="80">
+    <label class="modal-label">Deskripsi / Tujuan</label>
+    <textarea id="dreamDesc" class="modal-textarea" placeholder="Kenapa mimpi ini penting untukmu?..." rows="3"></textarea>
+    <label class="modal-label">Target Dana (Rp)</label>
+    <input type="number" id="dreamTarget" class="modal-input" placeholder="20000000" min="0">
+    <label class="modal-label">Deadline</label>
+    <input type="date" id="dreamDeadline" class="modal-input">
+    <label class="modal-label">Kategori</label>
+    <select id="dreamCategory" class="modal-select">
+      <option value="keuangan">💰 Keuangan</option>
+      <option value="karir">💼 Karir & Bisnis</option>
+      <option value="pendidikan">📚 Pendidikan</option>
+      <option value="kesehatan">💪 Kesehatan</option>
+      <option value="keluarga">👨‍👩‍👧‍👦 Keluarga</option>
+      <option value="perjalanan">✈️ Perjalanan</option>
+      <option value="hobi">🎨 Hobi & Kreativitas</option>
+      <option value="lainnya">🌟 Lainnya</option>
+    </select>
+    <div class="modal-row">
+      <button class="modal-cancel" onclick="closeNewDreamModal()">Batal</button>
+      <button class="modal-confirm" onclick="confirmDream()">Simpan Mimpi</button>
+    </div>
+  </div>
+</div>
+
+<!-- DREAM FINANCE MODAL (z-index lebih tinggi dari dream detail overlay) -->
+<div class="modal-overlay" id="dreamFinanceOverlay" style="z-index:900;">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Tambah Dana Impian 💰</div>
+    <label class="modal-label" style="margin-top:0;">Jumlah (Rp)</label>
+    <input type="number" id="dreamFinAmount" class="modal-input" placeholder="500000" min="1">
+    <label class="modal-label">Keterangan</label>
+    <input type="text" id="dreamFinDesc" class="modal-input" placeholder="Dari gaji, bonus, dll." maxlength="60">
+    <div class="modal-row">
+      <button class="modal-cancel" onclick="closeDreamFinanceModal()">Batal</button>
+      <button class="modal-confirm" onclick="confirmDreamFinance()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- TIMER MODAL -->
+<div class="timer-overlay" id="timerOverlay">
+  <div class="timer-modal">
+    <div class="timer-emoji" id="timerEmoji">⏱</div>
+    <div class="timer-title" id="timerTitle">Timer</div>
+    <div class="timer-subtitle" id="timerSubtitle">Fokus dan selesaikan!</div>
+    <div class="timer-ring">
+      <svg width="140" height="140" viewBox="0 0 140 140"><circle class="timer-ring-bg" cx="70" cy="70" r="58" fill="none" stroke-width="8"/><circle class="timer-ring-fill" id="timerRingFill" cx="70" cy="70" r="58" fill="none" stroke-width="8" stroke-dasharray="364.4" stroke-dashoffset="0"/></svg>
+      <div class="timer-time" id="timerDisplay">30:00</div>
+    </div>
+    <div class="timer-btns">
+      <button class="timer-ctrl start" id="timerToggle" onclick="toggleTimer()">▶ Mulai</button>
+      <button class="timer-ctrl close" onclick="closeTimer()">✕ Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- SAVINGS MODAL -->
+<div class="modal-overlay" id="savingsOverlay">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Transaksi Tabungan</div>
+    <div class="type-row" style="margin-bottom:4px;">
+      <div class="type-opt" id="typeCredit" onclick="setSavingsType('credit')" style="background:var(--green-bg);border-color:var(--green);color:var(--green);">+ Tabung</div>
+      <div class="type-opt" id="typeDebit" onclick="setSavingsType('debit')">− Ambil</div>
+    </div>
+    <label class="modal-label">Jumlah (Rp)</label>
+    <input type="number" id="savingsAmountInput" class="modal-input" placeholder="500000" min="1">
+    <label class="modal-label">Keterangan</label>
+    <input type="text" id="savingsDescInput" class="modal-input" placeholder="Gaji, bonus, dll." maxlength="60">
+    <div class="modal-row">
+      <button class="modal-cancel" onclick="closeSavingsModal()">Batal</button>
+      <button class="modal-confirm" onclick="confirmSavingsTransaction()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- DEBT MODAL -->
+<div class="modal-overlay" id="debtOverlay">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="debtModalTitle">Catat Hutang</div>
+    <div class="type-row" style="margin-bottom:14px;">
+      <div class="type-opt" id="dtHutang" onclick="setDebtType('hutang')" style="background:var(--red-bg);border-color:var(--red);color:var(--red);">💸 Hutang</div>
+      <div class="type-opt" id="dtCicilan" onclick="setDebtType('cicilan')">📅 Cicilan</div>
+    </div>
+    <label class="modal-label">Nama / Deskripsi</label>
+    <input type="text" id="debtNameInput" class="modal-input" placeholder="Hutang ke siapa / apa" maxlength="50">
+    <label class="modal-label">Total Jumlah (Rp)</label>
+    <input type="number" id="debtTotalInput" class="modal-input" placeholder="5000000" min="1">
+    <label class="modal-label">Sudah Dibayar (Rp)</label>
+    <input type="number" id="debtPaidInput" class="modal-input" placeholder="0" min="0" value="0">
+    <div id="cicilanExtra" style="display:none;">
+      <label class="modal-label">Cicilan per Bulan (Rp)</label>
+      <input type="number" id="debtMonthlyInput" class="modal-input" placeholder="500000" min="0">
+      <label class="modal-label">Tanggal Jatuh Tempo</label>
+      <input type="date" id="debtDueInput" class="modal-input">
+    </div>
+    <div class="modal-row">
+      <button class="modal-cancel" onclick="closeDebtModal()">Batal</button>
+      <button class="modal-confirm" onclick="confirmDebt()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- DEBT PAY MODAL -->
+<div class="modal-overlay" id="debtPayOverlay">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Bayar Hutang / Cicilan</div>
+    <label class="modal-label">Jumlah Pembayaran (Rp)</label>
+    <input type="number" id="debtPayAmount" class="modal-input" placeholder="500000" min="1">
+    <label class="modal-label">Keterangan</label>
+    <input type="text" id="debtPayDesc" class="modal-input" placeholder="Bayar cicilan bulan ini" maxlength="50">
+    <div class="modal-row">
+      <button class="modal-cancel" onclick="closeDebtPayModal()">Batal</button>
+      <button class="modal-confirm" onclick="confirmDebtPay()">Bayar</button>
+    </div>
+  </div>
+</div>
+
+<!-- WISHLIST MODAL -->
+<div class="modal-overlay" id="wishOverlay">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="wishModalTitle">Tambah Item</div>
+    <label class="modal-label">Nama Item</label>
+    <input type="text" id="wishNameInput" class="modal-input" placeholder="Nama barang/jasa" maxlength="60">
+    <label class="modal-label">Harga Estimasi (Rp)</label>
+    <input type="number" id="wishPriceInput" class="modal-input" placeholder="1000000" min="0">
+    <label class="modal-label">Prioritas</label>
+    <div class="priority-row" id="priorityRow">
+      <div class="priority-opt sel-rendah" onclick="selectPriority('rendah')">○ Biasa</div>
+      <div class="priority-opt" onclick="selectPriority('sedang')">◎ Sedang</div>
+      <div class="priority-opt" onclick="selectPriority('penting')">● Penting</div>
+      <div class="priority-opt" onclick="selectPriority('mendesak')">🔴 Mendesak</div>
+    </div>
+    <label class="modal-label">Catatan</label>
+    <input type="text" id="wishNoteInput" class="modal-input" placeholder="Link, toko, dll." maxlength="80">
+    <div class="modal-row">
+      <button class="modal-cancel" onclick="closeWishModal()">Batal</button>
+      <button class="modal-confirm" onclick="confirmWish()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTE MODAL -->
+<div class="modal-overlay" id="noteOverlay">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="noteModalTitle">Catatan Baru</div>
+    <label class="modal-label">Judul</label>
+    <input type="text" id="noteTitleInput" class="modal-input" placeholder="Judul catatan" maxlength="60">
+    <label class="modal-label">Label / Tag</label>
+    <input type="text" id="noteTagInput" class="modal-input" placeholder="Kerja, Pribadi, Ide..." maxlength="20">
+    <label class="modal-label">Isi Catatan</label>
+    <textarea id="noteBodyInput" class="modal-textarea" placeholder="Tulis catatan di sini..." rows="5"></textarea>
+    <label class="modal-label">Reminder (opsional)</label>
+    <input type="datetime-local" id="noteReminderInput" class="modal-input">
+    <div class="modal-row">
+      <button class="modal-cancel" onclick="closeNoteModal()">Batal</button>
+      <button class="modal-confirm" onclick="confirmNote()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTE VIEW -->
+<div class="note-full-overlay" id="noteViewOverlay">
+  <div class="note-full-box">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px;">
+      <div>
+        <div class="note-full-title" id="noteViewTitle">—</div>
+        <div class="note-full-meta" id="noteViewMeta">—</div>
+      </div>
+      <button onclick="closeNoteView()" style="padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);flex-shrink:0;">Tutup</button>
+    </div>
+    <div class="note-full-body" id="noteViewBody">—</div>
+  </div>
+</div>
+
+<!-- SAVINGS EDIT MODAL -->
+<div class="modal-overlay" id="savingsEditOverlay">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Edit Transaksi</div>
+    <label class="modal-label">Jumlah (Rp)</label>
+    <input type="number" id="editAmountInput" class="modal-input" min="1">
+    <label class="modal-label">Keterangan</label>
+    <input type="text" id="editDescInput" class="modal-input" maxlength="60">
+    <div class="modal-row">
+      <button class="modal-cancel" onclick="document.getElementById('savingsEditOverlay').classList.remove('open')">Batal</button>
+      <button class="modal-confirm" onclick="confirmEditTransaction()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FIREBASE SDK
+══════════════════════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDzYKjI9sYqkUYdC2ur37PCwvueJLood5M",
+  authDomain: "andi-87988.firebaseapp.com",
+  databaseURL: "https://andi-87988-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "andi-87988",
+  storageBucket: "andi-87988.firebasestorage.app",
+  messagingSenderId: "926256859975",
+  appId: "1:926256859975:web:2fd9f4cd74a261e535da62",
+  measurementId: "G-CJYJXYW9TC"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const DB_PATH = 'berlatih/data';
+
+window._fbSet = async (data) => {
+  setSyncStatus('syncing');
+  try {
+    await set(ref(db, DB_PATH), data);
+    setSyncStatus('synced');
+  } catch(e) {
+    console.error('Firebase write error:', e);
+    setSyncStatus('error');
+  }
+};
+
+window._fbLoad = async () => {
+  try {
+    const snap = await get(ref(db, DB_PATH));
+    if (snap.exists()) return snap.val();
+    return null;
+  } catch(e) {
+    console.error('Firebase read error:', e);
+    return null;
+  }
+};
+
+onValue(ref(db, DB_PATH), (snap) => {
+  if (window._fbListening && snap.exists()) {
+    const newData = snap.val();
+    if (JSON.stringify(newData) !== JSON.stringify(window.state)) {
+      window.state = Object.assign({}, window._defaultState(), newData);
+      if (window.renderAll) window.renderAll();
+    }
+  }
+});
+
+window._fbLoad().then(data => {
+  window._fbListening = true;
+  if (data) {
+    window.state = Object.assign({}, window._defaultState(), data);
+    if (!Array.isArray(window.state.quests) || !window.state.quests.length)
+      window.state.quests = window._defaultState().quests;
+    if (!window.state.savings || !window.state.savings.transactions)
+      window.state.savings = { transactions: [] };
+    if (!window.state.debts) window.state.debts = [];
+    if (!window.state.wishlist) window.state.wishlist = [];
+    if (!window.state.notes) window.state.notes = [];
+    if (!window.state.dreams) window.state.dreams = [];
+    if (!window.state.customBadges) window.state.customBadges = [];
+    if (!window.state.profile) window.state.profile = window._defaultState().profile;
+    if (!window.state.badges) window.state.badges = {};
+    if (!window.state.history) window.state.history = {};
+  }
+  window.renderAll();
+  window.checkReminders();
+  document.getElementById('loadingScreen').classList.add('hide');
+  setTimeout(() => { document.getElementById('loadingScreen').style.display = 'none'; }, 600);
+}).catch(err => {
+  console.error('Load error:', err);
+  setSyncStatus('error');
+  document.getElementById('loadingScreen').classList.add('hide');
+});
+
+function setSyncStatus(s) {
+  const el = document.getElementById('syncIndicator');
+  if (!el) return;
+  el.className = 'sync-indicator ' + s;
+  el.textContent = s === 'syncing' ? '⏳ Menyimpan...' : s === 'synced' ? '☁️ Tersinkron' : '❌ Gagal Sync';
+  if (s === 'synced') setTimeout(() => { el.style.opacity = '0'; }, 2000);
+  else el.style.opacity = '1';
+}
+window._setSyncStatus = setSyncStatus;
+</script>
+
+<script>
+// ════════════════════════════════════════════════════════
+// CONSTANTS & STATE
+// ════════════════════════════════════════════════════════
+const XP_PER=20,XP_BONUS=10;
+const MONTHS_ID=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const DAYS_ID=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+const COLOR_POOL=[
+  {bg:'rgba(108,99,255,0.12)',bc:'rgba(108,99,255,0.3)'},
+  {bg:'rgba(0,200,150,0.1)',bc:'rgba(0,200,150,0.3)'},
+  {bg:'rgba(255,165,2,0.1)',bc:'rgba(255,165,2,0.3)'},
+  {bg:'rgba(255,71,87,0.1)',bc:'rgba(255,71,87,0.3)'},
+  {bg:'rgba(46,134,222,0.1)',bc:'rgba(46,134,222,0.3)'},
+  {bg:'rgba(167,139,250,0.1)',bc:'rgba(167,139,250,0.3)'},
+];
+const CAT_CONFIG={
+  keuangan:{label:'💰 Keuangan',color:'#00c896',bg:'rgba(0,200,150,0.12)'},
+  karir:{label:'💼 Karir',color:'#2e86de',bg:'rgba(46,134,222,0.12)'},
+  pendidikan:{label:'📚 Pendidikan',color:'#6c63ff',bg:'rgba(108,99,255,0.12)'},
+  kesehatan:{label:'💪 Kesehatan',color:'#ff6348',bg:'rgba(255,99,72,0.12)'},
+  keluarga:{label:'👨‍👩‍👧‍👦 Keluarga',color:'#ffa502',bg:'rgba(255,165,2,0.12)'},
+  perjalanan:{label:'✈️ Perjalanan',color:'#a78bfa',bg:'rgba(167,139,250,0.12)'},
+  hobi:{label:'🎨 Hobi',color:'#f59e0b',bg:'rgba(245,158,11,0.12)'},
+  lainnya:{label:'🌟 Lainnya',color:'#9496a8',bg:'rgba(148,150,168,0.12)'},
+};
+const DREAM_BG_GRADIENTS=[
+  'linear-gradient(135deg,#1a1a2e,#533483)',
+  'linear-gradient(135deg,#0f2027,#2c5364)',
+  'linear-gradient(135deg,#2d1b69,#11998e)',
+  'linear-gradient(135deg,#16213e,#0f3460)',
+  'linear-gradient(135deg,#1a1a2e,#ff4757)',
+  'linear-gradient(135deg,#0f3460,#ffa502)',
+];
+const DEFAULT_MSG='Mulailah dengan satu langkah kecil. Konsistensi adalah kunci kesuksesan.';
+
+window._defaultState = function() {
+  return {
+    history:{},totalXP:0,badges:{},
+    quests:[
+      {id:'reading',emoji:'📚',name:'Membaca',dur:30},
+      {id:'exercise',emoji:'🏋️',name:'Olahraga',dur:30},
+      {id:'journal',emoji:'✍️',name:'Journaling',dur:15},
+    ],
+    dailyMsg:DEFAULT_MSG,
+    customBadges:[],
+    profile:{name:'Pengguna Berlatih',role:'Personal Growth',birthdate:'',photo:null},
+    savings:{transactions:[]},
+    debts:[],wishlist:[],notes:[],dreams:[]
+  };
+};
+
+window.state = window._defaultState();
+
+// FIX: Tambahkan 'streak' ke TAB_LIST
+let activeTab='today',activeFinTab='tabungan';
+let editingTxnId=null,editingDebtId=null,editingWishId=null,editingNoteId=null;
+let currentSavingsType='credit',currentDebtType='hutang',currentPriority='rendah';
+let tempPhotoData=null;
+let wishFilter='all';
+let timerInterval=null,timerSecs=1800,timerTotal=1800,timerRunning=false,activeTimerQuest=null;
+let activeDreamId=null,vbUploadTarget=0,editingDreamId=null;
+const CIRCUMFERENCE_90=226.2;
+
+// ════════════════════════════════════════════════════════
+// DATE HELPERS
+// ════════════════════════════════════════════════════════
+function dateKey(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+function todayKey(){return dateKey(new Date());}
+function todayData(){const k=todayKey();if(!state.history[k])state.history[k]={};return state.history[k];}
+function getDataForKey(k){if(!state.history[k])state.history[k]={};return state.history[k];}
+function formatRp(n){if(isNaN(n)||n===null)return 'Rp 0';return 'Rp '+(Math.abs(Math.round(n))).toLocaleString('id-ID');}
+function formatDate(dt){if(!dt)return '—';const d=new Date(dt);return d.getDate()+' '+MONTHS_ID[d.getMonth()]+' '+d.getFullYear();}
+
+// ════════════════════════════════════════════════════════
+// SAVE
+// ════════════════════════════════════════════════════════
+let _saveTimer=null;
+function save(){
+  try{localStorage.setItem('berlatih_v2',JSON.stringify(state));}catch(e){}
+  clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(()=>{
+    if(window._fbSet) window._fbSet(state);
+  },800);
+}
+
+// ════════════════════════════════════════════════════════
+// TABS — FIX: streak ditambahkan ke TAB_LIST
+// ════════════════════════════════════════════════════════
+const TAB_LIST=['today','dreambook','finance','notes','badges','profile'];
+
+function switchTab(tab){
+  activeTab=tab;
+  // Sembunyikan semua tab content (termasuk streak yang tidak ada di nav)
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  const target=document.getElementById('tab-'+tab);
+  if(target)target.classList.add('active');
+
+  // Update nav highlight
+  TAB_LIST.forEach((t,i)=>{
+    const ni=document.querySelectorAll('.nav-item')[i];
+    if(ni)ni.classList.toggle('active',t===tab);
+  });
+
+  const fab=document.getElementById('fabBtn');
+  if(tab==='finance'||tab==='notes')fab.style.display='flex';
+  else fab.style.display='none';
+
+  if(tab==='finance')renderFinance();
+  if(tab==='notes')renderNotes();
+  if(tab==='profile'){renderProfile();renderAdminPanel();}
+  if(tab==='dreambook')renderDreamList();
+  if(tab==='streak')renderStreak();   // FIX: render saat tab dibuka
+  if(tab==='today')renderReminders(); // refresh reminder saat balik ke home
+}
+
+function switchFinTab(ft){
+  activeFinTab=ft;
+  ['tabungan','hutang','wishlist'].forEach(f=>{
+    const el=document.getElementById('fin-'+f);
+    if(el)el.classList.toggle('active',f===ft);
+  });
+  document.querySelectorAll('.fin-tab').forEach((el,i)=>{
+    el.classList.toggle('active',['tabungan','hutang','wishlist'][i]===ft);
+  });
+  const fab=document.getElementById('fabBtn');
+  fab.textContent=ft==='wishlist'?'🛒':ft==='hutang'?'📋':'+';
+}
+function fabAction(){
+  if(activeTab==='finance'){
+    if(activeFinTab==='tabungan')openSavingsModal('credit');
+    else if(activeFinTab==='hutang')openDebtModal('hutang');
+    else if(activeFinTab==='wishlist')openWishModal();
+  }else if(activeTab==='notes')openNoteModal();
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER ALL
+// ════════════════════════════════════════════════════════
+window.renderAll=function(){
+  renderGreeting();renderQuestGrid();renderStatus();renderXPBar();
+  renderStreak();renderBadges();renderCustomBadges();renderReminders();
+  const ha=document.getElementById('headerAvatar');
+  if(state.profile&&state.profile.photo)ha.innerHTML='<img src="'+state.profile.photo+'" style="width:100%;height:100%;object-fit:cover;">';
+  else{const n=(state.profile&&state.profile.name)||'B';ha.textContent=n[0].toUpperCase();}
+  document.getElementById('homeStreak').textContent=computeStreak();
+  document.getElementById('homeXP').textContent=state.totalXP;
+  document.getElementById('homeBadge').textContent=Object.keys(state.badges).length;
+  renderDreamStats();
+};
+
+function renderGreeting(){
+  const prof=state.profile||{};
+  const hour=new Date().getHours();
+  const gr=hour<5?'Selamat Malam':hour<12?'Selamat Pagi':hour<15?'Selamat Siang':hour<19?'Selamat Sore':'Selamat Malam';
+  document.getElementById('greetingName').textContent=gr+', '+(prof.name||'Kamu')+'!';
+  document.getElementById('greetingMsg').textContent=state.dailyMsg||DEFAULT_MSG;
+}
+
+function renderXPBar(){
+  const d=todayData(),total=state.quests.length,count=state.quests.filter(q=>d[q.id]).length;
+  const xp=count*XP_PER+(count===total&&total>0?XP_BONUS:0);
+  const max=total*XP_PER+XP_BONUS;
+  document.getElementById('xpText').textContent=xp+' XP';
+  document.getElementById('xpFill').style.width=max>0?Math.min(100,(xp/max)*100)+'%':'0%';
+}
+
+function renderQuestGrid(){
+  const grid=document.getElementById('questGrid');grid.innerHTML='';
+  const d=todayData();
+  state.quests.forEach((q,i)=>{
+    const done=!!d[q.id];
+    const {bg,bc}=COLOR_POOL[i%COLOR_POOL.length];
+    const card=document.createElement('div');
+    card.className='quest-card'+(done?' done':'');
+    card.innerHTML=`<div class="quest-check">✓</div><div class="quest-icon-wrap" style="background:${bg};border:1.5px solid ${bc};">${q.emoji}</div><div class="quest-name">${q.name}</div><div class="quest-dur">⏱ ${q.dur} menit</div><button class="quest-timer-btn" onclick="openTimer('${q.id}','${q.name.replace(/'/g,"\\'")}','${q.emoji}',${q.dur});event.stopPropagation();">▶ Mulai Timer</button>`;
+    card.addEventListener('click',()=>toggleQuest(q.id));
+    grid.appendChild(card);
+  });
+}
+
+function toggleQuest(id){
+  const d=todayData();
+  if(d.submitted){showToast('Hari ini sudah dikunci!');return;}
+  if(d[id]){delete d[id];state.totalXP=Math.max(0,state.totalXP-XP_PER);showToast('Dibatalkan');}
+  else{d[id]=true;state.totalXP+=XP_PER;checkBadges();showToast('+20 XP! ⚡','success');}
+  save();renderAll();
+}
+
+function submitDay(){
+  const d=todayData(),total=state.quests.length,count=state.quests.filter(q=>d[q.id]).length;
+  if(count<total)return;
+  d.submitted=true;state.totalXP+=XP_BONUS;checkBadges();save();renderAll();
+  showToast('Luar biasa! Hari yang sempurna! 🎉','success');
+}
+
+function renderStatus(){
+  const d=todayData(),total=state.quests.length,count=state.quests.filter(q=>d[q.id]).length;
+  document.getElementById('statusText').textContent=count+' dari '+total+' tugas selesai';
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=count<total||!!d.submitted;
+  btn.textContent=d.submitted?'✓ Hari Ini Selesai':'Selesaikan Hari Ini ✓';
+}
+
+function computeStreak(){
+  let s=0;const d=new Date();
+  for(let i=0;i<365;i++){const k=dateKey(d);if(state.history[k]&&state.history[k].submitted){s++;d.setDate(d.getDate()-1);}else break;}
+  return s;
+}
+
+function computeBestStreak(){
+  const keys=Object.keys(state.history||{}).sort();
+  let best=0,cur=0,prev=null;
+  keys.forEach(k=>{
+    if(state.history[k]&&state.history[k].submitted){
+      if(prev){
+        const prevD=new Date(prev.replace(/-/g,','));prevD.setDate(prevD.getDate()+1);
+        const curParts=k.split('-');const curD=new Date(+curParts[0],+curParts[1]-1,+curParts[2]);
+        if(dateKey(prevD)===k)cur++;else cur=1;
+      }else cur=1;
+      if(cur>best)best=cur;
+      prev=k;
+    }else{prev=null;cur=0;}
+  });
+  return best;
+}
+
+function totalDone(){return Object.values(state.history).reduce((a,h)=>a+Object.keys(h).filter(k=>k!=='submitted').length,0);}
+function totalActiveDays(){return Object.values(state.history).filter(h=>h.submitted).length;}
+function totalPerfectDays(){
+  return Object.keys(state.history||{}).filter(k=>{
+    const h=state.history[k];
+    if(!h.submitted)return false;
+    return state.quests.every(q=>h[q.id]);
+  }).length;
+}
+
+// FIX: renderStreak sekarang mengisi semua elemen dengan benar
+function renderStreak(){
+  const s=computeStreak();
+  const sn=document.getElementById('streakNum');if(sn)sn.textContent=s;
+  const tx=document.getElementById('totalXpDisplay');if(tx)tx.textContent=state.totalXP+' XP';
+
+  // Week row
+  const row=document.getElementById('weekRow');
+  if(row){
+    row.innerHTML='';
+    const today=new Date();
+    for(let i=6;i>=0;i--){
+      const d=new Date(today);d.setDate(today.getDate()-i);
+      const k=dateKey(d),done=!!(state.history[k]&&state.history[k].submitted),isToday=i===0;
+      const el=document.createElement('div');
+      el.className='day-dot'+(done?' done':'')+(isToday?' today':'');
+      el.innerHTML='<span class="day-name">'+DAYS_ID[d.getDay()]+'</span><span class="day-ico">'+(done?'✓':'·')+'</span>';
+      row.appendChild(el);
+    }
+  }
+
+  // Calendar 30 hari
+  const cal=document.getElementById('streakCalendar');
+  if(cal){
+    cal.innerHTML='';
+    const today=new Date();
+    for(let i=29;i>=0;i--){
+      const d=new Date(today);d.setDate(today.getDate()-i);
+      const k=dateKey(d);
+      const h=state.history[k]||{};
+      const submitted=h.submitted;
+      const doneCount=state.quests.filter(q=>h[q.id]).length;
+      const total=state.quests.length;
+      const ratio=total>0?doneCount/total:0;
+      let bg='var(--surface3)';
+      if(submitted)bg='var(--amber)';
+      else if(ratio>0.6)bg='rgba(255,165,2,0.6)';
+      else if(ratio>0.3)bg='rgba(255,165,2,0.3)';
+      const isToday=i===0;
+      const cell=document.createElement('div');
+      cell.title=k+(submitted?' ✓':'');
+      cell.style.cssText=`width:100%;aspect-ratio:1;border-radius:4px;background:${bg};border:${isToday?'2px solid var(--accent)':'none'};cursor:default;`;
+      cal.appendChild(cell);
+    }
+  }
+
+  // Stats
+  const std=document.getElementById('statTotalDays');if(std)std.textContent=totalActiveDays();
+  const sbs=document.getElementById('statBestStreak');if(sbs)sbs.textContent=computeBestStreak();
+  const stt=document.getElementById('statTotalTasks');if(stt)stt.textContent=totalDone();
+  const spd=document.getElementById('statPerfectDays');if(spd)spd.textContent=totalPerfectDays();
+}
+
+// ════════════════════════════════════════════════════════
+// REMINDER (3 terdekat di halaman depan)
+// ════════════════════════════════════════════════════════
+function renderReminders(){
+  const now=Date.now();
+  const notes=(state.notes||[]).filter(n=>n.reminder&&new Date(n.reminder).getTime()>now);
+  notes.sort((a,b)=>new Date(a.reminder)-new Date(b.reminder));
+  const top3=notes.slice(0,3);
+  const section=document.getElementById('reminderSection');
+  const list=document.getElementById('reminderList');
+  if(!top3.length){section.style.display='none';return;}
+  section.style.display='block';
+  list.innerHTML='';
+  top3.forEach(n=>{
+    const dt=new Date(n.reminder);
+    const diffMs=dt-now;
+    const diffH=diffMs/(1000*60*60);
+    const diffD=diffMs/(1000*60*60*24);
+    let timeStr,urgency='normal';
+    if(diffH<1){timeStr='Dalam '+Math.ceil(diffMs/60000)+' menit';urgency='urgent';}
+    else if(diffH<24){timeStr='Dalam '+Math.ceil(diffH)+' jam';urgency='soon';}
+    else if(diffD<2){timeStr='Besok, '+dt.getHours()+':'+String(dt.getMinutes()).padStart(2,'0');}
+    else{timeStr=formatDate(n.reminder)+', '+dt.getHours()+':'+String(dt.getMinutes()).padStart(2,'0');}
+    const labelMap={urgent:'Segera',soon:'Hari ini',normal:'Mendatang'};
+    const card=document.createElement('div');
+    card.className='reminder-card';
+    card.innerHTML=`<div class="reminder-icon ${urgency}">⏰</div><div class="reminder-info"><div class="reminder-title">${n.title}</div><div class="reminder-time">${timeStr}</div></div><div class="reminder-badge ${urgency}">${labelMap[urgency]}</div>`;
+    card.onclick=()=>viewNote(n.id);
+    list.appendChild(card);
+  });
+}
+
+function checkBadges(){
+  const st=computeStreak(),xp=state.totalXP,td=totalDone();
+  const d=todayData(),total=state.quests.length,count=state.quests.filter(q=>d[q.id]).length;
+  const ul=id=>{state.badges[id]=true;};
+  if(td>=1)ul('first');if(count===total&&total>0&&d.submitted)ul('perfect');
+  if(st>=3)ul('streak3');if(st>=7)ul('streak7');if(st>=14)ul('streak14');if(st>=30)ul('streak30');
+  if(xp>=100)ul('xp100');if(xp>=500)ul('xp500');if(xp>=1000)ul('xp1000');if(td>=50)ul('task50');
+  (state.customBadges||[]).forEach(cb=>{if(xp>=cb.xpRequired)state.badges[cb.id]=true;});
+}
+
+function renderBadges(){
+  checkBadges();
+  ['first','perfect','streak3','streak7','streak14','streak30','xp100','xp500','xp1000','task50'].forEach(id=>{
+    const ic=document.getElementById('bicon-'+id),it=document.getElementById('bitem-'+id);
+    if(state.badges[id]){if(ic)ic.classList.add('unlocked');if(it)it.classList.add('unlocked');}
+  });
+}
+
+function renderCustomBadges(){
+  const cbs=state.customBadges||[];
+  const section=document.getElementById('customBadgesSection'),grid=document.getElementById('customBadgesGrid');
+  if(!cbs.length){section.style.display='none';return;}
+  section.style.display='block';grid.innerHTML='';
+  cbs.forEach(cb=>{
+    const unlocked=!!state.badges[cb.id];
+    const item=document.createElement('div');
+    item.className='badge-item'+(unlocked?' unlocked':'');
+    item.innerHTML=`<div class="badge-icon${unlocked?' unlocked':''}">${cb.emoji}</div><div class="badge-name">${cb.name}</div>`;
+    grid.appendChild(item);
+  });
+}
+
+function renderProfile(){
+  const prof=state.profile||{};
+  document.getElementById('profileNameDisplay').textContent=prof.name||'—';
+  document.getElementById('profileRole').textContent=prof.role||'—';
+  document.getElementById('pStatXP').textContent=state.totalXP;
+  document.getElementById('pStatStreak').textContent=computeStreak();
+  document.getElementById('pStatBadges').textContent=Object.keys(state.badges).length;
+  const pd=document.getElementById('profilePhotoDisplay');
+  if(prof.photo)pd.innerHTML='<img src="'+prof.photo+'" alt="foto">';else pd.innerHTML='👤';
+}
+
+// ════════════════════════════════════════════════════════
+// DREAM BOOK
+// ════════════════════════════════════════════════════════
+function renderDreamStats(){
+  const dreams=state.dreams||[];
+  const t=document.getElementById('dbTotalDreams');if(t)t.textContent=dreams.length;
+  const a=document.getElementById('dbActiveDreams');if(a)a.textContent=dreams.filter(d=>!d.achieved).length;
+  const dn=document.getElementById('dbDoneDreams');if(dn)dn.textContent=dreams.filter(d=>d.achieved).length;
+}
+
+function renderDreamList(){
+  renderDreamStats();
+  const list=document.getElementById('dreamList');
+  const dreams=state.dreams||[];
+  if(!dreams.length){
+    list.innerHTML=`<div class="db-list-empty"><div class="db-list-empty-ico">✦</div><div class="db-list-empty-title">Belum Ada Mimpi</div><div class="db-list-empty-desc">Setiap perjalanan besar dimulai dari mimpi yang ditulis. Mulailah mencatat impianmu hari ini!</div><button class="db-list-empty-btn" onclick="openNewDreamModal()">+ Tulis Mimpi Pertamamu</button></div>`;
+    return;
+  }
+  list.innerHTML='';
+  dreams.forEach((dream,idx)=>{
+    const milestones=dream.milestones||[];
+    const doneMilestones=milestones.filter(m=>m.done).length;
+    const msPct=milestones.length>0?Math.round((doneMilestones/milestones.length)*100):0;
+    const target=dream.target||0,collected=dream.collected||0;
+    const finPct=target>0?Math.min(100,Math.round((collected/target)*100)):0;
+    const cat=CAT_CONFIG[dream.category]||CAT_CONFIG.lainnya;
+    const grad=DREAM_BG_GRADIENTS[idx%DREAM_BG_GRADIENTS.length];
+    const card=document.createElement('div');
+    card.className='dream-card'+(dream.achieved?' dream-done':'');
+    card.innerHTML=`
+      <div class="dream-card-top" style="background:${grad};">
+        ${dream.vbImages&&dream.vbImages[0]?`<img src="${dream.vbImages[0]}" style="width:100%;height:100%;object-fit:cover;" alt="">`:
+        `<span style="font-size:56px;">${dream.emoji||'🌟'}</span>`}
+        ${dream.achieved?'<div style="position:absolute;top:10px;right:10px;background:var(--green);color:white;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:700;">✓ Terwujud</div>':''}
+      </div>
+      <div class="dream-card-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <span class="dream-cat-chip" style="background:${cat.bg};color:${cat.color};">${cat.label}</span>
+          ${dream.deadline?`<span style="font-size:10px;color:var(--text3);">📅 ${formatDate(dream.deadline)}</span>`:''}
+        </div>
+        <div class="dream-card-title">${dream.title}</div>
+        <div class="dream-card-desc">${dream.desc||''}</div>
+        <div class="dream-card-footer">
+          <span style="font-size:10px;color:var(--text3);font-weight:600;">Milestone</span>
+          <div class="dream-progress-bar"><div class="dream-progress-fill" style="width:${msPct}%;background:${cat.color};"></div></div>
+          <span class="dream-pct" style="color:${cat.color};">${msPct}%</span>
+        </div>
+        ${target>0?`<div style="display:flex;align-items:center;gap:6px;margin-top:6px;"><span style="font-size:10px;color:var(--text3);font-weight:600;">Dana</span><div style="flex:1;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;"><div style="height:100%;background:var(--green);border-radius:2px;width:${finPct}%;"></div></div><span style="font-size:10px;font-weight:700;color:var(--green);">${finPct}%</span></div>`:''}
+        <div class="dream-actions">
+          <button class="dream-act-btn" style="background:var(--accent-light);color:var(--accent);" onclick="openDreamDetail('${dream.id}')">📖 Detail</button>
+          <button class="dream-act-btn" style="background:var(--amber-bg);color:var(--amber);" onclick="openEditDreamModal('${dream.id}');event.stopPropagation();">✏️ Edit</button>
+          <button class="dream-act-btn" style="background:var(--red-bg);color:var(--red);" onclick="deleteDream('${dream.id}');event.stopPropagation();">🗑</button>
+        </div>
+      </div>`;
+    list.appendChild(card);
+  });
+}
+
+function openNewDreamModal(editId){
+  editingDreamId=editId||null;
+  document.getElementById('newDreamModalTitle').textContent=editId?'Edit Mimpi ✦':'Mimpi Baru ✦';
+  if(editId){
+    const d=(state.dreams||[]).find(x=>x.id===editId);if(!d)return;
+    document.getElementById('dreamEmoji').value=d.emoji||'🌟';
+    document.getElementById('dreamTitle').value=d.title||'';
+    document.getElementById('dreamDesc').value=d.desc||'';
+    document.getElementById('dreamTarget').value=d.target||0;
+    document.getElementById('dreamDeadline').value=d.deadline||'';
+    document.getElementById('dreamCategory').value=d.category||'lainnya';
+  }else{
+    document.getElementById('dreamEmoji').value='🌟';
+    document.getElementById('dreamTitle').value='';
+    document.getElementById('dreamDesc').value='';
+    document.getElementById('dreamTarget').value='';
+    document.getElementById('dreamDeadline').value='';
+    document.getElementById('dreamCategory').value='keuangan';
+  }
+  document.getElementById('newDreamOverlay').classList.add('open');
+}
+function openEditDreamModal(id){openNewDreamModal(id);}
+function closeNewDreamModal(){document.getElementById('newDreamOverlay').classList.remove('open');}
+
+function confirmDream(){
+  const emoji=document.getElementById('dreamEmoji').value.trim()||'🌟';
+  const title=document.getElementById('dreamTitle').value.trim();
+  const desc=document.getElementById('dreamDesc').value.trim();
+  const target=parseInt(document.getElementById('dreamTarget').value)||0;
+  const deadline=document.getElementById('dreamDeadline').value;
+  const category=document.getElementById('dreamCategory').value;
+  if(!title){showToast('Judul mimpi wajib diisi!','danger');return;}
+  if(!state.dreams)state.dreams=[];
+  if(editingDreamId){
+    const idx=state.dreams.findIndex(x=>x.id===editingDreamId);
+    if(idx!==-1)state.dreams[idx]={...state.dreams[idx],emoji,title,desc,target,deadline,category};
+    editingDreamId=null;
+  }else{
+    state.dreams.push({id:'dr_'+Date.now(),emoji,title,desc,target,deadline,category,milestones:[],affirmations:[],vbImages:[null,null,null],collected:0,finHistory:[],achieved:false,timestamp:Date.now()});
+  }
+  save();renderDreamList();closeNewDreamModal();showToast('Mimpi disimpan ✦','success');
+}
+
+function deleteDream(id){
+  if(!confirm('Hapus mimpi ini?'))return;
+  state.dreams=(state.dreams||[]).filter(d=>d.id!==id);
+  save();renderDreamList();showToast('Dihapus','danger');
+}
+
+function markDreamDone(){
+  const dream=getActiveDream();if(!dream)return;
+  if(!confirm('Tandai mimpi ini sebagai terwujud? 🎉'))return;
+  dream.achieved=true;dream.achievedDate=Date.now();
+  save();renderDreamDetail();showToast('Selamat! Mimpimu terwujud! 🎉🎉🎉','success');
+}
+
+function getActiveDream(){return (state.dreams||[]).find(d=>d.id===activeDreamId);}
+
+function openDreamDetail(id){
+  activeDreamId=id;
+  document.getElementById('dreamDetailOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  renderDreamDetail();
+
+  // FIX: Pasang event listener tombol Dana Impian setiap kali detail dibuka
+  const addBtn=document.getElementById('dreamFinAddBtn');
+  if(addBtn){
+    addBtn.onclick=function(e){
+      e.stopPropagation();
+      openDreamFinanceModal();
+    };
+  }
+
+  document.getElementById('aiResult').classList.remove('show');
+  document.getElementById('aiResultContent').innerHTML='';
+  document.getElementById('aiBstormInput').value='';
+}
+
+function closeDreamDetail(){
+  document.getElementById('dreamDetailOverlay').classList.remove('open');
+  document.body.style.overflow='';
+  activeDreamId=null;
+  renderDreamList();
+}
+
+function renderDreamDetail(){
+  const dream=getActiveDream();if(!dream)return;
+  document.getElementById('ddTitle').textContent=dream.emoji+' '+dream.title;
+  document.getElementById('aiBstormInput').value=dream.title;
+  renderVisionBoard(dream);
+  const milestones=dream.milestones||[];
+  const doneMilestones=milestones.filter(m=>m.done).length;
+  const msPct=milestones.length>0?Math.round((doneMilestones/milestones.length)*100):0;
+  const target=dream.target||0,collected=dream.collected||0;
+  const finPct=target>0?Math.min(100,Math.round((collected/target)*100)):0;
+  const msDash=CIRCUMFERENCE_90*(1-msPct/100);
+  const finDash=CIRCUMFERENCE_90*(1-finPct/100);
+  document.getElementById('circProgress').style.strokeDashoffset=msDash;
+  document.getElementById('circPct').textContent=msPct+'%';
+  document.getElementById('circFinance').style.strokeDashoffset=finDash;
+  document.getElementById('circFinPct').textContent=finPct+'%';
+  document.getElementById('ddCollected').textContent=formatRp(collected);
+  document.getElementById('ddTarget').textContent=target>0?formatRp(target):'Belum diset';
+  document.getElementById('ddFinBar').style.width=finPct+'%';
+  document.getElementById('ddFinMeta').textContent=finPct+'% terkumpul'+(target>0?' · Sisa '+formatRp(Math.max(0,target-collected)):'');
+  renderCountdown(dream);renderMilestones(dream);renderAffirmations(dream);
+}
+
+// FIX: Vision Board sekarang punya tombol hapus foto
+function renderVisionBoard(dream){
+  const imgs=dream.vbImages||[null,null,null];
+  const main=document.getElementById('vbMain');
+  const sub1=document.getElementById('vbSub1');
+  const sub2=document.getElementById('vbSub2');
+
+  function makeVBSlot(el, imgData, idx, placeholder, isMain){
+    if(imgData){
+      el.innerHTML=`
+        <img src="${imgData}" alt="vision" style="width:100%;height:100%;object-fit:cover;">
+        <div class="vb-add-overlay">📷 Ganti</div>
+        <button class="vb-delete-btn" title="Hapus foto">✕</button>`;
+      el.querySelector('.vb-delete-btn').onclick=(e)=>{
+        e.stopPropagation();
+        deleteVBImage(idx);
+      };
+    }else{
+      el.innerHTML=`
+        <div class="${isMain?'vb-placeholder':'vb-placeholder-sm'}">${placeholder}</div>
+        <div class="vb-add-overlay">${isMain?'📷 Tambah Foto':'📷'}</div>`;
+    }
+    el.onclick=()=>triggerVBUpload(idx);
+  }
+
+  makeVBSlot(main, imgs[0], 0, '🌟', true);
+  makeVBSlot(sub1, imgs[1], 1, '✨', false);
+  makeVBSlot(sub2, imgs[2], 2, '🎯', false);
+}
+
+// FIX: Fungsi hapus foto vision board
+function deleteVBImage(idx){
+  const dream=getActiveDream();if(!dream)return;
+  if(!dream.vbImages)dream.vbImages=[null,null,null];
+  dream.vbImages[idx]=null;
+  save();renderVisionBoard(dream);renderDreamList();showToast('Foto dihapus','danger');
+}
+
+function triggerVBUpload(idx){vbUploadTarget=idx;document.getElementById('vbFileInput').click();}
+
+function handleVBUpload(input){
+  if(!input.files||!input.files[0])return;
+  const dream=getActiveDream();if(!dream)return;
+  if(!dream.vbImages)dream.vbImages=[null,null,null];
+  compressImage(input.files[0],800,(data)=>{
+    dream.vbImages[vbUploadTarget]=data;
+    save();renderVisionBoard(dream);renderDreamList();showToast('Foto Vision Board diperbarui ✓','success');
+  });
+  input.value='';
+}
+
+function renderCountdown(dream){
+  if(!dream.deadline){
+    document.getElementById('cdNums').style.display='none';
+    document.getElementById('cdNoDeadline').style.display='block';
+    return;
+  }
+  const now=new Date(),target=new Date(dream.deadline);
+  target.setHours(23,59,59);
+  const diff=Math.max(0,target-now);
+  const days=Math.floor(diff/(1000*60*60*24));
+  const hours=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+  const mins=Math.floor((diff%(1000*60*60))/(1000*60));
+  document.getElementById('cdNoDeadline').style.display='none';
+  document.getElementById('cdNums').style.display='flex';
+  document.getElementById('cdNums').innerHTML=`<div class="cd-block"><div class="cd-num">${days}</div><div class="cd-unit">Hari</div></div><div class="cd-block"><div class="cd-num">${String(hours).padStart(2,'0')}</div><div class="cd-unit">Jam</div></div><div class="cd-block"><div class="cd-num">${String(mins).padStart(2,'0')}</div><div class="cd-unit">Menit</div></div>`;
+}
+
+function renderMilestones(dream){
+  const list=document.getElementById('milestoneList');
+  const milestones=dream.milestones||[];
+  if(!milestones.length){list.innerHTML='<div class="empty-state" style="padding:20px;"><div class="empty-ico">🚀</div><div class="empty-txt">Belum ada langkah<br><span style="font-size:11px;">Gunakan AI Brainstorm atau + Tambah</span></div></div>';return;}
+  list.innerHTML='';
+  milestones.forEach((ms,idx)=>{
+    const item=document.createElement('div');
+    item.className='milestone-item'+(ms.done?' done-ms':'');
+    item.innerHTML=`<div class="milestone-check">${ms.done?'✓':''}</div><div class="milestone-info"><div class="milestone-text">${ms.text}</div>${ms.note?`<div class="milestone-meta">${ms.note}</div>`:''}</div><button class="ms-delete" onclick="deleteMilestone(${idx});event.stopPropagation();">✕</button>`;
+    item.addEventListener('click',()=>toggleMilestone(idx));
+    list.appendChild(item);
+  });
+}
+
+function toggleMilestone(idx){
+  const dream=getActiveDream();if(!dream)return;
+  dream.milestones[idx].done=!dream.milestones[idx].done;
+  save();renderDreamDetail();
+}
+
+function deleteMilestone(idx){
+  const dream=getActiveDream();if(!dream)return;
+  dream.milestones.splice(idx,1);save();renderDreamDetail();
+}
+
+function showAddMilestoneInput(){document.getElementById('msAddInline').style.display='block';document.getElementById('msInlineInput').focus();}
+function hideAddMilestoneInput(){document.getElementById('msAddInline').style.display='none';document.getElementById('msInlineInput').value='';}
+
+function addMilestoneInline(){
+  const text=document.getElementById('msInlineInput').value.trim();
+  if(!text){showToast('Tulis langkah terlebih dahulu!','danger');return;}
+  const dream=getActiveDream();if(!dream)return;
+  if(!dream.milestones)dream.milestones=[];
+  dream.milestones.push({id:'ms_'+Date.now(),text,done:false});
+  save();hideAddMilestoneInput();renderDreamDetail();showToast('Langkah ditambahkan ✓','success');
+}
+
+function renderAffirmations(dream){
+  const affs=dream.affirmations||[];
+  const container=document.getElementById('affirmationsList');
+  const noData=document.getElementById('affNoData');
+  if(!affs.length){container.innerHTML='';noData.style.display='block';return;}
+  noData.style.display='none';container.innerHTML='';
+  affs.forEach(aff=>{
+    const card=document.createElement('div');card.className='affirmation-card';
+    card.innerHTML=`<div class="aff-deco">✦</div><div class="aff-quote">${aff}</div>`;
+    container.appendChild(card);
+  });
+}
+
+// FIX: openDreamFinanceModal dan closeDreamFinanceModal didefinisikan dengan jelas
+function openDreamFinanceModal(){
+  document.getElementById('dreamFinAmount').value='';
+  document.getElementById('dreamFinDesc').value='';
+  document.getElementById('dreamFinanceOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('dreamFinAmount').focus(),150);
+}
+
+function closeDreamFinanceModal(){
+  document.getElementById('dreamFinanceOverlay').classList.remove('open');
+}
+
+function confirmDreamFinance(){
+  const amount=parseInt(document.getElementById('dreamFinAmount').value);
+  const desc=document.getElementById('dreamFinDesc').value.trim();
+  if(!amount||amount<=0){showToast('Masukkan jumlah!','danger');return;}
+  const dream=getActiveDream();if(!dream)return;
+  dream.collected=(dream.collected||0)+amount;
+  if(!dream.finHistory)dream.finHistory=[];
+  dream.finHistory.push({amount,desc,ts:Date.now()});
+  save();renderDreamDetail();
+  closeDreamFinanceModal();
+  showToast('+'+formatRp(amount)+' ditambahkan ✓','success');
+}
+
+// ════════════════════════════════════════════════════════
+// AI BRAINSTORM
+// ════════════════════════════════════════════════════════
+async function runAIBrainstorm(){
+  const input=document.getElementById('aiBstormInput').value.trim();
+  if(!input){showToast('Ceritakan mimpimu terlebih dahulu!','danger');return;}
+  const btn=document.getElementById('aiBstormBtn');
+  const resultDiv=document.getElementById('aiResult');
+  const loadingDiv=document.getElementById('aiLoading');
+  const contentDiv=document.getElementById('aiResultContent');
+  btn.disabled=true;resultDiv.classList.add('show');loadingDiv.style.display='block';contentDiv.innerHTML='';
+  const prompt=`Kamu adalah AI coach untuk aplikasi personal growth bernama BERLATIH. Bantu pengguna mewujudkan mimpinya.\n\nMimpi pengguna: "${input}"\n\nBerikan output HANYA dalam format JSON yang valid (tanpa backtick, tanpa markdown), dengan struktur ini:\n{\n  "milestones": [\n    {"step": 1, "text": "...", "timeframe": "Minggu 1-2"},\n    {"step": 2, "text": "...", "timeframe": "Bulan 1"},\n    {"step": 3, "text": "...", "timeframe": "Bulan 2-3"},\n    {"step": 4, "text": "...", "timeframe": "Bulan 4-6"},\n    {"step": 5, "text": "...", "timeframe": "Bulan 6-12"}\n  ],\n  "budgeting": "Saran alokasi tabungan bulanan konkret dalam 1-2 kalimat",\n  "affirmations": ["Afirmasi 1", "Afirmasi 2", "Afirmasi 3"],\n  "keywords": ["keyword1", "keyword2", "keyword3", "keyword4"]\n}\n\nPENTING: Tulis dalam Bahasa Indonesia yang motivatif dan konkret.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    loadingDiv.style.display='none';
+    if(!data.content||!data.content[0])throw new Error('No response');
+    const raw=data.content.map(c=>c.text||'').join('');
+    let parsed;
+    try{parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());}
+    catch(e){contentDiv.innerHTML=`<div style="color:rgba(255,255,255,0.7);font-size:12px;line-height:1.7;padding:8px 0;">${raw.replace(/\n/g,'<br>')}</div>`;btn.disabled=false;return;}
+    renderAIResult(parsed);
+  }catch(err){
+    loadingDiv.style.display='none';
+    contentDiv.innerHTML=`<div style="color:rgba(255,100,100,0.9);font-size:12px;padding:8px;">Gagal terhubung ke AI. Periksa koneksi internet dan coba lagi.</div>`;
+  }
+  btn.disabled=false;
+}
+
+function renderAIResult(data){
+  const contentDiv=document.getElementById('aiResultContent');
+  let html='';
+  if(data.milestones&&data.milestones.length){
+    html+=`<div class="ai-result-section"><div class="ai-section-title">🚀 5 Langkah Konkret</div>`;
+    data.milestones.forEach(m=>{html+=`<div class="ai-milestone-item"><div class="ai-ms-num">${m.step}</div><div class="ai-ms-text"><strong>${m.text}</strong>${m.timeframe?`<br><span style="font-size:10px;opacity:0.6;">${m.timeframe}</span>`:''}</div></div>`;});
+    html+=`</div>`;
+  }
+  if(data.budgeting)html+=`<div class="ai-result-section"><div class="ai-section-title">💰 Strategi Tabungan</div><div class="ai-budget-box">${data.budgeting}</div></div>`;
+  if(data.affirmations&&data.affirmations.length){
+    html+=`<div class="ai-result-section"><div class="ai-section-title">✨ Afirmasi</div>`;
+    data.affirmations.forEach(a=>{html+=`<div class="ai-affirmation">"${a}"</div>`;});
+    html+=`</div>`;
+  }
+  if(data.keywords&&data.keywords.length){
+    html+=`<div class="ai-result-section"><div class="ai-section-title">🖼 Keyword Vision Board</div><div class="ai-keywords">`;
+    data.keywords.forEach(kw=>{html+=`<div class="ai-kw" onclick="copyKW('${kw}')">📋 ${kw}</div>`;});
+    html+=`</div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:6px;">Tap untuk menyalin</div></div>`;
+  }
+  html+=`<div style="display:flex;gap:8px;margin-top:14px;"><button onclick="importMilestonesFromAI()" style="flex:1;padding:10px;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.2);color:white;border-radius:12px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);">📥 Import Milestone</button><button onclick="importAffirmationsFromAI()" style="flex:1;padding:10px;background:rgba(245,158,11,0.2);border:1.5px solid rgba(245,158,11,0.3);color:var(--gold);border-radius:12px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);">✨ Import Afirmasi</button></div>`;
+  contentDiv.innerHTML=html;window._lastAIResult=data;
+}
+
+function importMilestonesFromAI(){
+  const data=window._lastAIResult;if(!data||!data.milestones)return;
+  const dream=getActiveDream();if(!dream)return;
+  if(!dream.milestones)dream.milestones=[];
+  data.milestones.forEach(m=>{dream.milestones.push({id:'ms_'+Date.now()+Math.random(),text:m.text+(m.timeframe?' ('+m.timeframe+')':''),done:false});});
+  save();renderDreamDetail();showToast(data.milestones.length+' milestone diimport ✓','success');
+}
+
+function importAffirmationsFromAI(){
+  const data=window._lastAIResult;if(!data||!data.affirmations)return;
+  const dream=getActiveDream();if(!dream)return;
+  dream.affirmations=data.affirmations;save();renderDreamDetail();showToast('Afirmasi diimport ✓','success');
+}
+
+function copyKW(kw){navigator.clipboard&&navigator.clipboard.writeText(kw).then(()=>showToast('"'+kw+'" disalin ✓','success'));}
+
+// ════════════════════════════════════════════════════════
+// FINANCE
+// ════════════════════════════════════════════════════════
+function computeSavingsBalance(){return(state.savings&&state.savings.transactions||[]).reduce((sum,t)=>sum+(t.type==='credit'?t.amount:-t.amount),0);}
+function computeDebtTotal(){return(state.debts||[]).reduce((sum,d)=>sum+(d.total-d.paid),0);}
+
+function renderFinance(){
+  document.getElementById('savingsBalanceDisplay').textContent=formatRp(computeSavingsBalance());
+  document.getElementById('debtTotalDisplay').textContent=formatRp(computeDebtTotal());
+  renderSavingsLedger();renderDebts();renderWishlist();
+}
+
+function renderSavingsLedger(){
+  const txns=(state.savings&&state.savings.transactions)||[];
+  const ledger=document.getElementById('savingsLedger');
+  if(!txns.length){ledger.innerHTML='<div class="empty-state"><div class="empty-ico">💰</div><div class="empty-txt">Belum ada transaksi</div></div>';return;}
+  ledger.innerHTML='';
+  [...txns].reverse().forEach(t=>{
+    const isCredit=t.type==='credit';
+    const row=document.createElement('div');row.className='txn-row';
+    const d=new Date(t.timestamp);
+    const dateStr=d.getDate()+' '+MONTHS_ID[d.getMonth()]+', '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    row.innerHTML=`<div class="txn-ico ${isCredit?'in':'out'}">${isCredit?'↑':'↓'}</div><div class="txn-info"><div class="txn-desc">${t.desc||'—'}</div><div class="txn-date">${dateStr}</div></div><div class="txn-amount ${isCredit?'in':'out'}">${isCredit?'+':'−'}${formatRp(t.amount)}</div><div class="txn-actions"><button class="txn-act" onclick="openEditTxn('${t.id}')">✏️</button><button class="txn-act" onclick="deleteTxn('${t.id}')">🗑</button></div>`;
+    ledger.appendChild(row);
+  });
+}
+
+function openSavingsModal(type){
+  currentSavingsType=type;
+  document.getElementById('savingsAmountInput').value='';
+  document.getElementById('savingsDescInput').value='';
+  setSavingsType(type);
+  document.getElementById('savingsOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('savingsAmountInput').focus(),100);
+}
+function closeSavingsModal(){document.getElementById('savingsOverlay').classList.remove('open');}
+
+function setSavingsType(type){
+  currentSavingsType=type;
+  const green='background:var(--green-bg);border-color:var(--green);color:var(--green);',red='background:var(--red-bg);border-color:var(--red);color:var(--red);',def='background:var(--surface2);border-color:var(--border);color:var(--text3);';
+  const base='flex:1;padding:11px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;text-align:center;border:1.5px solid;';
+  document.getElementById('typeCredit').style.cssText=base+(type==='credit'?green:def);
+  document.getElementById('typeDebit').style.cssText=base+(type==='debit'?red:def);
+}
+
+function confirmSavingsTransaction(){
+  const amount=parseInt(document.getElementById('savingsAmountInput').value);
+  const desc=document.getElementById('savingsDescInput').value.trim();
+  if(!amount||amount<=0){showToast('Masukkan jumlah yang valid!','danger');return;}
+  if(!desc){showToast('Keterangan harus diisi!','danger');return;}
+  if(currentSavingsType==='debit'&&amount>computeSavingsBalance()){showToast('Saldo tidak cukup!','danger');return;}
+  if(!state.savings.transactions)state.savings.transactions=[];
+  state.savings.transactions.push({id:'txn_'+Date.now(),type:currentSavingsType,amount,desc,timestamp:Date.now()});
+  save();renderFinance();closeSavingsModal();showToast(currentSavingsType==='credit'?'Berhasil ditabung ✓':'Berhasil diambil ✓','success');
+}
+
+function openEditTxn(id){
+  const t=(state.savings.transactions||[]).find(x=>x.id===id);if(!t)return;
+  editingTxnId=id;document.getElementById('editAmountInput').value=t.amount;document.getElementById('editDescInput').value=t.desc||'';
+  document.getElementById('savingsEditOverlay').classList.add('open');
+}
+
+function confirmEditTransaction(){
+  const amount=parseInt(document.getElementById('editAmountInput').value);
+  const desc=document.getElementById('editDescInput').value.trim();
+  if(!amount||amount<=0){showToast('Jumlah tidak valid!','danger');return;}
+  const idx=(state.savings.transactions||[]).findIndex(x=>x.id===editingTxnId);
+  if(idx===-1)return;
+  state.savings.transactions[idx].amount=amount;state.savings.transactions[idx].desc=desc;
+  document.getElementById('savingsEditOverlay').classList.remove('open');editingTxnId=null;save();renderFinance();showToast('Transaksi diperbarui ✓','success');
+}
+
+function deleteTxn(id){
+  if(!confirm('Hapus transaksi ini?'))return;
+  state.savings.transactions=state.savings.transactions.filter(t=>t.id!==id);save();renderFinance();showToast('Dihapus','danger');
+}
+
+function openDebtModal(type){
+  currentDebtType=type;
+  ['debtNameInput','debtTotalInput','debtMonthlyInput','debtDueInput'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('debtPaidInput').value='0';setDebtType(type);document.getElementById('debtOverlay').classList.add('open');
+}
+function closeDebtModal(){document.getElementById('debtOverlay').classList.remove('open');}
+
+function setDebtType(type){
+  currentDebtType=type;
+  const base='flex:1;padding:11px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;text-align:center;border:1.5px solid;';
+  const red='background:var(--red-bg);border-color:var(--red);color:var(--red);',amber='background:var(--amber-bg);border-color:var(--amber);color:var(--amber);',def='background:var(--surface2);border-color:var(--border);color:var(--text3);';
+  document.getElementById('dtHutang').style.cssText=base+(type==='hutang'?red:def);
+  document.getElementById('dtCicilan').style.cssText=base+(type==='cicilan'?amber:def);
+  document.getElementById('cicilanExtra').style.display=type==='cicilan'?'block':'none';
+}
+
+function confirmDebt(){
+  const name=document.getElementById('debtNameInput').value.trim();
+  const total=parseInt(document.getElementById('debtTotalInput').value);
+  const paid=parseInt(document.getElementById('debtPaidInput').value)||0;
+  if(!name||!total||total<=0){showToast('Isi nama dan jumlah!','danger');return;}
+  const debt={id:'debt_'+Date.now(),type:currentDebtType,name,total,paid,timestamp:Date.now()};
+  if(currentDebtType==='cicilan'){debt.monthly=parseInt(document.getElementById('debtMonthlyInput').value)||0;debt.due=document.getElementById('debtDueInput').value;}
+  if(!state.debts)state.debts=[];state.debts.push(debt);save();renderFinance();closeDebtModal();showToast('Berhasil dicatat ✓','success');
+}
+
+let payingDebtId=null;
+function openDebtPay(id){payingDebtId=id;document.getElementById('debtPayAmount').value='';document.getElementById('debtPayDesc').value='';document.getElementById('debtPayOverlay').classList.add('open');}
+function closeDebtPayModal(){document.getElementById('debtPayOverlay').classList.remove('open');}
+
+function confirmDebtPay(){
+  const amount=parseInt(document.getElementById('debtPayAmount').value);
+  if(!amount||amount<=0){showToast('Masukkan jumlah!','danger');return;}
+  const debt=(state.debts||[]).find(d=>d.id===payingDebtId);if(!debt)return;
+  debt.paid=Math.min(debt.total,debt.paid+amount);save();renderFinance();closeDebtPayModal();
+  showToast(debt.paid>=debt.total?'Lunas! 🎉':'Pembayaran tercatat ✓','success');
+}
+
+function deleteDebt(id){
+  if(!confirm('Hapus catatan hutang ini?'))return;
+  state.debts=(state.debts||[]).filter(d=>d.id!==id);save();renderFinance();showToast('Dihapus','danger');
+}
+
+function renderDebts(){
+  const list=document.getElementById('debtList');
+  const debts=state.debts||[];
+  if(!debts.length){list.innerHTML='<div class="empty-state"><div class="empty-ico">📋</div><div class="empty-txt">Belum ada catatan hutang</div></div>';return;}
+  list.innerHTML='';
+  debts.forEach(d=>{
+    const remaining=d.total-d.paid,pct=d.total>0?Math.round((d.paid/d.total)*100):0;
+    const card=document.createElement('div');card.className='debt-card';
+    let extra='';
+    if(d.type==='cicilan'&&d.monthly){const sisaBulan=d.monthly>0?Math.ceil(remaining/d.monthly):0;extra=`<div style="font-size:11px;color:var(--amber);margin-bottom:8px;font-weight:500;">Cicilan: ${formatRp(d.monthly)}/bln · Sisa ≈${sisaBulan} bln${d.due?' · Jatuh tempo: '+formatDate(d.due):''}</div>`;}
+    card.innerHTML=`<div class="debt-header"><div class="debt-name">${d.name}</div><div class="debt-badge ${d.type}">${d.type==='hutang'?'💸 Hutang':'📅 Cicilan'}</div></div>${extra}<div class="debt-progress"><div class="debt-fill ${d.type}" style="width:${pct}%"></div></div><div class="debt-meta"><span>Terbayar: ${formatRp(d.paid)}</span><span>Sisa: ${formatRp(remaining)}</span><span>${pct}%</span></div><div class="debt-actions">${remaining>0?`<button class="debt-act-btn pay-btn" onclick="openDebtPay('${d.id}')">💳 Bayar</button>`:'<span style="font-size:11px;color:var(--green);padding:8px;font-weight:700;">✓ Lunas</span>'}<button class="debt-act-btn del-btn" onclick="deleteDebt('${d.id}')">Hapus</button></div>`;
+    list.appendChild(card);
+  });
+}
+
+function openWishModal(id){
+  if(id){
+    editingWishId=id;const w=(state.wishlist||[]).find(x=>x.id===id);if(!w)return;
+    document.getElementById('wishModalTitle').textContent='Edit Item';
+    document.getElementById('wishNameInput').value=w.name;document.getElementById('wishPriceInput').value=w.price||0;document.getElementById('wishNoteInput').value=w.note||'';selectPriority(w.priority||'rendah');
+  }else{
+    editingWishId=null;document.getElementById('wishModalTitle').textContent='Tambah Item';
+    ['wishNameInput','wishPriceInput','wishNoteInput'].forEach(id=>{document.getElementById(id).value='';});selectPriority('rendah');
+  }
+  document.getElementById('wishOverlay').classList.add('open');
+}
+function closeWishModal(){document.getElementById('wishOverlay').classList.remove('open');}
+
+function selectPriority(p){
+  currentPriority=p;
+  const opts=['rendah','sedang','penting','mendesak'],labels=['○ Biasa','◎ Sedang','● Penting','🔴 Mendesak'];
+  document.querySelectorAll('.priority-opt').forEach((el,i)=>{el.className='priority-opt'+(opts[i]===p?' sel-'+opts[i]:'');el.textContent=labels[i];el.onclick=()=>selectPriority(opts[i]);});
+}
+
+function confirmWish(){
+  const name=document.getElementById('wishNameInput').value.trim();
+  const price=parseInt(document.getElementById('wishPriceInput').value)||0;
+  const note=document.getElementById('wishNoteInput').value.trim();
+  if(!name){showToast('Nama item harus diisi!','danger');return;}
+  if(!state.wishlist)state.wishlist=[];
+  if(editingWishId){const idx=state.wishlist.findIndex(x=>x.id===editingWishId);if(idx!==-1){state.wishlist[idx]={...state.wishlist[idx],name,price,note,priority:currentPriority};}editingWishId=null;}
+  else{state.wishlist.push({id:'w_'+Date.now(),name,price,note,priority:currentPriority,done:false,timestamp:Date.now()});}
+  save();renderWishlist();closeWishModal();showToast('Disimpan ✓','success');
+}
+
+function toggleWish(id){const w=(state.wishlist||[]).find(x=>x.id===id);if(!w)return;w.done=!w.done;save();renderWishlist();}
+function deleteWish(id){if(!confirm('Hapus item ini?'))return;state.wishlist=(state.wishlist||[]).filter(x=>x.id!==id);save();renderWishlist();showToast('Dihapus','danger');}
+
+function filterWish(f){
+  wishFilter=f;
+  ['all','mendesak'].forEach(ft=>{const el=document.getElementById('wf-'+ft);if(el)el.style.cssText=ft===f?'padding:8px 12px;border-radius:8px;font-size:11px;font-weight:600;border:1.5px solid var(--accent);background:var(--accent-light);color:var(--accent);cursor:pointer;font-family:var(--sans);':'padding:8px 12px;border-radius:8px;font-size:11px;font-weight:600;border:1.5px solid var(--border);background:var(--surface2);color:var(--text3);cursor:pointer;font-family:var(--sans);';});
+  renderWishlist();
+}
+
+function renderWishlist(){
+  const list=document.getElementById('wishList');
+  let items=(state.wishlist||[]);
+  if(wishFilter==='mendesak')items=items.filter(w=>w.priority==='mendesak');
+  const order={mendesak:0,penting:1,sedang:2,rendah:3};
+  items=[...items].sort((a,b)=>(order[a.priority]||3)-(order[b.priority]||3));
+  if(!items.length){list.innerHTML='<div class="empty-state"><div class="empty-ico">🛒</div><div class="empty-txt">Tidak ada item</div></div>';return;}
+  list.innerHTML='';
+  const pLabel={rendah:'Biasa',sedang:'Sedang',penting:'Penting',mendesak:'Mendesak'};
+  items.forEach(w=>{
+    const card=document.createElement('div');card.className='wish-card'+(w.done?' done-wish':'');
+    card.style.opacity=w.done?'0.55':'1';
+    card.innerHTML=`<div class="wish-priority ${w.priority||'rendah'}"></div><div class="wish-info"><div class="wish-name" style="${w.done?'text-decoration:line-through;':''}">${w.name}</div><div class="wish-detail">${w.price?formatRp(w.price):''} ${w.note?'· '+w.note:''}</div></div><div class="wish-tag ${w.priority||'rendah'}">${pLabel[w.priority]||'Biasa'}</div><div class="txn-actions"><button class="txn-act" onclick="toggleWish('${w.id}')">${w.done?'↩':'✓'}</button><button class="txn-act" onclick="openWishModal('${w.id}')">✏️</button><button class="txn-act" onclick="deleteWish('${w.id}')">🗑</button></div>`;
+    list.appendChild(card);
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// NOTES
+// ════════════════════════════════════════════════════════
+function openNoteModal(id){
+  if(id){editingNoteId=id;const n=(state.notes||[]).find(x=>x.id===id);if(!n)return;document.getElementById('noteModalTitle').textContent='Edit Catatan';document.getElementById('noteTitleInput').value=n.title;document.getElementById('noteTagInput').value=n.tag||'';document.getElementById('noteBodyInput').value=n.body;document.getElementById('noteReminderInput').value=n.reminder||'';}
+  else{editingNoteId=null;document.getElementById('noteModalTitle').textContent='Catatan Baru';['noteTitleInput','noteTagInput','noteBodyInput','noteReminderInput'].forEach(id=>{document.getElementById(id).value='';});}
+  document.getElementById('noteOverlay').classList.add('open');
+}
+function closeNoteModal(){document.getElementById('noteOverlay').classList.remove('open');}
+
+function confirmNote(){
+  const title=document.getElementById('noteTitleInput').value.trim();
+  const tag=document.getElementById('noteTagInput').value.trim();
+  const body=document.getElementById('noteBodyInput').value.trim();
+  const reminder=document.getElementById('noteReminderInput').value;
+  if(!title||!body){showToast('Judul dan isi wajib diisi!','danger');return;}
+  if(!state.notes)state.notes=[];
+  if(editingNoteId){const idx=state.notes.findIndex(x=>x.id===editingNoteId);if(idx!==-1)state.notes[idx]={...state.notes[idx],title,tag,body,reminder,updated:Date.now()};editingNoteId=null;}
+  else{state.notes.unshift({id:'n_'+Date.now(),title,tag,body,reminder,timestamp:Date.now()});}
+  save();renderNotes();renderReminders();closeNoteModal();showToast('Catatan disimpan ✓','success');
+  if(reminder)scheduleReminder(title,reminder);
+}
+
+function deleteNote(id){if(!confirm('Hapus catatan ini?'))return;state.notes=(state.notes||[]).filter(n=>n.id!==id);save();renderNotes();renderReminders();showToast('Dihapus','danger');}
+
+function viewNote(id){
+  const n=(state.notes||[]).find(x=>x.id===id);if(!n)return;
+  document.getElementById('noteViewTitle').textContent=n.title;
+  const d=new Date(n.timestamp);
+  let meta=d.getDate()+' '+MONTHS_ID[d.getMonth()]+' '+d.getFullYear();
+  if(n.tag)meta+=' · '+n.tag;
+  document.getElementById('noteViewMeta').textContent=meta;
+  document.getElementById('noteViewBody').textContent=n.body;
+  document.getElementById('noteViewOverlay').classList.add('open');
+}
+function closeNoteView(){document.getElementById('noteViewOverlay').classList.remove('open');}
+
+function renderNotes(){
+  const list=document.getElementById('noteList');
+  const notes=state.notes||[];
+  if(!notes.length){list.innerHTML='<div class="empty-state"><div class="empty-ico">📝</div><div class="empty-txt">Belum ada catatan<br><span style="font-size:11px;display:block;margin-top:4px;">Tap + untuk menambah catatan</span></div></div>';return;}
+  list.innerHTML='';
+  notes.forEach(n=>{
+    const card=document.createElement('div');card.className='note-card';
+    const d=new Date(n.timestamp||n.updated);
+    const dateStr=d.getDate()+' '+MONTHS_ID[d.getMonth()]+' '+d.getFullYear();
+    card.innerHTML=`<div class="note-header"><div class="note-title">${n.title}</div>${n.reminder?'<div class="note-remind-badge">⏰</div>':''}</div><div class="note-body">${n.body}</div><div class="note-meta"><div class="note-date">${dateStr}</div>${n.tag?`<div class="note-tag">${n.tag}</div>`:''}</div><div class="note-actions"><button class="txn-act" onclick="viewNote('${n.id}');event.stopPropagation();">👁</button><button class="txn-act" onclick="openNoteModal('${n.id}');event.stopPropagation();">✏️</button><button class="txn-act" onclick="deleteNote('${n.id}');event.stopPropagation();">🗑</button></div>`;
+    card.addEventListener('click',()=>viewNote(n.id));
+    list.appendChild(card);
+  });
+}
+
+function scheduleReminder(title,reminderDt){
+  const ms=new Date(reminderDt).getTime()-Date.now();
+  if(ms>0&&ms<86400000*7){setTimeout(()=>{if(Notification.permission==='granted'){new Notification('BERLATIH Reminder',{body:'📝 '+title});}else{showToast('⏰ Reminder: '+title);}},ms);}
+}
+
+window.checkReminders=function(){
+  if(Notification.permission!=='granted')Notification.requestPermission();
+  const now=Date.now();
+  (state.notes||[]).forEach(n=>{if(n.reminder){const ms=new Date(n.reminder).getTime()-now;if(ms>0&&ms<86400000)scheduleReminder(n.title,n.reminder);}});
+};
+
+// ════════════════════════════════════════════════════════
+// PROFILE
+// ════════════════════════════════════════════════════════
+function compressImage(file,maxSize,cb){
+  if(typeof maxSize==='function'){cb=maxSize;maxSize=150;}
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      let w=img.width,h=img.height;
+      if(w>h){if(w>maxSize){h=Math.round(h*maxSize/w);w=maxSize;}}else{if(h>maxSize){w=Math.round(w*maxSize/h);h=maxSize;}}
+      canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
+      cb(canvas.toDataURL('image/jpeg',0.75));
+    };img.src=e.target.result;
+  };reader.readAsDataURL(file);
+}
+
+function handlePhotoUpload(input){
+  if(!input.files||!input.files[0])return;
+  compressImage(input.files[0],150,(data)=>{
+    tempPhotoData=data;
+    document.getElementById('adminPhotoPreview').innerHTML='<img src="'+data+'" style="width:100%;height:100%;object-fit:cover;" alt="preview">';
+    showToast('Foto siap ✓','success');
+  });
+}
+
+function saveProfile(){
+  if(!state.profile)state.profile={};
+  state.profile.name=document.getElementById('editName').value.trim()||'Pengguna Berlatih';
+  state.profile.role=document.getElementById('editRole').value.trim()||'Personal Growth';
+  state.profile.birthdate=document.getElementById('editBirthdate').value;
+  state.dailyMsg=document.getElementById('profileMsgEditor').value.trim()||DEFAULT_MSG;
+  if(tempPhotoData){state.profile.photo=tempPhotoData;tempPhotoData=null;}
+  save();renderAll();renderProfile();showToast('Profil berhasil disimpan ✓','success');
+}
+
+function renderAdminPanel(){
+  const prof=state.profile||{};
+  document.getElementById('editName').value=prof.name||'';
+  document.getElementById('editRole').value=prof.role||'';
+  document.getElementById('editBirthdate').value=prof.birthdate||'';
+  document.getElementById('profileMsgEditor').value=state.dailyMsg||'';
+  const prev=document.getElementById('adminPhotoPreview');
+  if(prof.photo)prev.innerHTML='<img src="'+prof.photo+'" style="width:100%;height:100%;object-fit:cover;">';else prev.innerHTML='👤';
+  renderQuestManagerList();renderCustomBadgeList();renderAdminQuests();
+  document.getElementById('adminXpDisplay').textContent=state.totalXP+' XP';
+  const today=new Date();
+  document.getElementById('adminDatePicker').value=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+}
+
+function renderQuestManagerList(){
+  const list=document.getElementById('questManagerList');list.innerHTML='';
+  if(!state.quests.length){list.innerHTML='<div class="empty-state" style="padding:16px;"><div class="empty-txt">Belum ada rutinitas</div></div>';return;}
+  state.quests.forEach(q=>{
+    const row=document.createElement('div');row.className='qm-row';
+    row.innerHTML=`<span style="font-size:18px;">${q.emoji}</span><span style="flex:1;font-size:13px;font-weight:600;color:var(--text);">${q.name}</span><span style="font-size:11px;color:var(--text3);font-weight:500;">⏱ ${q.dur}m</span><button onclick="deleteQuest('${q.id}')" style="padding:5px 12px;border-radius:8px;border:none;background:var(--red-bg);color:var(--red);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);">Hapus</button>`;
+    list.appendChild(row);
+  });
+}
+
+function deleteQuest(id){
+  if(!confirm('Hapus rutinitas ini?'))return;
+  state.quests=state.quests.filter(q=>q.id!==id);save();renderAll();renderQuestManagerList();renderAdminQuests();showToast('Dihapus','danger');
+}
+
+function addQuest(){
+  const emoji=document.getElementById('aqEmoji').value.trim()||'🎯';
+  const name=document.getElementById('aqName').value.trim();
+  const dur=parseInt(document.getElementById('aqDur').value)||30;
+  if(!name){showToast('Nama rutinitas harus diisi!','danger');return;}
+  if(state.quests.find(q=>q.name.toLowerCase()===name.toLowerCase())){showToast('Nama sudah ada!','danger');return;}
+  state.quests.push({id:'q_'+Date.now(),emoji,name,dur});
+  document.getElementById('aqEmoji').value='';document.getElementById('aqName').value='';document.getElementById('aqDur').value='30';
+  save();renderAll();renderQuestManagerList();renderAdminQuests();showToast('Rutinitas ditambahkan ✓','success');
+}
+
+function renderAdminQuests(){
+  const dateVal=document.getElementById('adminDatePicker').value;
+  let k;
+  if(dateVal){const p=dateVal.split('-');const d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));k=dateKey(d);}else k=todayKey();
+  const d=getDataForKey(k);const list=document.getElementById('adminQuestList');list.innerHTML='';
+  state.quests.forEach(q=>{
+    const isDone=!!d[q.id];const row=document.createElement('div');row.className='qm-row';
+    row.innerHTML=`<span style="font-size:18px;">${q.emoji}</span><span style="flex:1;font-size:13px;font-weight:600;color:var(--text);">${q.name}</span><span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:700;background:${isDone?'var(--green-bg)':'var(--surface3)'};color:${isDone?'var(--green)':'var(--text3)'};">${isDone?'✓ Selesai':'Belum'}</span>${isDone?`<button onclick="adminCancelQuest('${k}','${q.id}')" style="padding:5px 10px;border-radius:8px;border:none;background:var(--red-bg);color:var(--red);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);">Batal</button>`:''}`;
+    list.appendChild(row);
+  });
+  document.getElementById('adminXpDisplay').textContent=state.totalXP+' XP';
+}
+
+function adminCancelQuest(k,questId){
+  const d=getDataForKey(k);if(!d[questId])return;
+  const wasSubmitted=!!d.submitted;delete d[questId];
+  if(wasSubmitted){d.submitted=false;state.totalXP=Math.max(0,state.totalXP-XP_PER-XP_BONUS);}else{state.totalXP=Math.max(0,state.totalXP-XP_PER);}
+  save();renderAll();renderAdminQuests();showToast('Dibatalkan','danger');
+}
+
+function cancelWholeDay(){
+  const dateVal=document.getElementById('adminDatePicker').value;
+  let k;
+  if(dateVal){const p=dateVal.split('-');const d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));k=dateKey(d);}else k=todayKey();
+  const d=getDataForKey(k);
+  const wasSubmitted=!!d.submitted,doneCount=state.quests.filter(q=>d[q.id]).length;
+  if(!doneCount&&!wasSubmitted){showToast('Tidak ada yang perlu dibatalkan');return;}
+  let xpDeduct=doneCount*XP_PER;if(wasSubmitted)xpDeduct+=XP_BONUS;
+  state.history[k]={};state.totalXP=Math.max(0,state.totalXP-xpDeduct);
+  save();renderAll();renderAdminQuests();showToast('Hari dibatalkan, -'+xpDeduct+' XP','danger');
+}
+
+function adjustXP(sign){
+  const val=parseInt(document.getElementById('xpAdjustInput').value)||0;
+  if(val<=0){showToast('Masukkan angka yang benar','danger');return;}
+  state.totalXP=Math.max(0,state.totalXP+sign*val);save();renderAll();renderAdminPanel();showToast((sign>0?'+':'-')+val+' XP','success');
+}
+
+function renderCustomBadgeList(){
+  const list=document.getElementById('customBadgeList');list.innerHTML='';
+  const cbs=state.customBadges||[];
+  if(!cbs.length){list.innerHTML='<div class="empty-state" style="padding:12px;"><div class="empty-txt">Belum ada badge kustom</div></div>';return;}
+  cbs.forEach(cb=>{
+    const row=document.createElement('div');row.className='qm-row';const unlocked=!!state.badges[cb.id];
+    row.innerHTML=`<span style="font-size:18px;">${cb.emoji}</span><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">${cb.name}</div><div style="font-size:10px;color:var(--text3);font-weight:500;">${cb.xpRequired} XP ${unlocked?'· ✓ Terbuka':''}</div></div><button onclick="deleteCustomBadge('${cb.id}')" style="padding:5px 12px;border-radius:8px;border:none;background:var(--red-bg);color:var(--red);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);">Hapus</button>`;
+    list.appendChild(row);
+  });
+}
+
+function addCustomBadge(){
+  const emoji=document.getElementById('abEmoji').value.trim()||'🌟';
+  const name=document.getElementById('abName').value.trim();
+  const xpReq=parseInt(document.getElementById('abXP').value)||500;
+  if(!name){showToast('Nama badge harus diisi!','danger');return;}
+  if(!state.customBadges)state.customBadges=[];
+  state.customBadges.push({id:'cb_'+Date.now(),emoji,name,xpRequired:xpReq});
+  document.getElementById('abEmoji').value='';document.getElementById('abName').value='';document.getElementById('abXP').value='500';
+  checkBadges();save();renderAll();renderCustomBadgeList();showToast('Badge ditambahkan ✓','success');
+}
+
+function deleteCustomBadge(id){
+  if(!confirm('Hapus badge ini?'))return;
+  state.customBadges=(state.customBadges||[]).filter(cb=>cb.id!==id);delete state.badges[id];
+  save();renderAll();renderCustomBadgeList();showToast('Dihapus','danger');
+}
+
+// ════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════
+const CIRCUMFERENCE=364.4;
+function openTimer(qId,label,emoji,dur){
+  activeTimerQuest=qId;timerSecs=(dur||30)*60;timerTotal=timerSecs;timerRunning=false;clearInterval(timerInterval);
+  document.getElementById('timerEmoji').textContent=emoji;document.getElementById('timerTitle').textContent=label;
+  document.getElementById('timerSubtitle').textContent='Durasi: '+dur+' menit · Fokus!';
+  document.getElementById('timerToggle').textContent='▶ Mulai';updateTimerDisplay();
+  document.getElementById('timerOverlay').classList.add('open');
+}
+function closeTimer(){clearInterval(timerInterval);timerRunning=false;timerInterval=null;document.getElementById('timerOverlay').classList.remove('open');}
+
+function toggleTimer(){
+  if(timerRunning){clearInterval(timerInterval);timerRunning=false;document.getElementById('timerToggle').textContent='▶ Lanjutkan';}
+  else{
+    timerRunning=true;document.getElementById('timerToggle').textContent='⏸ Pause';
+    timerInterval=setInterval(()=>{
+      timerSecs--;updateTimerDisplay();
+      if(timerSecs<=0){
+        clearInterval(timerInterval);timerRunning=false;document.getElementById('timerOverlay').classList.remove('open');
+        const d=todayData();
+        if(!d.submitted&&!d[activeTimerQuest]){d[activeTimerQuest]=true;state.totalXP+=XP_PER;checkBadges();save();renderAll();}
+        showToast('Timer selesai! +20 XP ⚡','success');
+        if(navigator.vibrate)navigator.vibrate([200,100,200]);
+      }
+    },1000);
+  }
+}
+
+function updateTimerDisplay(){
+  const m=Math.floor(timerSecs/60),s=timerSecs%60;
+  const el=document.getElementById('timerDisplay');
+  el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  el.className='timer-time'+(timerSecs<=60?' urgent':'');
+  const progress=timerTotal>0?timerSecs/timerTotal:0;
+  document.getElementById('timerRingFill').style.strokeDashoffset=CIRCUMFERENCE*(1-progress);
+  document.getElementById('timerRingFill').style.stroke=timerSecs<=60?'var(--red)':timerSecs<=timerTotal*0.3?'var(--amber)':'var(--accent)';
+}
+
+// ════════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════════
+let toastTimeout;
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast'+(type?' '+type:'');t.classList.add('show');
+  clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════
+document.getElementById('msInlineInput').addEventListener('keydown',(e)=>{if(e.key==='Enter')addMilestoneInline();});
+
+const _today=new Date();
+const dp=document.getElementById('adminDatePicker');
+if(dp)dp.value=_today.getFullYear()+'-'+String(_today.getMonth()+1).padStart(2,'0')+'-'+String(_today.getDate()).padStart(2,'0');
+
+// Fallback offline
+setTimeout(()=>{
+  const ls=document.getElementById('loadingScreen');
+  if(ls&&!ls.classList.contains('hide')){
+    try{
+      const raw=localStorage.getItem('berlatih_v2');
+      if(raw){const p=JSON.parse(raw);window.state=Object.assign({},window._defaultState(),p);}
+    }catch(e){}
+    renderAll();ls.classList.add('hide');showToast('Mode offline — data lokal digunakan');
+  }
+},5000);
+</script>
+
+<script>
+// ── Register Service Worker ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then((reg) => {
+        console.log('[BerLatih SW] Registered:', reg.scope);
+        setInterval(() => reg.update(), 60000);
+      })
+      .catch((err) => console.warn('[BerLatih SW] Failed:', err));
+  });
+}
+
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const btn = document.getElementById('installPWABtn');
+  if (btn) btn.style.display = 'flex';
+});
+
+window.installPWA = function () {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.then((choice) => {
+    if (choice.outcome === 'accepted') {
+      const btn = document.getElementById('installPWABtn');
+      if (btn) btn.style.display = 'none';
+    }
+    deferredInstallPrompt = null;
+  });
+};
+</script>
+</body>
+</html>

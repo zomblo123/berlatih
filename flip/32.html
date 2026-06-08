@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 2: CPU – Otak Super Cepat Komputer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red:    #ef4444;
+    --orange: #f97316;
+    --yellow: #fbbf24;
+    --sky:    #38bdf8;
+    --mint:   #34d399;
+    --purple: #a78bfa;
+    --bg:     #fff7ed;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 25%, rgba(251,191,36,0.18) 0%, transparent 45%),
+      radial-gradient(circle at 85% 70%, rgba(239,68,68,0.12) 0%, transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(56,189,248,0.12) 0%, transparent 40%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  h1,h2,h3,.display { font-family:'Fredoka One',cursive; }
+
+  /* ── Header ── */
+  .header-grad {
+    background: linear-gradient(135deg,#7c2d12 0%,#c2410c 40%,#f97316 75%,#fbbf24 100%);
+    position: relative; overflow: hidden;
+  }
+  .header-grad::after {
+    content:'';position:absolute;inset:0;
+    background:url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events:none;
+  }
+
+  /* ── Speech bubble ── */
+  .bubble {
+    position:relative;
+    background:white;
+    border-radius:22px;
+    border:3px solid #f97316;
+    box-shadow:4px 4px 0 #f97316;
+  }
+  .bubble::before {
+    content:'';position:absolute;
+    bottom:-22px;left:30px;
+    border:12px solid transparent;
+    border-top-color:#f97316;
+  }
+  .bubble::after {
+    content:'';position:absolute;
+    bottom:-15px;left:33px;
+    border:10px solid transparent;
+    border-top-color:white;
+  }
+
+  /* ── CPU hero SVG container ── */
+  #cpuHero { transition:transform .3s ease; cursor:pointer; }
+  #cpuHero:hover { transform:scale(1.04); }
+
+  /* Core pulse ring */
+  @keyframes corePulse {
+    0%,100% { opacity:.7; r:10; }
+    50%      { opacity:1;  r:13; }
+  }
+  .core-pulse { animation: corePulse 1.2s ease-in-out infinite; }
+
+  /* Thinking state */
+  @keyframes thinkFlash {
+    0%,100% { opacity:1; }
+    50%      { opacity:.3; }
+  }
+  @keyframes thinkSpin {
+    from { transform:rotate(0deg) translateX(0); }
+    to   { transform:rotate(360deg) translateX(0); }
+  }
+  .thinking .cpu-core { animation:thinkFlash .25s linear infinite; }
+  .thinking .cpu-ring { animation:thinkSpin  .5s linear infinite; transform-origin:center; }
+
+  /* Floating numbers */
+  @keyframes floatNum {
+    0%   { transform:translateY(0) scale(1); opacity:1; }
+    100% { transform:translateY(-120px) scale(.5) rotate(20deg); opacity:0; }
+  }
+  .float-num {
+    position:absolute;
+    font-family:'Fredoka One',cursive;
+    font-size:1.1rem;
+    pointer-events:none;
+    animation:floatNum 1.2s ease-out forwards;
+  }
+
+  /* Lightning flash overlay */
+  @keyframes flashOverlay {
+    0%,100%{ opacity:0; } 10%,30%,50%{ opacity:.35; } 20%,40%{ opacity:0; }
+  }
+  .flash-overlay {
+    position:absolute;inset:0;border-radius:inherit;
+    background:radial-gradient(circle,#fbbf24,#f97316);
+    pointer-events:none;
+    animation:flashOverlay .8s ease forwards;
+  }
+
+  /* Glow LED blink */
+  @keyframes ledBlink { 0%,100%{ opacity:1; } 50%{ opacity:.2; } }
+  .led { animation:ledBlink 1.5s ease-in-out infinite; }
+  .led2 { animation:ledBlink 2s ease-in-out infinite .5s; }
+
+  /* Big action button */
+  .btn-think {
+    background:linear-gradient(135deg,#ef4444,#f97316);
+    color:white;
+    border:none;
+    border-radius:50px;
+    padding:1rem 2.8rem;
+    font-family:'Fredoka One',cursive;
+    font-size:1.35rem;
+    cursor:pointer;
+    box-shadow:0 6px 0 #b91c1c, 0 8px 22px rgba(239,68,68,.4);
+    transition:all .15s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .btn-think:hover { transform:translateY(-3px); box-shadow:0 9px 0 #b91c1c,0 12px 28px rgba(239,68,68,.5); }
+  .btn-think:active{ transform:translateY(3px);  box-shadow:0 3px 0 #b91c1c; }
+  .btn-think:disabled{ opacity:.7; cursor:not-allowed; transform:none; }
+
+  .btn-nav {
+    border-radius:50px;
+    padding:.75rem 1.8rem;
+    font-family:'Fredoka One',cursive;
+    font-size:1.05rem;
+    cursor:pointer;
+    transition:all .15s ease;
+    border:3px solid transparent;
+  }
+  .btn-back {
+    background:white;
+    color:#f97316;
+    border-color:#f97316;
+    box-shadow:3px 3px 0 #f97316;
+  }
+  .btn-back:hover { transform:translateY(-2px); box-shadow:5px 5px 0 #f97316; }
+  .btn-fwd {
+    background:linear-gradient(135deg,#38bdf8,#34d399);
+    color:white;
+    box-shadow:0 4px 0 #0284c7, 0 6px 16px rgba(56,189,248,.4);
+  }
+  .btn-fwd:hover { transform:translateY(-2px); }
+
+  /* Comparison card */
+  .vs-card {
+    border-radius:24px;
+    border:3px solid transparent;
+    transition:all .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  .vs-card:hover { transform:scale(1.04) translateY(-4px); }
+
+  /* Speed bar */
+  @keyframes barGrow { from{ width:0; } }
+  .speed-bar { animation:barGrow 1.5s cubic-bezier(.4,0,.2,1) forwards; }
+
+  /* Fun fact banner */
+  .fact-banner {
+    background:linear-gradient(135deg,#fef08a,#fbbf24,#f97316);
+    border-radius:24px;
+    position:relative; overflow:hidden;
+  }
+  .fact-banner::before {
+    content:'⚡⚡⚡';
+    position:absolute;right:12px;top:50%;
+    transform:translateY(-50%);
+    font-size:3.5rem;opacity:.12;
+  }
+
+  /* Draw area */
+  .draw-area {
+    background:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(249,115,22,.2) 28px,rgba(249,115,22,.2) 30px),
+               repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(249,115,22,.12) 28px,rgba(249,115,22,.12) 30px);
+    border:3px dashed #f97316;
+    border-radius:20px;
+    min-height:180px;
+  }
+
+  /* Confetti */
+  @keyframes confettiFly {
+    0%  { transform:translate(0,0) rotate(0deg); opacity:1; }
+    100%{ transform:translate(var(--tx),var(--ty)) rotate(720deg); opacity:0; }
+  }
+  .confetti-piece {
+    position:fixed;width:10px;height:10px;border-radius:2px;
+    pointer-events:none;z-index:100;
+    animation:confettiFly 1.2s ease-out forwards;
+  }
+
+  /* Aslan bounce */
+  @keyframes bounceAslan { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-10px); } }
+  .aslan-bounce { animation:bounceAslan 2.2s ease-in-out infinite; }
+
+  /* Progress dots */
+  .day-dot { width:12px;height:12px;border-radius:50%;display:inline-block; }
+
+  /* Section underline */
+  .sec-title { position:relative;display:inline-block; }
+  .sec-title::after {
+    content:'';position:absolute;bottom:-6px;left:0;right:0;height:5px;
+    border-radius:10px;background:linear-gradient(90deg,#ef4444,#f97316);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
+    z-index:50;display:flex;align-items:center;justify-content:center;padding:1rem;
+    opacity:0;pointer-events:none;transition:opacity .3s ease;
+  }
+  .modal-overlay.show { opacity:1;pointer-events:all; }
+  .modal-box {
+    background:white;border-radius:28px;max-width:420px;width:100%;padding:2rem;
+    box-shadow:0 20px 60px rgba(0,0,0,.3);
+    transform:scale(.8) translateY(30px);
+    transition:all .35s cubic-bezier(.34,1.56,.64,1);
+    border:4px solid #f97316;
+  }
+  .modal-overlay.show .modal-box { transform:scale(1) translateY(0); }
+
+  /* Checklist */
+  .check-item { transition:all .2s; }
+  .check-item.done { opacity:.6; text-decoration:line-through; }
+
+  @media(max-width:640px){
+    .vs-grid { grid-template-columns:1fr!important; }
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ══════ INFO MODAL ══════ -->
+<div class="modal-overlay" id="infoModal" onclick="closeInfo(event)">
+  <div class="modal-box">
+    <div class="text-4xl text-center mb-2" id="infoEmoji">🔗</div>
+    <h3 class="text-2xl font-bold text-center mb-3 text-orange-600" id="infoTitle" style="font-family:'Fredoka One',cursive;"></h3>
+    <p class="text-gray-600 text-base leading-relaxed mb-4" id="infoDesc"></p>
+    <div class="bg-orange-50 border-2 border-orange-200 rounded-2xl p-3 mb-4">
+      <p class="text-sm font-bold text-orange-700">🤩 Fakta Seru:</p>
+      <p class="text-sm text-orange-800 mt-1" id="infoFact"></p>
+    </div>
+    <button onclick="closeInfo()" class="w-full py-2.5 rounded-2xl font-bold text-white text-lg"
+      style="background:linear-gradient(135deg,#f97316,#fbbf24); font-family:'Fredoka One',cursive;">
+      Oke, Paham! 🎯
+    </button>
+  </div>
+</div>
+
+<!-- ══════ HEADER ══════ -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <!-- deco clouds -->
+  <div style="position:absolute;top:10px;left:4%;font-size:2.5rem;opacity:.18;animation:bounceAslan 10s ease-in-out infinite;">⚡</div>
+  <div style="position:absolute;top:12px;right:6%;font-size:2rem;opacity:.2;animation:bounceAslan 14s ease-in-out infinite .5s;">🔥</div>
+  <div style="position:absolute;bottom:6px;left:28%;font-size:1.8rem;opacity:.15;animation:bounceAslan 12s ease-in-out infinite 1s;">💡</div>
+
+  <div class="max-w-3xl mx-auto relative z-10 text-center">
+    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-3 border border-white/30">
+      <span class="text-xl">🖥️</span>
+      <span style="font-family:'Fredoka One',cursive;font-size:.9rem;letter-spacing:.5px;">
+        Petualangan Aslan di Dalam Komputer Ajaib
+      </span>
+      <span class="text-xl">⚡</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl md:text-5xl mb-2 drop-shadow-lg" style="line-height:1.2;">
+      Hari 2: CPU – Otak<br>Super Cepat Komputer 🧠⚡
+    </h1>
+    <p class="text-orange-100 text-base sm:text-lg font-semibold">
+      Ketemu sama bagian paling pintar di komputer! 😎
+    </p>
+    <div class="flex items-center justify-center gap-1.5 mt-4">
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white"></div>
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white/40"></div>
+      <span class="text-white/70 text-xs ml-2 font-semibold">Hari 2 dari 30</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════ MAIN ══════ -->
+<main class="max-w-3xl mx-auto px-4 py-8 relative z-10">
+
+  <!-- ── Intro ── -->
+  <section class="mb-10">
+    <div class="flex flex-col sm:flex-row items-end gap-6">
+      <!-- Aslan -->
+      <div class="flex-shrink-0 flex justify-center" style="min-width:120px;">
+        <div class="aslan-bounce">
+          <svg width="120" height="150" viewBox="0 0 120 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="60" cy="145" rx="28" ry="6" fill="rgba(0,0,0,0.1)"/>
+            <!-- body – orange shirt today -->
+            <rect x="32" y="88" width="56" height="50" rx="14" fill="#f97316"/>
+            <rect x="32" y="102" width="56" height="6" rx="2" fill="#fbbf24" opacity=".7"/>
+            <!-- arms -->
+            <rect x="14" y="90" width="20" height="36" rx="10" fill="#f97316" transform="rotate(8 14 90)"/>
+            <!-- right arm pointing at CPU -->
+            <rect x="84" y="80" width="20" height="34" rx="10" fill="#f97316" transform="rotate(-30 84 80)"/>
+            <!-- legs -->
+            <rect x="36" y="130" width="18" height="22" rx="9" fill="#7c2d12"/>
+            <rect x="66" y="130" width="18" height="22" rx="9" fill="#7c2d12"/>
+            <ellipse cx="45" cy="150" rx="12" ry="6" fill="#92400e"/>
+            <ellipse cx="75" cy="150" rx="12" ry="6" fill="#92400e"/>
+            <!-- neck -->
+            <rect x="50" y="78" width="20" height="14" rx="7" fill="#f9a825"/>
+            <!-- head -->
+            <ellipse cx="60" cy="60" rx="32" ry="30" fill="#f9a825"/>
+            <!-- hair -->
+            <ellipse cx="60" cy="35" rx="30" ry="16" fill="#2d1b00"/>
+            <ellipse cx="35" cy="47" rx="9" ry="12" fill="#2d1b00"/>
+            <ellipse cx="85" cy="47" rx="9" ry="12" fill="#2d1b00"/>
+            <!-- eyes -->
+            <ellipse cx="48" cy="60" rx="7" ry="8" fill="white"/>
+            <ellipse cx="72" cy="60" rx="7" ry="8" fill="white"/>
+            <ellipse cx="49" cy="61" rx="4" ry="5" fill="#2d1b00"/>
+            <ellipse cx="73" cy="61" rx="4" ry="5" fill="#2d1b00"/>
+            <circle cx="51" cy="59" r="1.5" fill="white"/>
+            <circle cx="75" cy="59" r="1.5" fill="white"/>
+            <!-- big smile -->
+            <path d="M44 72 Q60 86 76 72" stroke="#2d1b00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M48 75 Q60 84 72 75" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <ellipse cx="40" cy="68" rx="6" ry="4" fill="#ffb347" opacity=".5"/>
+            <ellipse cx="80" cy="68" rx="6" ry="4" fill="#ffb347" opacity=".5"/>
+            <!-- excited sparks -->
+            <text x="92" y="44" font-size="14">⚡</text>
+            <text x="6"  y="72" font-size="12">🔥</text>
+            <text x="96" y="72" font-size="11">✨</text>
+          </svg>
+        </div>
+      </div>
+      <!-- Bubble -->
+      <div class="flex-1">
+        <div class="bubble p-5">
+          <p class="text-sm text-orange-500 font-bold mb-1">Aslan berkata:</p>
+          <p class="text-gray-700 text-base sm:text-lg leading-relaxed font-semibold">
+            "Hari ini kita ketemu sama bagian paling <strong class="text-red-500">PINTAR</strong> di komputer!
+            Namanya <strong class="text-orange-600">CPU</strong>. CPU itu seperti otaknya komputer yang bisa mikir
+            <strong class="text-yellow-600">super duper cepat</strong>! Ayo kenalan! 🤝🧠"
+          </p>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#ef4444,#f97316);">🔥 Hari 2</span>
+            <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#f97316,#fbbf24);">🧠 Topik: CPU</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CPU Hero ── -->
+  <section class="mb-10">
+    <div class="text-center mb-4">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#7c2d12;">🧠 Kenalan dengan CPU!</h2>
+      <p class="text-gray-500 mt-3 text-sm">Klik CPU-nya untuk membuatnya berpikir! 👆</p>
+    </div>
+
+    <div class="relative flex justify-center">
+      <!-- CPU SVG -->
+      <div id="cpuHero" class="relative" onclick="thinkCPU()" style="max-width:340px;width:100%;">
+        <svg id="cpuSvg" viewBox="0 0 340 300" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full drop-shadow-2xl">
+          <!-- Outer glow halo -->
+          <circle cx="170" cy="148" r="120" fill="url(#haloGrad)" opacity=".35"/>
+
+          <!-- PCB substrate -->
+          <rect x="60" y="40" width="220" height="220" rx="18" fill="#1e3a5f"/>
+          <rect x="60" y="40" width="220" height="220" rx="18" fill="url(#pcbGrad)" opacity=".5"/>
+
+          <!-- PCB trace lines -->
+          <g stroke="#1e40af" stroke-width="1.5" opacity=".6">
+            <line x1="60"  y1="90"  x2="280" y2="90"/>
+            <line x1="60"  y1="140" x2="280" y2="140"/>
+            <line x1="60"  y1="190" x2="280" y2="190"/>
+            <line x1="60"  y1="240" x2="280" y2="240"/>
+            <line x1="100" y1="40"  x2="100" y2="260"/>
+            <line x1="150" y1="40"  x2="150" y2="260"/>
+            <line x1="200" y1="40"  x2="200" y2="260"/>
+            <line x1="250" y1="40"  x2="250" y2="260"/>
+          </g>
+
+          <!-- Pins top -->
+          <g fill="#f59e0b">
+            <rect x="85"  y="30" width="8" height="14" rx="2"/>
+            <rect x="100" y="30" width="8" height="14" rx="2"/>
+            <rect x="115" y="30" width="8" height="14" rx="2"/>
+            <rect x="130" y="30" width="8" height="14" rx="2"/>
+            <rect x="145" y="30" width="8" height="14" rx="2"/>
+            <rect x="160" y="30" width="8" height="14" rx="2"/>
+            <rect x="175" y="30" width="8" height="14" rx="2"/>
+            <rect x="190" y="30" width="8" height="14" rx="2"/>
+            <rect x="205" y="30" width="8" height="14" rx="2"/>
+            <rect x="220" y="30" width="8" height="14" rx="2"/>
+            <rect x="235" y="30" width="8" height="14" rx="2"/>
+          </g>
+          <!-- Pins bottom -->
+          <g fill="#f59e0b">
+            <rect x="85"  y="256" width="8" height="14" rx="2"/>
+            <rect x="100" y="256" width="8" height="14" rx="2"/>
+            <rect x="115" y="256" width="8" height="14" rx="2"/>
+            <rect x="130" y="256" width="8" height="14" rx="2"/>
+            <rect x="145" y="256" width="8" height="14" rx="2"/>
+            <rect x="160" y="256" width="8" height="14" rx="2"/>
+            <rect x="175" y="256" width="8" height="14" rx="2"/>
+            <rect x="190" y="256" width="8" height="14" rx="2"/>
+            <rect x="205" y="256" width="8" height="14" rx="2"/>
+            <rect x="220" y="256" width="8" height="14" rx="2"/>
+            <rect x="235" y="256" width="8" height="14" rx="2"/>
+          </g>
+          <!-- Pins left -->
+          <g fill="#f59e0b">
+            <rect x="44" y="70"  width="18" height="8" rx="2"/>
+            <rect x="44" y="88"  width="18" height="8" rx="2"/>
+            <rect x="44" y="106" width="18" height="8" rx="2"/>
+            <rect x="44" y="124" width="18" height="8" rx="2"/>
+            <rect x="44" y="142" width="18" height="8" rx="2"/>
+            <rect x="44" y="160" width="18" height="8" rx="2"/>
+            <rect x="44" y="178" width="18" height="8" rx="2"/>
+            <rect x="44" y="196" width="18" height="8" rx="2"/>
+            <rect x="44" y="214" width="18" height="8" rx="2"/>
+            <rect x="44" y="232" width="18" height="8" rx="2"/>
+          </g>
+          <!-- Pins right -->
+          <g fill="#f59e0b">
+            <rect x="278" y="70"  width="18" height="8" rx="2"/>
+            <rect x="278" y="88"  width="18" height="8" rx="2"/>
+            <rect x="278" y="106" width="18" height="8" rx="2"/>
+            <rect x="278" y="124" width="18" height="8" rx="2"/>
+            <rect x="278" y="142" width="18" height="8" rx="2"/>
+            <rect x="278" y="160" width="18" height="8" rx="2"/>
+            <rect x="278" y="178" width="18" height="8" rx="2"/>
+            <rect x="278" y="196" width="18" height="8" rx="2"/>
+            <rect x="278" y="214" width="18" height="8" rx="2"/>
+            <rect x="278" y="232" width="18" height="8" rx="2"/>
+          </g>
+
+          <!-- Die (inner chip) -->
+          <rect x="100" y="80" width="140" height="140" rx="12" fill="#0f172a"/>
+          <rect x="100" y="80" width="140" height="140" rx="12" fill="url(#dieGrad)" opacity=".6"/>
+
+          <!-- Core blocks (4 cores) -->
+          <rect x="112" y="92"  width="54" height="54" rx="7" fill="#1d4ed8"/>
+          <rect x="174" y="92"  width="54" height="54" rx="7" fill="#1d4ed8"/>
+          <rect x="112" y="154" width="54" height="54" rx="7" fill="#1d4ed8"/>
+          <rect x="174" y="154" width="54" height="54" rx="7" fill="#1d4ed8"/>
+
+          <!-- Core labels -->
+          <text x="139" y="122" text-anchor="middle" fill="white" font-family="sans-serif" font-size="10" font-weight="bold">CORE</text>
+          <text x="139" y="134" text-anchor="middle" fill="#93c5fd" font-family="sans-serif" font-size="8">1</text>
+          <text x="201" y="122" text-anchor="middle" fill="white" font-family="sans-serif" font-size="10" font-weight="bold">CORE</text>
+          <text x="201" y="134" text-anchor="middle" fill="#93c5fd" font-family="sans-serif" font-size="8">2</text>
+          <text x="139" y="184" text-anchor="middle" fill="white" font-family="sans-serif" font-size="10" font-weight="bold">CORE</text>
+          <text x="139" y="196" text-anchor="middle" fill="#93c5fd" font-family="sans-serif" font-size="8">3</text>
+          <text x="201" y="184" text-anchor="middle" fill="white" font-family="sans-serif" font-size="10" font-weight="bold">CORE</text>
+          <text x="201" y="196" text-anchor="middle" fill="#93c5fd" font-family="sans-serif" font-size="8">4</text>
+
+          <!-- Core pulse circles -->
+          <circle class="cpu-core" cx="139" cy="110" r="10" fill="#3b82f6" opacity=".8"/>
+          <circle class="cpu-core" cx="201" cy="110" r="10" fill="#3b82f6" opacity=".8" style="animation-delay:.3s"/>
+          <circle class="cpu-core" cx="139" cy="172" r="10" fill="#3b82f6" opacity=".8" style="animation-delay:.6s"/>
+          <circle class="cpu-core" cx="201" cy="172" r="10" fill="#3b82f6" opacity=".8" style="animation-delay:.9s"/>
+
+          <!-- Centre label -->
+          <text x="170" y="230" text-anchor="middle" fill="#60a5fa" font-family="Fredoka One,sans-serif" font-size="13" font-weight="bold">CPU</text>
+          <text x="170" y="244" text-anchor="middle" fill="#475569" font-family="sans-serif" font-size="9">Intel Core / AMD Ryzen</text>
+
+          <!-- LEDs on PCB edge -->
+          <circle class="led"  cx="72"  cy="52" r="5" fill="#22c55e"/>
+          <circle class="led2" cx="88"  cy="52" r="5" fill="#3b82f6"/>
+          <circle class="led"  cx="262" cy="52" r="5" fill="#ef4444" style="animation-delay:1s"/>
+
+          <!-- Superhero cape hint (small) -->
+          <path d="M60 155 Q50 170 55 200 Q60 185 60 180 Z" fill="#ef4444" opacity=".7"/>
+          <path d="M280 155 Q290 170 285 200 Q280 185 280 180 Z" fill="#ef4444" opacity=".7"/>
+
+          <defs>
+            <radialGradient id="haloGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%"   stop-color="#fbbf24"/>
+              <stop offset="100%" stop-color="#f97316" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="pcbGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%"   stop-color="#1e40af" stop-opacity=".5"/>
+              <stop offset="100%" stop-color="#0f172a" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="dieGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%"   stop-color="#3b82f6" stop-opacity=".4"/>
+              <stop offset="100%" stop-color="#1e3a8a" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <!-- Floating numbers container -->
+        <div id="numContainer" class="absolute inset-0 overflow-hidden pointer-events-none" style="border-radius:18px;"></div>
+      </div>
+    </div>
+
+    <!-- Think button -->
+    <div class="flex justify-center mt-6">
+      <button class="btn-think" id="thinkBtn" onclick="thinkCPU()">
+        🧠 Klik Aku untuk Berpikir!
+      </button>
+    </div>
+    <p class="text-center text-gray-400 text-sm mt-2" id="thinkMsg">Klik tombolnya dan lihat CPU bekerja! ⚡</p>
+  </section>
+
+  <!-- ── Info Cards – CPU bekerja sama ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#7c2d12;">🔗 CPU Bekerja Sama dengan Siapa?</h2>
+    </div>
+    <p class="text-center text-gray-500 text-sm mb-5">Klik kartu untuk belajar lebih! 👆</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <!-- RAM -->
+      <div class="bg-white rounded-3xl p-5 text-center shadow-md cursor-pointer border-2 border-transparent hover:border-purple-400 transition-all hover:scale-105"
+           onclick="showInfo('ram')">
+        <div class="text-5xl mb-3">🗂️</div>
+        <h3 class="font-bold text-lg text-purple-700" style="font-family:'Fredoka One',cursive;">RAM</h3>
+        <p class="text-xs text-gray-500 mt-1">Asisten setia CPU</p>
+        <div class="mt-3 text-xs font-bold px-3 py-1 rounded-full inline-block" style="background:#ede9fe;color:#7c3aed;">Klik!</div>
+      </div>
+      <!-- Cache -->
+      <div class="bg-white rounded-3xl p-5 text-center shadow-md cursor-pointer border-2 border-transparent hover:border-yellow-400 transition-all hover:scale-105"
+           onclick="showInfo('cache')">
+        <div class="text-5xl mb-3">⚡</div>
+        <h3 class="font-bold text-lg text-yellow-700" style="font-family:'Fredoka One',cursive;">Cache</h3>
+        <p class="text-xs text-gray-500 mt-1">Saku rahasia CPU</p>
+        <div class="mt-3 text-xs font-bold px-3 py-1 rounded-full inline-block" style="background:#fef9c3;color:#a16207;">Klik!</div>
+      </div>
+      <!-- Clock Speed -->
+      <div class="bg-white rounded-3xl p-5 text-center shadow-md cursor-pointer border-2 border-transparent hover:border-red-400 transition-all hover:scale-105"
+           onclick="showInfo('clock')">
+        <div class="text-5xl mb-3">⏱️</div>
+        <h3 class="font-bold text-lg text-red-700" style="font-family:'Fredoka One',cursive;">Clock Speed</h3>
+        <p class="text-xs text-gray-500 mt-1">Detak jantung CPU</p>
+        <div class="mt-3 text-xs font-bold px-3 py-1 rounded-full inline-block" style="background:#fee2e2;color:#b91c1c;">Klik!</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CPU vs Otak Aslan ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#7c2d12;">🥊 CPU vs Otak Aslan</h2>
+      <p class="text-gray-500 mt-3 text-sm">Siapa yang lebih cepat? 😂</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 vs-grid">
+      <!-- CPU -->
+      <div class="vs-card bg-gradient-to-br from-blue-50 to-blue-100 p-5 border-blue-200 border-2 shadow-md text-center">
+        <div class="text-5xl mb-2">💻</div>
+        <h3 class="text-xl font-bold text-blue-800 mb-3" style="font-family:'Fredoka One',cursive;">CPU Super</h3>
+        <div class="space-y-3 text-left">
+          <div>
+            <p class="text-xs text-blue-600 font-bold mb-1">🔢 Berhitung per detik</p>
+            <div class="bg-blue-200 rounded-full h-4 overflow-hidden">
+              <div class="h-4 rounded-full bg-blue-600 speed-bar" style="width:95%;animation-delay:.2s;"></div>
+            </div>
+            <p class="text-xs text-blue-700 font-bold mt-1">3.000.000.000 (3 Miliar!)</p>
+          </div>
+          <div>
+            <p class="text-xs text-blue-600 font-bold mb-1">😴 Butuh istirahat?</p>
+            <div class="text-sm font-semibold text-blue-800">❌ Tidak pernah!</div>
+          </div>
+          <div>
+            <p class="text-xs text-blue-600 font-bold mb-1">🎯 Kemampuan</p>
+            <div class="text-sm font-semibold text-blue-800">Matematika, logika, data</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aslan -->
+      <div class="vs-card bg-gradient-to-br from-orange-50 to-yellow-100 p-5 border-orange-200 border-2 shadow-md text-center">
+        <div class="text-5xl mb-2">🧒</div>
+        <h3 class="text-xl font-bold text-orange-800 mb-3" style="font-family:'Fredoka One',cursive;">Otak Aslan</h3>
+        <div class="space-y-3 text-left">
+          <div>
+            <p class="text-xs text-orange-600 font-bold mb-1">🔢 Berhitung per detik</p>
+            <div class="bg-orange-200 rounded-full h-4 overflow-hidden">
+              <div class="h-4 rounded-full bg-orange-500 speed-bar" style="width:5%;animation-delay:.4s;"></div>
+            </div>
+            <p class="text-xs text-orange-700 font-bold mt-1">~1-5 (kalau mudah 😅)</p>
+          </div>
+          <div>
+            <p class="text-xs text-orange-600 font-bold mb-1">😴 Butuh istirahat?</p>
+            <div class="text-sm font-semibold text-orange-800">✅ Butuh tidur 8 jam!</div>
+          </div>
+          <div>
+            <p class="text-xs text-orange-600 font-bold mb-1">🌟 Kelebihan Aslan</p>
+            <div class="text-sm font-semibold text-orange-800">Kreatif, ngerasain, mimpi!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verdict -->
+    <div class="mt-4 bg-white rounded-3xl p-4 text-center border-2 border-yellow-300 shadow-sm">
+      <p class="text-base font-bold text-gray-700">
+        🏆 CPU menang soal <span class="text-blue-600">kecepatan hitung</span>, tapi
+        Aslan menang soal <span class="text-orange-600">kreativitas dan perasaan</span>! 🎨❤️<br>
+        <span class="text-sm text-gray-500">CPU tidak bisa merasakan bahagia atau punya teman seperti kamu! 😊</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Fun Fact ── -->
+  <section class="mb-10">
+    <div class="fact-banner p-5">
+      <div class="relative z-10">
+        <p class="text-white font-bold text-sm mb-2" style="font-family:'Fredoka One',cursive;">🤯 Fakta Gila Hari Ini!</p>
+        <p class="text-white text-base font-semibold leading-relaxed">
+          CPU modern punya kecepatan <strong>3–5 GHz</strong>, artinya dia melakukan
+          <strong>3–5 Miliar</strong> langkah per detik!
+          Kalau kamu berhitung 1 angka per detik... butuh <strong>95 tahun</strong> untuk ngimbangi CPU 1 detik! 😂🚀
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Speed Challenge ── -->
+  <section class="mb-10">
+    <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-orange-100">
+      <h2 class="text-xl font-bold text-orange-700 text-center mb-4" style="font-family:'Fredoka One',cursive;">
+        ⚡ Tantangan Kecepatan – Siapa Lebih Cepat?
+      </h2>
+      <p class="text-center text-gray-500 text-sm mb-4">Klik "Mulai!" lalu jawab soal matematika secepat mungkin! 🔢</p>
+
+      <div id="challengeBox" class="text-center">
+        <button onclick="startChallenge()" id="challengeBtn"
+          class="px-6 py-3 rounded-2xl font-bold text-white text-base cursor-pointer border-none"
+          style="background:linear-gradient(135deg,#f97316,#fbbf24); font-family:'Fredoka One',cursive; font-size:1.1rem;">
+          🚀 Mulai Tantangan!
+        </button>
+      </div>
+
+      <div id="challengeGame" class="hidden text-center">
+        <div class="bg-orange-50 rounded-2xl p-4 mb-4">
+          <p class="text-sm text-orange-600 font-bold mb-1">⏱️ Waktu kamu:</p>
+          <p class="text-4xl font-bold text-orange-700" id="timerDisplay" style="font-family:'Fredoka One',cursive;">0.00s</p>
+        </div>
+        <p class="text-xl font-bold text-gray-800 mb-3" id="mathQuestion"></p>
+        <div class="flex gap-3 justify-center flex-wrap" id="answerBtns"></div>
+        <p id="challengeFeedback" class="mt-3 text-base font-bold hidden"></p>
+      </div>
+
+      <div id="challengeResult" class="hidden text-center">
+        <div class="text-5xl mb-2" id="resultEmoji">⭐</div>
+        <p class="text-xl font-bold" id="resultText" style="font-family:'Fredoka One',cursive;color:#f97316;"></p>
+        <p class="text-sm text-gray-500 mt-1" id="resultSub"></p>
+        <button onclick="resetChallenge()" class="mt-4 px-5 py-2 rounded-2xl font-bold text-white text-sm"
+          style="background:linear-gradient(135deg,#f97316,#fbbf24); font-family:'Fredoka One',cursive;">
+          🔄 Coba Lagi!
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Activity ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#7c2d12;">🎨 Aktivitas Hari Ini</h2>
+    </div>
+
+    <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-dashed border-orange-300">
+      <div class="flex items-start gap-4 mb-5">
+        <div class="text-4xl flex-shrink-0">🦸</div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-800" style="font-family:'Fredoka One',cursive;">
+            CPU-mu Itu Superhero Apa?
+          </h3>
+          <p class="text-gray-600 text-sm mt-1 leading-relaxed">
+            Kalau CPU kamu adalah <strong>superhero</strong>, kira-kira superhero apa ya?
+            <strong>Flash</strong> yang super cepat? <strong>Ironman</strong> yang super pintar?
+            Gambarlah superhero CPU impianmu di kertas! 💪
+          </p>
+        </div>
+      </div>
+
+      <!-- Template heroes -->
+      <div class="grid grid-cols-3 gap-3 mb-5">
+        <div class="bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-3 text-center cursor-pointer hover:scale-105 transition-all" onclick="pickHero('flash')">
+          <div class="text-3xl mb-1">⚡</div>
+          <p class="text-xs font-bold text-yellow-700">The Flash</p>
+          <p class="text-xs text-yellow-600">Super Cepat</p>
+        </div>
+        <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-3 text-center cursor-pointer hover:scale-105 transition-all" onclick="pickHero('ironman')">
+          <div class="text-3xl mb-1">🤖</div>
+          <p class="text-xs font-bold text-red-700">Iron Man</p>
+          <p class="text-xs text-red-600">Super Pintar</p>
+        </div>
+        <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-3 text-center cursor-pointer hover:scale-105 transition-all" onclick="pickHero('create')">
+          <div class="text-3xl mb-1">✏️</div>
+          <p class="text-xs font-bold text-purple-700">Buatku Sendiri!</p>
+          <p class="text-xs text-purple-600">Kreasi kamu</p>
+        </div>
+      </div>
+      <div id="heroMsg" class="hidden text-center mb-4 p-3 rounded-2xl">
+        <p class="font-bold text-base" id="heroMsgText"></p>
+      </div>
+
+      <!-- Drawing area -->
+      <div class="draw-area flex flex-col items-center justify-center text-center">
+        <div class="text-5xl mb-3 opacity-40">🖊️</div>
+        <p class="text-gray-400 font-semibold text-sm">Cetak & gambar Superhero CPU-mu di sini!</p>
+        <p class="text-gray-300 text-xs mt-1">(boleh juga gambar di kertas polos)</p>
+      </div>
+
+      <!-- Checklist -->
+      <div class="mt-5">
+        <p class="text-sm font-bold text-gray-700 mb-3">✅ Checklist aktivitas:</p>
+        <div class="space-y-2">
+          <label class="flex items-center gap-3 cursor-pointer check-item" id="ck1">
+            <input type="checkbox" class="w-5 h-5 accent-orange-500" onchange="checkActivity(1)">
+            <span class="text-sm text-gray-700">🧠 Aku sudah tau apa itu CPU</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer check-item" id="ck2">
+            <input type="checkbox" class="w-5 h-5 accent-orange-500" onchange="checkActivity(2)">
+            <span class="text-sm text-gray-700">⚡ Aku sudah lihat CPU berpikir</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer check-item" id="ck3">
+            <input type="checkbox" class="w-5 h-5 accent-orange-500" onchange="checkActivity(3)">
+            <span class="text-sm text-gray-700">🦸 Aku sudah gambar Superhero CPU</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer check-item" id="ck4">
+            <input type="checkbox" class="w-5 h-5 accent-orange-500" onchange="checkActivity(4)">
+            <span class="text-sm text-gray-700">🏆 Aku sudah main tantangan kecepatan</span>
+          </label>
+        </div>
+        <div id="allDoneMsg" class="hidden mt-4 p-3 rounded-2xl text-center" style="background:linear-gradient(135deg,#fef9c3,#fde68a);">
+          <p class="font-bold text-yellow-800">🎉 Luar biasa! Semua selesai! Kamu bintang hari ini! ⭐</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Preview Hari 3 ── -->
+  <section class="mb-10">
+    <div class="rounded-3xl p-6 relative overflow-hidden text-white" style="background:linear-gradient(135deg,#4c1d95,#7c3aed,#a78bfa);">
+      <div class="absolute right-0 top-0 bottom-0 w-24 flex items-center justify-center text-8xl opacity-20">🗂️</div>
+      <div class="relative z-10">
+        <span class="inline-block text-xs font-bold px-3 py-1 rounded-full mb-3" style="background:rgba(255,255,255,.2);">📅 Besok – Hari 3</span>
+        <h3 class="text-xl font-bold mb-2" style="font-family:'Fredoka One',cursive;">
+          RAM – Meja Kerja Ajaib Komputer 🗂️
+        </h3>
+        <p class="text-purple-100 text-sm leading-relaxed mb-4">
+          Besok Aslan bakal jalan-jalan ke "meja kerja" komputer yang super ajaib!
+          Kenapa isi RAM bisa hilang tiba-tiba? Ayo cari tau!
+        </p>
+        <button class="btn-nav btn-fwd" onclick="alert('Besok kita bahas RAM ya! 😊 Sampai jumpa!')">
+          Besok: RAM – Meja Kerja Ajaib 🚀 →
+        </button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="pb-8 mt-2">
+  <div class="max-w-3xl mx-auto px-4">
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-orange-100 mb-4">
+      <p class="text-center font-bold text-orange-600 text-lg mb-1" style="font-family:'Fredoka One',cursive;">
+        🌟 Kamu hebat, Aslan! 🌟
+      </p>
+      <p class="text-center text-gray-500 text-sm">
+        Hari ini kamu sudah belajar tentang CPU — otak paling pintar di komputer!<br>
+        Terus semangat ya! 💪
+      </p>
+    </div>
+
+    <!-- Progress -->
+    <div class="bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
+      <div class="h-3 rounded-full" style="width:6.66%;background:linear-gradient(90deg,#f97316,#fbbf24);transition:width 1s ease;"></div>
+    </div>
+    <p class="text-center text-gray-400 text-xs mb-5">Progres Seri: Hari 2 dari 30 (6.6%)</p>
+
+    <p class="text-center text-gray-300 text-xs mt-5">Made with ❤️ for Aslan · Seri Komputer Ajaib</p>
+  </div>
+</footer>
+
+<!-- ══════ JAVASCRIPT ══════ -->
+<script>
+/* ── Info Modal ── */
+const infoData = {
+  ram: {
+    emoji:'🗂️',
+    title:'CPU + RAM = Tim Impian',
+    desc:'CPU dan RAM adalah sahabat terbaik! CPU itu otaknya, sedangkan RAM itu mejanya. Saat CPU mau ngerjain sesuatu, dia simpan dulu di RAM biar gampang dijangkau. Kalau RAM penuh, CPU jadi lambat karena mejanya sesak!',
+    fact:'Kalau RAM kamu 8GB, itu artinya bisa nampung sekitar 2 juta halaman buku teks secara bersamaan! 📚'
+  },
+  cache: {
+    emoji:'⚡',
+    title:'Cache – Saku Rahasia CPU',
+    desc:'Cache adalah memori super kecil tapi super cepat yang ada DI DALAM chip CPU sendiri! CPU simpan data yang paling sering dipakai di cache, supaya bisa langsung grab tanpa repot ke RAM.',
+    fact:'Cache hanya seukuran beberapa MB, tapi 100x lebih cepat dari RAM! Kecil-kecil cabe rawit! 🌶️'
+  },
+  clock: {
+    emoji:'⏱️',
+    title:'Clock Speed – Detak Jantung CPU',
+    desc:'Clock Speed diukur dalam GHz (GigaHertz). Angka ini menunjukkan berapa kali per detik CPU bisa melakukan satu langkah pekerjaan. CPU 3 GHz = 3 Miliar langkah per detik!',
+    fact:'CPU pertama di dunia (Intel 4004, 1971) hanya 0.000740 GHz. CPU sekarang 5 GHz — 6.000x lebih cepat! 🚀'
+  }
+};
+
+function showInfo(id) {
+  const d = infoData[id];
+  document.getElementById('infoEmoji').textContent = d.emoji;
+  document.getElementById('infoTitle').textContent = d.title;
+  document.getElementById('infoDesc').textContent  = d.desc;
+  document.getElementById('infoFact').textContent  = d.fact;
+  document.getElementById('infoModal').classList.add('show');
+}
+function closeInfo(e) {
+  if(!e || e.target===document.getElementById('infoModal'))
+    document.getElementById('infoModal').classList.remove('show');
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeInfo(); });
+
+/* ── CPU Think ── */
+let isThinking = false;
+function thinkCPU() {
+  if (isThinking) return;
+  isThinking = true;
+  const btn  = document.getElementById('thinkBtn');
+  const svg  = document.getElementById('cpuSvg');
+  const msg  = document.getElementById('thinkMsg');
+  const cont = document.getElementById('numContainer');
+
+  btn.disabled = true;
+  btn.textContent = '⚡ Sedang Berpikir...';
+  svg.classList.add('thinking');
+  msg.textContent = '🔥 CPU lagi ngitung dengan super cepat!';
+
+  // Flash overlay
+  const flash = document.createElement('div');
+  flash.className = 'flash-overlay';
+  document.getElementById('cpuHero').appendChild(flash);
+  setTimeout(()=>flash.remove(), 900);
+
+  // Float numbers
+  const nums = ['1','0','1','1','0','0','1','101','00','11','1010','0011','⚡','💡','🔢','100'];
+  const colors = ['#3b82f6','#ef4444','#fbbf24','#22c55e','#a78bfa','#f97316'];
+  const rect = cont.getBoundingClientRect();
+
+  for (let i = 0; i < 18; i++) {
+    setTimeout(()=>{
+      const el = document.createElement('div');
+      el.className = 'float-num';
+      el.textContent = nums[Math.floor(Math.random()*nums.length)];
+      el.style.cssText = `
+        left:${10+Math.random()*80}%;
+        top:${20+Math.random()*60}%;
+        color:${colors[Math.floor(Math.random()*colors.length)]};
+        animation-delay:${Math.random()*.4}s;
+      `;
+      cont.appendChild(el);
+      setTimeout(()=>el.remove(), 1400);
+    }, i * 80);
+  }
+
+  // Confetti
+  const cc = ['#fbbf24','#ef4444','#38bdf8','#34d399','#f97316','#a78bfa'];
+  for (let i = 0; i < 24; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    const bx = document.getElementById('cpuHero').getBoundingClientRect();
+    p.style.cssText = `
+      left:${bx.left + bx.width*.5 + window.scrollX}px;
+      top:${bx.top  + bx.height*.4 + window.scrollY}px;
+      background:${cc[Math.floor(Math.random()*cc.length)]};
+      --tx:${(Math.random()-.5)*260}px;
+      --ty:${(Math.random()-.5)*260}px;
+      animation-delay:${Math.random()*.3}s;
+      position:fixed;
+    `;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(), 1500);
+  }
+
+  setTimeout(()=>{
+    svg.classList.remove('thinking');
+    btn.disabled = false;
+    btn.textContent = '🧠 Klik Aku untuk Berpikir!';
+    msg.textContent = '🎉 Selesai berpikir! Klik lagi kalau mau! ⚡';
+    isThinking = false;
+  }, 2000);
+}
+
+/* ── Hero picker ── */
+const heroMessages = {
+  flash:   { text:'⚡ Kamu pilih The Flash! CPU-mu super duper cepat kayak kilat!', bg:'#fef9c3', color:'#92400e' },
+  ironman: { text:'🤖 Kamu pilih Iron Man! CPU-mu super cerdas dan canggih!',       bg:'#fee2e2', color:'#991b1b' },
+  create:  { text:'✏️ Keren! Kamu bikin superhero sendiri! Pasti luar biasa!',       bg:'#f3e8ff', color:'#6b21a8' }
+};
+function pickHero(h) {
+  const d = heroMessages[h];
+  const el = document.getElementById('heroMsg');
+  el.classList.remove('hidden');
+  el.style.background = d.bg;
+  document.getElementById('heroMsgText').textContent = d.text;
+  document.getElementById('heroMsgText').style.color = d.color;
+}
+
+/* ── Activity checklist ── */
+let doneCount = 0;
+function checkActivity(n) {
+  const el = document.getElementById('ck'+n);
+  const cb = el.querySelector('input');
+  if (cb.checked) { el.classList.add('done'); doneCount++; }
+  else            { el.classList.remove('done'); doneCount--; }
+  if (doneCount >= 4) document.getElementById('allDoneMsg').classList.remove('hidden');
+  else                document.getElementById('allDoneMsg').classList.add('hidden');
+}
+
+/* ── Speed Challenge ── */
+let timerInterval, startTime, currentQ, currentAns, questionCount = 0, correctCount = 0;
+
+const questions = [
+  {q:'5 + 3 = ?', a:8,  opts:[6,7,8,9]},
+  {q:'4 × 2 = ?', a:8,  opts:[6,8,10,12]},
+  {q:'10 - 4 = ?', a:6, opts:[4,5,6,7]},
+  {q:'3 × 3 = ?', a:9,  opts:[6,8,9,12]},
+  {q:'7 + 6 = ?', a:13, opts:[11,12,13,14]},
+];
+
+function startChallenge() {
+  document.getElementById('challengeBox').classList.add('hidden');
+  document.getElementById('challengeGame').classList.remove('hidden');
+  questionCount = 0; correctCount = 0;
+  nextQuestion();
+}
+
+function nextQuestion() {
+  if (questionCount >= 3) { endChallenge(); return; }
+  const q = questions[Math.floor(Math.random()*questions.length)];
+  currentAns = q.a;
+  document.getElementById('mathQuestion').textContent = '🔢 ' + q.q;
+  document.getElementById('challengeFeedback').classList.add('hidden');
+
+  const btns = document.getElementById('answerBtns');
+  btns.innerHTML = '';
+  const opts = [...q.opts].sort(()=>Math.random()-.5);
+  opts.forEach(o=>{
+    const b = document.createElement('button');
+    b.textContent = o;
+    b.className = 'px-6 py-3 rounded-2xl font-bold text-gray-800 text-lg border-2 border-gray-200 bg-white hover:border-orange-400 transition-all cursor-pointer';
+    b.style.fontFamily = "'Fredoka One',cursive";
+    b.onclick = ()=>checkAnswer(o, b);
+    btns.appendChild(b);
+  });
+
+  startTime = Date.now();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    const t = ((Date.now()-startTime)/1000).toFixed(2);
+    document.getElementById('timerDisplay').textContent = t+'s';
+  }, 50);
+  questionCount++;
+}
+
+function checkAnswer(val, btn) {
+  clearInterval(timerInterval);
+  const elapsed = ((Date.now()-startTime)/1000).toFixed(2);
+  document.querySelectorAll('#answerBtns button').forEach(b=>b.disabled=true);
+
+  const fb = document.getElementById('challengeFeedback');
+  fb.classList.remove('hidden');
+  if (val === currentAns) {
+    correctCount++;
+    btn.style.background='#dcfce7'; btn.style.borderColor='#16a34a';
+    fb.textContent = `✅ Benar! Kamu jawab dalam ${elapsed} detik! CPU jawabnya dalam 0.0000001 detik 😂`;
+    fb.style.color = '#16a34a';
+  } else {
+    btn.style.background='#fee2e2'; btn.style.borderColor='#dc2626';
+    fb.textContent = `❌ Jawabannya ${currentAns}! CPU tidak pernah salah haha 😅`;
+    fb.style.color = '#dc2626';
+  }
+  setTimeout(nextQuestion, 1500);
+}
+
+function endChallenge() {
+  clearInterval(timerInterval);
+  document.getElementById('challengeGame').classList.add('hidden');
+  document.getElementById('challengeResult').classList.remove('hidden');
+
+  const e = document.getElementById('resultEmoji');
+  const t = document.getElementById('resultText');
+  const s = document.getElementById('resultSub');
+  if (correctCount === 3) {
+    e.textContent='🏆'; t.textContent='Sempurna! 3/3 Benar!'; t.style.color='#f59e0b';
+    s.textContent='Wah, hampir sekencang CPU... hampir! 😄';
+  } else if (correctCount === 2) {
+    e.textContent='⭐'; t.textContent='Bagus! 2/3 Benar!'; t.style.color='#f97316';
+    s.textContent='Terus berlatih, kamu pasti bisa ngalahin CPU... eh 😂';
+  } else {
+    e.textContent='💪'; t.textContent='Jangan menyerah! ' + correctCount + '/3 Benar'; t.style.color='#a78bfa';
+    s.textContent='CPU latihan miliaran kali per detik, kamu bisa latihan juga! 🔥';
+  }
+
+  // Confetti if all correct
+  if (correctCount === 3) {
+    const cc=['#fbbf24','#ef4444','#38bdf8','#34d399'];
+    for(let i=0;i<20;i++){
+      const p=document.createElement('div');
+      p.className='confetti-piece';
+      p.style.cssText=`left:${20+Math.random()*60}%;top:50%;background:${cc[Math.floor(Math.random()*cc.length)]};--tx:${(Math.random()-.5)*300}px;--ty:${-80-Math.random()*200}px;animation-delay:${Math.random()*.5}s;position:fixed;`;
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(),1600);
+    }
+  }
+}
+
+function resetChallenge() {
+  document.getElementById('challengeResult').classList.add('hidden');
+  document.getElementById('challengeBox').classList.remove('hidden');
+  document.getElementById('timerDisplay').textContent='0.00s';
+}
+</script>
+</body>
+</html>

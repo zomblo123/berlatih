@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 18: Piramida, Kerajaan & Raja Pertama – Kapten Cerdas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS — Egyptian Dusk Palette
+   ═══════════════════════════════════════════ */
+:root{
+  --gold:#e8a020;
+  --gold-bright:#ffd700;
+  --gold-deep:#b8860b;
+  --gold-pale:#fff8d0;
+  --sand:#f5dfa0;
+  --sand-dark:#d4a843;
+  --desert:#c8824a;
+  --desert-dark:#8b5e3c;
+  --brown:#6b3e1e;
+  --sky:#4a9ede;
+  --sky-deep:#1a5f9e;
+  --sky-dusk:#e8904a;
+  --stone:#c9b99a;
+  --purple:#6b2d8b;
+  --purple-light:#9b4dbf;
+  --cream:#fdf6e3;
+  --text-dark:#3d2010;
+  --text-mid:#5a3a1a;
+  --white:#fff;
+  --sh-gold:0 8px 32px rgba(232,160,32,.38);
+  --sh-deep:0 22px 65px rgba(61,32,16,.28);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:'Nunito',sans-serif;
+  min-height:100vh;overflow-x:hidden;
+  position:relative;
+  background:#0d1b3e;
+}
+
+/* ── LAYERED FIXED BACKGROUND ── */
+.bg-layer{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(
+    175deg,
+    #080e22 0%,
+    #0d2250 18%,
+    #1a4a8a 38%,
+    #2a6ba0 55%,
+    #d4894a 72%,
+    #b86230 85%,
+    #8b4420 100%
+  );
+}
+
+/* ── ANIMATED STARS ── */
+.stars-layer{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.st{position:absolute;background:#fff;border-radius:50%;animation:tw ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.06;transform:scale(.5)}50%{opacity:.88;transform:scale(1.3)}}
+
+/* ── SUN ── */
+.sun-orb{
+  position:fixed;top:9%;right:10%;
+  width:76px;height:76px;border-radius:50%;
+  background:radial-gradient(circle at 40% 35%,#fffde0,#ffd700 45%,#ff9800 80%);
+  box-shadow:0 0 0 14px rgba(255,215,0,.1),0 0 0 30px rgba(255,180,0,.06),
+             0 0 90px rgba(255,200,0,.55);
+  z-index:3;pointer-events:none;
+  animation:sunPulse 5s ease-in-out infinite;
+}
+@keyframes sunPulse{
+  0%,100%{box-shadow:0 0 0 14px rgba(255,215,0,.1),0 0 0 30px rgba(255,180,0,.06),0 0 90px rgba(255,200,0,.55)}
+  50%{box-shadow:0 0 0 20px rgba(255,215,0,.14),0 0 0 42px rgba(255,180,0,.08),0 0 130px rgba(255,200,0,.65)}
+}
+
+/* ── HEAT SHIMMER PARTICLES ── */
+.particles-layer{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.px{position:absolute;border-radius:50%;background:rgba(255,215,0,.25);animation:drift linear infinite}
+@keyframes drift{
+  0%{transform:translate(0,0) rotate(0);opacity:0}
+  12%{opacity:.8}90%{opacity:.2}
+  100%{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}
+}
+
+/* ── FIXED DESERT DUNES ── */
+.dunes-layer{position:fixed;bottom:0;left:0;right:0;height:150px;z-index:3;pointer-events:none}
+.dunes-layer svg{width:100%;height:100%}
+
+/* ── BACK BUTTON ── */
+.back-btn{
+  position:fixed;top:18px;left:18px;z-index:2000;
+  background:rgba(0,0,0,.38);backdrop-filter:blur(16px);
+  border:2px solid rgba(255,215,0,.38);color:var(--gold-bright);
+  padding:10px 20px;border-radius:50px;
+  font-family:'Fredoka One',cursive;font-size:15px;
+  text-decoration:none;display:flex;align-items:center;gap:8px;
+  transition:all .3s;box-shadow:0 4px 18px rgba(0,0,0,.32);
+}
+.back-btn:hover{background:rgba(232,160,32,.22);transform:translateX(-3px);border-color:var(--gold-bright)}
+
+/* ── PROGRESS BAR ── */
+.prog-wrap{
+  position:fixed;top:18px;left:50%;transform:translateX(-50%);
+  z-index:2000;
+  display:flex;align-items:center;gap:10px;
+  background:rgba(0,0,0,.42);backdrop-filter:blur(16px);
+  padding:8px 22px;border-radius:50px;
+  border:1px solid rgba(255,215,0,.22);
+  white-space:nowrap;
+}
+.prog-track{width:150px;height:8px;background:rgba(255,255,255,.14);border-radius:10px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright));
+  border-radius:10px;transition:width .5s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 10px rgba(255,215,0,.65);}
+.prog-label{color:var(--gold-bright);font-family:'Fredoka One',cursive;font-size:13px}
+
+/* ── SOUND TOGGLE ── */
+.sound-btn{
+  position:fixed;top:18px;right:18px;z-index:2000;
+  background:rgba(0,0,0,.38);backdrop-filter:blur(16px);
+  border:2px solid rgba(255,215,0,.28);color:var(--gold-bright);
+  width:42px;height:42px;border-radius:50%;
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .3s;box-shadow:0 4px 14px rgba(0,0,0,.3);
+}
+.sound-btn:hover{background:rgba(232,160,32,.22);transform:scale(1.1)}
+
+/* ══════════════════════════════════
+   BOOK CONTAINER
+   ══════════════════════════════════ */
+.book{
+  position:relative;z-index:10;
+  max-width:850px;margin:0 auto;
+  padding:90px 20px 116px;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+
+/* ── PAGE ── */
+.page{display:none;width:100%;animation:pgIn .6s cubic-bezier(.34,1.56,.64,1)}
+.page.active{display:block}
+@keyframes pgIn{
+  0%{opacity:0;transform:translateY(28px) scale(.91)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* ══════════════════════════════════
+   CARD TYPES
+   ══════════════════════════════════ */
+
+/* COVER */
+.cover{
+  background:linear-gradient(158deg,#080e22,#0f2454,#1f4a8a);
+  border-radius:32px;padding:52px 42px;text-align:center;
+  position:relative;overflow:hidden;
+  box-shadow:0 40px 110px rgba(0,0,0,.65);
+  border:3px solid rgba(255,215,0,.32);
+}
+.cover::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 50% 2%,rgba(255,215,0,.16),transparent 52%),
+    radial-gradient(ellipse at 88% 92%,rgba(107,45,139,.22),transparent 50%),
+    radial-gradient(ellipse at 8% 82%,rgba(74,158,222,.1),transparent 48%);
+}
+.cover::after{
+  content:'';position:absolute;inset:14px;
+  border:1.5px solid rgba(255,215,0,.12);border-radius:22px;pointer-events:none;
+}
+
+/* STANDARD CARD */
+.card{
+  background:linear-gradient(148deg,rgba(255,252,235,.97) 0%,rgba(253,246,224,.95) 100%);
+  border-radius:28px;padding:38px 42px;
+  box-shadow:var(--sh-deep),inset 0 1px 0 rgba(255,255,255,.92);
+  border:2px solid rgba(255,215,0,.28);
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--purple),var(--gold),var(--sky-dusk),var(--gold-bright));
+  border-radius:28px 28px 0 0;
+}
+/* Faint hieroglyph watermark */
+.card::after{
+  content:'𓂀 𓃀 𓄿 𓅓 𓆣';position:absolute;
+  bottom:12px;right:16px;font-size:17px;
+  opacity:.055;letter-spacing:7px;pointer-events:none;
+}
+
+/* CLOSING */
+.closing{
+  background:linear-gradient(155deg,#080e22,#0f2454,#1f4a8a);
+  border-radius:30px;padding:50px 40px;text-align:center;color:#fff;
+  position:relative;overflow:hidden;
+  box-shadow:0 32px 90px rgba(0,0,0,.6);
+  border:3px solid rgba(255,215,0,.28);
+}
+.closing::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 50% 100%,rgba(255,215,0,.12),transparent 55%),
+    radial-gradient(ellipse at 14% 12%,rgba(107,45,139,.13),transparent 48%);
+}
+
+/* ══════════════════════════════════
+   TYPOGRAPHY HELPERS
+   ══════════════════════════════════ */
+.sh{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.si{
+  width:62px;height:62px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;box-shadow:0 5px 20px rgba(0,0,0,.2);
+}
+.si-gold{background:linear-gradient(135deg,var(--gold-deep),var(--gold-bright))}
+.si-sky{background:linear-gradient(135deg,var(--sky-deep),var(--sky))}
+.si-purple{background:linear-gradient(135deg,var(--purple),var(--purple-light))}
+.si-desert{background:linear-gradient(135deg,var(--desert-dark),var(--desert))}
+
+.sec-title{font-family:'Cinzel',serif;font-size:clamp(18px,3vw,26px);color:var(--text-dark);line-height:1.3}
+
+.st{font-size:16px;line-height:1.9;color:var(--text-mid);margin-bottom:14px}
+.st strong{color:var(--text-dark);font-weight:800}
+.st em{color:var(--gold-deep);font-style:normal;font-weight:700}
+
+.hbox{background:linear-gradient(135deg,rgba(232,160,32,.13),rgba(255,215,0,.07));
+  border-left:5px solid var(--gold);border-radius:0 16px 16px 0;
+  padding:16px 20px;margin:14px 0;font-size:15px;color:var(--text-dark);font-weight:600}
+.pbox{background:linear-gradient(135deg,rgba(107,45,139,.1),rgba(155,77,191,.06));
+  border-left:5px solid var(--purple);border-radius:0 16px 16px 0;
+  padding:16px 20px;margin:14px 0;font-size:15px;color:#42145e;font-weight:600}
+.sbox{background:linear-gradient(135deg,rgba(74,158,222,.1),rgba(26,95,158,.06));
+  border-left:5px solid var(--sky);border-radius:0 16px 16px 0;
+  padding:16px 20px;margin:14px 0;font-size:15px;color:var(--sky-deep);font-weight:600}
+.wdiv{text-align:center;font-size:22px;margin:16px 0;opacity:.35;letter-spacing:7px}
+
+/* ══════════════════════════════════
+   COVER SPECIFICS
+   ══════════════════════════════════ */
+.cover-badge{
+  display:inline-block;position:relative;z-index:1;
+  background:linear-gradient(135deg,var(--purple),var(--purple-light));
+  color:#fff;padding:6px 22px;border-radius:30px;
+  font-family:'Fredoka One',cursive;font-size:13px;letter-spacing:1.5px;
+  margin-bottom:18px;box-shadow:0 4px 18px rgba(107,45,139,.52);
+}
+.cover-title{
+  font-family:'Cinzel',serif;font-size:clamp(20px,4vw,36px);
+  color:#fff;line-height:1.25;margin:10px 0 6px;
+  position:relative;z-index:1;text-shadow:0 3px 22px rgba(0,0,0,.55);
+}
+.cover-gold{
+  font-family:'Fredoka One',cursive;display:block;
+  font-size:clamp(26px,5.5vw,48px);
+  background:linear-gradient(135deg,#ffd700,#ffb300,#ffd700);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:shimmer 3s linear infinite;
+}
+@keyframes shimmer{0%{background-position:0 center}100%{background-position:200% center}}
+.cover-sub{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(12px,2vw,17px);color:rgba(255,255,255,.6);
+  margin-bottom:24px;position:relative;z-index:1;
+}
+.cap-banner{
+  background:linear-gradient(135deg,rgba(255,215,0,.16),rgba(107,45,139,.13));
+  border:2px solid rgba(255,215,0,.42);border-radius:18px;
+  padding:13px 28px;display:inline-block;position:relative;z-index:1;margin-top:14px;
+}
+.cap-banner p{color:rgba(255,255,255,.72);font-size:13px;font-weight:700;margin-bottom:3px}
+.cap-banner h2{font-family:'Cinzel',serif;color:var(--gold-bright);font-size:23px}
+
+/* ══════════════════════════════════
+   PAGE 4 – INTERACTIVE PYRAMID SCENE
+   ══════════════════════════════════ */
+.py-scene{
+  position:relative;width:100%;height:290px;border-radius:22px;overflow:hidden;
+  margin:18px 0;
+  background:linear-gradient(180deg,#0d2a60 0%,#1a5f9e 35%,#4a9ede 55%,#d4a843 72%,#c8824a 100%);
+  border:2px solid rgba(255,215,0,.25);box-shadow:var(--sh-gold);
+  cursor:default;
+}
+.py-sun-sm{
+  position:absolute;top:16px;right:28px;width:50px;height:50px;border-radius:50%;
+  background:radial-gradient(circle at 38% 35%,#fffde0,#ffd700 45%,#ff9800 80%);
+  box-shadow:0 0 0 8px rgba(255,215,0,.14),0 0 50px rgba(255,200,0,.6);
+  animation:sunPulse 5s ease-in-out infinite;
+}
+.py-sand-floor{position:absolute;bottom:0;left:0;right:0;height:42%;
+  background:linear-gradient(180deg,#d4a843,#c8824a);}
+.py-workers{position:absolute;bottom:41%;left:0;right:0;display:flex;
+  justify-content:flex-start;padding:0 6%;gap:28px;pointer-events:none}
+.py-worker{font-size:20px;animation:wWalk 3.8s ease-in-out infinite}
+.py-worker:nth-child(2){animation-delay:.7s}
+.py-worker:nth-child(3){animation-delay:1.4s}
+@keyframes wWalk{0%,100%{transform:translateX(0)}50%{transform:translateX(14px)}}
+
+/* Big main pyramid – rises on page entry */
+.py-main-wrap{
+  position:absolute;bottom:40%;left:50%;transform:translateX(-50%);
+  animation:pyRise 1.4s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes pyRise{0%{bottom:-40%;opacity:0}100%{bottom:40%;opacity:1}}
+
+/* Hover glow on pyramid */
+.py-svg-click{cursor:pointer;transition:filter .3s}
+.py-svg-click:hover{filter:drop-shadow(0 0 22px rgba(255,215,0,.9))}
+
+/* Sphinx */
+.py-sphinx{
+  position:absolute;bottom:40.5%;right:7%;font-size:46px;
+  filter:drop-shadow(2px 2px 6px rgba(0,0,0,.45));
+  animation:sphAppear 2s .3s ease both;
+}
+@keyframes sphAppear{0%{opacity:0;transform:scale(0) rotate(-12deg)}80%{transform:scale(1.08) rotate(2deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+
+.py-nile-label{
+  position:absolute;left:3%;bottom:46%;
+  color:rgba(255,255,255,.72);font-family:'Fredoka One',cursive;font-size:12px;
+}
+.py-hint{
+  position:absolute;bottom:9px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.6);color:var(--gold-bright);
+  padding:5px 16px;border-radius:18px;
+  font-family:'Fredoka One',cursive;font-size:12px;white-space:nowrap;
+  animation:breathe 2.4s ease-in-out infinite;
+}
+@keyframes breathe{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}
+
+/* ── MODAL ── */
+#pyModal{
+  display:none;position:fixed;inset:0;z-index:3000;
+  background:rgba(0,0,0,.78);backdrop-filter:blur(9px);
+  align-items:center;justify-content:center;
+}
+#pyModal.open{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-inner{
+  background:linear-gradient(148deg,#fdf6e3,#fff8d0);
+  border-radius:24px;padding:28px 30px;max-width:520px;width:92%;
+  position:relative;border:3px solid var(--gold);
+  box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 0 2px var(--gold-deep);
+  animation:modalPop .4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes modalPop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.modal-close{
+  position:absolute;top:14px;right:14px;
+  width:32px;height:32px;border-radius:50%;border:none;
+  background:var(--gold);color:#fff;font-size:16px;font-weight:900;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.modal-close:hover{background:var(--gold-deep);transform:rotate(90deg) scale(1.1)}
+.modal-title{font-family:'Cinzel',serif;color:var(--text-dark);font-size:19px;margin-bottom:14px}
+
+/* ══════════════════════════════════
+   PAGE 5 – PYRAMID FACTS GRID
+   ══════════════════════════════════ */
+.facts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:14px;margin:18px 0}
+.fact-card{
+  background:#fff;border-radius:18px;padding:18px 14px;text-align:center;
+  box-shadow:0 4px 18px rgba(0,0,0,.08);border:2px solid transparent;
+  cursor:pointer;transition:all .38s cubic-bezier(.34,1.56,.64,1);
+}
+.fact-card:hover{transform:translateY(-7px) rotate(.4deg);box-shadow:0 14px 36px rgba(0,0,0,.15);border-color:var(--gold)}
+.fc-ico{font-size:40px;margin-bottom:10px;display:block}
+.fc-name{font-family:'Cinzel',serif;color:var(--text-dark);font-size:14px;margin-bottom:5px}
+.fc-desc{font-size:12px;color:#78909c;line-height:1.5}
+
+/* ══════════════════════════════════
+   PAGE 6 – BUILDER ANIMATION
+   ══════════════════════════════════ */
+.builder-scene{
+  background:linear-gradient(180deg,#1a5f9e 0%,#4a9ede 40%,#c8824a 70%,#a05a2a 100%);
+  border-radius:20px;padding:22px;margin:18px 0;
+  position:relative;overflow:hidden;min-height:230px;
+  border:2px solid rgba(255,215,0,.22);
+}
+.build-stage{position:relative;width:210px;height:168px;margin:0 auto 10px}
+.sblk{
+  position:absolute;
+  background:linear-gradient(135deg,#e8c870,#a07028);
+  border:1px solid rgba(0,0,0,.18);border-radius:3px;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.28),2px 2px 6px rgba(0,0,0,.2);
+  opacity:0;transform:translateY(-28px);
+}
+.sblk.placed{opacity:1;transform:translateY(0);transition:opacity .35s ease,transform .35s cubic-bezier(.34,1.56,.64,1)}
+.sblk.capstone{background:linear-gradient(135deg,#ffd700,#b8860b);
+  box-shadow:0 0 14px rgba(255,215,0,.7),inset 0 -3px 0 rgba(0,0,0,.2)}
+.build-btn{
+  display:block;margin:4px auto 0;
+  background:linear-gradient(135deg,var(--purple),var(--purple-light));
+  color:#fff;border:none;padding:12px 30px;border-radius:50px;
+  font-family:'Fredoka One',cursive;font-size:17px;cursor:pointer;
+  transition:all .3s;box-shadow:0 5px 18px rgba(107,45,139,.45);
+}
+.build-btn:hover{transform:translateY(-3px);box-shadow:0 9px 28px rgba(107,45,139,.55)}
+.build-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+#bStatus{
+  text-align:center;font-family:'Fredoka One',cursive;color:#fff;
+  font-size:15px;margin-bottom:8px;min-height:26px;
+  text-shadow:0 2px 8px rgba(0,0,0,.5);
+}
+
+/* ══════════════════════════════════
+   PAGE 7 – KINGDOM ROLES
+   ══════════════════════════════════ */
+.roles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin:18px 0}
+.role-card{
+  background:#fff;border-radius:18px;padding:17px 14px;text-align:center;
+  box-shadow:0 4px 18px rgba(0,0,0,.08);border:2px solid transparent;
+  cursor:pointer;transition:all .38s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;
+}
+.role-card:hover{transform:translateY(-6px) rotate(.5deg);box-shadow:0 14px 36px rgba(0,0,0,.14);border-color:var(--gold)}
+.role-card.open{background:linear-gradient(145deg,var(--gold-pale),#fdf6e3);border-color:var(--gold-deep)}
+.rc-ico{font-size:40px;margin-bottom:9px;display:block}
+.rc-name{font-family:'Cinzel',serif;color:var(--text-dark);font-size:14px;margin-bottom:4px}
+.rc-desc{font-size:12px;color:#607d8b;line-height:1.5;display:none}
+.role-card.open .rc-desc{display:block}
+.role-card.open .rc-name{color:var(--gold-deep)}
+
+/* ══════════════════════════════════
+   PAGE 8 – PANORAMA SVG
+   ══════════════════════════════════ */
+.panorama{
+  position:relative;width:100%;height:265px;border-radius:22px;overflow:hidden;
+  margin:18px 0;border:2px solid rgba(255,215,0,.28);box-shadow:var(--sh-gold);
+}
+
+/* ══════════════════════════════════
+   PAGE 9 – WHY KINGDOMS MATTER
+   ══════════════════════════════════ */
+.why-list{display:flex;flex-direction:column;gap:13px;margin:18px 0}
+.why-item{
+  display:flex;align-items:flex-start;gap:16px;
+  background:#fff;border-radius:16px;padding:16px 18px;
+  box-shadow:0 4px 14px rgba(0,0,0,.07);
+  border:2px solid transparent;cursor:pointer;transition:all .3s;
+}
+.why-item:hover{border-color:var(--gold);transform:translateX(5px);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.wi-ico{font-size:34px;flex-shrink:0}
+.wi-title{font-family:'Cinzel',serif;color:var(--text-dark);font-size:15px;margin-bottom:4px}
+.wi-desc{font-size:13px;color:#607d8b;line-height:1.55}
+
+/* ══════════════════════════════════
+   PAGE 10 – LEARNINGS
+   ══════════════════════════════════ */
+.learn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:15px;margin:18px 0}
+.learn-item{
+  background:#fff;border-radius:18px;padding:20px 15px;text-align:center;
+  box-shadow:0 4px 18px rgba(0,0,0,.08);border:2px solid rgba(0,0,0,.04);
+  cursor:pointer;transition:all .4s cubic-bezier(.34,1.56,.64,1);
+}
+.learn-item:hover{transform:translateY(-8px) rotate(.8deg);box-shadow:0 16px 38px rgba(0,0,0,.14);border-color:var(--gold)}
+.li-ico{font-size:44px;margin-bottom:12px;display:block}
+.li-title{font-family:'Cinzel',serif;color:var(--text-dark);font-size:14px;margin-bottom:5px}
+.li-txt{font-size:12px;color:#78909c;line-height:1.5}
+
+/* ══════════════════════════════════
+   PAGE 11 – CHALLENGE
+   ══════════════════════════════════ */
+.challenge{
+  background:linear-gradient(150deg,#080e22,#0f2454);
+  border-radius:24px;padding:32px;color:#fff;
+  position:relative;overflow:hidden;border:2px solid rgba(255,215,0,.3);
+}
+.challenge::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 92% 8%,rgba(255,215,0,.1),transparent 52%),
+             radial-gradient(ellipse at 8% 92%,rgba(107,45,139,.15),transparent 50%);
+}
+.ch-title{font-family:'Cinzel',serif;font-size:24px;color:var(--gold-bright);margin-bottom:4px;position:relative;z-index:1}
+.ch-sub{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:20px;position:relative;z-index:1}
+.ch-tasks{display:flex;flex-direction:column;gap:11px;margin-bottom:18px;position:relative;z-index:1}
+.ch-task{
+  display:flex;align-items:flex-start;gap:14px;
+  background:rgba(255,255,255,.1);border-radius:14px;padding:13px 16px;
+  cursor:pointer;transition:all .3s;border:2px solid transparent;
+}
+.ch-task:hover{background:rgba(255,255,255,.16);border-color:rgba(255,215,0,.35)}
+.ch-task.done{background:rgba(76,175,80,.2);border-color:rgba(76,175,80,.5)}
+.ch-chk{
+  width:30px;height:30px;flex-shrink:0;border-radius:50%;
+  border:3px solid rgba(255,255,255,.35);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:rgba(255,255,255,.4);transition:all .3s;
+}
+.ch-task.done .ch-chk{background:#4caf50;border-color:#4caf50;color:#fff}
+.ch-txt{font-size:14px;font-weight:600;color:#fff;line-height:1.5}
+.ch-score{
+  text-align:center;font-family:'Cinzel',serif;font-size:15px;
+  color:var(--gold-bright);position:relative;z-index:1;
+}
+
+/* ══════════════════════════════════
+   NAVIGATION
+   ══════════════════════════════════ */
+.nav{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;gap:14px;z-index:2000;align-items:center;
+}
+.nav-btn{
+  background:rgba(0,0,0,.42);backdrop-filter:blur(14px);
+  border:2px solid rgba(255,215,0,.3);color:var(--gold-bright);
+  padding:13px 28px;border-radius:50px;
+  font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;
+  transition:all .3s;box-shadow:0 5px 20px rgba(0,0,0,.3);
+}
+.nav-btn:hover{background:rgba(0,0,0,.58);transform:translateY(-3px);border-color:var(--gold-bright)}
+.nav-btn:disabled{opacity:.22;cursor:not-allowed;transform:none}
+.nav-btn.nxt{
+  background:linear-gradient(135deg,var(--gold-deep),var(--gold-bright));
+  border-color:transparent;color:#3d2010;
+  box-shadow:0 5px 22px rgba(232,160,32,.52);
+}
+.nav-btn.nxt:hover{box-shadow:0 9px 30px rgba(232,160,32,.68)}
+.pdots{display:flex;gap:6px;align-items:center}
+.pdot{width:8px;height:8px;border-radius:50%;background:rgba(255,215,0,.22);cursor:pointer;transition:all .3s}
+.pdot.active{background:var(--gold-bright);width:22px;border-radius:4px;box-shadow:0 0 10px rgba(255,215,0,.6)}
+
+/* ══════════════════════════════════
+   UTILITIES
+   ══════════════════════════════════ */
+@keyframes sparkleKf{0%,100%{opacity:1;transform:scale(1) rotate(0)}50%{opacity:.5;transform:scale(1.4) rotate(180deg)}}
+.sparkle{animation:sparkleKf 2.6s ease-in-out infinite}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.floaty{animation:floatY 3.6s ease-in-out infinite}
+@keyframes flagW{0%,100%{transform-origin:left center;transform:skewX(-3deg) scaleX(.97)}50%{transform:skewX(3deg) scaleX(1)}}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:32px;margin:18px 0}
+.timeline::before{
+  content:'';position:absolute;left:14px;top:0;bottom:0;
+  width:3px;background:linear-gradient(180deg,var(--gold-bright),var(--purple));border-radius:3px;
+}
+.tl-item{position:relative;margin-bottom:20px;padding-left:18px}
+.tl-item::before{
+  content:'';position:absolute;left:-21px;top:7px;
+  width:13px;height:13px;border-radius:50%;
+  background:var(--gold);border:3px solid #fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.22);
+}
+.tl-title{font-family:'Cinzel',serif;color:var(--text-dark);font-size:15px;margin-bottom:3px}
+.tl-desc{font-size:13px;color:#546e7a;line-height:1.6}
+
+@media(max-width:600px){
+  .book{padding:80px 14px 108px}
+  .card{padding:24px 18px}
+  .cover{padding:36px 22px}
+  .facts-grid,.roles-grid,.learn-grid{grid-template-columns:1fr 1fr}
+  .nav-btn{padding:11px 20px;font-size:14px}
+  .py-scene{height:230px}
+  .py-sphinx{font-size:34px}
+}
+</style>
+</head>
+<body>
+
+<!-- Background layers -->
+<div class="bg-layer"></div>
+<div class="stars-layer" id="stars"></div>
+<div class="particles-layer" id="particles"></div>
+<div class="sun-orb"></div>
+
+<!-- Desert dunes -->
+<div class="dunes-layer">
+  <svg viewBox="0 0 1440 150" preserveAspectRatio="none" fill="none">
+    <path d="M0,75 Q180,18 360,68 Q540,118 720,55 Q900,-2 1080,62 Q1260,128 1440,70 L1440,150 L0,150 Z" fill="#c8824a" opacity=".68"/>
+    <path d="M0,98 Q200,52 400,88 Q600,124 800,76 Q1000,28 1200,88 Q1320,112 1440,92 L1440,150 L0,150 Z" fill="#9a5228" opacity=".6"/>
+    <path d="M0,118 Q240,88 480,112 Q720,136 960,106 Q1200,76 1440,118 L1440,150 L0,150 Z" fill="#78381a" opacity=".5"/>
+  </svg>
+</div>
+
+<!-- Controls -->
+<a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+
+<div class="prog-wrap">
+  <span class="prog-label" id="pgLbl">1 / 13</span>
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:7.7%"></div></div>
+  <span style="font-size:15px">𓇳</span>
+</div>
+
+<button class="sound-btn" id="soundBtn" onclick="toggleSound()" title="Suara latar">🔊</button>
+
+<!-- Pyramid cross-section modal -->
+<div id="pyModal" onclick="closeMod(event)">
+  <div class="modal-inner">
+    <button class="modal-close" onclick="document.getElementById('pyModal').classList.remove('open')">✕</button>
+    <div class="modal-title">🔍 Di Dalam Piramida — Penampang Rahasia!</div>
+    <svg width="100%" viewBox="0 0 340 250" style="margin:8px 0 12px">
+      <defs>
+        <linearGradient id="mPyG" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#e8c870"/><stop offset="100%" stop-color="#a07028"/>
+        </linearGradient>
+        <linearGradient id="mPySd" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#b8860b"/><stop offset="100%" stop-color="#7a5020"/>
+        </linearGradient>
+      </defs>
+      <!-- Pyramid body -->
+      <polygon points="170,12 315,228 25,228" fill="url(#mPyG)"/>
+      <polygon points="170,12 220,12 315,228 236,228" fill="url(#mPySd)"/>
+      <!-- Base -->
+      <rect x="25" y="226" width="290" height="13" rx="2" fill="#8b6030"/>
+      <!-- Capstone glow -->
+      <polygon points="170,12 180,32 160,32" fill="#ffd700"/>
+      <circle cx="170" cy="13" r="5" fill="#fff5a0" opacity=".9"/>
+      <!-- King's chamber -->
+      <rect x="140" y="108" width="58" height="38" rx="5" fill="#6b2d8b" opacity=".88"/>
+      <text x="169" y="132" text-anchor="middle" font-size="8.5" fill="white" font-family="sans-serif" font-weight="bold">Kamar Raja</text>
+      <!-- Queen's chamber -->
+      <rect x="143" y="158" width="52" height="32" rx="5" fill="#9b4dbf" opacity=".82"/>
+      <text x="169" y="178" text-anchor="middle" font-size="8" fill="white" font-family="sans-serif">Kamar Ratu</text>
+      <!-- Underground -->
+      <rect x="144" y="202" width="50" height="18" rx="4" fill="#4a1a6b" opacity=".82"/>
+      <text x="169" y="214" text-anchor="middle" font-size="7.5" fill="white" font-family="sans-serif">Ruang Bawah</text>
+      <!-- Ascending corridor -->
+      <rect x="166" y="60" width="6" height="50" rx="3" fill="#8b5e3c"/>
+      <!-- Grand gallery line -->
+      <line x1="169" y1="108" x2="169" y2="158" stroke="#8b5e3c" stroke-width="4" stroke-linecap="round"/>
+      <!-- Descending corridor -->
+      <line x1="144" y1="125" x2="88" y2="162" stroke="#8b5e3c" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- Entrance -->
+      <rect x="83" y="157" width="20" height="11" rx="3" fill="#c8822a"/>
+      <text x="93" y="180" text-anchor="middle" font-size="8" fill="#3d2010" font-family="sans-serif">Pintu Masuk</text>
+      <!-- Airshafts -->
+      <line x1="140" y1="118" x2="62" y2="68" stroke="#d4a843" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <line x1="198" y1="118" x2="278" y2="68" stroke="#d4a843" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="42" y="64" font-size="7.5" fill="#b8860b" font-family="sans-serif">Lubang udara</text>
+      <!-- Labels -->
+      <text x="320" y="132" text-anchor="end" font-size="7.5" fill="#42145e" font-family="sans-serif">← Granit merah</text>
+      <text x="314" y="78" text-anchor="end" font-size="7.5" fill="#3d2010" font-family="sans-serif">← Lorong naik</text>
+    </svg>
+    <p style="font-size:13px;color:var(--text-mid);line-height:1.65">Di dalam piramida ada <strong>lorong-lorong rahasia</strong>, kamar granit untuk raja dan ratu, bahkan <em>lubang udara menuju bintang</em> agar jiwa Firaun bisa naik ke langit! Arsitek Mesir kuno adalah <strong>jenius sejati</strong>! 🏛️✨</p>
+  </div>
+</div>
+
+<!-- ═══════════════ BOOK ═══════════════ -->
+<div class="book">
+
+<!-- ══ PAGE 1: COVER ══ -->
+<div class="page active" id="page-1">
+  <div class="cover">
+    <!-- Egyptian corner hieroglyphs -->
+    <div style="position:absolute;top:18px;left:20px;font-size:18px;opacity:.2;z-index:1;letter-spacing:5px">𓂀𓃒𓄿𓅓</div>
+    <div style="position:absolute;top:18px;right:20px;font-size:18px;opacity:.2;z-index:1;letter-spacing:5px">𓆣𓇯𓈖𓉐</div>
+
+    <div class="cover-badge">📅 HARI 18 · MINGGU 3</div>
+
+    <div class="cover-title">
+      Petualangan Kapten Cerdas
+      <span class="cover-gold">Piramida, Kerajaan<br>&amp; Raja Pertama</span>
+    </div>
+    <div class="cover-sub">Jejak Manusia di Bumi · Seri Peradaban Awal</div>
+
+    <!-- Pyramid hero illustration -->
+    <div class="floaty" style="margin:22px auto 18px;position:relative;z-index:1">
+      <svg width="285" height="196" viewBox="0 0 285 196">
+        <defs>
+          <linearGradient id="skyC" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0d2250"/><stop offset="100%" stop-color="#d4a843"/>
+          </linearGradient>
+          <linearGradient id="pyC" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#e8c870"/><stop offset="100%" stop-color="#a07028"/>
+          </linearGradient>
+          <linearGradient id="sdC" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#d4a843"/><stop offset="100%" stop-color="#c8824a"/>
+          </linearGradient>
+          <filter id="glowC"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="285" height="196" rx="15" fill="url(#skyC)"/>
+        <!-- Stars -->
+        <circle cx="22" cy="18" r="2" fill="white" opacity=".7"/>
+        <circle cx="65" cy="11" r="1.5" fill="white" opacity=".6"/>
+        <circle cx="185" cy="14" r="2" fill="white" opacity=".55"/>
+        <circle cx="248" cy="9" r="1.5" fill="white" opacity=".65"/>
+        <!-- Sun -->
+        <circle cx="245" cy="28" r="20" fill="#ffd700" filter="url(#glowC)" opacity=".92"/>
+        <circle cx="245" cy="28" r="28" fill="rgba(255,215,0,.14)"/>
+        <!-- Big pyramid -->
+        <polygon points="142,16 238,150 46,150" fill="url(#pyC)"/>
+        <polygon points="142,16 178,16 238,150 192,150" fill="rgba(0,0,0,.16)"/>
+        <!-- Capstone -->
+        <polygon points="138,16 146,16 145,27 137,27" fill="#ffd700" filter="url(#glowC)"/>
+        <!-- Stone lines -->
+        <line x1="78" y1="68" x2="206" y2="68" stroke="rgba(0,0,0,.1)" stroke-width="1.5"/>
+        <line x1="62" y1="102" x2="222" y2="102" stroke="rgba(0,0,0,.1)" stroke-width="1.5"/>
+        <line x1="50" y1="133" x2="234" y2="133" stroke="rgba(0,0,0,.1)" stroke-width="1.5"/>
+        <!-- Entrance -->
+        <rect x="128" y="130" width="28" height="22" rx="3 3 0 0" fill="#6b3e1e"/>
+        <!-- Pyramid 2 small left -->
+        <polygon points="36,88 78,150 0,150" fill="#c9a855" opacity=".8"/>
+        <polygon points="36,88 52,88 78,150 58,150" fill="rgba(0,0,0,.12)"/>
+        <!-- Pyramid 3 small right -->
+        <polygon points="252,98 285,150 222,150" fill="#c9a855" opacity=".8"/>
+        <!-- Sand floor -->
+        <rect x="0" y="148" width="285" height="48" rx="0 0 15 15" fill="url(#sdC)"/>
+        <!-- Sphinx simplified -->
+        <rect x="62" y="140" width="56" height="10" rx="3" fill="#b8860b"/>
+        <rect x="68" y="133" width="38" height="14" rx="4" fill="#b8860b"/>
+        <circle cx="86" cy="130" r="11" fill="#c8924a"/>
+        <!-- Aslan -->
+        <text x="170" y="148" font-size="20">🧒</text>
+        <text x="164" y="163" font-size="8" fill="#6b3e1e" font-family="sans-serif" font-weight="bold">Aslan</text>
+        <!-- Hieroglyphs -->
+        <text x="116" y="108" font-size="9" fill="rgba(184,134,11,.55)" font-family="serif">𓂀𓃀</text>
+        <!-- Flag -->
+        <rect x="132" y="90" width="3" height="22" fill="#795548"/>
+        <rect x="135" y="90" width="17" height="9" rx="1" fill="#e53935" style="animation:flagW 2s ease-in-out infinite;transform-origin:135px 94px"/>
+        <!-- Camel -->
+        <text x="230" y="162" font-size="18">🐪</text>
+      </svg>
+    </div>
+
+    <div class="cap-banner">
+      <p>🏺 Kapten Penjelajah Peradaban</p>
+      <h2>Aslan</h2>
+    </div>
+    <div style="position:relative;z-index:1;margin-top:18px">
+      <p style="color:rgba(255,255,255,.65);font-size:13px;font-style:italic">
+        "Manusia purba membangun hal-hal yang bahkan<br>mesin modern pun kagum melihatnya... 🏛️"
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE 2: INTRO & RECAP ══ -->
+<div class="page" id="page-2">
+  <div class="card">
+    <div class="sh"><div class="si si-sky">🌊</div><div class="sec-title">Petualangan Kapten Aslan Berlanjut!</div></div>
+    <p class="st">Hei, <strong>Kapten Aslan!</strong> 🎉 Kamu sudah menempuh perjalanan luar biasa melewati ribuan tahun sejarah manusia. Mari ingat kembali jejak-jejak penting yang sudah kita temukan!</p>
+    <div class="hbox">🌾 <strong>Hari 15:</strong> Revolusi Pertanian — manusia berhenti berburu dan mulai menanam sendiri makanan mereka!</div>
+    <div class="hbox">🏘️ <strong>Hari 16:</strong> Lahirnya desa dan kota pertama — manusia mulai hidup dalam komunitas yang makin besar dan teratur.</div>
+    <div class="hbox">✍️ <strong>Hari 17:</strong> Penemuan Tulisan dan Roda — dua inovasi yang mengubah peradaban manusia selamanya!</div>
+    <div class="wdiv">𓂀 〜 𓃀 〜 𓄿 〜 𓅓</div>
+    <p class="st">Dan hari ini... kita akan menyaksikan sesuatu yang <em>bahkan lebih mengagumkan!</em> Sesuatu yang bahkan setelah 4.500 tahun masih membuat seluruh dunia terdiam kagum...</p>
+    <div style="text-align:center;margin:20px 0">
+      <svg width="175" height="105" viewBox="0 0 175 105" class="floaty">
+        <polygon points="87,5 165,98 9,98" fill="#d4a843"/>
+        <polygon points="87,5 112,5 165,98 136,98" fill="rgba(0,0,0,.15)"/>
+        <polygon points="84,5 90,5 89,15 83,15" fill="#ffd700"/>
+        <line x1="35" y1="58" x2="139" y2="58" stroke="rgba(0,0,0,.1)" stroke-width="1.2"/>
+        <line x1="22" y1="78" x2="152" y2="78" stroke="rgba(0,0,0,.1)" stroke-width="1.2"/>
+        <text x="72" y="80" font-size="20">🏛️</text>
+      </svg>
+    </div>
+    <p class="st" style="text-align:center;font-size:17px;font-weight:800;color:var(--text-dark)">
+      Manusia membangun <em>PIRAMIDA</em> setinggi gedung 50 lantai...<br>
+      dan menciptakan <em>KERAJAAN</em> pertama di dunia! 👑
+    </p>
+  </div>
+</div>
+
+<!-- ══ PAGE 3: MAIN STORY ══ -->
+<div class="page" id="page-3">
+  <div class="card">
+    <div class="sh"><div class="si si-gold">📖</div><div class="sec-title">Aslan Mendarat di Mesir Kuno! 🐪</div></div>
+    <p class="st">Kapal waktu Aslan menderu dengan hebat, lalu — <strong>WHUUUSHHH!</strong> 💨 Pintu kapal terbuka perlahan dan sinar matahari panas menyerbu masuk.</p>
+    <p class="st">Di depan Aslan membentang <strong>gurun pasir yang tiada bertepi</strong>, berwarna keemasan di bawah langit biru Mesir yang sangat cerah. Udara panas menyengat kulit, dan angin membawa bau pasir yang khas.</p>
+    <p class="st">Tapi yang membuat Aslan terpaku... adalah tiga <em>piramida raksasa</em> yang menjulang di cakrawala! Puncaknya — yang masih dilapisi batu kapur putih mengkilap — seolah menyentuh langit. Di sekelilingnya, ribuan pekerja bergerak seperti semut-semut raksasa!</p>
+    <div class="hbox">🏺 <strong>Pemandu Aslan, Imhotep Muda</strong> berbisik kagum: <em>"Selamat datang di Giza, Kapten! Tahun 2560 sebelum Masehi. Firaun Khufu sedang membangun makamnya. Ini akan jadi bangunan tertinggi di dunia selama 3.800 tahun!"</em></div>
+    <p class="st">Aslan mengerjap-ngerjapkan matanya. <em>"Bagaimana mereka membangunnya? Tanpa crane? Tanpa mesin?"</em></p>
+    <p class="st"><strong>"Dengan sesuatu yang jauh lebih kuat dari semua mesin itu,"</strong> jawab Imhotep. <em>"Kecerdasan manusia, kerja sama, dan semangat yang luar biasa!"</em></p>
+    <div class="pbox">👑 Di kejauhan, di balik tembok-tembok batu yang megah, Aslan melihat istana dengan pilar-pilar emas. Di atas singgasana duduk seseorang berpakaian putih bersih dengan <strong>mahkota ganda merah-putih</strong> — Firaun Khufu, Raja Agung Mesir!</div>
+    <p class="st" style="font-style:italic;font-size:15px;color:#546e7a">"Ini nyata," bisik Aslan dalam hati. "Ini benar-benar terjadi. Manusia purba... mereka jauh lebih hebat dari yang kubayangkan..." 😮✨</p>
+  </div>
+</div>
+
+<!-- ══ PAGE 4: INTERACTIVE PYRAMID SCENE ══ -->
+<div class="page" id="page-4">
+  <div class="card">
+    <div class="sh"><div class="si si-desert">👆</div><div class="sec-title">Klik Piramida untuk Melihat Dalamnya!</div></div>
+    <p class="st">Inilah pemandangan Giza yang dilihat Aslan! <strong>Sentuh piramida besar</strong> untuk mengintip ke dalam strukturnya yang menakjubkan!</p>
+
+    <div class="py-scene">
+      <div class="py-sun-sm"></div>
+      <!-- Cloud -->
+      <div style="position:absolute;top:14px;left:22px;width:52px;height:17px;background:rgba(255,255,255,.32);border-radius:28px"></div>
+      <div style="position:absolute;top:9px;left:42px;width:36px;height:15px;background:rgba(255,255,255,.28);border-radius:22px"></div>
+      <!-- Sand floor -->
+      <div class="py-sand-floor"></div>
+      <!-- Nile label -->
+      <div class="py-nile-label">← Sungai Nil</div>
+      <!-- Workers -->
+      <div class="py-workers">
+        <span class="py-worker">👷</span>
+        <span class="py-worker">🏋️</span>
+        <span class="py-worker">👷</span>
+      </div>
+      <!-- Main clickable pyramid -->
+      <div class="py-main-wrap">
+        <svg class="py-svg-click" width="230" height="175" viewBox="0 0 230 175" onclick="openMod()">
+          <defs>
+            <linearGradient id="scPy" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#e8c870"/><stop offset="100%" stop-color="#9a6820"/>
+            </linearGradient>
+            <linearGradient id="scSd" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#b8860b"/><stop offset="100%" stop-color="#7a5020"/>
+            </linearGradient>
+          </defs>
+          <polygon points="115,5 210,168 20,168" fill="url(#scPy)"/>
+          <polygon points="115,5 148,5 210,168 176,168" fill="url(#scSd)"/>
+          <rect x="20" y="166" width="190" height="9" rx="2" fill="#8b6030"/>
+          <!-- Capstone -->
+          <polygon points="115,5 124,22 106,22" fill="#ffd700"/>
+          <circle cx="115" cy="6" r="4" fill="#fffde0" opacity=".9"/>
+          <!-- Stone lines -->
+          <line x1="50" y1="58" x2="180" y2="58" stroke="rgba(0,0,0,.09)" stroke-width="1.5"/>
+          <line x1="36" y1="92" x2="194" y2="92" stroke="rgba(0,0,0,.09)" stroke-width="1.5"/>
+          <line x1="26" y1="126" x2="204" y2="126" stroke="rgba(0,0,0,.09)" stroke-width="1.5"/>
+          <!-- Entrance -->
+          <rect x="100" y="140" width="30" height="28" rx="3 3 0 0" fill="#6b3e1e"/>
+          <!-- Tap hint -->
+          <text x="115" y="108" text-anchor="middle" font-size="9.5" fill="rgba(255,215,0,.85)" font-family="sans-serif" font-weight="bold">TAP!</text>
+          <circle cx="115" cy="95" r="15" fill="none" stroke="rgba(255,215,0,.45)" stroke-width="2" stroke-dasharray="5,3">
+            <animate attributeName="stroke-dashoffset" values="0;-16" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+      <!-- Small pyramids -->
+      <svg style="position:absolute;bottom:40%;left:2%;width:65px" viewBox="0 0 100 85">
+        <polygon points="50,5 95,82 5,82" fill="#c9a855"/>
+        <polygon points="50,5 70,5 95,82 72,82" fill="rgba(0,0,0,.12)"/>
+      </svg>
+      <svg style="position:absolute;bottom:40%;right:3%;width:58px" viewBox="0 0 100 85">
+        <polygon points="50,5 95,82 5,82" fill="#c9a855"/>
+        <polygon points="50,5 70,5 95,82 72,82" fill="rgba(0,0,0,.12)"/>
+      </svg>
+      <!-- Sphinx -->
+      <div class="py-sphinx">🗿</div>
+      <!-- Hint -->
+      <div class="py-hint">👆 Sentuh piramida besar — ada rahasia di dalamnya!</div>
+    </div>
+
+    <div class="sbox">🌍 <strong>Fakta Luar Biasa:</strong> Piramida Agung Giza dibangun sekitar tahun 2560 SM dan <strong>masih berdiri hingga hari ini</strong> — sudah lebih dari 4.500 tahun! Itu lebih tua dari semua kerajaan yang ada di dunia sekarang!</div>
+  </div>
+</div>
+
+<!-- ══ PAGE 5: PYRAMID FACTS ══ -->
+<div class="page" id="page-5">
+  <div class="card">
+    <div class="sh"><div class="si si-gold">🏛️</div><div class="sec-title">6 Keajaiban Piramida Mesir! 😲</div></div>
+    <p class="st">Piramida bukan sekadar bangunan biasa — ini adalah <strong>makam abadi untuk para Firaun</strong>. Sentuh setiap kartu untuk tahu fakta-fakta mencengangkannya!</p>
+    <div class="facts-grid">
+      <div class="fact-card" onclick="this.style.borderColor='var(--gold)';this.style.background='linear-gradient(135deg,var(--gold-pale),#fdf6e3)'">
+        <span class="fc-ico">📏</span>
+        <div class="fc-name">Setinggi 146 Meter!</div>
+        <div class="fc-desc">Sama dengan gedung 50 lantai! Piramida Khufu adalah bangunan tertinggi di dunia selama 3.800 tahun — baru disalip oleh Menara Lincoln di Inggris pada 1311 M!</div>
+      </div>
+      <div class="fact-card" onclick="this.style.borderColor='var(--gold)';this.style.background='linear-gradient(135deg,var(--gold-pale),#fdf6e3)'">
+        <span class="fc-ico">🪨</span>
+        <div class="fc-name">2,3 Juta Batu!</div>
+        <div class="fc-desc">Tersusun dari sekitar 2,3 juta batu besar. Setiap batu beratnya 2,5–15 ton — seberat 2 ekor gajah! Total beratnya mencapai 6 juta ton!</div>
+      </div>
+      <div class="fact-card" onclick="this.style.borderColor='var(--gold)';this.style.background='linear-gradient(135deg,var(--gold-pale),#fdf6e3)'">
+        <span class="fc-ico">👷</span>
+        <div class="fc-name">20.000 Pekerja Terlatih!</div>
+        <div class="fc-desc">Bukan budak! Mereka adalah pekerja terorganisir yang mendapat gaji berupa makanan, bir, dan perawatan medis. Ada tim dokter khusus di lokasi proyek!</div>
+      </div>
+      <div class="fact-card" onclick="this.style.borderColor='var(--gold)';this.style.background='linear-gradient(135deg,var(--gold-pale),#fdf6e3)'">
+        <span class="fc-ico">⏳</span>
+        <div class="fc-name">20 Tahun Dibangun!</div>
+        <div class="fc-desc">Selama 20 tahun tanpa henti, setiap hari para pekerja memasang rata-rata 800 ton batu. Artinya, sekitar 12 batu dipasang setiap jam!</div>
+      </div>
+      <div class="fact-card" onclick="this.style.borderColor='var(--gold)';this.style.background='linear-gradient(135deg,var(--gold-pale),#fdf6e3)'">
+        <span class="fc-ico">🎯</span>
+        <div class="fc-name">Presisi yang Mustahil!</div>
+        <div class="fc-desc">Dasar piramida hampir sempurna rata — hanya meleset 2,1 cm dari total panjang 230 meter. Sudut-sudut nyaris tepat 90°. Ini lebih presisi dari banyak bangunan modern!</div>
+      </div>
+      <div class="fact-card" onclick="this.style.borderColor='var(--gold)';this.style.background='linear-gradient(135deg,var(--gold-pale),#fdf6e3)'">
+        <span class="fc-ico">🌟</span>
+        <div class="fc-name">Satu-satunya yang Tersisa!</div>
+        <div class="fc-desc">Dari 7 Keajaiban Dunia Kuno, hanya Piramida Agung Giza yang masih berdiri sampai hari ini. Keenam keajaiban lainnya sudah musnah dimakan waktu dan bencana.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE 6: PYRAMID BUILDER ══ -->
+<div class="page" id="page-6">
+  <div class="card">
+    <div class="sh"><div class="si si-desert">⚒️</div><div class="sec-title">Bagaimana Cara Membangunnya? Klik!</div></div>
+    <p class="st">Tanpa crane, tanpa buldoser — hanya dengan <strong>kejeniusan otak manusia!</strong> Tekan tombol untuk melihat batu-batu menyusun dirinya sendiri!</p>
+
+    <div class="builder-scene">
+      <div class="build-stage" id="buildStage"></div>
+      <div id="bStatus">⬇️ Tekan tombol di bawah untuk memulai pembangunan!</div>
+      <button class="build-btn" id="buildBtn" onclick="doBuild()">⚒️ Bangun Piramida!</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0">
+      <div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 4px 14px rgba(0,0,0,.07);border:2px solid transparent;transition:.3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='transparent'">
+        <div style="font-size:24px;margin-bottom:6px">⛰️</div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--text-dark);margin-bottom:4px">Ramp Pasir Raksasa</div>
+        <div style="font-size:12px;color:#78909c;line-height:1.5">Para pekerja membuat jalan miring panjang dari bata lumpur untuk menyeret batu-batu besar ke atas menggunakan tali dari papyrus.</div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 4px 14px rgba(0,0,0,.07);border:2px solid transparent;transition:.3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='transparent'">
+        <div style="font-size:24px;margin-bottom:6px">🪵</div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--text-dark);margin-bottom:4px">Kayu Gelondongan</div>
+        <div style="font-size:12px;color:#78909c;line-height:1.5">Batu diletakkan di atas batang kayu yang bisa bergulir, sehingga jauh lebih mudah dipindahkan meski bobotnya luar biasa berat.</div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 4px 14px rgba(0,0,0,.07);border:2px solid transparent;transition:.3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='transparent'">
+        <div style="font-size:24px;margin-bottom:6px">📐</div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--text-dark);margin-bottom:4px">Matematika Bintang</div>
+        <div style="font-size:12px;color:#78909c;line-height:1.5">Arsitek menggunakan tali, bandul berat, dan posisi bintang-bintang di langit untuk menentukan arah dan sudut yang sempurna.</div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 4px 14px rgba(0,0,0,.07);border:2px solid transparent;transition:.3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='transparent'">
+        <div style="font-size:24px;margin-bottom:6px">🍞</div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--text-dark);margin-bottom:4px">Pekerja Dibayar Baik</div>
+        <div style="font-size:12px;color:#78909c;line-height:1.5">Setiap pekerja mendapat roti, bir, ikan, daging, dan bawang setiap hari. Ada juga dokter dan tukang pijat. Mereka adalah profesional sejati!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE 7: KINGDOM BIRTH ══ -->
+<div class="page" id="page-7">
+  <div class="card">
+    <div class="sh"><div class="si si-purple">👑</div><div class="sec-title">Lahirnya Kerajaan Pertama di Dunia! 🌍</div></div>
+    <p class="st">Sebelum ada piramida, harus ada dulu yang namanya <strong>kerajaan</strong>. Dan kerajaan pertama lahir di Mesir sekitar <em>3100 tahun Sebelum Masehi...</em></p>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-title">📍 Awal: Desa-Desa Terpisah</div>
+        <div class="tl-desc">Manusia di lembah Sungai Nil hidup dalam desa-desa kecil dengan pemimpin masing-masing. Belum ada yang mengatur semuanya secara bersama.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-title">⚔️ Raja Narmer Menyatukan Mesir</div>
+        <div class="tl-desc">Sekitar 3100 SM, Raja Narmer (juga dikenal sebagai Menes) berhasil menyatukan Mesir Hulu (selatan) dan Mesir Hilir (utara) menjadi SATU kerajaan besar pertama di dunia!</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-title">👑 Lahirnya Firaun</div>
+        <div class="tl-desc">"Firaun" berasal dari kata "Per-Aa" yang artinya "rumah besar". Firaun dianggap sebagai anak dewa matahari Ra — setengah manusia, setengah dewa — yang memerintah atas nama langit!</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-title">🏛️ Sistem Pemerintahan Canggih</div>
+        <div class="tl-desc">Mesir punya wazir (menteri), tentara, hakim, juru tulis, dan petugas pajak. Ini adalah sistem pemerintahan terorganisir pertama yang pernah ada dalam sejarah manusia!</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-title">📅 Bertahan 3.000 Tahun!</div>
+        <div class="tl-desc">Luar biasanya, Kerajaan Mesir Kuno bertahan selama hampir 3.000 tahun — jauh melampaui semua peradaban lain. Tidak ada kerajaan modern yang mendekati rekor ini!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE 8: KINGDOM LIFE ROLES ══ -->
+<div class="page" id="page-8">
+  <div class="card">
+    <div class="sh"><div class="si si-purple">🏰</div><div class="sec-title">Kehidupan di Kerajaan Mesir! 👆 Klik!</div></div>
+    <p class="st">Kerajaan bukan hanya tentang raja. Ada seluruh sistem masyarakat yang terorganisir rapi! Sentuh setiap kartu untuk mengenal mereka lebih dekat:</p>
+    <div class="roles-grid">
+      <div class="role-card" onclick="this.classList.toggle('open')">
+        <span class="rc-ico">👑</span>
+        <div class="rc-name">Firaun</div>
+        <div class="rc-desc">Pemimpin tertinggi yang dianggap setengah dewa. Semua keputusan besar — perang, hukum, pembangunan — ada di tangannya. Firaun juga memimpin upacara agama penting.</div>
+      </div>
+      <div class="role-card" onclick="this.classList.toggle('open')">
+        <span class="rc-ico">📜</span>
+        <div class="rc-name">Wazir (Menteri)</div>
+        <div class="rc-desc">Pembantu utama Firaun yang mengurus administrasi harian seluruh kerajaan. Seperti Perdana Menteri zaman sekarang — wazir adalah orang paling berkuasa setelah Firaun!</div>
+      </div>
+      <div class="role-card" onclick="this.classList.toggle('open')">
+        <span class="rc-ico">⚔️</span>
+        <div class="rc-name">Tentara</div>
+        <div class="rc-desc">Melindungi kerajaan dari serangan dan memperluas wilayah. Tentara Mesir terkenal karena kereta kuda mereka yang cepat dan pemanah yang sangat akurat.</div>
+      </div>
+      <div class="role-card" onclick="this.classList.toggle('open')">
+        <span class="rc-ico">✍️</span>
+        <div class="rc-name">Juru Tulis</div>
+        <div class="rc-desc">Orang langka yang bisa membaca dan menulis hieroglif! Mereka mencatat pajak, hukum, dan sejarah. Di Mesir, bisa menulis artinya kamu termasuk golongan terpandang!</div>
+      </div>
+      <div class="role-card" onclick="this.classList.toggle('open')">
+        <span class="rc-ico">🏺</span>
+        <div class="rc-name">Imam / Pendeta</div>
+        <div class="rc-desc">Penjaga kuil-kuil dewa dan penyelenggara ritual keagamaan. Imam sangat dihormati karena dipercaya bisa berkomunikasi langsung dengan para dewa Mesir.</div>
+      </div>
+      <div class="role-card" onclick="this.classList.toggle('open')">
+        <span class="rc-ico">👨‍🌾</span>
+        <div class="rc-name">Petani & Pekerja</div>
+        <div class="rc-desc">Mayoritas penduduk! Mereka mengolah tanah subur di tepi Nil. Ketika banjir Nil tiba dan ladang terendam, mereka dipekerjakan pemerintah untuk membangun piramida — dengan upah!</div>
+      </div>
+    </div>
+    <div class="hbox">🏺 <strong>Fakta Seru:</strong> Orang Mesir kuno percaya Firaun adalah penjelmaan Horus (dewa elang) saat hidup, dan menjadi Osiris (dewa akhirat) setelah meninggal. Makanya piramida dibangun sangat megah — sebagai "tangga emas menuju surga"!</div>
+  </div>
+</div>
+
+<!-- ══ PAGE 9: PANORAMA ══ -->
+<div class="page" id="page-9">
+  <div class="card">
+    <div class="sh"><div class="si si-desert">🌅</div><div class="sec-title">Giza saat Matahari Terbenam 🌄</div></div>
+    <p class="st">Inilah pemandangan Giza yang membuat Aslan terdiam tak bisa berkata-kata... Matahari perlahan tenggelam di balik piramida, melukis langit dengan warna emas dan jingga...</p>
+
+    <div class="panorama">
+      <svg width="100%" height="100%" viewBox="0 0 800 265" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="dSky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0a1e50"/>
+            <stop offset="35%" stop-color="#1a5f9e"/>
+            <stop offset="62%" stop-color="#d4803a"/>
+            <stop offset="100%" stop-color="#c06030"/>
+          </linearGradient>
+          <linearGradient id="dSnd" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#c8a030"/><stop offset="100%" stop-color="#8b4a18"/>
+          </linearGradient>
+          <linearGradient id="dNile" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#2a6b9e"/><stop offset="100%" stop-color="#1a4a7a"/>
+          </linearGradient>
+          <radialGradient id="dSun" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fffde0"/>
+            <stop offset="38%" stop-color="#ffd700"/>
+            <stop offset="100%" stop-color="#ff6800"/>
+          </radialGradient>
+          <filter id="glow3"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- Sky -->
+        <rect width="800" height="265" fill="url(#dSky)"/>
+        <!-- Stars -->
+        <circle cx="70" cy="20" r="2" fill="white" opacity=".65"/>
+        <circle cx="190" cy="12" r="1.5" fill="white" opacity=".55"/>
+        <circle cx="560" cy="16" r="2" fill="white" opacity=".6"/>
+        <circle cx="695" cy="10" r="1.5" fill="white" opacity=".7"/>
+        <circle cx="450" cy="26" r="1" fill="white" opacity=".4"/>
+        <circle cx="330" cy="8" r="1" fill="white" opacity=".5"/>
+        <!-- Setting sun -->
+        <circle cx="640" cy="110" r="36" fill="url(#dSun)" filter="url(#glow3)" opacity=".92"/>
+        <circle cx="640" cy="110" r="50" fill="rgba(255,180,0,.14)"/>
+        <!-- Big pyramid -->
+        <polygon points="275,24 435,197 115,197" fill="#c9a040"/>
+        <polygon points="275,24 330,24 435,197 354,197" fill="rgba(0,0,0,.18)"/>
+        <polygon points="272,24 278,24 278,38 271,38" fill="#ffd700" filter="url(#glow3)"/>
+        <!-- Mid pyramid -->
+        <polygon points="496,68 618,197 374,197" fill="#b89030"/>
+        <polygon points="496,68 536,68 618,197 552,197" fill="rgba(0,0,0,.14)"/>
+        <!-- Small pyramid -->
+        <polygon points="675,108 748,197 602,197" fill="#a87e28"/>
+        <!-- Nile -->
+        <rect x="0" y="174" width="118" height="28" fill="url(#dNile)" opacity=".9"/>
+        <ellipse cx="60" cy="174" rx="64" ry="9" fill="url(#dNile)" opacity=".65"/>
+        <!-- Nile sun reflection -->
+        <path d="M18,183 Q58,177 98,183" stroke="rgba(255,215,0,.45)" stroke-width="3" fill="none"/>
+        <!-- Sphinx -->
+        <ellipse cx="125" cy="197" rx="30" ry="14" fill="#b8860b"/>
+        <rect x="108" y="182" width="36" height="20" rx="4" fill="#b8860b"/>
+        <circle cx="130" cy="178" r="13" fill="#c8924a"/>
+        <rect x="90" y="190" width="70" height="9" rx="2" fill="#a07020"/>
+        <ellipse cx="126" cy="176" rx="2.5" ry="2" fill="#1a0a00"/>
+        <!-- Sand floor -->
+        <rect x="0" y="197" width="800" height="68" fill="url(#dSnd)"/>
+        <!-- Desert dunes -->
+        <path d="M0,203 Q100,188 200,203 Q300,218 400,200 Q500,184 600,202 Q700,220 800,202 L800,265 L0,265 Z" fill="rgba(100,55,15,.38)"/>
+        <!-- Palm trees -->
+        <rect x="50" y="170" width="4" height="30" fill="#4a2a0a"/>
+        <text x="42" y="172" font-size="22">🌴</text>
+        <rect x="174" y="176" width="3" height="24" fill="#4a2a0a"/>
+        <text x="166" y="178" font-size="18">🌴</text>
+        <!-- Silhouettes -->
+        <circle cx="156" cy="194" r="4" fill="rgba(20,10,0,.72)"/>
+        <rect x="153" y="198" width="6" height="10" rx="2" fill="rgba(20,10,0,.72)"/>
+        <circle cx="338" cy="194" r="4" fill="rgba(20,10,0,.72)"/>
+        <rect x="335" y="198" width="6" height="10" rx="2" fill="rgba(20,10,0,.72)"/>
+        <!-- Camel -->
+        <text x="218" y="208" font-size="22">🐪</text>
+        <!-- Boat on Nile -->
+        <text x="28" y="192" font-size="14">⛵</text>
+        <!-- Hieroglyphs on sand -->
+        <text x="432" y="220" font-size="13" fill="rgba(184,134,11,.38)" font-family="serif">𓂀 𓃀 𓄿 𓅓 𓆣</text>
+        <!-- Giza label badge -->
+        <rect x="285" y="8" width="132" height="24" rx="12" fill="rgba(0,0,0,.55)"/>
+        <text x="351" y="24" text-anchor="middle" font-size="10" fill="#ffd700" font-family="sans-serif" font-weight="bold">🌅 Giza, 2560 SM</text>
+      </svg>
+    </div>
+
+    <p class="st" style="text-align:center;font-style:italic;color:var(--text-mid)">
+      "Aslan berdiri terpaku. Sinar matahari keemasan memantul di permukaan piramida yang mulus... 
+      <em>tidak ada kata yang sanggup menggambarkan betapa menakjubkannya ini.</em>" ✨
+    </p>
+    <div class="hbox">🦁 <strong>Sphinx:</strong> Patung singa berkepala manusia setinggi 20 meter, panjang 73 meter, yang menjaga piramida. Wajahnya diyakini adalah wajah Firaun Khafre. Ini adalah patung batu tunggal terbesar yang pernah dipahat oleh tangan manusia!</div>
+  </div>
+</div>
+
+<!-- ══ PAGE 10: WHY KINGDOMS MATTER ══ -->
+<div class="page" id="page-10">
+  <div class="card">
+    <div class="sh"><div class="si si-sky">🌍</div><div class="sec-title">Mengapa Kerajaan Mengubah Segalanya?</div></div>
+    <p class="st">Munculnya kerajaan pertama bukan hanya soal raja dan mahkota. Ini adalah <strong>lompatan terbesar peradaban manusia</strong> setelah penemuan pertanian. Inilah alasannya:</p>
+    <div class="why-list">
+      <div class="why-item">
+        <span class="wi-ico">🤝</span>
+        <div>
+          <div class="wi-title">Kerja Sama Skala Raksasa</div>
+          <div class="wi-desc">Tanpa kerajaan dan sistem pemerintahan, tidak mungkin mengorganisir 20.000 pekerja selama 20 tahun untuk membangun satu bangunan. Kerajaan memungkinkan proyek-proyek yang mustahil dilakukan sendirian!</div>
+        </div>
+      </div>
+      <div class="why-item">
+        <span class="wi-ico">⚖️</span>
+        <div>
+          <div class="wi-title">Hukum dan Keadilan Pertama</div>
+          <div class="wi-desc">Kerajaan menciptakan hukum tertulis. Semua orang, kaya atau miskin, harus mengikuti aturan yang sama. Inilah cikal bakal sistem hukum dan keadilan yang kita miliki sampai hari ini!</div>
+        </div>
+      </div>
+      <div class="why-item">
+        <span class="wi-ico">📚</span>
+        <div>
+          <div class="wi-title">Ilmu Pengetahuan Maju Pesat</div>
+          <div class="wi-desc">Membangun piramida membutuhkan matematika, astronomi, teknik, dan kedokteran yang sangat maju. Kebutuhan kerajaan mendorong perkembangan ilmu pengetahuan yang luar biasa pesat!</div>
+        </div>
+      </div>
+      <div class="why-item">
+        <span class="wi-ico">🎨</span>
+        <div>
+          <div class="wi-title">Seni dan Budaya Mekar</div>
+          <div class="wi-desc">Ketika kebutuhan dasar sudah terpenuhi oleh organisasi kerajaan, manusia punya waktu dan energi untuk menciptakan seni, musik, sastra, dan arsitektur yang indah dan abadi.</div>
+        </div>
+      </div>
+    </div>
+    <div class="sbox">🌟 <strong>Pikirkanlah ini, Kapten Aslan:</strong> Piramida membuktikan bahwa ketika manusia bekerja sama dengan satu tujuan yang sama, mereka bisa menciptakan hal-hal yang terlihat mustahil — bahkan tanpa satu pun teknologi modern!</div>
+  </div>
+</div>
+
+<!-- ══ PAGE 11: KEY LEARNINGS ══ -->
+<div class="page" id="page-11">
+  <div class="card">
+    <div class="sh"><div class="si si-gold">⭐</div><div class="sec-title">Harta Karun Pengetahuan Hari Ini! 💎</div></div>
+    <p class="st">Sentuh setiap harta karun untuk merayakan ilmu baru yang kamu dapat hari ini, Kapten Aslan!</p>
+    <div class="learn-grid">
+      <div class="learn-item" onclick="this.style.background='linear-gradient(135deg,var(--gold-pale),#fdf6e3)';this.style.borderColor='var(--gold)'">
+        <span class="li-ico">👑</span>
+        <div class="li-title">Raja Pertama Dunia</div>
+        <div class="li-txt">Sekitar 3100 SM, Raja Narmer menyatukan Mesir dan menciptakan kerajaan terorganisir pertama dalam sejarah manusia.</div>
+      </div>
+      <div class="learn-item" onclick="this.style.background='linear-gradient(135deg,var(--gold-pale),#fdf6e3)';this.style.borderColor='var(--gold)'">
+        <span class="li-ico">🏛️</span>
+        <div class="li-title">Piramida = Makam Raja</div>
+        <div class="li-txt">Piramida dibangun agar jiwa Firaun bisa naik ke surga. Di dalamnya ada kamar, lorong rahasia, dan harta untuk kehidupan setelah mati.</div>
+      </div>
+      <div class="learn-item" onclick="this.style.background='linear-gradient(135deg,var(--gold-pale),#fdf6e3)';this.style.borderColor='var(--gold)'">
+        <span class="li-ico">🪨</span>
+        <div class="li-title">2,3 Juta Batu Raksasa</div>
+        <div class="li-txt">Piramida Agung Khufu tersusun dari 2,3 juta batu, dibangun 20 tahun oleh 20.000 pekerja terlatih yang dibayar dengan makanan dan perawatan!</div>
+      </div>
+      <div class="learn-item" onclick="this.style.background='linear-gradient(135deg,var(--gold-pale),#fdf6e3)';this.style.borderColor='var(--gold)'">
+        <span class="li-ico">⏰</span>
+        <div class="li-title">Bertahan 4.500 Tahun!</div>
+        <div class="li-txt">Piramida Agung masih berdiri hingga kini — satu-satunya dari 7 Keajaiban Dunia Kuno yang masih ada. Sungguh bangunan paling tahan lama sepanjang masa!</div>
+      </div>
+      <div class="learn-item" onclick="this.style.background='linear-gradient(135deg,var(--gold-pale),#fdf6e3)';this.style.borderColor='var(--gold)'">
+        <span class="li-ico">🤝</span>
+        <div class="li-title">Kekuatan Kerja Sama</div>
+        <div class="li-txt">Piramida membuktikan bahwa manusia bisa melakukan hal yang terlihat mustahil ketika bekerja sama dengan satu tujuan besar dan organisasi yang baik.</div>
+      </div>
+      <div class="learn-item" onclick="this.style.background='linear-gradient(135deg,var(--gold-pale),#fdf6e3)';this.style.borderColor='var(--gold)'">
+        <span class="li-ico">🧠</span>
+        <div class="li-title">Tanpa Mesin, Pakai Otak!</div>
+        <div class="li-txt">Manusia purba membuktikan bahwa kreativitas, perencanaan matang, dan kerja keras bisa mengalahkan semua mesin yang belum ditemukan sekalipun!</div>
+      </div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(107,45,139,.1),rgba(155,77,191,.06));border:3px solid rgba(107,45,139,.18);border-radius:20px;padding:20px;margin-top:16px">
+      <p style="font-family:'Cinzel',serif;color:var(--purple);font-size:16px;margin-bottom:8px">🤔 Renungkan, Kapten Aslan!</p>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.72">Kamu hidup di zaman yang punya crane, komputer, robot, dan segala teknologi modern. <strong>Apa proyek besar yang ingin kamu bangun untuk dunia?</strong> Hal apa yang ingin kamu ciptakan yang masih akan dikenang 4.500 tahun dari sekarang? 🌟</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE 12: CHALLENGE ══ -->
+<div class="page" id="page-12">
+  <div class="challenge">
+    <div class="ch-title">🎯 Tantangan Hari Ini!</div>
+    <div class="ch-sub">Untuk Kapten Aslan · Hari 18</div>
+    <div class="ch-tasks" id="chTasks">
+      <div class="ch-task" onclick="doTask(this,0)">
+        <div class="ch-chk">1</div>
+        <div class="ch-txt">🔢 <strong>Hitung batu:</strong> Piramida punya 2,3 juta batu, dibangun 20 tahun. Berapa batu per hari yang harus dipasang? (1 tahun = 365 hari — pakai kalkulator boleh!) Tuliskan jawabannya!</div>
+      </div>
+      <div class="ch-task" onclick="doTask(this,1)">
+        <div class="ch-chk">2</div>
+        <div class="ch-txt">✍️ <strong>Gambar penampang:</strong> Coba gambar piramida beserta isi dalamnya — kamar raja, lorong, dan pintu masuknya! Lihat kembali halaman 4 untuk referensi.</div>
+      </div>
+      <div class="ch-task" onclick="doTask(this,2)">
+        <div class="ch-chk">3</div>
+        <div class="ch-txt">🗣️ <strong>Jelaskan:</strong> Ceritakan kepada Ayah, Ibu, atau teman — mengapa piramida dibangun dan bagaimana caranya tanpa mesin modern! Pakai kata-katamu sendiri.</div>
+      </div>
+      <div class="ch-task" onclick="doTask(this,3)">
+        <div class="ch-chk">4</div>
+        <div class="ch-txt">🤔 <strong>Berpikir kritis:</strong> Menurutmu, apakah Firaun itu pemimpin yang baik? Tulis 2 alasan mendukung dan 2 alasan meragukan! Tidak ada jawaban yang salah.</div>
+      </div>
+      <div class="ch-task" onclick="doTask(this,4)">
+        <div class="ch-chk">5</div>
+        <div class="ch-txt">🌟 <strong>BONUS:</strong> Ada berapa piramida di seluruh Mesir? Dan apakah ada piramida di negara lain? Minta bantuan orang tua untuk riset singkat ini!</div>
+      </div>
+    </div>
+    <div class="ch-score">🏆 Selesai: <span id="scoreNum">0</span>/5 — <span id="scoreMsg">Mulai tantanganmu, Kapten!</span></div>
+  </div>
+</div>
+
+<!-- ══ PAGE 13: CLOSING ══ -->
+<div class="page" id="page-13">
+  <div class="closing">
+    <div style="position:relative;z-index:1">
+      <div style="font-size:68px;margin-bottom:12px" class="sparkle">𓇳</div>
+      <div style="font-family:'Cinzel',serif;font-size:27px;color:var(--gold-bright);margin-bottom:10px">
+        Luar Biasa, Kapten Aslan! 🎉
+      </div>
+      <p style="font-size:15px;color:rgba(255,255,255,.88);line-height:1.82;margin-bottom:24px">
+        Hari ini kamu telah menyaksikan salah satu pencapaian terbesar manusia sepanjang masa —
+        <strong style="color:var(--gold-bright)">piramida yang megah dan kerajaan pertama di dunia!</strong>
+        Manusia purba bukan bodoh — mereka <em>sangat cerdas</em>, sangat kreatif, dan sangat gigih.
+        Dan kamu, Kapten, adalah penerus semangat luar biasa itu! 🌟
+      </p>
+
+      <!-- Week 3 progress -->
+      <div style="background:rgba(255,255,255,.09);border-radius:16px;padding:18px;margin-bottom:20px;border:1px solid rgba(255,215,0,.22)">
+        <div style="font-family:'Cinzel',serif;color:var(--gold-bright);font-size:13px;margin-bottom:12px">📅 Minggu 3 — Peradaban Awal &amp; Penemuan Besar</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+          <span style="background:rgba(76,175,80,.28);border:1px solid rgba(76,175,80,.4);padding:5px 12px;border-radius:12px;font-size:11px;font-weight:700;color:white">Hari 15 ✅</span>
+          <span style="background:rgba(76,175,80,.28);border:1px solid rgba(76,175,80,.4);padding:5px 12px;border-radius:12px;font-size:11px;font-weight:700;color:white">Hari 16 ✅</span>
+          <span style="background:rgba(76,175,80,.28);border:1px solid rgba(76,175,80,.4);padding:5px 12px;border-radius:12px;font-size:11px;font-weight:700;color:white">Hari 17 ✅</span>
+          <span style="background:rgba(255,215,0,.26);border:2px solid var(--gold-bright);padding:5px 12px;border-radius:12px;font-size:11px;font-weight:800;color:var(--gold-bright)">Hari 18 ✅</span>
+          <span style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);padding:5px 12px;border-radius:12px;font-size:11px;font-weight:700;color:rgba(255,255,255,.38)">Hari 19 →</span>
+          <span style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);padding:5px 12px;border-radius:12px;font-size:11px;font-weight:700;color:rgba(255,255,255,.38)">Hari 20 →</span>
+          <span style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);padding:5px 12px;border-radius:12px;font-size:11px;font-weight:700;color:rgba(255,255,255,.38)">Hari 21 →</span>
+        </div>
+      </div>
+
+      <!-- Next day teaser -->
+      <div style="background:linear-gradient(135deg,rgba(232,160,32,.16),rgba(107,45,139,.1));border:2px solid rgba(255,215,0,.28);border-radius:18px;padding:20px;margin-bottom:22px">
+        <div style="font-family:'Cinzel',serif;color:var(--gold-bright);font-size:14px;margin-bottom:8px">🚢 Besok di Hari 19:</div>
+        <div style="font-size:15px;color:rgba(255,255,255,.9);font-weight:700;margin-bottom:7px">🌊 Sungai Nil, Mesopotamia, dan Indus!</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.7);line-height:1.65">Tiga peradaban besar lahir di tepian tiga sungai ajaib. Aslan akan menjelajahi semua tiga kebudayaan raksasa ini dan menemukan mengapa sungai adalah "ibu kandung" peradaban manusia! ✨</div>
+      </div>
+
+      <!-- Motivational quote -->
+      <div style="background:rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:18px;border:1px solid rgba(255,215,0,.18)">
+        <p style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold-bright);margin-bottom:6px">"Piramida tidak dibangun oleh satu orang jenius..."</p>
+        <p style="font-size:13px;color:rgba(255,255,255,.75)">...melainkan oleh ribuan orang biasa yang bekerja sama dengan cara yang luar biasa. Begitu pula mimpi-mimpimu, Kapten Aslan! 🏛️⭐</p>
+      </div>
+
+      <div style="font-size:26px;letter-spacing:7px">𓂀 🏛️ 👑 ⭐ 𓇳</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- .book -->
+
+<!-- NAVIGATION -->
+<div class="nav">
+  <button class="nav-btn prev" id="prevBtn" onclick="changePg(-1)" disabled>← Sebelumnya</button>
+  <div class="pdots" id="pdots"></div>
+  <button class="nav-btn nxt" id="nextBtn" onclick="changePg(1)">Selanjutnya →</button>
+</div>
+
+<!-- Hidden audio element -->
+<audio id="bgAudio" loop>
+  <source src="data:audio/mpeg;base64," type="audio/mpeg">
+</audio>
+
+<script>
+/* ════════════════════════════════
+   INIT — STARS & PARTICLES
+   ════════════════════════════════ */
+(function initBg(){
+  const sw = document.getElementById('stars');
+  for(let i=0;i<72;i++){
+    const s=document.createElement('div');s.className='st';
+    const sz=Math.random()*2.8+.6;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*62}%;animation-delay:${Math.random()*8}s;animation-duration:${2+Math.random()*4}s`;
+    sw.appendChild(s);
+  }
+  const pw = document.getElementById('particles');
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');p.className='px';
+    const sz=Math.random()*4+1.5;
+    const dx=(Math.random()-.5)*180+'px';
+    const dy=-(Math.random()*380+180)+'px';
+    p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dx:${dx};--dy:${dy};animation-duration:${9+Math.random()*11}s;animation-delay:${Math.random()*12}s`;
+    pw.appendChild(p);
+  }
+})();
+
+/* ════════════════════════════════
+   PAGE NAVIGATION
+   ════════════════════════════════ */
+const TOTAL = 13;
+let cur = 1;
+
+function buildDots(){
+  const d=document.getElementById('pdots');
+  d.innerHTML='';
+  for(let i=1;i<=TOTAL;i++){
+    const dot=document.createElement('div');
+    dot.className='pdot'+(i===cur?' active':'');
+    dot.onclick=()=>goTo(i);
+    d.appendChild(dot);
+  }
+}
+
+function updateUI(){
+  document.querySelectorAll('.page').forEach((p,i)=>p.classList.toggle('active',i+1===cur));
+  document.getElementById('prevBtn').disabled = cur===1;
+  const nb=document.getElementById('nextBtn');
+  nb.disabled = cur===TOTAL;
+  nb.textContent = cur===TOTAL?'Selesai ✓':'Selanjutnya →';
+  document.getElementById('pgLbl').textContent = `${cur} / ${TOTAL}`;
+  document.getElementById('progFill').style.width = `${(cur/TOTAL)*100}%`;
+  buildDots();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function changePg(d){const n=cur+d;if(n>=1&&n<=TOTAL){cur=n;updateUI()}}
+function goTo(n){cur=n;updateUI()}
+
+/* ════════════════════════════════
+   PYRAMID MODAL
+   ════════════════════════════════ */
+function openMod(){document.getElementById('pyModal').classList.add('open')}
+function closeMod(e){if(e.target===document.getElementById('pyModal'))document.getElementById('pyModal').classList.remove('open')}
+
+/* ════════════════════════════════
+   PYRAMID BUILDER
+   ════════════════════════════════ */
+// Define stone layout rows: [left, bottom, width, height]
+const STONES = [
+  // Row 1 (base)
+  [5,4,32,13],[39,4,32,13],[73,4,32,13],[107,4,32,13],[141,4,32,13],[175,4,32,13],
+  // Row 2
+  [12,19,30,12],[44,19,30,12],[76,19,30,12],[108,19,30,12],[140,19,30,12],[172,19,30,12],
+  // Row 3
+  [20,33,28,11],[50,33,28,11],[80,33,28,11],[110,33,28,11],[140,33,28,11],[170,33,28,11],
+  // Row 4
+  [28,46,26,10],[56,46,26,10],[84,46,26,10],[112,46,26,10],[140,46,26,10],
+  // Row 5
+  [36,58,24,10],[62,58,24,10],[88,58,24,10],[114,58,24,10],[140,58,24,10],
+  // Row 6
+  [46,70,22,9],[70,70,22,9],[94,70,22,9],[118,70,22,9],
+  // Row 7
+  [56,81,20,8],[78,81,20,8],[100,81,20,8],[122,81,20,8],
+  // Row 8
+  [66,91,18,8],[86,91,18,8],[108,91,18,8],
+  // Row 9
+  [76,101,16,8],[94,101,16,8],[112,101,16,8],
+  // Capstone
+  [88,111,24,10],
+];
+
+let bStep=0, bBuilding=false;
+
+function doBuild(){
+  if(bBuilding) return;
+  const stage=document.getElementById('buildStage');
+  const btn=document.getElementById('buildBtn');
+  const status=document.getElementById('bStatus');
+
+  if(bStep>=STONES.length){
+    bStep=0;stage.innerHTML='';
+    status.textContent='🔄 Reset! Tekan lagi untuk membangun ulang!';
+    btn.textContent='⚒️ Bangun Lagi!';
+    return;
+  }
+
+  bBuilding=true;
+  btn.disabled=true;
+  status.textContent='🪨 Para pekerja sedang mengangkut batu-batu raksasa...';
+
+  let delay=0;
+  STONES.forEach((s,i)=>{
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.className='sblk'+(i===STONES.length-1?' capstone':'');
+      el.style.cssText=`left:${s[0]}px;bottom:${s[1]}px;width:${s[2]}px;height:${s[3]}px`;
+      stage.appendChild(el);
+      // Trigger animation
+      requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('placed')));
+      bStep++;
+
+      if(bStep===STONES.length){
+        setTimeout(()=>{
+          status.innerHTML='✨ <strong>Piramida selesai!</strong> Butuh 20 tahun dan 20.000 pekerja — sungguh luar biasa! 🏛️';
+          btn.textContent='🔄 Reset & Ulangi';
+          btn.disabled=false;
+          bBuilding=false;
+        },400);
+      }
+    }, delay);
+    delay += i<6?200:i<18?130:90;
+  });
+}
+
+/* ════════════════════════════════
+   CHALLENGE TASKS
+   ════════════════════════════════ */
+const msgs=['Mulai tantanganmu, Kapten!','Bagus! Terus semangat! 💪','Hebat! Setengah jalan! 🌟','Hampir selesai, Kapten! ⭐','Satu lagi, hampir perfect! 🏆','SEMPURNA! Kapten Sejati! 👑'];
+let tasksDone=0;
+function doTask(el,idx){
+  const was=el.classList.contains('done');
+  el.classList.toggle('done');
+  tasksDone+=was?-1:1;tasksDone=Math.max(0,tasksDone);
+  el.querySelector('.ch-chk').textContent=was?idx+1:'✓';
+  document.getElementById('scoreNum').textContent=tasksDone;
+  document.getElementById('scoreMsg').textContent=msgs[Math.min(tasksDone,5)];
+}
+
+/* ════════════════════════════════
+   SOUND TOGGLE (visual only — no external audio)
+   ════════════════════════════════ */
+let soundOn=false;
+function toggleSound(){
+  soundOn=!soundOn;
+  document.getElementById('soundBtn').textContent=soundOn?'🔇':'🔊';
+  document.getElementById('soundBtn').title=soundOn?'Matikan suara':'Nyalakan suara';
+  // Note: actual audio would require an external file
+}
+
+/* ── INIT ── */
+updateUI();
+</script>
+</body>
+</html>

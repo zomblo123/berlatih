@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 26 – Komputer, Internet & Dunia Digital | Kapten Cerdas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void:    #030712;
+  --dark:    #060d1f;
+  --deep:    #0a1628;
+  --navy:    #0f2044;
+  --blue:    #1a3a6e;
+  --neon-b:  #00b4ff;
+  --neon-b2: #40d4ff;
+  --neon-p:  #b44fff;
+  --neon-p2: #d480ff;
+  --neon-g:  #00ff88;
+  --neon-g2: #80ffbb;
+  --gold:    #f0c040;
+  --gold2:   #ffe080;
+  --amber:   #ff9d00;
+  --white:   #e8f0fe;
+  --dim:     rgba(232,240,254,.65);
+  --grid:    rgba(0,180,255,.07);
+  --shadow:  rgba(0,0,0,.7);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--void);
+  min-height:100vh;
+  overflow-x:hidden;
+  color:var(--white);
+}
+
+/* ── PROGRESS ── */
+#prog-wrap{position:fixed;top:0;left:0;right:0;height:5px;background:rgba(255,255,255,.06);z-index:900;}
+#prog-bar{height:100%;background:linear-gradient(90deg,var(--neon-b),var(--neon-p),var(--neon-g));transition:width .5s ease;box-shadow:0 0 16px var(--neon-b);}
+
+/* ── BACK BTN ── */
+.back-btn{
+  position:fixed;top:14px;left:14px;z-index:950;
+  background:rgba(0,180,255,.12);backdrop-filter:blur(14px);
+  border:2px solid rgba(0,180,255,.3);color:var(--neon-b2);
+  padding:9px 18px;border-radius:50px;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;
+  text-decoration:none;display:flex;align-items:center;gap:7px;
+  transition:all .3s;box-shadow:0 4px 18px rgba(0,0,0,.4),0 0 20px rgba(0,180,255,.1);
+}
+.back-btn:hover{background:rgba(0,180,255,.22);transform:translateX(-3px);box-shadow:0 4px 18px rgba(0,180,255,.25);}
+
+/* ── AMBIENT BG ── */
+#bg-wrap{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.grid-layer{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:48px 48px;
+  animation:gridShift 20s linear infinite;
+}
+@keyframes gridShift{0%{transform:translateY(0);}100%{transform:translateY(48px);}}
+.binary-col{
+  position:absolute;top:-20px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;color:var(--neon-g);
+  opacity:.12;
+  animation:binFall var(--d,8s) linear infinite var(--dl,0s);
+  white-space:nowrap;writing-mode:vertical-rl;letter-spacing:4px;
+}
+@keyframes binFall{0%{transform:translateY(-100px);}100%{transform:translateY(110vh);}}
+.network-dot{
+  position:absolute;border-radius:50%;
+  background:var(--col,var(--neon-b));
+  animation:dotPulse var(--d,3s) ease-in-out infinite var(--dl,0s);
+  opacity:.35;
+}
+@keyframes dotPulse{0%,100%{transform:scale(1);opacity:.35;}50%{transform:scale(1.6);opacity:.7;}}
+.glow-orb{
+  position:absolute;border-radius:50%;
+  background:radial-gradient(circle,var(--c,rgba(0,180,255,.15)) 0%,transparent 70%);
+  animation:orbFloat var(--d,6s) ease-in-out infinite var(--dl,0s);
+}
+@keyframes orbFloat{0%,100%{transform:scale(1);opacity:.8;}50%{transform:scale(1.3);opacity:1;}}
+
+/* ── LAYOUT ── */
+.book{
+  position:relative;z-index:10;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:78px 18px 44px;
+}
+.slides{width:100%;max-width:860px;}
+
+/* ── SLIDE ── */
+.slide{display:none;animation:pageIn .5s ease;}
+.slide.active{display:block;}
+@keyframes pageIn{from{opacity:0;transform:translateY(20px) scale(.975);}to{opacity:1;transform:none;}}
+
+.card{
+  background:linear-gradient(150deg,rgba(6,13,31,.95),rgba(10,22,40,.97));
+  backdrop-filter:blur(22px);
+  border:2px solid rgba(0,180,255,.15);
+  border-radius:28px;
+  padding:50px 54px;
+  box-shadow:0 30px 80px rgba(0,0,0,.65),inset 0 1px 0 rgba(0,180,255,.1),0 0 0 1px rgba(180,79,255,.06);
+  position:relative;overflow:hidden;
+  min-height:520px;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--neon-b),var(--neon-p),var(--neon-g),var(--gold));
+  border-radius:28px 28px 0 0;
+  box-shadow:0 0 20px rgba(0,180,255,.5);
+}
+/* scanline effect */
+.card::after{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,180,255,.015) 3px,rgba(0,180,255,.015) 4px);
+  pointer-events:none;border-radius:28px;
+}
+
+/* ── COVER ── */
+.cover-card{
+  background:linear-gradient(160deg,#020812 0%,#060e22 40%,#090620 80%,#030a14 100%);
+  text-align:center;padding:56px 36px 44px;
+}
+.week-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,180,255,.1);border:2px solid rgba(0,180,255,.3);
+  border-radius:50px;padding:7px 20px;
+  font-size:13px;font-weight:800;color:var(--neon-b2);
+  letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;
+  box-shadow:0 0 20px rgba(0,180,255,.15);
+}
+.day-num{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(58px,10vw,94px);
+  background:linear-gradient(135deg,var(--neon-b),var(--neon-p),var(--neon-g));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1;margin-bottom:6px;
+  filter:drop-shadow(0 4px 20px rgba(0,180,255,.6));
+  animation:neonGlow 3s ease-in-out infinite;
+}
+@keyframes neonGlow{
+  0%,100%{filter:drop-shadow(0 4px 20px rgba(0,180,255,.5));}
+  50%{filter:drop-shadow(0 4px 44px rgba(180,79,255,.8));}
+}
+.cover-title{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(24px,4.5vw,40px);
+  color:var(--white);line-height:1.2;margin-bottom:12px;
+  text-shadow:0 0 30px rgba(0,180,255,.3);
+}
+.cover-title span{color:var(--neon-g);text-shadow:0 0 22px rgba(0,255,136,.5);}
+.captain-sub{
+  font-family:'Fredoka One',cursive;
+  font-size:20px;color:var(--neon-b2);margin-bottom:28px;
+  text-shadow:0 0 14px rgba(0,180,255,.4);
+}
+
+/* ── COMPUTER SCENE ── */
+.comp-scene{
+  position:relative;height:180px;max-width:460px;margin:0 auto 20px;
+}
+.monitor-em{
+  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+  font-size:80px;
+  animation:monitorGlow 2.5s ease-in-out infinite;
+  filter:drop-shadow(0 0 20px rgba(0,180,255,.5));
+}
+@keyframes monitorGlow{0%,100%{filter:drop-shadow(0 0 18px rgba(0,180,255,.5));}50%{filter:drop-shadow(0 0 40px rgba(180,79,255,.7));}}
+.float-icon{
+  position:absolute;font-size:var(--sz,22px);
+  animation:floatRnd var(--d,3s) ease-in-out infinite var(--dl,0s);
+}
+@keyframes floatRnd{0%,100%{transform:translateY(0) rotate(0deg);opacity:.9;}50%{transform:translateY(-18px) rotate(10deg);opacity:1;}}
+
+/* ── SECTION TITLES ── */
+.sec-title{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(22px,4vw,34px);
+  color:var(--neon-b2);margin-bottom:20px;line-height:1.2;
+  text-shadow:0 0 14px rgba(0,180,255,.3);
+}
+.brow{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.brow-icon{font-size:34px;}
+
+/* ── TEXT ── */
+.story{
+  font-size:clamp(14.5px,2.3vw,16.5px);
+  color:rgba(232,240,254,.9);line-height:1.9;margin-bottom:18px;
+}
+.story strong{color:var(--neon-b2);font-weight:900;}
+.story em{color:var(--neon-g2);font-style:normal;font-weight:800;}
+
+.scene{
+  background:rgba(0,180,255,.06);
+  border-left:4px solid var(--neon-b);
+  border-radius:0 16px 16px 0;
+  padding:18px 22px;margin:18px 0;
+  font-size:15px;font-style:italic;
+  color:rgba(232,240,254,.87);line-height:1.8;position:relative;
+}
+.scene::before{
+  content:'"';font-family:Georgia,serif;font-size:54px;
+  color:var(--neon-b);opacity:.25;
+  position:absolute;top:-8px;left:10px;line-height:1;
+}
+
+.hl{background:linear-gradient(135deg,rgba(0,180,255,.08),rgba(180,79,255,.06));border:2px solid rgba(0,180,255,.2);border-radius:18px;padding:20px 24px;margin:18px 0;}
+.hl-green{background:linear-gradient(135deg,rgba(0,255,136,.08),rgba(0,180,80,.05));border:2px solid rgba(0,255,136,.25);border-radius:18px;padding:20px 24px;margin:18px 0;}
+.hl-gold{background:linear-gradient(135deg,rgba(240,192,64,.08),rgba(255,157,0,.06));border:2px solid rgba(240,192,64,.25);border-radius:18px;padding:20px 24px;margin:18px 0;}
+
+/* ── CHAR BUBBLE ── */
+.cbubble{display:flex;align-items:flex-start;gap:14px;margin:18px 0;}
+.cavatar{font-size:44px;flex-shrink:0;}
+.cspeech{
+  background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.1);
+  border-radius:18px 18px 18px 4px;padding:14px 18px;
+  font-size:15px;color:rgba(232,240,254,.9);line-height:1.75;flex:1;
+}
+.cspeech strong{color:var(--neon-b2);}
+
+/* ── COMPUTER TIMELINE ── */
+.comp-timeline{display:flex;flex-direction:column;gap:14px;margin:20px 0;}
+.ct-item{
+  display:flex;align-items:flex-start;gap:14px;
+  background:rgba(0,180,255,.06);border:2px solid rgba(0,180,255,.12);
+  border-radius:16px;padding:16px 18px;
+  cursor:pointer;transition:all .35s;position:relative;overflow:hidden;
+}
+.ct-item:hover{background:rgba(0,180,255,.12);border-color:var(--neon-b);transform:translateX(6px);}
+.ct-item.active{background:rgba(0,180,255,.14);border-color:var(--neon-b);box-shadow:0 0 20px rgba(0,180,255,.15);}
+.ct-year{
+  min-width:78px;font-family:'Fredoka One',cursive;font-size:15px;
+  color:var(--neon-b);text-align:center;flex-shrink:0;
+  padding-top:2px;
+}
+.ct-icon{font-size:30px;flex-shrink:0;}
+.ct-body{}
+.ct-title{font-family:'Fredoka One',cursive;font-size:15px;color:var(--gold2);margin-bottom:4px;}
+.ct-desc{font-size:13px;color:rgba(232,240,254,.72);line-height:1.58;}
+.ct-expand{max-height:0;overflow:hidden;transition:max-height .4s ease;font-size:12.5px;color:rgba(232,240,254,.7);line-height:1.6;margin-top:0;}
+.ct-item.active .ct-expand{max-height:120px;margin-top:8px;}
+.ct-dot{
+  position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:4px;height:0;background:var(--neon-b);border-radius:2px;
+  transition:height .4s ease;
+}
+.ct-item.active .ct-dot{height:100%;}
+
+/* ── INTERNET GLOBE ── */
+.globe-container{
+  position:relative;width:100%;height:280px;margin:20px 0;
+  background:radial-gradient(ellipse at 50% 50%,rgba(0,20,60,.8),rgba(0,0,0,.95));
+  border:2px solid rgba(0,180,255,.2);border-radius:24px;overflow:hidden;
+  cursor:pointer;
+}
+.globe-em{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);
+  font-size:90px;
+  animation:globeSpin 6s linear infinite;
+  filter:drop-shadow(0 0 25px rgba(0,180,255,.5));
+}
+@keyframes globeSpin{0%,100%{transform:translate(-50%,-55%) scale(1);}50%{transform:translate(-50%,-55%) scale(1.06);}}
+.connection-node{
+  position:absolute;width:10px;height:10px;border-radius:50%;
+  background:var(--col,var(--neon-g));
+  box-shadow:0 0 10px var(--col,var(--neon-g));
+  cursor:pointer;transition:all .3s;
+  animation:nodePulse 2s ease-in-out infinite var(--dl,0s);
+}
+@keyframes nodePulse{0%,100%{transform:scale(1);opacity:.9;}50%{transform:scale(1.8);opacity:.5;}}
+.connection-node:hover{transform:scale(2.5)!important;z-index:10;}
+.connection-line{
+  position:absolute;height:1px;
+  background:linear-gradient(90deg,transparent,var(--col,rgba(0,180,255,.4)),transparent);
+  transform-origin:left center;
+  animation:linePulse 3s ease-in-out infinite var(--dl,0s);
+}
+@keyframes linePulse{0%,100%{opacity:.3;}50%{opacity:.8;}}
+.globe-title{
+  position:absolute;bottom:16px;left:0;right:0;text-align:center;
+  font-family:'Fredoka One',cursive;font-size:15px;color:var(--neon-b2);
+  text-shadow:0 0 10px rgba(0,180,255,.4);
+}
+.globe-hint{
+  position:absolute;top:12px;right:14px;
+  font-size:12px;color:rgba(0,180,255,.6);font-weight:700;
+  animation:hintBlink 2s ease-in-out infinite;
+}
+@keyframes hintBlink{0%,100%{opacity:.6;}50%{opacity:1;}}
+.email-fly{
+  position:absolute;font-size:22px;
+  animation:emailZoom 2s ease forwards;
+  pointer-events:none;
+}
+@keyframes emailZoom{0%{opacity:1;transform:scale(.5) translate(0,0);}60%{opacity:1;}100%{opacity:0;transform:scale(.3) translate(var(--tx,80px),var(--ty,-80px));}}
+
+/* ── IMPACT GRID ── */
+.impact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:18px 0;}
+.impact-card{
+  background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.09);
+  border-radius:20px;padding:20px 16px;text-align:center;
+  cursor:pointer;transition:all .35s;position:relative;overflow:hidden;
+}
+.impact-card::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 0%,var(--glow,rgba(0,180,255,.12)),transparent 65%);
+  opacity:0;transition:opacity .3s;
+}
+.impact-card:hover::after{opacity:1;}
+.impact-card:hover{transform:translateY(-5px);border-color:var(--neon-b);box-shadow:0 10px 28px rgba(0,180,255,.15);}
+.ic-icon{font-size:40px;display:block;margin-bottom:10px;}
+.ic-title{font-family:'Fredoka One',cursive;font-size:15px;color:var(--neon-b2);margin-bottom:7px;}
+.ic-desc{font-size:12.5px;color:rgba(232,240,254,.65);line-height:1.55;}
+
+/* ── OCEAN COMPARE ── */
+.ocean-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0;}
+.ocean-tile{
+  background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.1);
+  border-radius:16px;padding:16px 10px;text-align:center;
+  transition:all .3s;cursor:pointer;
+}
+.ocean-tile:hover{background:rgba(0,180,255,.1);border-color:var(--neon-b);transform:translateY(-4px);}
+.ot-icon{font-size:34px;display:block;margin-bottom:8px;}
+.ot-name{font-family:'Fredoka One',cursive;font-size:13px;color:var(--gold2);margin-bottom:5px;}
+.ot-year{font-size:11px;color:rgba(232,240,254,.5);font-weight:700;margin-bottom:6px;}
+.ot-desc{font-size:11.5px;color:rgba(232,240,254,.65);line-height:1.5;}
+
+/* ── LESSONS ── */
+.lessons{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:18px 0;}
+.lp{
+  background:linear-gradient(135deg,rgba(0,180,255,.1),rgba(6,13,31,.6));
+  border:2px solid rgba(0,180,255,.18);
+  border-radius:16px;padding:16px 14px;
+  display:flex;align-items:flex-start;gap:12px;transition:all .3s;
+}
+.lp:hover{border-color:var(--neon-b);transform:translateY(-3px);}
+.lp-icon{font-size:24px;flex-shrink:0;}
+.lp-text{font-size:13px;color:rgba(232,240,254,.85);line-height:1.58;font-weight:700;}
+
+/* ── CHALLENGE ── */
+.challenge{
+  background:linear-gradient(135deg,rgba(0,180,255,.08),rgba(180,79,255,.06));
+  border:3px solid rgba(0,180,255,.3);
+  border-radius:26px;padding:32px 30px;position:relative;overflow:hidden;
+}
+.challenge::before{content:'💻';font-size:120px;opacity:.05;position:absolute;top:50%;right:-10px;transform:translateY(-50%);}
+.ch-title{font-family:'Fredoka One',cursive;font-size:26px;color:var(--neon-b2);margin-bottom:12px;text-align:center;text-shadow:0 0 14px rgba(0,180,255,.3);}
+.ch-tasks{display:flex;flex-direction:column;gap:12px;margin:20px 0;}
+.ch-task{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,.06);border:2px solid transparent;
+  border-radius:14px;padding:13px 16px;
+  font-size:14.5px;color:rgba(232,240,254,.9);
+  cursor:pointer;transition:all .3s;
+}
+.ch-task:hover{background:rgba(255,255,255,.11);border-color:var(--neon-b);}
+.ch-task.done{background:rgba(0,255,136,.1);border-color:var(--neon-g);}
+.ch-task.done .tc{background:var(--neon-g);color:#002a14;}
+.tc{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;font-weight:900;transition:all .3s;}
+
+/* ── CLOSING ── */
+.closing-card{
+  background:linear-gradient(160deg,#020812 0%,#06122a 50%,#0a0616 100%);
+  text-align:center;
+}
+.trophy-em{font-size:84px;display:block;margin:16px auto;animation:trophyNeon 4s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(0,255,136,.4));}
+@keyframes trophyNeon{0%,100%{filter:drop-shadow(0 0 18px rgba(0,255,136,.4));}50%{filter:drop-shadow(0 0 44px rgba(0,180,255,.7));}}
+.closing-quote{font-family:'Fredoka One',cursive;font-size:clamp(16px,2.8vw,21px);color:var(--neon-b2);line-height:1.55;margin:16px 0;}
+.teaser-box{background:rgba(255,255,255,.05);border:2px dashed rgba(0,180,255,.2);border-radius:18px;padding:18px 24px;margin-top:20px;font-size:14px;color:rgba(232,240,254,.65);}
+.teaser-box strong{color:var(--neon-b2);font-size:15px;display:block;margin-bottom:5px;}
+
+/* ── PARTICLES ── */
+.spark{position:absolute;pointer-events:none;animation:sparkUp var(--d,1.5s) ease forwards var(--dl,0s);font-size:var(--sz,16px);}
+@keyframes sparkUp{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-80px) scale(.2);}}
+.cpiece{position:absolute;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:cFall var(--cd,2.5s) ease forwards var(--cdl,0s);}
+@keyframes cFall{0%{transform:translateY(-10px) rotate(0);opacity:1;}100%{transform:translateY(340px) rotate(720deg);opacity:0;}}
+
+/* ── NAV ── */
+.nav-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:24px;max-width:860px;width:100%;flex-wrap:wrap;}
+.nbtn{
+  background:linear-gradient(135deg,rgba(0,180,255,.18),rgba(6,13,31,.5));
+  border:2px solid rgba(0,180,255,.25);border-radius:50px;color:var(--white);
+  padding:13px 30px;font-family:'Fredoka One',cursive;font-size:15px;
+  cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:9px;
+  backdrop-filter:blur(8px);box-shadow:0 4px 18px rgba(0,0,0,.4);
+  min-width:130px;justify-content:center;
+}
+.nbtn:hover:not(:disabled){background:linear-gradient(135deg,rgba(0,180,255,.32),rgba(10,22,50,.6));transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,180,255,.25);border-color:var(--neon-b2);}
+.nbtn:disabled{opacity:.3;cursor:not-allowed;}
+.nbtn.nxt{background:linear-gradient(135deg,rgba(0,255,136,.2),rgba(0,80,40,.3));border-color:rgba(0,255,136,.3);}
+.nbtn.nxt:hover:not(:disabled){background:linear-gradient(135deg,rgba(0,255,136,.32),rgba(0,100,50,.4));border-color:var(--neon-g);box-shadow:0 8px 28px rgba(0,255,136,.2);}
+.pg-dots{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:center;}
+.dot{width:10px;height:10px;border-radius:50%;background:rgba(232,240,254,.15);cursor:pointer;transition:all .3s;}
+.dot.on{background:var(--neon-b);width:26px;border-radius:5px;box-shadow:0 0 12px var(--neon-b);}
+.dot:hover:not(.on){background:rgba(0,180,255,.5);}
+
+/* ── CHANGE LIST ── */
+.clist{display:flex;flex-direction:column;gap:14px;margin:18px 0;}
+.clist-item{display:flex;align-items:flex-start;gap:16px;background:rgba(0,180,255,.05);border:1px solid rgba(0,180,255,.1);border-radius:16px;padding:16px 18px;transition:all .3s;}
+.clist-item:hover{background:rgba(0,180,255,.1);border-color:rgba(0,180,255,.25);transform:translateX(5px);}
+.cli-icon{font-size:30px;flex-shrink:0;width:42px;text-align:center;}
+.cli-body strong{color:var(--neon-b2);font-size:15px;font-weight:900;display:block;margin-bottom:4px;}
+.cli-body p{font-size:13.5px;color:rgba(232,240,254,.72);line-height:1.6;}
+
+/* ── DIGITAL OCEAN ── */
+.dig-ocean{
+  background:linear-gradient(160deg,#020812,#050d20);
+  border:2px solid rgba(0,180,255,.18);border-radius:24px;
+  padding:28px;position:relative;overflow:hidden;margin:20px 0;
+}
+.do-wave{
+  position:absolute;bottom:0;left:-50%;width:200%;height:60px;
+  background:linear-gradient(0deg,rgba(0,180,255,.15),transparent);
+  border-radius:50%;animation:doWave 5s linear infinite;
+}
+@keyframes doWave{0%{transform:translateX(0) scaleY(1);}50%{transform:translateX(10%) scaleY(1.3);}100%{transform:translateX(20%) scaleY(1);}}
+.do-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;position:relative;z-index:2;}
+.do-stat{text-align:center;background:rgba(0,180,255,.08);border-radius:16px;padding:18px 10px;border:2px solid rgba(0,180,255,.12);}
+.do-num{font-family:'Fredoka One',cursive;font-size:26px;color:var(--neon-g);display:block;margin-bottom:4px;text-shadow:0 0 14px rgba(0,255,136,.4);}
+.do-label{font-size:12px;color:rgba(232,240,254,.65);font-weight:700;line-height:1.4;}
+
+/* responsive */
+@media(max-width:600px){
+  .card{padding:28px 20px;}
+  .impact-grid,.lessons{grid-template-columns:1fr;}
+  .ocean-row{grid-template-columns:repeat(2,1fr);}
+  .do-stats{grid-template-columns:1fr;}
+  .nbtn{min-width:110px;padding:11px 18px;font-size:14px;}
+}
+.divider{height:2px;background:linear-gradient(90deg,transparent,rgba(0,180,255,.15),transparent);margin:22px 0;}
+</style>
+</head>
+<body>
+
+<!-- Progress -->
+<div id="prog-wrap"><div id="prog-bar" style="width:9.09%"></div></div>
+
+<!-- Back -->
+<a href="../perpustakaan.html" class="back-btn">← Kembali ke Perpustakaan</a>
+
+<!-- Ambient BG -->
+<div id="bg-wrap">
+  <div class="grid-layer"></div>
+  <div id="binaryLayer"></div>
+  <div id="dotsLayer"></div>
+  <div id="orbLayer"></div>
+</div>
+
+<!-- BOOK -->
+<div class="book">
+<div class="slides" id="slidesWrap">
+
+<!-- ════════════ SLIDE 1 : COVER ════════════ -->
+<div class="slide active" id="sl1">
+<div class="card cover-card">
+  <div class="week-badge">🌍 Jejak Manusia di Bumi — Minggu 4</div>
+  <div class="day-num">Hari 26</div>
+  <div class="cover-title">Komputer, Internet,<br>dan <span>Dunia Digital</span></div>
+  <div class="captain-sub">💻 Bersama Kapten Aslan 💻</div>
+
+  <div class="comp-scene">
+    <span class="float-icon" style="--d:2.5s;--dl:.0s;--sz:20px;top:5px;left:12%">💾</span>
+    <span class="float-icon" style="--d:3.2s;--dl:.7s;--sz:22px;top:10px;right:15%">📡</span>
+    <span class="float-icon" style="--d:2.8s;--dl:1.2s;--sz:18px;top:0px;left:40%">⚡</span>
+    <span class="float-icon" style="--d:4s;--dl:.4s;--sz:20px;top:20px;left:25%">🔗</span>
+    <span class="float-icon" style="--d:3.5s;--dl:1.8s;--sz:18px;top:8px;right:30%">🌐</span>
+    <span class="monitor-em">💻</span>
+  </div>
+
+  <div class="hl" style="text-align:center">
+    <div style="font-size:15px;color:rgba(232,240,254,.88);line-height:1.8">
+      Setelah belajar tentang <strong>Revolusi Industri dan Mesin Uap</strong>
+      (Hari 25), kini Kapten Aslan menemukan penemuan terbesar abad ke-20 —
+      <em>sebuah mesin yang bisa berpikir dan menghubungkan seluruh dunia!</em>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════ SLIDE 2 : PENGANTAR ════════════ -->
+<div class="slide" id="sl2">
+<div class="card">
+  <div class="brow"><span class="brow-icon">📖</span><div class="sec-title" style="margin:0">Petualangan ke Era Digital!</div></div>
+
+  <div class="story">Pagi itu, <strong>Kapten Aslan</strong> membuka mata dan langsung meraih tabletnya. Dalam hitungan detik, ia sudah menonton video tentang dinosaurus, chatting dengan teman, dan mengerjakan soal matematika online. Tiba-tiba ia berhenti dan berpikir...</div>
+
+  <div class="cbubble">
+    <span class="cavatar">🧒</span>
+    <div class="cspeech">"Tunggu... bagaimana semua ini bisa terjadi? Dulu manusia pakai batu, lalu logam, lalu mesin uap... tapi sekarang ada <strong>komputer dan internet</strong>? Itu jalan yang sangat panjang!" pikir Aslan.</div>
+  </div>
+
+  <div class="scene">
+    Mesin waktu Aslan berkedip. Layarnya menampilkan angka-angka biner — 0 dan 1 — yang mengalir seperti hujan cahaya hijau. Lalu sebuah suara terdengar: <strong>"Koordinat terdeteksi. Tahun 1940-an. Ruangan besar. Ada mesin sebesar rumah yang bisa menghitung..."</strong>
+  </div>
+
+  <div class="story">Aslan meloncat masuk ke mesin waktunya. Kali ini perjalanannya tidak membawanya ke hutan purba atau padang pasir — tapi ke sebuah <em>laboratorium super modern</em> yang penuh dengan kabel, lampu berkedip, dan suara dengung yang aneh. Inilah awal dari revolusi terbesar dalam sejarah manusia!</div>
+
+  <div class="hl">
+    <div style="font-size:15px;color:rgba(232,240,254,.9);line-height:1.8">
+      ⏰ <strong>Kapan ini dimulai?</strong><br>
+      Komputer pertama lahir sekitar <strong>1940-an</strong>. Internet lahir <strong>1960-1990-an</strong>. Dan dalam waktu hanya <em>80 tahun</em> — lebih pendek dari umur seorang kakek! — teknologi ini mengubah cara manusia hidup, bekerja, dan belajar selamanya.
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════ SLIDE 3 : SEJARAH KOMPUTER ════════════ -->
+<div class="slide" id="sl3">
+<div class="card">
+  <div class="brow"><span class="brow-icon">🖥️</span><div class="sec-title" style="margin:0">Dari Kamar ke Saku: Sejarah Komputer</div></div>
+
+  <div class="story">Aslan berdiri di tengah ruangan besar yang dingin. Di sekelilingnya berjejer lemari-lemari setinggi 3 meter, penuh kabel dan lampu berkedip. <strong>"Ini... komputer?!"</strong> ia terbelalak.</div>
+
+  <div class="scene">Mesin waktu berbisik: <strong>"Ya, Kapten. Komputer pertama, ENIAC, sebesar 3 kamar tidur, berat 27 ton, dan hanya bisa menghitung angka. Tapi perhatikan apa yang akan terjadi selanjutnya..."</strong></div>
+
+  <div class="story">Klik setiap era untuk tahu cerita lengkapnya! 👇</div>
+
+  <div class="comp-timeline" id="compTimeline">
+    <div class="ct-item" onclick="toggleCT(this)">
+      <div class="ct-dot"></div>
+      <div class="ct-year">1940an</div>
+      <span class="ct-icon">🏢</span>
+      <div class="ct-body">
+        <div class="ct-title">ENIAC — Komputer Sebesar Gedung</div>
+        <div class="ct-desc">Sebesar 3 kamar, berat 27 ton, hanya untuk menghitung bom!</div>
+        <div class="ct-expand">ENIAC (1945) adalah komputer elektronik pertama. Ia membutuhkan 18.000 tabung vakum, memakai listrik sebesar 150 kilowatt (cukup untuk menyalakan 1.500 lampu!), dan harus diprogram dengan cara menyambung kabel secara manual. Butuh 6 insinyur untuk mengoperasikannya!</div>
+      </div>
+    </div>
+    <div class="ct-item" onclick="toggleCT(this)">
+      <div class="ct-dot"></div>
+      <div class="ct-year">1970an</div>
+      <span class="ct-icon">📦</span>
+      <div class="ct-body">
+        <div class="ct-title">Komputer Pribadi Pertama</div>
+        <div class="ct-desc">Apple II dan IBM PC masuk ke rumah-rumah biasa!</div>
+        <div class="ct-expand">Steve Jobs dan Steve Wozniak menciptakan Apple II (1977) — komputer pertama yang bisa dibeli orang biasa untuk dipakai di rumah. Ukurannya sebesar TV kecil. IBM PC (1981) kemudian dipakai di kantor-kantor. Revolusi komputer pribadi dimulai!</div>
+      </div>
+    </div>
+    <div class="ct-item" onclick="toggleCT(this)">
+      <div class="ct-dot"></div>
+      <div class="ct-year">1990an</div>
+      <span class="ct-icon">💾</span>
+      <div class="ct-body">
+        <div class="ct-title">Era Windows & Mouse</div>
+        <div class="ct-desc">Komputer pakai ikon dan bisa diklik dengan mouse!</div>
+        <div class="ct-expand">Microsoft Windows membuat komputer jauh lebih mudah digunakan — tidak perlu mengetik kode lagi! Cukup klik ikon. CD-ROM memungkinkan menyimpan data. Internet mulai masuk ke rumah-rumah melalui kabel telepon. Ini adalah era anak-anak pertama kali main game komputer!</div>
+      </div>
+    </div>
+    <div class="ct-item" onclick="toggleCT(this)">
+      <div class="ct-dot"></div>
+      <div class="ct-year">2007+</div>
+      <span class="ct-icon">📱</span>
+      <div class="ct-body">
+        <div class="ct-title">Smartphone — Komputer di Saku!</div>
+        <div class="ct-desc">iPhone lahir dan komputer jadi bisa dibawa ke mana-mana!</div>
+        <div class="ct-expand">Steve Jobs memperkenalkan iPhone (2007) dan mengubah dunia selamanya. Kini smartphone lebih kuat dari komputer yang dipakai NASA untuk mengirim manusia ke bulan (1969)! Tablet, smartwatch, dan AI melanjutkan revolusi ini. Inilah yang Aslan pegang di tangannya setiap hari!</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════ SLIDE 4 : INTERNET ════════════ -->
+<div class="slide" id="sl4">
+<div class="card">
+  <div class="brow"><span class="brow-icon">🌐</span><div class="sec-title" style="margin:0">Internet: Jaring Laba-laba Raksasa!</div></div>
+
+  <div class="story">Aslan melompat ke laboratorium yang berbeda — tahun 1969. Di sini, seorang ilmuwan sedang mengirim pesan antar dua komputer untuk pertama kalinya. <strong>"Ini adalah momen yang akan mengubah dunia,"</strong> bisik mesin waktu.</div>
+
+  <div class="scene">"L... O..." ketik ilmuwan itu. Komputer tujuan menerima kedua huruf itu. Ia hendak mengetik "G" untuk melengkapi kata "LOGIN" — tapi tiba-tiba sistemnya <em>crash!</em> Pesan pertama yang berhasil terkirim lewat internet hanyalah: <strong>"LO"</strong>. Seperti kata "halo" terpotong!</div>
+
+  <div class="story">Klik titik-titik di globe untuk melihat bagaimana internet menghubungkan dunia! 🌍</div>
+
+  <div class="globe-container" id="globeContainer" onclick="sendEmail(event)">
+    <div class="globe-hint">👆 Klik globe!</div>
+    <span class="globe-em">🌍</span>
+    <!-- connection nodes -->
+    <div class="connection-node" style="--col:#00ff88;--dl:.0s;top:22%;left:28%;width:12px;height:12px;" title="Amerika Serikat"></div>
+    <div class="connection-node" style="--col:#00b4ff;--dl:.5s;top:30%;left:65%;width:14px;height:14px;" title="Eropa"></div>
+    <div class="connection-node" style="--col:#b44fff;--dl:1s;top:55%;left:72%;width:11px;height:11px;" title="Asia"></div>
+    <div class="connection-node" style="--col:#f0c040;--dl:1.5s;top:70%;left:40%;width:10px;height:10px;" title="Afrika"></div>
+    <div class="connection-node" style="--col:#ff9d00;--dl:.8s;top:60%;left:15%;width:11px;height:11px;" title="Amerika Selatan"></div>
+    <div class="connection-node" style="--col:#40d4ff;--dl:1.2s;top:75%;left:82%;width:10px;height:10px;" title="Australia"></div>
+    <!-- lines -->
+    <div class="connection-line" style="--col:rgba(0,255,136,.4);--dl:.3s;top:25%;left:30%;width:36%;transform:rotate(8deg);"></div>
+    <div class="connection-line" style="--col:rgba(0,180,255,.4);--dl:.8s;top:35%;left:55%;width:20%;transform:rotate(35deg);"></div>
+    <div class="connection-line" style="--col:rgba(180,79,255,.3);--dl:1.2s;top:50%;left:28%;width:45%;transform:rotate(25deg);"></div>
+    <div class="connection-line" style="--col:rgba(240,192,64,.3);--dl:.6s;top:62%;left:18%;width:25%;transform:rotate(-15deg);"></div>
+    <div class="globe-title">🌐 Internet menghubungkan 5 miliar manusia di seluruh dunia!</div>
+  </div>
+
+  <div class="hl-green">
+    <div style="font-size:15px;color:rgba(232,240,254,.9);line-height:1.8">
+      🕸️ <strong>Analogi keren:</strong> Bayangkan internet seperti <em>jaring laba-laba raksasa</em> yang menutupi seluruh bumi. Setiap titik jaring adalah satu komputer atau HP. Setiap benang adalah kabel atau sinyal WiFi. Ketika kamu mengirim pesan, itu seperti menjentikkan jaring — getarannya sampai ke titik manapun di dunia dalam <strong>sepersekian detik!</strong>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════ SLIDE 5 : DAMPAK ════════════ -->
+<div class="slide" id="sl5">
+<div class="card">
+  <div class="brow"><span class="brow-icon">💥</span><div class="sec-title" style="margin:0">Komputer & Internet Mengubah Segalanya!</div></div>
+
+  <div class="story">Aslan menekan tombol fast-forward di mesin waktunya. Dalam sekejap ia melihat dunia berubah dengan kecepatan yang luar biasa — seperti bunga yang mekar dipercepat ribuan kali!</div>
+
+  <div class="impact-grid">
+    <div class="impact-card" style="--glow:rgba(0,180,255,.15)">
+      <span class="ic-icon">📡</span>
+      <div class="ic-title">Komunikasi Instan</div>
+      <div class="ic-desc">Dulu surat butuh berminggu-minggu. Kini pesan WhatsApp sampai dalam 0,1 detik ke ujung dunia manapun!</div>
+    </div>
+    <div class="impact-card" style="--glow:rgba(0,255,136,.12)">
+      <span class="ic-icon">📚</span>
+      <div class="ic-title">Belajar Tanpa Batas</div>
+      <div class="ic-desc">Seluruh ilmu pengetahuan manusia tersimpan di internet. Kamu bisa belajar apapun — dari memasak hingga fisika kuantum — gratis!</div>
+    </div>
+    <div class="impact-card" style="--glow:rgba(180,79,255,.12)">
+      <span class="ic-icon">🎮</span>
+      <div class="ic-title">Hiburan & Kreativitas</div>
+      <div class="ic-desc">Game, musik, film, seni digital — semua bisa dibuat dan dinikmati oleh siapapun di manapun, kapanpun.</div>
+    </div>
+    <div class="impact-card" style="--glow:rgba(240,192,64,.12)">
+      <span class="ic-icon">🏥</span>
+      <div class="ic-title">Kesehatan & Sains</div>
+      <div class="ic-desc">Komputer membantu dokter mendiagnosis penyakit, ilmuwan menemukan vaksin, dan peneliti memecahkan misteri alam semesta!</div>
+    </div>
+    <div class="impact-card" style="--glow:rgba(0,180,255,.12)">
+      <span class="ic-icon">💼</span>
+      <div class="ic-title">Pekerjaan Baru</div>
+      <div class="ic-desc">Programmer, desainer game, YouTuber, data scientist — semua pekerjaan ini belum ada 30 tahun lalu!</div>
+    </div>
+    <div class="impact-card" style="--glow:rgba(0,255,136,.1)">
+      <span class="ic-icon">🤝</span>
+      <div class="ic-title">Dunia Menjadi Desa</div>
+      <div class="ic-desc">Internet membuat manusia dari berbagai budaya bisa saling mengenal, bekerja sama, dan belajar satu sama lain!</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════ SLIDE 6 : LAUTAN DIGITAL ════════════ -->
+<div class="slide" id="sl6">
+<div class="card">
+  <div class="brow"><span class="brow-icon">🌊</span><div class="sec-title" style="margin:0">Dunia Digital: Lautan Baru Manusia!</div></div>
+
+  <div class="story">Aslan teringat sesuatu. <strong>"Ini seperti cerita Kapten Cerdas di Lautan Digital!"</strong> serunya. Mesin waktu tersenyum — atau setidaknya lampunya berkedip seolah tersenyum.</div>
+
+  <div class="scene">
+    "Tepat sekali, Kapten Aslan! Manusia sudah pernah menjelajahi lautan nyata di Hari 24 — Zaman Penjelajahan. Kini mereka menemukan lautan baru yang jauh lebih luas: <strong>Lautan Digital.</strong> Dan kamu sudah tahu cara berlayarnya dengan bijak!"
+  </div>
+
+  <div class="dig-ocean">
+    <div class="do-wave"></div>
+    <div class="do-stats">
+      <div class="do-stat">
+        <span class="do-num">5.4M</span>
+        <div class="do-label">Miliar pengguna internet di dunia (2024)</div>
+      </div>
+      <div class="do-stat">
+        <span class="do-num">1.7M</span>
+        <div class="do-label">Triliun MB data baru dibuat setiap hari</div>
+      </div>
+      <div class="do-stat">
+        <span class="do-num">8.000</span>
+        <div class="do-label">Pesan WA terkirim setiap detik di seluruh dunia</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="clist">
+    <div class="clist-item">
+      <span class="cli-icon">🧭</span>
+      <div class="cli-body">
+        <strong>Seperti Lautan Nyata, Lautan Digital Punya Bahaya</strong>
+        <p>Sama seperti lautan yang punya badai dan monster laut, dunia digital punya hoax, cyberbullying, dan penipuan. Makanya kamu butuh kompas dan pelampung yang tepat!</p>
+      </div>
+    </div>
+    <div class="clist-item">
+      <span class="cli-icon">🌟</span>
+      <div class="cli-body">
+        <strong>Tapi Juga Penuh Harta Karun</strong>
+        <p>Ilmu pengetahuan, koneksi dengan orang-orang luar biasa, alat kreatif yang tak terbatas — Lautan Digital menyimpan lebih banyak "berlian" dari lautan manapun!</p>
+      </div>
+    </div>
+    <div class="clist-item">
+      <span class="cli-icon">⚓</span>
+      <div class="cli-body">
+        <strong>Kapten yang Bijak Tahu Cara Berlayar</strong>
+        <p>Kamu, Kapten Aslan, sudah belajar cara berlayar di Lautan Digital dengan bijak. Itu adalah kemampuan paling penting di abad ke-21 ini!</p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════ SLIDE 7 : PERBANDINGAN PENEMUAN ════════════ -->
+<div class="slide" id="sl7">
+<div class="card">
+  <div class="brow"><span class="brow-icon">⚖️</span><div class="sec-title" style="margin:0">4 Revolusi Terbesar Manusia</div></div>
+
+  <div class="story">Mesin waktu Aslan menampilkan <strong>timeline besar sejarah manusia</strong>. Ada empat penemuan yang paling banyak mengubah dunia. Klik setiap kartu untuk tahu lebih lanjut!</div>
+
+  <div class="ocean-row">
+    <div class="ocean-tile" onclick="this.style.borderColor='var(--gold)';this.style.background='rgba(240,192,64,.12)'">
+      <span class="ot-icon">🔥</span>
+      <div class="ot-name">Roda & Logam</div>
+      <div class="ot-year">3.500 SM</div>
+      <div class="ot-desc">Transportasi & alat lebih kuat. Kota pertama lahir!</div>
+    </div>
+    <div class="ocean-tile" onclick="this.style.borderColor='var(--amber)';this.style.background='rgba(255,157,0,.1)'">
+      <span class="ot-icon">⚙️</span>
+      <div class="ot-name">Mesin Uap</div>
+      <div class="ot-year">1760 M</div>
+      <div class="ot-desc">Industri meledak. Pabrik, kereta api, kapal uap!</div>
+    </div>
+    <div class="ocean-tile" onclick="this.style.borderColor='var(--neon-b)';this.style.background='rgba(0,180,255,.1)'">
+      <span class="ot-icon">⚡</span>
+      <div class="ot-name">Listrik</div>
+      <div class="ot-year">1879 M</div>
+      <div class="ot-desc">Lampu, radio, televisi — dunia menjadi lebih terang!</div>
+    </div>
+    <div class="ocean-tile" onclick="this.style.borderColor='var(--neon-g)';this.style.background='rgba(0,255,136,.1)'">
+      <span class="ot-icon">💻</span>
+      <div class="ot-name">Komputer & Net</div>
+      <div class="ot-year">1940+ M</div>
+      <div class="ot-desc">Seluruh ilmu manusia terhubung. Era Aslan dimulai!</div>
+    </div>
+  </div>
+
+  <div class="hl-gold">
+    <div style="font-size:15px;color:rgba(232,240,254,.9);line-height:1.8">
+      🤯 <strong>Fakta mengagumkan:</strong> Roda ditemukan 5.500 tahun yang lalu. Komputer ditemukan 80 tahun yang lalu. Tapi dalam 80 tahun itu, manusia <em>berubah lebih cepat</em> dari 5.500 tahun sebelumnya! Kecepatan kemajuan teknologi semakin cepat setiap harinya — dan kamu, Kapten Aslan, hidup tepat di tengah pusarannya!
+    </div>
+  </div>
+
+  <div class="cbubble" style="margin-top:20px">
+    <span class="cavatar">🤖</span>
+    <div class="cspeech">
+      "Dan sekarang," suara mesin waktu terdengar penuh semangat, "manusia sedang dalam revolusi berikutnya — <strong>Kecerdasan Buatan (AI)!</strong> Komputer yang bisa belajar sendiri, mesin yang bisa berbicara, dan robot yang bisa bekerja. Kamu akan hidup di tengah semua itu, Kapten Aslan. Siapkah kamu?"
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════ SLIDE 8 : PELAJARAN ════════════ -->
+<div class="slide" id="sl8">
+<div class="card">
+  <div class="brow"><span class="brow-icon">🌟</span><div class="sec-title" style="margin:0">Harta Karun Ilmu Hari Ini</div></div>
+
+  <div class="story" style="margin-bottom:20px">
+    Mesin waktu membawa Aslan kembali ke masa kini. Di tangannya ada tablet yang menyala — dan kini ia melihatnya dengan cara yang sama sekali berbeda. <strong>Inilah pelajaran hari ini:</strong>
+  </div>
+
+  <div class="lessons">
+    <div class="lp"><span class="lp-icon">💻</span><span class="lp-text">Komputer pertama sebesar gedung — kini yang jauh lebih kuat ada di saku kita sebagai smartphone!</span></div>
+    <div class="lp"><span class="lp-icon">🌐</span><span class="lp-text">Internet lahir tahun 1969 dari pesan "LO" — kini menghubungkan 5 miliar manusia di seluruh dunia</span></div>
+    <div class="lp"><span class="lp-icon">🕸️</span><span class="lp-text">Internet seperti jaring laba-laba raksasa — setiap pesan bisa sampai ke manapun dalam sepersekian detik</span></div>
+    <div class="lp"><span class="lp-icon">🚀</span><span class="lp-text">Komputer memungkinkan manusia belajar, bekerja, berkarya, dan berkomunikasi dengan cara yang tak terbayangkan sebelumnya</span></div>
+    <div class="lp"><span class="lp-icon">🌊</span><span class="lp-text">Dunia Digital adalah "Lautan Baru" manusia — penuh bahaya tapi juga penuh harta karun yang luar biasa</span></div>
+    <div class="lp"><span class="lp-icon">⚓</span><span class="lp-text">Kapten yang bijak tahu cara berlayar di Lautan Digital — dan kamu, Aslan, sudah memiliki keterampilan itu!</span></div>
+  </div>
+
+  <div class="hl" style="text-align:center;margin-top:16px">
+    <div style="font-size:26px;margin-bottom:10px">💻</div>
+    <div style="font-size:15px;color:var(--neon-b2);font-weight:800;line-height:1.72">
+      "Manusia purba menggunakan batu untuk bertahan.<br>
+      Kita menggunakan komputer untuk terbang ke bintang.<br>
+      <em>Semua bermula dari rasa ingin tahu yang sama.</em>"
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════ SLIDE 9 : TANTANGAN ════════════ -->
+<div class="slide" id="sl9">
+<div class="card">
+<div class="challenge">
+  <div class="ch-title">💻 Tantangan Digital Kapten Aslan! 💻</div>
+  <div class="story" style="text-align:center;margin-bottom:6px">
+    Kamu hidup di Era Digital — buktikan kamu adalah <strong>Kapten Cerdas</strong> sejati! 🎯
+  </div>
+
+  <div class="ch-tasks" id="chTasks">
+    <div class="ch-task" onclick="tick(this)">
+      <div class="tc">○</div>
+      <span>🔍 Cari tahu berapa ukuran dan berat komputer ENIAC dibanding HPmu sekarang!</span>
+    </div>
+    <div class="ch-task" onclick="tick(this)">
+      <div class="tc">○</div>
+      <span>💭 Ceritakan kepada orang tuamu bagaimana internet pertama kali lahir dengan kata-katamu sendiri</span>
+    </div>
+    <div class="ch-task" onclick="tick(this)">
+      <div class="tc">○</div>
+      <span>📝 Tulis 5 cara kamu menggunakan internet hari ini — dan nilai apakah itu hal yang positif!</span>
+    </div>
+    <div class="ch-task" onclick="tick(this)">
+      <div class="tc">○</div>
+      <span>🤔 Bayangkan dunia tanpa internet selama 1 hari — apa yang tidak bisa kamu lakukan?</span>
+    </div>
+    <div class="ch-task" onclick="tick(this)">
+      <div class="tc">○</div>
+      <span>🌟 Jika kamu bisa menciptakan teknologi baru, apa yang ingin kamu buat dan untuk siapa?</span>
+    </div>
+  </div>
+
+  <div id="chMsg" style="text-align:center;min-height:44px">
+    <div style="font-size:14px;color:rgba(232,240,254,.5)">Selesaikan misimu, Kapten Digital Aslan! 💻</div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ════════════ SLIDE 10 : PENUTUP ════════════ -->
+<div class="slide" id="sl10">
+<div class="card closing-card">
+  <div class="week-badge">🏆 Hari 26 Selesai!</div>
+
+  <span class="trophy-em">🏆</span>
+
+  <div class="cover-title" style="font-size:clamp(20px,3.5vw,30px)">
+    Luar Biasa, Kapten <span style="color:var(--neon-g)">Aslan</span>!
+  </div>
+
+  <div class="closing-quote">
+    "Tablet yang kamu pegang hari ini<br>
+    lebih kuat dari semua komputer<br>
+    yang pernah ada sebelum tahun 1990.<br>
+    <em>Gunakan kekuatan itu dengan bijak!</em>"
+  </div>
+
+  <div class="story" style="margin:16px 0">
+    Hari ini kamu telah melihat sendiri perjalanan luar biasa dari komputer sebesar gedung hingga smartphone di saku. Kamu sekarang tahu bahwa setiap kali kamu membuka Google, menonton YouTube, atau chatting dengan teman — kamu sedang menggunakan <strong>warisan terbesar dari ribuan ilmuwan</strong> yang berjuang selama puluhan tahun. Jagalah warisan itu dengan baik!
+  </div>
+
+  <div class="teaser-box">
+    <strong>🧬 Besok – Hari 27: Evolusi Manusia Masih Berlanjut?</strong>
+    Kapten Aslan akan menghadapi pertanyaan terbesar: apakah manusia masih berevolusi sampai sekarang? Apakah AI akan menjadi bagian dari evolusi kita? Jawabannya mungkin mengejutkan! 🤖
+  </div>
+
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px">
+    <div style="background:rgba(255,255,255,.07);border-radius:50px;padding:8px 16px;font-size:13px;color:rgba(232,240,254,.6);font-weight:700">📅 Hari 26 dari 30</div>
+    <div style="background:rgba(0,180,255,.1);border:2px solid rgba(0,180,255,.25);border-radius:50px;padding:8px 16px;font-size:13px;color:var(--neon-b2);font-weight:700">💻 Minggu 4 — Hari 5</div>
+    <div style="background:rgba(0,255,136,.1);border:2px solid rgba(0,255,136,.25);border-radius:50px;padding:8px 16px;font-size:13px;color:var(--neon-g2);font-weight:700">🚀 Era Digital!</div>
+  </div>
+</div>
+</div>
+
+</div><!-- end slides -->
+
+<!-- Nav Bar -->
+<div class="nav-bar">
+  <button class="nbtn" id="prevBtn" onclick="go(-1)" disabled>← Sebelumnya</button>
+  <div class="pg-dots" id="pgDots"></div>
+  <button class="nbtn nxt" id="nextBtn" onclick="go(1)">Selanjutnya →</button>
+</div>
+</div><!-- end book -->
+
+<script>
+let cur = 1, total = 10, doneTasks = 0;
+
+// ── AMBIENT BG ──
+function initBg() {
+  // Binary columns
+  const bl = document.getElementById('binaryLayer');
+  for (let i = 0; i < 18; i++) {
+    const c = document.createElement('div');
+    c.className = 'binary-col';
+    let str = '';
+    for (let j = 0; j < 40; j++) str += (Math.random() > .5 ? '1' : '0') + '\n';
+    c.textContent = str;
+    c.style.cssText = `left:${Math.random()*100}%;--d:${6+Math.random()*10}s;--dl:${Math.random()*8}s;`;
+    bl.appendChild(c);
+  }
+  // Network dots
+  const dl = document.getElementById('dotsLayer');
+  const dotCols = ['var(--neon-b)','var(--neon-g)','var(--neon-p)','var(--gold)'];
+  for (let i = 0; i < 20; i++) {
+    const d = document.createElement('div');
+    d.className = 'network-dot';
+    const sz = 3 + Math.random() * 5;
+    d.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--col:${dotCols[Math.floor(Math.random()*dotCols.length)]};--d:${2+Math.random()*4}s;--dl:${Math.random()*4}s;`;
+    dl.appendChild(d);
+  }
+  // Glow orbs
+  const ol = document.getElementById('orbLayer');
+  const orbs = [
+    {x:'10%',y:'20%',sz:300,c:'rgba(0,180,255,.08)',d:'7s',dl:'0s'},
+    {x:'75%',y:'60%',sz:250,c:'rgba(180,79,255,.07)',d:'9s',dl:'2s'},
+    {x:'40%',y:'80%',sz:350,c:'rgba(0,255,136,.05)',d:'8s',dl:'4s'},
+  ];
+  orbs.forEach(o=>{
+    const div=document.createElement('div');div.className='glow-orb';
+    div.style.cssText=`width:${o.sz}px;height:${o.sz}px;left:${o.x};top:${o.y};--c:${o.c};--d:${o.d};--dl:${o.dl};`;
+    ol.appendChild(div);
+  });
+}
+
+// ── SLIDE NAV ──
+function initDots() {
+  const d = document.getElementById('pgDots'); d.innerHTML='';
+  for (let i=1;i<=total;i++) {
+    const dot=document.createElement('div');
+    dot.className='dot'+(i===cur?' on':'');
+    dot.onclick=()=>goTo(i); dot.title=`Halaman ${i}`;
+    d.appendChild(dot);
+  }
+}
+function updateDots(){ document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i+1===cur)); }
+function updateProg(){ document.getElementById('prog-bar').style.width=(cur/total*100)+'%'; }
+function goTo(n){
+  document.getElementById('sl'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('sl'+cur).classList.add('active');
+  document.getElementById('prevBtn').disabled=cur===1;
+  document.getElementById('nextBtn').disabled=false;
+  document.getElementById('nextBtn').textContent=cur===total?'🎉 Selesai!':'Selanjutnya →';
+  updateDots(); updateProg();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function go(d){ const n=cur+d; if(n>=1&&n<=total) goTo(n); }
+
+// ── COMPUTER TIMELINE ──
+function toggleCT(el){
+  const was=el.classList.contains('active');
+  document.querySelectorAll('.ct-item').forEach(i=>i.classList.remove('active'));
+  if(!was) el.classList.add('active');
+}
+
+// ── GLOBE EMAIL ──
+function sendEmail(e){
+  const cont=document.getElementById('globeContainer');
+  const rect=cont.getBoundingClientRect();
+  const x=e.clientX-rect.left, y=e.clientY-rect.top;
+  const ems=['📧','✉️','💬','📨','📩'];
+  for(let i=0;i<4;i++){
+    const em=document.createElement('div');
+    em.className='email-fly';
+    em.textContent=ems[Math.floor(Math.random()*ems.length)];
+    em.style.cssText=`left:${x}px;top:${y}px;--tx:${-80+Math.random()*160}px;--ty:${-50-Math.random()*80}px;animation-delay:${i*.15}s;`;
+    cont.appendChild(em);
+    setTimeout(()=>em.remove(),2200);
+  }
+}
+
+// ── CHALLENGE ──
+function tick(el){
+  const tc=el.querySelector('.tc');
+  if(el.classList.contains('done')){ el.classList.remove('done'); tc.textContent='○'; doneTasks--; }
+  else { el.classList.add('done'); tc.textContent='✓'; doneTasks++; }
+  const msgs=[
+    {t:'Selesaikan misimu, Kapten Digital Aslan! 💻',c:'rgba(232,240,254,.5)'},
+    {t:'🌐 Satu misi selesai! Koneksi terbentuk!',c:'var(--neon-b2)'},
+    {t:'⭐ Dua misi! Jaringanmu semakin kuat!',c:'var(--gold2)'},
+    {t:'✨ Tiga misi! Data mengalir deras!',c:'var(--neon-p2)'},
+    {t:'🌟 Empat misi! Hampir jadi Kapten Digital!',c:'var(--neon-g2)'},
+    {t:'🏆 SEMUA MISI SELESAI! Kapten Cerdas Digital Sejati!',c:'var(--neon-g)'},
+  ];
+  const m=msgs[Math.min(doneTasks,5)];
+  document.getElementById('chMsg').innerHTML=`<div style="font-size:15px;color:${m.c};font-weight:800;padding:10px">${m.t}</div>`;
+  if(doneTasks===5) spawnConfetti(document.querySelector('.challenge'));
+}
+
+// ── SPARKS & CONFETTI ──
+function spawnConfetti(container){
+  const cols=['#00b4ff','#b44fff','#00ff88','#f0c040','#ff9d00','#40d4ff'];
+  for(let i=0;i<32;i++){
+    const c=document.createElement('div'); c.className='cpiece';
+    c.style.cssText=`left:${Math.random()*100}%;top:0;background:${cols[Math.floor(Math.random()*cols.length)]};--cd:${2+Math.random()*2}s;--cdl:${Math.random()*.8}s;transform:rotate(${Math.random()*360}deg);`;
+    container.appendChild(c);
+    setTimeout(()=>c.remove(),4200);
+  }
+}
+
+// ── KEYBOARD / SWIPE ──
+document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1); if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1); });
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50)go(dx<0?1:-1); });
+
+// ── BOOT ──
+initBg(); initDots(); updateProg();
+</script>
+</body>
+</html>

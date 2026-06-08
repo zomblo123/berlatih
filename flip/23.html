@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flipbook #23 – Bill Gates | Milik Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fira+Code:wght@400;600&family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --ms-blue: #00a4ef;
+    --ms-blue-dark: #0078d4;
+    --ms-blue-light: #e8f4fd;
+    --tech-green: #10b981;
+    --tech-green-light: #d1fae5;
+    --win-gray: #c0c0c0;
+    --win-gray-dark: #808080;
+    --win-bg: #008080;
+    --pixel-font: 'Press Start 2P', monospace;
+    --code-font: 'Fira Code', monospace;
+    --story-font: 'Fredoka', sans-serif;
+    --ui-font: 'Nunito', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--story-font);
+    background: var(--win-bg);
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(0,164,239,0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(16,185,129,0.12) 0%, transparent 40%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8px;
+    overflow-x: hidden;
+  }
+
+  /* ── TASKBAR ── */
+  #taskbar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 36px;
+    background: var(--win-gray);
+    border-top: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 8px;
+    z-index: 1000;
+    box-shadow: 0 -2px 0 var(--win-gray-dark);
+  }
+  #taskbar .start-btn {
+    background: var(--win-gray);
+    border: 2px solid;
+    border-color: #fff #808080 #808080 #fff;
+    padding: 2px 10px;
+    font-family: var(--ui-font);
+    font-weight: 800;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 4px;
+    color: #000;
+  }
+  #taskbar .start-btn:active { border-color: #808080 #fff #fff #808080; }
+  #taskbar .clock {
+    margin-left: auto;
+    font-family: var(--code-font);
+    font-size: 11px;
+    border: 2px solid;
+    border-color: #808080 #fff #fff #808080;
+    padding: 2px 8px;
+    background: var(--win-gray);
+  }
+  #taskbar .task-item {
+    background: var(--win-gray);
+    border: 2px solid;
+    border-color: #808080 #fff #fff #808080;
+    padding: 2px 10px;
+    font-family: var(--ui-font);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: default;
+    color: #000;
+  }
+
+  /* ── MAIN WINDOW ── */
+  #app-window {
+    width: 100%;
+    max-width: 900px;
+    margin-top: 4px;
+    margin-bottom: 44px;
+    background: #fff;
+    border: 3px solid;
+    border-color: #fff #808080 #808080 #fff;
+    box-shadow: 4px 4px 0 #000, inset 0 0 0 1px rgba(0,0,0,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  /* ── TITLE BAR ── */
+  #title-bar {
+    background: linear-gradient(90deg, var(--ms-blue-dark) 0%, var(--ms-blue) 60%, #40c8f4 100%);
+    padding: 4px 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    user-select: none;
+  }
+  #title-bar .win-title {
+    flex: 1;
+    color: #fff;
+    font-family: var(--ui-font);
+    font-weight: 800;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  #title-bar .win-title .owner-badge {
+    font-size: 10px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.25);
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-family: var(--code-font);
+  }
+  .win-btn {
+    width: 20px; height: 16px;
+    border: 2px solid;
+    border-color: #fff #808080 #808080 #fff;
+    background: var(--win-gray);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1;
+    color: #000;
+    font-family: var(--code-font);
+    flex-shrink: 0;
+  }
+  .win-btn:active { border-color: #808080 #fff #fff #808080; }
+  .win-btn.close { background: #ff5a5a; color: #fff; }
+  .win-btn.max { }
+  .win-btn.min { }
+
+  /* ── MENU BAR ── */
+  #menu-bar {
+    background: var(--win-gray);
+    border-bottom: 2px solid #808080;
+    border-top: 1px solid #fff;
+    padding: 2px 8px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .menu-item {
+    padding: 2px 8px;
+    font-family: var(--ui-font);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 1px;
+    color: #000;
+  }
+  .menu-item:hover { background: var(--ms-blue); color: #fff; }
+
+  /* ── GREETING BANNER ── */
+  #greeting-banner {
+    background: linear-gradient(135deg, var(--ms-blue-light) 0%, #e8fff5 100%);
+    border-bottom: 2px solid rgba(0,164,239,0.3);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #greeting-banner .greet-text {
+    font-family: var(--ui-font);
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--ms-blue-dark);
+  }
+  #greeting-banner .series-badge {
+    margin-left: auto;
+    font-family: var(--pixel-font);
+    font-size: 8px;
+    color: var(--tech-green);
+    background: var(--tech-green-light);
+    padding: 3px 8px;
+    border-radius: 2px;
+    border: 1px solid var(--tech-green);
+  }
+
+  /* ── CONTENT AREA ── */
+  #content-area {
+    min-height: 480px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── PAGES ── */
+  .page {
+    display: none;
+    width: 100%;
+    min-height: 480px;
+    padding: 20px;
+    animation: pageFadeIn 0.3s ease;
+  }
+  .page.active { display: flex; flex-direction: column; }
+  @keyframes pageFadeIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Landscape 2-col layout */
+  .page-2col {
+    display: none;
+    width: 100%;
+    min-height: 480px;
+    animation: pageFadeIn 0.3s ease;
+  }
+  .page-2col.active {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    align-items: center;
+  }
+
+  @media (max-width: 600px) {
+    .page-2col.active {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  /* ── COVER PAGE ── */
+  #page-1 {
+    background: linear-gradient(160deg, #0a1628 0%, #0d2b5e 40%, #0c3d6e 70%, #054a6e 100%);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px 20px;
+    position: relative;
+    overflow: hidden;
+    min-height: 480px;
+  }
+  #page-1::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 85%, rgba(0,164,239,0.3) 0%, transparent 35%),
+      radial-gradient(circle at 85% 15%, rgba(16,185,129,0.25) 0%, transparent 35%),
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  /* grid lines */
+  #page-1::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,164,239,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,164,239,0.07) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+  .cover-series {
+    font-family: var(--pixel-font);
+    font-size: 8px;
+    color: var(--tech-green);
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .cover-monitor {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 16px;
+  }
+  .cover-title {
+    font-family: var(--ui-font);
+    font-weight: 900;
+    font-size: clamp(22px, 5vw, 34px);
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 20px rgba(0,164,239,0.8);
+  }
+  .cover-title span { color: var(--ms-blue); }
+  .cover-subtitle {
+    font-family: var(--story-font);
+    font-size: clamp(13px, 2.5vw, 16px);
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .cover-owner {
+    display: inline-block;
+    font-family: var(--code-font);
+    font-size: 11px;
+    color: #000;
+    background: #fff;
+    border-radius: 3px;
+    padding: 5px 14px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 0 3px var(--tech-green);
+    font-weight: 600;
+  }
+  .cover-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    background: rgba(16,185,129,0.2);
+    border: 1px solid rgba(16,185,129,0.5);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: var(--ui-font);
+    font-size: 12px;
+    color: #6ee7b7;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── STORY PAGES ── */
+  .story-col-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+  }
+  .story-col-illo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .page-num-badge {
+    font-family: var(--pixel-font);
+    font-size: 8px;
+    background: var(--ms-blue-dark);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .page-label {
+    font-family: var(--code-font);
+    font-size: 11px;
+    color: var(--tech-green);
+    font-weight: 600;
+  }
+  .story-title {
+    font-family: var(--ui-font);
+    font-weight: 900;
+    font-size: clamp(18px, 3.5vw, 26px);
+    color: #0a1628;
+    line-height: 1.2;
+  }
+  .story-title span { color: var(--ms-blue-dark); }
+  .story-body {
+    font-family: var(--story-font);
+    font-size: clamp(15px, 2.2vw, 18px);
+    color: #334155;
+    line-height: 1.75;
+  }
+  .story-body strong { color: var(--ms-blue-dark); }
+
+  /* ── ILLUSTRATION BOXES ── */
+  .illo-box {
+    background: linear-gradient(135deg, #e8f4fd 0%, #e8fff5 100%);
+    border: 3px solid;
+    border-color: #fff var(--win-gray-dark) var(--win-gray-dark) #fff;
+    border-radius: 4px;
+    padding: 20px;
+    width: 100%;
+    max-width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.15);
+    text-align: center;
+  }
+  .illo-box .illo-label {
+    font-family: var(--code-font);
+    font-size: 10px;
+    color: var(--win-gray-dark);
+    margin-top: 4px;
+  }
+
+  /* ── ALERT BOXES (Page 5 & 8) ── */
+  .alert-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+  @media (max-width: 600px) {
+    .alert-grid { grid-template-columns: 1fr; }
+  }
+  .alert-card {
+    background: var(--win-gray);
+    border: 3px solid;
+    border-color: #fff #808080 #808080 #fff;
+    border-radius: 2px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 3px 3px 0 #000;
+  }
+  .alert-card:hover, .alert-card:focus {
+    transform: scale(1.04);
+    box-shadow: 6px 6px 12px rgba(0,0,0,0.25), 0 0 0 2px var(--ms-blue);
+    outline: none;
+  }
+  .alert-card:active { transform: scale(0.98); }
+  .alert-titlebar {
+    background: linear-gradient(90deg, var(--ms-blue-dark), var(--ms-blue));
+    padding: 3px 7px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #fff;
+    font-family: var(--ui-font);
+    font-weight: 800;
+    font-size: 11px;
+  }
+  .alert-titlebar .alert-close {
+    margin-left: auto;
+    width: 14px; height: 11px;
+    background: var(--win-gray);
+    border: 1px solid;
+    border-color: #fff #808080 #808080 #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 900;
+    color: #000;
+    line-height: 1;
+    font-family: var(--code-font);
+  }
+  .alert-body {
+    padding: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .alert-icon { flex-shrink: 0; width: 28px; height: 28px; }
+  .alert-text {
+    font-family: var(--story-font);
+    font-size: 13px;
+    color: #1e293b;
+    line-height: 1.5;
+  }
+  .alert-footer {
+    padding: 6px 10px;
+    display: flex;
+    justify-content: center;
+  }
+  .alert-ok-btn {
+    background: var(--win-gray);
+    border: 2px solid;
+    border-color: #fff #808080 #808080 #fff;
+    padding: 2px 20px;
+    font-family: var(--ui-font);
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    color: #000;
+  }
+  .alert-ok-btn:active { border-color: #808080 #fff #fff #808080; }
+
+  /* ── CHARACTER BOX ── */
+  .char-trait {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--ms-blue-light);
+    border-left: 4px solid var(--ms-blue);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+  }
+  .char-trait .trait-label {
+    font-family: var(--ui-font);
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--ms-blue-dark);
+  }
+  .char-trait .trait-desc {
+    font-family: var(--story-font);
+    font-size: 14px;
+    color: #334155;
+  }
+
+  /* ── MESSAGE BOX (special pages) ── */
+  .msg-box {
+    background: var(--win-gray);
+    border: 3px solid;
+    border-color: #fff #808080 #808080 #fff;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+    max-width: 460px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .msg-titlebar {
+    background: linear-gradient(90deg, var(--ms-blue-dark), var(--ms-blue));
+    padding: 4px 8px;
+    color: #fff;
+    font-family: var(--ui-font);
+    font-weight: 800;
+    font-size: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .msg-content {
+    padding: 16px 18px;
+    font-family: var(--story-font);
+    font-size: clamp(15px, 2.2vw, 17px);
+    color: #1e293b;
+    line-height: 1.7;
+  }
+  .msg-content strong { color: var(--ms-blue-dark); }
+
+  /* ── ENDING PAGE ── */
+  #page-12 {
+    background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 50%, #064e3b 100%);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  #page-12::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 80%, rgba(16,185,129,0.3) 0%, transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(0,164,239,0.25) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .ending-title {
+    font-family: var(--ui-font);
+    font-weight: 900;
+    font-size: clamp(18px, 4vw, 26px);
+    color: #fff;
+    margin-bottom: 14px;
+    position: relative; z-index: 1;
+    text-shadow: 0 2px 20px rgba(16,185,129,0.8);
+  }
+  .ending-body {
+    font-family: var(--story-font);
+    font-size: clamp(14px, 2vw, 16px);
+    color: rgba(255,255,255,0.85);
+    line-height: 1.8;
+    margin-bottom: 20px;
+    position: relative; z-index: 1;
+    max-width: 480px;
+  }
+  .teaser-box {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(16,185,129,0.5);
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-family: var(--ui-font);
+    font-size: 14px;
+    color: #6ee7b7;
+    font-weight: 700;
+    margin-bottom: 16px;
+    position: relative; z-index: 1;
+  }
+  .ayah-note {
+    background: rgba(0,164,239,0.15);
+    border: 1px solid rgba(0,164,239,0.4);
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-family: var(--story-font);
+    font-size: 14px;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 18px;
+    position: relative; z-index: 1;
+  }
+  .ending-btns {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative; z-index: 1;
+  }
+
+  /* ── NAVIGATION ── */
+  #nav-bar {
+    background: var(--win-gray);
+    border-top: 3px solid;
+    border-color: #808080 #fff #fff #808080;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .kbd-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--win-gray);
+    border: 3px solid;
+    border-color: #fff #808080 #808080 #fff;
+    padding: 7px 18px;
+    font-family: var(--ui-font);
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+    color: #000;
+    border-radius: 2px;
+    box-shadow: 3px 3px 0 #000;
+    transition: transform 0.1s;
+    text-decoration: none;
+    user-select: none;
+  }
+  .kbd-btn:hover { background: #d0d0d0; }
+  .kbd-btn:active {
+    border-color: #808080 #fff #fff #808080;
+    box-shadow: 1px 1px 0 #000;
+    transform: translate(2px, 2px);
+  }
+  .kbd-btn.primary {
+    background: var(--ms-blue);
+    border-color: #40c8f4 var(--ms-blue-dark) var(--ms-blue-dark) #40c8f4;
+    color: #fff;
+  }
+  .kbd-btn.primary:hover { background: #008fdc; }
+  .kbd-btn.danger {
+    background: #c00;
+    border-color: #f66 #800 #800 #f66;
+    color: #fff;
+  }
+  .kbd-btn.green {
+    background: var(--tech-green);
+    border-color: #6ee7b7 #065f46 #065f46 #6ee7b7;
+    color: #fff;
+  }
+  .nav-progress {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-direction: column;
+  }
+  .nav-page-info {
+    font-family: var(--pixel-font);
+    font-size: 8px;
+    color: #000;
+  }
+  .progress-track {
+    display: flex;
+    gap: 3px;
+  }
+  .prog-dot {
+    width: 8px; height: 8px;
+    background: #999;
+    border: 1px solid #666;
+    border-radius: 1px;
+    transition: background 0.2s;
+  }
+  .prog-dot.active { background: var(--ms-blue); border-color: var(--ms-blue-dark); }
+  .prog-dot.done   { background: var(--tech-green); border-color: #065f46; }
+
+  /* ── STATUS BAR ── */
+  #status-bar {
+    background: var(--win-gray);
+    border-top: 2px solid #808080;
+    padding: 3px 10px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .status-panel {
+    font-family: var(--code-font);
+    font-size: 10px;
+    color: #000;
+    border: 1px solid;
+    border-color: #808080 #fff #fff #808080;
+    padding: 1px 8px;
+    background: var(--win-gray);
+  }
+
+  /* ── UTILITIES ── */
+  .section-divider {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--ms-blue), var(--tech-green), transparent);
+    margin: 8px 0;
+    border-radius: 1px;
+  }
+  .highlight-pill {
+    display: inline-block;
+    background: var(--ms-blue-light);
+    color: var(--ms-blue-dark);
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: var(--ui-font);
+  }
+  .green-pill {
+    background: var(--tech-green-light);
+    color: #065f46;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     MAIN WINDOW
+══════════════════════════════════════════════ -->
+<div id="app-window">
+
+  <!-- TITLE BAR -->
+  <div id="title-bar">
+    <div class="win-title">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="0" y="0" width="7" height="7" fill="#f25022"/><rect x="9" y="0" width="7" height="7" fill="#7fba00"/><rect x="0" y="9" width="7" height="7" fill="#00a4ef"/><rect x="9" y="9" width="7" height="7" fill="#ffb900"/></svg>
+      Flipbook Seri #23 – Bill Gates
+      <span class="owner-badge">📁 Milik Aslan</span>
+    </div>
+    <button class="win-btn min" title="Minimize">_</button>
+    <button class="win-btn max" title="Maximize">□</button>
+    <button class="win-btn close" onclick="window.location.href='index.html'" title="Tutup">✕</button>
+  </div>
+
+  <!-- MENU BAR -->
+  <div id="menu-bar">
+    <span class="menu-item">📂 File</span>
+    <span class="menu-item">✏️ Edit</span>
+    <span class="menu-item">👀 View</span>
+    <span class="menu-item">❓ Help</span>
+  </div>
+
+  <!-- GREETING BANNER -->
+  <div id="greeting-banner">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0078d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <span class="greet-text">⚡ Selamat Membaca, Kapten Aslan!</span>
+    <span class="series-badge">SERIES #23</span>
+  </div>
+
+  <!-- CONTENT AREA -->
+  <div id="content-area">
+
+    <!-- ═══ PAGE 1 — COVER ═══ -->
+    <div class="page active" id="page-1">
+      <div class="cover-series">📀 FLIPBOOK EDUKASI SERI #23</div>
+      <div class="cover-monitor">
+        <svg width="140" height="120" viewBox="0 0 140 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- monitor body -->
+          <rect x="10" y="10" width="120" height="82" rx="4" fill="#1e3a5f" stroke="#00a4ef" stroke-width="2"/>
+          <!-- screen -->
+          <rect x="18" y="18" width="104" height="66" rx="2" fill="#0a0e1a"/>
+          <!-- screen glow -->
+          <rect x="18" y="18" width="104" height="66" rx="2" fill="url(#screenGrad)" opacity="0.8"/>
+          <!-- screen content: code lines -->
+          <rect x="26" y="30" width="50" height="3" rx="1" fill="#00a4ef" opacity="0.8"/>
+          <rect x="26" y="37" width="70" height="3" rx="1" fill="#10b981" opacity="0.8"/>
+          <rect x="26" y="44" width="40" height="3" rx="1" fill="#fbbf24" opacity="0.8"/>
+          <rect x="26" y="51" width="60" height="3" rx="1" fill="#00a4ef" opacity="0.5"/>
+          <rect x="26" y="58" width="30" height="3" rx="1" fill="#10b981" opacity="0.6"/>
+          <!-- cursor -->
+          <rect x="64" y="58" width="6" height="10" rx="1" fill="#fff" opacity="0.9"/>
+          <!-- stand -->
+          <rect x="57" y="92" width="26" height="8" rx="2" fill="#2d4a6e" stroke="#00a4ef" stroke-width="1.5"/>
+          <rect x="45" y="100" width="50" height="6" rx="2" fill="#1a2f4a" stroke="#00a4ef" stroke-width="1.5"/>
+          <!-- floppy slot -->
+          <rect x="48" y="74" width="16" height="5" rx="1" fill="#0d1f3c" stroke="#3b82f6" stroke-width="1"/>
+          <defs>
+            <linearGradient id="screenGrad" x1="18" y1="18" x2="122" y2="84" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#00a4ef" stop-opacity="0.1"/>
+              <stop offset="100%" stop-color="#10b981" stop-opacity="0.1"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="cover-title"><span>Bill Gates</span><br>Anak yang Suka<br>Main Komputer</div>
+      <div class="cover-subtitle">Dari anak biasa jadi salah satu orang terkaya di dunia</div>
+      <div class="cover-owner">📎 Milik: Aslan</div>
+      <div class="cover-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Seri Edukasi Anak Inspiratif
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 2 — PENGENALAN ═══ -->
+    <div class="page-2col" id="page-2">
+      <div class="story-col-text">
+        <div class="page-header">
+          <span class="page-num-badge">HAL 02</span>
+          <span class="page-label">// pengenalan</span>
+        </div>
+        <div class="story-title">Siapa <span>Bill Gates</span>?</div>
+        <div class="section-divider"></div>
+        <div class="story-body">
+          Kamu pasti pernah dengar nama <strong>Bill Gates</strong>. Dia adalah salah satu orang paling kaya dan paling berpengaruh di dunia teknologi.
+        </div>
+        <div class="story-body">
+          Tapi tahukah kamu? Dulu dia juga <strong>anak biasa</strong> yang sangat suka main komputer — persis seperti kamu yang suka belajar hal baru!
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="highlight-pill">🌍 Orang Berpengaruh</span>
+          <span class="highlight-pill green-pill">💻 Pecinta Komputer</span>
+        </div>
+      </div>
+      <div class="story-col-illo">
+        <div class="illo-box">
+          <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- globe -->
+            <circle cx="45" cy="45" r="36" fill="#e8f4fd" stroke="#00a4ef" stroke-width="2.5"/>
+            <!-- meridians -->
+            <ellipse cx="45" cy="45" rx="16" ry="36" fill="none" stroke="#0078d4" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <line x1="9" y1="45" x2="81" y2="45" stroke="#0078d4" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <ellipse cx="45" cy="45" rx="36" ry="14" fill="none" stroke="#0078d4" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <!-- star pin -->
+            <polygon points="45,22 47.4,29.3 55,29.3 49.1,33.8 51.5,41 45,36.5 38.5,41 40.9,33.8 35,29.3 42.6,29.3" fill="#fbbf24" stroke="#d97706" stroke-width="1"/>
+          </svg>
+          <div class="illo-label">Bill Gates — Ikon Teknologi Dunia</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 3 — MASA KECIL ═══ -->
+    <div class="page-2col" id="page-3">
+      <div class="story-col-text">
+        <div class="page-header">
+          <span class="page-num-badge">HAL 03</span>
+          <span class="page-label">// masa_kecil.exe</span>
+        </div>
+        <div class="story-title">Masa Kecil <span>Bill Gates</span></div>
+        <div class="section-divider"></div>
+        <div class="story-body">
+          Bill lahir pada tahun <strong>1955</strong> di kota Seattle, Amerika Serikat. Sejak kecil, dia dikenal sebagai anak yang sangat pintar.
+        </div>
+        <div class="story-body">
+          Pelajaran favoritnya adalah <strong>Matematika</strong> dan <strong>Sains</strong>. Dia suka sekali memecahkan soal-soal sulit — semakin susah, semakin dia suka!
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="highlight-pill">📅 Lahir: 1955</span>
+          <span class="highlight-pill green-pill">🔢 Jago Matematika</span>
+        </div>
+      </div>
+      <div class="story-col-illo">
+        <div class="illo-box">
+          <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- book stack -->
+            <rect x="15" y="58" width="60" height="12" rx="2" fill="#0078d4" stroke="#005ba1" stroke-width="1.5"/>
+            <rect x="18" y="44" width="54" height="12" rx="2" fill="#10b981" stroke="#065f46" stroke-width="1.5"/>
+            <rect x="22" y="32" width="46" height="10" rx="2" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/>
+            <rect x="26" y="22" width="38" height="8" rx="2" fill="#f97316" stroke="#c2410c" stroke-width="1.5"/>
+            <!-- math symbol -->
+            <text x="45" y="17" font-size="13" text-anchor="middle" fill="#0078d4" font-weight="900" font-family="Fira Code, monospace">∑π²</text>
+          </svg>
+          <div class="illo-label">Buku & Matematika — Sahabat Bill</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 4 — PERTAMA KALI KETEMU KOMPUTER ═══ -->
+    <div class="page-2col" id="page-4">
+      <div class="story-col-text">
+        <div class="page-header">
+          <span class="page-num-badge">HAL 04</span>
+          <span class="page-label">// first_boot.exe</span>
+        </div>
+        <div class="story-title">Jatuh Cinta Pada <span>Komputer</span></div>
+        <div class="section-divider"></div>
+        <div class="story-body">
+          Di sekolahnya ada <strong>satu komputer besar</strong> — saat itu komputer masih sangat mahal dan sangat jarang ada. Hanya sekolah-sekolah tertentu yang punya!
+        </div>
+        <div class="story-body">
+          Bill langsung <strong>jatuh cinta</strong>! Dia rela bolos pelajaran lain hanya untuk duduk di depan komputer, belajar, dan terus mencoba hal-hal baru.
+        </div>
+        <div class="story-body">
+          💡 Rasa penasaran itulah yang mengubah hidupnya selamanya.
+        </div>
+      </div>
+      <div class="story-col-illo">
+        <div class="illo-box">
+          <svg width="100" height="90" viewBox="0 0 100 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- retro monitor -->
+            <rect x="8" y="8" width="84" height="56" rx="5" fill="#c0c0c0" stroke="#808080" stroke-width="2"/>
+            <rect x="16" y="15" width="68" height="42" rx="2" fill="#001a00"/>
+            <!-- green screen text -->
+            <rect x="22" y="22" width="35" height="3" rx="1" fill="#00ff41" opacity="0.9"/>
+            <rect x="22" y="29" width="50" height="3" rx="1" fill="#00ff41" opacity="0.7"/>
+            <rect x="22" y="36" width="28" height="3" rx="1" fill="#00ff41" opacity="0.8"/>
+            <rect x="22" y="43" width="8" height="8" rx="1" fill="#00ff41" opacity="0.9"/><!-- cursor blink -->
+            <!-- stand -->
+            <rect x="38" y="64" width="24" height="6" rx="1" fill="#a0a0a0" stroke="#808080" stroke-width="1.5"/>
+            <rect x="28" y="70" width="44" height="5" rx="2" fill="#909090" stroke="#808080" stroke-width="1.5"/>
+            <!-- power light -->
+            <circle cx="78" cy="54" r="3" fill="#00ff41"/>
+            <!-- disk drive slot -->
+            <rect x="62" y="38" width="14" height="5" rx="1" fill="#808080" stroke="#606060" stroke-width="1"/>
+          </svg>
+          <div class="illo-label">Komputer Pertama — Cinta Pertama!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 5 — NAKAL TAPI JENIUS (Alert Cards) ═══ -->
+    <div class="page" id="page-5">
+      <div class="page-header" style="margin-bottom:12px;">
+        <span class="page-num-badge">HAL 05</span>
+        <span class="page-label">// debug_log: bill_&_paul</span>
+      </div>
+      <div class="story-title" style="margin-bottom:8px;">Bill yang <span style="color:var(--ms-blue-dark)">Nakal</span> tapi <span style="color:var(--tech-green)">Jenius!</span></div>
+      <div class="story-body" style="margin-bottom:14px;">Klik kotak dialognya — siapa tahu ada kejutan! 👾</div>
+      <div class="alert-grid">
+
+        <div class="alert-card" tabindex="0" onclick="alertClick(this,'Misi Diterima!')">
+          <div class="alert-titlebar">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            INFO.EXE &nbsp;|&nbsp; Sahabat Paul Allen
+            <div class="alert-close">✕</div>
+          </div>
+          <div class="alert-body">
+            <svg class="alert-icon" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#dbeafe" stroke="#0078d4" stroke-width="2"/><path d="M10 16c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6-6-2.7-6-6z" fill="#0078d4"/><path d="M16 13v3l2 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div class="alert-text">Bill punya sahabat bernama <strong>Paul Allen</strong>. Berdua mereka selalu punya ide gila dan seru tentang komputer!</div>
+          </div>
+          <div class="alert-footer"><button class="alert-ok-btn">OK</button></div>
+        </div>
+
+        <div class="alert-card" tabindex="0" onclick="alertClick(this,'Hehehe! 😄')">
+          <div class="alert-titlebar">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            WARNING.EXE &nbsp;|&nbsp; Kebanyakan Main!
+            <div class="alert-close">✕</div>
+          </div>
+          <div class="alert-body">
+            <svg class="alert-icon" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#fef3c7" stroke="#d97706" stroke-width="2"/><path d="M16 8v8" stroke="#d97706" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="20" r="1.5" fill="#d97706"/></svg>
+            <div class="alert-text">Bill dan Paul sering <strong>ketahuan</strong> pakai komputer sekolah terlalu lama sampai harus dihukum guru!</div>
+          </div>
+          <div class="alert-footer"><button class="alert-ok-btn">OK</button></div>
+        </div>
+
+        <div class="alert-card" tabindex="0" onclick="alertClick(this,'Programmer Sejati! 💻')">
+          <div class="alert-titlebar">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            CODE.EXE &nbsp;|&nbsp; Belajar Sendiri
+            <div class="alert-close">✕</div>
+          </div>
+          <div class="alert-body">
+            <svg class="alert-icon" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#d1fae5" stroke="#10b981" stroke-width="2"/><polyline points="10 18 14 12 10 6" stroke="#10b981" stroke-width="2" stroke-linecap="round" fill="none" transform="translate(4,4)"/><polyline points="4 14 8 18 4 22" stroke="#10b981" stroke-width="2" stroke-linecap="round" fill="none" transform="translate(10,2)"/></svg>
+            <div class="alert-text">Meski dilarang, Bill terus belajar coding sendiri. Hukuman justru makin membuatnya <strong>penasaran</strong> dan makin jago!</div>
+          </div>
+          <div class="alert-footer"><button class="alert-ok-btn">OK</button></div>
+        </div>
+
+        <div class="alert-card" tabindex="0" onclick="alertClick(this,'Luar Biasa! 🌟')">
+          <div class="alert-titlebar">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            SUCCESS.EXE &nbsp;|&nbsp; Usia 13 Tahun!
+            <div class="alert-close">✕</div>
+          </div>
+          <div class="alert-body">
+            <svg class="alert-icon" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#fce7f3" stroke="#ec4899" stroke-width="2"/><polygon points="16,8 18.4,13.8 25,13.8 19.8,17.6 21.8,23.4 16,19.6 10.2,23.4 12.2,17.6 7,13.8 13.6,13.8" fill="#ec4899"/></svg>
+            <div class="alert-text">Di umur <strong>13 tahun</strong>, Bill sudah berhasil membuat program komputer pertamanya — sebuah permainan tic-tac-toe!</div>
+          </div>
+          <div class="alert-footer"><button class="alert-ok-btn">OK</button></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 6 — IDE BESAR PERTAMA ═══ -->
+    <div class="page-2col" id="page-6">
+      <div class="story-col-text">
+        <div class="page-header">
+          <span class="page-num-badge">HAL 06</span>
+          <span class="page-label">// startup.bat</span>
+        </div>
+        <div class="story-title">Ide Besar <span>Pertama</span></div>
+        <div class="section-divider"></div>
+        <div class="story-body">
+          Saat masih remaja, Bill dan Paul mulai membuat <strong>program komputer</strong> kecil-kecilan. Mereka berani menjualnya ke perusahaan!
+        </div>
+        <div class="story-body">
+          Lalu, di usia 20-an, mereka nekat mendirikan sebuah perusahaan kecil. Namanya: <strong>Microsoft</strong>. Siapa sangka nama itu akan dikenal seluruh dunia!
+        </div>
+        <div class="msg-box" style="max-width:320px; margin-top: 4px;">
+          <div class="msg-titlebar">💡 Fun Fact!</div>
+          <div class="msg-content" style="font-size:13px;">Kata "Microsoft" berasal dari <strong>Micro</strong>computer + <strong>Soft</strong>ware. Nama yang cerdas dari otak yang cerdas!</div>
+        </div>
+      </div>
+      <div class="story-col-illo">
+        <div class="illo-box">
+          <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- floppy disk -->
+            <rect x="18" y="12" width="54" height="66" rx="4" fill="#2d4a6e" stroke="#00a4ef" stroke-width="2"/>
+            <!-- label area -->
+            <rect x="24" y="20" width="42" height="28" rx="2" fill="#e8f4fd" stroke="#0078d4" stroke-width="1.5"/>
+            <!-- label lines -->
+            <rect x="28" y="26" width="30" height="3" rx="1" fill="#0078d4" opacity="0.6"/>
+            <rect x="28" y="32" width="22" height="3" rx="1" fill="#0078d4" opacity="0.4"/>
+            <rect x="28" y="38" width="26" height="3" rx="1" fill="#0078d4" opacity="0.4"/>
+            <!-- write protect -->
+            <rect x="24" y="58" width="14" height="14" rx="2" fill="#1e3a5f" stroke="#00a4ef" stroke-width="1.5"/>
+            <rect x="28" y="62" width="6" height="6" rx="1" fill="#00a4ef"/>
+            <!-- metal cover -->
+            <rect x="40" y="58" width="28" height="12" rx="2" fill="#9ca3af" stroke="#6b7280" stroke-width="1.5"/>
+            <rect x="43" y="61" width="22" height="4" rx="1" fill="#d1d5db"/>
+          </svg>
+          <div class="illo-label">Floppy Disk — Media Penyimpanan Era Bill</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 7 — MICROSOFT LAHIR ═══ -->
+    <div class="page-2col" id="page-7">
+      <div class="story-col-text">
+        <div class="page-header">
+          <span class="page-num-badge">HAL 07</span>
+          <span class="page-label">// microsoft.exe</span>
+        </div>
+        <div class="story-title"><span>Microsoft</span> Lahir!</div>
+        <div class="section-divider"></div>
+        <div class="story-body">
+          Awalnya Microsoft hanyalah perusahaan kecil dengan sedikit karyawan. Tapi Bill Gates punya <strong>visi yang sangat besar</strong>:
+        </div>
+        <div class="msg-box" style="max-width:360px;">
+          <div class="msg-titlebar">💬 Kutipan Bill Gates</div>
+          <div class="msg-content" style="font-size:15px; font-style:italic; color:#0078d4; font-weight:700;">
+            "Suatu hari nanti, setiap rumah akan punya komputer di mejanya!"
+          </div>
+        </div>
+        <div class="story-body">
+          Orang-orang tertawa mendengarnya. Tapi Bill tidak peduli. Dia terus bekerja keras — dan <strong>visinya terbukti benar!</strong> 🏆
+        </div>
+      </div>
+      <div class="story-col-illo">
+        <div class="illo-box">
+          <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Windows logo style -->
+            <rect x="10" y="10" width="32" height="32" rx="3" fill="#f25022"/>
+            <rect x="48" y="10" width="32" height="32" rx="3" fill="#7fba00"/>
+            <rect x="10" y="48" width="32" height="32" rx="3" fill="#00a4ef"/>
+            <rect x="48" y="48" width="32" height="32" rx="3" fill="#ffb900"/>
+            <!-- inner highlights -->
+            <rect x="14" y="14" width="10" height="10" rx="2" fill="#fff" opacity="0.2"/>
+            <rect x="52" y="14" width="10" height="10" rx="2" fill="#fff" opacity="0.2"/>
+            <rect x="14" y="52" width="10" height="10" rx="2" fill="#fff" opacity="0.2"/>
+            <rect x="52" y="52" width="10" height="10" rx="2" fill="#fff" opacity="0.2"/>
+          </svg>
+          <div class="illo-label">Logo Windows — Karya Microsoft</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 8 — FAKTA KEREN (Alert Cards) ═══ -->
+    <div class="page" id="page-8">
+      <div class="page-header" style="margin-bottom:12px;">
+        <span class="page-num-badge">HAL 08</span>
+        <span class="page-label">// facts.json — loaded ✓</span>
+      </div>
+      <div class="story-title" style="margin-bottom:8px;">Fakta <span style="color:var(--ms-blue-dark)">Keren</span> tentang Bill Gates 🤩</div>
+      <div class="story-body" style="margin-bottom:14px;">Tap tiap kotak untuk membukanya!</div>
+      <div class="alert-grid">
+
+        <div class="alert-card" tabindex="0" onclick="alertClick(this,'Gila ya? 😲')">
+          <div class="alert-titlebar">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            FACT_01.EXE &nbsp;|&nbsp; Drop Out Harvard!
+            <div class="alert-close">✕</div>
+          </div>
+          <div class="alert-body">
+            <svg class="alert-icon" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/><text x="16" y="20" font-size="14" text-anchor="middle" fill="#d97706">🎓</text></svg>
+            <div class="alert-text">Bill <strong>berhenti kuliah</strong> dari Universitas Harvard — salah satu kampus terbaik dunia — untuk fokus sepenuhnya membangun Microsoft!</div>
+          </div>
+          <div class="alert-footer"><button class="alert-ok-btn">Wow!</button></div>
+        </div>
+
+        <div class="alert-card" tabindex="0" onclick="alertClick(this,'Windows! 🪟')">
+          <div class="alert-titlebar">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            FACT_02.EXE &nbsp;|&nbsp; Windows!
+            <div class="alert-close">✕</div>
+          </div>
+          <div class="alert-body">
+            <svg class="alert-icon" viewBox="0 0 32 32" fill="none"><rect x="4" y="4" width="11" height="11" rx="1" fill="#f25022"/><rect x="17" y="4" width="11" height="11" rx="1" fill="#7fba00"/><rect x="4" y="17" width="11" height="11" rx="1" fill="#00a4ef"/><rect x="17" y="17" width="11" height="11" rx="1" fill="#ffb900"/></svg>
+            <div class="alert-text"><strong>Windows</strong> adalah sistem operasi komputer yang diciptakan Bill Gates. Miliaran komputer di dunia menggunakannya hingga hari ini!</div>
+          </div>
+          <div class="alert-footer"><button class="alert-ok-btn">Keren!</button></div>
+        </div>
+
+        <div class="alert-card" tabindex="0" onclick="alertClick(this,'Terkaya! 💰')">
+          <div class="alert-titlebar">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            FACT_03.EXE &nbsp;|&nbsp; Orang Terkaya!
+            <div class="alert-close">✕</div>
+          </div>
+          <div class="alert-body">
+            <svg class="alert-icon" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#d1fae5" stroke="#10b981" stroke-width="2"/><text x="16" y="21" font-size="14" text-anchor="middle" fill="#065f46">💰</text></svg>
+            <div class="alert-text">Bill Gates pernah menjadi <strong>orang terkaya di dunia</strong> selama bertahun-tahun berturut-turut! Kekayaannya lebih dari ratusan triliun rupiah.</div>
+          </div>
+          <div class="alert-footer"><button class="alert-ok-btn">Wah!</button></div>
+        </div>
+
+        <div class="alert-card" tabindex="0" onclick="alertClick(this,'Pahlawan Dunia! 🌍')">
+          <div class="alert-titlebar">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            FACT_04.EXE &nbsp;|&nbsp; Dermawan!
+            <div class="alert-close">✕</div>
+          </div>
+          <div class="alert-body">
+            <svg class="alert-icon" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#fce7f3" stroke="#ec4899" stroke-width="2"/><text x="16" y="21" font-size="14" text-anchor="middle" fill="#be185d">❤️</text></svg>
+            <div class="alert-text">Kini Bill banyak menyumbangkan uangnya untuk <strong>pendidikan dan kesehatan dunia</strong>. Dia membantu jutaan anak-anak di negara berkembang!</div>
+          </div>
+          <div class="alert-footer"><button class="alert-ok-btn">Salut!</button></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 9 — KARAKTER BILL ═══ -->
+    <div class="page-2col" id="page-9">
+      <div class="story-col-text">
+        <div class="page-header">
+          <span class="page-num-badge">HAL 09</span>
+          <span class="page-label">// character_stats.ini</span>
+        </div>
+        <div class="story-title">Karakter <span>Bill Gates</span></div>
+        <div class="section-divider"></div>
+        <div class="char-trait">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ms-blue)" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          <div><div class="trait-label">📚 Suka Membaca</div><div class="trait-desc">Bill membaca 50+ buku per tahun!</div></div>
+        </div>
+        <div class="char-trait">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--tech-green)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <div><div class="trait-label" style="color:var(--tech-green);">💪 Rajin Belajar</div><div class="trait-desc">Pantang menyerah meski susah</div></div>
+        </div>
+        <div class="char-trait">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <div><div class="trait-label" style="color:#d97706;">🌟 Mimpi Besar</div><div class="trait-desc">Percaya pada visinya sendiri</div></div>
+        </div>
+        <div class="char-trait">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <div><div class="trait-label" style="color:#be185d;">🤝 Dermawan</div><div class="trait-desc">Kaya tapi tetap sederhana & peduli</div></div>
+        </div>
+      </div>
+      <div class="story-col-illo">
+        <div class="illo-box">
+          <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- trophy -->
+            <rect x="32" y="72" width="26" height="8" rx="2" fill="#d97706" stroke="#92400e" stroke-width="1.5"/>
+            <rect x="36" y="65" width="18" height="8" rx="1" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
+            <path d="M20 18h50v28c0 14-11 20-25 20S20 60 20 46V18z" fill="#fbbf24" stroke="#d97706" stroke-width="2"/>
+            <path d="M20 26H8c0 12 5 20 12 22" stroke="#f59e0b" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M70 26h12c0 12-5 20-12 22" stroke="#f59e0b" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- star on trophy -->
+            <polygon points="45,28 47,34 53,34 48,38 50,44 45,40 40,44 42,38 37,34 43,34" fill="#fff" stroke="#d97706" stroke-width="1"/>
+          </svg>
+          <div class="illo-label">Rajin + Mimpi = Sukses!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 10 — PESAN UNTUK ANAK ═══ -->
+    <div class="page-2col" id="page-10">
+      <div class="story-col-text">
+        <div class="page-header">
+          <span class="page-num-badge">HAL 10</span>
+          <span class="page-label">// message_for_aslan.txt</span>
+        </div>
+        <div class="story-title">Pesan untuk <span>Kamu!</span> 💌</div>
+        <div class="section-divider"></div>
+        <div class="story-body">
+          Kamu tidak perlu berasal dari keluarga kaya, atau harus jadi anak paling jenius di sekolah untuk bisa <strong>sukses</strong>.
+        </div>
+        <div class="story-body">
+          Cukup <strong>suka belajar</strong>, punya <strong>mimpi yang jelas</strong>, dan <strong>rajin berlatih</strong> — persis seperti yang dilakukan Bill Gates sejak kecil!
+        </div>
+        <div class="msg-box" style="max-width:360px; margin-top:4px;">
+          <div class="msg-titlebar">⭐ Khusus untuk Aslan</div>
+          <div class="msg-content" style="font-size:14px;">
+            Aslan, kamu sudah mau membaca sampai halaman ini. Itu artinya kamu <strong>sudah seperti Bill Gates</strong> — anak yang haus belajar! Keep it up! 🚀
+          </div>
+        </div>
+      </div>
+      <div class="story-col-illo">
+        <div class="illo-box">
+          <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- rocket -->
+            <ellipse cx="45" cy="38" rx="14" ry="24" fill="#0078d4" stroke="#005ba1" stroke-width="2"/>
+            <polygon points="45,14 31,38 59,38" fill="#00a4ef" stroke="#0078d4" stroke-width="1.5"/>
+            <!-- window -->
+            <circle cx="45" cy="38" r="7" fill="#e8f4fd" stroke="#0078d4" stroke-width="1.5"/>
+            <circle cx="45" cy="38" r="4" fill="#00a4ef" opacity="0.5"/>
+            <!-- fins -->
+            <polygon points="31,50 20,62 31,62" fill="#0078d4" stroke="#005ba1" stroke-width="1.5"/>
+            <polygon points="59,50 70,62 59,62" fill="#0078d4" stroke="#005ba1" stroke-width="1.5"/>
+            <!-- flame -->
+            <ellipse cx="40" cy="68" rx="5" ry="8" fill="#fbbf24" opacity="0.8"/>
+            <ellipse cx="50" cy="68" rx="5" ry="8" fill="#f97316" opacity="0.8"/>
+            <ellipse cx="45" cy="72" rx="6" ry="10" fill="#fbbf24"/>
+            <!-- stars -->
+            <circle cx="14" cy="20" r="2" fill="#fbbf24"/>
+            <circle cx="76" cy="14" r="1.5" fill="#10b981"/>
+            <circle cx="20" cy="50" r="1.5" fill="#fff"/>
+            <circle cx="72" cy="44" r="2" fill="#fbbf24"/>
+          </svg>
+          <div class="illo-label">Impianmu Bisa Setinggi Roket! 🚀</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 11 — PESAN PENTING ═══ -->
+    <div class="page-2col" id="page-11">
+      <div class="story-col-text">
+        <div class="page-header">
+          <span class="page-num-badge">HAL 11</span>
+          <span class="page-label">// coding_matters.exe</span>
+        </div>
+        <div class="story-title"><span>Coding</span> Bisa Ubah Dunia!</div>
+        <div class="section-divider"></div>
+        <div class="story-body">
+          Bill Gates membuktikan bahwa <strong>cinta terhadap komputer dan coding</strong> bisa benar-benar mengubah dunia menjadi tempat yang lebih baik.
+        </div>
+        <div class="story-body">
+          Sekarang <strong>giliran kamu, Aslan!</strong> Mulai belajar coding, eksplorasi teknologi, dan wujudkan mimpi besarmu — dunia menunggumu! 🌍
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
+          <span class="highlight-pill">💻 Belajar Coding</span>
+          <span class="highlight-pill green-pill">🚀 Wujudkan Mimpi</span>
+          <span class="highlight-pill" style="background:#fef3c7; color:#d97706;">🌍 Ubah Dunia</span>
+        </div>
+      </div>
+      <div class="story-col-illo">
+        <div class="illo-box">
+          <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- laptop -->
+            <rect x="12" y="20" width="66" height="44" rx="4" fill="#1e3a5f" stroke="#00a4ef" stroke-width="2"/>
+            <rect x="18" y="26" width="54" height="32" rx="2" fill="#0a0e1a"/>
+            <!-- code on screen -->
+            <text x="22" y="40" font-size="7" fill="#00ff41" font-family="Fira Code, monospace">&lt;html&gt;</text>
+            <text x="22" y="49" font-size="7" fill="#00a4ef" font-family="Fira Code, monospace">  &lt;dream/&gt;</text>
+            <text x="22" y="58" font-size="7" fill="#10b981" font-family="Fira Code, monospace">&lt;/html&gt;</text>
+            <!-- keyboard base -->
+            <rect x="6" y="64" width="78" height="8" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1.5"/>
+            <!-- trackpad -->
+            <rect x="34" y="65" width="22" height="5" rx="1" fill="#4b5563" stroke="#6b7280" stroke-width="1"/>
+            <!-- glow effect -->
+            <ellipse cx="45" cy="26" rx="20" ry="2" fill="#00a4ef" opacity="0.3"/>
+          </svg>
+          <div class="illo-label">Coding = Bahasa Masa Depan!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 12 — ENDING ═══ -->
+    <div class="page active" id="page-12" style="display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px 20px; position:relative; overflow:hidden;">
+      <div style="position:absolute;inset:0;background-image:radial-gradient(circle at 20% 80%, rgba(16,185,129,0.3) 0%, transparent 40%),radial-gradient(circle at 80% 20%, rgba(0,164,239,0.25) 0%, transparent 40%);pointer-events:none;"></div>
+      <div style="position:relative;z-index:1;margin-bottom:14px;">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="36" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="3"/><polygon points="40,20 43.5,31 56,31 46,38.5 49.5,50 40,43 30.5,50 34,38.5 24,31 36.5,31" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/></svg>
+      </div>
+      <div class="ending-title">🎉 Selamat, Kapten Aslan!<br>Kamu sudah kenal Bill Gates!</div>
+      <div class="ending-body">
+        Anak yang suka main komputer itu berhasil <strong style="color:#6ee7b7;">mengubah dunia</strong>. Dan sekarang, kamu sudah tahu rahasianya: <strong style="color:#93c5fd;">belajar, bermimpi, dan pantang menyerah!</strong>
+      </div>
+      <div class="teaser-box">
+        📖 Berikutnya → Bab 24: <strong>Mark Zuckerberg</strong><br>
+        <span style="font-size:12px;font-weight:400;">Membuat Facebook dari Kamar Tidur!</span>
+      </div>
+      <div class="ayah-note">
+        💬 Kalau ada yang ingin ditanyakan tentang Bill Gates, Microsoft, atau coding — tanya saja ke <strong>Ayah Sigit</strong> ya! Ayah siap jelasin dengan senang hati. 😊
+      </div>
+      <div class="ending-btns">
+        <a href="..\/perpustakaan.html" class="kbd-btn green">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          ← Kembali ke Perpustakaan
+        </a>
+        <button class="kbd-btn" onclick="goToPage(1)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+          Baca Ulang
+        </button>
+        <a href="index.html" class="kbd-btn danger">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /content-area -->
+
+  <!-- NAVIGATION BAR -->
+  <div id="nav-bar">
+    <button class="kbd-btn" id="btn-back" onclick="navigate(-1)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      &lt; Back
+    </button>
+    <div class="nav-progress">
+      <div class="nav-page-info" id="page-info">HAL 01 / 12</div>
+      <div class="progress-track" id="progress-track"></div>
+    </div>
+    <button class="kbd-btn primary" id="btn-next" onclick="navigate(1)">
+      Next &gt;
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div id="status-bar">
+    <span class="status-panel" id="status-page">Hal 1 dari 12</span>
+    <span class="status-panel" id="status-title">Cover</span>
+    <span class="status-panel" style="margin-left:auto; font-family:var(--pixel-font); font-size:9px;" id="status-clock">00:00</span>
+  </div>
+
+</div><!-- /app-window -->
+
+<!-- TASKBAR -->
+<div id="taskbar">
+  <button class="start-btn">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="0" y="0" width="7" height="7" fill="#f25022"/><rect x="9" y="0" width="7" height="7" fill="#7fba00"/><rect x="0" y="9" width="7" height="7" fill="#00a4ef"/><rect x="9" y="9" width="7" height="7" fill="#ffb900"/></svg>
+    Start
+  </button>
+  <div class="task-item">📖 Flipbook #23 – Bill Gates</div>
+  <div class="clock" id="taskbar-clock">00:00</div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────
+const TOTAL = 12;
+let current = 1;
+
+const pageData = [
+  { label: 'Cover',                id: 'page-1',  type: 'page' },
+  { label: 'Pengenalan',           id: 'page-2',  type: '2col' },
+  { label: 'Masa Kecil',           id: 'page-3',  type: '2col' },
+  { label: 'Ketemu Komputer',      id: 'page-4',  type: '2col' },
+  { label: 'Nakal tapi Jenius',    id: 'page-5',  type: 'page' },
+  { label: 'Ide Besar',            id: 'page-6',  type: '2col' },
+  { label: 'Microsoft Lahir',      id: 'page-7',  type: '2col' },
+  { label: 'Fakta Keren',          id: 'page-8',  type: 'page' },
+  { label: 'Karakter Bill',        id: 'page-9',  type: '2col' },
+  { label: 'Pesan untuk Kamu',     id: 'page-10', type: '2col' },
+  { label: 'Coding Ubah Dunia',    id: 'page-11', type: '2col' },
+  { label: 'Ending 🎉',            id: 'page-12', type: 'page' },
+];
+
+// ─── BUILD PROGRESS DOTS ─────────────────────────────────────────
+function buildDots() {
+  const track = document.getElementById('progress-track');
+  track.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'prog-dot';
+    d.id = 'dot-' + i;
+    track.appendChild(d);
+  }
+}
+
+// ─── RENDER PAGE ─────────────────────────────────────────────────
+function goToPage(n) {
+  // hide all
+  pageData.forEach(p => {
+    const el = document.getElementById(p.id);
+    el.classList.remove('active');
+    el.style.display = 'none';
+  });
+
+  // show target
+  const target = pageData[n - 1];
+  const el = document.getElementById(target.id);
+  if (target.type === '2col') {
+    el.style.display = '';
+    el.classList.add('active');
+  } else {
+    el.style.display = '';
+    el.classList.add('active');
+  }
+
+  current = n;
+  updateUI();
+}
+
+function updateUI() {
+  // progress dots
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.getElementById('dot-' + i);
+    d.className = 'prog-dot';
+    if (i === current)     d.classList.add('active');
+    else if (i < current)  d.classList.add('done');
+  }
+
+  document.getElementById('page-info').textContent =
+    'HAL ' + String(current).padStart(2,'0') + ' / ' + TOTAL;
+
+  // status bar
+  document.getElementById('status-page').textContent  = 'Hal ' + current + ' dari ' + TOTAL;
+  document.getElementById('status-title').textContent = pageData[current-1].label;
+
+  // nav buttons
+  document.getElementById('btn-back').disabled = current === 1;
+  document.getElementById('btn-back').style.opacity = current === 1 ? '0.4' : '1';
+  document.getElementById('btn-next').style.display = current === TOTAL ? 'none' : '';
+}
+
+function navigate(dir) {
+  const next = current + dir;
+  if (next < 1 || next > TOTAL) return;
+  goToPage(next);
+}
+
+// ─── KEYBOARD ────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   navigate(-1);
+});
+
+// ─── ALERT CARD CLICK ────────────────────────────────────────────
+function alertClick(card, msg) {
+  // flash animation
+  card.style.transition = 'none';
+  card.style.background = '#e8f4fd';
+  setTimeout(() => {
+    card.style.transition = 'background 0.4s';
+    card.style.background = '';
+  }, 150);
+}
+
+// ─── CLOCK ───────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const t = h + ':' + m;
+  document.getElementById('status-clock').textContent  = t;
+  document.getElementById('taskbar-clock').textContent = t;
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+// ─── WIN BUTTONS (visual only) ───────────────────────────────────
+document.querySelector('.win-btn.min').addEventListener('click', () => {
+  const ca = document.getElementById('content-area');
+  ca.style.display = ca.style.display === 'none' ? '' : 'none';
+});
+document.querySelector('.win-btn.max').addEventListener('click', () => {
+  const win = document.getElementById('app-window');
+  win.style.maxWidth = win.style.maxWidth === '100%' ? '900px' : '100%';
+});
+
+// ─── INIT ────────────────────────────────────────────────────────
+buildDots();
+// Make sure only page 1 visible at start
+pageData.forEach(p => {
+  const el = document.getElementById(p.id);
+  el.classList.remove('active');
+  el.style.display = 'none';
+});
+goToPage(1);
+</script>
+</body>
+</html>

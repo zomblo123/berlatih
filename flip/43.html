@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 13: Hard Disk & SSD – Lemari Penyimpanan Selamanya</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #5ec8f2;
+    --mint: #3dd9b3;
+    --sun: #ffd43b;
+    --orange: #ff8c42;
+    --pink: #ff6b9d;
+    --purple: #a78bfa;
+    --bg: #f0f9ff;
+    --card: #ffffff;
+    --brown: #92400e;
+    --indigo: #4f46e5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(94,200,242,0.15) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(79,70,229,0.12) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(255,212,59,0.08) 0%, transparent 60%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  h1,h2,h3,.display{ font-family:'Fredoka One',cursive; }
+
+  /* ── Header ── */
+  .header-grad {
+    background: linear-gradient(135deg,#1e1b4b 0%,#3730a3 40%,#6366f1 70%,#818cf8 100%);
+    position:relative; overflow:hidden;
+  }
+  .header-grad::after {
+    content:'';position:absolute;inset:0;
+    background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events:none;
+  }
+
+  /* ── Animations ── */
+  @keyframes bounceAslan { 0%,100%{transform:translateY(0);}  50%{transform:translateY(-10px);} }
+  .aslan-bounce { animation:bounceAslan 2.2s ease-in-out infinite; }
+
+  @keyframes floatGently { 0%,100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-8px) rotate(2deg);} }
+  .float-gentle { animation:floatGently 3.5s ease-in-out infinite; }
+
+  @keyframes spinDisk { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  .spin-disk { animation:spinDisk 2.5s linear infinite; }
+  .spin-disk-slow { animation:spinDisk 5s linear infinite; }
+
+  @keyframes slideUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+  .slide-up { animation:slideUp 0.6s ease forwards; }
+
+  @keyframes popIn { 0%{transform:scale(0) rotate(-20deg);opacity:0;} 100%{transform:scale(1) rotate(0deg);opacity:1;} }
+  .pop-in { animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+  @keyframes wiggle { 0%,100%{transform:rotate(0deg);} 20%{transform:rotate(-8deg) scale(1.05);} 40%{transform:rotate(8deg) scale(1.05);} 60%{transform:rotate(-4deg);} 80%{transform:rotate(4deg);} }
+  .wiggle { animation:wiggle 0.55s ease; }
+
+  @keyframes pulse-indigo { 0%,100%{box-shadow:0 0 0 0 rgba(99,102,241,.6);} 50%{box-shadow:0 0 0 14px rgba(99,102,241,0);} }
+  .pulse-indigo { animation:pulse-indigo 1.2s ease-out; }
+
+  @keyframes shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-8px);} 40%{transform:translateX(8px);} 60%{transform:translateX(-6px);} 80%{transform:translateX(6px);} }
+  .shake { animation:shake 0.5s ease; }
+
+  @keyframes confettiBurst { 0%{transform:translate(0,0) scale(1) rotate(0deg);opacity:1;} 100%{transform:translate(var(--cx),var(--cy)) scale(0) rotate(720deg);opacity:0;} }
+  .confetti-bit { position:fixed;width:10px;height:10px;border-radius:2px;animation:confettiBurst 1s ease-out forwards;pointer-events:none;z-index:9999; }
+
+  @keyframes flyTo { 0%{opacity:1;transform:translate(0,0) scale(1);} 80%{opacity:1;transform:translate(var(--tx),var(--ty)) scale(0.5);} 100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0);} }
+  .fly-item { position:fixed;pointer-events:none;font-size:2rem;z-index:999;animation:flyTo 0.85s ease-in forwards; }
+
+  @keyframes lightUp { 0%,100%{opacity:.3;} 50%{opacity:1;} }
+  .light-up { animation:lightUp 0.8s ease-in-out; }
+
+  @keyframes powerOff { 0%{opacity:1;filter:brightness(1);} 100%{opacity:.15;filter:brightness(0.3) saturate(0.2);} }
+  .power-off { animation:powerOff 1s ease forwards; }
+  @keyframes powerOn { 0%{opacity:.15;filter:brightness(0.3) saturate(0.2);} 100%{opacity:1;filter:brightness(1);} }
+  .power-on { animation:powerOn 0.8s ease forwards; }
+
+  @keyframes hddSpin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+
+  /* ── Speech bubble ── */
+  .bubble {
+    position:relative;background:white;
+    border-radius:20px;border:3px solid var(--indigo);
+    box-shadow:4px 4px 0 var(--indigo);
+  }
+  .bubble::before { content:'';position:absolute;bottom:-22px;left:30px;border:12px solid transparent;border-top-color:var(--indigo); }
+  .bubble::after  { content:'';position:absolute;bottom:-15px;left:33px;border:10px solid transparent;border-top-color:white; }
+
+  /* ── Cards ── */
+  .info-card { transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+  .info-card:hover { transform:translateY(-5px) scale(1.02); }
+
+  .sec-title { font-family:'Fredoka One',cursive;letter-spacing:.5px; }
+
+  /* ── Buttons ── */
+  .btn-magic {
+    background:linear-gradient(135deg,#ff6b9d,#ff8c42);color:white;border:none;
+    border-radius:50px;padding:1rem 2.5rem;font-family:'Fredoka One',cursive;
+    font-size:1.25rem;cursor:pointer;
+    box-shadow:0 6px 0 #c74a6a,0 8px 20px rgba(255,107,157,.4);
+    transition:all 0.15s ease;letter-spacing:.5px;
+  }
+  .btn-magic:hover { transform:translateY(-3px);box-shadow:0 9px 0 #c74a6a,0 12px 28px rgba(255,107,157,.5); }
+  .btn-magic:active{ transform:translateY(3px);box-shadow:0 3px 0 #c74a6a; }
+
+  .btn-indigo {
+    background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;border:none;
+    border-radius:50px;padding:.85rem 2rem;font-family:'Fredoka One',cursive;
+    font-size:1.1rem;cursor:pointer;
+    box-shadow:0 5px 0 #3730a3,0 7px 16px rgba(99,102,241,.4);
+    transition:all 0.15s ease;
+  }
+  .btn-indigo:hover { transform:translateY(-3px);box-shadow:0 8px 0 #3730a3; }
+  .btn-indigo:active{ transform:translateY(3px);box-shadow:0 2px 0 #3730a3; }
+
+  .btn-orange {
+    background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;
+    border-radius:50px;padding:.85rem 2rem;font-family:'Fredoka One',cursive;
+    font-size:1.1rem;cursor:pointer;
+    box-shadow:0 5px 0 #c2410c,0 7px 16px rgba(249,115,22,.4);
+    transition:all 0.15s ease;
+  }
+  .btn-orange:hover { transform:translateY(-3px);box-shadow:0 8px 0 #c2410c; }
+  .btn-orange:active{ transform:translateY(3px);box-shadow:0 2px 0 #c2410c; }
+
+  .btn-red {
+    background:linear-gradient(135deg,#ef4444,#dc2626);color:white;border:none;
+    border-radius:50px;padding:.85rem 2rem;font-family:'Fredoka One',cursive;
+    font-size:1.1rem;cursor:pointer;
+    box-shadow:0 5px 0 #991b1b,0 7px 16px rgba(220,38,38,.4);
+    transition:all 0.15s ease;
+  }
+  .btn-red:hover { transform:translateY(-3px);box-shadow:0 8px 0 #991b1b; }
+  .btn-red:active{ transform:translateY(3px);box-shadow:0 2px 0 #991b1b; }
+
+  /* ── Lamp / LED indicator ── */
+  .led { width:10px;height:10px;border-radius:50%;display:inline-block;transition:all .3s; }
+  .led-green { background:#22c55e;box-shadow:0 0 8px #22c55e; }
+  .led-off   { background:#374151;box-shadow:none; }
+  .led-orange{ background:#f97316;box-shadow:0 0 8px #f97316; }
+
+  /* ── Storage file items ── */
+  .file-item { transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+
+  /* ── Speed meter ── */
+  .speed-bar { transition:width 1.4s cubic-bezier(0.22,1,0.36,1); }
+
+  /* ── Drawing canvas ── */
+  #drawCanvas { cursor:crosshair;touch-action:none;border-radius:12px; }
+
+  /* ── Badge ── */
+  .badge-pill { display:inline-block;padding:.2rem .8rem;border-radius:50px;font-size:.78rem;font-weight:800; }
+
+  /* ── Footer dot ── */
+  @keyframes footDot { 0%,100%{opacity:.3;transform:scale(.8);} 50%{opacity:1;transform:scale(1.2);} }
+  .foot-dot:nth-child(1){animation:footDot 1.2s ease-in-out infinite 0s;}
+  .foot-dot:nth-child(2){animation:footDot 1.2s ease-in-out infinite .2s;}
+  .foot-dot:nth-child(3){animation:footDot 1.2s ease-in-out infinite .4s;}
+
+  /* ── Comparison bars ── */
+  .comp-bar-speed { transition:width 1.6s cubic-bezier(0.22,1,0.36,1); }
+
+  /* ── HDD platter needle ── */
+  @keyframes needleSwipe { 0%,100%{transform:rotate(-30deg);} 50%{transform:rotate(30deg);} }
+  .needle-anim { transform-origin:80px 120px;animation:needleSwipe 1.5s ease-in-out infinite; }
+
+  /* ── SSD flash ── */
+  @keyframes ssdFlash { 0%,100%{opacity:.4;} 50%{opacity:1;} }
+  .ssd-flash { animation:ssdFlash 0.6s ease-in-out infinite; }
+
+  /* ── Power screen ── */
+  .screen-overlay {
+    position:absolute;inset:0;background:rgba(17,24,39,.85);
+    border-radius:inherit;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;z-index:10;
+    transition:opacity .5s;
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ═══════════════════════════════════════
+     HEADER
+═══════════════════════════════════════ -->
+<header class="header-grad text-white py-6 px-4 shadow-2xl" style="position:relative;">
+  <div style="position:absolute;top:10px;left:4%;font-size:2.5rem;opacity:.18;animation:bounceAslan 10s ease-in-out infinite;">🗄️</div>
+  <div style="position:absolute;top:12px;right:6%;font-size:2rem;opacity:.2;animation:bounceAslan 14s ease-in-out infinite .5s;">💾</div>
+  <div style="position:absolute;bottom:6px;left:28%;font-size:1.8rem;opacity:.15;animation:bounceAslan 12s ease-in-out infinite 1s;">📦</div>
+  <div style="position:absolute;bottom:8px;right:20%;font-size:1.6rem;opacity:.15;animation:bounceAslan 9s ease-in-out infinite .8s;">🔒</div>
+
+  <div class="max-w-4xl mx-auto text-center relative z-10">
+    <div class="inline-flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur rounded-full px-4 py-1.5 mb-3 text-sm font-bold tracking-wide">
+      <span>🚀</span><span>Petualangan Aslan di Dalam Komputer Ajaib</span><span>🚀</span>
+    </div>
+    <h1 class="text-3xl sm:text-5xl font-black mb-2 drop-shadow-lg" style="font-family:'Fredoka One',cursive;text-shadow:3px 3px 0 rgba(0,0,0,.25);">
+      Hari 13: Hard Disk &amp; SSD
+    </h1>
+    <p class="text-xl sm:text-2xl font-bold opacity-90" style="font-family:'Fredoka One',cursive;">
+      🗄️ Lemari Penyimpanan Selamanya! 🔒
+    </p>
+    <!-- Day dots -->
+    <div class="flex items-center justify-center gap-1.5 mt-4 flex-wrap">
+      <span class="text-xs font-bold opacity-80 mr-1">Hari:</span>
+      <div class="flex gap-1 flex-wrap justify-center">
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <div class="foot-dot w-3 h-3 rounded-full bg-yellow-300 opacity-80"></div>
+        <!-- Day 13 current -->
+        <div class="w-5 h-5 rounded-full bg-white ring-2 ring-indigo-200 shadow-lg" style="animation:pulse-indigo 2s ease-in-out infinite;"></div>
+        <!-- 10-30 upcoming -->
+        <div class="w-3 h-3 rounded-full bg-white opacity-30"></div>
+        <div class="w-3 h-3 rounded-full bg-white opacity-30"></div>
+        <div class="w-3 h-3 rounded-full bg-white opacity-30"></div>
+      </div>
+      <span class="text-xs font-bold opacity-80 ml-1">...30</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════
+     INTRO – Aslan + Bubble
+═══════════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 mt-8">
+  <div class="bg-white rounded-3xl shadow-xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 slide-up"
+       style="border:3px solid #c7d2fe;">
+
+    <!-- Aslan in front of big wardrobe -->
+    <div class="flex-shrink-0 flex justify-center" style="min-width:130px;">
+      <div class="aslan-bounce">
+        <svg width="130" height="175" viewBox="0 0 130 175" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- wardrobe behind aslan -->
+          <rect x="0" y="40" width="130" height="130" rx="14" fill="#7c3aed" opacity=".18"/>
+          <rect x="8" y="48" width="54" height="116" rx="8" fill="#6d28d9" opacity=".22"/>
+          <rect x="68" y="48" width="54" height="116" rx="8" fill="#6d28d9" opacity=".22"/>
+          <circle cx="62" cy="112" r="4" fill="#fbbf24" opacity=".7"/>
+          <circle cx="68" cy="112" r="4" fill="#fbbf24" opacity=".7"/>
+          <!-- body – indigo shirt -->
+          <ellipse cx="65" cy="168" rx="28" ry="6" fill="rgba(0,0,0,.1)"/>
+          <rect x="33" y="90" width="56" height="52" rx="14" fill="#6366f1"/>
+          <rect x="33" y="104" width="56" height="6" rx="2" fill="#818cf8" opacity=".7"/>
+          <text x="41" y="126" font-size="11" font-family="Fredoka One,cursive" fill="white">HDD&amp;SSD</text>
+          <!-- arms -->
+          <rect x="11" y="93" width="20" height="36" rx="10" fill="#6366f1" transform="rotate(12 11 93)"/>
+          <rect x="87" y="86" width="20" height="32" rx="10" fill="#6366f1" transform="rotate(-18 87 86)"/>
+          <!-- legs -->
+          <rect x="37" y="133" width="18" height="25" rx="9" fill="#4338ca"/>
+          <rect x="67" y="133" width="18" height="25" rx="9" fill="#4338ca"/>
+          <ellipse cx="46" cy="156" rx="12" ry="6" fill="#312e81"/>
+          <ellipse cx="76" cy="156" rx="12" ry="6" fill="#312e81"/>
+          <!-- neck -->
+          <rect x="51" y="80" width="20" height="14" rx="7" fill="#f9a825"/>
+          <!-- head -->
+          <ellipse cx="61" cy="62" rx="32" ry="30" fill="#f9a825"/>
+          <!-- hair -->
+          <ellipse cx="61" cy="37" rx="30" ry="16" fill="#2d1b00"/>
+          <ellipse cx="36" cy="49" rx="9" ry="12" fill="#2d1b00"/>
+          <ellipse cx="86" cy="49" rx="9" ry="12" fill="#2d1b00"/>
+          <!-- eyes -->
+          <ellipse cx="49" cy="62" rx="7" ry="8" fill="white"/>
+          <ellipse cx="73" cy="62" rx="7" ry="8" fill="white"/>
+          <ellipse cx="50" cy="63" rx="4" ry="5" fill="#2d1b00"/>
+          <ellipse cx="74" cy="63" rx="4" ry="5" fill="#2d1b00"/>
+          <circle cx="52" cy="61" r="1.5" fill="white"/>
+          <circle cx="76" cy="61" r="1.5" fill="white"/>
+          <!-- smile -->
+          <path d="M45 74 Q61 88 77 74" stroke="#2d1b00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M49 77 Q61 86 73 77" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <ellipse cx="41" cy="70" rx="6" ry="4" fill="#ffb347" opacity=".5"/>
+          <ellipse cx="81" cy="70" rx="6" ry="4" fill="#ffb347" opacity=".5"/>
+          <!-- sparks -->
+          <text x="93" y="48" font-size="14">💾</text>
+          <text x="5"  y="72" font-size="12">✨</text>
+          <text x="95" y="75" font-size="11">🗄️</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Bubble -->
+    <div class="flex-1">
+      <div class="bubble p-5">
+        <p class="text-sm text-indigo-600 font-bold mb-1">Aslan berkata:</p>
+        <p class="text-gray-700 text-base sm:text-lg leading-relaxed font-semibold">
+          "Halo teman-teman! Hari ini kita belajar <strong class="text-indigo-600">Hard Disk dan SSD</strong>! 🗄️<br>
+          Mereka seperti <strong class="text-orange-500">Lemari Penyimpanan Selamanya</strong> di komputer.
+          Data yang disimpan di sini <strong class="text-green-600">tidak hilang walau komputer dimatikan</strong>! 🔒✨"
+        </p>
+        <div class="flex gap-2 mt-3 flex-wrap">
+          <span class="badge-pill text-white" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">💾 Hari 13</span>
+          <span class="badge-pill text-white" style="background:linear-gradient(135deg,#f97316,#fbbf24);">🗄️ HDD &amp; SSD</span>
+          <span class="badge-pill text-white" style="background:linear-gradient(135deg,#22c55e,#16a34a);">🔒 Permanen</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     MAIN SECTION – HDD & SSD Illustrated
+═══════════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 mt-8">
+  <div class="bg-white rounded-3xl shadow-xl overflow-hidden" style="border:3px solid #c7d2fe;">
+    <div class="px-6 py-4" style="background:linear-gradient(135deg,#eef2ff,#c7d2fe);">
+      <h2 class="sec-title text-2xl sm:text-3xl text-indigo-800">🗄️ Kenalan dengan Hard Disk &amp; SSD!</h2>
+    </div>
+
+    <div class="p-6 sm:p-8">
+      <!-- Two cabinets side by side -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+
+        <!-- HDD Card -->
+        <div class="rounded-3xl overflow-hidden shadow-lg" style="border:3px solid #fde68a;">
+          <div class="px-4 py-3 text-center" style="background:linear-gradient(135deg,#fef9c3,#fde68a);">
+            <h3 class="sec-title text-xl text-yellow-800">🟡 Hard Disk (HDD)</h3>
+            <p class="text-yellow-700 text-sm font-bold">Lemari Besar yang Berputar</p>
+          </div>
+          <div class="p-4 bg-yellow-50 flex flex-col items-center">
+            <!-- HDD SVG Illustration -->
+            <div class="float-gentle">
+              <svg id="hddSvg" width="180" height="200" viewBox="0 0 180 200" fill="none">
+                <!-- Cabinet body -->
+                <rect x="15" y="20" width="150" height="170" rx="16" fill="#78716c"/>
+                <rect x="15" y="20" width="150" height="170" rx="16" fill="url(#hddBodyGrad)"/>
+                <!-- Cabinet front panel -->
+                <rect x="22" y="28" width="136" height="154" rx="12" fill="#44403c"/>
+                <!-- Drawer 1 - main platter window -->
+                <rect x="30" y="35" width="120" height="100" rx="10" fill="#1c1917"/>
+                <!-- HDD platter (spinning disk) -->
+                <g id="hddPlatter" style="transform-origin:90px 85px;">
+                  <circle cx="90" cy="85" r="44" fill="#374151"/>
+                  <circle cx="90" cy="85" r="44" fill="url(#platGrad)"/>
+                  <!-- platter rings -->
+                  <circle cx="90" cy="85" r="38" stroke="#6b7280" stroke-width=".8" fill="none" opacity=".5"/>
+                  <circle cx="90" cy="85" r="30" stroke="#6b7280" stroke-width=".8" fill="none" opacity=".5"/>
+                  <circle cx="90" cy="85" r="22" stroke="#6b7280" stroke-width=".8" fill="none" opacity=".5"/>
+                  <circle cx="90" cy="85" r="14" stroke="#6b7280" stroke-width=".8" fill="none" opacity=".5"/>
+                  <!-- data sectors colors -->
+                  <path d="M90 85 L128 58 A44 44 0 0 1 130 90 Z" fill="#6366f1" opacity=".4"/>
+                  <path d="M90 85 L52 62 A44 44 0 0 1 90 41 Z" fill="#22c55e" opacity=".3"/>
+                  <path d="M90 85 L60 120 A44 44 0 0 1 52 62 Z" fill="#f97316" opacity=".3"/>
+                  <!-- center hub -->
+                  <circle cx="90" cy="85" r="8" fill="#9ca3af"/>
+                  <circle cx="90" cy="85" r="4" fill="#374151"/>
+                  <circle cx="92" cy="83" r="1.5" fill="#e5e7eb"/>
+                </g>
+                <!-- Read/write arm -->
+                <g id="hddArm" style="transform-origin:90px 85px;">
+                  <rect x="88" y="44" width="40" height="8" rx="4" fill="#d1d5db" transform="rotate(20 88 44)"/>
+                  <circle cx="120" cy="52" r="5" fill="#fbbf24"/>
+                  <circle cx="120" cy="52" r="2.5" fill="#92400e"/>
+                </g>
+                <!-- Screw bolts corners -->
+                <circle cx="35" cy="42" r="4" fill="#6b7280"/><circle cx="35" cy="42" r="2" fill="#9ca3af"/>
+                <circle cx="145" cy="42" r="4" fill="#6b7280"/><circle cx="145" cy="42" r="2" fill="#9ca3af"/>
+                <circle cx="35" cy="128" r="4" fill="#6b7280"/><circle cx="35" cy="128" r="2" fill="#9ca3af"/>
+                <circle cx="145" cy="128" r="4" fill="#6b7280"/><circle cx="145" cy="128" r="2" fill="#9ca3af"/>
+                <!-- Bottom connectors area -->
+                <rect x="30" y="145" width="120" height="30" rx="8" fill="#292524"/>
+                <!-- SATA connector -->
+                <rect x="40" y="152" width="40" height="12" rx="3" fill="#fbbf24"/>
+                <rect x="86" y="154" width="22" height="8" rx="2" fill="#9ca3af"/>
+                <!-- LED indicator -->
+                <circle id="hddLed" cx="150" cy="160" r="5" fill="#374151"/>
+                <!-- Label -->
+                <rect x="50" y="148" width="0" height="0" rx="3" fill="none"/>
+                <text x="90" y="186" text-anchor="middle" font-family="Fredoka One,cursive" font-size="13" fill="#e5e7eb">HDD</text>
+                <text x="90" y="198" text-anchor="middle" font-family="Nunito,sans-serif" font-size="9" fill="#9ca3af" font-weight="700">1 TB</text>
+                <!-- Defs -->
+                <defs>
+                  <radialGradient id="platGrad" cx="40%" cy="40%">
+                    <stop offset="0%"   stop-color="#6b7280"/>
+                    <stop offset="100%" stop-color="#1f2937"/>
+                  </radialGradient>
+                  <linearGradient id="hddBodyGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%"   stop-color="#a8a29e"/>
+                    <stop offset="100%" stop-color="#57534e"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <!-- Info pills -->
+            <div class="flex flex-col gap-2 w-full mt-3">
+              <div class="flex items-center gap-2 bg-yellow-100 rounded-xl px-3 py-2">
+                <span>⚙️</span><p class="text-xs font-bold text-yellow-800">Punya piringan yang berputar</p>
+              </div>
+              <div class="flex items-center gap-2 bg-orange-100 rounded-xl px-3 py-2">
+                <span>🔊</span><p class="text-xs font-bold text-orange-800">Ada suara sedikit saat bekerja</p>
+              </div>
+              <div class="flex items-center gap-2 bg-blue-100 rounded-xl px-3 py-2">
+                <span>💰</span><p class="text-xs font-bold text-blue-800">Harganya lebih murah, muat banyak</p>
+              </div>
+              <div class="flex items-center gap-2 bg-green-100 rounded-xl px-3 py-2">
+                <span>📦</span><p class="text-xs font-bold text-green-800">Cocok simpan film, foto koleksi</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SSD Card -->
+        <div class="rounded-3xl overflow-hidden shadow-lg" style="border:3px solid #c7d2fe;">
+          <div class="px-4 py-3 text-center" style="background:linear-gradient(135deg,#eef2ff,#c7d2fe);">
+            <h3 class="sec-title text-xl text-indigo-800">🔵 SSD (Solid State Drive)</h3>
+            <p class="text-indigo-700 text-sm font-bold">Lemari Tipis Super Cepat!</p>
+          </div>
+          <div class="p-4 bg-indigo-50 flex flex-col items-center">
+            <!-- SSD SVG Illustration -->
+            <div class="float-gentle" style="animation-delay:.8s;">
+              <svg id="ssdSvg" width="180" height="200" viewBox="0 0 180 200" fill="none">
+                <!-- SSD body – slim modern -->
+                <rect x="10" y="55" width="160" height="90" rx="14" fill="#312e81"/>
+                <rect x="10" y="55" width="160" height="90" rx="14" fill="url(#ssdBodyGrad)"/>
+                <!-- PCB green board inside -->
+                <rect x="18" y="63" width="144" height="74" rx="10" fill="#065f46"/>
+                <!-- Circuit traces -->
+                <line x1="28" y1="73" x2="152" y2="73" stroke="#34d399" stroke-width="1" opacity=".4"/>
+                <line x1="28" y1="83" x2="152" y2="83" stroke="#34d399" stroke-width="1" opacity=".3"/>
+                <line x1="28" y1="93" x2="152" y2="93" stroke="#34d399" stroke-width="1" opacity=".2"/>
+                <line x1="40" y1="63" x2="40" y2="137" stroke="#34d399" stroke-width="1" opacity=".3"/>
+                <line x1="80" y1="63" x2="80" y2="137" stroke="#34d399" stroke-width="1" opacity=".25"/>
+                <line x1="120" y1="63" x2="120" y2="137" stroke="#34d399" stroke-width="1" opacity=".3"/>
+                <!-- NAND Flash chips (the magic memory blocks!) -->
+                <rect x="25" y="68" width="30" height="22" rx="4" fill="#1d4ed8"/>
+                <rect x="25" y="68" width="30" height="22" rx="4" fill="url(#chipGrad)"/>
+                <text x="40" y="83" text-anchor="middle" font-size="7" fill="#93c5fd" font-family="monospace" font-weight="bold">NAND</text>
+                <rect x="62" y="68" width="30" height="22" rx="4" fill="#1d4ed8"/>
+                <rect x="62" y="68" width="30" height="22" rx="4" fill="url(#chipGrad)"/>
+                <text x="77" y="83" text-anchor="middle" font-size="7" fill="#93c5fd" font-family="monospace" font-weight="bold">NAND</text>
+                <rect x="99" y="68" width="30" height="22" rx="4" fill="#1d4ed8"/>
+                <rect x="99" y="68" width="30" height="22" rx="4" fill="url(#chipGrad)"/>
+                <text x="114" y="83" text-anchor="middle" font-size="7" fill="#93c5fd" font-family="monospace" font-weight="bold">NAND</text>
+                <rect x="136" y="68" width="24" height="22" rx="4" fill="#1d4ed8"/>
+                <rect x="136" y="68" width="24" height="22" rx="4" fill="url(#chipGrad)"/>
+                <text x="148" y="83" text-anchor="middle" font-size="7" fill="#93c5fd" font-family="monospace" font-weight="bold">CTL</text>
+                <!-- Flash indicator dots -->
+                <circle id="ssdDot1" cx="40"  cy="101" r="4" fill="#fbbf24" opacity=".5"/>
+                <circle id="ssdDot2" cx="77"  cy="101" r="4" fill="#34d399" opacity=".5"/>
+                <circle id="ssdDot3" cx="114" cy="101" r="4" fill="#60a5fa" opacity=".5"/>
+                <circle id="ssdDot4" cx="148" cy="101" r="4" fill="#f472b6" opacity=".5"/>
+                <!-- Data bars -->
+                <rect x="25" y="108" width="30" height="6" rx="3" fill="#4ade80" opacity=".6"/>
+                <rect x="62" y="108" width="22" height="6" rx="3" fill="#60a5fa" opacity=".6"/>
+                <rect x="99" y="108" width="28" height="6" rx="3" fill="#fbbf24" opacity=".6"/>
+                <rect x="136" y="108" width="15" height="6" rx="3" fill="#f472b6" opacity=".6"/>
+                <!-- Bottom row chips -->
+                <rect x="25" y="120" width="64" height="12" rx="4" fill="#7c3aed" opacity=".6"/>
+                <text x="57" y="130" text-anchor="middle" font-size="7" fill="#e9d5ff" font-family="monospace" font-weight="bold">DRAM CACHE</text>
+                <rect x="95" y="120" width="65" height="12" rx="4" fill="#0e7490" opacity=".6"/>
+                <text x="128" y="130" text-anchor="middle" font-size="7" fill="#cffafe" font-family="monospace" font-weight="bold">SSD CTRL</text>
+                <!-- Connector at bottom -->
+                <rect x="10" y="145" width="160" height="22" rx="0 0 14 14" fill="#1e1b4b"/>
+                <rect x="25" y="150" width="90" height="12" rx="3" fill="#fbbf24"/>
+                <rect x="120" y="152" width="35" height="8" rx="2" fill="#6b7280"/>
+                <!-- LED -->
+                <circle id="ssdLed" cx="155" cy="156" r="5" fill="#374151"/>
+                <!-- Label -->
+                <text x="90" y="182" text-anchor="middle" font-family="Fredoka One,cursive" font-size="13" fill="#e0e7ff">SSD</text>
+                <text x="90" y="196" text-anchor="middle" font-family="Nunito,sans-serif" font-size="9" fill="#a5b4fc" font-weight="700">500 GB · M.2 NVMe</text>
+                <defs>
+                  <linearGradient id="ssdBodyGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%"   stop-color="#4f46e5"/>
+                    <stop offset="100%" stop-color="#1e1b4b"/>
+                  </linearGradient>
+                  <linearGradient id="chipGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%"   stop-color="#3b82f6" stop-opacity=".4"/>
+                    <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <!-- Info pills -->
+            <div class="flex flex-col gap-2 w-full mt-3">
+              <div class="flex items-center gap-2 bg-indigo-100 rounded-xl px-3 py-2">
+                <span>⚡</span><p class="text-xs font-bold text-indigo-800">Super cepat! Tidak ada bagian berputar</p>
+              </div>
+              <div class="flex items-center gap-2 bg-green-100 rounded-xl px-3 py-2">
+                <span>🤫</span><p class="text-xs font-bold text-green-800">Tidak ada suara sama sekali (senyap)</p>
+              </div>
+              <div class="flex items-center gap-2 bg-yellow-100 rounded-xl px-3 py-2">
+                <span>💸</span><p class="text-xs font-bold text-yellow-800">Harganya lebih mahal, tapi lebih tipis</p>
+              </div>
+              <div class="flex items-center gap-2 bg-pink-100 rounded-xl px-3 py-2">
+                <span>🎮</span><p class="text-xs font-bold text-pink-800">Cocok untuk game dan buka komputer cepat</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key fact banner -->
+      <div class="rounded-2xl p-5 flex items-center gap-4" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);border:2px solid #86efac;">
+        <span style="font-size:2.5rem;">🔑</span>
+        <div>
+          <p class="font-black text-green-800 sec-title text-lg">Fakta Penting!</p>
+          <p class="text-green-700 font-semibold text-sm leading-relaxed">
+            Berbeda dengan <strong>RAM</strong> (yang lupa saat komputer mati), data di <strong>Hard Disk &amp; SSD</strong> tetap tersimpan SELAMANYA sampai kamu menghapusnya sendiri! 🔒✨
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     INTERACTIVE – Simpan & Matikan
+═══════════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 mt-8">
+  <div class="bg-white rounded-3xl shadow-xl overflow-hidden" style="border:3px solid #fde68a;">
+    <div class="px-6 py-4" style="background:linear-gradient(135deg,#fef9c3,#fde68a);">
+      <h2 class="sec-title text-2xl sm:text-3xl text-yellow-800">🎮 Ayo Cobain Lemarinya!</h2>
+    </div>
+
+    <div class="p-6 sm:p-8">
+      <p class="text-center text-gray-700 font-bold text-lg mb-6">
+        Pilih file yang mau kamu simpan, lalu coba matikan komputernya! 💾
+      </p>
+
+      <!-- File buttons to save -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <button onclick="saveFile('game','🎮','Game RPG',2048)" id="btn-game"
+          class="rounded-2xl p-4 text-center font-bold transition-all hover:scale-105 active:scale-95 shadow-md"
+          style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:2px solid #c4b5fd;">
+          <div class="text-4xl mb-1">🎮</div>
+          <p class="text-purple-700 text-sm sec-title">Game RPG</p>
+          <span class="badge-pill text-white mt-1" style="background:#a78bfa;">2 GB</span>
+        </button>
+        <button onclick="saveFile('photo','📸','Foto Liburan',150)" id="btn-photo"
+          class="rounded-2xl p-4 text-center font-bold transition-all hover:scale-105 active:scale-95 shadow-md"
+          style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);border:2px solid #f9a8d4;">
+          <div class="text-4xl mb-1">📸</div>
+          <p class="text-pink-700 text-sm sec-title">Foto Liburan</p>
+          <span class="badge-pill text-white mt-1" style="background:#ec4899;">150 MB</span>
+        </button>
+        <button onclick="saveFile('video','🎬','Video Lucu',700)" id="btn-video"
+          class="rounded-2xl p-4 text-center font-bold transition-all hover:scale-105 active:scale-95 shadow-md"
+          style="background:linear-gradient(135deg,#fef9c3,#fde68a);border:2px solid #fcd34d;">
+          <div class="text-4xl mb-1">🎬</div>
+          <p class="text-yellow-700 text-sm sec-title">Video Lucu</p>
+          <span class="badge-pill text-white mt-1" style="background:#eab308;">700 MB</span>
+        </button>
+        <button onclick="saveFile('doc','📚','Tugas Sekolah',5)" id="btn-doc"
+          class="rounded-2xl p-4 text-center font-bold transition-all hover:scale-105 active:scale-95 shadow-md"
+          style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);border:2px solid #86efac;">
+          <div class="text-4xl mb-1">📚</div>
+          <p class="text-green-700 text-sm sec-title">Tugas Sekolah</p>
+          <span class="badge-pill text-white mt-1" style="background:#22c55e;">5 MB</span>
+        </button>
+      </div>
+
+      <!-- Storage Cabinets Display -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
+
+        <!-- HDD Cabinet display -->
+        <div id="hddCabinet" class="rounded-2xl overflow-hidden relative" style="border:3px solid #fde68a;">
+          <!-- power-off overlay -->
+          <div id="hddPowerOverlay" class="screen-overlay hidden" style="opacity:0;border-radius:16px;">
+            <span style="font-size:3rem;">😴</span>
+            <p class="text-white font-black sec-title text-lg mt-2">Komputer Mati...</p>
+            <p class="text-gray-300 text-sm font-bold mt-1">Tapi data tetap ada! 🔒</p>
+          </div>
+          <div class="px-3 py-2 flex items-center justify-between" style="background:linear-gradient(135deg,#fef9c3,#fde68a);">
+            <span class="font-black text-yellow-800 sec-title">🟡 Hard Disk (HDD)</span>
+            <div class="flex items-center gap-1.5">
+              <div class="led" id="hddLedBox"></div>
+              <span class="text-xs font-bold text-gray-500" id="hddLedLabel">OFF</span>
+            </div>
+          </div>
+          <!-- HDD activity: spinning animation while saving -->
+          <div class="bg-gray-900 p-3 flex items-center justify-center" style="min-height:90px;">
+            <svg id="hddActivity" width="80" height="80" viewBox="0 0 80 80" fill="none">
+              <circle cx="40" cy="40" r="36" fill="#1f2937"/>
+              <g id="platterAnim">
+                <circle cx="40" cy="40" r="34" fill="url(#platAnim)"/>
+                <circle cx="40" cy="40" r="28" stroke="#374151" stroke-width=".8" fill="none"/>
+                <circle cx="40" cy="40" r="20" stroke="#374151" stroke-width=".8" fill="none"/>
+                <circle cx="40" cy="40" r="12" stroke="#374151" stroke-width=".8" fill="none"/>
+                <circle cx="40" cy="40" r="5" fill="#6b7280"/>
+                <circle cx="40" cy="40" r="2.5" fill="#1f2937"/>
+                <circle cx="41.5" cy="38.5" r="1" fill="#d1d5db"/>
+              </g>
+              <defs>
+                <radialGradient id="platAnim" cx="35%" cy="35%">
+                  <stop offset="0%" stop-color="#4b5563"/>
+                  <stop offset="100%" stop-color="#111827"/>
+                </radialGradient>
+              </defs>
+            </svg>
+            <div class="ml-3 flex-1">
+              <p class="text-green-400 text-xs font-bold sec-title mb-1" id="hddStatus">Menunggu data...</p>
+              <!-- file list -->
+              <div id="hddFileList" class="flex flex-col gap-1"></div>
+            </div>
+          </div>
+          <!-- storage bar -->
+          <div class="px-3 py-2 bg-gray-800">
+            <div class="flex justify-between text-xs text-gray-400 font-bold mb-1">
+              <span>Kapasitas 1 TB</span>
+              <span id="hddUsed">0 GB terpakai</span>
+            </div>
+            <div class="w-full h-3 bg-gray-700 rounded-full overflow-hidden">
+              <div id="hddBar" class="h-full rounded-full speed-bar" style="width:0%;background:linear-gradient(90deg,#fbbf24,#f97316);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SSD Cabinet display -->
+        <div id="ssdCabinet" class="rounded-2xl overflow-hidden relative" style="border:3px solid #c7d2fe;">
+          <!-- power-off overlay -->
+          <div id="ssdPowerOverlay" class="screen-overlay hidden" style="opacity:0;border-radius:16px;">
+            <span style="font-size:3rem;">😴</span>
+            <p class="text-white font-black sec-title text-lg mt-2">Komputer Mati...</p>
+            <p class="text-indigo-300 text-sm font-bold mt-1">Tapi data tetap ada! 🔒</p>
+          </div>
+          <div class="px-3 py-2 flex items-center justify-between" style="background:linear-gradient(135deg,#eef2ff,#c7d2fe);">
+            <span class="font-black text-indigo-800 sec-title">🔵 SSD</span>
+            <div class="flex items-center gap-1.5">
+              <div class="led" id="ssdLedBox"></div>
+              <span class="text-xs font-bold text-gray-500" id="ssdLedLabel">OFF</span>
+            </div>
+          </div>
+          <div class="bg-gray-900 p-3 flex items-center justify-center" style="min-height:90px;">
+            <!-- SSD activity: chip flash pattern -->
+            <svg id="ssdActivity" width="80" height="80" viewBox="0 0 80 80" fill="none">
+              <rect x="5" y="5" width="70" height="70" rx="10" fill="#1e1b4b"/>
+              <rect x="12" y="12" width="56" height="56" rx="6" fill="#065f46"/>
+              <line x1="12" y1="25" x2="68" y2="25" stroke="#34d399" stroke-width=".8" opacity=".4"/>
+              <line x1="12" y1="40" x2="68" y2="40" stroke="#34d399" stroke-width=".8" opacity=".3"/>
+              <line x1="12" y1="55" x2="68" y2="55" stroke="#34d399" stroke-width=".8" opacity=".4"/>
+              <line x1="27" y1="12" x2="27" y2="68" stroke="#34d399" stroke-width=".8" opacity=".3"/>
+              <line x1="53" y1="12" x2="53" y2="68" stroke="#34d399" stroke-width=".8" opacity=".3"/>
+              <!-- Chip blocks -->
+              <rect x="14" y="14" width="11" height="9" rx="2" fill="#1d4ed8" id="sc1"/>
+              <rect x="28" y="14" width="11" height="9" rx="2" fill="#1d4ed8" id="sc2"/>
+              <rect x="42" y="14" width="11" height="9" rx="2" fill="#1d4ed8" id="sc3"/>
+              <rect x="56" y="14" width="9"  height="9" rx="2" fill="#7c3aed" id="sc4"/>
+              <rect x="14" y="43" width="24" height="9" rx="2" fill="#0e7490" id="sc5"/>
+              <rect x="42" y="43" width="24" height="9" rx="2" fill="#0e7490" id="sc6"/>
+              <rect x="14" y="57" width="56" height="8" rx="2" fill="#374151" id="sc7"/>
+            </svg>
+            <div class="ml-3 flex-1">
+              <p class="text-blue-400 text-xs font-bold sec-title mb-1" id="ssdStatus">Menunggu data...</p>
+              <div id="ssdFileList" class="flex flex-col gap-1"></div>
+            </div>
+          </div>
+          <div class="px-3 py-2 bg-gray-800">
+            <div class="flex justify-between text-xs text-gray-400 font-bold mb-1">
+              <span>Kapasitas 500 GB</span>
+              <span id="ssdUsed">0 GB terpakai</span>
+            </div>
+            <div class="w-full h-3 bg-gray-700 rounded-full overflow-hidden">
+              <div id="ssdBar" class="h-full rounded-full speed-bar" style="width:0%;background:linear-gradient(90deg,#6366f1,#818cf8);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex flex-wrap gap-3 justify-center mb-4">
+        <button onclick="saveToStorage()" class="btn-indigo">💾 Simpan ke Lemari!</button>
+        <button onclick="togglePower()" id="powerBtn" class="btn-red">🔴 Matikan Komputer</button>
+        <button onclick="resetStorage()" class="btn-orange">🗑️ Reset Semua</button>
+      </div>
+
+      <!-- Status message -->
+      <div id="storageMsg" class="rounded-2xl p-4 text-center font-bold transition-all"
+           style="background:#f0fdf4;border:2px solid #86efac;">
+        <p id="storageMsgText" class="text-green-700 font-bold">
+          ✅ Pilih file dulu, lalu klik "Simpan ke Lemari"! 😊
+        </p>
+      </div>
+
+      <!-- Computer on/off state indicator -->
+      <div id="computerState" class="mt-4 rounded-2xl p-3 flex items-center gap-3 justify-center"
+           style="background:#f0fdf4;border:2px solid #86efac;">
+        <div class="led led-green" id="stateIndicator"></div>
+        <span id="stateText" class="font-black text-green-700 sec-title">💻 Komputer Menyala</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     COMPARISON SECTION
+═══════════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 mt-8">
+  <div class="bg-white rounded-3xl shadow-xl overflow-hidden" style="border:3px solid #fbcfe8;">
+    <div class="px-6 py-4" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);">
+      <h2 class="sec-title text-2xl sm:text-3xl text-pink-800">⚡ HDD vs SSD – Siapa Lebih Cepat?</h2>
+    </div>
+    <div class="p-6 sm:p-8">
+
+      <!-- Race visual -->
+      <div class="mb-6">
+        <p class="text-center text-gray-700 font-bold mb-5 text-base">
+          Bayangkan mereka balapan! 🏁 Siapa yang menang?
+        </p>
+
+        <!-- HDD Race bar -->
+        <div class="mb-4">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="w-28 text-right font-black text-yellow-700 sec-title text-base">🟡 HDD</span>
+            <div class="flex-1 bg-gray-100 rounded-full h-12 overflow-hidden relative shadow-inner">
+              <div id="raceHDD" class="comp-bar-speed h-full rounded-full flex items-center pl-3"
+                   style="width:0%;background:linear-gradient(90deg,#fbbf24,#f97316);">
+                <span class="text-white font-black text-sm sec-title">🚗 ~130 MB/s</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SSD Race bar -->
+        <div class="mb-4">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="w-28 text-right font-black text-indigo-700 sec-title text-base">🔵 SSD</span>
+            <div class="flex-1 bg-gray-100 rounded-full h-12 overflow-hidden relative shadow-inner">
+              <div id="raceSSD" class="comp-bar-speed h-full rounded-full flex items-center pl-3"
+                   style="width:0%;background:linear-gradient(90deg,#6366f1,#818cf8);">
+                <span class="text-white font-black text-sm sec-title">🚀 ~3.500 MB/s</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-center mt-4">
+          <button onclick="startRace()" class="btn-magic px-8 py-3 text-base">🏁 Mulai Balapan!</button>
+        </div>
+        <div id="raceResult" class="hidden mt-4 text-center rounded-2xl p-4 slide-up"
+             style="background:linear-gradient(135deg,#eef2ff,#c7d2fe);border:2px solid #818cf8;">
+          <p class="sec-title text-2xl text-indigo-700">🏆 SSD Menang! SSD 27× lebih cepat dari HDD!</p>
+          <p class="text-indigo-600 font-bold text-sm mt-1">Bayangkan kamu cuma nunggu 1 detik, HDD masih perlu 27 detik! 😱</p>
+        </div>
+      </div>
+
+      <!-- Comparison table -->
+      <div class="overflow-x-auto rounded-2xl" style="border:2px solid #e5e7eb;">
+        <table class="w-full">
+          <thead>
+            <tr style="background:linear-gradient(135deg,#1e1b4b,#3730a3);">
+              <th class="p-3 text-left text-white sec-title text-sm">Fitur</th>
+              <th class="p-3 text-center text-yellow-300 sec-title text-sm">🟡 HDD</th>
+              <th class="p-3 text-center text-blue-300 sec-title text-sm">🔵 SSD</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="p-3 font-bold text-gray-700 text-sm">⚡ Kecepatan</td>
+              <td class="p-3 text-center text-yellow-700 font-bold text-sm">~130 MB/s 🐢</td>
+              <td class="p-3 text-center text-indigo-700 font-bold text-sm">~3.500 MB/s 🚀</td>
+            </tr>
+            <tr class="bg-gray-50 hover:bg-gray-100 transition-colors">
+              <td class="p-3 font-bold text-gray-700 text-sm">🔊 Suara</td>
+              <td class="p-3 text-center text-yellow-700 font-bold text-sm">Ada suara 🔉</td>
+              <td class="p-3 text-center text-indigo-700 font-bold text-sm">Senyap total 🤫</td>
+            </tr>
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="p-3 font-bold text-gray-700 text-sm">📦 Ukuran</td>
+              <td class="p-3 text-center text-yellow-700 font-bold text-sm">Lebih besar &amp; berat</td>
+              <td class="p-3 text-center text-indigo-700 font-bold text-sm">Tipis &amp; ringan ✨</td>
+            </tr>
+            <tr class="bg-gray-50 hover:bg-gray-100 transition-colors">
+              <td class="p-3 font-bold text-gray-700 text-sm">💰 Harga</td>
+              <td class="p-3 text-center text-green-700 font-bold text-sm">✅ Lebih murah</td>
+              <td class="p-3 text-center text-red-600 font-bold text-sm">Lebih mahal</td>
+            </tr>
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="p-3 font-bold text-gray-700 text-sm">💾 Kapasitas</td>
+              <td class="p-3 text-center text-yellow-700 font-bold text-sm">✅ Bisa sangat besar (4-20 TB)</td>
+              <td class="p-3 text-center text-indigo-700 font-bold text-sm">500 GB – 4 TB</td>
+            </tr>
+            <tr class="bg-gray-50 hover:bg-gray-100 transition-colors">
+              <td class="p-3 font-bold text-gray-700 text-sm">⚙️ Cara kerja</td>
+              <td class="p-3 text-center text-yellow-700 font-bold text-sm">Piringan berputar 💿</td>
+              <td class="p-3 text-center text-indigo-700 font-bold text-sm">Chip memori flash ✨</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Fun tip -->
+      <div class="mt-5 rounded-2xl p-4 flex items-start gap-3" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #93c5fd;">
+        <span style="font-size:2rem;">💡</span>
+        <div>
+          <p class="font-black text-blue-800 sec-title text-base">Tips Keren!</p>
+          <p class="text-blue-700 text-sm font-semibold leading-relaxed">
+            Banyak komputer modern punya <strong>dua-duanya</strong>: 
+            SSD untuk sistem operasi (biar cepat nyala), dan HDD untuk simpan koleksi film &amp; foto banyak-banyak. 
+            Kombinasi terbaik! 🤝🌟
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     ACTIVITY – Drawing
+═══════════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 mt-8">
+  <div class="bg-white rounded-3xl shadow-xl overflow-hidden" style="border:3px solid #a5f3fc;">
+    <div class="px-6 py-4" style="background:linear-gradient(135deg,#cffafe,#a5f3fc);">
+      <h2 class="sec-title text-2xl sm:text-3xl text-cyan-800">✏️ Aktivitas Hari Ini!</h2>
+    </div>
+    <div class="p-6 sm:p-8">
+      <div class="flex flex-col lg:flex-row items-start gap-6">
+
+        <!-- Task card -->
+        <div class="flex-1">
+          <div class="rounded-2xl p-5 mb-4" style="background:linear-gradient(135deg,#cffafe,#e0f2fe);border:2px dashed #38bdf8;">
+            <h3 class="sec-title text-xl text-cyan-800 mb-2">📋 Tugasmu:</h3>
+            <p class="text-gray-700 font-bold leading-relaxed text-base">
+              🎨 <strong>Gambarlah dua lemari penyimpanan milikmu:</strong><br>
+              satu untuk <strong>Hard Disk</strong> dan satu untuk <strong>SSD</strong>!
+            </p>
+            <ul class="mt-3 flex flex-col gap-2">
+              <li class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                <span class="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center text-white font-black text-xs flex-shrink-0">1</span>
+                Gambar lemari HDD: besar, ada piringan di dalam
+              </li>
+              <li class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                <span class="w-6 h-6 rounded-full bg-indigo-400 flex items-center justify-center text-white font-black text-xs flex-shrink-0">2</span>
+                Gambar lemari SSD: ramping, modern, ada chip-chip kecil
+              </li>
+              <li class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                <span class="w-6 h-6 rounded-full bg-pink-400 flex items-center justify-center text-white font-black text-xs flex-shrink-0">3</span>
+                Isi lemarinya dengan game, foto, video favoritmu! 🎮📸🎬
+              </li>
+            </ul>
+          </div>
+
+          <!-- Color picker -->
+          <p class="font-black text-gray-700 mb-2 text-sm">🎨 Pilih warna:</p>
+          <div class="flex gap-2 flex-wrap mb-3">
+            <button onclick="setColor('#1e1b4b')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#1e1b4b;"></button>
+            <button onclick="setColor('#ef4444')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#ef4444;"></button>
+            <button onclick="setColor('#f97316')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#f97316;"></button>
+            <button onclick="setColor('#eab308')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#eab308;"></button>
+            <button onclick="setColor('#22c55e')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#22c55e;"></button>
+            <button onclick="setColor('#6366f1')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#6366f1;"></button>
+            <button onclick="setColor('#3b82f6')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#3b82f6;"></button>
+            <button onclick="setColor('#a78bfa')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#a78bfa;"></button>
+            <button onclick="setColor('#ff6b9d')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#ff6b9d;"></button>
+            <button onclick="setColor('#78716c')" class="w-8 h-8 rounded-full border-2 border-white shadow hover:scale-110 transition-transform" style="background:#78716c;"></button>
+            <button onclick="setColor('#ffffff')" class="w-8 h-8 rounded-full border-2 border-gray-300 shadow hover:scale-110 transition-transform" style="background:#ffffff;"></button>
+          </div>
+          <!-- Brush -->
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-sm font-bold text-gray-600">Kuas:</span>
+            <input type="range" id="brushSize" min="2" max="24" value="6"
+              class="flex-1 h-2 rounded-full cursor-pointer accent-indigo-500">
+            <span id="brushPreview" class="w-8 h-8 rounded-full flex-shrink-0" style="background:#1e1b4b;border:2px solid white;transition:all .2s;"></span>
+          </div>
+          <!-- Action buttons -->
+          <div class="flex gap-3 flex-wrap">
+            <button onclick="clearCanvas()" class="btn-orange text-sm py-2 px-4">🗑️ Hapus</button>
+            <button onclick="downloadDrawing()" class="btn-magic text-sm py-2 px-4">💾 Simpan Gambar!</button>
+          </div>
+        </div>
+
+        <!-- Canvas with template -->
+        <div class="flex-shrink-0 w-full lg:w-auto flex flex-col items-center">
+          <div class="relative">
+            <canvas id="drawCanvas" width="300" height="340"
+              style="background:white;border:3px solid #38bdf8;box-shadow:6px 6px 0 #a5f3fc;">
+            </canvas>
+            <!-- Template overlay – two cabinet outlines -->
+            <svg class="absolute top-0 left-0 pointer-events-none" width="300" height="340" viewBox="0 0 300 340" fill="none" opacity="0.07">
+              <!-- HDD cabinet outline left -->
+              <rect x="12" y="20" width="120" height="145" rx="12" stroke="#000" stroke-width="5"/>
+              <circle cx="72" cy="80" r="36" stroke="#000" stroke-width="4"/>
+              <circle cx="72" cy="80" r="20" stroke="#000" stroke-width="2"/>
+              <circle cx="72" cy="80" r="6"  stroke="#000" stroke-width="2"/>
+              <text x="72" y="145" text-anchor="middle" font-size="14" font-weight="bold" fill="#000">HDD</text>
+              <rect x="22" y="152" width="100" height="5" rx="2" fill="#000"/>
+              <!-- SSD cabinet outline right -->
+              <rect x="168" y="60" width="120" height="60" rx="12" stroke="#000" stroke-width="5"/>
+              <rect x="178" y="70" width="18" height="14" rx="3" stroke="#000" stroke-width="2.5"/>
+              <rect x="202" y="70" width="18" height="14" rx="3" stroke="#000" stroke-width="2.5"/>
+              <rect x="226" y="70" width="18" height="14" rx="3" stroke="#000" stroke-width="2.5"/>
+              <rect x="178" y="94" width="66" height="14" rx="3" stroke="#000" stroke-width="2"/>
+              <text x="228" y="150" text-anchor="middle" font-size="14" font-weight="bold" fill="#000">SSD</text>
+            </svg>
+          </div>
+          <p class="text-xs text-center text-gray-400 font-bold mt-2">👆 Gambar di sini!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     QUIZ
+═══════════════════════════════════════ -->
+<section class="max-w-4xl mx-auto px-4 mt-8">
+  <div class="bg-white rounded-3xl shadow-xl overflow-hidden" style="border:3px solid #fde68a;">
+    <div class="px-6 py-4" style="background:linear-gradient(135deg,#fefce8,#fef9c3);">
+      <h2 class="sec-title text-2xl sm:text-3xl text-yellow-800">🧠 Quiz Kilat!</h2>
+    </div>
+    <div class="p-6 sm:p-8">
+
+      <!-- Q1 -->
+      <div id="q1" class="quiz-q">
+        <p class="font-black text-gray-800 text-lg mb-4">❓ Pertanyaan 1: Apa yang membedakan Hard Disk &amp; SSD dari RAM?</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button onclick="qa(1,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all"
+            style="background:#f0fdf4;border:2px solid #86efac;">
+            <span class="text-xl">🤔</span> <span class="text-green-700">RAM juga menyimpan data selamanya</span>
+          </button>
+          <button onclick="qa(1,true,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all"
+            style="background:#eff6ff;border:2px solid #93c5fd;">
+            <span class="text-xl">✅</span> <span class="text-blue-700">Data di HDD/SSD tidak hilang saat komputer mati</span>
+          </button>
+          <button onclick="qa(1,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all"
+            style="background:#fef9c3;border:2px solid #fcd34d;">
+            <span class="text-xl">🤔</span> <span class="text-yellow-700">HDD dan SSD sama seperti RAM</span>
+          </button>
+          <button onclick="qa(1,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all"
+            style="background:#fce7f3;border:2px solid #f9a8d4;">
+            <span class="text-xl">🤔</span> <span class="text-pink-700">HDD/SSD lebih kecil dari RAM</span>
+          </button>
+        </div>
+        <div id="fb1" class="mt-3 rounded-2xl p-3 text-center font-bold hidden"></div>
+      </div>
+
+      <!-- Q2 -->
+      <div id="q2" class="quiz-q mt-6 hidden">
+        <p class="font-black text-gray-800 text-lg mb-4">❓ Pertanyaan 2: Mengapa SSD lebih cepat dari HDD?</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button onclick="qa(2,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all"
+            style="background:#fce7f3;border:2px solid #f9a8d4;">
+            <span class="text-xl">🤔</span> <span class="text-pink-700">Karena SSD lebih besar ukurannya</span>
+          </button>
+          <button onclick="qa(2,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all"
+            style="background:#fef9c3;border:2px solid #fcd34d;">
+            <span class="text-xl">🤔</span> <span class="text-yellow-700">Karena SSD punya piringan yang berputar lebih cepat</span>
+          </button>
+          <button onclick="qa(2,true,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all"
+            style="background:#dcfce7;border:2px solid #86efac;">
+            <span class="text-xl">✅</span> <span class="text-green-700">Karena SSD pakai chip memori, tidak ada bagian yang bergerak</span>
+          </button>
+          <button onclick="qa(2,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all"
+            style="background:#ede9fe;border:2px solid #c4b5fd;">
+            <span class="text-xl">🤔</span> <span class="text-purple-700">Karena SSD lebih mahal, jadi selalu cepat</span>
+          </button>
+        </div>
+        <div id="fb2" class="mt-3 rounded-2xl p-3 text-center font-bold hidden"></div>
+      </div>
+
+      <!-- Q3 -->
+      <div id="q3" class="quiz-q mt-6 hidden">
+        <p class="font-black text-gray-800 text-lg mb-4">❓ Pertanyaan 3: Kamu punya koleksi 1.000 video film. Penyimpanan mana yang lebih cocok?</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button onclick="qa(3,true,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all"
+            style="background:#fef9c3;border:2px solid #fcd34d;">
+            <span class="text-xl">✅</span> <span class="text-yellow-700">HDD – kapasitas lebih besar, harga lebih murah</span>
+          </button>
+          <button onclick="qa(3,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all"
+            style="background:#eff6ff;border:2px solid #93c5fd;">
+            <span class="text-xl">🤔</span> <span class="text-blue-700">SSD – karena lebih cepat</span>
+          </button>
+          <button onclick="qa(3,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all"
+            style="background:#fce7f3;border:2px solid #f9a8d4;">
+            <span class="text-xl">🤔</span> <span class="text-pink-700">RAM – karena lebih mudah diakses</span>
+          </button>
+          <button onclick="qa(3,false,this)" class="qbtn rounded-2xl p-4 font-bold text-left shadow hover:scale-101 transition-all"
+            style="background:#ede9fe;border:2px solid #c4b5fd;">
+            <span class="text-xl">🤔</span> <span class="text-purple-700">CPU – karena paling pintar</span>
+          </button>
+        </div>
+        <div id="fb3" class="mt-3 rounded-2xl p-3 text-center font-bold hidden"></div>
+      </div>
+
+      <!-- Score -->
+      <div id="quizScore" class="hidden mt-6 rounded-3xl p-6 text-center slide-up"
+           style="background:linear-gradient(135deg,#fefce8,#fef9c3);border:3px solid #fcd34d;">
+        <div class="text-5xl mb-3" id="scoreTrophy">🏆</div>
+        <p class="sec-title text-2xl text-yellow-800 mb-1">Skor Kamu:</p>
+        <p class="sec-title text-5xl text-indigo-600 mb-3" id="scoreText">0/3</p>
+        <p id="scoreMsg" class="text-gray-700 font-bold text-lg"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════ -->
+<footer class="max-w-4xl mx-auto px-4 mt-8 mb-8">
+  <div class="rounded-3xl p-6 sm:p-8 text-center"
+       style="background:linear-gradient(135deg,#1e1b4b,#3730a3,#6366f1);border:4px solid #c7d2fe;">
+    <!-- Aslan celebrate -->
+    <div class="flex justify-center mb-4">
+      <div style="animation:bounceAslan 1.5s ease-in-out infinite;">
+        <svg width="90" height="115" viewBox="0 0 120 150" fill="none">
+          <ellipse cx="60" cy="145" rx="28" ry="6" fill="rgba(0,0,0,.15)"/>
+          <rect x="32" y="88" width="56" height="50" rx="14" fill="#6366f1"/>
+          <text x="38" y="118" font-size="11" font-family="Fredoka One,cursive" fill="white">HDD+SSD</text>
+          <!-- arms up -->
+          <rect x="6" y="72" width="20" height="30" rx="10" fill="#6366f1" transform="rotate(-40 6 72)"/>
+          <rect x="84" y="65" width="20" height="30" rx="10" fill="#6366f1" transform="rotate(40 84 65)"/>
+          <rect x="36" y="130" width="18" height="22" rx="9" fill="#4338ca"/>
+          <rect x="66" y="130" width="18" height="22" rx="9" fill="#4338ca"/>
+          <ellipse cx="45" cy="150" rx="12" ry="6" fill="#312e81"/>
+          <ellipse cx="75" cy="150" rx="12" ry="6" fill="#312e81"/>
+          <rect x="50" y="78" width="20" height="14" rx="7" fill="#f9a825"/>
+          <ellipse cx="60" cy="60" rx="32" ry="30" fill="#f9a825"/>
+          <ellipse cx="60" cy="35" rx="30" ry="16" fill="#2d1b00"/>
+          <ellipse cx="35" cy="47" rx="9" ry="12" fill="#2d1b00"/>
+          <ellipse cx="85" cy="47" rx="9" ry="12" fill="#2d1b00"/>
+          <ellipse cx="48" cy="60" rx="7" ry="8" fill="white"/>
+          <ellipse cx="72" cy="60" rx="7" ry="8" fill="white"/>
+          <ellipse cx="49" cy="61" rx="4" ry="5" fill="#2d1b00"/>
+          <ellipse cx="73" cy="61" rx="4" ry="5" fill="#2d1b00"/>
+          <circle cx="51" cy="59" r="1.5" fill="white"/>
+          <circle cx="75" cy="59" r="1.5" fill="white"/>
+          <path d="M44 72 Q60 86 76 72" stroke="#2d1b00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <text x="-2" y="48" font-size="16">🗄️</text>
+          <text x="100" y="45" font-size="16">💾</text>
+          <text x="46" y="16" font-size="14">🎉</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="inline-flex items-center gap-2 bg-white bg-opacity-20 rounded-full px-4 py-1.5 mb-3 text-white text-sm font-bold">
+      <div class="foot-dot w-2 h-2 rounded-full bg-yellow-300"></div>
+      <span>Hari 13 dari 30</span>
+      <div class="foot-dot w-2 h-2 rounded-full bg-yellow-300"></div>
+      <div class="foot-dot w-2 h-2 rounded-full bg-yellow-300"></div>
+    </div>
+
+    <h2 class="text-2xl sm:text-4xl font-black text-white mb-2 drop-shadow-lg"
+        style="font-family:'Fredoka One',cursive;text-shadow:3px 3px 0 rgba(0,0,0,.25);">
+      🌟 Mantap, Aslan! 🌟
+    </h2>
+    <p class="text-white text-lg font-bold mb-3 opacity-90" style="font-family:'Fredoka One',cursive;">
+      Sekarang kamu tahu tempat menyimpan barang-barang di komputer selamanya! 📦
+    </p>
+    <p class="text-white text-sm font-semibold opacity-80 mb-4">
+      HDD = Lemari Besar Berputar 🟡 · SSD = Lemari Tipis Super Cepat 🔵 · Data Aman Selamanya 🔒
+    </p>
+    <div class="mt-3 bg-white bg-opacity-15 rounded-2xl px-4 py-3 inline-block">
+      <p class="text-white text-sm font-bold opacity-80">
+        🔜 Besok: <strong class="opacity-100">Hari 14 – GPU</strong> – Kartu Sakti untuk Gambar &amp; Video! 🎨
+      </p>
+    </div>
+    <p class="text-center text-white text-xs mt-5 opacity-60">Made with ❤️ for Aslan · Seri Komputer Ajaib · Hari 13/30</p>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════ -->
+<script>
+// ────────────────────────────────
+// HDD PLATTER SPIN
+// ────────────────────────────────
+const platAnim = document.getElementById('platterAnim');
+const hddArm   = document.getElementById('hddArm');
+let hddAngle = 0;
+let hddSpinning = false;
+let hddArmAngle = 0;
+let hddArmDir = 1;
+
+function spinHDD() {
+  if (!hddSpinning) return;
+  hddAngle = (hddAngle + 4) % 360;
+  platAnim.setAttribute('transform', `rotate(${hddAngle},90,85)`);
+  hddArmAngle += 0.8 * hddArmDir;
+  if (hddArmAngle > 30 || hddArmAngle < -30) hddArmDir *= -1;
+  hddArm.setAttribute('transform', `rotate(${hddArmAngle},90,85)`);
+  requestAnimationFrame(spinHDD);
+}
+
+// ────────────────────────────────
+// SSD CHIP FLASH
+// ────────────────────────────────
+const ssdChips = ['sc1','sc2','sc3','sc4','sc5','sc6'];
+let ssdFlashing = false;
+function flashSSD() {
+  if (!ssdFlashing) return;
+  const chip = document.getElementById(ssdChips[Math.floor(Math.random()*ssdChips.length)]);
+  if (chip) {
+    chip.style.opacity = '1';
+    setTimeout(() => { chip.style.opacity = '.4'; }, 200);
+  }
+  setTimeout(flashSSD, 150 + Math.random()*200);
+}
+
+// ────────────────────────────────
+// STORAGE STATE
+// ────────────────────────────────
+let computerOn = true;
+let hddGB = 0;
+let ssdGB = 0;
+let hddFiles = [];
+let ssdFiles = [];
+let selectedFiles = {};  // tracks which buttons are toggled
+
+// Selected items tracking
+const allFiles = {
+  game:  { emoji:'🎮', label:'Game RPG',      mb:2048 },
+  photo: { emoji:'📸', label:'Foto Liburan',  mb:150  },
+  video: { emoji:'🎬', label:'Video Lucu',    mb:700  },
+  doc:   { emoji:'📚', label:'Tugas Sekolah', mb:5    },
+};
+
+// Toggle select file
+['game','photo','video','doc'].forEach(k => {
+  document.getElementById('btn-'+k).addEventListener('click', function() {
+    selectedFiles[k] = !selectedFiles[k];
+    if (selectedFiles[k]) {
+      this.style.transform = 'scale(1.05)';
+      this.style.boxShadow = '0 0 0 4px rgba(99,102,241,.5)';
+    } else {
+      this.style.transform = '';
+      this.style.boxShadow = '';
+    }
+  });
+});
+
+function saveFile(k, emoji, label, mb) { /* handled via toggle above */ }
+
+function saveToStorage() {
+  if (!computerOn) { showStorageMsg('⚠️ Komputer mati! Nyalakan dulu!','#fef2f2','#fecaca','#991b1b'); return; }
+
+  const toSave = Object.keys(selectedFiles).filter(k => selectedFiles[k]);
+  if (toSave.length === 0) {
+    showStorageMsg('⚠️ Pilih file dulu sebelum menyimpan! 😅','#fef2f2','#fecaca','#991b1b');
+    document.getElementById('storageMsg').classList.add('shake');
+    setTimeout(()=>document.getElementById('storageMsg').classList.remove('shake'),600);
+    return;
+  }
+
+  // Start HDD spin + SSD flash
+  hddSpinning = true; spinHDD();
+  ssdFlashing = true; flashSSD();
+
+  // LED on
+  setLED('hddLedBox','hddLedLabel','led-orange','Tulis...');
+  setLED('ssdLedBox','ssdLedLabel','led-orange','Tulis...');
+  document.getElementById('hddStatus').textContent = '⚙️ Menyimpan data...';
+  document.getElementById('ssdStatus').textContent = '⚡ Menyimpan data...';
+
+  toSave.forEach((k, i) => {
+    const f = allFiles[k];
+    setTimeout(()=>{
+      // Add to HDD
+      const gbVal = f.mb >= 1024 ? (f.mb/1024).toFixed(1)+'GB' : f.mb+'MB';
+      if (!hddFiles.find(x=>x.label===f.label)) {
+        hddFiles.push(f);
+        hddGB += f.mb/1024;
+      }
+      // Add to SSD
+      if (!ssdFiles.find(x=>x.label===f.label)) {
+        ssdFiles.push(f);
+        ssdGB += f.mb/1024;
+      }
+      renderFileList('hddFileList', hddFiles);
+      renderFileList('ssdFileList', ssdFiles);
+      updateBars();
+      spawnFlyTo(f.emoji, 'btn-'+k, 'hddCabinet');
+      spawnFlyTo(f.emoji, 'btn-'+k, 'ssdCabinet');
+    }, i * 400);
+  });
+
+  setTimeout(()=>{
+    hddSpinning = false; ssdFlashing = false;
+    setLED('hddLedBox','hddLedLabel','led-green','ON');
+    setLED('ssdLedBox','ssdLedLabel','led-green','ON');
+    document.getElementById('hddStatus').textContent = '✅ Data tersimpan!';
+    document.getElementById('ssdStatus').textContent = '✅ Data tersimpan!';
+    showStorageMsg('🎉 Berhasil disimpan! Data ada di HDD dan SSD!','#f0fdf4','#86efac','#166534');
+    fireConfetti();
+    // Deselect
+    Object.keys(selectedFiles).forEach(k=>{
+      selectedFiles[k]=false;
+      const btn = document.getElementById('btn-'+k);
+      if(btn){ btn.style.transform=''; btn.style.boxShadow=''; }
+    });
+  }, toSave.length*400 + 600);
+}
+
+function renderFileList(id, files) {
+  const el = document.getElementById(id);
+  el.innerHTML = files.slice(-4).map(f=>`
+    <div class="flex items-center gap-1 pop-in">
+      <span style="font-size:.9rem;">${f.emoji}</span>
+      <span class="text-xs text-gray-300 font-bold">${f.label}</span>
+    </div>
+  `).join('');
+}
+
+function updateBars() {
+  const hddPct = Math.min((hddGB/1024)*100, 100);
+  const ssdPct = Math.min((ssdGB/500)*100, 100);
+  document.getElementById('hddBar').style.width = hddPct+'%';
+  document.getElementById('ssdBar').style.width = ssdPct+'%';
+  document.getElementById('hddUsed').textContent = hddGB.toFixed(2)+' GB terpakai';
+  document.getElementById('ssdUsed').textContent = ssdGB.toFixed(2)+' GB terpakai';
+}
+
+let powerOff = false;
+function togglePower() {
+  if (!computerOn) {
+    // Turn on
+    computerOn = true; powerOff = false;
+    const btn = document.getElementById('powerBtn');
+    btn.textContent = '🔴 Matikan Komputer';
+    btn.className = 'btn-red';
+
+    // Hide overlays
+    hideOverlay('hddPowerOverlay');
+    hideOverlay('ssdPowerOverlay');
+
+    // LED back on if files exist
+    if(hddFiles.length) setLED('hddLedBox','hddLedLabel','led-green','ON');
+    if(ssdFiles.length) setLED('ssdLedBox','ssdLedLabel','led-green','ON');
+
+    document.getElementById('hddStatus').textContent = hddFiles.length ? '✅ Data tersimpan!' : 'Menunggu data...';
+    document.getElementById('ssdStatus').textContent = ssdFiles.length ? '✅ Data tersimpan!' : 'Menunggu data...';
+
+    setComputerState(true);
+    showStorageMsg('💻 Komputer menyala lagi! Lihat, data masih ada! 🎉','#f0fdf4','#86efac','#166534');
+    fireConfetti();
+
+  } else {
+    // Turn off
+    computerOn = false;
+    const btn = document.getElementById('powerBtn');
+    btn.textContent = '🟢 Nyalakan Komputer';
+    btn.className = 'btn-indigo';
+
+    hddSpinning = false; ssdFlashing = false;
+    setLED('hddLedBox','hddLedLabel','led-off','OFF');
+    setLED('ssdLedBox','ssdLedLabel','led-off','OFF');
+
+    showOverlay('hddPowerOverlay');
+    showOverlay('ssdPowerOverlay');
+    setComputerState(false);
+
+    const saved = hddFiles.length > 0;
+    showStorageMsg(
+      saved
+        ? '😴 Komputer mati! Tapi tenang... data di HDD &amp; SSD masih AMAN! 🔒✅'
+        : '😴 Komputer mati! Tidak ada data yang disimpan.',
+      saved ? '#f0fdf4' : '#fef9c3',
+      saved ? '#86efac' : '#fcd34d',
+      saved ? '#166534' : '#713f12'
+    );
+  }
+}
+
+function showOverlay(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('hidden');
+  el.style.opacity = '0';
+  setTimeout(()=>{ el.style.opacity='1'; el.style.transition='opacity .5s'; },10);
+}
+function hideOverlay(id) {
+  const el = document.getElementById(id);
+  el.style.opacity = '0';
+  setTimeout(()=>el.classList.add('hidden'),500);
+}
+
+function setComputerState(on) {
+  const ind = document.getElementById('stateIndicator');
+  const txt = document.getElementById('stateText');
+  const box = document.getElementById('computerState');
+  if(on){
+    ind.className='led led-green';
+    txt.textContent='💻 Komputer Menyala';
+    txt.className='font-black text-green-700 sec-title';
+    box.style.background='#f0fdf4';
+    box.style.borderColor='#86efac';
+  } else {
+    ind.className='led led-off';
+    txt.textContent='😴 Komputer Mati – Data Tetap Aman!';
+    txt.className='font-black text-gray-500 sec-title';
+    box.style.background='#f9fafb';
+    box.style.borderColor='#e5e7eb';
+  }
+}
+
+function resetStorage() {
+  hddFiles=[]; ssdFiles=[]; hddGB=0; ssdGB=0;
+  computerOn=true; powerOff=false;
+  document.getElementById('hddFileList').innerHTML='';
+  document.getElementById('ssdFileList').innerHTML='';
+  document.getElementById('hddStatus').textContent='Menunggu data...';
+  document.getElementById('ssdStatus').textContent='Menunggu data...';
+  setLED('hddLedBox','hddLedLabel','led-off','OFF');
+  setLED('ssdLedBox','ssdLedLabel','led-off','OFF');
+  updateBars();
+  hideOverlay('hddPowerOverlay'); hideOverlay('ssdPowerOverlay');
+  const btn = document.getElementById('powerBtn');
+  btn.textContent='🔴 Matikan Komputer'; btn.className='btn-red';
+  setComputerState(true);
+  showStorageMsg('🗑️ Reset! Pilih file baru dan simpan lagi! 😊','#f0fdf4','#86efac','#166534');
+  Object.keys(selectedFiles).forEach(k=>{
+    selectedFiles[k]=false;
+    const b=document.getElementById('btn-'+k);
+    if(b){b.style.transform='';b.style.boxShadow='';}
+  });
+}
+
+function setLED(boxId, labelId, cls, label) {
+  const box = document.getElementById(boxId);
+  const lbl = document.getElementById(labelId);
+  box.className='led '+cls;
+  lbl.textContent=label;
+}
+
+function showStorageMsg(msg, bg, border, color) {
+  const box = document.getElementById('storageMsg');
+  const txt = document.getElementById('storageMsgText');
+  box.style.background = bg;
+  box.style.borderColor = border;
+  txt.style.color = color;
+  txt.innerHTML = msg;
+}
+
+function spawnFlyTo(emoji, fromId, toId) {
+  const from = document.getElementById(fromId);
+  const to   = document.getElementById(toId);
+  if (!from||!to) return;
+  const fr = from.getBoundingClientRect();
+  const tr = to.getBoundingClientRect();
+  const el = document.createElement('div');
+  el.className = 'fly-item';
+  el.textContent = emoji;
+  el.style.left = (fr.left + fr.width/2 - 16)+'px';
+  el.style.top  = (fr.top  + fr.height/2 - 16)+'px';
+  const tx = (tr.left+tr.width/2)-(fr.left+fr.width/2);
+  const ty = (tr.top +tr.height/2)-(fr.top +fr.height/2);
+  el.style.setProperty('--tx', tx+'px');
+  el.style.setProperty('--ty', ty+'px');
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 950);
+}
+
+// ────────────────────────────────
+// RACE
+// ────────────────────────────────
+let raceRan = false;
+function startRace() {
+  document.getElementById('raceHDD').style.width='0%';
+  document.getElementById('raceSSD').style.width='0%';
+  document.getElementById('raceResult').classList.add('hidden');
+
+  setTimeout(()=>{
+    document.getElementById('raceHDD').style.width='18%';
+    document.getElementById('raceSSD').style.width='98%';
+    setTimeout(()=>{
+      document.getElementById('raceResult').classList.remove('hidden');
+      fireConfetti();
+    },1700);
+  },100);
+  raceRan=true;
+}
+
+// ────────────────────────────────
+// CONFETTI
+// ────────────────────────────────
+function fireConfetti() {
+  const colors=['#6366f1','#f97316','#fbbf24','#ff6b9d','#22c55e','#a78bfa'];
+  for(let i=0;i<36;i++){
+    const el=document.createElement('div');
+    el.className='confetti-bit';
+    el.style.background=colors[Math.floor(Math.random()*colors.length)];
+    el.style.left=(window.innerWidth/2)+'px';
+    el.style.top =(window.innerHeight/2)+'px';
+    const a=Math.random()*Math.PI*2, d=70+Math.random()*220;
+    el.style.setProperty('--cx',(Math.cos(a)*d)+'px');
+    el.style.setProperty('--cy',(Math.sin(a)*d)+'px');
+    el.style.animationDelay=(Math.random()*.3)+'s';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1400);
+  }
+}
+
+// ────────────────────────────────
+// QUIZ
+// ────────────────────────────────
+let quizScore={1:false,2:false,3:false}, qDone=0;
+function qa(q, correct, btn) {
+  const all = btn.closest('.quiz-q').querySelectorAll('.qbtn');
+  all.forEach(b=>{ b.disabled=true; b.style.opacity='.6'; b.style.cursor='default'; });
+  const fb = document.getElementById('fb'+q);
+  fb.classList.remove('hidden');
+  if(correct){
+    quizScore[q]=true;
+    btn.style.background='#dcfce7'; btn.style.borderColor='#22c55e'; btn.style.opacity='1';
+    fb.style.background='#dcfce7'; fb.style.border='2px solid #86efac'; fb.style.color='#166534';
+    fb.innerHTML='🎉 Benar sekali! Kamu pintar banget! ⭐';
+    fireConfetti();
+  } else {
+    btn.style.background='#fef2f2'; btn.style.borderColor='#fca5a5'; btn.style.opacity='1';
+    fb.style.background='#fef2f2'; fb.style.border='2px solid #fca5a5'; fb.style.color='#991b1b';
+    fb.innerHTML='😅 Belum tepat! Lihat yang benar ya! ✨';
+    all.forEach(b=>{ if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes('true')){ b.style.background='#dcfce7'; b.style.borderColor='#22c55e'; b.style.opacity='1'; } });
+  }
+  qDone++;
+  if(q<3) setTimeout(()=>{ document.getElementById('q'+(q+1)).classList.remove('hidden'); document.getElementById('q'+(q+1)).classList.add('slide-up'); },1200);
+  else setTimeout(showScore,1200);
+}
+function showScore(){
+  const s=Object.values(quizScore).filter(Boolean).length;
+  document.getElementById('quizScore').classList.remove('hidden');
+  document.getElementById('scoreText').textContent=s+'/3';
+  const msgs=['📚 Terus belajar ya!','⭐ Hampir sempurna!','🏆 Sempurna! Kamu jenius!'];
+  const trophies=['📚','⭐','🏆'];
+  document.getElementById('scoreMsg').textContent=msgs[s-1]||msgs[0];
+  document.getElementById('scoreTrophy').textContent=trophies[s-1]||'📚';
+  if(s===3){fireConfetti();setTimeout(fireConfetti,400);}
+}
+
+// ────────────────────────────────
+// DRAWING CANVAS
+// ────────────────────────────────
+const canvas = document.getElementById('drawCanvas');
+const ctx    = canvas.getContext('2d');
+let drawing=false, curColor='#1e1b4b', brushSz=6, lastX,lastY;
+
+function drawTemplate(){
+  ctx.save();
+  ctx.globalAlpha=0.06;
+  ctx.strokeStyle='#4f46e5';
+  ctx.lineWidth=4;
+  // HDD outline
+  ctx.beginPath(); ctx.roundRect(12,20,120,145,12); ctx.stroke();
+  ctx.beginPath(); ctx.arc(72,80,36,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(72,80,20,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(72,80,6,0,Math.PI*2); ctx.stroke();
+  ctx.globalAlpha=0.08;
+  ctx.font='bold 14px Fredoka One,cursive'; ctx.fillStyle='#000';
+  ctx.textAlign='center'; ctx.fillText('HDD',72,148);
+  // SSD outline
+  ctx.globalAlpha=0.05; ctx.strokeStyle='#4f46e5'; ctx.lineWidth=4;
+  ctx.beginPath(); ctx.roundRect(168,60,120,60,12); ctx.stroke();
+  ctx.globalAlpha=0.07;
+  for(let i=0;i<4;i++){
+    ctx.beginPath(); ctx.roundRect(178+i*25,70,18,14,3); ctx.stroke();
+  }
+  ctx.globalAlpha=0.08; ctx.fillText('SSD',228,148);
+  ctx.restore();
+}
+drawTemplate();
+
+function getPos(e){
+  const r=canvas.getBoundingClientRect();
+  const cx=e.touches?e.touches[0].clientX:e.clientX;
+  const cy=e.touches?e.touches[0].clientY:e.clientY;
+  return[(cx-r.left)*(canvas.width/r.width),(cy-r.top)*(canvas.height/r.height)];
+}
+canvas.addEventListener('mousedown', e=>{ drawing=true;[lastX,lastY]=getPos(e); });
+canvas.addEventListener('mousemove', e=>{
+  if(!drawing)return;
+  const[x,y]=getPos(e);
+  ctx.strokeStyle=curColor; ctx.lineWidth=brushSz; ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.beginPath(); ctx.moveTo(lastX,lastY); ctx.lineTo(x,y); ctx.stroke();
+  [lastX,lastY]=[x,y];
+});
+canvas.addEventListener('mouseup',()=>drawing=false);
+canvas.addEventListener('mouseleave',()=>drawing=false);
+canvas.addEventListener('touchstart',e=>{ e.preventDefault();drawing=true;[lastX,lastY]=getPos(e); });
+canvas.addEventListener('touchmove',e=>{ e.preventDefault();if(!drawing)return;const[x,y]=getPos(e);ctx.strokeStyle=curColor;ctx.lineWidth=brushSz;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(lastX,lastY);ctx.lineTo(x,y);ctx.stroke();[lastX,lastY]=[x,y]; });
+canvas.addEventListener('touchend',()=>drawing=false);
+
+function setColor(c){
+  curColor=c;
+  const p=document.getElementById('brushPreview');
+  p.style.background=c;
+  p.style.border=c==='#ffffff'?'2px solid #ccc':'2px solid white';
+  p.style.width=Math.max(16,brushSz*2.5)+'px'; p.style.height=Math.max(16,brushSz*2.5)+'px';
+}
+document.getElementById('brushSize').addEventListener('input',function(){
+  brushSz=parseInt(this.value);
+  const p=document.getElementById('brushPreview');
+  p.style.width=Math.max(16,brushSz*2.5)+'px'; p.style.height=Math.max(16,brushSz*2.5)+'px';
+});
+function clearCanvas(){ ctx.clearRect(0,0,canvas.width,canvas.height); drawTemplate(); }
+function downloadDrawing(){
+  const link=document.createElement('a');
+  link.download='lemari-hdd-ssd-aslan.png'; link.href=canvas.toDataURL(); link.click();
+  fireConfetti();
+}
+
+// Init brush preview
+setColor('#1e1b4b');
+
+// Intersection observer for race bars on scroll
+const raceObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting&&!raceRan) startRace(); });
+},{threshold:0.5});
+const raceSection = document.getElementById('raceHDD');
+if(raceSection) raceObs.observe(raceSection);
+</script>
+</body>
+</html>

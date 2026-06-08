@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 17: Keyboard dan Mouse</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky:    #38bdf8;
+    --blue:   #3b82f6;
+    --mint:   #34d399;
+    --teal:   #0d9488;
+    --yellow: #fbbf24;
+    --orange: #f97316;
+    --pink:   #f472b6;
+    --purple: #a78bfa;
+    --bg:     #fff7ed;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 8% 15%,  rgba(251,191,36,.18) 0%, transparent 40%),
+      radial-gradient(circle at 88% 70%, rgba(56,189,248,.15) 0%, transparent 42%),
+      radial-gradient(circle at 50% 95%, rgba(244,114,182,.12) 0%, transparent 38%);
+    min-height: 100vh; overflow-x: hidden;
+  }
+  h1,h2,h3,.fredoka { font-family:'Fredoka One',cursive; }
+
+  /* ── Header ── */
+  .header-grad {
+    background: linear-gradient(135deg,#7c3aed 0%,#ec4899 45%,#f97316 80%,#fbbf24 100%);
+    position:relative; overflow:hidden;
+  }
+  .header-grad::after {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='40' cy='40' r='2' fill='%23ffffff' fill-opacity='0.06'/%3E%3Ccircle cx='0' cy='0' r='2' fill='%23ffffff' fill-opacity='0.06'/%3E%3Ccircle cx='80' cy='0' r='2' fill='%23ffffff' fill-opacity='0.06'/%3E%3Ccircle cx='0' cy='80' r='2' fill='%23ffffff' fill-opacity='0.06'/%3E%3Ccircle cx='80' cy='80' r='2' fill='%23ffffff' fill-opacity='0.06'/%3E%3C/svg%3E");
+  }
+
+  /* ── Aslan bounce ── */
+  @keyframes bounceAslan { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  .aslan-bounce { animation:bounceAslan 2.2s ease-in-out infinite; }
+
+  /* ── Speech bubble ── */
+  .bubble {
+    position:relative; background:white;
+    border-radius:22px; border:3px solid var(--orange);
+    box-shadow:4px 4px 0 var(--orange);
+  }
+  .bubble::before{content:'';position:absolute;bottom:-22px;left:30px;border:12px solid transparent;border-top-color:var(--orange);}
+  .bubble::after {content:'';position:absolute;bottom:-15px;left:33px;border:10px solid transparent;border-top-color:white;}
+
+  /* ── Keyboard Key ── */
+  .key {
+    display:inline-flex; align-items:center; justify-content:center;
+    background:white; border:2.5px solid #d1d5db;
+    border-radius:10px; cursor:pointer; user-select:none;
+    font-family:'Fredoka One',cursive;
+    box-shadow: 0 4px 0 #9ca3af, 0 5px 6px rgba(0,0,0,.15);
+    transition: all .08s ease;
+    position:relative;
+  }
+  .key:hover {
+    background: #fef3c7;
+    border-color: var(--yellow);
+    box-shadow: 0 4px 0 #d97706, 0 5px 12px rgba(251,191,36,.5);
+    transform: translateY(-2px) scale(1.12);
+  }
+  .key:active, .key.pressed {
+    transform: translateY(3px) scale(0.96);
+    box-shadow: 0 1px 0 #9ca3af;
+    background: var(--yellow);
+    border-color: var(--orange);
+  }
+  .key.special {
+    background: linear-gradient(135deg,#a78bfa,#818cf8);
+    color:white; border-color:#6d28d9;
+    box-shadow: 0 4px 0 #4c1d95, 0 5px 8px rgba(109,40,217,.4);
+  }
+  .key.special:hover {
+    background: linear-gradient(135deg,#c4b5fd,#a78bfa);
+    box-shadow: 0 4px 0 #4c1d95, 0 5px 14px rgba(167,139,250,.6);
+    transform: translateY(-2px) scale(1.1);
+  }
+  .key.space-key {
+    background: linear-gradient(135deg,#34d399,#0d9488);
+    color:white; border-color:#065f46;
+    box-shadow: 0 4px 0 #065f46, 0 5px 10px rgba(13,148,136,.4);
+  }
+  .key.enter-key {
+    background: linear-gradient(135deg,#f97316,#ef4444);
+    color:white; border-color:#b91c1c;
+    box-shadow: 0 4px 0 #991b1b;
+  }
+
+  /* ── Screen output ── */
+  @keyframes letterPop {
+    0%  { transform:scale(0) rotate(-20deg); opacity:0; }
+    65% { transform:scale(1.3) rotate(5deg); }
+    100%{ transform:scale(1) rotate(0); opacity:1; }
+  }
+  .letter-pop { animation:letterPop .35s cubic-bezier(.34,1.56,.64,1) both; }
+
+  @keyframes screenGlow {
+    0%,100%{ box-shadow:0 0 20px rgba(56,189,248,.3); }
+    50%    { box-shadow:0 0 40px rgba(56,189,248,.7), 0 0 80px rgba(56,189,248,.3); }
+  }
+  .screen-glow { animation:screenGlow 2.5s ease-in-out infinite; }
+
+  /* ── Mouse cursor ── */
+  .cursor-dot {
+    width:28px; height:28px; border-radius:50%;
+    background:linear-gradient(135deg,#f97316,#fbbf24);
+    border:3px solid white;
+    box-shadow:0 3px 12px rgba(249,115,22,.6);
+    position:absolute; pointer-events:none; z-index:50;
+    transition:left .06s ease, top .06s ease;
+  }
+
+  /* ── Drag items ── */
+  .drag-item {
+    width:64px; height:64px; border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.8rem; cursor:grab; user-select:none;
+    position:absolute; z-index:10;
+    border:3px solid transparent;
+    transition: box-shadow .2s, border-color .2s, transform .15s;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+  }
+  .drag-item:hover { transform:scale(1.1); }
+  .drag-item.dragging { cursor:grabbing; z-index:100; transform:scale(1.2) rotate(5deg); opacity:.9; }
+
+  .drop-zone {
+    border-radius:20px; border:3px dashed;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:6px;
+    transition: all .25s ease;
+    position:relative;
+  }
+  .drop-zone.over {
+    transform:scale(1.04);
+    box-shadow:0 0 24px rgba(52,211,153,.5);
+  }
+  .drop-zone.matched {
+    border-style:solid;
+    background:rgba(52,211,153,.15) !important;
+  }
+
+  /* ── Float emoji ── */
+  @keyframes floatUp { 0%{transform:translateY(0) scale(1);opacity:1} 100%{transform:translateY(-80px) scale(.5);opacity:0} }
+  .float-emoji { position:absolute; pointer-events:none; animation:floatUp 1s ease-out forwards; font-size:1.5rem; z-index:999; }
+
+  /* ── Big buttons ── */
+  .btn-action {
+    border:none; border-radius:50px;
+    padding:.9rem 2.2rem; font-family:'Fredoka One',cursive;
+    font-size:1.15rem; cursor:pointer; transition:all .15s ease;
+    white-space:nowrap;
+  }
+  .btn-orange {
+    background:linear-gradient(135deg,#f97316,#fbbf24);
+    color:white; box-shadow:0 5px 0 #c2410c, 0 8px 20px rgba(249,115,22,.4);
+  }
+  .btn-orange:hover { transform:translateY(-3px); box-shadow:0 8px 0 #c2410c,0 12px 28px rgba(249,115,22,.5); }
+  .btn-orange:active{ transform:translateY(3px); box-shadow:0 2px 0 #c2410c; }
+
+  .btn-blue {
+    background:linear-gradient(135deg,#38bdf8,#3b82f6);
+    color:white; box-shadow:0 5px 0 #1d4ed8, 0 8px 20px rgba(59,130,246,.4);
+  }
+  .btn-blue:hover { transform:translateY(-3px); }
+  .btn-blue:active{ transform:translateY(3px); box-shadow:0 2px 0 #1d4ed8; }
+
+  .btn-pink {
+    background:linear-gradient(135deg,#f472b6,#ec4899);
+    color:white; box-shadow:0 5px 0 #be185d;
+  }
+  .btn-pink:hover { transform:translateY(-3px); }
+
+  .btn-nav {
+    border-radius:50px; padding:.7rem 1.7rem;
+    font-family:'Fredoka One',cursive; font-size:1rem;
+    cursor:pointer; transition:all .15s ease; border:none;
+  }
+  .btn-back { background:white; color:#7c3aed; border:2.5px solid #7c3aed; box-shadow:3px 3px 0 #7c3aed; }
+  .btn-back:hover { transform:translateY(-2px); box-shadow:5px 5px 0 #7c3aed; }
+  .btn-fwd  { background:linear-gradient(135deg,#f97316,#ec4899); color:white; box-shadow:0 4px 0 #b91c1c; }
+  .btn-fwd:hover  { transform:translateY(-2px); }
+
+  /* ── Card hover ── */
+  .info-card { transition:all .25s cubic-bezier(.34,1.56,.64,1); }
+  .info-card:hover { transform:translateY(-5px) scale(1.02); }
+
+  /* ── Sparkle ── */
+  @keyframes sparkle { 0%,100%{opacity:.6;transform:scale(1) rotate(0)} 50%{opacity:1;transform:scale(1.3) rotate(20deg)} }
+  .sparkle { animation:sparkle 2s ease-in-out infinite; display:inline-block; }
+
+  /* ── Reveal ── */
+  @keyframes revealUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+  .reveal { animation:revealUp .65s ease-out both; }
+  .d1{animation-delay:.1s} .d2{animation-delay:.2s} .d3{animation-delay:.3s} .d4{animation-delay:.4s} .d5{animation-delay:.5s} .d6{animation-delay:.6s}
+
+  /* ── Cloud float ── */
+  @keyframes floatCloud { 0%,100%{transform:translateX(0) translateY(0)} 50%{transform:translateX(18px) translateY(-7px)} }
+  .cloud  { position:absolute; opacity:.15; animation:floatCloud 11s ease-in-out infinite; font-size:2.8rem; }
+  .cloud2 { animation-delay:-5.5s; animation-duration:14s; }
+  .cloud3 { animation-delay:-3s;   animation-duration:9s; }
+
+  /* ── Progress ── */
+  @keyframes progIn { from{width:0} to{width:var(--w)} }
+  .prog-fill { animation:progIn 1.6s cubic-bezier(.4,0,.2,1) .4s both; }
+
+  /* ── Type cursor blink ── */
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .type-cursor { display:inline-block; width:3px; height:1.2em; background:var(--orange); border-radius:2px; vertical-align:middle; animation:blink .8s step-end infinite; margin-left:1px; }
+
+  /* ── Mouse wiggle ── */
+  @keyframes mouseWiggle { 0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} }
+  .mouse-idle { animation:mouseWiggle 1.8s ease-in-out infinite; transform-origin:50% 80%; }
+
+  /* ── Confetti pop ── */
+  @keyframes confettiFly {
+    0%   { transform:translateY(0) rotate(0) scale(1); opacity:1; }
+    100% { transform:translateY(-120px) rotate(720deg) scale(0); opacity:0; }
+  }
+  .confetti { position:absolute; pointer-events:none; animation:confettiFly .9s ease-out forwards; font-size:1.2rem; z-index:999; }
+
+  /* ── Ripple ── */
+  @keyframes ripple { 0%{transform:scale(0);opacity:.6} 100%{transform:scale(3.5);opacity:0} }
+  .ripple-effect {
+    position:absolute; border-radius:50%;
+    background:rgba(251,191,36,.5);
+    width:60px; height:60px;
+    pointer-events:none;
+    animation:ripple .7s ease-out forwards;
+    transform-origin:center;
+    margin-top:-30px; margin-left:-30px;
+  }
+
+  canvas { touch-action:none; cursor:crosshair; display:block; }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body class="min-h-screen pb-16">
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ══════════════════════════════════════ HEADER ══ -->
+<header class="header-grad py-7 px-4 text-white text-center relative overflow-hidden">
+  <span class="cloud" style="top:8px;left:5%">☁️</span>
+  <span class="cloud cloud2" style="top:4px;right:8%">☁️</span>
+  <span class="cloud cloud3" style="bottom:6px;left:30%;font-size:2rem">☁️</span>
+
+  <p class="text-sm font-bold tracking-widest uppercase opacity-80 mb-1 relative z-10"
+     style="font-family:'Fredoka One',cursive;letter-spacing:.18em">
+    🚀 Petualangan Aslan di Dalam Komputer Ajaib 🚀
+  </p>
+  <h1 class="text-3xl md:text-4xl font-bold leading-tight relative z-10"
+      style="text-shadow:0 3px 12px rgba(0,0,0,.25)">
+    ⌨️ Hari 17: Keyboard dan Mouse 🖱️
+  </h1>
+  <p class="text-xl mt-1 opacity-90 relative z-10" style="font-family:'Fredoka One',cursive">
+    Tangan Komputer! 🤲
+  </p>
+
+  <div class="mt-4 max-w-xs mx-auto relative z-10">
+    <div class="flex justify-between text-xs opacity-80 mb-1 font-bold">
+      <span>Hari 17 dari 30</span>
+      <span>57% selesai 🎯</span>
+    </div>
+    <div class="w-full bg-white/25 rounded-full h-3">
+      <div class="h-3 rounded-full prog-fill" style="--w:57%;background:linear-gradient(90deg,#fbbf24,#f97316)"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════ INTRO ══ -->
+<section class="max-w-3xl mx-auto px-4 mt-8 reveal d1">
+  <div class="flex flex-col md:flex-row items-center gap-6">
+
+    <!-- Aslan with keyboard + mouse -->
+    <div class="aslan-bounce flex-shrink-0">
+      <svg width="140" height="185" viewBox="0 0 140 185" xmlns="http://www.w3.org/2000/svg">
+        <!-- Desk -->
+        <rect x="5" y="145" width="130" height="12" rx="6" fill="#fbbf24"/>
+        <rect x="18" y="155" width="12" height="28" rx="6" fill="#fbbf24"/>
+        <rect x="110" y="155" width="12" height="28" rx="6" fill="#fbbf24"/>
+        <!-- Keyboard on desk -->
+        <rect x="10" y="130" width="70" height="18" rx="5" fill="#e2e8f0"/>
+        <rect x="12" y="132" width="66" height="14" rx="4" fill="#f1f5f9"/>
+        <rect x="15" y="134" width="8" height="5" rx="2" fill="#94a3b8"/>
+        <rect x="25" y="134" width="8" height="5" rx="2" fill="#94a3b8"/>
+        <rect x="35" y="134" width="8" height="5" rx="2" fill="#94a3b8"/>
+        <rect x="45" y="134" width="8" height="5" rx="2" fill="#f97316"/>
+        <rect x="55" y="134" width="8" height="5" rx="2" fill="#94a3b8"/>
+        <rect x="20" y="141" width="40" height="4" rx="2" fill="#94a3b8"/>
+        <!-- Mouse on desk -->
+        <ellipse cx="105" cy="137" rx="14" ry="17" fill="#e2e8f0"/>
+        <ellipse cx="105" cy="137" rx="12" ry="15" fill="#f1f5f9"/>
+        <line x1="105" y1="123" x2="105" y2="152" stroke="#cbd5e1" stroke-width="1.5"/>
+        <ellipse cx="105" cy="127" rx="4" ry="3" fill="#38bdf8"/>
+        <!-- Body -->
+        <rect x="35" y="90" width="60" height="52" rx="18" fill="#f97316"/>
+        <rect x="35" y="90" width="60" height="18" rx="10" fill="#ea580c"/>
+        <!-- Name badge -->
+        <rect x="49" y="95" width="32" height="10" rx="5" fill="white" opacity=".85"/>
+        <text x="65" y="103" text-anchor="middle" font-size="5.5" fill="#ea580c" font-family="Nunito" font-weight="900">ASLAN</text>
+        <!-- Left arm pointing to keyboard -->
+        <path d="M35 108 Q18 115 14 128" stroke="#f9a825" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <circle cx="14" cy="129" r="6" fill="#f9a825"/>
+        <!-- Right arm pointing to mouse -->
+        <path d="M95 108 Q115 115 118 127" stroke="#f9a825" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <circle cx="118" cy="128" r="6" fill="#f9a825"/>
+        <!-- Legs -->
+        <rect x="45" y="135" width="18" height="22" rx="9" fill="#ea580c"/>
+        <rect x="72" y="135" width="18" height="22" rx="9" fill="#ea580c"/>
+        <ellipse cx="54" cy="156" rx="12" ry="7" fill="#1e293b"/>
+        <ellipse cx="81" cy="156" rx="12" ry="7" fill="#1e293b"/>
+        <!-- Neck -->
+        <rect x="53" y="76" width="24" height="18" rx="8" fill="#f9a825"/>
+        <!-- Head -->
+        <ellipse cx="65" cy="60" rx="32" ry="30" fill="#f9a825"/>
+        <!-- Hair -->
+        <ellipse cx="65" cy="33" rx="30" ry="14" fill="#1a1a2e"/>
+        <ellipse cx="43" cy="40" rx="10" ry="8" fill="#1a1a2e"/>
+        <ellipse cx="87" cy="40" rx="10" ry="8" fill="#1a1a2e"/>
+        <!-- Eyes -->
+        <ellipse cx="55" cy="60" rx="7" ry="8" fill="white"/>
+        <ellipse cx="75" cy="60" rx="7" ry="8" fill="white"/>
+        <ellipse cx="56" cy="61" rx="4" ry="5" fill="#1a1a2e"/>
+        <ellipse cx="76" cy="61" rx="4" ry="5" fill="#1a1a2e"/>
+        <circle cx="57" cy="60" r="1.5" fill="white"/>
+        <circle cx="77" cy="60" r="1.5" fill="white"/>
+        <!-- Stars in eyes (excited) -->
+        <text x="55" y="62" text-anchor="middle" font-size="6">★</text>
+        <text x="75" y="62" text-anchor="middle" font-size="6">★</text>
+        <!-- Big smile -->
+        <path d="M49 72 Q65 84 81 72" stroke="#1a1a2e" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <!-- Cheeks -->
+        <ellipse cx="47" cy="68" rx="7" ry="5" fill="#ff8fab" opacity=".6"/>
+        <ellipse cx="83" cy="68" rx="7" ry="5" fill="#ff8fab" opacity=".6"/>
+        <!-- Ears -->
+        <ellipse cx="34" cy="57" rx="6" ry="8" fill="#f9a825"/>
+        <ellipse cx="96" cy="57" rx="6" ry="8" fill="#f9a825"/>
+        <!-- Exclamation marks floating -->
+        <text x="108" y="50" font-size="16" opacity=".7">!</text>
+        <text x="15" y="55" font-size="14" opacity=".6">✨</text>
+      </svg>
+    </div>
+
+    <!-- Bubble -->
+    <div class="bubble p-5 flex-1">
+      <p class="text-xl font-bold text-slate-700 leading-snug">
+        Halo teman-teman! 👋 Hari ini kita belajar tentang <strong class="text-orange-500">Keyboard</strong> dan <strong class="text-blue-500">Mouse</strong>! 🎉
+      </p>
+      <p class="mt-2 text-lg text-slate-600">
+        Mereka adalah <strong class="text-pink-600">Tangan Komputer! 🤲</strong> Tanpa mereka, komputer tidak tahu apa yang kita mau lakukan!
+      </p>
+      <p class="mt-2 text-lg text-orange-600 font-bold italic">
+        "Wah, ini tanganku buat komputer nih! Keren banget!" — Aslan 😄
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ INFO CARDS ══ -->
+<section class="max-w-4xl mx-auto px-4 mt-10 reveal d2">
+  <h2 class="text-2xl md:text-3xl font-bold text-center text-slate-700 mb-6 fredoka">
+    🤔 Apa Itu Keyboard dan Mouse?
+  </h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- Keyboard card -->
+    <div class="info-card bg-white rounded-3xl p-6 border-4 border-orange-300 shadow-xl">
+      <div class="text-center mb-4">
+        <!-- Keyboard SVG -->
+        <svg width="200" height="110" viewBox="0 0 200 110" class="mx-auto">
+          <rect x="5" y="20" width="190" height="80" rx="14" fill="#e2e8f0"/>
+          <rect x="5" y="20" width="190" height="80" rx="14" fill="none" stroke="#f97316" stroke-width="3"/>
+          <!-- Row 1 -->
+          <rect x="14" y="30" width="16" height="14" rx="5" fill="#fbbf24"/> <text x="22" y="41" text-anchor="middle" font-size="7" font-weight="bold" fill="#1e293b">Q</text>
+          <rect x="33" y="30" width="16" height="14" rx="5" fill="white"/>   <text x="41" y="41" text-anchor="middle" font-size="7" font-weight="bold" fill="#1e293b">W</text>
+          <rect x="52" y="30" width="16" height="14" rx="5" fill="white"/>   <text x="60" y="41" text-anchor="middle" font-size="7" font-weight="bold" fill="#1e293b">E</text>
+          <rect x="71" y="30" width="16" height="14" rx="5" fill="#f472b6"/>  <text x="79" y="41" text-anchor="middle" font-size="7" font-weight="bold" fill="white">R</text>
+          <rect x="90" y="30" width="16" height="14" rx="5" fill="white"/>   <text x="98" y="41" text-anchor="middle" font-size="7" font-weight="bold" fill="#1e293b">T</text>
+          <rect x="109" y="30" width="16" height="14" rx="5" fill="#a78bfa"/> <text x="117" y="41" text-anchor="middle" font-size="7" font-weight="bold" fill="white">Y</text>
+          <rect x="128" y="30" width="16" height="14" rx="5" fill="white"/>   <text x="136" y="41" text-anchor="middle" font-size="7" font-weight="bold" fill="#1e293b">U</text>
+          <rect x="147" y="30" width="16" height="14" rx="5" fill="#34d399"/> <text x="155" y="41" text-anchor="middle" font-size="7" font-weight="bold" fill="white">I</text>
+          <rect x="166" y="30" width="24" height="14" rx="5" fill="#38bdf8"/> <text x="178" y="41" text-anchor="middle" font-size="6" font-weight="bold" fill="white">DEL</text>
+          <!-- Row 2 -->
+          <rect x="14" y="47" width="16" height="14" rx="5" fill="white"/>   <text x="22" y="58" text-anchor="middle" font-size="7" font-weight="bold" fill="#1e293b">A</text>
+          <rect x="33" y="47" width="16" height="14" rx="5" fill="#fbbf24"/> <text x="41" y="58" text-anchor="middle" font-size="7" font-weight="bold" fill="#1e293b">S</text>
+          <rect x="52" y="47" width="16" height="14" rx="5" fill="white"/>   <text x="60" y="58" text-anchor="middle" font-size="7" font-weight="bold" fill="#1e293b">D</text>
+          <rect x="71" y="47" width="16" height="14" rx="5" fill="white"/>   <text x="79" y="58" text-anchor="middle" font-size="7" font-weight="bold" fill="#1e293b">F</text>
+          <rect x="90" y="47" width="16" height="14" rx="5" fill="#f472b6"/>  <text x="98" y="58" text-anchor="middle" font-size="7" font-weight="bold" fill="white">G</text>
+          <rect x="109" y="47" width="16" height="14" rx="5" fill="white"/>   <text x="117" y="58" text-anchor="middle" font-size="7" font-weight="bold" fill="#1e293b">H</text>
+          <rect x="128" y="47" width="16" height="14" rx="5" fill="#a78bfa"/> <text x="136" y="58" text-anchor="middle" font-size="7" font-weight="bold" fill="white">J</text>
+          <rect x="147" y="47" width="16" height="14" rx="5" fill="white"/>   <text x="155" y="58" text-anchor="middle" font-size="7" font-weight="bold" fill="#1e293b">K</text>
+          <rect x="166" y="47" width="24" height="14" rx="5" fill="#f97316"/> <text x="178" y="58" text-anchor="middle" font-size="6.5" font-weight="bold" fill="white">↵</text>
+          <!-- Spacebar -->
+          <rect x="40" y="64" width="112" height="14" rx="7" fill="#34d399"/>
+          <text x="96" y="75" text-anchor="middle" font-size="8" font-weight="bold" fill="white">SPASI ✨</text>
+          <rect x="14" y="64" width="22" height="14" rx="5" fill="#e2e8f0"/> <text x="25" y="75" text-anchor="middle" font-size="6" fill="#64748b">Ctrl</text>
+          <rect x="156" y="64" width="34" height="14" rx="5" fill="#e2e8f0"/> <text x="173" y="75" text-anchor="middle" font-size="6" fill="#64748b">Shift</text>
+          <!-- Emoji keys -->
+          <text x="22" y="96" text-anchor="middle" font-size="12">😊</text>
+          <text x="60" y="96" text-anchor="middle" font-size="12">🎮</text>
+          <text x="98" y="96" text-anchor="middle" font-size="12">🌟</text>
+          <text x="136" y="96" text-anchor="middle" font-size="12">🎵</text>
+          <text x="174" y="96" text-anchor="middle" font-size="12">❤️</text>
+        </svg>
+        <div class="inline-flex items-center gap-2 bg-orange-100 px-4 py-2 rounded-2xl mt-2">
+          <span class="text-2xl">⌨️</span>
+          <span class="font-bold text-orange-700 text-xl fredoka">Keyboard</span>
+        </div>
+      </div>
+      <ul class="space-y-2 text-base">
+        <li class="flex gap-2 items-start"><span class="text-orange-500 font-bold mt-0.5">🔤</span><span class="text-slate-600 font-semibold">Tombol huruf, angka, simbol, dan spasi</span></li>
+        <li class="flex gap-2 items-start"><span class="text-orange-500 font-bold mt-0.5">✍️</span><span class="text-slate-600 font-semibold">Untuk mengetik nama, cerita, atau main game</span></li>
+        <li class="flex gap-2 items-start"><span class="text-orange-500 font-bold mt-0.5">🎮</span><span class="text-slate-600 font-semibold">Tombol seperti WASD untuk game!</span></li>
+        <li class="flex gap-2 items-start"><span class="text-orange-500 font-bold mt-0.5">💬</span><span class="text-slate-600 font-semibold"><em>"Seperti mulut yang bisa bicara banyak kata!"</em></span></li>
+      </ul>
+    </div>
+
+    <!-- Mouse card -->
+    <div class="info-card bg-white rounded-3xl p-6 border-4 border-blue-300 shadow-xl">
+      <div class="text-center mb-4">
+        <!-- Mouse SVG -->
+        <svg width="160" height="110" viewBox="0 0 160 110" class="mx-auto">
+          <!-- Mouse body -->
+          <path d="M50 90 Q50 30 80 20 Q110 30 110 90 Q110 105 80 108 Q50 105 50 90Z"
+                fill="#e2e8f0" stroke="#3b82f6" stroke-width="3"/>
+          <path d="M50 90 Q50 30 80 20 Q110 30 110 90 Q110 105 80 108 Q50 105 50 90Z"
+                fill="url(#mouseGrad)"/>
+          <defs>
+            <linearGradient id="mouseGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#dbeafe"/>
+              <stop offset="100%" stop-color="#bfdbfe"/>
+            </linearGradient>
+          </defs>
+          <!-- Left click -->
+          <path d="M50 55 Q50 30 80 20 L80 55 Z" fill="#93c5fd" stroke="#3b82f6" stroke-width="2"/>
+          <text x="63" y="45" text-anchor="middle" font-size="9" fill="#1d4ed8" font-weight="bold">Klik</text>
+          <text x="63" y="54" text-anchor="middle" font-size="8" fill="#1d4ed8">Kiri</text>
+          <!-- Right click -->
+          <path d="M110 55 Q110 30 80 20 L80 55 Z" fill="#fde68a" stroke="#f97316" stroke-width="2"/>
+          <text x="97" y="45" text-anchor="middle" font-size="9" fill="#c2410c" font-weight="bold">Klik</text>
+          <text x="97" y="54" text-anchor="middle" font-size="8" fill="#c2410c">Kanan</text>
+          <!-- Scroll wheel -->
+          <rect x="73" y="22" width="14" height="30" rx="7" fill="#60a5fa"/>
+          <text x="80" y="42" text-anchor="middle" font-size="10">🔄</text>
+          <!-- Cable -->
+          <path d="M80 108 Q80 115 70 118 Q60 122 65 108" stroke="#94a3b8" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <!-- Glow dots -->
+          <circle cx="65" cy="80" r="4" fill="#38bdf8" opacity=".5"/>
+          <circle cx="95" cy="75" r="3" fill="#38bdf8" opacity=".4"/>
+          <circle cx="72" cy="95" r="3" fill="#38bdf8" opacity=".35"/>
+          <!-- Stars -->
+          <text x="20" y="35" font-size="14" opacity=".6">✨</text>
+          <text x="125" y="55" font-size="12" opacity=".5">⭐</text>
+        </svg>
+        <div class="inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-2xl mt-2">
+          <span class="text-2xl">🖱️</span>
+          <span class="font-bold text-blue-700 text-xl fredoka">Mouse</span>
+        </div>
+      </div>
+      <ul class="space-y-2 text-base">
+        <li class="flex gap-2 items-start"><span class="text-blue-500 font-bold mt-0.5">👆</span><span class="text-slate-600 font-semibold">Menggerakkan kursor (panah) di layar</span></li>
+        <li class="flex gap-2 items-start"><span class="text-blue-500 font-bold mt-0.5">🖱️</span><span class="text-slate-600 font-semibold">Klik kiri = pilih / buka. Klik kanan = menu</span></li>
+        <li class="flex gap-2 items-start"><span class="text-blue-500 font-bold mt-0.5">🔄</span><span class="text-slate-600 font-semibold">Scroll wheel untuk gulir halaman</span></li>
+        <li class="flex gap-2 items-start"><span class="text-blue-500 font-bold mt-0.5">👉</span><span class="text-slate-600 font-semibold"><em>"Seperti tangan yang bisa menunjuk dan memilih!"</em></span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Analogy banner -->
+  <div class="mt-6 rounded-3xl p-5 text-center border-4 border-pink-300 shadow-lg"
+       style="background:linear-gradient(135deg,#fdf2f8,#fce7f3)">
+    <p class="text-xl font-bold text-pink-700 fredoka">🎭 Analogi Seru!</p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-3 text-base font-semibold text-slate-700">
+      <span class="bg-orange-100 text-orange-700 px-4 py-2 rounded-2xl">⌨️ Keyboard = Mulut yang bisa bicara banyak kata!</span>
+      <span class="text-2xl">vs</span>
+      <span class="bg-blue-100 text-blue-700 px-4 py-2 rounded-2xl">🖱️ Mouse = Tangan yang bisa menunjuk & memilih!</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ INTERACTIVE KEYBOARD ══ -->
+<section class="max-w-4xl mx-auto px-4 mt-10 reveal d3">
+  <div class="bg-white rounded-3xl p-6 shadow-xl border-4 border-orange-200">
+    <h2 class="text-2xl font-bold text-orange-700 text-center mb-1 fredoka">
+      ⌨️ Keyboard Interaktif — Coba Klik!
+    </h2>
+    <p class="text-center text-slate-500 font-semibold mb-4 text-sm">
+      Klik tombol keyboard di bawah atau tekan tombol di keyboardmu! 😄
+    </p>
+
+    <!-- Screen / Output -->
+    <div id="screen" class="screen-glow rounded-2xl p-4 mb-5 min-h-[80px] relative overflow-hidden"
+         style="background:linear-gradient(135deg,#0f172a,#1e293b); border:3px solid #38bdf8;">
+      <div class="flex items-center gap-2 mb-2">
+        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+        <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+        <div class="w-3 h-3 rounded-full bg-green-400"></div>
+        <span class="text-slate-400 text-xs ml-2 font-bold">📺 Layar Komputer Aslan</span>
+      </div>
+      <div id="screenText" class="text-3xl font-bold tracking-wider min-h-[2rem] flex flex-wrap gap-1 items-center"
+           style="font-family:'Fredoka One',cursive;color:#fbbf24; text-shadow:0 0 12px rgba(251,191,36,.6);">
+        <span class="text-slate-500 text-lg font-semibold italic" id="screenPlaceholder">Ketik sesuatu... ✨</span>
+      </div>
+      <span class="type-cursor" id="typeCursor"></span>
+    </div>
+
+    <!-- Virtual Keyboard -->
+    <div id="virtualKeyboard">
+      <!-- Row 1: Numbers -->
+      <div class="flex flex-wrap gap-1.5 mb-1.5 justify-center">
+        <div class="key w-8 h-8 text-xs" onclick="pressKey('1')">1</div>
+        <div class="key w-8 h-8 text-xs" onclick="pressKey('2')">2</div>
+        <div class="key w-8 h-8 text-xs" onclick="pressKey('3')">3</div>
+        <div class="key w-8 h-8 text-xs" onclick="pressKey('4')">4</div>
+        <div class="key w-8 h-8 text-xs" onclick="pressKey('5')">5</div>
+        <div class="key w-8 h-8 text-xs" onclick="pressKey('6')">6</div>
+        <div class="key w-8 h-8 text-xs" onclick="pressKey('7')">7</div>
+        <div class="key w-8 h-8 text-xs" onclick="pressKey('8')">8</div>
+        <div class="key w-8 h-8 text-xs" onclick="pressKey('9')">9</div>
+        <div class="key w-8 h-8 text-xs" onclick="pressKey('0')">0</div>
+        <div class="key special w-14 h-8 text-xs" onclick="pressKey('⌫','backspace')">⌫ DEL</div>
+      </div>
+      <!-- Row 2: QWERTY -->
+      <div class="flex flex-wrap gap-1.5 mb-1.5 justify-center">
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('Q')">Q</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('W')">W</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('E')">E</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('R')">R</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('T')">T</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('Y')">Y</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('U')">U</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('I')">I</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('O')">O</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('P')">P</div>
+      </div>
+      <!-- Row 3: ASDF -->
+      <div class="flex flex-wrap gap-1.5 mb-1.5 justify-center">
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('A')">A</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('S')">S</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('D')">D</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('F')">F</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('G')">G</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('H')">H</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('J')">J</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('K')">K</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('L')">L</div>
+        <div class="key enter-key w-16 h-9 text-xs font-bold" onclick="pressKey('↵','enter')">ENTER↵</div>
+      </div>
+      <!-- Row 4: ZXCV -->
+      <div class="flex flex-wrap gap-1.5 mb-1.5 justify-center">
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('Z')">Z</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('X')">X</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('C')">C</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('V')">V</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('B')">B</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('N')">N</div>
+        <div class="key w-9 h-9 text-sm" onclick="pressKey('M')">M</div>
+        <div class="key special w-12 h-9 text-sm" onclick="pressKey('!')">!</div>
+        <div class="key special w-12 h-9 text-sm" onclick="pressKey('?')">?</div>
+      </div>
+      <!-- Spacebar row -->
+      <div class="flex gap-1.5 justify-center">
+        <div class="key special w-16 h-9 text-xs" onclick="pressKey('😊','emoji')">😊</div>
+        <div class="key special w-16 h-9 text-xs" onclick="pressKey('🌟','emoji')">🌟</div>
+        <div class="key space-key flex-1 max-w-xs h-9 text-sm font-bold" onclick="pressKey(' ','space')">
+          ✨ SPASI ✨
+        </div>
+        <div class="key special w-16 h-9 text-xs" onclick="pressKey('🎉','emoji')">🎉</div>
+        <div class="key special w-16 h-9 text-xs" onclick="pressKey('❤️','emoji')">❤️</div>
+      </div>
+    </div>
+
+    <!-- Quick name buttons -->
+    <div class="mt-4 flex flex-wrap gap-2 justify-center">
+      <button class="btn-action btn-orange text-sm py-2 px-4" onclick="typeWord('ASLAN')">
+        🧒 Ketik "ASLAN"
+      </button>
+      <button class="btn-action btn-blue text-sm py-2 px-4" onclick="typeWord('HALO DUNIA')">
+        🌍 Ketik "HALO DUNIA"
+      </button>
+      <button class="btn-action btn-pink text-sm py-2 px-4" onclick="typeWord('AKU SUKA KOMPUTER')">
+        💻 Ketik "AKU SUKA KOMPUTER"
+      </button>
+      <button class="btn-action text-sm py-2 px-4" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);color:white;box-shadow:0 4px 0 #4c1d95;border-radius:50px;" onclick="clearScreen()">
+        🗑️ Bersihkan Layar
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ INTERACTIVE MOUSE ══ -->
+<section class="max-w-4xl mx-auto px-4 mt-10 reveal d4">
+  <div class="bg-white rounded-3xl p-6 shadow-xl border-4 border-blue-200">
+    <h2 class="text-2xl font-bold text-blue-700 text-center mb-1 fredoka">
+      🖱️ Mouse Interaktif — Seret & Letakkan!
+    </h2>
+    <p class="text-center text-slate-500 font-semibold mb-5 text-sm">
+      Seret emoji ke kotak yang cocok! 🎯 Cocokkan setiap benda ke tempatnya!
+    </p>
+
+    <div id="mouseScore" class="text-center text-lg font-bold text-slate-600 mb-4">
+      Cocok: <span id="matchCount" class="text-green-600 text-xl">0</span> / <span id="totalItems">5</span> 🎯
+    </div>
+
+    <!-- Drag arena -->
+    <div id="dragArena" class="relative rounded-2xl p-4 min-h-[260px] border-3 border-dashed border-slate-300"
+         style="background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border-width:3px;">
+
+      <!-- Custom cursor -->
+      <div id="cursorDot" class="cursor-dot" style="left:50%;top:50%;display:none;"></div>
+
+      <!-- Source items (draggable) -->
+      <div id="sourceItems" class="flex flex-wrap gap-3 justify-center mb-6 min-h-[70px] pt-2">
+        <div class="drag-item bg-orange-100 border-orange-300" id="item-game"     draggable="true" data-type="game"     style="border-width:3px;">🎮</div>
+        <div class="drag-item bg-blue-100   border-blue-300"   id="item-music"    draggable="true" data-type="music"    style="border-width:3px;">🎵</div>
+        <div class="drag-item bg-pink-100   border-pink-300"   id="item-photo"    draggable="true" data-type="photo"    style="border-width:3px;">📸</div>
+        <div class="drag-item bg-green-100  border-green-300"  id="item-document" draggable="true" data-type="document" style="border-width:3px;">📄</div>
+        <div class="drag-item bg-yellow-100 border-yellow-300" id="item-video"    draggable="true" data-type="video"    style="border-width:3px;">🎬</div>
+      </div>
+
+      <!-- Arrow hint -->
+      <div class="text-center text-slate-400 font-bold text-sm mb-3">⬇️ Seret ke kotak yang cocok di bawah! ⬇️</div>
+
+      <!-- Drop zones -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+        <div class="drop-zone border-orange-300 bg-orange-50 min-h-[80px] p-3"  data-accept="game"     ondragover="dOver(event)" ondrop="dDrop(event)" style="border-color:#f97316;">
+          <span class="text-2xl">🕹️</span>
+          <span class="text-xs font-bold text-orange-600 text-center">Folder Game</span>
+        </div>
+        <div class="drop-zone border-blue-300   bg-blue-50   min-h-[80px] p-3"  data-accept="music"    ondragover="dOver(event)" ondrop="dDrop(event)" style="border-color:#3b82f6;">
+          <span class="text-2xl">🎼</span>
+          <span class="text-xs font-bold text-blue-600 text-center">Folder Musik</span>
+        </div>
+        <div class="drop-zone border-pink-300   bg-pink-50   min-h-[80px] p-3"  data-accept="photo"    ondragover="dOver(event)" ondrop="dDrop(event)" style="border-color:#ec4899;">
+          <span class="text-2xl">🖼️</span>
+          <span class="text-xs font-bold text-pink-600 text-center">Folder Foto</span>
+        </div>
+        <div class="drop-zone border-green-300  bg-green-50  min-h-[80px] p-3"  data-accept="document" ondragover="dOver(event)" ondrop="dDrop(event)" style="border-color:#22c55e;">
+          <span class="text-2xl">📁</span>
+          <span class="text-xs font-bold text-green-600 text-center">Folder Dokumen</span>
+        </div>
+        <div class="drop-zone border-yellow-300 bg-yellow-50 min-h-[80px] p-3"  data-accept="video"    ondragover="dOver(event)" ondrop="dDrop(event)" style="border-color:#fbbf24;">
+          <span class="text-2xl">📽️</span>
+          <span class="text-xs font-bold text-yellow-600 text-center">Folder Video</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mouse info tip -->
+    <div class="mt-4 flex flex-wrap gap-3 justify-center text-sm font-bold text-slate-600">
+      <span class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full">👆 Klik Kiri = Pilih</span>
+      <span class="bg-orange-100 text-orange-700 px-3 py-1.5 rounded-full">✋ Tahan & Seret = Pindah</span>
+      <span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-full">🖱️ Klik Kanan = Menu</span>
+      <span class="bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full">🔄 Scroll = Gulir</span>
+    </div>
+
+    <div class="mt-4 text-center">
+      <button class="btn-action btn-blue text-sm py-2 px-5" onclick="resetDrag()">
+        🔄 Reset Permainan
+      </button>
+    </div>
+
+    <!-- Win message -->
+    <div id="winMsg" class="hidden mt-4 text-center p-4 rounded-2xl text-2xl font-bold fredoka"
+         style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;">
+      🎉 Luar Biasa! Kamu berhasil memindahkan semua file! 🎊<br>
+      <span class="text-lg font-semibold text-slate-600">Mouse kamu jago sekali! 🖱️✨</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ FUN FACTS ══ -->
+<section class="max-w-3xl mx-auto px-4 mt-10 reveal d5">
+  <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-7 border-4 border-purple-200 shadow-lg">
+    <h2 class="text-2xl font-bold text-purple-700 text-center mb-5 fredoka">
+      🤩 Fakta Seru tentang Keyboard & Mouse!
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="info-card bg-white rounded-2xl p-4 border-2 border-orange-200">
+        <p class="text-3xl mb-2">⌨️</p>
+        <p class="font-bold text-orange-700">Keyboard punya 100+ tombol!</p>
+        <p class="text-slate-600 text-sm mt-1">Ada tombol huruf, angka, tanda baca, dan tombol spesial seperti F1–F12!</p>
+      </div>
+      <div class="info-card bg-white rounded-2xl p-4 border-2 border-blue-200">
+        <p class="text-3xl mb-2">🖱️</p>
+        <p class="font-bold text-blue-700">Mouse pertama dibuat dari kayu!</p>
+        <p class="text-slate-600 text-sm mt-1">Tahun 1964! Diciptakan oleh Douglas Engelbart. Bentuknya kotak dengan kabel di belakang 😄</p>
+      </div>
+      <div class="info-card bg-white rounded-2xl p-4 border-2 border-green-200">
+        <p class="text-3xl mb-2">🌍</p>
+        <p class="font-bold text-green-700">Ada keyboard bahasa Indonesia!</p>
+        <p class="text-slate-600 text-sm mt-1">Susunan tombolnya disebut "QWERTY" karena 6 huruf pertamanya Q-W-E-R-T-Y!</p>
+      </div>
+      <div class="info-card bg-white rounded-2xl p-4 border-2 border-pink-200">
+        <p class="text-3xl mb-2">🎮</p>
+        <p class="font-bold text-pink-700">Ada mouse gaming super cepat!</p>
+        <p class="text-slate-600 text-sm mt-1">Mouse gaming bisa bergerak 400x lebih cepat dari mouse biasa dan punya lampu RGB keren! 🌈</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ ACTIVITY ══ -->
+<section class="max-w-4xl mx-auto px-4 mt-10 reveal d5">
+  <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-3xl p-7 border-4 border-yellow-300 shadow-lg">
+    <h2 class="text-2xl font-bold text-orange-700 text-center mb-2 fredoka">
+      🎨 Aktivitas: Desain Keyboard & Mouse Impianmu!
+    </h2>
+    <p class="text-center text-slate-600 font-semibold mb-5">
+      Gambarlah keyboard dan mouse impianmu di kotak di bawah!<br>
+      Mau warna apa? Ada tombol spesial apa? ✏️🌈
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Keyboard canvas -->
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-2xl">⌨️</span>
+          <h3 class="font-bold text-orange-700 text-lg fredoka">Keyboard Impianku</h3>
+        </div>
+        <div class="rounded-2xl overflow-hidden border-4 border-dashed border-orange-300" style="border-style:dashed;">
+          <canvas id="canvasKB" width="340" height="200"
+                  style="background:linear-gradient(135deg,#fff7ed,#fef3c7);width:100%;"
+                  onmousedown="sd(event,'canvasKB')" onmousemove="dr(event,'canvasKB')"
+                  onmouseup="sp('canvasKB')" onmouseleave="sp('canvasKB')"
+                  ontouchstart="sdt(event,'canvasKB')" ontouchmove="drt(event,'canvasKB')" ontouchend="sp('canvasKB')">
+          </canvas>
+        </div>
+        <div class="flex gap-2 mt-2 items-center flex-wrap">
+          <input type="color" id="kbColor" value="#f97316" class="w-9 h-9 rounded-lg cursor-pointer border-2 border-orange-300">
+          <input type="range" id="kbSize" min="2" max="22" value="5" class="w-24">
+          <label class="text-xs font-bold text-slate-500">Ukuran</label>
+          <button onclick="cc('canvasKB')" class="ml-auto text-xs bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-full hover:bg-red-200">🗑️ Hapus</button>
+        </div>
+        <p class="text-xs text-orange-500 font-bold text-center mt-1 italic">💡 Gambar tombol warna-warni dengan tombol emoji spesial!</p>
+      </div>
+
+      <!-- Mouse canvas -->
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-2xl">🖱️</span>
+          <h3 class="font-bold text-blue-700 text-lg fredoka">Mouse Impianku</h3>
+        </div>
+        <div class="rounded-2xl overflow-hidden border-4 border-dashed border-blue-300" style="border-style:dashed;">
+          <canvas id="canvasMS" width="340" height="200"
+                  style="background:linear-gradient(135deg,#eff6ff,#dbeafe);width:100%;"
+                  onmousedown="sd(event,'canvasMS')" onmousemove="dr(event,'canvasMS')"
+                  onmouseup="sp('canvasMS')" onmouseleave="sp('canvasMS')"
+                  ontouchstart="sdt(event,'canvasMS')" ontouchmove="drt(event,'canvasMS')" ontouchend="sp('canvasMS')">
+          </canvas>
+        </div>
+        <div class="flex gap-2 mt-2 items-center flex-wrap">
+          <input type="color" id="msColor" value="#3b82f6" class="w-9 h-9 rounded-lg cursor-pointer border-2 border-blue-300">
+          <input type="range" id="msSize" min="2" max="22" value="5" class="w-24">
+          <label class="text-xs font-bold text-slate-500">Ukuran</label>
+          <button onclick="cc('canvasMS')" class="ml-auto text-xs bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-full hover:bg-red-200">🗑️ Hapus</button>
+        </div>
+        <p class="text-xs text-blue-500 font-bold text-center mt-1 italic">💡 Gambar mouse dengan lampu RGB atau bentuk unik!</p>
+      </div>
+    </div>
+
+    <div class="mt-5 bg-white rounded-2xl p-4 border-2 border-orange-200 text-center">
+      <p class="text-lg font-bold text-orange-700">📝 Tugas Hari Ini:</p>
+      <p class="text-slate-600 font-semibold mt-1">
+        Gambarlah keyboard dan mouse impianmu!<br>
+        Mau warna apa? Ada tombol spesial apa yang kamu mau? 🎨
+      </p>
+      <p class="text-sm text-slate-400 mt-2">
+        💡 Setelah selesai, foto hasil gambarmu dan tunjukkan ke guru atau orang tua!
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════ FOOTER ══ -->
+<footer class="max-w-3xl mx-auto px-4 mt-12 text-center">
+  <div class="rounded-3xl p-8 text-white shadow-2xl"
+       style="background:linear-gradient(135deg,#7c3aed 0%,#ec4899 50%,#f97316 100%)">
+
+    <div class="aslan-bounce inline-block mb-3 text-5xl">🎉</div>
+
+    <h2 class="text-2xl md:text-3xl font-bold leading-tight fredoka">
+      Hebat sekali Aslan! ⌨️🖱️
+    </h2>
+    <p class="text-xl mt-2 font-bold opacity-90">
+      Sekarang kamu tahu Keyboard dan Mouse adalah Tangan Komputer! 🤲
+    </p>
+
+    <div class="flex justify-center gap-3 mt-4 text-3xl">
+      <span class="sparkle">⌨️</span>
+      <span class="sparkle" style="animation-delay:.3s">✨</span>
+      <span class="sparkle" style="animation-delay:.6s">🖱️</span>
+      <span class="sparkle" style="animation-delay:.9s">🌟</span>
+      <span class="sparkle" style="animation-delay:1.2s">🎉</span>
+    </div>
+
+    <div class="mt-5 bg-white/20 rounded-2xl px-6 py-3 inline-block">
+      <p class="font-bold text-lg">📅 Hari 17 dari 30</p>
+      <p class="text-sm opacity-80">Seri: Petualangan Aslan di Dalam Komputer Ajaib</p>
+    </div>
+
+    <div class="mt-5 flex flex-wrap gap-3 justify-center">
+      <button class="btn-nav btn-back" onclick="alert('Kembali ke Hari 16! 😊')">← Hari 16</button>
+      <button class="btn-nav btn-fwd"  onclick="alert('Hari 18: Speaker dan Microphone! 🔊 Segera hadir! 😊')">
+        Hari 18: Speaker & Mic 🔊 →
+      </button>
+    </div>
+
+    <div class="mt-4 flex flex-wrap justify-center gap-3 text-sm font-bold">
+      <span class="bg-white/20 rounded-full px-4 py-1">⌨️ Keyboard = Mulut</span>
+      <span class="bg-white/20 rounded-full px-4 py-1">🖱️ Mouse = Tangan</span>
+      <span class="bg-white/20 rounded-full px-4 py-1">🤲 Keduanya = Tangan Komputer</span>
+    </div>
+  </div>
+  <p class="text-slate-400 text-sm mt-4 font-semibold">
+    © Petualangan Aslan di Dalam Komputer Ajaib • Seri Belajar Teknologi Anak
+  </p>
+</footer>
+
+<!-- ════════════════════════════════════ SCRIPTS ══ -->
+<script>
+// ══ KEYBOARD INTERACTIVE ══════════════════════════════════════
+let screenContent = '';
+const MAX_CHARS = 30;
+
+function pressKey(char, type) {
+  const placeholder = document.getElementById('screenPlaceholder');
+  if (placeholder) placeholder.remove();
+
+  if (type === 'backspace') {
+    screenContent = screenContent.slice(0, -1);
+  } else if (type === 'enter') {
+    spawnConfetti(document.getElementById('screen'));
+    screenContent += '\n';
+  } else if (type === 'space') {
+    if (screenContent.length < MAX_CHARS) screenContent += ' ';
+  } else {
+    if (screenContent.length < MAX_CHARS) screenContent += char;
+  }
+
+  renderScreen();
+  flashKey(char, type);
+  spawnFloatEmoji(document.getElementById('virtualKeyboard'), type === 'backspace' ? '💨' : type === 'enter' ? '✅' : char.length > 1 ? char : null);
+}
+
+function renderScreen() {
+  const el = document.getElementById('screenText');
+  const lines = screenContent.split('\n');
+  el.innerHTML = '';
+  lines.forEach((line, li) => {
+    const lineEl = document.createElement('div');
+    lineEl.style.display = 'flex';
+    lineEl.style.flexWrap = 'wrap';
+    lineEl.style.gap = '2px';
+    line.split('').forEach((ch, ci) => {
+      const span = document.createElement('span');
+      span.textContent = ch === ' ' ? '\u00A0' : ch;
+      span.className = 'letter-pop';
+      span.style.animationDelay = `${(li * 10 + ci) * 0.01}s`;
+      const colors = ['#fbbf24','#f472b6','#34d399','#38bdf8','#a78bfa','#f97316'];
+      span.style.color = colors[(ci + li) % colors.length];
+      span.style.textShadow = `0 0 10px ${colors[(ci+li)%colors.length]}80`;
+      lineEl.appendChild(span);
+    });
+    el.appendChild(lineEl);
+  });
+  el.appendChild(document.getElementById('typeCursor'));
+}
+
+function typeWord(word) {
+  screenContent = '';
+  let i = 0;
+  const placeholder = document.getElementById('screenPlaceholder');
+  if (placeholder) placeholder.remove();
+
+  const timer = setInterval(() => {
+    if (i < word.length) {
+      screenContent += word[i];
+      renderScreen();
+      i++;
+    } else {
+      clearInterval(timer);
+      spawnConfetti(document.getElementById('screen'));
+    }
+  }, 100);
+}
+
+function clearScreen() {
+  screenContent = '';
+  const el = document.getElementById('screenText');
+  el.innerHTML = '<span class="text-slate-500 text-lg font-semibold italic" id="screenPlaceholder">Ketik sesuatu... ✨</span>';
+  el.appendChild(document.getElementById('typeCursor'));
+}
+
+function flashKey(char, type) {
+  // Highlight corresponding physical key briefly
+}
+
+function spawnFloatEmoji(parent, emoji) {
+  if (!emoji) return;
+  const el = document.createElement('span');
+  el.className = 'float-emoji';
+  el.textContent = emoji;
+  el.style.left = (10 + Math.random() * 80) + '%';
+  el.style.bottom = '10px';
+  parent.style.position = 'relative';
+  parent.appendChild(el);
+  setTimeout(() => el.remove(), 1100);
+}
+
+function spawnConfetti(parent) {
+  ['🎉','⭐','✨','🌟','💫'].forEach((e, i) => {
+    const el = document.createElement('span');
+    el.className = 'confetti';
+    el.textContent = e;
+    el.style.left = (15 + i * 16) + '%';
+    el.style.bottom = '20%';
+    el.style.animationDelay = (i * 0.08) + 's';
+    parent.style.position = 'relative';
+    parent.appendChild(el);
+    setTimeout(() => el.remove(), 1200);
+  });
+}
+
+// Physical keyboard support
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Backspace') { pressKey('⌫','backspace'); return; }
+  if (e.key === 'Enter') { pressKey('↵','enter'); return; }
+  if (e.key === ' ') { e.preventDefault(); pressKey(' ','space'); return; }
+  if (e.key.length === 1) {
+    pressKey(e.key.toUpperCase());
+    // Visually flash matching key
+    document.querySelectorAll('.key').forEach(k => {
+      if (k.textContent.trim() === e.key.toUpperCase()) {
+        k.classList.add('pressed');
+        setTimeout(() => k.classList.remove('pressed'), 200);
+      }
+    });
+  }
+});
+
+// ══ DRAG & DROP ═══════════════════════════════════════════════
+let draggedId = null;
+let matchCount = 0;
+const totalItems = 5;
+
+document.querySelectorAll('.drag-item').forEach(item => {
+  item.addEventListener('dragstart', e => {
+    draggedId = item.id;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  item.addEventListener('dragend', () => {
+    item.classList.remove('dragging');
+  });
+  // Touch support
+  item.addEventListener('touchstart', touchStart, { passive: false });
+  item.addEventListener('touchmove', touchMove, { passive: false });
+  item.addEventListener('touchend', touchEnd);
+});
+
+function dOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('over');
+}
+
+document.querySelectorAll('.drop-zone').forEach(zone => {
+  zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+});
+
+function dDrop(e) {
+  e.preventDefault();
+  const zone = e.currentTarget;
+  zone.classList.remove('over');
+  const item = document.getElementById(draggedId);
+  if (!item) return;
+
+  const accept = zone.dataset.accept;
+  const type   = item.dataset.type;
+
+  if (accept === type) {
+    // Correct!
+    item.style.position = 'static';
+    item.draggable = false;
+    item.style.cursor = 'default';
+    item.classList.remove('dragging');
+    item.style.transform = 'scale(1)';
+    zone.appendChild(item);
+    zone.classList.add('matched');
+    matchCount++;
+    document.getElementById('matchCount').textContent = matchCount;
+    spawnConfetti(zone);
+    if (matchCount >= totalItems) {
+      setTimeout(() => document.getElementById('winMsg').classList.remove('hidden'), 500);
+    }
+  } else {
+    // Wrong — shake
+    item.classList.add('dragging');
+    item.style.border = '3px solid #ef4444';
+    setTimeout(() => {
+      item.classList.remove('dragging');
+      item.style.border = '';
+    }, 500);
+  }
+  draggedId = null;
+}
+
+function resetDrag() {
+  matchCount = 0;
+  document.getElementById('matchCount').textContent = 0;
+  document.getElementById('winMsg').classList.add('hidden');
+  const arena = document.getElementById('dragArena');
+  const source = document.getElementById('sourceItems');
+
+  // Move all items back to source
+  document.querySelectorAll('.drag-item').forEach(item => {
+    item.draggable = true;
+    item.style.cursor = 'grab';
+    item.style.position = 'static';
+    item.style.transform = '';
+    item.style.border = '';
+    source.appendChild(item);
+  });
+
+  document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('matched'));
+}
+
+// Touch drag support
+let touchDragEl = null, touchOffX = 0, touchOffY = 0;
+let cloneEl = null;
+
+function touchStart(e) {
+  e.preventDefault();
+  touchDragEl = e.currentTarget;
+  const touch = e.touches[0];
+  const rect = touchDragEl.getBoundingClientRect();
+  touchOffX = touch.clientX - rect.left;
+  touchOffY = touch.clientY - rect.top;
+  draggedId = touchDragEl.id;
+  cloneEl = touchDragEl.cloneNode(true);
+  cloneEl.style.position = 'fixed';
+  cloneEl.style.pointerEvents = 'none';
+  cloneEl.style.zIndex = '9999';
+  cloneEl.style.opacity = '.85';
+  cloneEl.style.transform = 'scale(1.2) rotate(5deg)';
+  cloneEl.style.left = (touch.clientX - touchOffX) + 'px';
+  cloneEl.style.top  = (touch.clientY - touchOffY) + 'px';
+  document.body.appendChild(cloneEl);
+}
+
+function touchMove(e) {
+  e.preventDefault();
+  if (!cloneEl) return;
+  const touch = e.touches[0];
+  cloneEl.style.left = (touch.clientX - touchOffX) + 'px';
+  cloneEl.style.top  = (touch.clientY - touchOffY) + 'px';
+}
+
+function touchEnd(e) {
+  if (!cloneEl) return;
+  const touch = e.changedTouches[0];
+  cloneEl.remove(); cloneEl = null;
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  const zone = el?.closest('.drop-zone');
+  if (zone) dDrop({ preventDefault:()=>{}, currentTarget:zone });
+  touchDragEl = null;
+}
+
+// ══ CANVAS DRAWING ════════════════════════════════════════════
+const ds = {};
+
+function gp(e, canvas) {
+  const r = canvas.getBoundingClientRect();
+  const sx = canvas.width / r.width, sy = canvas.height / r.height;
+  return { x:(e.clientX-r.left)*sx, y:(e.clientY-r.top)*sy };
+}
+function sd(e,id){ e.preventDefault(); const c=document.getElementById(id); const p=gp(e,c); ds[id]={on:true,lx:p.x,ly:p.y}; }
+function dr(e,id){ if(!ds[id]?.on)return; e.preventDefault(); const c=document.getElementById(id); const ctx=c.getContext('2d'); const p=gp(e,c); const ci=id==='canvasKB'?'kbColor':'msColor'; const si=id==='canvasKB'?'kbSize':'msSize'; ctx.strokeStyle=document.getElementById(ci).value; ctx.lineWidth=parseInt(document.getElementById(si).value); ctx.lineCap='round'; ctx.lineJoin='round'; ctx.beginPath(); ctx.moveTo(ds[id].lx,ds[id].ly); ctx.lineTo(p.x,p.y); ctx.stroke(); ds[id].lx=p.x; ds[id].ly=p.y; }
+function sp(id){ if(ds[id]) ds[id].on=false; }
+function sdt(e,id){ e.preventDefault(); const t=e.touches[0]; sd({clientX:t.clientX,clientY:t.clientY,preventDefault:()=>{}},id); }
+function drt(e,id){ e.preventDefault(); const t=e.touches[0]; dr({clientX:t.clientX,clientY:t.clientY,preventDefault:()=>{}},id); }
+function cc(id){ const c=document.getElementById(id); c.getContext('2d').clearRect(0,0,c.width,c.height); drawHint(id); }
+
+function drawHint(id) {
+  const c = document.getElementById(id);
+  const ctx = c.getContext('2d');
+  ctx.save();
+  ctx.globalAlpha = .18;
+  ctx.fillStyle = id === 'canvasKB' ? '#f97316' : '#3b82f6';
+  ctx.font = 'bold 15px Nunito';
+  ctx.textAlign = 'center';
+  ctx.fillText(id==='canvasKB' ? '⌨️ Gambar Keyboard Impianmu!' : '🖱️ Gambar Mouse Impianmu!', c.width/2, c.height/2);
+  ctx.restore();
+}
+
+// ══ INIT ══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  ['canvasKB','canvasMS'].forEach(drawHint);
+  document.getElementById('totalItems').textContent = totalItems;
+});
+</script>
+</body>
+</html>

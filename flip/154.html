@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Aslan's English Adventure — Day 24: The Cloud Kingdom</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #050c1a;
+    --deep:    #091428;
+    --sky:     #38bdf8;
+    --amber:   #f59e0b;
+    --gold:    #fbbf24;
+    --emerald: #10b981;
+    --coral:   #f97316;
+    --purple:  #8b5cf6;
+    --rose:    #f43f5e;
+    --cloud:   #bae6fd;
+    --mist:    #e0f2fe;
+    --white:   #ffffff;
+    --accent:  #7dd3fc;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star {
+    position: absolute; border-radius: 50%; background: white;
+    animation: twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:.15;transform:scale(1);}50%{opacity:.9;transform:scale(1.5);} }
+
+  /* Floating cloud wisps */
+  .wisp {
+    position: fixed; pointer-events: none; z-index: 0; border-radius: 50%;
+    background: radial-gradient(circle, #bae6fd18 0%, #38bdf808 60%, transparent 100%);
+    animation: wispdrift var(--wd,14s) ease-in-out infinite var(--wdelay,0s);
+    filter: blur(6px);
+  }
+  @keyframes wispdrift {
+    0%{transform:translate(0,0) scale(1);opacity:0;}
+    20%{opacity:.5;}
+    60%{transform:translate(var(--wx,30px),var(--wy,-50px)) scale(1.3);opacity:.25;}
+    100%{transform:translate(var(--wx2,-20px),var(--wy2,-100px)) scale(.7);opacity:0;}
+  }
+
+  .shoot {
+    position: fixed; top: 10%; left: -10%;
+    width: 160px; height: 2px;
+    background: linear-gradient(90deg, transparent, #bae6fd, transparent);
+    animation: shoot 11s linear infinite 1.5s; z-index: 0;
+  }
+  @keyframes shoot {
+    0%{left:-10%;top:10%;opacity:0;}5%{opacity:1;}38%{left:110%;top:30%;opacity:0;}100%{left:110%;top:30%;opacity:0;}
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 36px 20px 60px; }
+
+  /* ===== HERO ===== */
+  .hero { text-align: center; margin-bottom: 44px; animation: fadeDown .8s ease both; }
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
+  .hero-badge {
+    display: inline-flex; gap: 8px;
+    background: rgba(186,230,253,.12); border: 1px solid rgba(186,230,253,.32);
+    color: #bae6fd; padding: 7px 22px; border-radius: 100px;
+    font-size: .8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Baloo 2', cursive; font-size: clamp(2rem,6vw,3.2rem);
+    font-weight: 800; color: var(--white); line-height: 1.15; margin-bottom: 12px;
+  }
+  .hero h1 .accent { background: linear-gradient(135deg,#bae6fd,#38bdf8,#0ea5e9); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero-sub { color: rgba(255,255,255,.55); font-size: 1rem; max-width: 500px; margin: 0 auto 28px; line-height: 1.6; }
+  .hero-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .tag { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.7); padding:6px 16px; border-radius:100px; font-size:.78rem; font-weight:600; backdrop-filter:blur(8px); }
+
+  .progress-wrap { background:rgba(255,255,255,.07); border-radius:100px; height:8px; margin-bottom:40px; overflow:hidden; border:1px solid rgba(255,255,255,.08); }
+  .progress-bar { height:100%; background:linear-gradient(90deg,#38bdf8,#bae6fd,#fbbf24); border-radius:100px; width:0%; transition:width .6s ease; }
+  .progress-label { text-align:right; font-size:.75rem; color:rgba(255,255,255,.4); margin-top:6px; font-weight:600; }
+
+  /* ===== ILLUSTRATION ===== */
+  .illustration-card {
+    background: linear-gradient(135deg,#050c1a 0%,#091e3a 50%,#050c1a 100%);
+    border-radius: 32px; padding: 32px 24px 24px; margin-bottom: 40px;
+    text-align: center; position: relative; overflow: hidden; animation: fadeUp .9s ease .1s both;
+    border: 1px solid rgba(186,230,253,.14);
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+  .illus-svg { max-width: 310px; width: 100%; position: relative; z-index: 1; }
+  .illus-quote { color:rgba(255,255,255,.75); font-size:.95rem; font-weight:600; margin-top:16px; font-style:italic; }
+  .illus-quote strong { color:#bae6fd; font-style:normal; }
+
+  /* ===== SPEED CONTROLS ===== */
+  .speed-controls {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 16px; animation: fadeUp .9s ease .15s both;
+  }
+  .speed-label { color: rgba(255,255,255,.5); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .speed-btn {
+    padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06); color: rgba(255,255,255,.6);
+    font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s;
+    backdrop-filter: blur(8px); font-family: 'Nunito', sans-serif;
+  }
+  .speed-btn:hover { background: rgba(255,255,255,.12); color: white; }
+  .speed-btn.active {
+    background: linear-gradient(135deg, #0ea5e9, #0369a1);
+    color: white; border-color: transparent;
+    box-shadow: 0 4px 16px rgba(14,165,233,.4);
+  }
+
+  .master-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:40px; animation:fadeUp .9s ease .2s both; }
+  .btn-master { display:inline-flex; align-items:center; gap:10px; padding:13px 28px; border-radius:100px; border:none; cursor:pointer; font-weight:700; transition:transform .15s; font-family:'Nunito',sans-serif; font-size:.95rem; }
+  .btn-master:active { transform:scale(.97); }
+  .btn-play-all { background:linear-gradient(135deg,#0ea5e9,#0369a1); color:white; box-shadow:0 6px 24px rgba(14,165,233,.4); }
+  .btn-stop { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:rgba(255,255,255,.75); backdrop-filter:blur(8px); }
+
+  /* ===== CHAPTERS ===== */
+  .chapter {
+    background: linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.09); border-radius: 28px;
+    margin-bottom: 24px; overflow: hidden; backdrop-filter: blur(12px);
+    transition: transform .2s; animation: fadeUp .7s ease both;
+  }
+  .chapter:hover { transform: translateY(-3px); }
+  .chapter:nth-child(1){animation-delay:.1s;}.chapter:nth-child(2){animation-delay:.2s;}
+  .chapter:nth-child(3){animation-delay:.3s;}.chapter:nth-child(4){animation-delay:.4s;}
+  .chapter:nth-child(5){animation-delay:.5s;}
+  .chapter-accent { height: 4px; }
+  .ch1 .chapter-accent{background:linear-gradient(90deg,#bae6fd,#38bdf8);}
+  .ch2 .chapter-accent{background:linear-gradient(90deg,#c4b5fd,#7c3aed);}
+  .ch3 .chapter-accent{background:linear-gradient(90deg,#fde68a,#f59e0b);}
+  .ch4 .chapter-accent{background:linear-gradient(90deg,#6ee7b7,#059669);}
+  .ch5 .chapter-accent{background:linear-gradient(90deg,#fda4af,#e11d48);}
+  .chapter-inner { padding: 28px 28px 24px; }
+  .chapter-head { display:flex; align-items:center; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+  .chapter-num {
+    width:52px; height:52px; border-radius:16px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2',cursive; font-size:1.3rem; font-weight:800; color:white;
+  }
+  .ch1 .chapter-num{background:linear-gradient(135deg,#bae6fd,#0ea5e9);}
+  .ch2 .chapter-num{background:linear-gradient(135deg,#c4b5fd,#7c3aed);}
+  .ch3 .chapter-num{background:linear-gradient(135deg,#fde68a,#f59e0b);}
+  .ch4 .chapter-num{background:linear-gradient(135deg,#6ee7b7,#059669);}
+  .ch5 .chapter-num{background:linear-gradient(135deg,#fda4af,#e11d48);}
+  .chapter-meta { flex:1; min-width:0; }
+  .chapter-tag { font-size:.7rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.35); margin-bottom:4px; }
+  .chapter-title { font-family:'Baloo 2',cursive; font-size:1.05rem; font-weight:700; color:var(--white); line-height:1.3; }
+  .btn-listen {
+    flex-shrink:0; display:inline-flex; align-items:center; gap:8px;
+    padding:10px 20px; border-radius:100px; border:none; cursor:pointer;
+    font-size:.82rem; font-weight:700; transition:all .2s; font-family:'Nunito',sans-serif;
+  }
+  .ch1 .btn-listen{background:rgba(186,230,253,.15);color:#bae6fd;border:1px solid rgba(186,230,253,.3);}
+  .ch2 .btn-listen{background:rgba(196,181,253,.15);color:#ddd6fe;border:1px solid rgba(196,181,253,.3);}
+  .ch3 .btn-listen{background:rgba(253,230,138,.15);color:#fde68a;border:1px solid rgba(253,230,138,.3);}
+  .ch4 .btn-listen{background:rgba(110,231,183,.15);color:#a7f3d0;border:1px solid rgba(110,231,183,.3);}
+  .ch5 .btn-listen{background:rgba(253,164,175,.15);color:#fecdd3;border:1px solid rgba(253,164,175,.3);}
+  .btn-listen:hover{filter:brightness(1.15);transform:scale(1.04);}
+  .btn-listen.playing::before{content:'⏸';margin-right:4px;}
+  .wave-bars{display:none;align-items:center;gap:2px;height:16px;}
+  .btn-listen.playing .wave-bars{display:flex;}
+  .wave-bar{width:3px;border-radius:2px;background:currentColor;animation:wave var(--dur,.5s) infinite alternate;}
+  @keyframes wave{from{height:3px;}to{height:14px;}}
+
+  .chapter-text {
+    font-size: 1rem; line-height: 1.95; color: rgba(255,255,255,.85);
+    padding: 20px 22px; background: rgba(0,0,0,.25);
+    border-radius: 16px; border: 1px solid rgba(255,255,255,.05);
+    position: relative; word-spacing: 2px;
+  }
+  .chapter-text .read-marker {
+    position:absolute; top:12px; right:14px;
+    font-size:.75rem; font-weight:700; color:#bae6fd;
+    opacity:0; transition:opacity .4s;
+  }
+  .chapter.done .chapter-text .read-marker { opacity:1; }
+
+  .w {
+    display: inline; border-radius: 5px; padding: 1px 2px;
+    cursor: pointer; transition: background 0.08s; white-space: normal;
+  }
+  .w:hover { background: rgba(186,230,253,0.2); }
+  .hl { color: #bae6fd; font-weight: 700; }
+
+  .vocab-box { margin-top:16px; padding:16px 20px; background:rgba(255,255,255,.04); border-radius:14px; border:1px solid rgba(255,255,255,.07); }
+  .vocab-title { font-size:.72rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:10px; }
+  .vocab-pills { display:flex; flex-wrap:wrap; gap:8px; }
+  .vocab-pill {
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
+    border-radius:100px; padding:5px 14px; font-size:.8rem; font-weight:600;
+    color:rgba(255,255,255,.65); cursor:pointer; transition:all .18s;
+  }
+  .vocab-pill:hover{background:rgba(255,255,255,.14);color:var(--white);transform:scale(1.06);}
+
+  .motivation-card {
+    background: linear-gradient(135deg,#050c1a 0%,#091e3a 60%,#050c1a 100%);
+    border: 1px solid rgba(186,230,253,.18); border-radius:28px;
+    padding:36px 32px; text-align:center; margin-top:40px;
+    position:relative; overflow:hidden; animation:fadeUp .7s ease .6s both;
+  }
+  .motivation-card .star-icon{font-size:2.8rem;margin-bottom:16px;display:block;animation:spin 6s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);}50%{transform:rotate(180deg);}to{transform:rotate(360deg);}}
+  .motivation-card h2{font-family:'Baloo 2',cursive;font-size:clamp(1.2rem,4vw,1.7rem);font-weight:800;color:#bae6fd;margin-bottom:14px;}
+  .motivation-card p{color:rgba(255,255,255,.7);font-size:.97rem;line-height:1.7;max-width:520px;margin:0 auto;}
+  .challenge-box{margin-top:24px;background:rgba(186,230,253,.08);border:1px solid rgba(186,230,253,.2);border-radius:16px;padding:18px 22px;}
+  .challenge-box p{font-size:.9rem;font-weight:600;color:rgba(255,255,255,.75);}
+  .challenge-box strong{color:#bae6fd;}
+  .footer{text-align:center;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.3);font-size:.82rem;font-weight:600;}
+
+  .word-toast {
+    position:fixed; bottom:28px; left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:rgba(0,0,0,.92); backdrop-filter:blur(12px);
+    color:#bae6fd; padding:12px 28px; border-radius:100px;
+    font-size:.9rem; font-weight:600;
+    box-shadow:0 8px 32px rgba(0,0,0,.4);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    z-index:9999; white-space:nowrap;
+    border:1px solid rgba(186,230,253,.28); font-family:monospace;
+  }
+  .word-toast.show{transform:translateX(-50%) translateY(0);}
+  .word-toast small{color:#aaa;font-size:0.7rem;margin-left:8px;}
+
+  @media(max-width:600px){
+    .chapter-inner{padding:20px 18px 18px;}
+    .btn-listen span{display:none;}
+    .chapter-num{width:44px;height:44px;font-size:1.1rem;}
+    .word-toast{white-space:normal;max-width:90vw;text-align:center;}
+    .speed-controls{gap:6px;}
+    .speed-btn{padding:7px 14px;font-size:.75rem;}
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<div class="stars" id="stars"></div>
+<div class="shoot"></div>
+
+<div class="wrapper">
+  <header class="hero">
+    <div class="hero-badge">☁️ Day 24 – Late Beginner | ✨ Click ANY word for Indonesian meaning</div>
+    <h1>The Cloud<br><span class="accent">Kingdom</span></h1>
+    <p class="hero-sub">A story about <strong style="color:#bae6fd">Aslan</strong> who discovers a magical path to a kingdom high above the clouds — where the palaces are made of cotton, the creatures are gentle, and the world below looks like a beautiful painting. ☁️🏰✨</p>
+    <div class="hero-tags">
+      <span class="tag">⭐ Late Beginner</span>
+      <span class="tag">🎧 Listen &amp; Learn</span>
+      <span class="tag">📚 5 Chapters</span>
+      <span class="tag">🏆 Vocabulary</span>
+      <span class="tag">🔍 Click words for meaning</span>
+    </div>
+  </header>
+
+  <div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-label" id="progressLabel">0 of 5 chapters read</div>
+  </div>
+
+  <!-- ILLUSTRATION -->
+  <div class="illustration-card">
+    <svg class="illus-svg" viewBox="0 0 320 215" xmlns="http://www.w3.org/2000/svg">
+      <!-- Night-to-day sky gradient background -->
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#020c1b"/>
+          <stop offset="45%" stop-color="#0c2340"/>
+          <stop offset="100%" stop-color="#0e3a6e"/>
+        </linearGradient>
+        <radialGradient id="sunGlow" cx="75%" cy="20%" r="30%">
+          <stop offset="0%" stop-color="#fde68a" stop-opacity=".35"/>
+          <stop offset="100%" stop-color="#fde68a" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="rainbowGrad" cx="50%" cy="100%" r="50%">
+          <stop offset="0%"  stop-color="#f87171" stop-opacity=".7"/>
+          <stop offset="20%" stop-color="#fb923c" stop-opacity=".6"/>
+          <stop offset="40%" stop-color="#facc15" stop-opacity=".6"/>
+          <stop offset="60%" stop-color="#4ade80" stop-opacity=".6"/>
+          <stop offset="80%" stop-color="#38bdf8" stop-opacity=".6"/>
+          <stop offset="100%" stop-color="#a78bfa" stop-opacity=".6"/>
+        </radialGradient>
+      </defs>
+      <rect width="320" height="215" fill="url(#skyGrad)" rx="14"/>
+      <rect width="320" height="215" fill="url(#sunGlow)" rx="14"/>
+
+      <!-- Twinkling stars (top half) -->
+      <circle cx="18" cy="18" r="1.1" fill="white" opacity=".7"><animate attributeName="opacity" values=".1;.9;.1" dur="2.2s" repeatCount="indefinite"/></circle>
+      <circle cx="44" cy="10" r="1.4" fill="white" opacity=".8"><animate attributeName="opacity" values=".2;1;.2" dur="1.9s" repeatCount="indefinite" begin=".3s"/></circle>
+      <circle cx="75" cy="22" r="1" fill="#bae6fd" opacity=".6"><animate attributeName="opacity" values=".1;.8;.1" dur="2.6s" repeatCount="indefinite" begin=".6s"/></circle>
+      <circle cx="108" cy="12" r="1.2" fill="white" opacity=".7"><animate attributeName="opacity" values=".3;.9;.3" dur="2s" repeatCount="indefinite" begin=".9s"/></circle>
+      <circle cx="18" cy="44" r="1" fill="#fbbf24" opacity=".6"><animate attributeName="opacity" values=".1;.7;.1" dur="3s" repeatCount="indefinite" begin=".2s"/></circle>
+      <circle cx="52" cy="38" r="1.3" fill="white" opacity=".6"><animate attributeName="opacity" values=".2;.8;.2" dur="2.4s" repeatCount="indefinite" begin=".7s"/></circle>
+
+      <!-- Sun (top right) -->
+      <circle cx="268" cy="38" r="22" fill="#fde68a" opacity=".9"/>
+      <circle cx="268" cy="38" r="16" fill="#fbbf24" opacity=".95"/>
+      <!-- Sun rays -->
+      <line x1="268" y1="10" x2="268" y2="4" stroke="#fde68a" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+      <line x1="268" y1="66" x2="268" y2="72" stroke="#fde68a" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+      <line x1="240" y1="38" x2="234" y2="38" stroke="#fde68a" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+      <line x1="296" y1="38" x2="302" y2="38" stroke="#fde68a" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+      <line x1="248" y1="18" x2="244" y2="14" stroke="#fde68a" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+      <line x1="288" y1="18" x2="292" y2="14" stroke="#fde68a" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+      <line x1="248" y1="58" x2="244" y2="62" stroke="#fde68a" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+      <line x1="288" y1="58" x2="292" y2="62" stroke="#fde68a" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+
+      <!-- Rainbow arc (behind clouds) -->
+      <path d="M30 185 Q100 80 200 185" stroke="#f87171" stroke-width="4" fill="none" opacity=".55"/>
+      <path d="M36 185 Q103 88 194 185" stroke="#fb923c" stroke-width="4" fill="none" opacity=".5"/>
+      <path d="M42 185 Q106 96 188 185" stroke="#facc15" stroke-width="4" fill="none" opacity=".5"/>
+      <path d="M48 185 Q109 104 182 185" stroke="#4ade80" stroke-width="4" fill="none" opacity=".5"/>
+      <path d="M54 185 Q112 112 176 185" stroke="#38bdf8" stroke-width="4" fill="none" opacity=".5"/>
+      <path d="M60 185 Q115 120 170 185" stroke="#a78bfa" stroke-width="4" fill="none" opacity=".5"/>
+
+      <!-- Big fluffy base cloud (the kingdom platform) -->
+      <ellipse cx="160" cy="148" rx="100" ry="28" fill="#dbeafe" opacity=".92"/>
+      <ellipse cx="120" cy="138" rx="50" ry="22" fill="#e0f2fe" opacity=".95"/>
+      <ellipse cx="170" cy="132" rx="58" ry="26" fill="#f0f9ff" opacity=".95"/>
+      <ellipse cx="215" cy="140" rx="44" ry="20" fill="#e0f2fe" opacity=".9"/>
+      <ellipse cx="85"  cy="145" rx="36" ry="16" fill="#dbeafe" opacity=".88"/>
+
+      <!-- Cloud Palace (sitting on cloud platform) -->
+      <!-- Main hall -->
+      <rect x="124" y="88" width="72" height="50" rx="3" fill="#f8fafc" opacity=".97"/>
+      <rect x="124" y="88" width="72" height="50" rx="3" fill="none" stroke="#bae6fd" stroke-width="1" opacity=".5"/>
+      <!-- Windows main hall -->
+      <rect x="133" y="97" width="10" height="12" rx="2" fill="#bae6fd" opacity=".7"/>
+      <rect x="149" y="97" width="10" height="12" rx="2" fill="#bae6fd" opacity=".7"/>
+      <rect x="165" y="97" width="10" height="12" rx="2" fill="#bae6fd" opacity=".7"/>
+      <rect x="181" y="97" width="10" height="12" rx="2" fill="#bae6fd" opacity=".7"/>
+      <!-- Door -->
+      <path d="M154 138 Q160 132 166 138 L166 138 L154 138Z" fill="#bae6fd" opacity=".8"/>
+      <rect x="154" y="120" width="12" height="18" rx="1" fill="#e0f2fe" opacity=".9"/>
+      <!-- Left tower -->
+      <rect x="110" y="98" width="20" height="40" rx="2" fill="#f0f9ff" opacity=".97"/>
+      <rect x="108" y="90" width="24" height="12" rx="3" fill="#f8fafc" opacity=".95"/>
+      <!-- Left tower spire -->
+      <polygon points="120,68 108,90 132,90" fill="#bae6fd" opacity=".9"/>
+      <circle cx="120" cy="66" r="3" fill="#fbbf24" opacity=".95"/>
+      <!-- Left tower windows -->
+      <rect x="115" y="104" width="8" height="10" rx="2" fill="#bae6fd" opacity=".65"/>
+      <rect x="115" y="120" width="8" height="10" rx="2" fill="#bae6fd" opacity=".65"/>
+      <!-- Right tower -->
+      <rect x="190" y="98" width="20" height="40" rx="2" fill="#f0f9ff" opacity=".97"/>
+      <rect x="188" y="90" width="24" height="12" rx="3" fill="#f8fafc" opacity=".95"/>
+      <!-- Right tower spire -->
+      <polygon points="200,68 188,90 212,90" fill="#bae6fd" opacity=".9"/>
+      <circle cx="200" cy="66" r="3" fill="#fbbf24" opacity=".95"/>
+      <!-- Right tower windows -->
+      <rect x="195" y="104" width="8" height="10" rx="2" fill="#bae6fd" opacity=".65"/>
+      <rect x="195" y="120" width="8" height="10" rx="2" fill="#bae6fd" opacity=".65"/>
+      <!-- Center mini tower -->
+      <polygon points="160,56 148,80 172,80" fill="#7dd3fc" opacity=".88"/>
+      <circle cx="160" cy="54" r="4" fill="#fbbf24" opacity=".98"/>
+      <rect x="152" y="80" width="16" height="10" rx="1" fill="#f0f9ff" opacity=".9"/>
+      <rect x="156" y="82" width="8" height="8" rx="1" fill="#bae6fd" opacity=".7"/>
+      <!-- Palace flags -->
+      <line x1="120" y1="66" x2="120" y2="58" stroke="#94a3b8" stroke-width="1.2"/>
+      <polygon points="120,58 128,61 120,64" fill="#f87171" opacity=".9"/>
+      <line x1="200" y1="66" x2="200" y2="58" stroke="#94a3b8" stroke-width="1.2"/>
+      <polygon points="200,58 208,61 200,64" fill="#4ade80" opacity=".9"/>
+      <line x1="160" y1="54" x2="160" y2="46" stroke="#94a3b8" stroke-width="1.2"/>
+      <polygon points="160,46 168,49 160,52" fill="#fbbf24" opacity=".95"/>
+
+      <!-- Small cloud creatures floating near palace -->
+      <!-- Creature 1 (left) -->
+      <ellipse cx="74" cy="118" rx="14" ry="9" fill="white" opacity=".93"/>
+      <ellipse cx="68" cy="113" rx="9" ry="7" fill="#f0f9ff" opacity=".95"/>
+      <ellipse cx="80" cy="114" rx="8" ry="6" fill="#f0f9ff" opacity=".95"/>
+      <circle cx="71" cy="115" r="1.5" fill="#334155" opacity=".8"/>
+      <circle cx="78" cy="115" r="1.5" fill="#334155" opacity=".8"/>
+      <path d="M71 119 Q74 121 78 119" stroke="#334155" stroke-width="1" fill="none" opacity=".7"/>
+      <!-- Creature 2 (right) -->
+      <ellipse cx="250" cy="110" rx="14" ry="9" fill="white" opacity=".9"/>
+      <ellipse cx="244" cy="105" rx="9" ry="7" fill="#f0f9ff" opacity=".92"/>
+      <ellipse cx="257" cy="106" rx="8" ry="6" fill="#f0f9ff" opacity=".92"/>
+      <circle cx="247" cy="107" r="1.5" fill="#334155" opacity=".8"/>
+      <circle cx="254" cy="107" r="1.5" fill="#334155" opacity=".8"/>
+      <path d="M248 111 Q251 113 255 111" stroke="#334155" stroke-width="1" fill="none" opacity=".7"/>
+
+      <!-- Birds flying -->
+      <path d="M30 72 Q34 68 38 72" stroke="#94a3b8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M38 72 Q42 68 46 72" stroke="#94a3b8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M55 62 Q58 58 62 62" stroke="#94a3b8" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      <path d="M62 62 Q65 58 69 62" stroke="#94a3b8" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+
+      <!-- ASLAN standing on cloud, gazing up at palace -->
+      <circle cx="50" cy="152" r="8.5" fill="#c8956c"/>
+      <!-- Hair -->
+      <path d="M42 148 Q50 142 58 148 Q58 144 50 143 Q42 144 42 148Z" fill="#5c3a1e"/>
+      <!-- Body -->
+      <rect x="43" y="160" width="14" height="22" rx="4" fill="#0ea5e9"/>
+      <!-- Right arm pointing UP at palace with wonder -->
+      <line x1="57" y1="163" x2="66" y2="148" stroke="#0ea5e9" stroke-width="4" stroke-linecap="round"/>
+      <!-- Left arm at side -->
+      <line x1="43" y1="163" x2="37" y2="172" stroke="#0ea5e9" stroke-width="4" stroke-linecap="round"/>
+      <!-- Legs -->
+      <line x1="46" y1="182" x2="43" y2="195" stroke="#0369a1" stroke-width="4" stroke-linecap="round"/>
+      <line x1="54" y1="182" x2="57" y2="195" stroke="#0369a1" stroke-width="4" stroke-linecap="round"/>
+      <!-- Wide amazed eyes -->
+      <circle cx="47" cy="150" r="2.2" fill="#2d1a08"/>
+      <circle cx="54" cy="150" r="2.2" fill="#2d1a08"/>
+      <circle cx="47.8" cy="149.3" r=".9" fill="white"/>
+      <circle cx="54.8" cy="149.3" r=".9" fill="white"/>
+
+      <!-- Sparkles / magic dust around palace -->
+      <text x="93"  y="108" fill="#fbbf24" font-size="9" opacity=".85">✦</text>
+      <text x="222" y="94"  fill="#bae6fd" font-size="10" opacity=".8">✦</text>
+      <text x="140" y="72"  fill="#fde68a" font-size="8" opacity=".7">✦</text>
+      <text x="175" y="74"  fill="#a78bfa" font-size="7" opacity=".75">✦</text>
+      <text x="100" y="130" fill="#bae6fd" font-size="7" opacity=".6">✦</text>
+      <text x="232" y="130" fill="#fbbf24" font-size="8" opacity=".65">✦</text>
+
+      <!-- Animated shimmer on palace -->
+      <rect x="124" y="88" width="72" height="50" rx="3" fill="none" stroke="#bae6fd" stroke-width="2" opacity=".2">
+        <animate attributeName="opacity" values=".2;.05;.2" dur="3s" repeatCount="indefinite"/>
+      </rect>
+    </svg>
+    <p class="illus-quote">Aslan looked up at the <strong>Cloud Kingdom</strong> — a palace of cotton and light, floating in the blue sky. 🏰☁️✨</p>
+  </div>
+
+  <!-- SPEED CONTROLS -->
+  <div class="speed-controls">
+    <span class="speed-label">🎚️ Speed:</span>
+    <button class="speed-btn" data-rate="0.65">🐢 Slow</button>
+    <button class="speed-btn active" data-rate="0.88">🚶 Normal</button>
+    <button class="speed-btn" data-rate="1.15">🚀 Fast</button>
+  </div>
+
+  <div class="master-controls">
+    <button class="btn-master btn-play-all" id="playAllBtn">🎧 <span>Listen to Whole Story</span></button>
+    <button class="btn-master btn-stop" id="stopBtn">⏹ <span>Stop Reading</span></button>
+  </div>
+
+  <div id="chapters">
+
+    <!-- CHAPTER 1 -->
+    <div class="chapter ch1" id="ch1">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">01</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter One</div>
+            <div class="chapter-title">☁️ The Floating Cloud</div>
+          </div>
+          <button class="btn-listen" data-ch="1">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.5s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text1">
+          <span class="read-marker">✅ Read!</span>
+          One clear morning, Aslan was lying on the soft green grass in his garden, staring up at the sky. The sky was a beautiful deep blue, and dozens of white clouds drifted slowly overhead. Aslan loved to watch the clouds and imagine shapes in them — a sleeping bear, a sailing ship, a friendly dragon. But one cloud was different. It was lower than the others, and it moved against the wind instead of with it. Aslan sat up and watched carefully. The cloud came closer and closer until it was floating just above the garden fence, soft and bright like a pile of fresh <span class="hl">cotton</span>. Then Aslan heard a tiny, silvery voice coming from inside the cloud. "We have been <span class="hl">waiting</span> for you, Aslan," the voice said gently. "The Cloud Kingdom is ready for its visitor."
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="cotton">cotton</span><span class="vocab-pill" data-word="waiting">waiting</span><span class="vocab-pill" data-word="drifted">drifted</span><span class="vocab-pill" data-word="dozens">dozens</span><span class="vocab-pill" data-word="overhead">overhead</span><span class="vocab-pill" data-word="floating">floating</span><span class="vocab-pill" data-word="silvery">silvery</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 2 -->
+    <div class="chapter ch2" id="ch2">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">02</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Two</div>
+            <div class="chapter-title">🌀 Climbing to the Sky</div>
+          </div>
+          <button class="btn-listen" data-ch="2">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text2">
+          <span class="read-marker">✅ Read!</span>
+          The cloud touched the top of the garden fence and held perfectly still. Aslan stood up slowly, his heart beating fast with <span class="hl">excitement</span>. He reached out his hand and touched the cloud. It felt cool and soft, like touching a fresh pillow. The silvery voice spoke again. "Step on. We will carry you safely." Aslan took a deep breath. He placed one foot on the cloud, then the other. The cloud held him firmly, as solid as a floor. Then, very gently, it began to rise. Aslan's garden grew smaller below him. The trees became tiny. The rooftops of his neighbourhood looked like a patchwork <span class="hl">quilt</span> of orange and red tiles. Higher and higher the cloud carried him, through a layer of cold mist that left tiny droplets on his hair. And then, suddenly, he broke through — and the Cloud Kingdom appeared above him in all its glowing, breathtaking <span class="hl">glory</span>.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="excitement">excitement</span><span class="vocab-pill" data-word="quilt">quilt</span><span class="vocab-pill" data-word="glory">glory</span><span class="vocab-pill" data-word="firmly">firmly</span><span class="vocab-pill" data-word="droplets">droplets</span><span class="vocab-pill" data-word="neighbourhood">neighbourhood</span><span class="vocab-pill" data-word="breathtaking">breathtaking</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 3 -->
+    <div class="chapter ch3" id="ch3">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">03</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Three</div>
+            <div class="chapter-title">🏰 Welcome to Cloud Kingdom</div>
+          </div>
+          <button class="btn-listen" data-ch="3">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text3">
+          <span class="read-marker">✅ Read!</span>
+          The Cloud Kingdom was more wonderful than anything Aslan had ever <span class="hl">imagined</span>. The ground was made of thick, soft cloud — springy and white, like walking on the world's largest marshmallow. Everywhere Aslan looked, there were beautiful structures made entirely from cloud and mist. Tall towers rose into the blue sky, their <span class="hl">peaks</span> decorated with tiny rainbows. Wide bridges connected island clouds that floated at different heights. Rivers of mist flowed gently between them. Small creatures lived here — beings made entirely of cloud, soft and round and white, with dark little eyes full of kindness. One of them floated up to Aslan and bowed politely. "Welcome, Aslan," it said in a whisper-soft voice. "I am Nimbus. I will be your guide today." Nimbus had a round little body and two small cloud-puff arms. It smiled warmly, and Aslan immediately felt <span class="hl">safe</span> and welcome.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="imagined">imagined</span><span class="vocab-pill" data-word="peaks">peaks</span><span class="vocab-pill" data-word="marshmallow">marshmallow</span><span class="vocab-pill" data-word="structures">structures</span><span class="vocab-pill" data-word="creatures">creatures</span><span class="vocab-pill" data-word="bowed">bowed</span><span class="vocab-pill" data-word="guide">guide</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 4 -->
+    <div class="chapter ch4" id="ch4">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">04</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Four</div>
+            <div class="chapter-title">🌈 The Cloud Palace</div>
+          </div>
+          <button class="btn-listen" data-ch="4">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.15s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text4">
+          <span class="read-marker">✅ Read!</span>
+          Nimbus led Aslan to the heart of the Cloud Kingdom — the Cloud Palace. Its walls shimmered with soft white light, and its towers were so tall they <span class="hl">disappeared</span> into the blue above. Inside, the palace was airy and open, with no heavy stone or dark wood. Everything was made of mist and light. The floors were smooth and cool under Aslan's feet. The walls glowed faintly like moonlight through fog. In the palace's great hall, Aslan saw the most extraordinary thing — a wide round window, like a giant eye looking down at the Earth below. He walked to it and <span class="hl">peered</span> through. The world he knew — his street, his school, his town — looked tiny and peaceful from up here, like a beautiful painting. Green fields, silver rivers, and tiny roads that <span class="hl">wound</span> through villages like ribbons. Aslan pressed his hand against the cool cloud-glass and felt his heart fill with something warm and quiet. He understood, for the first time, how big and beautiful the world truly was.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="disappeared">disappeared</span><span class="vocab-pill" data-word="peered">peered</span><span class="vocab-pill" data-word="wound">wound</span><span class="vocab-pill" data-word="shimmered">shimmered</span><span class="vocab-pill" data-word="extraordinary">extraordinary</span><span class="vocab-pill" data-word="faintly">faintly</span><span class="vocab-pill" data-word="peaceful">peaceful</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 5 -->
+    <div class="chapter ch5" id="ch5">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">05</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Five</div>
+            <div class="chapter-title">🏠 Flying Back Home</div>
+          </div>
+          <button class="btn-listen" data-ch="5">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text5">
+          <span class="read-marker">✅ Read!</span>
+          After a long and magical afternoon, Nimbus came to Aslan and spoke softly. "The sun is beginning to <span class="hl">descend</span>," Nimbus said. "It is time for you to go home." Aslan felt a little sad, but he nodded. He had learned so much and seen so much beauty. The same kind cloud that had brought him up now waited at the edge of the kingdom, ready to carry him gently back down. As Aslan stepped on, all the cloud creatures gathered and waved their soft little arms. "Come back soon!" they called in their whispering voices. The cloud descended slowly, and Aslan watched the Cloud Kingdom grow smaller above him — the palace, the towers, the rainbow bridges — until they vanished into the mist. When his feet touched the grass of his garden again, everything looked different. Not because it had changed — but because he had. Aslan now saw his garden, his street, and his whole world with new eyes. He understood something important: sometimes you need to go very high to truly <span class="hl">appreciate</span> what is below. The beauty of the world was not only up in the clouds. It was right here, at home, all along.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="descend">descend</span><span class="vocab-pill" data-word="appreciate">appreciate</span><span class="vocab-pill" data-word="gathered">gathered</span><span class="vocab-pill" data-word="vanished">vanished</span><span class="vocab-pill" data-word="descended">descended</span><span class="vocab-pill" data-word="perspective">perspective</span><span class="vocab-pill" data-word="truly">truly</span></div></div>
+      </div>
+    </div>
+
+  </div><!-- /chapters -->
+
+  <div class="motivation-card">
+    <span class="star-icon">☁️</span>
+    <h2>You see the world with new eyes, Aslan! 🌟</h2>
+    <p>Just like Aslan discovered from the Cloud Kingdom, sometimes we need a new perspective to truly see how wonderful our world is. Every time you learn a new English word, you are climbing a little higher — seeing a little more. <strong style="color:#bae6fd">Keep rising, Aslan. The view only gets more beautiful.</strong> 🏰✨</p>
+    <div class="challenge-box"><p>💪 <strong>Today's Challenge:</strong> Look out your window and describe what you see in English — use at least <strong>five sentences</strong>. Then imagine what it would look like from the Cloud Kingdom. Write or say what you think! ☁️🖊️</p></div>
+  </div>
+
+  <footer class="footer">Made with ❤️ for <span style="color:#bae6fd">Aslan</span> • Day 24 complete • Click any word for Indonesian meaning 🖱️</footer>
+</div>
+
+<div id="wordToast" class="word-toast">📖</div>
+
+<script>
+// ===== STARS + CLOUD WISPS =====
+(function(){
+  const wrap = document.getElementById('stars');
+  for(let i=0;i<90;i++){
+    const s=document.createElement('div'); s.className='star';
+    const size=Math.random()*2.5+0.6;
+    s.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--delay:-${(Math.random()*5).toFixed(1)}s;`;
+    wrap.appendChild(s);
+  }
+  for(let i=0;i<8;i++){
+    const m=document.createElement('div'); m.className='wisp';
+    const size=Math.random()*90+50;
+    const wx=(Math.random()*60-30).toFixed(0);
+    const wy=-(Math.random()*40+20);
+    const wx2=(Math.random()*50-25).toFixed(0);
+    const wy2=-(Math.random()*80+50);
+    m.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*90}%;left:${Math.random()*100}%;--wd:${(Math.random()*6+10).toFixed(1)}s;--wdelay:-${(Math.random()*10).toFixed(1)}s;--wx:${wx}px;--wy:${wy}px;--wx2:${wx2}px;--wy2:${wy2}px;`;
+    wrap.appendChild(m);
+  }
+})();
+
+// ===== DICTIONARY =====
+const dictionary = {
+  /* ── Story-specific ── */
+  "aslan":"Aslan (nama tokoh utama kita 🦁)",
+  "cloud":"awan",
+  "clouds":"awan-awan",
+  "kingdom":"kerajaan",
+  "cotton":"kapas",
+  "waiting":"menunggu (sedang)",
+  "waited":"menunggu (masa lalu)",
+  "drifted":"mengapung perlahan (masa lalu drift)",
+  "dozens":"berpuluh-puluh / banyak",
+  "overhead":"di atas kepala",
+  "floating":"mengambang / melayang (sedang)",
+  "silvery":"berwarna perak / suaranya jernih seperti perak",
+  "excitement":"kegembiraan / rasa antusias",
+  "quilt":"selimut bermotif / hasil jahitan kain berbeda-beda",
+  "glory":"keindahan yang memukau / kemegahan",
+  "firmly":"dengan kokoh / dengan kuat",
+  "droplets":"tetesan-tetesan kecil",
+  "neighbourhood":"lingkungan tempat tinggal",
+  "breathtaking":"sangat menakjubkan (sampai bikin napas tertahan)",
+  "imagined":"membayangkan (masa lalu imagine)",
+  "peaks":"puncak-puncak",
+  "marshmallow":"marshmallow (permen lunak putih seperti awan)",
+  "structures":"bangunan-bangunan / struktur-struktur",
+  "creatures":"makhluk-makhluk",
+  "bowed":"membungkuk hormat (masa lalu bow)",
+  "guide":"pemandu",
+  "disappeared":"menghilang (masa lalu disappear)",
+  "peered":"mengintip / menatap cermat (masa lalu peer)",
+  "wound":"berkelok-kelok (masa lalu wind, bukan luka)",
+  "shimmered":"berkilau lembut (masa lalu shimmer)",
+  "extraordinary":"luar biasa / sangat istimewa",
+  "faintly":"dengan samar-samar / dengan lemah",
+  "peaceful":"damai / tenang",
+  "descend":"turun / bergerak ke bawah",
+  "descended":"turun (masa lalu descend)",
+  "appreciate":"menghargai / mensyukuri",
+  "gathered":"berkumpul (masa lalu gather)",
+  "vanished":"lenyap / menghilang tiba-tiba (masa lalu vanish)",
+  "perspective":"sudut pandang / cara melihat sesuatu",
+  "truly":"benar-benar / sungguh-sungguh",
+  "nimbus":"Nimbus (nama makhluk awan)",
+  "patchwork":"jahitan berbagai potongan kain / tambal sulam",
+  "springy":"empuk dan membal",
+  "rainbows":"pelangi-pelangi",
+  "ribbons":"pita-pita",
+  /* ── General vocabulary ── */
+  "one":"satu / suatu",
+  "clear":"cerah / jernih",
+  "morning":"pagi",
+  "was":"adalah / sedang (masa lalu)",
+  "lying":"berbaring (sedang)",
+  "soft":"lembut",
+  "green":"hijau",
+  "grass":"rumput",
+  "garden":"taman / kebun",
+  "staring":"menatap (sedang)",
+  "sky":"langit",
+  "beautiful":"indah",
+  "deep":"dalam / pekat",
+  "blue":"biru",
+  "white":"putih",
+  "slowly":"perlahan-lahan",
+  "loved":"menyukai (masa lalu love)",
+  "watch":"melihat / mengamati",
+  "imagine":"membayangkan",
+  "shapes":"bentuk-bentuk",
+  "sleeping":"tidur (sedang)",
+  "bear":"beruang",
+  "sailing":"berlayar (sedang)",
+  "ship":"kapal",
+  "friendly":"ramah",
+  "dragon":"naga",
+  "different":"berbeda",
+  "lower":"lebih rendah",
+  "others":"yang lainnya",
+  "moved":"bergerak (masa lalu move)",
+  "against":"melawan / berlawanan dengan",
+  "wind":"angin",
+  "instead":"sebaliknya / alih-alih",
+  "sat":"duduk (masa lalu sit)",
+  "watched":"mengamati (masa lalu watch)",
+  "carefully":"dengan hati-hati",
+  "came":"datang (masa lalu come)",
+  "closer":"lebih dekat",
+  "until":"sampai / hingga",
+  "above":"di atas",
+  "fence":"pagar",
+  "bright":"terang / cerah",
+  "pile":"tumpukan",
+  "fresh":"segar / baru",
+  "tiny":"sangat kecil",
+  "voice":"suara",
+  "coming":"datang (sedang)",
+  "inside":"di dalam",
+  "said":"berkata (masa lalu say)",
+  "gently":"dengan lembut",
+  "ready":"siap",
+  "visitor":"tamu / pengunjung",
+  "touched":"menyentuh (masa lalu touch)",
+  "cool":"dingin / sejuk",
+  "pillow":"bantal",
+  "spoke":"berbicara (masa lalu speak)",
+  "step":"langkah / melangkah",
+  "carry":"membawa / mengangkut",
+  "safely":"dengan aman",
+  "took":"mengambil (masa lalu take)",
+  "breath":"napas",
+  "placed":"meletakkan (masa lalu place)",
+  "foot":"kaki (satu kaki)",
+  "other":"lainnya",
+  "held":"memegang / menahan (masa lalu hold)",
+  "solid":"padat / kokoh",
+  "floor":"lantai",
+  "began":"mulai (masa lalu begin)",
+  "rise":"naik / bangkit",
+  "grew":"menjadi (masa lalu grow)",
+  "smaller":"lebih kecil",
+  "below":"di bawah",
+  "trees":"pohon-pohon",
+  "became":"menjadi (masa lalu become)",
+  "rooftops":"atap-atap rumah",
+  "looked":"tampak / terlihat (masa lalu look)",
+  "orange":"oranye",
+  "red":"merah",
+  "tiles":"genteng / ubin",
+  "higher":"lebih tinggi",
+  "layer":"lapisan",
+  "cold":"dingin",
+  "mist":"kabut / uap air",
+  "left":"meninggalkan / meninggalkan jejak (masa lalu leave)",
+  "hair":"rambut",
+  "suddenly":"tiba-tiba",
+  "broke":"menembus (masa lalu break)",
+  "through":"melalui / menembus",
+  "appeared":"muncul (masa lalu appear)",
+  "glowing":"bercahaya (sedang)",
+  "wonderful":"luar biasa / menakjubkan",
+  "anything":"apa pun",
+  "ever":"pernah",
+  "ground":"tanah / lantai",
+  "made":"dibuat (masa lalu make)",
+  "thick":"tebal",
+  "world":"dunia",
+  "largest":"terbesar",
+  "everywhere":"di mana-mana",
+  "tall":"tinggi",
+  "towers":"menara-menara",
+  "rose":"naik (masa lalu rise)",
+  "decorated":"didekorasi / dihiasi (masa lalu decorate)",
+  "wide":"lebar",
+  "bridges":"jembatan-jembatan",
+  "connected":"menghubungkan (masa lalu connect)",
+  "island":"pulau / kepulauan",
+  "different":"berbeda",
+  "heights":"ketinggian-ketinggian",
+  "rivers":"sungai-sungai",
+  "flowed":"mengalir (masa lalu flow)",
+  "between":"di antara",
+  "small":"kecil",
+  "beings":"makhluk-makhluk / wujud-wujud",
+  "entirely":"sepenuhnya / seluruhnya",
+  "round":"bulat",
+  "dark":"gelap",
+  "little":"kecil / sedikit",
+  "eyes":"mata",
+  "full":"penuh",
+  "kindness":"kebaikan hati",
+  "floated":"melayang (masa lalu float)",
+  "politely":"dengan sopan",
+  "welcome":"selamat datang / merasa disambut",
+  "whisper":"bisikan",
+  "guide":"pemandu",
+  "today":"hari ini",
+  "body":"tubuh",
+  "arms":"tangan / lengan",
+  "smiled":"tersenyum (masa lalu smile)",
+  "warmly":"dengan hangat",
+  "immediately":"langsung / segera",
+  "safe":"aman",
+  "led":"memimpin / mengantar (masa lalu lead)",
+  "heart":"jantung / hati",
+  "walls":"dinding-dinding / tembok-tembok",
+  "light":"cahaya / ringan",
+  "airy":"lapang / berangin",
+  "open":"terbuka",
+  "heavy":"berat",
+  "stone":"batu",
+  "wood":"kayu",
+  "floors":"lantai-lantai",
+  "smooth":"halus / licin",
+  "feet":"kaki-kaki (jamak foot)",
+  "moonlight":"cahaya bulan",
+  "fog":"kabut tebal",
+  "great":"besar / hebat",
+  "hall":"aula / ruang besar",
+  "saw":"melihat (masa lalu see)",
+  "window":"jendela",
+  "giant":"raksasa / sangat besar",
+  "eye":"mata",
+  "looking":"melihat / mengamati (sedang)",
+  "down":"ke bawah",
+  "earth":"bumi",
+  "walked":"berjalan (masa lalu walk)",
+  "street":"jalan",
+  "school":"sekolah",
+  "town":"kota kecil / kota",
+  "painting":"lukisan",
+  "fields":"ladang-ladang",
+  "silver":"perak / berwarna perak",
+  "roads":"jalan-jalan",
+  "villages":"desa-desa",
+  "pressed":"menekan (masa lalu press)",
+  "hand":"tangan",
+  "against":"menempel pada",
+  "warm":"hangat",
+  "quiet":"tenang / hening",
+  "understood":"mengerti (masa lalu understand)",
+  "first":"pertama",
+  "time":"waktu / kali",
+  "big":"besar",
+  "truly":"benar-benar",
+  "long":"lama / panjang",
+  "magical":"ajaib / magis",
+  "afternoon":"sore hari",
+  "sun":"matahari",
+  "beginning":"mulai (sedang)",
+  "felt":"merasa (masa lalu feel)",
+  "little":"sedikit",
+  "sad":"sedih",
+  "nodded":"mengangguk (masa lalu nod)",
+  "learned":"belajar / mempelajari (masa lalu learn)",
+  "seen":"dilihat (past participle see)",
+  "beauty":"keindahan",
+  "kind":"baik hati / jenis",
+  "brought":"membawa (masa lalu bring)",
+  "edge":"tepi / pinggir",
+  "carry":"membawa",
+  "back":"kembali / punggung",
+  "stepped":"melangkah (masa lalu step)",
+  "gathered":"berkumpul",
+  "waved":"melambaikan (masa lalu wave)",
+  "called":"memanggil / berteriak (masa lalu call)",
+  "whispering":"berbisik (sedang)",
+  "voices":"suara-suara",
+  "soon":"segera",
+  "watch":"mengamati",
+  "grow":"tumbuh / menjadi",
+  "palace":"istana",
+  "until":"sampai",
+  "vanished":"lenyap",
+  "when":"ketika",
+  "touched":"menyentuh",
+  "grass":"rumput",
+  "again":"lagi",
+  "everything":"segalanya",
+  "different":"berbeda",
+  "not":"tidak / bukan",
+  "because":"karena",
+  "changed":"berubah (masa lalu change)",
+  "now":"sekarang",
+  "whole":"seluruh",
+  "new":"baru",
+  "need":"perlu / butuh",
+  "very":"sangat",
+  "high":"tinggi",
+  "right":"tepat / benar / kanan",
+  "here":"di sini",
+  "home":"rumah / pulang",
+  "along":"sepanjang / dari tadi",
+  "sometimes":"kadang-kadang",
+  "important":"penting",
+  "the":"kata sandang (the)",
+  "a":"sebuah / satu",
+  "an":"sebuah (sebelum vokal)",
+  "and":"dan",
+  "but":"tetapi",
+  "in":"di dalam",
+  "on":"di atas / pada",
+  "at":"di / pada",
+  "to":"ke / untuk",
+  "of":"dari / milik",
+  "with":"dengan",
+  "for":"untuk",
+  "from":"dari",
+  "his":"miliknya (laki-laki)",
+  "her":"miliknya (perempuan)",
+  "he":"dia (laki-laki)",
+  "she":"dia (perempuan)",
+  "it":"itu / dia (benda)",
+  "they":"mereka",
+  "we":"kita / kami",
+  "you":"kamu",
+  "i":"saya",
+  "my":"milikku",
+  "its":"miliknya (benda)",
+  "this":"ini",
+  "that":"itu / bahwa",
+  "all":"semua",
+  "had":"memiliki / telah (masa lalu have)",
+  "have":"memiliki / telah",
+  "were":"adalah (masa lalu, jamak)",
+  "been":"telah (past participle be)",
+  "is":"adalah",
+  "are":"adalah (jamak)",
+  "as":"sebagai / seperti",
+  "so":"jadi / sangat",
+  "or":"atau",
+  "not":"tidak",
+  "can":"bisa",
+  "could":"bisa (masa lalu)",
+  "would":"akan (kondisional)",
+  "more":"lebih / lagi",
+  "like":"seperti / suka",
+  "just":"hanya / baru saja",
+  "even":"bahkan",
+  "up":"ke atas",
+  "out":"ke luar",
+  "no":"tidak",
+  "only":"hanya",
+  "how":"bagaimana",
+  "what":"apa",
+  "who":"siapa",
+  "where":"di mana",
+  "when":"kapan / ketika",
+  "than":"daripada",
+  "then":"kemudian / lalu",
+  "now":"sekarang",
+  "after":"setelah",
+  "before":"sebelum",
+  "his":"miliknya",
+  "its":"miliknya (benda)",
+  "him":"dia (laki-laki, objek)",
+  "them":"mereka (objek)",
+  "us":"kami / kita (objek)",
+  "our":"milik kita",
+  "their":"milik mereka",
+  "back":"kembali",
+  "around":"sekitar",
+  "over":"di atas / selesai",
+  "into":"ke dalam",
+  "also":"juga",
+  "too":"juga",
+  "each":"masing-masing",
+  "some":"beberapa",
+  "any":"apa pun / beberapa",
+  "most":"paling / sebagian besar",
+  "many":"banyak",
+  "much":"banyak (tidak terhitung)",
+  "very":"sangat",
+  "well":"dengan baik / baik-baik",
+  "good":"baik / bagus",
+  "great":"hebat / besar",
+  "own":"sendiri",
+  "same":"sama",
+  "two":"dua",
+  "these":"ini (jamak)",
+  "those":"itu (jamak)"
+};
+
+function showMeaning(word) {
+  let clean = word.toLowerCase().replace(/[.,!?;:()'"""''—–\-]/g,'');
+  let meaning = dictionary[clean];
+  if(!meaning){
+    if(clean.endsWith('s')   && dictionary[clean.slice(0,-1)])  meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ed')  && dictionary[clean.slice(0,-2)])  meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('d')   && dictionary[clean.slice(0,-1)])  meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ing') && dictionary[clean.slice(0,-3)])  meaning=dictionary[clean.slice(0,-3)];
+    else if(clean.endsWith('ing') && dictionary[clean.slice(0,-3)+'e']) meaning=dictionary[clean.slice(0,-3)+'e'];
+    else if(clean.endsWith('ly')  && dictionary[clean.slice(0,-2)])  meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('er')  && dictionary[clean.slice(0,-2)])  meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('est') && dictionary[clean.slice(0,-3)])  meaning=dictionary[clean.slice(0,-3)];
+    else if(clean.endsWith('es')  && dictionary[clean.slice(0,-2)])  meaning=dictionary[clean.slice(0,-2)];
+    else meaning="❓ arti belum tersedia, coba cek kamus";
+  }
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `📖 <strong>${clean}</strong> → ${meaning} <small>🇮🇩</small>`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>toast.classList.remove('show'), 2800);
+}
+
+// ===== WORD WRAPPING =====
+function wrapWords(div) {
+  if(div.dataset.wrapped) return;
+  div.dataset.wrapped = "1";
+  function processNode(node) {
+    if(node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      if(!text.trim()) return;
+      const frag = document.createDocumentFragment();
+      const parts = text.split(/(\s+)/);
+      parts.forEach(part => {
+        if(/^\s+$/.test(part)) {
+          frag.appendChild(document.createTextNode(part));
+        } else if(part.length > 0) {
+          const match = part.match(/^([^a-zA-Z0-9']*)([a-zA-Z0-9'][a-zA-Z0-9']*)([^a-zA-Z0-9']*)$/);
+          if(match) {
+            if(match[1]) frag.appendChild(document.createTextNode(match[1]));
+            const span = document.createElement('span');
+            span.className = 'w';
+            span.textContent = match[2];
+            span.addEventListener('click', (e)=>{ e.stopPropagation(); showMeaning(match[2]); });
+            frag.appendChild(span);
+            if(match[3]) frag.appendChild(document.createTextNode(match[3]));
+          } else {
+            frag.appendChild(document.createTextNode(part));
+          }
+        }
+      });
+      node.parentNode.replaceChild(frag, node);
+    } else if(node.nodeType === Node.ELEMENT_NODE) {
+      if(node.classList && (node.classList.contains('read-marker') || node.classList.contains('w'))) return;
+      if(node.tagName === 'SCRIPT' || node.tagName === 'STYLE') return;
+      Array.from(node.childNodes).forEach(child => processNode(child));
+    }
+  }
+  const marker = div.querySelector('.read-marker');
+  const markerEl = marker ? marker.cloneNode(true) : null;
+  if(marker) marker.remove();
+  processNode(div);
+  if(markerEl) div.insertAdjacentElement('afterbegin', markerEl);
+}
+
+function wrapAllChapters() {
+  document.querySelectorAll('.chapter-text').forEach(div => wrapWords(div));
+}
+
+// ===== SPEED CONTROL =====
+let speechRate = 0.88;
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    speechRate = parseFloat(btn.dataset.rate);
+    if(currentUtt) {
+      const toast = document.getElementById('wordToast');
+      toast.innerHTML = `⚡ Speed changed! Press Stop then Listen again to apply.`;
+      toast.classList.add('show');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(()=>toast.classList.remove('show'), 2500);
+    }
+  });
+});
+
+// ===== SPEECH =====
+let currentUtt = null;
+let isPlayingAll = false;
+let readChapters = new Set();
+
+const stories = {
+  1: "One clear morning, Aslan was lying on the soft green grass in his garden, staring up at the sky. The sky was a beautiful deep blue, and dozens of white clouds drifted slowly overhead. Aslan loved to watch the clouds and imagine shapes in them — a sleeping bear, a sailing ship, a friendly dragon. But one cloud was different. It was lower than the others, and it moved against the wind instead of with it. Aslan sat up and watched carefully. The cloud came closer and closer until it was floating just above the garden fence, soft and bright like a pile of fresh cotton. Then Aslan heard a tiny, silvery voice coming from inside the cloud. We have been waiting for you, Aslan, the voice said gently. The Cloud Kingdom is ready for its visitor.",
+  2: "The cloud touched the top of the garden fence and held perfectly still. Aslan stood up slowly, his heart beating fast with excitement. He reached out his hand and touched the cloud. It felt cool and soft, like touching a fresh pillow. The silvery voice spoke again. Step on. We will carry you safely. Aslan took a deep breath. He placed one foot on the cloud, then the other. The cloud held him firmly, as solid as a floor. Then, very gently, it began to rise. Aslan's garden grew smaller below him. The trees became tiny. The rooftops of his neighbourhood looked like a patchwork quilt of orange and red tiles. Higher and higher the cloud carried him, through a layer of cold mist that left tiny droplets on his hair. And then, suddenly, he broke through — and the Cloud Kingdom appeared above him in all its glowing, breathtaking glory.",
+  3: "The Cloud Kingdom was more wonderful than anything Aslan had ever imagined. The ground was made of thick, soft cloud — springy and white, like walking on the world's largest marshmallow. Everywhere Aslan looked, there were beautiful structures made entirely from cloud and mist. Tall towers rose into the blue sky, their peaks decorated with tiny rainbows. Wide bridges connected island clouds that floated at different heights. Rivers of mist flowed gently between them. Small creatures lived here — beings made entirely of cloud, soft and round and white, with dark little eyes full of kindness. One of them floated up to Aslan and bowed politely. Welcome, Aslan, it said in a whisper-soft voice. I am Nimbus. I will be your guide today. Nimbus had a round little body and two small cloud-puff arms. It smiled warmly, and Aslan immediately felt safe and welcome.",
+  4: "Nimbus led Aslan to the heart of the Cloud Kingdom — the Cloud Palace. Its walls shimmered with soft white light, and its towers were so tall they disappeared into the blue above. Inside, the palace was airy and open, with no heavy stone or dark wood. Everything was made of mist and light. The floors were smooth and cool under Aslan's feet. The walls glowed faintly like moonlight through fog. In the palace's great hall, Aslan saw the most extraordinary thing — a wide round window, like a giant eye looking down at the Earth below. He walked to it and peered through. The world he knew — his street, his school, his town — looked tiny and peaceful from up here, like a beautiful painting. Green fields, silver rivers, and tiny roads that wound through villages like ribbons. Aslan pressed his hand against the cool cloud-glass and felt his heart fill with something warm and quiet. He understood, for the first time, how big and beautiful the world truly was.",
+  5: "After a long and magical afternoon, Nimbus came to Aslan and spoke softly. The sun is beginning to descend, Nimbus said. It is time for you to go home. Aslan felt a little sad, but he nodded. He had learned so much and seen so much beauty. The same kind cloud that had brought him up now waited at the edge of the kingdom, ready to carry him gently back down. As Aslan stepped on, all the cloud creatures gathered and waved their soft little arms. Come back soon! they called in their whispering voices. The cloud descended slowly, and Aslan watched the Cloud Kingdom grow smaller above him — the palace, the towers, the rainbow bridges — until they vanished into the mist. When his feet touched the grass of his garden again, everything looked different. Not because it had changed — but because he had. Aslan now saw his garden, his street, and his whole world with new eyes. He understood something important: sometimes you need to go very high to truly appreciate what is below. The beauty of the world was not only up in the clouds. It was right here, at home, all along."
+};
+
+function pickVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v=>v.lang==='en-US'&&(v.name.includes('Google')||v.name.includes('Samantha')||v.name.includes('Microsoft')))
+    || voices.find(v=>v.lang.startsWith('en'))
+    || null;
+}
+
+function stopAll() {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  currentUtt = null;
+  isPlayingAll = false;
+  document.querySelectorAll('.btn-listen.playing').forEach(b=>b.classList.remove('playing'));
+}
+
+function speak(chId, btn, onEnd) {
+  if(!window.speechSynthesis) return;
+  stopAll();
+  const text = stories[chId];
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'en-US';
+  utt.rate = speechRate;
+  utt.pitch = 1.05;
+  const v = pickVoice();
+  if(v) utt.voice = v;
+  if(btn) btn.classList.add('playing');
+  utt.onend = () => {
+    if(btn) btn.classList.remove('playing');
+    currentUtt = null;
+    if(onEnd) onEnd();
+  };
+  utt.onerror = () => {
+    if(btn) btn.classList.remove('playing');
+    currentUtt = null;
+  };
+  currentUtt = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+// ===== LISTEN BUTTONS =====
+document.querySelectorAll('.btn-listen').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ch = btn.getAttribute('data-ch');
+    if(btn.classList.contains('playing')) { stopAll(); return; }
+    isPlayingAll = false;
+    speak(ch, btn, () => {
+      if(!readChapters.has(ch)) {
+        readChapters.add(ch);
+        document.getElementById('ch'+ch).classList.add('done');
+        updateProgress();
+      }
+    });
+  });
+});
+
+// ===== PLAY ALL =====
+document.getElementById('playAllBtn').addEventListener('click', () => {
+  stopAll();
+  isPlayingAll = true;
+  let keys = ['1','2','3','4','5'];
+  let idx = 0;
+  function next() {
+    if(!isPlayingAll || idx >= keys.length) { isPlayingAll=false; return; }
+    const k = keys[idx];
+    const btn = document.querySelector(`[data-ch="${k}"]`);
+    document.getElementById('ch'+k).scrollIntoView({behavior:'smooth',block:'center'});
+    speak(k, btn, () => {
+      if(!readChapters.has(k)) {
+        readChapters.add(k);
+        document.getElementById('ch'+k).classList.add('done');
+        updateProgress();
+      }
+      idx++;
+      setTimeout(next, 700);
+    });
+  }
+  next();
+});
+
+document.getElementById('stopBtn').addEventListener('click', stopAll);
+
+// ===== PROGRESS =====
+function updateProgress() {
+  const pct = (readChapters.size/5)*100;
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = readChapters.size+' of 5 chapters read'+(readChapters.size===5?' — Above the clouds! 🏆':'');
+}
+
+// ===== VOCAB PILLS =====
+document.querySelectorAll('.vocab-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const word = pill.getAttribute('data-word');
+    showMeaning(word);
+    if(window.speechSynthesis) {
+      const utt = new SpeechSynthesisUtterance(word);
+      utt.lang='en-US'; utt.rate=0.8;
+      const v=pickVoice(); if(v) utt.voice=v;
+      window.speechSynthesis.speak(utt);
+    }
+  });
+});
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', () => {
+  wrapAllChapters();
+  if(window.speechSynthesis) window.speechSynthesis.getVoices();
+  if(window.speechSynthesis) {
+    window.speechSynthesis.addEventListener('voiceschanged', ()=>{});
+  }
+});
+window.addEventListener('beforeunload', () => {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+});
+</script>
+</body>
+</html>

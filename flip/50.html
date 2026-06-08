@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 20: Bagaimana Gambar dan Suara Muncul di Layar?</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple:  #8b5cf6;
+    --violet:  #7c3aed;
+    --pink:    #ec4899;
+    --blue:    #3b82f6;
+    --cyan:    #06b6d4;
+    --mint:    #34d399;
+    --yellow:  #fbbf24;
+    --orange:  #f97316;
+    --bg:      #faf5ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 8% 15%,  rgba(139,92,246,.14) 0%, transparent 45%),
+      radial-gradient(circle at 90% 65%,  rgba(236,72,153,.10) 0%, transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(59,130,246,.10) 0%, transparent 40%);
+    min-height: 100vh; overflow-x: hidden;
+  }
+  h1,h2,h3 { font-family:'Fredoka One',cursive; }
+
+  /* ── Header ── */
+  .header-grad {
+    background: linear-gradient(135deg,#3b0764 0%,#6d28d9 35%,#8b5cf6 70%,#c4b5fd 100%);
+    position: relative; overflow: hidden;
+  }
+  .header-grad::after {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background: repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,.03) 20px,rgba(255,255,255,.03) 40px);
+  }
+
+  /* ── Bubble ── */
+  .bubble {
+    position:relative; background:white;
+    border-radius:22px; border:3px solid #8b5cf6;
+    box-shadow:4px 4px 0 #8b5cf6;
+  }
+  .bubble::before { content:''; position:absolute; bottom:-22px; left:30px; border:12px solid transparent; border-top-color:#8b5cf6; }
+  .bubble::after  { content:''; position:absolute; bottom:-15px; left:33px; border:10px solid transparent; border-top-color:white; }
+
+  /* ── Aslan bounce ── */
+  @keyframes bounceAslan { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  .aslan-bounce { animation:bounceAslan 2.2s ease-in-out infinite; }
+
+  /* ── Float ── */
+  @keyframes floatAnim { 0%,100%{transform:translateY(0) rotate(-2deg);} 50%{transform:translateY(-8px) rotate(2deg);} }
+  .float-anim { animation:floatAnim 3s ease-in-out infinite; }
+
+  /* ── Pixel grid animation ── */
+  @keyframes pixelReveal {
+    0%   { opacity:0; transform:scale(0); }
+    60%  { opacity:1; transform:scale(1.2); }
+    100% { opacity:1; transform:scale(1); }
+  }
+  .pixel-cell { transition: background-color .3s ease; cursor:pointer; }
+  .pixel-cell.lit { animation:pixelReveal .4s ease forwards; }
+
+  /* ── Equalizer bar ── */
+  @keyframes eqBar {
+    0%,100% { height: var(--min-h); }
+    50%     { height: var(--max-h); }
+  }
+  .eq-bar {
+    border-radius: 4px 4px 0 0;
+    animation: eqBar var(--speed) ease-in-out infinite;
+    animation-play-state: paused;
+  }
+  .eq-bar.playing { animation-play-state: running; }
+
+  /* ── Sound wave ── */
+  @keyframes waveExpand {
+    0%   { r: 10; opacity: .9; }
+    100% { r: 70; opacity: 0; }
+  }
+  .sound-wave { animation: waveExpand 1.8s ease-out infinite; animation-play-state: paused; }
+  .sound-wave.playing { animation-play-state: running; }
+  .sound-wave:nth-child(2) { animation-delay: .6s; }
+  .sound-wave:nth-child(3) { animation-delay: 1.2s; }
+
+  /* ── Glow pulse ── */
+  @keyframes glowPulse {
+    0%,100% { box-shadow: 0 0 10px rgba(139,92,246,.3); }
+    50%      { box-shadow: 0 0 30px rgba(139,92,246,.8); }
+  }
+  .glow-pulse { animation: glowPulse 2s ease-in-out infinite; }
+
+  /* ── Screen flicker on ── */
+  @keyframes screenOn {
+    0%   { opacity: 0; transform: scaleY(.05); filter: brightness(3); }
+    30%  { opacity: 1; transform: scaleY(1.05); }
+    60%  { transform: scaleY(.98); }
+    100% { opacity: 1; transform: scaleY(1); }
+  }
+
+  /* ── Note float ── */
+  @keyframes noteFly {
+    0%   { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--nx),var(--ny)) scale(.5); opacity: 0; }
+  }
+  .note-fly {
+    position:fixed; font-size:1.6rem; pointer-events:none; z-index:99;
+    animation: noteFly 1.4s ease-out forwards;
+  }
+
+  /* ── Confetti ── */
+  @keyframes confettiFly {
+    0%  { transform:translate(0,0) rotate(0deg); opacity:1; }
+    100%{ transform:translate(var(--tx),var(--ty)) rotate(720deg); opacity:0; }
+  }
+  .confetti-piece {
+    position:fixed; width:10px; height:10px; border-radius:2px;
+    pointer-events:none; z-index:100;
+    animation:confettiFly 1.3s ease-out forwards;
+  }
+
+  /* ── Scan line on monitor ── */
+  @keyframes scanLine {
+    0%   { top: 0%; }
+    100% { top: 100%; }
+  }
+  .scan-line {
+    position:absolute; left:0; right:0; height:3px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);
+    animation: scanLine 2s linear infinite;
+    pointer-events:none;
+  }
+
+  /* ── Arrow bounce ── */
+  @keyframes arrowBounce { 0%,100%{transform:translateX(0);} 50%{transform:translateX(5px);} }
+  .arrow-bounce { animation:arrowBounce 1s ease-in-out infinite; }
+
+  /* ── Brightness flicker ── */
+  @keyframes brightnessFlash { 0%,100%{opacity:1;} 50%{opacity:.7;} }
+
+  /* ── Buttons ── */
+  .btn-main {
+    background: linear-gradient(135deg,#6d28d9,#8b5cf6);
+    color:white; border:none; border-radius:50px;
+    padding:.85rem 2.2rem; font-family:'Fredoka One',cursive;
+    font-size:1.2rem; cursor:pointer;
+    box-shadow:0 6px 0 #4c1d95, 0 8px 20px rgba(139,92,246,.4);
+    transition:all .15s ease;
+  }
+  .btn-main:hover  { transform:translateY(-3px); box-shadow:0 9px 0 #4c1d95,0 12px 26px rgba(139,92,246,.5); }
+  .btn-main:active { transform:translateY(3px); box-shadow:0 3px 0 #4c1d95; }
+
+  .btn-pink {
+    background: linear-gradient(135deg,#be185d,#ec4899);
+    color:white; border:none; border-radius:50px;
+    padding:.85rem 2.2rem; font-family:'Fredoka One',cursive;
+    font-size:1.2rem; cursor:pointer;
+    box-shadow:0 6px 0 #9d174d, 0 8px 20px rgba(236,72,153,.4);
+    transition:all .15s ease;
+  }
+  .btn-pink:hover  { transform:translateY(-3px); box-shadow:0 9px 0 #9d174d,0 12px 26px rgba(236,72,153,.5); }
+  .btn-pink:active { transform:translateY(3px); box-shadow:0 3px 0 #9d174d; }
+
+  .btn-secondary {
+    background:white; color:#6d28d9; border:3px solid #8b5cf6;
+    border-radius:50px; padding:.65rem 1.6rem;
+    font-family:'Fredoka One',cursive; font-size:1rem;
+    cursor:pointer; transition:all .2s ease;
+    box-shadow:3px 3px 0 #8b5cf6;
+  }
+  .btn-secondary:hover { transform:translateY(-2px); box-shadow:5px 5px 0 #8b5cf6; }
+
+  /* ── Section title ── */
+  .sec-title { position:relative; display:inline-block; }
+  .sec-title::after {
+    content:''; position:absolute; bottom:-6px; left:0; right:0; height:5px;
+    border-radius:10px; background:linear-gradient(90deg,#8b5cf6,#ec4899);
+  }
+
+  /* ── Day dot ── */
+  .day-dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  /* ── Card hover ── */
+  .card-hover { transition: all .25s cubic-bezier(.34,1.56,.64,1); cursor:pointer; }
+  .card-hover:hover { transform: scale(1.04) translateY(-4px); }
+
+  /* ── Draw area ── */
+  .draw-area {
+    background:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(139,92,246,.15) 28px,rgba(139,92,246,.15) 30px),
+               repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(236,72,153,.08) 28px,rgba(236,72,153,.08) 30px);
+    border:3px dashed #8b5cf6; border-radius:20px; min-height:200px;
+  }
+
+  /* ── Quiz btn ── */
+  .qbtn {
+    padding:.5rem .8rem; border-radius:14px; font-size:.83rem; font-weight:700;
+    border:2px solid #e2e8f0; background:white; color:#374151;
+    cursor:pointer; transition:all .2s; text-align:left;
+  }
+  .qbtn:hover:not(:disabled) { border-color:#8b5cf6; background:#f5f3ff; }
+  .qbtn:disabled { opacity:.7; cursor:not-allowed; }
+
+  /* ── Monitor glow ── */
+  .monitor-glow {
+    filter: drop-shadow(0 0 0px rgba(139,92,246,0));
+    transition: filter .5s ease;
+  }
+  .monitor-glow.active {
+    filter: drop-shadow(0 0 20px rgba(139,92,246,.7)) drop-shadow(0 0 40px rgba(236,72,153,.3));
+  }
+
+  /* ── Component box ── */
+  .comp-box {
+    border-radius:16px; padding:14px; text-align:center;
+    transition: all .25s ease;
+  }
+  .comp-box:hover { transform:translateY(-4px) scale(1.02); }
+
+  /* ── Pixel canvas ── */
+  #pixelGrid {
+    display:grid;
+    grid-template-columns: repeat(16,1fr);
+    gap:2px;
+  }
+
+  /* ── Slider custom ── */
+  input[type=range] {
+    -webkit-appearance:none; width:100%; height:10px;
+    border-radius:10px; background:#e9d5ff; outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none; width:24px; height:24px;
+    border-radius:50%; background:linear-gradient(135deg,#6d28d9,#ec4899);
+    cursor:pointer; box-shadow:0 2px 8px rgba(109,40,217,.5);
+    transition: transform .2s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
+
+  @media(max-width:640px){ .flow-grid{ grid-template-columns:1fr!important; gap:1rem!important; } }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ══════ HEADER ══════ -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <div style="position:absolute;top:10px;left:4%;font-size:2.5rem;opacity:.2;animation:bounceAslan 9s ease-in-out infinite;">🖼️</div>
+  <div style="position:absolute;top:14px;right:6%;font-size:2rem;opacity:.2;animation:bounceAslan 11s ease-in-out infinite .5s;">🎵</div>
+  <div style="position:absolute;bottom:10px;left:30%;font-size:1.8rem;opacity:.18;animation:bounceAslan 13s ease-in-out infinite 1s;">🎨</div>
+  <div style="position:absolute;bottom:12px;right:18%;font-size:1.6rem;opacity:.15;animation:bounceAslan 10s ease-in-out infinite 2s;">🔊</div>
+
+  <div class="max-w-3xl mx-auto relative z-10 text-center">
+    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-3 border border-white/30">
+      <span class="text-xl">🖥️</span>
+      <span style="font-family:'Fredoka One',cursive;font-size:.9rem;letter-spacing:.5px;">Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span class="text-xl">⚡</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl md:text-5xl mb-2 drop-shadow-lg" style="line-height:1.2;">
+      Hari 20: Bagaimana Gambar<br>dan Suara Muncul di Layar? 🎨🔊
+    </h1>
+    <p class="text-purple-100 text-base sm:text-lg font-semibold">Rahasia ajaib di balik layar komputer! ✨😍</p>
+    <div class="flex items-center justify-center gap-1 mt-4 flex-wrap">
+      <!-- 20 dots: 19 filled dim, 1 active white -->
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div><div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white" style="width:14px;height:14px;box-shadow:0 0 8px white;"></div>
+      <span class="text-white/70 text-xs ml-2 font-semibold">Hari 20 dari 30</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════ MAIN ══════ -->
+<main class="max-w-3xl mx-auto px-4 py-8">
+
+  <!-- ── Intro ── -->
+  <section class="mb-10">
+    <div class="flex flex-col sm:flex-row items-end gap-6">
+      <!-- Aslan SVG -->
+      <div class="flex-shrink-0 flex justify-center" style="min-width:130px;">
+        <div class="aslan-bounce">
+          <svg width="130" height="165" viewBox="0 0 130 165" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="65" cy="160" rx="30" ry="6" fill="rgba(0,0,0,.1)"/>
+            <!-- Body – purple shirt -->
+            <rect x="37" y="96" width="56" height="50" rx="14" fill="#7c3aed"/>
+            <rect x="37" y="110" width="56" height="7" rx="2" fill="#a78bfa" opacity=".6"/>
+            <!-- Arms -->
+            <rect x="18" y="96" width="21" height="36" rx="10" fill="#7c3aed" transform="rotate(8 18 96)"/>
+            <!-- Right arm up pointing at screen excitedly -->
+            <rect x="88" y="80" width="21" height="34" rx="10" fill="#7c3aed" transform="rotate(-40 88 80)"/>
+            <!-- Legs -->
+            <rect x="40" y="138" width="18" height="22" rx="9" fill="#4c1d95"/>
+            <rect x="72" y="138" width="18" height="22" rx="9" fill="#4c1d95"/>
+            <ellipse cx="49" cy="158" rx="12" ry="6" fill="#6d28d9"/>
+            <ellipse cx="81" cy="158" rx="12" ry="6" fill="#6d28d9"/>
+            <!-- Neck -->
+            <rect x="53" y="86" width="20" height="14" rx="7" fill="#f9a825"/>
+            <!-- Head -->
+            <ellipse cx="63" cy="66" rx="33" ry="31" fill="#f9a825"/>
+            <!-- Hair -->
+            <ellipse cx="65" cy="38" rx="31" ry="16" fill="#1c0a00"/>
+            <ellipse cx="34" cy="52" rx="9" ry="13" fill="#1c0a00"/>
+            <ellipse cx="92" cy="49" rx="7" ry="10" fill="#1c0a00"/>
+            <!-- Eyes – wide open amazed -->
+            <circle cx="50" cy="64" r="7" fill="white"/>
+            <circle cx="76" cy="64" r="7" fill="white"/>
+            <circle cx="51" cy="65" r="4" fill="#1c0a00"/>
+            <circle cx="77" cy="65" r="4" fill="#1c0a00"/>
+            <circle cx="53" cy="63" r="1.5" fill="white"/>
+            <circle cx="79" cy="63" r="1.5" fill="white"/>
+            <!-- Big open smile -->
+            <path d="M46 80 Q63 95 80 80" stroke="#1c0a00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M48 82 Q63 92 78 82" fill="#fff" stroke="none"/>
+            <!-- Cheeks -->
+            <ellipse cx="38" cy="74" rx="7" ry="5" fill="#ffb347" opacity=".5"/>
+            <ellipse cx="88" cy="74" rx="7" ry="5" fill="#ffb347" opacity=".5"/>
+            <!-- Stars around eyes = amazed -->
+            <text x="94" y="45" font-size="14">✨</text>
+            <text x="2"  y="50" font-size="11">⭐</text>
+            <text x="98" y="72" font-size="10">🎵</text>
+          </svg>
+        </div>
+      </div>
+      <!-- Bubble -->
+      <div class="flex-1">
+        <div class="bubble p-5">
+          <p class="text-sm font-bold mb-1" style="color:#8b5cf6;">Aslan berkata:</p>
+          <p class="text-gray-700 text-base sm:text-lg leading-relaxed font-semibold">
+            "Halo! Hari ini kita belajar <strong style="color:#6d28d9;">Bagaimana Gambar dan Suara Muncul di Layar</strong>! 🎉
+            Ternyata ada proses keren banget di dalam komputer sebelum gambar dan suara muncul!
+            Mau tau caranya? Ayo kita intip bareng-bareng! 🔍😆"
+          </p>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);">🎨 Hari 20</span>
+            <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#ec4899,#f97316);">🔊 GPU + Monitor + Speaker</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Flow Diagram: Bagaimana Gambar Muncul ── -->
+  <section class="mb-10">
+    <div class="text-center mb-6">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#3b0764;">🖥️ Perjalanan Gambar ke Layar!</h2>
+      <p class="text-gray-500 mt-3 text-sm">Begini proses hebat yang terjadi dalam sekejap! ⚡</p>
+    </div>
+
+    <!-- Flow steps -->
+    <div class="flow-grid grid gap-3" style="grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;">
+
+      <!-- GPU -->
+      <div class="comp-box card-hover" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:2.5px solid #8b5cf6;" onclick="popComp(this,'GPU')">
+        <div class="text-4xl mb-2">🎨</div>
+        <div class="font-bold text-sm" style="font-family:'Fredoka One',cursive;color:#5b21b6;">GPU</div>
+        <div class="text-xs text-purple-600 mt-1 font-semibold">"Si Pelukis"</div>
+        <div class="text-xs text-gray-500 mt-1">Mengolah & menggambar semua gambar</div>
+      </div>
+      <!-- Arrow 1 -->
+      <div class="flex items-center justify-center">
+        <div class="arrow-bounce text-2xl" style="color:#8b5cf6;">➜</div>
+      </div>
+      <!-- RAM -->
+      <div class="comp-box card-hover" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);border:2.5px solid #ec4899;" onclick="popComp(this,'RAM')">
+        <div class="text-4xl mb-2">⚡</div>
+        <div class="font-bold text-sm" style="font-family:'Fredoka One',cursive;color:#9d174d;">RAM</div>
+        <div class="text-xs text-pink-600 mt-1 font-semibold">"Si Kurir Cepat"</div>
+        <div class="text-xs text-gray-500 mt-1">Mengirim data dengan super cepat</div>
+      </div>
+      <!-- Arrow 2 -->
+      <div class="flex items-center justify-center">
+        <div class="arrow-bounce text-2xl" style="color:#ec4899;animation-delay:.2s;">➜</div>
+      </div>
+      <!-- Monitor -->
+      <div class="comp-box card-hover" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);border:2.5px solid #3b82f6;" onclick="popComp(this,'Monitor')">
+        <div class="text-4xl mb-2">🖥️</div>
+        <div class="font-bold text-sm" style="font-family:'Fredoka One',cursive;color:#1d4ed8;">Monitor</div>
+        <div class="text-xs text-blue-600 mt-1 font-semibold">"Si Kanvas"</div>
+        <div class="text-xs text-gray-500 mt-1">Menampilkan gambar dari GPU</div>
+      </div>
+      <!-- Arrow 3 -->
+      <div class="flex items-center justify-center">
+        <div class="arrow-bounce text-2xl" style="color:#3b82f6;animation-delay:.4s;">➜</div>
+      </div>
+      <!-- Speaker -->
+      <div class="comp-box card-hover" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);border:2.5px solid #34d399;" onclick="popComp(this,'Speaker')">
+        <div class="text-4xl mb-2">🔊</div>
+        <div class="font-bold text-sm" style="font-family:'Fredoka One',cursive;color:#065f46;">Speaker</div>
+        <div class="text-xs text-emerald-600 mt-1 font-semibold">"Si Penyanyi"</div>
+        <div class="text-xs text-gray-500 mt-1">Mengubah sinyal jadi suara</div>
+      </div>
+    </div>
+
+    <!-- Popup info -->
+    <div id="compInfo" class="hidden mt-5 p-5 rounded-2xl border-3 text-center" style="border:3px solid #8b5cf6;background:linear-gradient(135deg,#faf5ff,#ede9fe);">
+      <div id="compInfoEmoji" class="text-5xl mb-2">🎨</div>
+      <div id="compInfoTitle" class="text-xl font-bold mb-1" style="font-family:'Fredoka One',cursive;color:#5b21b6;"></div>
+      <div id="compInfoDesc" class="text-gray-700 font-semibold text-sm"></div>
+    </div>
+    <p class="text-center text-xs text-purple-400 mt-3 font-semibold">👆 Klik tiap komponen untuk lihat penjelasannya!</p>
+  </section>
+
+  <!-- ── Penjelasan Pixel ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#3b0764;">🔍 Gambar = Ribuan Titik Kecil!</h2>
+    </div>
+
+    <div class="rounded-3xl p-6" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:3px solid #c4b5fd;">
+      <div class="flex flex-col sm:flex-row gap-6 items-center">
+        <!-- Pixel mini explanation -->
+        <div class="flex-1">
+          <div class="bubble p-4 mb-4">
+            <p class="text-sm font-bold mb-1" style="color:#8b5cf6;">Aslan penasaran:</p>
+            <p class="text-gray-700 font-semibold text-sm leading-relaxed">
+              "Wah, ternyata gambar itu terbuat dari banyak titik kecil ya! 😲 Titik-titik ini namanya <strong style="color:#7c3aed;">PIXEL</strong>!
+              Kayak mozaik atau puzzle kecil yang disusun jadi gambar besar!"
+            </p>
+          </div>
+          <div class="space-y-3 text-sm font-semibold text-gray-700">
+            <div class="flex items-start gap-2">
+              <span class="text-lg">🔴</span>
+              <span>Setiap pixel punya <strong style="color:#dc2626;">warna merah</strong>, <strong style="color:#16a34a;">hijau</strong>, dan <strong style="color:#2563eb;">biru</strong></span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-lg">📺</span>
+              <span>Layar Full HD punya <strong>2.073.600 pixel</strong> — banyak banget! 😱</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-lg">⚡</span>
+              <span>GPU mengatur <strong>warna tiap pixel</strong> berkali-kali per detik!</span>
+            </div>
+          </div>
+        </div>
+        <!-- Pixel visual -->
+        <div class="flex-shrink-0 text-center">
+          <div class="inline-block rounded-xl overflow-hidden" style="border:3px solid #8b5cf6;box-shadow:0 0 20px rgba(139,92,246,.3);">
+            <div id="pixelGrid" style="width:160px;height:160px;background:#1e1b4b;"></div>
+          </div>
+          <p class="text-xs text-purple-500 mt-2 font-bold">Ini adalah 16×16 pixel! 🎨</p>
+          <button class="btn-secondary mt-2 text-sm" onclick="drawPixelArt()" style="padding:.4rem 1rem;font-size:.85rem;">🖌️ Gambar Pixel!</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Penjelasan Suara ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#3b0764;">🎵 Suara = Gelombang Ajaib!</h2>
+    </div>
+
+    <div class="rounded-3xl p-6" style="background:linear-gradient(135deg,#fff7ed,#ffedd5);border:3px solid #fed7aa;">
+      <div class="flex flex-col sm:flex-row gap-6 items-center">
+        <!-- Sound wave SVG -->
+        <div class="flex-shrink-0 text-center">
+          <svg id="soundSvg" width="160" height="160" viewBox="0 0 160 160">
+            <!-- Speaker icon -->
+            <rect x="55" y="55" width="24" height="50" rx="4" fill="#f97316"/>
+            <polygon points="55,65 35,75 35,85 55,95" fill="#f97316"/>
+            <!-- Sound waves -->
+            <circle id="sw1" class="sound-wave" cx="80" cy="80" r="10" fill="none" stroke="#fbbf24" stroke-width="3" style="--speed:.9s;"/>
+            <circle id="sw2" class="sound-wave" cx="80" cy="80" r="10" fill="none" stroke="#f97316" stroke-width="2.5" style="--speed:.9s;"/>
+            <circle id="sw3" class="sound-wave" cx="80" cy="80" r="10" fill="none" stroke="#ec4899" stroke-width="2" style="--speed:.9s;"/>
+          </svg>
+          <p id="soundStatus" class="text-xs font-bold mt-1" style="color:#ea580c;">⏸️ Suara belum keluar</p>
+        </div>
+        <!-- Sound explanation -->
+        <div class="flex-1">
+          <div class="bubble p-4 mb-3" style="border-color:#f97316;box-shadow:4px 4px 0 #f97316;">
+            <p class="text-sm font-bold mb-1" style="color:#ea580c;">Aslan berkata:</p>
+            <p class="text-gray-700 font-semibold text-sm leading-relaxed">
+              "Suara itu sebenernya <strong style="color:#ea580c;">getaran</strong> yang merambat di udara!
+              Komputer mengubah angka menjadi <strong style="color:#d97706;">sinyal listrik</strong> — terus speaker menggetarkan udara — dan sampailah ke telingamu! 👂✨"
+            </p>
+          </div>
+          <div class="space-y-2 text-sm font-semibold text-gray-700">
+            <div class="flex items-center gap-2 rounded-xl p-2" style="background:rgba(249,115,22,.1);">
+              <span>🎵</span><span>File musik → Angka digital</span>
+            </div>
+            <div class="flex items-center gap-2 rounded-xl p-2" style="background:rgba(251,191,36,.1);">
+              <span>⚡</span><span>Angka → Sinyal listrik</span>
+            </div>
+            <div class="flex items-center gap-2 rounded-xl p-2" style="background:rgba(236,72,153,.1);">
+              <span>🔊</span><span>Listrik → Getaran speaker → Suara!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Perbandingan Lucu ── -->
+  <section class="mb-10">
+    <div class="text-center mb-4">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#3b0764;">🍳 Analoginya Begini!</h2>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <!-- Masak -->
+      <div class="card-hover rounded-2xl p-5 text-center" style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border:3px solid #fbbf24;">
+        <div class="text-5xl mb-3">👨‍🍳</div>
+        <div class="font-bold text-lg mb-1" style="font-family:'Fredoka One',cursive;color:#92400e;">Tukang Masak</div>
+        <div class="text-sm text-gray-600 font-semibold">Menyiapkan & memasak makanan di dapur (= GPU mengolah gambar)</div>
+        <div class="text-2xl mt-3">🍲</div>
+      </div>
+      <!-- Meja makan -->
+      <div class="card-hover rounded-2xl p-5 text-center" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:3px solid #34d399;">
+        <div class="text-5xl mb-3">🍽️</div>
+        <div class="font-bold text-lg mb-1" style="font-family:'Fredoka One',cursive;color:#065f46;">Meja Makan</div>
+        <div class="text-sm text-gray-600 font-semibold">Makanan disajikan di meja agar bisa dimakan (= Monitor menampilkan gambar)</div>
+        <div class="text-2xl mt-3">😋</div>
+      </div>
+    </div>
+    <div class="mt-4 rounded-2xl p-4 text-center font-bold text-base" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:3px solid #c4b5fd;color:#5b21b6;">
+      💡 GPU = juru masak yang jago, Monitor = meja yang cantik, Speaker = teman yang cerita sambil makan! 😂
+    </div>
+  </section>
+
+  <!-- ══════ INTERAKTIF ══════ -->
+  <section class="mb-10">
+    <div class="text-center mb-6">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#3b0764;">🎮 Coba Sendiri, Yuk!</h2>
+      <p class="text-gray-500 mt-3 text-sm">Klik tombol dan geser slider-nya! 👆🎉</p>
+    </div>
+
+    <!-- Monitor Interactive -->
+    <div class="rounded-3xl p-6 mb-6" style="background:linear-gradient(135deg,#1e1b4b,#312e81);border:4px solid #6d28d9;">
+      <div class="text-center mb-4">
+        <span style="font-family:'Fredoka One',cursive;color:#c4b5fd;font-size:1.3rem;">🖥️ Monitor Simulasi</span>
+      </div>
+
+      <!-- Monitor SVG screen area -->
+      <div class="flex justify-center mb-5">
+        <div class="relative rounded-2xl overflow-hidden monitor-glow" id="monitorBox"
+             style="width:280px;height:180px;background:#0f0f1a;border:4px solid #4c1d95;box-shadow:0 0 30px rgba(109,40,217,.5);">
+          <div class="scan-line" id="scanLine" style="display:none;"></div>
+          <!-- Default dark screen -->
+          <div id="screenContent" class="w-full h-full flex items-center justify-center"
+               style="background:linear-gradient(135deg,#0f0f1a,#1e1b4b);">
+            <div class="text-center">
+              <div class="text-5xl mb-2">🌑</div>
+              <div style="color:#4338ca;font-family:'Fredoka One',cursive;font-size:.9rem;">Layar mati... 😴</div>
+            </div>
+          </div>
+          <!-- Brightness overlay -->
+          <div id="brightnessOverlay" class="absolute inset-0 bg-white pointer-events-none" style="opacity:0;"></div>
+        </div>
+      </div>
+
+      <!-- Button tampilkan gambar -->
+      <div class="flex flex-wrap justify-center gap-3 mb-5">
+        <button class="btn-main" onclick="tampilkanGambar()">🖼️ Tampilkan Gambar!</button>
+        <button class="btn-secondary" onclick="matikanLayar()" style="color:#c4b5fd;border-color:#8b5cf6;box-shadow:3px 3px 0 #8b5cf6;">🌑 Matikan Layar</button>
+      </div>
+
+      <!-- Slider kecerahan -->
+      <div class="rounded-2xl p-4" style="background:rgba(255,255,255,.08);">
+        <label class="block text-sm font-bold mb-2" style="color:#c4b5fd;">
+          ☀️ Ubah Kecerahan Layar: <span id="brightnessVal" style="color:#fbbf24;">50%</span>
+        </label>
+        <input type="range" id="brightnessSlider" min="0" max="100" value="50"
+               oninput="ubahKecerahan(this.value)" style="background:linear-gradient(90deg,#4c1d95,#7c3aed);">
+        <div class="flex justify-between text-xs mt-1" style="color:#7c6aed;">
+          <span>🌑 Gelap</span><span>☀️ Terang</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Equalizer Interactive -->
+    <div class="rounded-3xl p-6" style="background:linear-gradient(135deg,#0f172a,#1e293b);border:4px solid #ec4899;">
+      <div class="text-center mb-4">
+        <span style="font-family:'Fredoka One',cursive;color:#f9a8d4;font-size:1.3rem;">🔊 Speaker Simulator</span>
+      </div>
+
+      <!-- Equalizer bars -->
+      <div class="flex justify-center items-end gap-2 mb-5" style="height:100px;">
+        <div id="eq1"  class="eq-bar w-6 rounded-t-lg" style="--min-h:10px;--max-h:90px;--speed:.4s;background:linear-gradient(to top,#ec4899,#f9a8d4);height:10px;"></div>
+        <div id="eq2"  class="eq-bar w-6 rounded-t-lg" style="--min-h:15px;--max-h:85px;--speed:.6s;background:linear-gradient(to top,#8b5cf6,#c4b5fd);height:15px;animation-delay:.1s;"></div>
+        <div id="eq3"  class="eq-bar w-6 rounded-t-lg" style="--min-h:8px; --max-h:95px;--speed:.3s;background:linear-gradient(to top,#06b6d4,#a5f3fc);height:8px; animation-delay:.05s;"></div>
+        <div id="eq4"  class="eq-bar w-6 rounded-t-lg" style="--min-h:20px;--max-h:80px;--speed:.5s;background:linear-gradient(to top,#34d399,#a7f3d0);height:20px;animation-delay:.2s;"></div>
+        <div id="eq5"  class="eq-bar w-6 rounded-t-lg" style="--min-h:12px;--max-h:88px;--speed:.45s;background:linear-gradient(to top,#fbbf24,#fef3c7);height:12px;animation-delay:.15s;"></div>
+        <div id="eq6"  class="eq-bar w-6 rounded-t-lg" style="--min-h:18px;--max-h:92px;--speed:.35s;background:linear-gradient(to top,#f97316,#fed7aa);height:18px;animation-delay:.25s;"></div>
+        <div id="eq7"  class="eq-bar w-6 rounded-t-lg" style="--min-h:10px;--max-h:78px;--speed:.55s;background:linear-gradient(to top,#ec4899,#fce7f3);height:10px;animation-delay:.3s;"></div>
+        <div id="eq8"  class="eq-bar w-6 rounded-t-lg" style="--min-h:22px;--max-h:85px;--speed:.42s;background:linear-gradient(to top,#8b5cf6,#ede9fe);height:22px;animation-delay:.08s;"></div>
+        <div id="eq9"  class="eq-bar w-6 rounded-t-lg" style="--min-h:7px; --max-h:90px;--speed:.38s;background:linear-gradient(to top,#06b6d4,#cffafe);height:7px; animation-delay:.18s;"></div>
+        <div id="eq10" class="eq-bar w-6 rounded-t-lg" style="--min-h:15px;--max-h:82px;--speed:.5s; background:linear-gradient(to top,#34d399,#d1fae5);height:15px;animation-delay:.12s;"></div>
+      </div>
+
+      <!-- Sound wave circles -->
+      <div class="flex justify-center mb-5">
+        <svg id="soundViz" width="120" height="80" viewBox="0 0 120 80">
+          <circle class="sound-wave" id="sw1" cx="60" cy="40" r="10" fill="none" stroke="#ec4899" stroke-width="3" style="--speed:.9s;"/>
+          <circle class="sound-wave" id="sw2" cx="60" cy="40" r="10" fill="none" stroke="#8b5cf6" stroke-width="2.5" style="--speed:.9s;"/>
+          <circle class="sound-wave" id="sw3" cx="60" cy="40" r="10" fill="none" stroke="#06b6d4" stroke-width="2" style="--speed:.9s;"/>
+          <text x="50" y="44" fill="#f9a8d4" font-size="14">🔊</text>
+        </svg>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex flex-wrap justify-center gap-3 mb-4">
+        <button class="btn-pink" onclick="putar()">🎵 Putar Suara!</button>
+        <button class="btn-secondary" onclick="henti()" style="color:#f9a8d4;border-color:#ec4899;box-shadow:3px 3px 0 #ec4899;">⏹️ Stop</button>
+      </div>
+
+      <!-- Volume slider -->
+      <div class="rounded-2xl p-4" style="background:rgba(255,255,255,.08);">
+        <label class="block text-sm font-bold mb-2" style="color:#f9a8d4;">
+          🔊 Ubah Volume Suara: <span id="volVal" style="color:#fbbf24;">50%</span>
+        </label>
+        <input type="range" id="volSlider" min="0" max="100" value="50"
+               oninput="ubahVolume(this.value)" style="background:linear-gradient(90deg,#9d174d,#ec4899);">
+        <div class="flex justify-between text-xs mt-1" style="color:#f472b6;">
+          <span>🔇 Diam</span><span>📢 Kencang</span>
+        </div>
+      </div>
+
+      <!-- Status text -->
+      <p id="audioStatus" class="text-center text-sm font-bold mt-3" style="color:#f9a8d4;">⏸️ Klik "Putar Suara!" untuk lihat gelombangnya! 🎶</p>
+    </div>
+  </section>
+
+  <!-- ── Fun Fact Cards ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#3b0764;">🤩 Fakta Keren!</h2>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="card-hover rounded-2xl p-5 text-center" style="background:linear-gradient(135deg,#faf5ff,#ede9fe);border:3px solid #c4b5fd;">
+        <div class="text-4xl mb-2">🚀</div>
+        <div class="font-bold text-sm mb-1" style="font-family:'Fredoka One',cursive;color:#5b21b6;">Super Cepat!</div>
+        <div class="text-xs text-gray-600 font-semibold">GPU modern bisa menggambar <strong>60 gambar per detik</strong> atau bahkan lebih!</div>
+      </div>
+      <div class="card-hover rounded-2xl p-5 text-center" style="background:linear-gradient(135deg,#fff7ed,#ffedd5);border:3px solid #fed7aa;">
+        <div class="text-4xl mb-2">🌈</div>
+        <div class="font-bold text-sm mb-1" style="font-family:'Fredoka One',cursive;color:#92400e;">16 Juta Warna!</div>
+        <div class="text-xs text-gray-600 font-semibold">Pixel bisa menampilkan lebih dari <strong>16 juta warna berbeda</strong>! Wuiih!</div>
+      </div>
+      <div class="card-hover rounded-2xl p-5 text-center" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:3px solid #86efac;">
+        <div class="text-4xl mb-2">🎶</div>
+        <div class="font-bold text-sm mb-1" style="font-family:'Fredoka One',cursive;color:#065f46;">Gelombang Suara</div>
+        <div class="text-xs text-gray-600 font-semibold">Suara yang kamu dengar bergerak <strong>343 meter per detik</strong> di udara!</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Quiz ── -->
+  <section class="mb-10">
+    <div class="rounded-3xl p-6" style="background:linear-gradient(135deg,#faf5ff,#ede9fe);border:3px solid #c4b5fd;">
+      <div class="text-center mb-5">
+        <h2 class="text-2xl sm:text-3xl sec-title" style="color:#3b0764;">🧠 Uji Pengetahuanmu!</h2>
+      </div>
+
+      <!-- Q1 -->
+      <div id="q1" class="mb-6 p-4 rounded-2xl bg-white border-2 border-purple-200">
+        <p class="font-bold text-gray-800 mb-3 text-sm">🎨 1. Apa nama komponen yang bertugas mengolah gambar di komputer?</p>
+        <div class="grid grid-cols-1 gap-2">
+          <button class="qbtn" onclick="qa(1,'a',this)">A. GPU (Graphics Processing Unit) 🎨</button>
+          <button class="qbtn" onclick="qa(1,'b',this)">B. RAM (Random Access Memory) ⚡</button>
+          <button class="qbtn" onclick="qa(1,'c',this)">C. Fan Pendingin ❄️</button>
+        </div>
+        <p id="q1r" class="hidden mt-2 font-bold text-sm"></p>
+      </div>
+
+      <!-- Q2 -->
+      <div id="q2" class="mb-6 p-4 rounded-2xl bg-white border-2 border-purple-200">
+        <p class="font-bold text-gray-800 mb-3 text-sm">🔍 2. Gambar di layar komputer terdiri dari banyak titik kecil yang disebut apa?</p>
+        <div class="grid grid-cols-1 gap-2">
+          <button class="qbtn" onclick="qa(2,'b',this)">A. Titik warna 🎨</button>
+          <button class="qbtn" onclick="qa(2,'a',this)">B. Pixel 🔴🟢🔵</button>
+          <button class="qbtn" onclick="qa(2,'c',this)">C. Gelombang ≋</button>
+        </div>
+        <p id="q2r" class="hidden mt-2 font-bold text-sm"></p>
+      </div>
+
+      <!-- Q3 -->
+      <div id="q3" class="mb-4 p-4 rounded-2xl bg-white border-2 border-purple-200">
+        <p class="font-bold text-gray-800 mb-3 text-sm">🔊 3. Bagaimana speaker menghasilkan suara?</p>
+        <div class="grid grid-cols-1 gap-2">
+          <button class="qbtn" onclick="qa(3,'c',this)">A. Dengan memantulkan cahaya 💡</button>
+          <button class="qbtn" onclick="qa(3,'b',this)">B. Dengan mengirim gambar 🖼️</button>
+          <button class="qbtn" onclick="qa(3,'a',this)">C. Dengan menggetarkan udara menggunakan sinyal listrik ⚡🔊</button>
+        </div>
+        <p id="q3r" class="hidden mt-2 font-bold text-sm"></p>
+      </div>
+
+      <!-- Final result -->
+      <div id="qFinal" class="hidden mt-4 p-4 rounded-2xl text-center" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:3px solid #8b5cf6;">
+        <div id="qfE" class="text-4xl mb-1"></div>
+        <div id="qfT" class="text-lg font-bold mb-1" style="font-family:'Fredoka One',cursive;"></div>
+        <div id="qfS" class="text-sm text-gray-600 font-semibold"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Aktivitas ── -->
+  <section class="mb-10">
+    <div class="rounded-3xl p-6" style="background:linear-gradient(135deg,#fff7ed,#fffbeb);border:3px solid #fbbf24;">
+      <div class="text-center mb-5">
+        <h2 class="text-2xl sm:text-3xl sec-title" style="color:#92400e;">✏️ Tugas Hari Ini!</h2>
+      </div>
+
+      <div class="bubble p-4 mb-5" style="border-color:#f97316;box-shadow:4px 4px 0 #f97316;">
+        <p class="text-sm font-bold mb-1" style="color:#ea580c;">Aslan berkata:</p>
+        <p class="text-gray-700 font-semibold text-sm leading-relaxed">
+          "Sekarang giliranmu! 🎨 Gambarlah apa yang kamu ingin tampilkan di <strong>layar komputer impianmu</strong>!
+          Mau gambar apa? Mau lagu apa yang keluar dari speaker? Tulis atau gambar di bawah ini yuk! 📝✨"
+        </p>
+      </div>
+
+      <!-- Checklist aktivitas -->
+      <div class="space-y-3 mb-5">
+        <div id="ac1" onclick="actCk(1)" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer" style="background:rgba(249,115,22,.08);border:2px solid #fed7aa;">
+          <input type="checkbox" class="w-5 h-5 accent-orange-500" onclick="event.stopPropagation();actCk(1)">
+          <span class="font-semibold text-gray-700 text-sm">🎨 Gambarkan layar komputer impianmu — mau ada gambar apa?</span>
+        </div>
+        <div id="ac2" onclick="actCk(2)" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer" style="background:rgba(139,92,246,.08);border:2px solid #c4b5fd;">
+          <input type="checkbox" class="w-5 h-5 accent-purple-500" onclick="event.stopPropagation();actCk(2)">
+          <span class="font-semibold text-gray-700 text-sm">🎵 Tulis lagu favorit yang mau diputar di speaker komputer impianmu!</span>
+        </div>
+        <div id="ac3" onclick="actCk(3)" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer" style="background:rgba(59,130,246,.08);border:2px solid #bfdbfe;">
+          <input type="checkbox" class="w-5 h-5 accent-blue-500" onclick="event.stopPropagation();actCk(3)">
+          <span class="font-semibold text-gray-700 text-sm">🔍 Coba lihat gambar dari dekat — bisakah kamu melihat pixelnya?</span>
+        </div>
+        <div id="ac4" onclick="actCk(4)" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer" style="background:rgba(52,211,153,.08);border:2px solid #a7f3d0;">
+          <input type="checkbox" class="w-5 h-5 accent-emerald-500" onclick="event.stopPropagation();actCk(4)">
+          <span class="font-semibold text-gray-700 text-sm">💡 Jelaskan ke teman: bagaimana gambar bisa muncul di layar?</span>
+        </div>
+      </div>
+
+      <div id="actAllDone" class="hidden rounded-2xl p-4 text-center mb-4" style="background:linear-gradient(135deg,#fffbeb,#fef9c3);border:3px solid #fbbf24;">
+        <div class="text-3xl mb-1">🏆✨</div>
+        <div class="font-bold text-lg" style="font-family:'Fredoka One',cursive;color:#92400e;">Semua tugas selesai! Kamu luar biasa! 🌟</div>
+        <div class="text-sm text-amber-700 font-semibold">Besok ada petualangan baru menunggumu! 🚀</div>
+      </div>
+
+      <!-- Draw area -->
+      <p class="font-bold text-sm mb-2" style="color:#ea580c;">✏️ Area Menggambar (cetak atau gambar di kertas):</p>
+      <div class="draw-area flex items-center justify-center" style="border-color:#fbbf24;background:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(251,191,36,.18) 28px,rgba(251,191,36,.18) 30px),repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(249,115,22,.08) 28px,rgba(249,115,22,.08) 30px);">
+        <div class="text-center text-gray-400">
+          <div class="text-5xl mb-3">🖍️</div>
+          <div class="font-bold text-sm">Gambar layar komputer impianmu di sini!</div>
+          <div class="text-xs mt-1">Isi dengan gambar, warna, dan kreativitasmu! 🌈</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="py-8 px-4 text-center mt-4" style="background:linear-gradient(135deg,#3b0764,#6d28d9);">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex items-center justify-center gap-1 flex-wrap mb-3">
+      <!-- 20 dots in footer -->
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div><div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-white/30"></div>
+      <div class="day-dot bg-yellow-300" style="width:14px;height:14px;box-shadow:0 0 8px #fbbf24;"></div>
+    </div>
+    <p style="font-family:'Fredoka One',cursive;color:#c4b5fd;font-size:1.3rem;">Hari 20 dari 30 ✨</p>
+    <p class="text-purple-300 text-sm mt-1 font-semibold">Petualangan Aslan di Dalam Komputer Ajaib 🖥️🚀</p>
+  </div>
+</footer>
+
+<script>
+/* ════ PIXEL ART ════ */
+const PIXEL_COLS = 16;
+const PIXEL_ROWS = 16;
+
+// Aslan pixel art pattern (simplified smiley face)
+const pixelArt = [
+  [0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0],
+  [0,0,1,2,2,2,2,2,2,2,2,2,2,1,0,0],
+  [0,1,2,2,2,2,2,2,2,2,2,2,2,2,1,0],
+  [1,2,2,2,3,3,2,2,2,2,3,3,2,2,2,1],
+  [1,2,2,3,4,4,3,2,2,3,4,4,3,2,2,1],
+  [1,2,2,3,4,5,3,2,2,3,4,5,3,2,2,1],
+  [1,2,2,3,3,3,3,2,2,3,3,3,3,2,2,1],
+  [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+  [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+  [1,2,3,2,2,2,2,2,2,2,2,2,2,3,2,1],
+  [1,2,2,3,2,2,2,2,2,2,2,2,3,2,2,1],
+  [1,2,2,2,3,3,3,3,3,3,3,3,2,2,2,1],
+  [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+  [0,1,2,2,2,2,2,2,2,2,2,2,2,2,1,0],
+  [0,0,1,2,2,2,2,2,2,2,2,2,2,1,0,0],
+  [0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0],
+];
+const palette = {
+  0: 'transparent',
+  1: '#1c0a00',    // dark outline
+  2: '#f9a825',    // skin
+  3: '#2d1b00',    // dark detail
+  4: '#1c0a00',    // eye
+  5: 'white',      // eye shine
+};
+
+// Star / space art (default)
+function buildPixelGrid() {
+  const grid = document.getElementById('pixelGrid');
+  grid.innerHTML = '';
+  for (let r=0; r<PIXEL_ROWS; r++) {
+    for (let c=0; c<PIXEL_COLS; c++) {
+      const cell = document.createElement('div');
+      cell.style.cssText = 'width:100%;aspect-ratio:1;border-radius:1px;';
+      cell.style.background = '#1e1b4b';
+      grid.appendChild(cell);
+    }
+  }
+}
+
+let pixelDrawn = false;
+function drawPixelArt() {
+  const grid = document.getElementById('pixelGrid');
+  const cells = grid.querySelectorAll('div');
+  pixelDrawn = !pixelDrawn;
+
+  if (pixelDrawn) {
+    // Draw Aslan face pixel by pixel with delay
+    let idx = 0;
+    const total = PIXEL_ROWS * PIXEL_COLS;
+    function drawNext() {
+      if (idx >= total) return;
+      const r = Math.floor(idx / PIXEL_COLS);
+      const c = idx % PIXEL_COLS;
+      const colorKey = pixelArt[r][c];
+      cells[idx].style.background = palette[colorKey] || '#1e1b4b';
+      cells[idx].style.transition = 'background .15s ease';
+      idx++;
+      setTimeout(drawNext, 8);
+    }
+    drawNext();
+  } else {
+    // Clear to dark
+    cells.forEach(cell => {
+      cell.style.background = '#1e1b4b';
+    });
+  }
+}
+
+buildPixelGrid();
+
+/* ════ COMPONENT INFO ════ */
+const compData = {
+  'GPU': {
+    emoji: '🎨',
+    title: 'GPU – Si Pelukis Ajaib!',
+    desc: 'GPU (Graphics Processing Unit) adalah "seniman" komputer! Dia bertugas menghitung dan melukis setiap pixel di layarmu. Makin keren GPU-nya, makin mulus gambar yang tampil! 🖌️✨'
+  },
+  'RAM': {
+    emoji: '⚡',
+    title: 'RAM – Si Kurir Super Cepat!',
+    desc: 'RAM ibarat kurir kilat yang membawa data gambar dari GPU ke monitor. Makin besar RAM, makin banyak data yang bisa dikirim sekaligus! Makanya game berat butuh RAM banyak! 🏃‍♂️💨'
+  },
+  'Monitor': {
+    emoji: '🖥️',
+    title: 'Monitor – Si Kanvas Digital!',
+    desc: 'Monitor adalah tempat gambar akhirnya tampil! Dia punya jutaan pixel kecil yang menyala dengan warna berbeda-beda. Layarmu itu kayak puzzle raksasa yang bergerak cepat! 🌈🔲'
+  },
+  'Speaker': {
+    emoji: '🔊',
+    title: 'Speaker – Si Penyanyi Berbakat!',
+    desc: 'Speaker mengubah sinyal listrik menjadi getaran udara yang sampai ke telingamu sebagai suara! Conus kecil di dalam speaker bergetar ratusan kali per detik! 🎵🌊'
+  }
+};
+
+function popComp(el, name) {
+  const d = compData[name];
+  const box = document.getElementById('compInfo');
+  document.getElementById('compInfoEmoji').textContent = d.emoji;
+  document.getElementById('compInfoTitle').textContent = d.title;
+  document.getElementById('compInfoDesc').textContent = d.desc;
+  box.classList.remove('hidden');
+  box.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  // Confetti
+  spawnConfetti(['#8b5cf6','#ec4899','#fbbf24','#34d399','#06b6d4']);
+}
+
+/* ════ MONITOR INTERAKTIF ════ */
+const screens = [
+  {
+    bg: 'linear-gradient(135deg,#0f0f1a,#1a0533)',
+    content: `<div class="text-center p-4">
+      <div style="font-size:3rem;">🦁</div>
+      <div style="font-family:'Fredoka One',cursive;color:#c4b5fd;font-size:1rem;margin-top:6px;">Aslan di Savana! 🌅</div>
+      <div style="color:#8b5cf6;font-size:.7rem;margin-top:4px;">1920 × 1080 pixel</div>
+    </div>`
+  },
+  {
+    bg: 'linear-gradient(135deg,#1a2e1a,#064e3b)',
+    content: `<div class="text-center p-4">
+      <div style="font-size:2.5rem;">🌏✨🚀</div>
+      <div style="font-family:'Fredoka One',cursive;color:#a7f3d0;font-size:1rem;margin-top:6px;">Luar Angkasa!</div>
+      <div style="color:#34d399;font-size:.7rem;margin-top:4px;">Loading... 60 FPS! ⚡</div>
+    </div>`
+  },
+  {
+    bg: 'linear-gradient(135deg,#1e1428,#2d1b69)',
+    content: `<div class="text-center p-4">
+      <div style="font-size:2.5rem;">🎮🕹️</div>
+      <div style="font-family:'Fredoka One',cursive;color:#fbbf24;font-size:1rem;margin-top:6px;">Game Seru!</div>
+      <div style="color:#f97316;font-size:.7rem;margin-top:4px;">GPU bekerja keras! 🔥</div>
+    </div>`
+  }
+];
+let screenIdx = 0;
+let screenOn = false;
+
+function tampilkanGambar() {
+  const content = document.getElementById('screenContent');
+  const scanLine = document.getElementById('scanLine');
+  const monitorBox = document.getElementById('monitorBox');
+  const s = screens[screenIdx % screens.length];
+  screenIdx++;
+  screenOn = true;
+
+  // Animate screen turning on
+  content.style.animation = 'screenOn .4s ease forwards';
+  content.style.background = s.bg;
+  content.innerHTML = s.content;
+  scanLine.style.display = 'block';
+  monitorBox.classList.add('active');
+
+  setTimeout(() => { content.style.animation = ''; }, 500);
+
+  spawnConfetti(['#8b5cf6','#ec4899','#fbbf24','#06b6d4','#34d399']);
+}
+
+function matikanLayar() {
+  const content = document.getElementById('screenContent');
+  const scanLine = document.getElementById('scanLine');
+  const monitorBox = document.getElementById('monitorBox');
+  screenOn = false;
+
+  content.style.background = 'linear-gradient(135deg,#0f0f1a,#1e1b4b)';
+  content.innerHTML = `<div class="text-center">
+    <div class="text-5xl mb-2">🌑</div>
+    <div style="color:#4338ca;font-family:'Fredoka One',cursive;font-size:.9rem;">Layar mati... 😴</div>
+  </div>`;
+  scanLine.style.display = 'none';
+  monitorBox.classList.remove('active');
+}
+
+function ubahKecerahan(val) {
+  document.getElementById('brightnessVal').textContent = val + '%';
+  const overlay = document.getElementById('brightnessOverlay');
+  // val 0 = max dark overlay, 100 = no overlay
+  // But also simulate "too bright" at 100
+  if (val <= 50) {
+    overlay.style.background = 'black';
+    overlay.style.opacity = (1 - val/50) * 0.7;
+  } else {
+    overlay.style.background = 'white';
+    overlay.style.opacity = ((val - 50)/50) * 0.4;
+  }
+}
+
+/* ════ AUDIO / EQUALIZER ════ */
+let isPlaying = false;
+let volLevel = 50;
+
+function putar() {
+  isPlaying = true;
+  // Activate eq bars
+  document.querySelectorAll('.eq-bar').forEach(b => b.classList.add('playing'));
+  // Activate sound waves
+  document.querySelectorAll('#soundViz .sound-wave').forEach(w => w.classList.add('playing'));
+  document.querySelectorAll('#soundSvg .sound-wave').forEach(w => w.classList.add('playing'));
+  document.getElementById('soundStatus').textContent = '🎵 Suara sedang keluar! Dengar gelombangnya!';
+  document.getElementById('soundStatus').style.color = '#f97316';
+  document.getElementById('audioStatus').textContent = '🎵 Suara sedang diputar! Gelombang bergerak! 🌊';
+  document.getElementById('audioStatus').style.color = '#34d399';
+  spawnNotes();
+}
+
+function henti() {
+  isPlaying = false;
+  document.querySelectorAll('.eq-bar').forEach(b => b.classList.remove('playing'));
+  document.querySelectorAll('#soundViz .sound-wave').forEach(w => w.classList.remove('playing'));
+  document.querySelectorAll('#soundSvg .sound-wave').forEach(w => w.classList.remove('playing'));
+  document.getElementById('soundStatus').textContent = '⏸️ Suara berhenti';
+  document.getElementById('soundStatus').style.color = '#9ca3af';
+  document.getElementById('audioStatus').textContent = '⏸️ Klik "Putar Suara!" untuk lihat gelombangnya! 🎶';
+  document.getElementById('audioStatus').style.color = '#f9a8d4';
+}
+
+function ubahVolume(val) {
+  volLevel = val;
+  document.getElementById('volVal').textContent = val + '%';
+  // Adjust eq bar heights visually via CSS variable trick
+  const scale = val / 100;
+  document.querySelectorAll('.eq-bar').forEach(b => {
+    b.style.setProperty('--max-h', Math.round(20 + scale * 75) + 'px');
+  });
+}
+
+function spawnNotes() {
+  if (!isPlaying) return;
+  const notes = ['🎵','🎶','🎸','🎹','🎺','♪','♫'];
+  const n = document.createElement('div');
+  n.className = 'note-fly';
+  n.textContent = notes[Math.floor(Math.random()*notes.length)];
+  n.style.left = (30 + Math.random()*40) + '%';
+  n.style.top = '60%';
+  n.style.setProperty('--nx', (Math.random()-.5)*120 + 'px');
+  n.style.setProperty('--ny', '-' + (80 + Math.random()*100) + 'px');
+  document.body.appendChild(n);
+  setTimeout(()=>n.remove(), 1500);
+  if (isPlaying) setTimeout(spawnNotes, 400 + Math.random()*300);
+}
+
+/* ════ CONFETTI ════ */
+function spawnConfetti(colors) {
+  for (let i=0; i<14; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `
+      left:${20+Math.random()*60}%;top:40%;
+      background:${colors[i%colors.length]};
+      --tx:${(Math.random()-.5)*250}px;
+      --ty:${-60-Math.random()*180}px;
+      animation-delay:${Math.random()*.4}s;
+      border-radius:${Math.random()>.5?'50%':'2px'};
+      position:fixed;
+    `;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(), 1400);
+  }
+}
+
+/* ════ QUIZ ════ */
+let qD={1:false,2:false,3:false}, qSc=0;
+function qa(n, correct, btn) {
+  if (qD[n]) return;
+  qD[n] = true;
+  btn.closest('#q'+n).querySelectorAll('.qbtn').forEach(b=>b.disabled=true);
+  const r = document.getElementById('q'+n+'r');
+  r.classList.remove('hidden');
+  if (correct === 'a') {
+    qSc++;
+    btn.style.background = '#dcfce7';
+    btn.style.borderColor = '#16a34a';
+    r.textContent = '✅ Betul! Kamu pintar banget! 🌟';
+    r.style.color = '#16a34a';
+    spawnConfetti(['#34d399','#fbbf24','#8b5cf6','#ec4899','#06b6d4']);
+  } else {
+    btn.style.background = '#fee2e2';
+    btn.style.borderColor = '#dc2626';
+    const ans = ['A – GPU yang mengolah gambar! 🎨', 'B – Pixel! Titik-titik kecil! 🔵', 'C – Getaran speaker menggunakan sinyal listrik! ⚡'];
+    r.textContent = '❌ Jawabannya ' + ans[n-1];
+    r.style.color = '#dc2626';
+  }
+  if (Object.values(qD).every(v=>v)) {
+    setTimeout(()=>{
+      const f = document.getElementById('qFinal');
+      f.classList.remove('hidden');
+      const e=document.getElementById('qfE'), t=document.getElementById('qfT'), s=document.getElementById('qfS');
+      if (qSc===3) {
+        e.textContent='🏆'; t.textContent='Sempurna! 3/3 – Master Gambar & Suara!';
+        t.style.color='#5b21b6'; s.textContent='Wih! Sekarang kamu lebih pintar dari banyak orang dewasa! 😎✨';
+        spawnConfetti(['#8b5cf6','#ec4899','#fbbf24','#34d399','#06b6d4','#f97316']);
+      } else if (qSc===2) {
+        e.textContent='⭐'; t.textContent='Bagus! 2/3 Benar!';
+        t.style.color='#6d28d9'; s.textContent='Hampir sempurna! Scroll ke atas dan baca lagi yuk!';
+      } else {
+        e.textContent='💪'; t.textContent=qSc+'/3 – Semangat Terus!';
+        t.style.color='#7c3aed'; s.textContent='Coba baca materinya lagi dari atas, pasti bisa! 🎨🔊';
+      }
+    }, 400);
+  }
+}
+
+/* ════ ACTIVITY ════ */
+let actC = 0;
+function actCk(n) {
+  const el = document.getElementById('ac'+n);
+  const cb = el.querySelector('input');
+  if (cb.checked) {
+    actC++;
+    el.querySelector('span').style.textDecoration = 'line-through';
+    el.querySelector('span').style.opacity = '.5';
+  } else {
+    actC--;
+    el.querySelector('span').style.textDecoration = '';
+    el.querySelector('span').style.opacity = '';
+  }
+  if (actC >= 4) {
+    document.getElementById('actAllDone').classList.remove('hidden');
+    spawnConfetti(['#fbbf24','#f97316','#ec4899','#8b5cf6','#34d399']);
+  } else {
+    document.getElementById('actAllDone').classList.add('hidden');
+  }
+}
+</script>
+</body>
+</html>

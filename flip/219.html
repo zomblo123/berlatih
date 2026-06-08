@@ -1,0 +1,1593 @@
+<!-- BUKU DIGITAL ASLAN - Hari 19: Ilmuwan Kecil: Percobaan Sains di Rumah -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ilmuwan Kecil: Percobaan Sains di Rumah — Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sci-yellow:  #ffd600;
+    --sci-amber:   #ffab00;
+    --sci-orange:  #ff6d00;
+    --sci-red:     #ff1744;
+    --sci-teal:    #00bcd4;
+    --sci-cyan:    #00e5ff;
+    --sci-blue:    #2979ff;
+    --sci-green:   #00c853;
+    --sci-lime:    #aeea00;
+    --sci-purple:  #d500f9;
+    --sci-pink:    #ff4081;
+    --dark-bg:     #0c1220;
+    --mid-bg:      #131e30;
+    --surface-bg:  #1a2a40;
+    --text-light:  #e8f4fd;
+    --radius:      24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #0c1220;
+    color: #e8f4fd;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  body.light-mode {
+    background: #fffbf0;
+    color: #1a0f00;
+  }
+
+  /* ─── BUBBLE PARTICLES ─── */
+  .sci-particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .sp {
+    position: absolute;
+    animation: spFloat linear infinite;
+    opacity: 0;
+    border-radius: 50%;
+  }
+  @keyframes spFloat {
+    0%   { opacity: 0.8; transform: translateY(0) scale(1) rotate(0deg); }
+    50%  { opacity: 0.4; transform: translateY(-52vh) scale(1.1) rotate(120deg) translateX(12px); }
+    100% { opacity: 0;   transform: translateY(-108vh) scale(0.35) rotate(360deg) translateX(-8px); }
+  }
+  body.light-mode .sci-particles { opacity: 0.35; }
+
+  /* ─── TOP NAV ─── */
+  .top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(12,18,32,0.94);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,214,0,0.2);
+  }
+  body.light-mode .top-nav {
+    background: rgba(255,251,240,0.96);
+    border-color: rgba(255,171,0,0.22);
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--sci-orange), var(--sci-amber));
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 800;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(255,109,0,0.45);
+  }
+  .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,214,0,0.5); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .book-day-badge {
+    background: linear-gradient(135deg, var(--sci-teal), var(--sci-blue));
+    color: white;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  .mode-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,0.18); transform: rotate(20deg); }
+  body.light-mode .mode-btn { background: rgba(0,0,0,0.07); border-color: rgba(0,0,0,0.12); color: #1a0f00; }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-wrap {
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    z-index: 99;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sci-yellow), var(--sci-orange), var(--sci-teal), var(--sci-lime));
+    transition: width 0.35s ease;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 10px rgba(255,214,0,0.7);
+  }
+
+  /* ─── MAIN CONTAINER ─── */
+  .book-container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 20px 40px;
+  }
+
+  /* ─── PAGES ─── */
+  .page { display: none; animation: fadeUp 0.5s ease forwards; }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── COVER ─── */
+  .cover-page {
+    min-height: calc(100vh - 80px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 20px;
+    position: relative;
+  }
+
+  /* ── CSS LAB ILLUSTRATION ── */
+  .cover-lab-wrap {
+    width: 230px; height: 230px;
+    position: relative;
+    margin: 0 auto 32px;
+    animation: labFloat 3.6s ease-in-out infinite;
+  }
+  @keyframes labFloat {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-13px); }
+  }
+
+  /* Flask / Erlenmeyer */
+  .flask-body {
+    position: absolute;
+    bottom: 20px; left: 50%;
+    transform: translateX(-50%);
+    width: 90px; height: 80px;
+    background: linear-gradient(160deg, rgba(0,229,255,0.25), rgba(41,121,255,0.4));
+    border: 3px solid rgba(0,229,255,0.6);
+    border-radius: 10px 10px 50% 50% / 10px 10px 60% 60%;
+    box-shadow: 0 0 20px rgba(0,229,255,0.3), inset 0 0 20px rgba(0,229,255,0.1);
+  }
+  .flask-neck {
+    position: absolute;
+    bottom: 96px; left: 50%;
+    transform: translateX(-50%);
+    width: 28px; height: 38px;
+    background: rgba(0,229,255,0.15);
+    border: 3px solid rgba(0,229,255,0.5);
+    border-radius: 4px;
+  }
+  .flask-rim {
+    position: absolute;
+    bottom: 130px; left: 50%;
+    transform: translateX(-50%);
+    width: 42px; height: 8px;
+    background: rgba(0,229,255,0.4);
+    border-radius: 4px;
+    border: 2px solid rgba(0,229,255,0.6);
+  }
+  /* Bubbles inside flask */
+  .flask-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(0,229,255,0.5);
+    box-shadow: 0 0 6px rgba(0,229,255,0.8);
+    animation: flaskBub ease-in-out infinite;
+  }
+  @keyframes flaskBub {
+    0%,100% { transform: translateY(0) scale(1); opacity: 0.8; }
+    50%     { transform: translateY(-8px) scale(1.15); opacity: 0.5; }
+  }
+  /* Liquid in flask */
+  .flask-liquid {
+    position: absolute;
+    bottom: 22px; left: 50%;
+    transform: translateX(-50%);
+    width: 80px; height: 40px;
+    background: linear-gradient(180deg, rgba(0,229,255,0.4), rgba(41,121,255,0.7));
+    border-radius: 0 0 50% 50% / 0 0 60% 60%;
+    animation: liquidSlosh 3s ease-in-out infinite;
+  }
+  @keyframes liquidSlosh {
+    0%,100% { transform: translateX(-50%) scaleX(1); }
+    50%     { transform: translateX(-48%) scaleX(1.05); }
+  }
+
+  /* Test tube right */
+  .test-tube {
+    position: absolute;
+    bottom: 25px; right: 22px;
+    width: 24px; height: 70px;
+    background: rgba(255,64,129,0.2);
+    border: 2.5px solid rgba(255,64,129,0.6);
+    border-radius: 4px 4px 14px 14px;
+    transform: rotate(12deg);
+    box-shadow: 0 0 10px rgba(255,64,129,0.3);
+  }
+  .test-tube-liquid {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 40%;
+    background: linear-gradient(180deg, rgba(255,64,129,0.5), rgba(255,64,129,0.8));
+    border-radius: 0 0 11px 11px;
+  }
+
+  /* Beaker left */
+  .beaker {
+    position: absolute;
+    bottom: 22px; left: 20px;
+    width: 48px; height: 60px;
+    background: rgba(255,214,0,0.15);
+    border: 2.5px solid rgba(255,214,0,0.5);
+    border-radius: 4px 4px 10px 10px;
+    box-shadow: 0 0 10px rgba(255,214,0,0.2);
+  }
+  .beaker-liquid {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,214,0,0.4), rgba(255,171,0,0.7));
+    border-radius: 0 0 8px 8px;
+  }
+  .beaker-spout {
+    position: absolute;
+    top: -4px; right: -6px;
+    width: 12px; height: 8px;
+    border-top: 2.5px solid rgba(255,214,0,0.5);
+    border-right: 2.5px solid rgba(255,214,0,0.5);
+    border-radius: 0 4px 0 0;
+  }
+
+  /* Stars / sparks */
+  .lab-spark {
+    position: absolute;
+    font-size: 18px;
+    animation: sparkSpin 3s ease-in-out infinite;
+  }
+  .lab-spark:nth-child(1) { top: 10px; left: 20px;  animation-delay: 0s; }
+  .lab-spark:nth-child(2) { top: 5px;  right: 22px; animation-delay: -1s; font-size: 14px; }
+  .lab-spark:nth-child(3) { top: 50px; right: 8px;  animation-delay: -2s; font-size: 12px; }
+  @keyframes sparkSpin {
+    0%,100% { transform: rotate(0deg) scale(1); opacity: 0.8; }
+    50%     { transform: rotate(180deg) scale(1.3); opacity: 1; }
+  }
+
+  /* Floating icons */
+  .floating-sci {
+    position: absolute;
+    font-size: 24px;
+    animation: sciFloat 4.5s ease-in-out infinite;
+  }
+  .floating-sci:nth-child(1) { top: 5%;  left: 5%;   animation-delay: 0s; }
+  .floating-sci:nth-child(2) { top: 8%;  right: 7%;  animation-delay: -1.8s; }
+  .floating-sci:nth-child(3) { bottom: 28%; left: 4%; animation-delay: -3s; }
+  .floating-sci:nth-child(4) { bottom: 22%; right: 5%;animation-delay: -1.4s; }
+  @keyframes sciFloat {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50%     { transform: translateY(-10px) rotate(10deg); }
+  }
+
+  .cover-badge {
+    background: linear-gradient(135deg, var(--sci-orange), var(--sci-amber));
+    color: white;
+    padding: 6px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: inline-block;
+    box-shadow: 0 0 16px rgba(255,109,0,0.4);
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(28px, 6vw, 50px);
+    line-height: 1.2;
+    background: linear-gradient(135deg, #ffd600, #ff6d00, #00e5ff, #aeea00, #ffd600);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease infinite;
+    margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+
+  .cover-subtitle { font-size: clamp(16px, 3vw, 22px); opacity: 0.75; margin-bottom: 24px; }
+
+  .cover-name-badge {
+    background: linear-gradient(135deg, rgba(255,214,0,0.09), rgba(0,229,255,0.08));
+    border: 2px solid rgba(255,214,0,0.28);
+    border-radius: 20px;
+    padding: 16px 32px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+  }
+  .cover-name-badge p { font-size: 14px; opacity: 0.7; margin-bottom: 4px; }
+  .cover-name-badge h2 { font-family: 'Fredoka One', cursive; font-size: clamp(22px,4vw,32px); color: var(--sci-yellow); }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+  }
+  body.light-mode .card {
+    background: white;
+    border-color: rgba(255,171,0,0.15);
+    box-shadow: 0 4px 24px rgba(255,109,0,0.1);
+    color: #1a0f00;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent, linear-gradient(90deg, var(--sci-amber), var(--sci-yellow)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .card-method  { --accent: linear-gradient(90deg, #2979ff, #00e5ff, #aeea00); }
+  .card-exp1    { --accent: linear-gradient(90deg, #ff6d00, #ffd600, #ff1744); }
+  .card-exp2    { --accent: linear-gradient(90deg, #00bcd4, #aeea00, #2979ff); }
+  .card-exp3    { --accent: linear-gradient(90deg, #d500f9, #ff4081, #ffd600); }
+  .card-exp4    { --accent: linear-gradient(90deg, #00c853, #00e5ff, #ffd600); }
+  .card-record  { --accent: linear-gradient(90deg, #ffd600, #ffab00, #ff6d00); }
+
+  .card-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    display: block;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
+  }
+
+  .card h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(22px, 4vw, 30px);
+    margin-bottom: 8px;
+    color: var(--sci-yellow);
+  }
+  body.light-mode .card h2 { color: var(--sci-orange); }
+
+  .card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 20px 0 10px;
+    color: var(--sci-yellow);
+  }
+  body.light-mode .card h3 { color: var(--sci-orange); }
+
+  .card p {
+    font-size: clamp(15px, 2.5vw, 17px);
+    line-height: 1.85;
+    opacity: 0.9;
+    margin-bottom: 14px;
+  }
+
+  /* ─── ANALOGY BOX ─── */
+  .analogy-box {
+    background: linear-gradient(135deg, rgba(255,214,0,0.07), rgba(0,229,255,0.07));
+    border: 2px dashed rgba(255,214,0,0.3);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .analogy-box::before {
+    content: '💡 Analogi Keren!';
+    position: absolute;
+    top: -12px; left: 20px;
+    background: var(--dark-bg);
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--sci-yellow);
+  }
+  body.light-mode .analogy-box { background: linear-gradient(135deg, rgba(255,214,0,0.05), rgba(0,229,255,0.05)); }
+  body.light-mode .analogy-box::before { background: white; }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header { text-align: center; margin-bottom: 32px; padding-top: 20px; }
+  .section-header .tag {
+    display: inline-block;
+    background: rgba(255,214,0,0.12);
+    border: 1px solid rgba(255,214,0,0.3);
+    color: var(--sci-yellow);
+    padding: 4px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-header h1 { font-family: 'Fredoka One', cursive; font-size: clamp(24px,5vw,40px); line-height: 1.2; }
+
+  /* ─── SCENE BOX ─── */
+  .scene-box {
+    background: linear-gradient(135deg, rgba(12,18,32,0.94), rgba(41,121,255,0.1));
+    border: 1px solid rgba(255,214,0,0.15);
+    border-radius: 20px;
+    padding: 28px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .scene-box::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 85% 50%, rgba(255,214,0,0.05), transparent 60%);
+    pointer-events: none;
+  }
+  body.light-mode .scene-box {
+    background: linear-gradient(135deg, rgba(255,251,240,0.97), rgba(255,214,0,0.05));
+    border-color: rgba(255,171,0,0.2);
+  }
+  .scene-title {
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--sci-yellow);
+    margin-bottom: 12px;
+    opacity: 0.8;
+  }
+  .scene-box p { font-size: clamp(15px,2.5vw,17px); line-height: 1.9; font-style: italic; opacity: 0.9; }
+
+  /* ─── METHOD STEPS ─── */
+  .method-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .method-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 16px;
+  }
+  .ms-num {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 17px;
+    font-weight: 900;
+    flex-shrink: 0;
+    box-shadow: 0 0 12px rgba(0,0,0,0.3);
+  }
+  .ms-content { flex: 1; }
+  .ms-content strong { display: block; font-size: 16px; font-weight: 900; margin-bottom: 4px; }
+  .ms-content p { font-size: 13px; line-height: 1.65; opacity: 0.85; margin: 0; }
+
+  /* ─── EXPERIMENT CARD ─── */
+  .exp-box {
+    border-radius: 20px;
+    padding: 24px;
+    margin: 16px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .exp-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,0.3) 0px, rgba(255,255,255,0.3) 1px,
+      transparent 1px, transparent 12px
+    );
+    pointer-events: none;
+  }
+  .exp-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .exp-icon { font-size: 48px; flex-shrink: 0; }
+  .exp-title { font-family: 'Fredoka One', cursive; font-size: clamp(18px,3.5vw,24px); }
+  .exp-subtitle { font-size: 13px; opacity: 0.7; margin-top: 2px; }
+
+  .exp-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 12px 0;
+  }
+  .exp-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+  .exp-step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .ingredients-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 14px;
+  }
+  .ingredient-tag {
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.07);
+  }
+  body.light-mode .ingredient-tag { background: rgba(0,0,0,0.07); border-color: rgba(0,0,0,0.15); }
+
+  .exp-science {
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .exp-science strong { display: block; font-size: 13px; font-weight: 900; margin-bottom: 4px; }
+
+  /* ─── TWO COL CARDS ─── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+
+  .mini-card {
+    border-radius: 18px;
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mini-card-yellow  { background: rgba(255,214,0,0.09);  border: 1px solid rgba(255,214,0,0.24); }
+  .mini-card-orange  { background: rgba(255,109,0,0.1);   border: 1px solid rgba(255,109,0,0.25); }
+  .mini-card-teal    { background: rgba(0,188,212,0.09);  border: 1px solid rgba(0,188,212,0.24); }
+  .mini-card-green   { background: rgba(0,200,83,0.09);   border: 1px solid rgba(0,200,83,0.24); }
+  .mini-card-purple  { background: rgba(213,0,249,0.08);  border: 1px solid rgba(213,0,249,0.22); }
+  body.light-mode .mini-card-yellow  { background: rgba(255,214,0,0.06); }
+  body.light-mode .mini-card-orange  { background: rgba(255,109,0,0.06); }
+  body.light-mode .mini-card-teal    { background: rgba(0,188,212,0.06); }
+  body.light-mode .mini-card-green   { background: rgba(0,200,83,0.06); }
+  body.light-mode .mini-card-purple  { background: rgba(213,0,249,0.05); }
+
+  .mini-card .mini-icon { font-size: 36px; }
+  .mini-card strong { font-size: 15px; font-weight: 900; }
+  .mini-card p { font-size: 14px; line-height: 1.6; opacity: 0.85; margin: 0; }
+
+  /* ─── FACT GRID ─── */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .fact-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .fact-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(255,214,0,0.15); }
+  body.light-mode .fact-card { background: #fffbf0; border-color: rgba(255,171,0,0.15); }
+  .fact-card .fact-emoji { font-size: 40px; margin-bottom: 10px; display: block; }
+  .fact-card .fact-number { font-family: 'Fredoka One', cursive; font-size: 20px; color: var(--sci-yellow); display: block; margin-bottom: 4px; }
+  .fact-card .fact-label { font-size: 13px; opacity: 0.7; font-weight: 700; }
+
+  /* ─── CHALLENGE ─── */
+  .challenge-card {
+    background: linear-gradient(135deg, rgba(12,18,32,0.92), rgba(41,121,255,0.1));
+    border: 2px solid rgba(255,214,0,0.22);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin: 20px 0;
+  }
+  body.light-mode .challenge-card {
+    background: linear-gradient(135deg, rgba(255,214,0,0.04), rgba(0,229,255,0.03));
+  }
+
+  .challenge-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 24px;
+    color: var(--sci-yellow);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  body.light-mode .challenge-title { color: var(--sci-orange); }
+
+  .challenge-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .challenge-item:last-child { border-bottom: none; }
+  body.light-mode .challenge-item { border-color: rgba(0,0,0,0.05); }
+
+  .challenge-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--sci-orange), var(--sci-amber));
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 14px;
+    flex-shrink: 0; margin-top: 2px;
+    box-shadow: 0 0 10px rgba(255,109,0,0.35);
+  }
+  .challenge-item p { font-size: 15px; line-height: 1.7; opacity: 0.9; }
+
+  /* ─── NAV BUTTONS ─── */
+  .nav-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  body.light-mode .nav-btns { border-color: rgba(0,0,0,0.05); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover  { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-prev {
+    background: rgba(255,255,255,0.06);
+    color: inherit;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  body.light-mode .btn-prev { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); color:#1a0f00; }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--sci-orange), var(--sci-amber));
+    color: white;
+    box-shadow: 0 4px 16px rgba(255,109,0,0.4);
+    flex: 1; justify-content: center;
+    max-width: 300px;
+  }
+  .btn-next:hover { box-shadow: 0 6px 24px rgba(255,214,0,0.55); }
+
+  .btn-done {
+    background: linear-gradient(135deg, var(--sci-teal), var(--sci-blue));
+    color: white;
+    box-shadow: 0 4px 16px rgba(0,188,212,0.4);
+    width: 100%; max-width: 400px;
+    margin: 0 auto;
+    justify-content: center;
+    font-size: 17px;
+    padding: 18px 32px;
+  }
+  .btn-done:hover { box-shadow: 0 6px 24px rgba(0,229,255,0.55); }
+
+  .page-indicator { font-size: 13px; opacity: 0.5; font-weight: 700; white-space: nowrap; }
+
+  /* ─── CLOSING ─── */
+  .closing-content { text-align: center; padding: 40px 20px; }
+  .trophy-big {
+    font-size: 100px;
+    display: block; margin: 0 auto 24px;
+    animation: bounceIn 0.8s cubic-bezier(0.36,0.07,0.19,0.97);
+    filter: drop-shadow(0 0 24px rgba(255,214,0,0.7));
+  }
+  @keyframes bounceIn {
+    0%  { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); }
+    100%{ transform: scale(1); opacity: 1; }
+  }
+  .quote-box {
+    background: linear-gradient(135deg, rgba(255,214,0,0.08), rgba(0,229,255,0.08));
+    border-left: 4px solid var(--sci-amber);
+    border-radius: 0 16px 16px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+    text-align: left;
+  }
+  .quote-box p { font-size: 18px; font-style: italic; line-height: 1.8; }
+  .quote-box cite { font-size: 13px; opacity: 0.6; margin-top: 8px; display: block; font-style: normal; font-weight: 700; }
+
+  /* ─── SAFETY BOX ─── */
+  .safety-box {
+    background: rgba(255,23,68,0.08);
+    border: 2px solid rgba(255,23,68,0.25);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+  .safety-box .safety-icon { font-size: 22px; flex-shrink: 0; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .book-container { padding: 76px 16px 32px; }
+    .card { padding: 24px 20px; }
+    .nav-btns { flex-wrap: wrap; }
+    .btn-next { max-width: 100%; }
+    .fact-grid { grid-template-columns: 1fr 1fr; }
+    .cover-lab-wrap { width: 200px; height: 200px; }
+  }
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .book-container { padding: 80px 32px 40px; }
+    .card p { font-size: 18px; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,214,0,0.28); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- SCI PARTICLES -->
+<div class="sci-particles" id="sciParticles"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+  <div class="nav-right">
+    <span class="book-day-badge">⚗️ Hari ke-19</span>
+    <button class="mode-btn" id="modeBtn" title="Ganti Mode">☀️</button>
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<!-- ═══════════════ BOOK CONTAINER ═══════════════ -->
+<div class="book-container">
+
+  <!-- ── PAGE 1: COVER ── -->
+  <div class="page active" id="page-1">
+    <div class="cover-page">
+      <span class="floating-sci">🔬</span>
+      <span class="floating-sci">⚗️</span>
+      <span class="floating-sci">🧪</span>
+      <span class="floating-sci">💡</span>
+
+      <!-- Lab illustration -->
+      <div class="cover-lab-wrap">
+        <span class="lab-spark">✨</span>
+        <span class="lab-spark">⭐</span>
+        <span class="lab-spark">💥</span>
+
+        <!-- Beaker left -->
+        <div class="beaker">
+          <div class="beaker-liquid"></div>
+          <div class="beaker-spout"></div>
+        </div>
+
+        <!-- Main flask -->
+        <div class="flask-rim"></div>
+        <div class="flask-neck"></div>
+        <div class="flask-body">
+          <div class="flask-liquid"></div>
+          <!-- bubbles -->
+          <div class="flask-bubble" style="width:8px;height:8px;bottom:35px;left:18px;animation-duration:1.8s;animation-delay:0s;"></div>
+          <div class="flask-bubble" style="width:6px;height:6px;bottom:42px;left:36px;animation-duration:2.2s;animation-delay:-0.7s;"></div>
+          <div class="flask-bubble" style="width:5px;height:5px;bottom:28px;left:52px;animation-duration:1.5s;animation-delay:-1.3s;"></div>
+        </div>
+
+        <!-- Test tube right -->
+        <div class="test-tube">
+          <div class="test-tube-liquid"></div>
+        </div>
+      </div>
+
+      <div class="cover-badge">📚 Buku Sains Petualangan • Hari ke-19</div>
+      <h1 class="cover-title">Ilmuwan Kecil:<br>Percobaan Sains di Rumah!</h1>
+      <p class="cover-subtitle">⚗️ Jadilah Ilmuwan Sungguhan Hari Ini!</p>
+
+      <div class="cover-name-badge">
+        <p>Petualangan sains milik:</p>
+        <h2>🌟 Aslan 🌟</h2>
+        <p style="font-size:13px;margin-top:4px;">Ilmuwan Cilik Berbakat • Kelas 3 SD</p>
+      </div>
+
+      <div class="nav-btns" style="justify-content:center;border:none;padding-top:0;">
+        <button class="btn btn-next" onclick="goPage(2)" style="max-width:300px;font-size:17px;padding:16px 32px;">
+          🧪 Mulai Bereksperimen!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE 2: PENGANTAR ── -->
+  <div class="page" id="page-2">
+    <div class="section-header">
+      <span class="tag">✉️ Hari Kesembilanbelas!</span>
+      <h1>Hei Aslan, Hari Ini<br>Kamu Jadi Ilmuwan Sungguhan! 🔬</h1>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">⚗️</span>
+      <p>Hei, <strong>Aslan</strong>! Selama 18 hari terakhir kamu sudah menjelajahi dunia sains dari berbagai sudut — gunung berapi, berlian, laut dalam, dinosaurus, DNA, dan masih banyak lagi. Kamu sudah belajar <em>tentang</em> sains yang luar biasa!</p>
+      <p>Tapi hari ini berbeda. Hari ini kamu tidak hanya belajar <em>tentang</em> sains — <strong>kamu yang akan MELAKUKAN sains itu sendiri!</strong> 🧪 Terra Explorer punya misi spesial: mengubah dapur dan ruang keluargamu menjadi <strong>laboratorium ilmuwan cilik</strong> yang sesungguhnya!</p>
+      <p>Semua ilmuwan besar di dunia — Einstein, Newton, Marie Curie — mereka semua mulai dari hal yang sama: <strong>rasa ingin tahu dan keberanian untuk mencoba</strong>. Hari ini, giliran Aslan! 🌟</p>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Pesan Dari Terra Explorer</p>
+      <p>"Aslan! Hari ini Terra Explorer berubah menjadi asisten laboratorium pribadimu! 🥽 Kita tidak pergi ke mana-mana yang jauh — labmu adalah rumahmu sendiri. Dengan bahan-bahan yang sudah ada di dapur, kita akan melakukan percobaan sungguhan yang hasilnya akan membuatmu berteriak 'WOW!' Aku sudah menyiapkan 4 percobaan keren. Tapi ingat: seorang ilmuwan sejati selalu meminta bantuan orang dewasa, mencatat pengamatan, dan tidak takut saat percobaan tidak berjalan seperti yang diharapkan. Siap, Ilmuwan Aslan?"</p>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--sci-amber),var(--sci-yellow),var(--sci-teal));">
+      <h3>🗺️ Yang Akan Kita Pelajari Hari Ini</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(41,121,255,0.1);border-radius:14px;">
+          <span style="font-size:28px;">🔭</span>
+          <div><strong>Metode Ilmiah</strong><p style="font-size:13px;margin:0;opacity:0.7;">Cara ilmuwan bekerja: observasi, hipotesis, eksperimen, kesimpulan!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(255,109,0,0.1);border-radius:14px;">
+          <span style="font-size:28px;">🌋</span>
+          <div><strong>Percobaan 1: Gunung Berapi Soda</strong><p style="font-size:13px;margin:0;opacity:0.7;">Reaksi asam-basa yang spektakuler dengan cuka dan soda kue!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(0,229,255,0.08);border-radius:14px;">
+          <span style="font-size:28px;">🌈</span>
+          <div><strong>Percobaan 2: Pelangi di Gelas</strong><p style="font-size:13px;margin:0;opacity:0.7;">Buat lapisan warna yang tidak bercampur menggunakan densitas cairan!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(174,234,0,0.1);border-radius:14px;">
+          <span style="font-size:28px;">🫧</span>
+          <div><strong>Percobaan 3: Lava Lamp Alami</strong><p style="font-size:13px;margin:0;opacity:0.7;">Buat lampu lava keren dengan minyak, air, dan tablet effervescent!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(213,0,249,0.08);border-radius:14px;">
+          <span style="font-size:28px;">📓</span>
+          <div><strong>Buku Catatan Ilmuwan</strong><p style="font-size:13px;margin:0;opacity:0.7;">Cara mencatat hasil percobaan seperti ilmuwan sungguhan!</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+      <span class="page-indicator">Halaman 2 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(3)">Metode Ilmiah! 🔭 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 3: METODE ILMIAH ── -->
+  <div class="page" id="page-3">
+    <div class="section-header">
+      <span class="tag">🔭 Bab Satu</span>
+      <h1>Metode Ilmiah:<br><span style="color:var(--sci-yellow)">Cara Berpikir Ilmuwan!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Briefing Ilmuwan!</p>
+      <p>"Aslan, sebelum kita mulai bereksperimen, ada satu hal penting yang harus kamu pelajari terlebih dahulu! Semua ilmuwan terhebat di dunia menggunakan cara berpikir yang sama — disebut METODE ILMIAH. Ini adalah 'resep rahasia' untuk melakukan sains yang baik dan benar. Tanpa metode ilmiah, kita hanya bermain-main tanpa memahami apa yang terjadi. Dengan metode ilmiah, kita benar-benar BELAJAR dari setiap percobaan — bahkan saat hasilnya mengejutkan atau berbeda dari yang kita bayangkan! 🔬"</p>
+    </div>
+
+    <div class="card card-method">
+      <span class="card-icon">🔬</span>
+      <h2>Metode Ilmiah: 6 Langkah Jadi Ilmuwan!</h2>
+      <p>Metode ilmiah adalah cara sistematis yang digunakan ilmuwan untuk menjawab pertanyaan dan memecahkan masalah. Setiap ilmuwan di seluruh dunia menggunakan cara yang sama — dari ilmuwan di NASA hingga dokter di rumah sakit!</p>
+
+      <div class="method-steps">
+        <div class="method-step" style="background:rgba(41,121,255,0.12);border:1px solid rgba(41,121,255,0.28);">
+          <div class="ms-num" style="background:linear-gradient(135deg,#2979ff,#00e5ff);color:white;">1</div>
+          <div class="ms-content">
+            <strong style="color:var(--sci-cyan);">🔍 Observasi — Amati!</strong>
+            <p>Perhatikan sesuatu dengan seksama. Apa yang kamu lihat, dengar, rasakan, cium? Sains dimulai dari rasa ingin tahu terhadap dunia di sekitar kita. Contoh: "Kenapa es batu mencair di luar kulkas?"</p>
+          </div>
+        </div>
+
+        <div class="method-step" style="background:rgba(255,214,0,0.1);border:1px solid rgba(255,171,0,0.25);">
+          <div class="ms-num" style="background:linear-gradient(135deg,#ffd600,#ffab00);color:#1a0f00;">2</div>
+          <div class="ms-content">
+            <strong style="color:var(--sci-yellow);">❓ Pertanyaan — Tanya!</strong>
+            <p>Buat pertanyaan yang spesifik berdasarkan observasimu. Contoh: "Apakah es batu yang lebih besar mencair lebih lama dari yang lebih kecil?"</p>
+          </div>
+        </div>
+
+        <div class="method-step" style="background:rgba(174,234,0,0.1);border:1px solid rgba(174,234,0,0.25);">
+          <div class="ms-num" style="background:linear-gradient(135deg,#aeea00,#00c853);color:#1a2a00;">3</div>
+          <div class="ms-content">
+            <strong style="color:var(--sci-lime);">💭 Hipotesis — Tebak!</strong>
+            <p>Buat tebakan yang masuk akal berdasarkan apa yang sudah kamu tahu. Hipotesis harus bisa diuji! Contoh: "Aku menduga es batu yang lebih besar mencair lebih lama karena volumenya lebih banyak."</p>
+          </div>
+        </div>
+
+        <div class="method-step" style="background:rgba(255,109,0,0.1);border:1px solid rgba(255,109,0,0.25);">
+          <div class="ms-num" style="background:linear-gradient(135deg,#ff6d00,#ff1744);color:white;">4</div>
+          <div class="ms-content">
+            <strong style="color:var(--sci-orange);">🧪 Eksperimen — Coba!</strong>
+            <p>Lakukan percobaan untuk menguji hipotesismu. Ubah satu hal saja (variabel) dan ukur hasilnya dengan cermat. Catat semua yang kamu amati — termasuk hal yang tidak terduga!</p>
+          </div>
+        </div>
+
+        <div class="method-step" style="background:rgba(0,188,212,0.1);border:1px solid rgba(0,188,212,0.25);">
+          <div class="ms-num" style="background:linear-gradient(135deg,#00bcd4,#2979ff);color:white;">5</div>
+          <div class="ms-content">
+            <strong style="color:var(--sci-teal);">📊 Analisis — Pelajari!</strong>
+            <p>Lihat data dan catatanmu. Apakah hasilnya sesuai dengan hipotesismu? Cari pola dan hubungan. Jangan takut kalau hasilnya berbeda — itu justru penemuan menarik!</p>
+          </div>
+        </div>
+
+        <div class="method-step" style="background:rgba(213,0,249,0.08);border:1px solid rgba(213,0,249,0.22);">
+          <div class="ms-num" style="background:linear-gradient(135deg,#d500f9,#ff4081);color:white;">6</div>
+          <div class="ms-content">
+            <strong style="color:#ea80fc);">🏆 Kesimpulan — Simpulkan!</strong>
+            <p>Apa yang kamu pelajari dari eksperimenmu? Apakah hipotesismu terbukti benar atau salah? Kesimpulan yang "salah" tetap sangat berharga — itu tetap ilmu pengetahuan!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Bayangkan kamu detektif 🕵️ yang sedang memecahkan kasus misteri. Kamu mengumpulkan bukti (observasi), membuat dugaan siapa pelakunya (hipotesis), menyelidiki lebih lanjut (eksperimen), menganalisis semua bukti (analisis), dan akhirnya mengumumkan siapa pelakunya (kesimpulan). Metode ilmiah adalah cara detektif — tapi untuk alam semesta! 🌍</p>
+      </div>
+
+      <div style="background:rgba(255,214,0,0.07);border:1px solid rgba(255,171,0,0.22);border-radius:14px;padding:16px 18px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🌟 <strong>Fakta Menarik:</strong> Albert Einstein pernah berkata: <em>"Saya tidak punya bakat khusus. Saya hanya sangat penasaran."</em> Rasa ingin tahu adalah bahan bakar paling penting seorang ilmuwan — dan kamu sudah punya itu, Aslan! 🚀</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+      <span class="page-indicator">Halaman 3 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(4)">Percobaan 1: Gunung Berapi! 🌋 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 4: PERCOBAAN 1 & 2 ── -->
+  <div class="page" id="page-4">
+    <div class="section-header">
+      <span class="tag">🌋🌈 Percobaan 1 & 2</span>
+      <h1>Gunung Berapi Soda<br><span style="color:var(--sci-yellow)">dan Pelangi di Gelas!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Saatnya Beraksi!</p>
+      <p>"Aslan, laboratoriummu sudah siap! Meja dapur sudah dibersihkan, bahan-bahan sudah disiapkan. Satu hal penting: minta orang tua atau kakakmu untuk menemanimu ya — ilmuwan terbaik pun selalu bekerja dengan tim! Sekarang, percobaan pertama kita akan membuat letusan gunung berapi mini yang SPEKTAKULER di atas mejamu. Siapkan hati, Ilmuwan Aslan! 🌋"</p>
+    </div>
+
+    <!-- EXPERIMENT 1 -->
+    <div class="card card-exp1">
+      <div class="exp-header">
+        <span class="exp-icon">🌋</span>
+        <div>
+          <div class="exp-title" style="color:var(--sci-orange);">Percobaan 1: Gunung Berapi Soda Kue!</div>
+          <div class="exp-subtitle">Reaksi Asam-Basa yang Menggelegar!</div>
+        </div>
+      </div>
+
+      <div class="safety-box">
+        <span class="safety-icon">⚠️</span>
+        <p><strong>Minta Bantuan Orang Tua!</strong> Percobaan ini aman tapi bisa sedikit berantakan. Lakukan di atas nampan atau di luar ruangan. Jangan khawatir soal kotoran — itu bagian dari sains!</p>
+      </div>
+
+      <strong style="font-size:14px;font-weight:900;color:var(--sci-yellow);">🛒 Bahan yang Dibutuhkan:</strong>
+      <div class="ingredients-row">
+        <span class="ingredient-tag">🏺 Botol plastik/gelas</span>
+        <span class="ingredient-tag">🍶 Cuka (½ gelas)</span>
+        <span class="ingredient-tag">🥄 Soda kue (2 sendok makan)</span>
+        <span class="ingredient-tag">🎨 Pewarna makanan merah</span>
+        <span class="ingredient-tag">🧴 Sabun cuci piring (sedikit)</span>
+        <span class="ingredient-tag">🏔️ Tanah liat/kertas (opsional)</span>
+      </div>
+
+      <strong style="font-size:14px;font-weight:900;color:var(--sci-yellow);">📋 Langkah-langkah:</strong>
+      <div class="exp-steps">
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#ff6d00;color:white;">1</div>
+          <p>Jika mau, buat "gunung" dari tanah liat atau kertas di sekeliling botol plastik kecil agar terlihat seperti gunung berapi sungguhan!</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#ff8f00;color:white;">2</div>
+          <p>Masukkan 2 sendok makan soda kue ke dalam botol, tambahkan beberapa tetes pewarna makanan merah, dan sedikit sabun cuci piring.</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#ffa000;color:white;">3</div>
+          <p>Siapkan cuka di gelas terpisah. Sebelum menuangkan, buat hipotesismu: "Aku menduga akan terjadi... karena..."</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#ffb300;color:black;">4</div>
+          <p>Tuangkan cuka ke dalam botol dengan cepat. Mundur selangkah dan amati! Catat apa yang kamu lihat, dengar, dan rasakan (bau!).</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#ffc400;color:black;">5</div>
+          <p>Coba variasi: lebih banyak soda kue, kurang cuka, atau tambahkan jus lemon. Apakah hasilnya berbeda? Catat!</p>
+        </div>
+      </div>
+
+      <div class="exp-science" style="background:rgba(255,109,0,0.1);border:1px solid rgba(255,109,0,0.25);">
+        <strong style="color:var(--sci-orange);">🔬 Kenapa Ini Terjadi?</strong>
+        Cuka (asam asetat) bertemu soda kue (natrium bikarbonat/basa) → menghasilkan reaksi kimia yang melepaskan gas CO₂ (karbon dioksida) dengan cepat! Gas inilah yang membuat gelembung dan busa muncrat ke luar. Sabun cuci piring memperbesar dan menstabilkan gelembung. Ini adalah <strong>reaksi asam-basa</strong> — prinsip yang sama dengan cara antasida obat maag bekerja di perut kita!
+      </div>
+    </div>
+
+    <!-- EXPERIMENT 2 -->
+    <div class="card card-exp2">
+      <div class="exp-header">
+        <span class="exp-icon">🌈</span>
+        <div>
+          <div class="exp-title" style="color:var(--sci-cyan);">Percobaan 2: Pelangi di Gelas!</div>
+          <div class="exp-subtitle">Lapisan Cairan yang Tidak Mau Bercampur!</div>
+        </div>
+      </div>
+
+      <strong style="font-size:14px;font-weight:900;color:var(--sci-yellow);">🛒 Bahan yang Dibutuhkan:</strong>
+      <div class="ingredients-row">
+        <span class="ingredient-tag">🥃 Gelas tinggi bening</span>
+        <span class="ingredient-tag">🍯 Madu (2 sendok)</span>
+        <span class="ingredient-tag">🫧 Sabun cuci piring</span>
+        <span class="ingredient-tag">💧 Air + pewarna biru</span>
+        <span class="ingredient-tag">🛢️ Minyak sayur</span>
+        <span class="ingredient-tag">🥃 Alkohol 70% + pewarna</span>
+      </div>
+
+      <strong style="font-size:14px;font-weight:900;color:var(--sci-yellow);">📋 Langkah-langkah:</strong>
+      <div class="exp-steps">
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#00bcd4;color:white;">1</div>
+          <p>Tuangkan madu ke dasar gelas secukupnya (lapisan paling bawah). Lakukan perlahan agar tidak bercampur.</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#0097a7;color:white;">2</div>
+          <p>Tambahkan sabun cuci piring perlahan melalui sisi gelas. Amati — sabun mengapung di atas madu!</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#2979ff;color:white;">3</div>
+          <p>Tuang air yang sudah diberi pewarna biru perlahan melalui sendok agar tidak mengganggu lapisan bawah.</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#0d47a1;color:white;">4</div>
+          <p>Tambahkan minyak sayur perlahan. Terakhir, tambahkan alkohol 70% yang sudah diberi pewarna merah/pink.</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:linear-gradient(135deg,#2979ff,#00bcd4);color:white;">5</div>
+          <p>Amati lapisan-lapisan yang terbentuk! Hitung berapa lapisan. Coba aduk — lalu tunggu. Apa yang terjadi?</p>
+        </div>
+      </div>
+
+      <div class="exp-science" style="background:rgba(0,188,212,0.09);border:1px solid rgba(0,188,212,0.25);">
+        <strong style="color:var(--sci-cyan);">🔬 Kenapa Ini Terjadi?</strong>
+        Setiap cairan punya <strong>massa jenis (densitas)</strong> yang berbeda! Cairan yang lebih berat per satuan volumenya akan tenggelam ke bawah, yang lebih ringan mengapung di atas. Urutan dari terberat: madu → sabun → air → minyak → alkohol. Cairan-cairan ini juga bersifat "<strong>tidak dapat bercampur (immiscible)</strong>" satu sama lain karena perbedaan sifat kimia molekulnya — itulah kenapa minyak tidak mau bercampur dengan air!
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+      <span class="page-indicator">Halaman 4 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(5)">Percobaan 3 & 4! 🫧💥 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 5: PERCOBAAN 3 & 4 ── -->
+  <div class="page" id="page-5">
+    <div class="section-header">
+      <span class="tag">🫧💥 Percobaan 3 & 4</span>
+      <h1>Lava Lamp Ajaib<br><span style="color:var(--sci-yellow)">dan Mentos Gila!</span></h1>
+    </div>
+
+    <!-- EXPERIMENT 3 -->
+    <div class="card card-exp3">
+      <div class="exp-header">
+        <span class="exp-icon">🫧</span>
+        <div>
+          <div class="exp-title" style="color:#ea80fc;">Percobaan 3: Lava Lamp Alami!</div>
+          <div class="exp-subtitle">Gelembung Warna-warni yang Naik Turun!</div>
+        </div>
+      </div>
+
+      <strong style="font-size:14px;font-weight:900;color:var(--sci-yellow);">🛒 Bahan yang Dibutuhkan:</strong>
+      <div class="ingredients-row">
+        <span class="ingredient-tag">🥃 Botol/gelas bening</span>
+        <span class="ingredient-tag">🛢️ Minyak sayur (¾ gelas)</span>
+        <span class="ingredient-tag">💧 Air + pewarna mencolok</span>
+        <span class="ingredient-tag">💊 Tablet effervescent (Redoxon/vitamin C)</span>
+        <span class="ingredient-tag">🔦 Senter (opsional)</span>
+      </div>
+
+      <strong style="font-size:14px;font-weight:900;color:var(--sci-yellow);">📋 Langkah-langkah:</strong>
+      <div class="exp-steps">
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#d500f9;color:white;">1</div>
+          <p>Isi botol bening dengan minyak sayur hingga ¾ penuh. Amati dulu — bagaimana teksturnya?</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#aa00ff;color:white;">2</div>
+          <p>Tuangkan air berwarna (diberi pewarna makanan warna cerah) ke dalam botol. Amati — air langsung tenggelam ke bawah minyak!</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#7c4dff;color:white;">3</div>
+          <p>Buat hipotesis: "Aku menduga saat tablet dimasukkan, akan terjadi..."</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#ff4081;color:white;">4</div>
+          <p>Pecah tablet effervescent menjadi beberapa bagian kecil. Masukkan satu bagian ke dalam botol. Amati dengan seksama!</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:linear-gradient(135deg,#d500f9,#ff4081);color:white;">5</div>
+          <p>Sinari botol dari bawah dengan senter di ruangan remang-remang untuk efek lava lamp sungguhan! 🌟</p>
+        </div>
+      </div>
+
+      <div class="exp-science" style="background:rgba(213,0,249,0.08);border:1px solid rgba(213,0,249,0.22);">
+        <strong style="color:#ea80fc;">🔬 Kenapa Ini Terjadi?</strong>
+        Air dan minyak tidak bercampur (seperti percobaan 2). Tablet effervescent bereaksi dengan air menghasilkan gelembung CO₂. Gelembung CO₂ menempel pada tetesan air, membawa air naik menembus minyak — "lava" naik! Di atas, CO₂ terlepas ke udara, air kembali turun karena lebih berat dari minyak — "lava" turun! Prosesnya berulang terus sampai tablet habis. Inilah prinsip di balik lava lamp dekoratif yang sebenarnya!
+      </div>
+    </div>
+
+    <!-- EXPERIMENT 4 -->
+    <div class="card card-exp4">
+      <div class="exp-header">
+        <span class="exp-icon">💥</span>
+        <div>
+          <div class="exp-title" style="color:var(--sci-green);">Percobaan 4: Mentos vs Cola!</div>
+          <div class="exp-subtitle">Letusan yang Harus Dilakukan di Luar! (Minta Izin Dulu!)</div>
+        </div>
+      </div>
+
+      <div class="safety-box">
+        <span class="safety-icon">🚨</span>
+        <p><strong>WAJIB di Luar Ruangan!</strong> Percobaan ini akan menghasilkan semburan yang bisa mencapai 1–2 meter! Lakukan di halaman atau taman. Minta izin dan dampingan orang tua. Pakai baju yang tidak masalah jika basah!</p>
+      </div>
+
+      <strong style="font-size:14px;font-weight:900;color:var(--sci-yellow);">🛒 Bahan yang Dibutuhkan:</strong>
+      <div class="ingredients-row">
+        <span class="ingredient-tag">🥤 Botol cola/soda 1,5 liter</span>
+        <span class="ingredient-tag">🍬 Permen Mentos (5–7 butir)</span>
+        <span class="ingredient-tag">📏 Penggaris (untuk mengukur tinggi semburan)</span>
+        <span class="ingredient-tag">🎥 Kamera/HP (rekam momennya!)</span>
+      </div>
+
+      <strong style="font-size:14px;font-weight:900;color:var(--sci-yellow);">📋 Langkah-langkah:</strong>
+      <div class="exp-steps">
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#00c853;color:white;">1</div>
+          <p>Pergi ke luar! Buka botol cola dan biarkan berdiri di tanah. Buat hipotesis dan catat prediksi ketinggian semburanmu.</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#00897b;color:white;">2</div>
+          <p>Minta seseorang merekam video. Tumpuk permen Mentos (5–7 butir) di tanganmu — siap-siap bergerak cepat!</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:#006064;color:white;">3</div>
+          <p>Jatuhkan semua Mentos ke dalam botol sekaligus dengan cepat, lalu MUNDUR! Amati dari jarak aman.</p>
+        </div>
+        <div class="exp-step">
+          <div class="exp-step-num" style="background:linear-gradient(135deg,#00c853,#00bcd4);color:white;">4</div>
+          <p>Ukur tinggi semburan jika memungkinkan. Coba variasi: cola vs sprite, 3 mentos vs 7 mentos, botol dingin vs hangat!</p>
+        </div>
+      </div>
+
+      <div class="exp-science" style="background:rgba(0,200,83,0.09);border:1px solid rgba(0,200,83,0.25);">
+        <strong style="color:var(--sci-green);">🔬 Kenapa Ini Terjadi?</strong>
+        Cola mengandung CO₂ yang sudah dilarutkan di bawah tekanan tinggi. Permukaan permen Mentos sangat kasar dan berlubang-lubang kecil (seperti busa mikroskopik) — ilmuwan menyebutnya "situs nukleasi". Ratusan ribu lubang kecil ini menyediakan tempat bagi CO₂ untuk membentuk gelembung sekaligus dan sangat cepat. CO₂ yang terbentuk mendorong cairan keluar dengan dahsyat — inilah yang disebut <strong>nucleation reaction</strong>. Bukan reaksi kimia (tidak ada zat baru yang terbentuk) tapi <strong>reaksi fisika</strong>!
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+      <span class="page-indicator">Halaman 5 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(6)">Buku Catatan Ilmuwan! 📓 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 6: BUKU CATATAN & METODE LANJUT ── -->
+  <div class="page" id="page-6">
+    <div class="section-header">
+      <span class="tag">📓 Bab Empat</span>
+      <h1>Buku Catatan Ilmuwan:<br><span style="color:var(--sci-yellow)">Rahasia Para Ilmuwan Besar!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Misi Pencatatan!</p>
+      <p>"Aslan, ilmuwan terhebat dalam sejarah selalu punya kesamaan satu hal: mereka semua menulis catatan dengan sangat rapi! Newton mencatat semua penemuannya, Darwin membawa buku catatan ke mana-mana, Marie Curie punya buku catatan yang bahkan sampai sekarang masih terlalu radioaktif untuk disentuh tanpa perlindungan khusus! Catatan adalah memori ekstra seorang ilmuwan. Tanpa catatan, penemuan bisa hilang begitu saja. Ayo kita buat buku catatan ilmuwan Aslan yang keren! 📓"</p>
+    </div>
+
+    <div class="card card-record">
+      <span class="card-icon">📓</span>
+      <h2>Cara Mencatat seperti Ilmuwan Sungguhan!</h2>
+      <p>Setiap percobaan yang kamu lakukan harus dicatat. Ilmuwan tidak mengandalkan ingatan — mereka mencatat semuanya! Berikut format catatan yang digunakan ilmuwan nyata:</p>
+
+      <div style="background:rgba(255,214,0,0.06);border:2px solid rgba(255,171,0,0.2);border-radius:18px;padding:20px 24px;margin:16px 0;">
+        <div style="font-family:'Fredoka One',cursive;font-size:18px;color:var(--sci-yellow);margin-bottom:16px;text-align:center;">📋 Template Catatan Ilmuwan Aslan</div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:14px;">
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;background:rgba(255,255,255,0.04);border-radius:10px;">
+            <span style="font-weight:900;color:var(--sci-yellow);min-width:110px;">📅 Tanggal:</span>
+            <span style="opacity:0.8;">Hari dan tanggal percobaan dilakukan</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;background:rgba(255,255,255,0.04);border-radius:10px;">
+            <span style="font-weight:900;color:var(--sci-yellow);min-width:110px;">❓ Pertanyaan:</span>
+            <span style="opacity:0.8;">Apa yang ingin aku cari tahu?</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;background:rgba(255,255,255,0.04);border-radius:10px;">
+            <span style="font-weight:900;color:var(--sci-yellow);min-width:110px;">💭 Hipotesis:</span>
+            <span style="opacity:0.8;">Aku menduga akan terjadi... karena...</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;background:rgba(255,255,255,0.04);border-radius:10px;">
+            <span style="font-weight:900;color:var(--sci-yellow);min-width:110px;">🛒 Bahan:</span>
+            <span style="opacity:0.8;">Daftar semua bahan yang dipakai</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;background:rgba(255,255,255,0.04);border-radius:10px;">
+            <span style="font-weight:900;color:var(--sci-yellow);min-width:110px;">👁️ Pengamatan:</span>
+            <span style="opacity:0.8;">Yang aku lihat, dengar, cium selama percobaan (tulis sedetail mungkin!)</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;background:rgba(255,214,0,0.08);border-radius:10px;border:1px solid rgba(255,171,0,0.2);">
+            <span style="font-weight:900;color:var(--sci-yellow);min-width:110px;">🏆 Kesimpulan:</span>
+            <span style="opacity:0.8;">Hipotesisku terbukti/tidak terbukti karena... Dan aku belajar bahwa...</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>🌟 Tips Ilmuwan Cilik Aslan</h3>
+      <div class="two-col">
+        <div class="mini-card mini-card-yellow">
+          <span class="mini-icon">✏️</span>
+          <strong>Gambar Juga!</strong>
+          <p>Ilmuwan sering membuat sketsa atau gambar dari yang mereka amati. Gambar bisa menangkap detail yang sulit ditulis dengan kata-kata!</p>
+        </div>
+        <div class="mini-card mini-card-teal">
+          <span class="mini-icon">📊</span>
+          <strong>Buat Tabel</strong>
+          <p>Jika kamu menguji beberapa variasi (misalnya jumlah Mentos berbeda), buat tabel untuk membandingkan hasilnya dengan rapi!</p>
+        </div>
+        <div class="mini-card mini-card-orange">
+          <span class="mini-icon">🤔</span>
+          <strong>Tulis Pertanyaan Baru</strong>
+          <p>Setelah setiap percobaan, tuliskan pertanyaan baru yang muncul. Sains selalu melahirkan pertanyaan baru — itulah yang membuatnya menarik!</p>
+        </div>
+        <div class="mini-card mini-card-green">
+          <span class="mini-icon">📸</span>
+          <strong>Foto atau Video</strong>
+          <p>Minta orang tua memotret atau merekam percobaan. Foto adalah "catatan" terbaik yang bisa kamu tunjukkan kepada teman atau gurumu!</p>
+        </div>
+      </div>
+
+      <div style="background:rgba(0,188,212,0.07);border:1px solid rgba(0,188,212,0.22);border-radius:16px;padding:16px 20px;margin-top:12px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">💡 <strong>Ingat:</strong> Dalam sains, tidak ada percobaan yang "gagal"! Kalau hasilnya berbeda dari hipotesismu, itu bukan kegagalan — itu adalah <strong>penemuan baru</strong>! Thomas Edison mencoba lebih dari 1.000 cara sebelum menemukan bola lampu yang berhasil. Katanya: "Aku tidak gagal. Aku menemukan 1.000 cara yang tidak berhasil!" 💡</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+      <span class="page-indicator">Halaman 6 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(7)">Fakta Keren Ilmuwan! 🤯 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 7: FAKTA KEREN ── -->
+  <div class="page" id="page-7">
+    <div class="section-header">
+      <span class="tag">🤯 Bab Lima</span>
+      <h1>Fakta Keren Sains<br><span style="color:var(--sci-yellow)">dan Ilmuwan Hebat!</span></h1>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--sci-yellow),var(--sci-orange),var(--sci-teal),var(--sci-lime));">
+      <span class="card-icon">🤩</span>
+      <h2>Percobaan di Balik Ilmu Pengetahuan!</h2>
+      <div class="fact-grid">
+        <div class="fact-card">
+          <span class="fact-emoji">🍎</span>
+          <span class="fact-number">1687</span>
+          <span class="fact-label">Tahun Newton "menemukan" gravitasi — mungkin karena melihat apel jatuh! Observasi sederhana, penemuan luar biasa.</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">⚡</span>
+          <span class="fact-number">1.000+</span>
+          <span class="fact-label">Percobaan Edison sebelum berhasil membuat bola lampu. Tiap kegagalan adalah pelajaran!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🧫</span>
+          <span class="fact-number">1928</span>
+          <span class="fact-label">Alexander Fleming menemukan penisilin (antibiotik pertama) secara TIDAK SENGAJA dari jamur yang tumbuh di sampelnya!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌊</span>
+          <span class="fact-number">71%</span>
+          <span class="fact-label">Bumi tertutup air — tapi kita lebih banyak tahu tentang permukaan Bulan daripada dasar laut kita sendiri!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🔬</span>
+          <span class="fact-number">8,7 juta</span>
+          <span class="fact-label">Perkiraan total spesies yang hidup di Bumi — dan kita baru mengenal sekitar 1,2 juta di antaranya!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🇮🇩</span>
+          <span class="fact-number">B.J. Habibie</span>
+          <span class="fact-label">Ilmuwan & Presiden Indonesia yang menemukan "Faktor Habibie" — rumus penting dalam desain pesawat terbang!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--sci-teal),var(--sci-blue),var(--sci-lime));">
+      <span class="card-icon">🌍</span>
+      <h2>Ilmuwan Luar Biasa dari Seluruh Dunia!</h2>
+      <p>Sains tidak mengenal batas negara, jenis kelamin, atau usia. Banyak ilmuwan besar yang mulai bereksperimen sejak masih muda seperti kamu!</p>
+
+      <div style="display:flex;flex-direction:column;gap:12px;margin:16px 0;">
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 18px;background:rgba(255,214,0,0.08);border:1px solid rgba(255,171,0,0.2);border-radius:14px;">
+          <span style="font-size:36px;flex-shrink:0;">🧑‍🔬</span>
+          <div>
+            <strong style="display:block;margin-bottom:4px;color:var(--sci-yellow);">Marie Curie — Ilmuwan Dua Nobel</strong>
+            <p style="font-size:13px;margin:0;opacity:0.85;line-height:1.65;">Perempuan pertama yang memenangkan Nobel, dan satu-satunya orang yang menang Nobel di dua bidang berbeda (Fisika dan Kimia). Ia menemukan unsur Polonium dan Radium dari eksperimen tanpa henti di laboratorium sederhananya.</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 18px;background:rgba(0,229,255,0.07);border:1px solid rgba(0,188,212,0.2);border-radius:14px;">
+          <span style="font-size:36px;flex-shrink:0;">🚀</span>
+          <div>
+            <strong style="display:block;margin-bottom:4px;color:var(--sci-cyan);">Nicolaus Copernicus — Pemberani Sains</strong>
+            <p style="font-size:13px;margin:0;opacity:0.85;line-height:1.65;">Berani menyatakan bahwa Bumi mengelilingi Matahari (bukan sebaliknya) saat semua orang percaya sebaliknya! Butuh keberanian besar untuk mengikuti data sains, bahkan saat hasilnya berbeda dari keyakinan umum.</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 18px;background:rgba(174,234,0,0.07);border:1px solid rgba(174,234,0,0.2);border-radius:14px;">
+          <span style="font-size:36px;flex-shrink:0;">🦋</span>
+          <div>
+            <strong style="display:block;margin-bottom:4px;color:var(--sci-lime);">Siti Fadilah Supari — Indonesia Berjaya!</strong>
+            <p style="font-size:13px;margin:0;opacity:0.85;line-height:1.65;">Ilmuwan dan mantan Menteri Kesehatan Indonesia yang berani menantang kebijakan WHO soal hak kepemilikan virus flu burung. Membuktikan bahwa ilmuwan Indonesia mampu berdiri setara di panggung global!</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,109,0,0.08);border:1px solid rgba(255,109,0,0.22);border-radius:14px;padding:16px 18px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🌟 <strong>Untuk Aslan:</strong> Usia bukan halangan dalam sains. Louis Braille menciptakan sistem huruf braille saat berusia <strong>15 tahun</strong>. Blaise Pascal menemukan konsep probabilitas matematika saat <strong>16 tahun</strong>. Siapa tahu, penemuan Aslan bisa mengubah dunia suatu hari nanti? 🚀</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+      <span class="page-indicator">Halaman 7 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(8)">Tantangan Ilmuwan Aslan! ⚡ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 8: TANTANGAN + PENUTUP ── -->
+  <div class="page" id="page-8">
+    <div class="section-header">
+      <span class="tag">⚡ Misi Aslan</span>
+      <h1>Buktikan Kamu<br>Ilmuwan Cilik Sejati! 🔬</h1>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-title">🏆 Misi Laboratorium Aslan</div>
+      <p style="font-size:15px;opacity:0.8;margin-bottom:20px;">Kamu sudah belajar metode ilmiah dan melihat 4 percobaan keren! Sekarang saatnya kamu menjadi ilmuwan sesungguhnya. Semua percobaan ini bisa dan HARUS dilakukan di rumah! 🏠</p>
+
+      <div class="challenge-item">
+        <div class="challenge-num">1</div>
+        <div>
+          <p><strong>Lakukan Percobaan Gunung Berapi Soda!</strong> 🌋 Ikuti langkah-langkah yang sudah kita pelajari. Tapi sebelum mulai, buat dulu hipotesis di buku catatanmu: "Aku menduga akan terjadi... karena...". Setelah percobaan, catat apa yang kamu amati dan tulis kesimpulan. Coba juga variasi: apakah lebih banyak soda kue menghasilkan busa lebih besar? Bandingkan dan catat hasilnya!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">2</div>
+        <div>
+          <p><strong>Buat Buku Catatan Ilmuwan Aslan!</strong> 📓 Ambil buku tulis kosong dan jadikan "Lab Notebook"-mu. Di halaman pertama, tulis nama: "Buku Catatan Ilmiah — Aslan, Ilmuwan Cilik". Lalu catat SEMUA percobaan yang kamu lakukan menggunakan template yang sudah kita pelajari (tanggal, pertanyaan, hipotesis, bahan, pengamatan, kesimpulan). Buku ini akan jadi bukti perjalanan ilmiahmu!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">3</div>
+        <div>
+          <p><strong>Kuis Metode Ilmiah!</strong> ⚡ Jawab tanpa melihat buku: (a) Apa itu hipotesis? (b) Apa perbedaan reaksi kimia dan reaksi fisika? (jelaskan dengan contoh dari percobaan yang kita lakukan) (c) Kenapa minyak tidak bercampur dengan air? (d) Mengapa Thomas Edison berhasil menemukan bola lampu meskipun gagal ribuan kali? (e) Siapa ilmuwan Indonesia yang menemukan "Faktor Habibie"?</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">4</div>
+        <div>
+          <p><strong>Rancang Percobaan Sendiri!</strong> 🧪 Ini tantangan terbesar: buat percobaan SAINS-MU SENDIRI! Mulai dari pertanyaan yang kamu penasaran — "Apakah air hangat melarutkan gula lebih cepat dari air dingin?" atau "Apakah tanaman tumbuh lebih baik dengan musik?". Ikuti 6 langkah metode ilmiah, lakukan percobaannya, dan catat hasilnya. Kamu akan jadi PENEMU sungguhan!</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">5</div>
+        <div>
+          <p><strong>Presentasi Ilmuwan Cilik!</strong> 🎤 Setelah kamu melakukan minimal dua percobaan, ceritakan temuanmu kepada keluarga seperti presentasi ilmuwan sungguhan! Tunjukkan buku catatanmu, jelaskan apa yang terjadi dan kenapa, tunjukkan foto atau videonya, dan ajak mereka untuk bertanya. Siapa tahu keluargamu juga ingin ikut bereksperimen bersamamu! 👨‍👩‍👦</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENUTUP -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--sci-yellow),var(--sci-orange),var(--sci-teal),var(--sci-lime));margin-top:32px;">
+      <div class="closing-content">
+        <span class="trophy-big">⚗️</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(24px,5vw,36px);margin-bottom:16px;">
+          Luar Biasa, Ilmuwan Aslan! 🎉
+        </h2>
+        <p style="font-size:clamp(15px,2.5vw,17px);max-width:500px;margin:0 auto 24px;line-height:1.8;opacity:0.9;">
+          Kamu telah menyelesaikan Hari ke-19 dan bukan hanya belajar <em>tentang</em> sains — kamu sudah belajar cara <em>melakukan</em> sains! Dari metode ilmiah hingga gunung berapi soda, pelangi di gelas, lava lamp, hingga Mentos vs cola. Kamu adalah <strong>Ilmuwan Cilik Indonesia</strong> yang sesungguhnya!
+        </p>
+
+        <div class="quote-box" style="max-width:520px;margin:0 auto 28px;">
+          <p>"Sains bukan hanya tentang apa yang kita ketahui — sains adalah tentang cara kita mengetahuinya. Dan cara terbaik untuk mengetahui sesuatu adalah dengan mencobanya sendiri. Setiap percobaan yang kamu lakukan, berhasil atau tidak, menambah satu batu bata ke bangunan pengetahuan manusia."</p>
+          <cite>— Untuk Aslan, Ilmuwan Cilik Indonesia yang Luar Biasa ⚗️</cite>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px;">
+          <span style="background:rgba(255,214,0,0.12);border:1px solid rgba(255,171,0,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🔬 Master Metode Ilmiah</span>
+          <span style="background:rgba(255,109,0,0.1);border:1px solid rgba(255,109,0,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🌋 Ahli Reaksi Asam-Basa</span>
+          <span style="background:rgba(0,188,212,0.1);border:1px solid rgba(0,188,212,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🌈 Pakar Densitas Cairan</span>
+          <span style="background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">💥 Ilmuwan Cilik Indonesia!</span>
+        </div>
+
+        <button class="btn btn-done" onclick="selesaiMembaca()">
+          ✅ Saya Sudah Selesai Membaca!
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(7)">← Kembali</button>
+      <span class="page-indicator">Halaman 8 dari 8</span>
+      <span></span>
+    </div>
+  </div>
+
+</div><!-- end book-container -->
+
+<script>
+  // ── SCI PARTICLES ──
+  const container = document.getElementById('sciParticles');
+  const colors = ['#ffd600','#ffab00','#ff6d00','#00e5ff','#aeea00','#00bcd4','#ff4081','#2979ff'];
+
+  for (let i = 0; i < 55; i++) {
+    const p = document.createElement('div');
+    p.className = 'sp';
+    const size = Math.random() * 7 + 2;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const isRound = Math.random() > 0.4;
+    p.style.cssText = `
+      width:${size}px; height:${size * (isRound ? 1 : 1.5)}px;
+      left:${Math.random()*100}%;
+      bottom:${Math.random()*14}%;
+      background:${color};
+      box-shadow:0 0 ${size*2.5}px ${color}aa;
+      border-radius:${isRound ? '50%' : '2px'};
+      animation-duration:${5 + Math.random()*9}s;
+      animation-delay:${Math.random()*10}s;
+      opacity:0;
+    `;
+    container.appendChild(p);
+  }
+
+  // ── PAGES ──
+  const TOTAL = 8;
+  let current = 1;
+
+  function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── DARK / LIGHT MODE ──
+  const modeBtn = document.getElementById('modeBtn');
+  let isLight = false;
+  modeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+    modeBtn.textContent = isLight ? '🌙' : '☀️';
+  });
+
+  // ── SELESAI MEMBACA ──
+  function selesaiMembaca() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.87);backdrop-filter:blur(8px);
+      z-index:999;display:flex;align-items:center;justify-content:center;
+      padding:20px;animation:fadeUp 0.3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="background:linear-gradient(135deg,#0c1220,#131e30);border:2px solid rgba(255,214,0,0.4);border-radius:28px;padding:40px;max-width:440px;width:100%;text-align:center;color:white;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#ffd600,#ff6d00,#00e5ff,#aeea00);box-shadow:0 0 12px rgba(255,214,0,0.6);"></div>
+        <span style="font-size:80px;display:block;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(255,214,0,0.8));">⚗️</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:12px;background:linear-gradient(135deg,#ffd600,#ff6d00,#00e5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Brilian, Ilmuwan Aslan!</h2>
+        <p style="font-size:16px;line-height:1.8;opacity:0.9;margin-bottom:24px;">Hari ke-19 selesai! 🎉<br>Kamu sudah menguasai <strong>metode ilmiah</strong> dan mempelajari 4 percobaan keren yang bisa langsung kamu coba di rumah!<br><br>Ingat: sains terbaik dimulai dari rasa ingin tahu. <strong>Jangan berhenti bertanya dan mencoba!</strong> 🔬<br>Sampai jumpa di Hari ke-20! 🚀</p>
+        <button onclick="this.closest('div').parentElement.remove()" style="background:linear-gradient(135deg,#ff6d00,#ffd600);color:white;border:none;padding:14px 32px;border-radius:50px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(255,109,0,0.45);">Mantap! Tutup ⚗️</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+  }
+
+  // ── KEYBOARD NAV ──
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(current - 1);
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>

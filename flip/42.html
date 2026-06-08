@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 12: TB (Terabyte) – Gudang Super Raksasa</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky:     #38bdf8;
+    --mint:    #34d399;
+    --sun:     #fbbf24;
+    --orange:  #fb923c;
+    --pink:    #f472b6;
+    --purple:  #a78bfa;
+    --red:     #f87171;
+    --brown:   #92400e;
+    --bg:      #fffbeb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 8%  15%, rgba(251,191,36,.18)  0%, transparent 42%),
+      radial-gradient(circle at 90% 80%, rgba(251,146,60,.14)   0%, transparent 38%),
+      radial-gradient(circle at 50% 95%, rgba(167,139,250,.12)  0%, transparent 40%),
+      radial-gradient(circle at 18% 75%, rgba(56,189,248,.10)   0%, transparent 35%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  h1,h2,h3,.display { font-family:'Fredoka One', cursive; }
+
+  /* ── Header ── */
+  .header-grad {
+    background: linear-gradient(135deg, #78350f 0%, #92400e 28%, #b45309 55%, #d97706 80%, #f59e0b 100%);
+    position: relative; overflow: hidden;
+  }
+  .header-grad::after {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Crect x='5' y='5' width='15' height='15' rx='3'/%3E%3Crect x='35' y='5' width='15' height='15' rx='3'/%3E%3Crect x='5' y='35' width='15' height='15' rx='3'/%3E%3Crect x='35' y='35' width='15' height='15' rx='3'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* ── Aslan bounce ── */
+  @keyframes bounceAslan { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-10px);} }
+  .aslan-bounce { animation: bounceAslan 2.2s ease-in-out infinite; }
+
+  /* ── Speech bubble ── */
+  .bubble {
+    position: relative; background: white;
+    border-radius: 22px; border: 3px solid #d97706;
+    box-shadow: 4px 4px 0 #d97706;
+  }
+  .bubble::before { content:''; position:absolute; bottom:-22px; left:30px; border:12px solid transparent; border-top-color:#d97706; }
+  .bubble::after  { content:''; position:absolute; bottom:-15px; left:33px; border:10px solid transparent; border-top-color:white; }
+
+  /* ── Day dots ── */
+  .day-dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  /* ── Section title underline ── */
+  .sec-title { position:relative; display:inline-block; }
+  .sec-title::after {
+    content:''; position:absolute; bottom:-6px; left:0; right:0; height:5px;
+    border-radius:10px; background: linear-gradient(90deg, #d97706, #f59e0b);
+  }
+
+  /* ── Badge ── */
+  .badge {
+    background: linear-gradient(135deg, #f59e0b, #fb923c);
+    color: white; font-family:'Fredoka One',cursive;
+    border-radius: 50px; padding:.25rem .9rem; font-size:.82rem;
+    display:inline-block; box-shadow: 2px 2px 0 rgba(0,0,0,.12);
+  }
+
+  /* ── Float ── */
+  @keyframes float2 { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-7px);} }
+  .float  { animation: float2 3s ease-in-out infinite; }
+  .float-d1 { animation-delay:.5s; }
+  .float-d2 { animation-delay:1s; }
+  .float-d3 { animation-delay:1.5s; }
+  .float-d4 { animation-delay:2s; }
+
+  /* ── Scale card hover ── */
+  .scale-card {
+    cursor:pointer; transition:all .25s cubic-bezier(.34,1.56,.64,1);
+    border:3px solid transparent;
+  }
+  .scale-card:hover { transform:scale(1.06) translateY(-4px); }
+
+  /* ── Warehouse door animation ── */
+  @keyframes doorOpen {
+    0%   { transform: scaleX(1); }
+    100% { transform: scaleX(0); transform-origin:left; }
+  }
+  .door-opening { animation: doorOpen .5s ease-in-out forwards; transform-origin:left; }
+
+  /* ── Item fly-in ── */
+  @keyframes flyIn {
+    0%   { transform: translate(var(--sx), var(--sy)) scale(0) rotate(-20deg); opacity:0; }
+    60%  { transform: translate(calc(var(--sx)*.2), calc(var(--sy)*.2)) scale(1.2) rotate(5deg); opacity:1; }
+    100% { transform: translate(0,0) scale(1) rotate(0deg); opacity:1; }
+  }
+  .fly-in { animation: flyIn var(--dur,.7s) cubic-bezier(.34,1.56,.64,1) forwards; }
+
+  /* ── Confetti ── */
+  @keyframes confettiFly {
+    0%   { transform:translate(0,0) rotate(0deg); opacity:1; }
+    100% { transform:translate(var(--tx),var(--ty)) rotate(720deg); opacity:0; }
+  }
+  .confetti-piece {
+    position:fixed; pointer-events:none; z-index:100;
+    animation:confettiFly 1.2s ease-out forwards;
+  }
+
+  /* ── Wiggle ── */
+  @keyframes wiggle { 0%,100%{transform:rotate(-4deg);} 50%{transform:rotate(4deg);} }
+  .wiggle { animation:wiggle .35s ease-in-out 3; }
+
+  /* ── Warehouse glow pulse ── */
+  @keyframes warehouseGlow {
+    0%,100% { box-shadow:0 0 20px rgba(245,158,11,.3), 0 0 60px rgba(245,158,11,.1); }
+    50%     { box-shadow:0 0 40px rgba(245,158,11,.6), 0 0 100px rgba(245,158,11,.25); }
+  }
+  .warehouse-glow { animation:warehouseGlow 3s ease-in-out infinite; }
+
+  /* ── Draw area ── */
+  .draw-area {
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(245,158,11,.2) 28px, rgba(245,158,11,.2) 30px),
+      repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(245,158,11,.12) 28px, rgba(245,158,11,.12) 30px);
+    border:3px dashed #f59e0b; border-radius:20px; min-height:180px;
+  }
+
+  /* ── Big CTA button ── */
+  .btn-magic {
+    background:linear-gradient(135deg,#f59e0b,#fb923c);
+    color:white; border:none; border-radius:50px;
+    padding:1rem 2.5rem;
+    font-family:'Fredoka One',cursive; font-size:1.25rem;
+    cursor:pointer;
+    box-shadow:0 6px 0 #b45309, 0 8px 22px rgba(245,158,11,.45);
+    transition:all .15s ease; letter-spacing:.5px;
+  }
+  .btn-magic:hover { transform:translateY(-3px); box-shadow:0 9px 0 #b45309, 0 14px 30px rgba(245,158,11,.55); }
+  .btn-magic:active { transform:translateY(3px); box-shadow:0 3px 0 #b45309; }
+
+  /* ── Warehouse fill bar ── */
+  .fill-bar-inner { transition:width .8s cubic-bezier(.22,1,.36,1); }
+
+  /* ── Ticker animation ── */
+  @keyframes countUp { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+  .count-anim { animation:countUp .4s ease-out; }
+
+  @media(max-width:640px) {
+    .scale-row { flex-direction:column !important; align-items:center !important; }
+    .scale-row .arrow-label { transform:rotate(90deg); }
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN MODAL (item info)
+═══════════════════════════════════════════════ -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+     id="infoModal"
+     style="background:rgba(0,0,0,.5);backdrop-filter:blur(5px);display:none!important;opacity:0;transition:opacity .3s ease;"
+     onclick="closeInfoModal(event)">
+  <div id="infoBox"
+       class="bg-white rounded-3xl max-w-md w-full p-7 shadow-2xl"
+       style="border:4px solid #f59e0b;transform:scale(.8) translateY(30px);transition:all .35s cubic-bezier(.34,1.56,.64,1);">
+    <div class="text-5xl text-center mb-2" id="iEmoji">🎬</div>
+    <h3 class="text-2xl font-black text-center mb-1 text-amber-700" id="iTitle"
+        style="font-family:'Fredoka One',cursive;"></h3>
+    <div class="badge mb-3" id="iSize"></div>
+    <p class="text-gray-600 text-base leading-relaxed mb-4" id="iDesc"></p>
+    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 mb-4">
+      <p class="text-sm font-bold text-amber-700">🏭 Analogi Gudang:</p>
+      <p class="text-sm text-amber-800 mt-1" id="iAnalogy"></p>
+    </div>
+    <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-3 mb-4">
+      <p class="text-sm font-bold text-purple-700">🤯 Fakta Gila:</p>
+      <p class="text-sm text-purple-800 mt-1" id="iFact"></p>
+    </div>
+    <button onclick="closeInfoModal()"
+      class="w-full py-3 rounded-2xl font-bold text-white text-lg"
+      style="background:linear-gradient(135deg,#f59e0b,#fb923c);font-family:'Fredoka One',cursive;">
+      Keren Banget! 🏆
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════ -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <!-- Deco floats -->
+  <div style="position:absolute;top:10px;left:4%;font-size:2.4rem;opacity:.2;" class="float">🏭</div>
+  <div style="position:absolute;top:14px;right:5%;font-size:2rem;opacity:.2;"  class="float float-d1">📦</div>
+  <div style="position:absolute;bottom:8px;left:28%;font-size:1.6rem;opacity:.15;" class="float float-d2">💿</div>
+  <div style="position:absolute;bottom:10px;right:22%;font-size:1.5rem;opacity:.18;" class="float float-d3">✨</div>
+
+  <div class="max-w-3xl mx-auto relative z-10 text-center">
+    <!-- Series badge -->
+    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-3 border border-white/30">
+      <span class="text-lg">🖥️</span>
+      <span style="font-family:'Fredoka One',cursive;font-size:.88rem;letter-spacing:.5px;">
+        Petualangan Aslan di Dalam Komputer Ajaib
+      </span>
+      <span class="text-lg">⚡</span>
+    </div>
+
+    <!-- Title -->
+    <h1 class="text-3xl sm:text-4xl md:text-5xl mb-2 drop-shadow-lg" style="line-height:1.2;">
+      Hari 12: TB (Terabyte) 🏭<br>
+      <span style="color:#fde68a;">Gudang Super Raksasa!</span>
+    </h1>
+    <p class="text-amber-100 text-base sm:text-lg font-semibold">
+      1 TB = 1.000 GB = 1.000.000 MB 😱
+    </p>
+
+    <!-- Progress dots (12 active) -->
+    <div class="flex items-center justify-center gap-1.5 mt-4 flex-wrap">
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white"></div>
+      <div class="day-dot bg-white/35"></div>
+      <div class="day-dot bg-white/35"></div>
+      <span class="text-white/70 text-xs ml-2 font-semibold">Hari 12 dari 30</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════════ -->
+<main class="max-w-3xl mx-auto px-4 py-8 relative z-10">
+
+  <!-- ────────────────────────────────
+       INTRO + ASLAN
+  ──────────────────────────────── -->
+  <section class="mb-10">
+    <div class="flex flex-col sm:flex-row items-end gap-6">
+
+      <!-- Aslan amazed, arms up wide -->
+      <div class="flex-shrink-0 flex justify-center" style="min-width:140px;">
+        <div class="aslan-bounce">
+          <svg width="140" height="175" viewBox="0 0 140 175" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Shadow -->
+            <ellipse cx="70" cy="170" rx="34" ry="7" fill="rgba(0,0,0,0.10)"/>
+            <!-- Body -->
+            <rect x="30" y="95" width="56" height="52" rx="14" fill="#fb923c"/>
+            <!-- Shirt stripe -->
+            <rect x="30" y="108" width="56" height="7" rx="3" fill="#fbbf24" opacity=".7"/>
+            <!-- Left arm raised wide (amazed!) -->
+            <rect x="6"  y="72" width="20" height="36" rx="10" fill="#fb923c" transform="rotate(-35 6 72)"/>
+            <!-- Right arm raised wide (amazed!) -->
+            <rect x="96" y="72" width="20" height="36" rx="10" fill="#fb923c" transform="rotate(35 96 72)"/>
+            <!-- Legs -->
+            <rect x="35" y="138" width="18" height="24" rx="9" fill="#1e40af"/>
+            <rect x="65" y="138" width="18" height="24" rx="9" fill="#1e40af"/>
+            <!-- Shoes -->
+            <ellipse cx="44"  cy="160" rx="13" ry="6" fill="#1e3a8a"/>
+            <ellipse cx="74"  cy="160" rx="13" ry="6" fill="#1e3a8a"/>
+            <!-- Neck -->
+            <rect x="52" y="85" width="20" height="14" rx="7" fill="#f59e0b"/>
+            <!-- Head -->
+            <ellipse cx="62" cy="66" rx="32" ry="30" fill="#f59e0b"/>
+            <!-- Hair -->
+            <ellipse cx="62" cy="42" rx="30" ry="17" fill="#2d1b00"/>
+            <ellipse cx="36" cy="53" rx="9" ry="13" fill="#2d1b00"/>
+            <ellipse cx="88" cy="53" rx="9" ry="13" fill="#2d1b00"/>
+            <!-- Eyes wide (amazed O_O) -->
+            <ellipse cx="50" cy="66" rx="8"  ry="9"  fill="white"/>
+            <ellipse cx="74" cy="66" rx="8"  ry="9"  fill="white"/>
+            <ellipse cx="51" cy="67" rx="5"  ry="6"  fill="#2d1b00"/>
+            <ellipse cx="75" cy="67" rx="5"  ry="6"  fill="#2d1b00"/>
+            <circle  cx="53" cy="65" r="2"   fill="white"/>
+            <circle  cx="77" cy="65" r="2"   fill="white"/>
+            <!-- Open mouth amazed -->
+            <ellipse cx="62" cy="80" rx="8" ry="6" fill="#2d1b00"/>
+            <ellipse cx="62" cy="79" rx="7" ry="4" fill="#c2410c"/>
+            <!-- Cheeks -->
+            <ellipse cx="41" cy="74" rx="7" ry="4.5" fill="#ffb347" opacity=".55"/>
+            <ellipse cx="83" cy="74" rx="7" ry="4.5" fill="#ffb347" opacity=".55"/>
+            <!-- Stars/sweat amazed -->
+            <text x="100" y="52" font-size="16">😲</text>
+            <text x="4"   y="60" font-size="13">⭐</text>
+            <text x="100" y="74" font-size="12">💫</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Speech bubble -->
+      <div class="flex-1">
+        <div class="bubble p-5">
+          <p class="text-amber-600 font-bold text-sm mb-1">Aslan berkata:</p>
+          <p class="text-gray-700 text-base sm:text-lg leading-relaxed font-semibold">
+            "WOW! Hari ini kita ketemu yang <span class="text-amber-600 font-black">paling RAKSASA</span>! 🏭
+            <br><br>
+            TB atau <span class="text-orange-600 font-black">Terabyte</span> itu seperti <span class="text-amber-700 font-black">Gudang Super Raksasa</span>!
+            Jauh lebih besar dari GB. Bisa menyimpan ribuan film, jutaan foto, dan game-game super besar!
+          </p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="badge">🏭 1 TB = 1.000 GB</span>
+            <span class="badge" style="background:linear-gradient(135deg,#a78bfa,#6366f1);">🤯 = 1 Juta MB!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────
+       ILUSTRASI GUDANG RAKSASA SVG
+  ──────────────────────────────── -->
+  <section class="mb-10">
+    <h2 class="text-2xl sm:text-3xl font-bold mb-6 sec-title">🏭 Gudang Super Raksasa TB!</h2>
+
+    <div class="mt-6 rounded-3xl overflow-hidden shadow-xl warehouse-glow" style="border:4px solid #f59e0b;">
+      <svg viewBox="0 0 600 320" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
+        <!-- Sky BG -->
+        <rect width="600" height="320" fill="url(#skyGrad)"/>
+        <defs>
+          <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="#dbeafe"/>
+            <stop offset="100%" stop-color="#bfdbfe"/>
+          </linearGradient>
+          <linearGradient id="wallGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="#d97706"/>
+            <stop offset="100%" stop-color="#92400e"/>
+          </linearGradient>
+          <linearGradient id="roofGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="#1e3a8a"/>
+            <stop offset="100%" stop-color="#1d4ed8"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Ground -->
+        <rect x="0" y="260" width="600" height="60" fill="#86efac"/>
+        <rect x="0" y="258" width="600" height="6"  fill="#4ade80"/>
+
+        <!-- Shadow under warehouse -->
+        <ellipse cx="300" cy="262" rx="230" ry="12" fill="rgba(0,0,0,0.12)"/>
+
+        <!-- ── Warehouse main body ── -->
+        <!-- Back wall -->
+        <rect x="60" y="120" width="480" height="145" fill="url(#wallGrad)" rx="4"/>
+        <!-- Roof (trapezoidal) -->
+        <polygon points="40,122  560,122  530,72  70,72" fill="url(#roofGrad)"/>
+        <!-- Roof ridge -->
+        <rect x="70" y="68" width="460" height="8" rx="4" fill="#1e40af"/>
+        <!-- Roof highlight -->
+        <rect x="70" y="74" width="460" height="3" rx="2" fill="rgba(255,255,255,0.15)"/>
+
+        <!-- Side shading -->
+        <rect x="60" y="120" width="18" height="145" fill="rgba(0,0,0,0.12)" rx="2"/>
+        <rect x="522" y="120" width="18" height="145" fill="rgba(0,0,0,0.10)" rx="2"/>
+
+        <!-- ── Windows row ── -->
+        <!-- Window 1 -->
+        <rect x="90"  y="140" width="60" height="44" rx="6" fill="#bae6fd"/>
+        <rect x="90"  y="140" width="60" height="44" rx="6" stroke="#0369a1" stroke-width="3" fill="none"/>
+        <line x1="120" y1="140" x2="120" y2="184" stroke="#0369a1" stroke-width="2"/>
+        <line x1="90"  y1="162" x2="150" y2="162" stroke="#0369a1" stroke-width="2"/>
+        <!-- Window 2 -->
+        <rect x="180" y="140" width="60" height="44" rx="6" fill="#bae6fd"/>
+        <rect x="180" y="140" width="60" height="44" rx="6" stroke="#0369a1" stroke-width="3" fill="none"/>
+        <line x1="210" y1="140" x2="210" y2="184" stroke="#0369a1" stroke-width="2"/>
+        <line x1="180" y1="162" x2="240" y2="162" stroke="#0369a1" stroke-width="2"/>
+        <!-- Window 3 -->
+        <rect x="360" y="140" width="60" height="44" rx="6" fill="#bae6fd"/>
+        <rect x="360" y="140" width="60" height="44" rx="6" stroke="#0369a1" stroke-width="3" fill="none"/>
+        <line x1="390" y1="140" x2="390" y2="184" stroke="#0369a1" stroke-width="2"/>
+        <line x1="360" y1="162" x2="420" y2="162" stroke="#0369a1" stroke-width="2"/>
+        <!-- Window 4 -->
+        <rect x="450" y="140" width="60" height="44" rx="6" fill="#bae6fd"/>
+        <rect x="450" y="140" width="60" height="44" rx="6" stroke="#0369a1" stroke-width="3" fill="none"/>
+        <line x1="480" y1="140" x2="480" y2="184" stroke="#0369a1" stroke-width="2"/>
+        <line x1="450" y1="162" x2="510" y2="162" stroke="#0369a1" stroke-width="2"/>
+
+        <!-- ── Big warehouse door ── -->
+        <!-- Door frame -->
+        <rect x="240" y="168" width="120" height="97" rx="6" fill="#1c1917"/>
+        <!-- Left door panel -->
+        <rect x="243" y="171" width="56" height="91" rx="4" fill="#44403c" id="doorLeft"/>
+        <!-- Right door panel -->
+        <rect x="301" y="171" width="56" height="91" rx="4" fill="#44403c" id="doorRight"/>
+        <!-- Door panels detail -->
+        <rect x="248" y="178" width="45" height="30" rx="3" fill="#57534e"/>
+        <rect x="248" y="215" width="45" height="30" rx="3" fill="#57534e"/>
+        <rect x="306" y="178" width="45" height="30" rx="3" fill="#57534e"/>
+        <rect x="306" y="215" width="45" height="30" rx="3" fill="#57534e"/>
+        <!-- Door handles -->
+        <rect x="291" y="205" width="8" height="18" rx="4" fill="#fbbf24"/>
+        <rect x="303" y="205" width="8" height="18" rx="4" fill="#fbbf24"/>
+        <!-- Door label -->
+        <text x="300" y="164" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="11" fill="#fde68a">📦 GUDANG TB</text>
+
+        <!-- ── Sign on wall ── -->
+        <rect x="250" y="86" width="100" height="30" rx="8" fill="#fbbf24"/>
+        <text x="300" y="106" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="15" fill="#78350f">1 TB STORAGE</text>
+
+        <!-- ── Chimney/vent ── -->
+        <rect x="130" y="54" width="28" height="24" rx="4" fill="#374151"/>
+        <rect x="126" y="50" width="36" height="8"  rx="4" fill="#1f2937"/>
+        <!-- Smoke puffs -->
+        <circle cx="144" cy="40" r="8"  fill="white" opacity=".55"/>
+        <circle cx="152" cy="30" r="6"  fill="white" opacity=".40"/>
+        <circle cx="140" cy="22" r="5"  fill="white" opacity=".30"/>
+
+        <!-- ── Forklift outside ── -->
+        <!-- Forklift body -->
+        <rect x="510" y="218" width="60" height="38" rx="6" fill="#f97316"/>
+        <!-- Forks -->
+        <rect x="568" y="226" width="28" height="5" rx="2" fill="#374151"/>
+        <rect x="568" y="238" width="28" height="5" rx="2" fill="#374151"/>
+        <!-- Mast -->
+        <rect x="562" y="200" width="8"  height="56" rx="2" fill="#374151"/>
+        <!-- Wheels -->
+        <circle cx="522" cy="258" r="9" fill="#1f2937"/>
+        <circle cx="555" cy="258" r="9" fill="#1f2937"/>
+        <circle cx="522" cy="258" r="4" fill="#6b7280"/>
+        <circle cx="555" cy="258" r="4" fill="#6b7280"/>
+        <!-- Driver -->
+        <circle cx="530" cy="214" r="7" fill="#f59e0b"/>
+        <rect x="525" y="220" width="14" height="10" rx="3" fill="#f97316"/>
+
+        <!-- ── Boxes outside ── -->
+        <rect x="30"  y="228" width="38" height="32" rx="4" fill="#fbbf24"/>
+        <rect x="36"  y="234" width="26" height="20" rx="2" fill="#f59e0b"/>
+        <text x="49" y="248" text-anchor="middle" font-size="12">📦</text>
+        <rect x="74"  y="236" width="28" height="24" rx="4" fill="#fb923c"/>
+        <text x="88" y="253" text-anchor="middle" font-size="10">🎬</text>
+
+        <!-- ── Label "1 TB = 1.000.000 MB" ── -->
+        <rect x="0" y="270" width="600" height="50" fill="rgba(120,53,15,.75)"/>
+        <text x="300" y="292" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="15" fill="#fde68a">
+          🏭  1 TB = 1.000 GB = 1.000.000 MB = 1.000.000.000 KB  🏭
+        </text>
+        <text x="300" y="312" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="12" fill="#fcd34d">
+          Bisa menyimpan ±250.000 lagu 🎵 · ±200.000 foto 📸 · ±500 film 🎬
+        </text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────
+       TANGGA PERBANDINGAN KB→MB→GB→TB
+  ──────────────────────────────── -->
+  <section class="mb-10">
+    <h2 class="text-2xl sm:text-3xl font-bold mb-6 sec-title">📏 Dari Tas Kecil sampai Gudang Raksasa</h2>
+
+    <div class="mt-6">
+      <!-- Staircase visual -->
+      <div class="flex items-end justify-center gap-3 sm:gap-5 flex-wrap">
+
+        <!-- KB -->
+        <div class="flex flex-col items-center scale-card" onclick="showInfoModal('kb')">
+          <div class="text-4xl mb-2 float">👜</div>
+          <div class="rounded-2xl p-3 text-center shadow-md"
+               style="background:linear-gradient(135deg,#fef9c3,#fef3c7);border:3px solid #fbbf24;width:100px;">
+            <p class="font-black text-yellow-700 text-base">KB</p>
+            <p class="text-yellow-600 text-xs font-bold">Tas Kecil</p>
+            <p class="text-yellow-500 text-xs mt-1">1.000 B</p>
+          </div>
+          <div class="h-3 w-full rounded-b-xl" style="background:#fbbf24;"></div>
+          <p class="text-yellow-600 font-bold text-xs mt-1">🔍 Tap!</p>
+        </div>
+
+        <!-- Arrow -->
+        <div class="text-3xl font-black text-gray-400 mb-8 arrow-label">→</div>
+
+        <!-- MB -->
+        <div class="flex flex-col items-center scale-card" onclick="showInfoModal('mb')">
+          <div class="text-4xl mb-2 float float-d1">🎒</div>
+          <div class="rounded-2xl p-3 text-center shadow-md"
+               style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:3px solid #34d399;width:110px;">
+            <p class="font-black text-emerald-700 text-base">MB</p>
+            <p class="text-emerald-600 text-xs font-bold">Tas Sekolah</p>
+            <p class="text-emerald-500 text-xs mt-1">1.000 KB</p>
+          </div>
+          <div class="h-6 w-full rounded-b-xl" style="background:#34d399;"></div>
+          <p class="text-emerald-600 font-bold text-xs mt-1">🔍 Tap!</p>
+        </div>
+
+        <!-- Arrow -->
+        <div class="text-3xl font-black text-gray-400 mb-8 arrow-label">→</div>
+
+        <!-- GB -->
+        <div class="flex flex-col items-center scale-card" onclick="showInfoModal('gb')">
+          <div class="text-4xl mb-2 float float-d2">🗄️</div>
+          <div class="rounded-2xl p-3 text-center shadow-md"
+               style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:3px solid #a78bfa;width:120px;">
+            <p class="font-black text-purple-700 text-base">GB</p>
+            <p class="text-purple-600 text-xs font-bold">Lemari Mainan</p>
+            <p class="text-purple-500 text-xs mt-1">1.000 MB</p>
+          </div>
+          <div class="h-10 w-full rounded-b-xl" style="background:#a78bfa;"></div>
+          <p class="text-purple-600 font-bold text-xs mt-1">🔍 Tap!</p>
+        </div>
+
+        <!-- Arrow -->
+        <div class="text-3xl font-black text-gray-400 mb-8 arrow-label">→</div>
+
+        <!-- TB (tallest) -->
+        <div class="flex flex-col items-center scale-card" onclick="showInfoModal('tb')">
+          <div class="text-4xl mb-2 float float-d3">🏭</div>
+          <div class="rounded-2xl p-3 text-center shadow-md"
+               style="background:linear-gradient(135deg,#fef3c7,#fde68a);border:3px solid #f59e0b;width:130px;">
+            <p class="font-black text-amber-700 text-xl">TB</p>
+            <p class="text-amber-600 text-xs font-bold">Gudang Raksasa!</p>
+            <p class="text-amber-500 text-xs mt-1">1.000 GB</p>
+            <span class="badge text-xs mt-1" style="font-size:.65rem;">Kamu di sini!</span>
+          </div>
+          <div class="h-16 w-full rounded-b-xl" style="background:#f59e0b;"></div>
+          <p class="text-amber-600 font-bold text-xs mt-1">🔍 Tap!</p>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="mt-5 bg-amber-50 rounded-2xl p-4 border-2 border-amber-200 text-center">
+        <p class="text-amber-700 font-bold text-sm">💡 Semakin tinggi = semakin besar kapasitasnya!</p>
+        <p class="text-amber-600 text-xs mt-1">👆 Ketuk tiap kotak untuk tahu lebih banyak!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────
+       FAKTA NYATA TB
+  ──────────────────────────────── -->
+  <section class="mb-10">
+    <h2 class="text-2xl sm:text-3xl font-bold mb-5 sec-title">💻 TB di Kehidupan Nyata</h2>
+
+    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+      <div class="bg-white rounded-3xl p-5 shadow-md float" style="border:3px solid #fbbf24;">
+        <div class="text-4xl mb-2">💻</div>
+        <p class="font-black text-gray-700 mb-1">Harddisk Laptop Biasa</p>
+        <p class="text-amber-600 font-bold text-lg">256 GB – 512 GB</p>
+        <p class="text-gray-500 text-sm mt-1">Belum sampai 1 TB, tapi sudah cukup besar untuk sehari-hari!</p>
+      </div>
+
+      <div class="bg-white rounded-3xl p-5 shadow-md float float-d1" style="border:3px solid #34d399;">
+        <div class="text-4xl mb-2">🖥️</div>
+        <p class="font-black text-gray-700 mb-1">Komputer / PC Gaming</p>
+        <p class="text-emerald-600 font-bold text-lg">1 TB – 4 TB</p>
+        <p class="text-gray-500 text-sm mt-1">Komputer gaming butuh banyak ruang untuk game-game besar!</p>
+      </div>
+
+      <div class="bg-white rounded-3xl p-5 shadow-md float float-d2" style="border:3px solid #a78bfa;">
+        <div class="text-4xl mb-2">☁️</div>
+        <p class="font-black text-gray-700 mb-1">Google Drive / Cloud</p>
+        <p class="text-purple-600 font-bold text-lg">15 GB (gratis)</p>
+        <p class="text-gray-500 text-sm mt-1">Yang gratis "hanya" 15 GB. Kalau mau lebih, harus bayar!</p>
+      </div>
+
+      <div class="bg-white rounded-3xl p-5 shadow-md float float-d3" style="border:3px solid #f87171;">
+        <div class="text-4xl mb-2">🎮</div>
+        <p class="font-black text-gray-700 mb-1">Game Modern (PS5/PC)</p>
+        <p class="text-red-500 font-bold text-lg">50 GB – 150 GB</p>
+        <p class="text-gray-500 text-sm mt-1">Satu game besar saja bisa 100 GB! Makanya butuh TB yang besar.</p>
+      </div>
+    </div>
+
+    <!-- Fun math box -->
+    <div class="mt-5 bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-5 border-3"
+         style="border:3px solid #fb923c;">
+      <h3 class="font-black text-orange-700 mb-3" style="font-family:'Fredoka One',cursive;">
+        🧮 Hitung-hitungan Seru 1 TB!
+      </h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div class="bg-white rounded-2xl p-3 text-center shadow-sm">
+          <div class="text-3xl mb-1">📸</div>
+          <p class="font-black text-gray-700 text-sm">Foto HP</p>
+          <p class="font-black text-amber-600 text-lg">~200.000</p>
+          <p class="text-gray-400 text-xs">foto!</p>
+        </div>
+        <div class="bg-white rounded-2xl p-3 text-center shadow-sm">
+          <div class="text-3xl mb-1">🎵</div>
+          <p class="font-black text-gray-700 text-sm">Lagu MP3</p>
+          <p class="font-black text-purple-600 text-lg">~250.000</p>
+          <p class="text-gray-400 text-xs">lagu!</p>
+        </div>
+        <div class="bg-white rounded-2xl p-3 text-center shadow-sm">
+          <div class="text-3xl mb-1">🎬</div>
+          <p class="font-black text-gray-700 text-sm">Film HD</p>
+          <p class="font-black text-red-500 text-lg">~500</p>
+          <p class="text-gray-400 text-xs">film!</p>
+        </div>
+        <div class="bg-white rounded-2xl p-3 text-center shadow-sm">
+          <div class="text-3xl mb-1">📖</div>
+          <p class="font-black text-gray-700 text-sm">Buku Teks</p>
+          <p class="font-black text-emerald-600 text-lg">~1 Juta</p>
+          <p class="text-gray-400 text-xs">buku!</p>
+        </div>
+        <div class="bg-white rounded-2xl p-3 text-center shadow-sm">
+          <div class="text-3xl mb-1">🎮</div>
+          <p class="font-black text-gray-700 text-sm">Game Besar</p>
+          <p class="font-black text-blue-600 text-lg">~10-20</p>
+          <p class="text-gray-400 text-xs">game!</p>
+        </div>
+        <div class="bg-white rounded-2xl p-3 text-center shadow-sm">
+          <div class="text-3xl mb-1">📺</div>
+          <p class="font-black text-gray-700 text-sm">Video 4K</p>
+          <p class="font-black text-orange-600 text-lg">~17 jam</p>
+          <p class="text-gray-400 text-xs">tayangan!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────
+       INTERAKTIF: ISI GUDANG!
+  ──────────────────────────────── -->
+  <section class="mb-10">
+    <h2 class="text-2xl sm:text-3xl font-bold mb-2 sec-title">🏭 Isi Gudang Raksasamu!</h2>
+    <p class="text-gray-500 text-sm mt-4 mb-5">
+      Klik tombol untuk memasukkan file ke gudang TB Aslan! Lihat gudang semakin penuh! 😄
+    </p>
+
+    <div class="bg-white rounded-3xl p-6 shadow-xl" style="border:3px solid #fde68a;">
+
+      <!-- Warehouse illustration (fillable) -->
+      <div class="relative mb-5 rounded-2xl overflow-hidden" style="height:180px;background:linear-gradient(180deg,#dbeafe 0%,#bfdbfe 100%);">
+        <!-- Warehouse outline -->
+        <svg class="absolute inset-0 w-full h-full" viewBox="0 0 600 180" preserveAspectRatio="xMidYMid slice">
+          <!-- Ground -->
+          <rect x="0" y="148" width="600" height="32" fill="#86efac"/>
+          <!-- Warehouse silhouette -->
+          <rect x="60"  y="40" width="480" height="110" fill="#d97706" opacity=".25" rx="4"/>
+          <polygon points="40,42 560,42 540,14 60,14" fill="#1e40af" opacity=".2"/>
+          <!-- Door frame -->
+          <rect x="252" y="88" width="96" height="62" rx="4" fill="#1c1917" opacity=".3"/>
+          <!-- Fill level (green) -->
+          <rect x="62" y="42" width="476" height="108" rx="4" fill="url(#wFillGrad)" id="warehouseFill"
+                style="transform-origin:bottom;transform:scaleY(0);transition:transform .8s ease;"/>
+          <defs>
+            <linearGradient id="wFillGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"  stop-color="#34d399" stop-opacity=".5"/>
+              <stop offset="100%" stop-color="#059669" stop-opacity=".7"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <!-- Floating items container -->
+        <div class="absolute inset-0 flex items-end justify-center pb-4 flex-wrap gap-1 px-4 pointer-events-none overflow-hidden"
+             id="warehouseItems" style="align-content:flex-end;">
+          <!-- Items appear here -->
+        </div>
+
+        <!-- TB meter overlay top-right -->
+        <div class="absolute top-3 right-3 bg-white/90 rounded-xl px-3 py-2 shadow-md text-center">
+          <p class="text-xs font-bold text-gray-500">Terpakai</p>
+          <p class="font-black text-amber-600 text-lg count-anim" id="tbUsed"
+             style="font-family:'Fredoka One',cursive;">0 GB</p>
+          <p class="text-xs text-gray-400">dari 1000 GB (1 TB)</p>
+        </div>
+
+        <!-- Empty label -->
+        <div class="absolute inset-0 flex items-center justify-center" id="emptyLabel">
+          <p class="text-gray-400 font-bold text-sm">Gudang masih kosong... 👆 Isi yuk!</p>
+        </div>
+      </div>
+
+      <!-- Fill bar -->
+      <div class="mb-5">
+        <div class="flex justify-between text-xs font-bold text-gray-600 mb-1">
+          <span>Kosong</span>
+          <span id="fillPctLabel">0%</span>
+          <span>Penuh!</span>
+        </div>
+        <div class="bg-gray-100 rounded-full h-5 overflow-hidden">
+          <div id="mainFillBar" class="h-5 rounded-full fill-bar-inner"
+               style="width:0%;background:linear-gradient(90deg,#059669,#34d399,#fbbf24);"></div>
+        </div>
+      </div>
+
+      <!-- Add buttons -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+        <button onclick="addToWarehouse('film')"
+          class="rounded-2xl p-3 font-bold text-sm text-white shadow-md transition-all hover:scale-105 active:scale-95 border-0"
+          style="background:linear-gradient(135deg,#ef4444,#f97316);">
+          🎬 +1 Film<br><span class="text-xs opacity-80 font-semibold">(+2 GB)</span>
+        </button>
+        <button onclick="addToWarehouse('game')"
+          class="rounded-2xl p-3 font-bold text-sm text-white shadow-md transition-all hover:scale-105 active:scale-95 border-0"
+          style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">
+          🎮 +1 Game<br><span class="text-xs opacity-80 font-semibold">(+50 GB)</span>
+        </button>
+        <button onclick="addToWarehouse('foto')"
+          class="rounded-2xl p-3 font-bold text-sm text-white shadow-md transition-all hover:scale-105 active:scale-95 border-0"
+          style="background:linear-gradient(135deg,#f59e0b,#fb923c);">
+          📸 +100 Foto<br><span class="text-xs opacity-80 font-semibold">(+0.5 GB)</span>
+        </button>
+        <button onclick="addToWarehouse('lagu')"
+          class="rounded-2xl p-3 font-bold text-sm text-white shadow-md transition-all hover:scale-105 active:scale-95 border-0"
+          style="background:linear-gradient(135deg,#ec4899,#a78bfa);">
+          🎵 +100 Lagu<br><span class="text-xs opacity-80 font-semibold">(+0.5 GB)</span>
+        </button>
+      </div>
+
+      <!-- Reset -->
+      <div class="text-center">
+        <button onclick="resetWarehouse()"
+          class="text-gray-400 border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-bold hover:bg-gray-50 transition-all">
+          🔄 Kosongkan Gudang
+        </button>
+      </div>
+
+      <!-- Inventory list -->
+      <div class="mt-4 bg-amber-50 rounded-2xl p-4 border-2 border-amber-100">
+        <p class="text-amber-700 font-bold text-sm mb-2">📋 Isi Gudangmu:</p>
+        <div id="inventoryList" class="text-sm text-amber-800 font-semibold space-y-1">
+          <p class="text-gray-400 text-xs">Belum ada isi...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────
+       TOMBOL ANIMASI BESAR
+  ──────────────────────────────── -->
+  <section class="mb-10 text-center">
+    <div class="rounded-3xl p-8 relative overflow-hidden"
+         style="background:linear-gradient(135deg,#fef3c7,#fde68a,#fcd34d);">
+      <div class="absolute inset-0 opacity-10 text-8xl flex items-center justify-center pointer-events-none">🏭</div>
+      <div class="text-5xl mb-3 aslan-bounce inline-block">🎉</div>
+      <h3 class="text-xl font-bold text-amber-800 mb-2" style="font-family:'Fredoka One',cursive;">
+        Gudang TB Siap Dipakai!
+      </h3>
+      <p class="text-amber-700 text-sm mb-5">
+        Aslan akan pakai gudang raksasa ini untuk menyimpan semua petualangannya! 🚀
+      </p>
+      <button class="btn-magic" id="megaBtn" onclick="triggerMegaAnim()">
+        🏭 Buka Gudang Super Raksasa!
+      </button>
+      <div id="megaMsg" class="mt-4 text-2xl font-bold text-amber-700 hidden"
+           style="font-family:'Fredoka One',cursive;">
+        🌟 GUDANG TERBUKA! Selamat datang di dunia TB! 🏆✨
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────
+       AKTIVITAS / TUGAS
+  ──────────────────────────────── -->
+  <section class="mb-10">
+    <h2 class="text-2xl sm:text-3xl font-bold mb-5 sec-title">✏️ Tugas Hari Ini</h2>
+
+    <div class="mt-6 bg-gradient-to-br from-sky-50 to-amber-50 rounded-3xl p-6"
+         style="border:3px solid #7dd3fc;">
+      <!-- Aslan mini saying task -->
+      <div class="flex items-start gap-4 mb-5">
+        <div class="flex-shrink-0">
+          <svg width="70" height="88" viewBox="0 0 120 150" fill="none">
+            <ellipse cx="60" cy="145" rx="28" ry="6" fill="rgba(0,0,0,0.1)"/>
+            <rect x="32" y="88" width="56" height="50" rx="14" fill="#fb923c"/>
+            <rect x="32" y="102" width="56" height="6" rx="2" fill="#fbbf24" opacity="0.7"/>
+            <rect x="14" y="90" width="20" height="36" rx="10" fill="#fb923c" transform="rotate(8 14 90)"/>
+            <rect x="84" y="82" width="20" height="36" rx="10" fill="#fb923c" transform="rotate(-25 84 82)"/>
+            <rect x="36" y="130" width="18" height="22" rx="9" fill="#1e40af"/>
+            <rect x="66" y="130" width="18" height="22" rx="9" fill="#1e40af"/>
+            <ellipse cx="45" cy="150" rx="12" ry="6" fill="#1e3a8a"/>
+            <ellipse cx="75" cy="150" rx="12" ry="6" fill="#1e3a8a"/>
+            <rect x="50" y="78" width="20" height="14" rx="7" fill="#f59e0b"/>
+            <ellipse cx="60" cy="60" rx="32" ry="30" fill="#f59e0b"/>
+            <ellipse cx="60" cy="35" rx="30" ry="16" fill="#2d1b00"/>
+            <ellipse cx="35" cy="47" rx="9" ry="12" fill="#2d1b00"/>
+            <ellipse cx="85" cy="47" rx="9" ry="12" fill="#2d1b00"/>
+            <ellipse cx="48" cy="60" rx="7" ry="8" fill="white"/>
+            <ellipse cx="72" cy="60" rx="7" ry="8" fill="white"/>
+            <ellipse cx="49" cy="61" rx="4" ry="5" fill="#2d1b00"/>
+            <ellipse cx="73" cy="61" rx="4" ry="5" fill="#2d1b00"/>
+            <circle cx="51" cy="59" r="1.5" fill="white"/>
+            <circle cx="75" cy="59" r="1.5" fill="white"/>
+            <path d="M46 73 Q60 84 74 73" stroke="#2d1b00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <ellipse cx="40" cy="68" rx="6" ry="4" fill="#ffb347" opacity="0.5"/>
+            <ellipse cx="80" cy="68" rx="6" ry="4" fill="#ffb347" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border-2 border-amber-200 flex-1">
+          <p class="text-amber-600 font-bold text-sm mb-1">Aslan berkata:</p>
+          <p class="text-gray-700 text-sm leading-relaxed">
+            "Yuk kita <strong>gambar gudang super besar TB</strong> milikmu sendiri! 🏭 Isi dengan film, game, foto, dan semua yang kamu suka — lalu hitung total TB-nya!"
+          </p>
+        </div>
+      </div>
+
+      <!-- Steps -->
+      <div class="bg-white rounded-2xl p-4 border-2 border-amber-200 mb-4">
+        <p class="font-bold text-amber-700 mb-3">📋 Langkah-langkah:</p>
+        <ol class="list-none space-y-2">
+          <li class="flex items-start gap-2">
+            <span class="bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">1</span>
+            <p class="text-gray-700 text-sm">Gambar gudang besar di kertas — beri nama "GUDANG TB milik [namamu]" 🏭</p>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">2</span>
+            <p class="text-gray-700 text-sm">Di dalam gudang, gambar atau tuliskan isi yang kamu mau: game, film, foto, lagu 📦</p>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">3</span>
+            <p class="text-gray-700 text-sm">Hitung total GB-nya! 1.000 GB = 1 TB 🧮</p>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">4</span>
+            <p class="text-gray-700 text-sm">Berapa TB yang kamu butuhkan? Tulis jawabanmu di pojok gudang! ✏️</p>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Draw area (warehouse template) -->
+      <p class="font-bold text-gray-500 text-sm mb-2 text-center">🖊️ Template Gudang — Gambar di Sini atau Cetak!</p>
+      <div class="draw-area relative" style="min-height:220px;">
+        <!-- SVG warehouse outline for drawing -->
+        <svg class="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+          <rect x="20" y="70" width="360" height="120" rx="6" stroke="#f59e0b" stroke-width="3" fill="none" stroke-dasharray="8 4"/>
+          <polygon points="10,72 390,72 370,28 30,28" stroke="#f59e0b" stroke-width="3" fill="none" stroke-dasharray="8 4"/>
+          <rect x="165" y="120" width="70" height="70" rx="4" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="6 3"/>
+          <text x="200" y="50" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="14" fill="#f59e0b">GUDANG TB-ku</text>
+        </svg>
+        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 text-center">
+          <p class="text-amber-400 font-bold text-sm">Gambar isi gudangmu di sini! 🎨</p>
+          <p class="text-amber-300 text-xs">(cetak halaman ini atau gunakan kertas)</p>
+        </div>
+      </div>
+
+      <!-- Quick calc helper -->
+      <div class="mt-4 bg-white border-2 border-amber-200 rounded-2xl p-4">
+        <p class="text-amber-700 font-bold text-sm mb-2">🧮 Kalkulator cepat:</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-center">
+          <div class="bg-amber-50 rounded-xl p-2">
+            <div class="text-lg">🎬</div>
+            <p class="font-bold text-gray-600">1 Film HD</p>
+            <p class="font-black text-amber-600">≈ 2 GB</p>
+          </div>
+          <div class="bg-purple-50 rounded-xl p-2">
+            <div class="text-lg">🎮</div>
+            <p class="font-bold text-gray-600">1 Game Besar</p>
+            <p class="font-black text-purple-600">≈ 50 GB</p>
+          </div>
+          <div class="bg-yellow-50 rounded-xl p-2">
+            <div class="text-lg">📸</div>
+            <p class="font-bold text-gray-600">1.000 Foto</p>
+            <p class="font-black text-yellow-600">≈ 5 GB</p>
+          </div>
+          <div class="bg-pink-50 rounded-xl p-2">
+            <div class="text-lg">🎵</div>
+            <p class="font-bold text-gray-600">1.000 Lagu</p>
+            <p class="font-black text-pink-600">≈ 5 GB</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════ -->
+<footer class="mt-4 pb-8">
+  <div class="max-w-3xl mx-auto px-4">
+
+    <!-- Progress bar -->
+    <div class="bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
+      <div class="h-3 rounded-full"
+           style="width:40%; background:linear-gradient(90deg,#d97706,#f59e0b,#fbbf24); transition:width 1s ease;"></div>
+    </div>
+    <p class="text-center text-gray-400 text-xs mb-5">Progres Seri: Hari 12 dari 30 (40%)</p>
+
+    <!-- Encouragement banner -->
+    <div class="rounded-3xl p-6 text-center mb-6 relative overflow-hidden"
+         style="background:linear-gradient(135deg,#fef3c7,#fde68a,#fcd34d); border:3px solid #f59e0b;">
+      <div class="absolute inset-0 text-7xl flex items-center justify-center opacity-10 pointer-events-none">🏆</div>
+      <div class="relative z-10">
+        <div class="text-4xl mb-2">🏆</div>
+        <h3 class="text-2xl font-black text-amber-800 mb-1" style="font-family:'Fredoka One',cursive;">
+          Hebat sekali, Aslan!
+        </h3>
+        <p class="text-amber-700 font-bold text-base">
+          Kamu sudah mengerti sampai ukuran data <span class="text-amber-900 font-black">RAKSASA</span>!
+          <br>Dari KB → MB → GB → TB — kamu sudah kuasai semuanya! 🌟
+        </p>
+        <div class="flex flex-wrap gap-2 justify-center mt-3">
+          <span class="badge">✅ KB – Lulus!</span>
+          <span class="badge" style="background:linear-gradient(135deg,#059669,#34d399);">✅ MB – Lulus!</span>
+          <span class="badge" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">✅ GB – Lulus!</span>
+          <span class="badge" style="background:linear-gradient(135deg,#d97706,#f59e0b);">✅ TB – Lulus!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Day counter -->
+    <div class="text-center">
+      <p class="text-gray-400 font-bold text-sm">Petualangan Aslan di Dalam Komputer Ajaib</p>
+      <p class="text-amber-500 font-black text-lg" style="font-family:'Fredoka One',cursive;">Hari 12 dari 30 🏭</p>
+    </div>
+
+    <p class="text-center text-gray-300 text-xs mt-6">
+      Made with ❤️ for Aslan · Buku Digital Seri Komputer
+    </p>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════ -->
+<script>
+// ── Scale card info data ──
+const scaleInfo = {
+  kb: {
+    emoji:'👜', title:'KB – Kilobyte', size:'≈ 1.000 Byte',
+    desc:'KB adalah kilobyte. Dipakai untuk menyimpan hal-hal kecil seperti teks, ikon, atau pesan singkat. Nama emailmu di kotak pesan mungkin cuma beberapa KB!',
+    analogy:'Tas kecil yang cuma muat dompet dan HP — cukup untuk keperluan ringan.',
+    fact:'1 KB = 1.024 Byte (secara teknis), tapi biasanya kita anggap 1.000 Byte saja supaya lebih mudah dihitung!',
+    color:'#fbbf24'
+  },
+  mb: {
+    emoji:'🎒', title:'MB – Megabyte', size:'≈ 1.000 KB',
+    desc:'MB adalah megabyte. Dipakai untuk menyimpan foto, lagu, atau dokumen yang agak besar. Hampir semua file yang kamu download sehari-hari ukurannya dalam MB!',
+    analogy:'Tas sekolah yang muat buku, pensil, tempat makan, dan uang jajan — cukup besar untuk seharian!',
+    fact:'1 foto dari kamera HP biasanya 3-5 MB. Zaman dulu foto cuma 0,1 MB karena kamera masih jelek!',
+    color:'#34d399'
+  },
+  gb: {
+    emoji:'🗄️', title:'GB – Gigabyte', size:'≈ 1.000 MB',
+    desc:'GB adalah gigabyte. Dipakai untuk kapasitas penyimpanan HP, game, atau download film. Memori HP biasanya 64 GB, 128 GB, atau 256 GB!',
+    analogy:'Lemari mainan besar yang muat ratusan mainan, buku, dan pakaian — jauh lebih besar dari tas!',
+    fact:'HP dengan 128 GB bisa muat sekitar 25.000 foto, 30.000 lagu, atau beberapa game sekaligus!',
+    color:'#a78bfa'
+  },
+  tb: {
+    emoji:'🏭', title:'TB – Terabyte', size:'≈ 1.000 GB',
+    desc:'TB adalah terabyte — ukuran paling raksasa yang sering dipakai! Harddisk komputer canggih dan server internet pakai ukuran TB. Bahkan ada PB (Petabyte) = 1.000 TB untuk data super besar!',
+    analogy:'Gudang super raksasa yang muat ribuan rak penuh barang — saking besarnya sampai butuh forklift untuk mengambil barang!',
+    fact:'YouTube menerima lebih dari 500 jam video SETIAP MENIT. Bayangkan berapa banyak TB yang dibutuhkan untuk menyimpan semua video YouTube! 🤯',
+    color:'#f59e0b'
+  }
+};
+
+function showInfoModal(key) {
+  const d = scaleInfo[key];
+  document.getElementById('iEmoji').textContent   = d.emoji;
+  document.getElementById('iTitle').textContent   = d.title;
+  document.getElementById('iSize').textContent    = d.size;
+  document.getElementById('iDesc').textContent    = d.desc;
+  document.getElementById('iAnalogy').textContent = d.analogy;
+  document.getElementById('iFact').textContent    = d.fact;
+  document.getElementById('infoBox').style.borderColor = d.color;
+  const m = document.getElementById('infoModal');
+  m.style.setProperty('display','flex','important');
+  requestAnimationFrame(() => {
+    m.style.opacity = '1';
+    document.getElementById('infoBox').style.transform = 'scale(1) translateY(0)';
+  });
+}
+function closeInfoModal(e) {
+  if (!e || e.target === document.getElementById('infoModal')) {
+    const m = document.getElementById('infoModal');
+    m.style.opacity = '0';
+    document.getElementById('infoBox').style.transform = 'scale(.8) translateY(30px)';
+    setTimeout(() => m.style.setProperty('display','none','important'), 320);
+  }
+}
+
+// ── Warehouse fill logic ──
+let totalGBUsed = 0;
+const MAX_GB    = 1000;
+const inventory = { film:0, game:0, foto:0, lagu:0 };
+const itemGB    = { film:2, game:50, foto:.5, lagu:.5 };
+const itemEmoji = { film:'🎬', game:'🎮', foto:'📸', lagu:'🎵' };
+const itemLabel = { film:'Film HD', game:'Game Besar', foto:'×100 Foto', lagu:'×100 Lagu' };
+
+function addToWarehouse(type) {
+  const add = itemGB[type];
+  if (totalGBUsed + add > MAX_GB) {
+    const label = document.getElementById('megaMsg');
+    label.textContent = '🏭 GUDANG PENUH! Tidak muat lagi! 😅';
+    label.classList.remove('hidden');
+    setTimeout(() => label.classList.add('hidden'), 2500);
+    return;
+  }
+  totalGBUsed += add;
+  inventory[type]++;
+  updateWarehouseUI();
+
+  // Spawn emoji item in warehouse
+  const container = document.getElementById('warehouseItems');
+  document.getElementById('emptyLabel').style.display = 'none';
+  const span = document.createElement('span');
+  span.textContent = itemEmoji[type];
+  const fontSize = type === 'game' ? '2rem' : type === 'film' ? '1.8rem' : '1.2rem';
+  span.style.cssText = `font-size:${fontSize};filter:drop-shadow(1px 1px 2px rgba(0,0,0,.2));`;
+  container.appendChild(span);
+
+  // Confetti burst
+  if (type === 'game') launchConfetti(10);
+  else launchConfetti(5);
+}
+
+function updateWarehouseUI() {
+  const pct = Math.min((totalGBUsed / MAX_GB) * 100, 100);
+  document.getElementById('mainFillBar').style.width = pct + '%';
+  document.getElementById('fillPctLabel').textContent = Math.round(pct) + '%';
+
+  // GB display
+  const gbEl = document.getElementById('tbUsed');
+  gbEl.textContent = totalGBUsed.toFixed(1) + ' GB';
+  gbEl.classList.remove('count-anim');
+  void gbEl.offsetWidth;
+  gbEl.classList.add('count-anim');
+
+  // Warehouse fill scale
+  document.getElementById('warehouseFill').style.transform = `scaleY(${pct / 100})`;
+
+  // Inventory list
+  const list = document.getElementById('inventoryList');
+  const lines = [];
+  if (inventory.film) lines.push(`🎬 ${inventory.film} Film HD  →  ${(inventory.film * itemGB.film).toFixed(1)} GB`);
+  if (inventory.game) lines.push(`🎮 ${inventory.game} Game  →  ${(inventory.game * itemGB.game).toFixed(1)} GB`);
+  if (inventory.foto) lines.push(`📸 ${inventory.foto * 100} Foto  →  ${(inventory.foto * itemGB.foto).toFixed(1)} GB`);
+  if (inventory.lagu) lines.push(`🎵 ${inventory.lagu * 100} Lagu  →  ${(inventory.lagu * itemGB.lagu).toFixed(1)} GB`);
+  lines.push(`─────────────────`);
+  lines.push(`📊 Total: ${totalGBUsed.toFixed(1)} GB  (${((totalGBUsed/1000)*100).toFixed(2)}% dari 1 TB)`);
+  list.innerHTML = lines.map(l => `<p>${l}</p>`).join('');
+}
+
+function resetWarehouse() {
+  totalGBUsed = 0;
+  inventory.film = inventory.game = inventory.foto = inventory.lagu = 0;
+  document.getElementById('warehouseItems').innerHTML = '';
+  document.getElementById('emptyLabel').style.display = 'flex';
+  document.getElementById('warehouseFill').style.transform = 'scaleY(0)';
+  document.getElementById('mainFillBar').style.width = '0%';
+  document.getElementById('fillPctLabel').textContent = '0%';
+  document.getElementById('tbUsed').textContent = '0 GB';
+  document.getElementById('inventoryList').innerHTML = '<p class="text-gray-400 text-xs">Belum ada isi...</p>';
+}
+
+// ── Big button animation ──
+function triggerMegaAnim() {
+  const btn = document.getElementById('megaBtn');
+  const msg = document.getElementById('megaMsg');
+  btn.classList.add('wiggle');
+  setTimeout(() => btn.classList.remove('wiggle'), 1100);
+  msg.classList.remove('hidden');
+  setTimeout(() => msg.classList.add('hidden'), 4000);
+  launchConfetti(35);
+}
+
+// ── Confetti ──
+function launchConfetti(n) {
+  const colors = ['#f59e0b','#fb923c','#34d399','#a78bfa','#f472b6','#38bdf8','#fbbf24','#6366f1'];
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.cssText = `
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${15+Math.random()*70}%;
+      top:${30+Math.random()*30}%;
+      --tx:${(Math.random()-.5)*240}px;
+      --ty:${-60-Math.random()*180}px;
+      width:${6+Math.random()*10}px; height:${6+Math.random()*10}px;
+      border-radius:${Math.random()>.5?'50%':'3px'};
+      animation-delay:${Math.random()*.5}s;
+    `;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 1800);
+  }
+}
+</script>
+</body>
+</html>

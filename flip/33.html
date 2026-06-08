@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 3: RAM – Meja Kerja Sementara</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:   #0d9488;
+    --mint:   #34d399;
+    --sky:    #38bdf8;
+    --purple: #a78bfa;
+    --yellow: #fbbf24;
+    --bg:     #f0fdfa;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(52,211,153,.18) 0%, transparent 45%),
+      radial-gradient(circle at 85% 75%, rgba(167,139,250,.14) 0%, transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(56,189,248,.12) 0%, transparent 40%);
+    min-height: 100vh; overflow-x: hidden;
+  }
+  h1,h2,h3,.display { font-family:'Fredoka One',cursive; }
+
+  /* Header */
+  .header-grad {
+    background: linear-gradient(135deg,#134e4a 0%,#0f766e 35%,#0d9488 65%,#2dd4bf 100%);
+    position:relative; overflow:hidden;
+  }
+  .header-grad::after {
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Crect x='0' y='0' width='20' height='20'/%3E%3Crect x='20' y='20' width='20' height='20'/%3E%3Crect x='40' y='0' width='20' height='20'/%3E%3Crect x='0' y='40' width='20' height='20'/%3E%3Crect x='40' y='40' width='20' height='20'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Speech bubble */
+  .bubble {
+    position:relative; background:white;
+    border-radius:22px; border:3px solid #0d9488;
+    box-shadow:4px 4px 0 #0d9488;
+  }
+  .bubble::before { content:'';position:absolute;bottom:-22px;left:30px;border:12px solid transparent;border-top-color:#0d9488; }
+  .bubble::after  { content:'';position:absolute;bottom:-15px;left:33px;border:10px solid transparent;border-top-color:white; }
+
+  /* Aslan bounce */
+  @keyframes bounceAslan { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-10px);} }
+  .aslan-bounce { animation:bounceAslan 2.2s ease-in-out infinite; }
+
+  /* RAM shimmer */
+  @keyframes shimmer {
+    0%   { background-position:-200% center; }
+    100% { background-position: 200% center; }
+  }
+  .ram-shimmer {
+    background: linear-gradient(90deg,
+      transparent 0%, rgba(255,255,255,.7) 45%,
+      rgba(255,255,255,.9) 50%, rgba(255,255,255,.7) 55%, transparent 100%);
+    background-size:200% auto;
+    animation: shimmer 2s linear infinite;
+  }
+
+  /* RAM glow pulse */
+  @keyframes ramGlow {
+    0%,100% { box-shadow: 0 0 10px rgba(52,211,153,.4), 0 0 30px rgba(52,211,153,.2); }
+    50%      { box-shadow: 0 0 25px rgba(52,211,153,.8), 0 0 60px rgba(52,211,153,.4); }
+  }
+  .ram-glow { animation: ramGlow 2s ease-in-out infinite; }
+
+  /* Desk item pop-in */
+  @keyframes popIn {
+    0%  { transform:scale(0) rotate(-15deg); opacity:0; }
+    70% { transform:scale(1.15) rotate(5deg); }
+    100%{ transform:scale(1) rotate(0deg); opacity:1; }
+  }
+  .pop-in { animation: popIn .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+  /* Desk item pop-out */
+  @keyframes popOut {
+    0%  { transform:scale(1); opacity:1; }
+    40% { transform:scale(1.2) rotate(10deg); opacity:.7; }
+    100%{ transform:scale(0) rotate(-30deg); opacity:0; }
+  }
+  .pop-out { animation: popOut .4s ease-in forwards; }
+
+  /* Screen flash off */
+  @keyframes screenOff {
+    0%  { opacity:1; }
+    60% { opacity:.8; background:white; }
+    80% { opacity:1; background:#0f172a; }
+    100%{ opacity:1; }
+  }
+  .screen-off { animation: screenOff .6s ease-in-out forwards; }
+
+  /* Slot fill animation */
+  @keyframes slotFill {
+    from { width:0; }
+    to   { width:var(--target-w); }
+  }
+  .slot-fill { animation: slotFill 1.2s cubic-bezier(.4,0,.2,1) forwards; }
+
+  /* Float emoji */
+  @keyframes floatEmoji {
+    0%  { transform:translateY(0) scale(1); opacity:1; }
+    100%{ transform:translateY(-90px) scale(.5); opacity:0; }
+  }
+  .float-emoji {
+    position:absolute; pointer-events:none;
+    animation: floatEmoji 1s ease-out forwards;
+    font-size:1.4rem;
+  }
+
+  /* Big buttons */
+  .btn-fill {
+    background:linear-gradient(135deg,#0d9488,#34d399);
+    color:white; border:none; border-radius:50px;
+    padding:1rem 2.6rem; font-family:'Fredoka One',cursive;
+    font-size:1.3rem; cursor:pointer;
+    box-shadow:0 6px 0 #0f766e, 0 8px 22px rgba(13,148,136,.4);
+    transition:all .15s ease;
+  }
+  .btn-fill:hover  { transform:translateY(-3px); box-shadow:0 9px 0 #0f766e,0 12px 28px rgba(13,148,136,.5); }
+  .btn-fill:active { transform:translateY(3px);  box-shadow:0 3px 0 #0f766e; }
+  .btn-fill:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+
+  .btn-off {
+    background:linear-gradient(135deg,#64748b,#334155);
+    color:white; border:none; border-radius:50px;
+    padding:1rem 2.6rem; font-family:'Fredoka One',cursive;
+    font-size:1.3rem; cursor:pointer;
+    box-shadow:0 6px 0 #1e293b, 0 8px 22px rgba(100,116,139,.4);
+    transition:all .15s ease;
+  }
+  .btn-off:hover  { transform:translateY(-3px); }
+  .btn-off:active { transform:translateY(3px); box-shadow:0 3px 0 #1e293b; }
+  .btn-off:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+
+  .btn-nav {
+    border-radius:50px; padding:.75rem 1.8rem;
+    font-family:'Fredoka One',cursive; font-size:1.05rem;
+    cursor:pointer; transition:all .15s ease; border:3px solid transparent;
+  }
+  .btn-back { background:white; color:#0d9488; border-color:#0d9488; box-shadow:3px 3px 0 #0d9488; }
+  .btn-back:hover { transform:translateY(-2px); box-shadow:5px 5px 0 #0d9488; }
+  .btn-fwd  { background:linear-gradient(135deg,#a78bfa,#818cf8); color:white; box-shadow:0 4px 0 #5b21b6; }
+  .btn-fwd:hover  { transform:translateY(-2px); }
+
+  /* Day dot */
+  .day-dot { width:12px;height:12px;border-radius:50%;display:inline-block; }
+
+  /* Section underline */
+  .sec-title { position:relative;display:inline-block; }
+  .sec-title::after {
+    content:'';position:absolute;bottom:-6px;left:0;right:0;height:5px;
+    border-radius:10px;background:linear-gradient(90deg,#0d9488,#34d399);
+  }
+
+  /* Confetti */
+  @keyframes confettiFly {
+    0%  { transform:translate(0,0) rotate(0deg); opacity:1; }
+    100%{ transform:translate(var(--tx),var(--ty)) rotate(720deg); opacity:0; }
+  }
+  .confetti-piece {
+    position:fixed;width:10px;height:10px;border-radius:2px;
+    pointer-events:none;z-index:100;
+    animation:confettiFly 1.2s ease-out forwards;
+  }
+
+  /* Desk slots grid */
+  .desk-grid {
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:.5rem;
+  }
+  @media(max-width:500px){ .desk-grid{ grid-template-columns:repeat(4,1fr); } }
+
+  /* RAM stick face blink */
+  @keyframes eyeBlink { 0%,90%,100%{ scaleY:1; } 95%{ scaleY:.1; } }
+
+  /* Slot bar anim */
+  .slot-bar { transition: width 1s cubic-bezier(.4,0,.2,1); }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ══════ HEADER ══════ -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <div style="position:absolute;top:10px;left:4%;font-size:2.5rem;opacity:.18;animation:bounceAslan 10s ease-in-out infinite;">💾</div>
+  <div style="position:absolute;top:14px;right:6%;font-size:2rem;opacity:.2;animation:bounceAslan 13s ease-in-out infinite .5s;">🗂️</div>
+  <div style="position:absolute;bottom:6px;left:30%;font-size:1.8rem;opacity:.15;animation:bounceAslan 11s ease-in-out infinite 1s;">📋</div>
+
+  <div class="max-w-3xl mx-auto relative z-10 text-center">
+    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-3 border border-white/30">
+      <span class="text-xl">🖥️</span>
+      <span style="font-family:'Fredoka One',cursive;font-size:.9rem;letter-spacing:.5px;">Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span class="text-xl">⚡</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl md:text-5xl mb-2 drop-shadow-lg" style="line-height:1.2;">
+      Hari 3: RAM –<br>Meja Kerja Sementara 🗂️✨
+    </h1>
+    <p class="text-teal-100 text-base sm:text-lg font-semibold">Makin besar mejanya, makin banyak yang bisa dikerjain! 😄</p>
+    <div class="flex items-center justify-center gap-1.5 mt-4">
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white"></div>
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white/40"></div>
+      <span class="text-white/70 text-xs ml-2 font-semibold">Hari 3 dari 30</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════ MAIN ══════ -->
+<main class="max-w-3xl mx-auto px-4 py-8 relative z-10">
+
+  <!-- ── Intro ── -->
+  <section class="mb-10">
+    <div class="flex flex-col sm:flex-row items-end gap-6">
+      <!-- Aslan -->
+      <div class="flex-shrink-0 flex justify-center" style="min-width:120px;">
+        <div class="aslan-bounce">
+          <svg width="120" height="155" viewBox="0 0 120 155" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="60" cy="150" rx="28" ry="6" fill="rgba(0,0,0,0.1)"/>
+            <!-- body teal shirt -->
+            <rect x="32" y="88" width="56" height="50" rx="14" fill="#0d9488"/>
+            <rect x="32" y="100" width="56" height="7" rx="2" fill="#34d399" opacity=".6"/>
+            <!-- arms -->
+            <rect x="14" y="90" width="20" height="36" rx="10" fill="#0d9488" transform="rotate(8 14 90)"/>
+            <!-- right arm (pointing at desk excitedly) -->
+            <rect x="84" y="84" width="20" height="32" rx="10" fill="#0d9488" transform="rotate(-20 84 84)"/>
+            <!-- legs -->
+            <rect x="36" y="130" width="18" height="22" rx="9" fill="#134e4a"/>
+            <rect x="66" y="130" width="18" height="22" rx="9" fill="#134e4a"/>
+            <ellipse cx="45" cy="150" rx="12" ry="6" fill="#0f766e"/>
+            <ellipse cx="75" cy="150" rx="12" ry="6" fill="#0f766e"/>
+            <!-- neck -->
+            <rect x="50" y="78" width="20" height="14" rx="7" fill="#f9a825"/>
+            <!-- head -->
+            <ellipse cx="60" cy="60" rx="32" ry="30" fill="#f9a825"/>
+            <!-- hair -->
+            <ellipse cx="60" cy="35" rx="30" ry="16" fill="#2d1b00"/>
+            <ellipse cx="35" cy="47" rx="9" ry="12" fill="#2d1b00"/>
+            <ellipse cx="85" cy="47" rx="9" ry="12" fill="#2d1b00"/>
+            <!-- eyes excited/wide -->
+            <ellipse cx="48" cy="59" rx="8" ry="9" fill="white"/>
+            <ellipse cx="72" cy="59" rx="8" ry="9" fill="white"/>
+            <ellipse cx="49" cy="60" rx="5" ry="6" fill="#2d1b00"/>
+            <ellipse cx="73" cy="60" rx="5" ry="6" fill="#2d1b00"/>
+            <circle cx="51" cy="58" r="2" fill="white"/>
+            <circle cx="75" cy="58" r="2" fill="white"/>
+            <!-- big smile -->
+            <path d="M44 73 Q60 86 76 73" stroke="#2d1b00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M48 76 Q60 84 72 76" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <ellipse cx="40" cy="68" rx="6" ry="4" fill="#ffb347" opacity=".5"/>
+            <ellipse cx="80" cy="68" rx="6" ry="4" fill="#ffb347" opacity=".5"/>
+            <!-- sparks -->
+            <text x="4"  y="55" font-size="13">✨</text>
+            <text x="96" y="48" font-size="12">💡</text>
+            <text x="96" y="70" font-size="11">🌟</text>
+          </svg>
+        </div>
+      </div>
+      <!-- Speech bubble -->
+      <div class="flex-1">
+        <div class="bubble p-5">
+          <p class="text-sm text-teal-600 font-bold mb-1">Aslan berkata:</p>
+          <p class="text-gray-700 text-base sm:text-lg leading-relaxed font-semibold">
+            "Hari ini kita kenalan sama <strong class="text-teal-600">RAM</strong>!
+            RAM itu kayak <strong class="text-purple-600">meja kerja Aslan</strong> yang penuh mainan.
+            Semakin besar mejanya, semakin banyak yang bisa dikerjain sekaligus!
+            Tapi hati-hati... kalau komputer dimatikan, semua barang di meja <strong class="text-red-500">hilang!</strong> 😱"
+          </p>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#0d9488,#34d399);">💾 Hari 3</span>
+            <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">🗂️ Topik: RAM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── RAM Kartun ── -->
+  <section class="mb-10">
+    <div class="text-center mb-4">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#134e4a;">💾 Halo, Aku RAM!</h2>
+      <p class="text-gray-500 mt-3 text-sm">Kenalan dulu sama RAM yang lucu ini! 👋</p>
+    </div>
+
+    <div class="flex justify-center">
+      <div class="relative ram-glow rounded-3xl" style="max-width:380px;width:100%;">
+        <svg id="ramSvg" viewBox="0 0 380 260" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full drop-shadow-xl">
+          <!-- Background -->
+          <rect width="380" height="260" rx="24" fill="#0f172a"/>
+          <rect width="380" height="260" rx="24" fill="url(#ramBgGrad)" opacity=".5"/>
+
+          <!-- PCB board -->
+          <rect x="30" y="60" width="320" height="140" rx="10" fill="#064e3b"/>
+          <!-- PCB traces -->
+          <g stroke="#065f46" stroke-width="1.5" opacity=".7">
+            <line x1="30" y1="90"  x2="350" y2="90"/>
+            <line x1="30" y1="120" x2="350" y2="120"/>
+            <line x1="30" y1="150" x2="350" y2="150"/>
+            <line x1="30" y1="180" x2="350" y2="180"/>
+            <line x1="80"  y1="60" x2="80"  y2="200"/>
+            <line x1="130" y1="60" x2="130" y2="200"/>
+            <line x1="180" y1="60" x2="180" y2="200"/>
+            <line x1="230" y1="60" x2="230" y2="200"/>
+            <line x1="280" y1="60" x2="280" y2="200"/>
+          </g>
+
+          <!-- Memory chips (8 chips) -->
+          <g>
+            <rect x="50"  y="75"  width="42" height="50" rx="6" fill="#1d4ed8"/>
+            <rect x="103" y="75"  width="42" height="50" rx="6" fill="#1d4ed8"/>
+            <rect x="156" y="75"  width="42" height="50" rx="6" fill="#1d4ed8"/>
+            <rect x="209" y="75"  width="42" height="50" rx="6" fill="#1d4ed8"/>
+            <rect x="50"  y="135" width="42" height="50" rx="6" fill="#1d4ed8"/>
+            <rect x="103" y="135" width="42" height="50" rx="6" fill="#1d4ed8"/>
+            <rect x="156" y="135" width="42" height="50" rx="6" fill="#1d4ed8"/>
+            <rect x="209" y="135" width="42" height="50" rx="6" fill="#1d4ed8"/>
+          </g>
+          <!-- Chip dot patterns -->
+          <g fill="#3b82f6" opacity=".8">
+            <rect x="56"  y="81"  width="8" height="8" rx="1"/><rect x="70"  y="81"  width="8" height="8" rx="1"/>
+            <rect x="56"  y="94"  width="8" height="8" rx="1"/><rect x="70"  y="94"  width="8" height="8" rx="1"/>
+            <rect x="109" y="81"  width="8" height="8" rx="1"/><rect x="123" y="81"  width="8" height="8" rx="1"/>
+            <rect x="109" y="94"  width="8" height="8" rx="1"/><rect x="123" y="94"  width="8" height="8" rx="1"/>
+            <rect x="162" y="81"  width="8" height="8" rx="1"/><rect x="176" y="81"  width="8" height="8" rx="1"/>
+            <rect x="162" y="94"  width="8" height="8" rx="1"/><rect x="176" y="94"  width="8" height="8" rx="1"/>
+            <rect x="215" y="81"  width="8" height="8" rx="1"/><rect x="229" y="81"  width="8" height="8" rx="1"/>
+            <rect x="215" y="94"  width="8" height="8" rx="1"/><rect x="229" y="94"  width="8" height="8" rx="1"/>
+          </g>
+
+          <!-- Cute RAM face on right side -->
+          <!-- Face background -->
+          <rect x="266" y="72" width="72" height="116" rx="14" fill="#0e7490"/>
+          <!-- Eyes -->
+          <ellipse cx="284" cy="108" rx="9" ry="10" fill="white"/>
+          <ellipse cx="316" cy="108" rx="9" ry="10" fill="white"/>
+          <ellipse cx="285" cy="109" rx="5.5" ry="6.5" fill="#0f172a"/>
+          <ellipse cx="317" cy="109" rx="5.5" ry="6.5" fill="#0f172a"/>
+          <circle  cx="287" cy="107" r="2" fill="white"/>
+          <circle  cx="319" cy="107" r="2" fill="white"/>
+          <!-- Smile -->
+          <path d="M279 126 Q300 138 321 126" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <!-- Blush -->
+          <ellipse cx="278" cy="120" rx="6" ry="4" fill="#2dd4bf" opacity=".5"/>
+          <ellipse cx="322" cy="120" rx="6" ry="4" fill="#2dd4bf" opacity=".5"/>
+          <!-- Antenna -->
+          <line x1="300" y1="72" x2="300" y2="50" stroke="#34d399" stroke-width="2.5"/>
+          <circle cx="300" cy="46" r="6" fill="#34d399">
+            <animate attributeName="r" values="6;9;6" dur="1.5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="1;.4;1" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+
+          <!-- Gold pins bottom -->
+          <g fill="#fbbf24">
+            <rect x="40"  y="200" width="10" height="22" rx="2"/>
+            <rect x="56"  y="200" width="10" height="22" rx="2"/>
+            <rect x="72"  y="200" width="10" height="22" rx="2"/>
+            <rect x="88"  y="200" width="10" height="22" rx="2"/>
+            <rect x="104" y="200" width="10" height="22" rx="2"/>
+            <rect x="120" y="200" width="10" height="22" rx="2"/>
+            <rect x="136" y="200" width="10" height="22" rx="2"/>
+            <rect x="152" y="200" width="10" height="22" rx="2"/>
+            <rect x="168" y="200" width="10" height="22" rx="2"/>
+            <rect x="184" y="200" width="10" height="22" rx="2"/>
+            <rect x="200" y="200" width="10" height="22" rx="2"/>
+            <rect x="216" y="200" width="10" height="22" rx="2"/>
+            <rect x="232" y="200" width="10" height="22" rx="2"/>
+            <rect x="248" y="200" width="10" height="22" rx="2"/>
+          </g>
+
+          <!-- Shimmer stripe -->
+          <rect x="30" y="60" width="320" height="140" rx="10" class="ram-shimmer" opacity=".3"/>
+
+          <!-- LEDs top edge -->
+          <circle cx="50"  cy="52" r="5" fill="#34d399"><animate attributeName="opacity" values="1;.2;1" dur="1.2s" repeatCount="indefinite"/></circle>
+          <circle cx="68"  cy="52" r="5" fill="#38bdf8"><animate attributeName="opacity" values=".2;1;.2" dur="1.8s" repeatCount="indefinite"/></circle>
+          <circle cx="86"  cy="52" r="5" fill="#a78bfa"><animate attributeName="opacity" values="1;.3;1" dur="2.1s" repeatCount="indefinite" begin=".4s"/></circle>
+
+          <!-- Label -->
+          <text x="155" y="245" text-anchor="middle" fill="#34d399" font-family="Fredoka One,sans-serif" font-size="14" font-weight="bold">RAM – 16 GB DDR5</text>
+
+          <defs>
+            <linearGradient id="ramBgGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%"   stop-color="#0d9488" stop-opacity=".4"/>
+              <stop offset="100%" stop-color="#0f172a" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <!-- Floating emoji from RAM -->
+        <div id="ramFloats" class="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl"></div>
+      </div>
+    </div>
+    <p class="text-center text-teal-600 font-semibold mt-3 text-sm">👆 RAM punya wajah yang ramah! Dia senang bantu CPU kerja! 😊</p>
+  </section>
+
+  <!-- ── Simulasi Meja Kerja ── -->
+  <section class="mb-10">
+    <div class="text-center mb-4">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#134e4a;">🖥️ Simulasi Meja Kerja RAM</h2>
+      <p class="text-gray-500 mt-3 text-sm">Isi meja kerjanya... lalu lihat apa yang terjadi kalau dimatikan! 👀</p>
+    </div>
+
+    <!-- RAM Meter -->
+    <div class="bg-white rounded-3xl p-5 shadow-md border-2 border-teal-100 mb-5">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-bold text-teal-700">💾 Kapasitas RAM Terpakai</span>
+        <span class="text-sm font-bold text-teal-700" id="ramPercText">0%</span>
+      </div>
+      <div class="bg-gray-100 rounded-full h-6 overflow-hidden border border-gray-200">
+        <div id="ramBar" class="h-6 rounded-full flex items-center justify-end pr-2 transition-all duration-700"
+             style="width:0%;background:linear-gradient(90deg,#34d399,#0d9488);">
+          <span id="ramBarLabel" class="text-white text-xs font-bold hidden">0 / 8 slot</span>
+        </div>
+      </div>
+      <div class="flex justify-between text-xs text-gray-400 mt-1">
+        <span>0 GB</span><span>8 GB (penuh)</span>
+      </div>
+    </div>
+
+    <!-- Desk / Stage -->
+    <div id="deskStage" class="relative bg-white rounded-3xl p-5 shadow-lg border-4 border-teal-200 min-h-52 mb-5 overflow-hidden"
+         style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1);">
+      <!-- Desk surface decoration -->
+      <div class="absolute bottom-0 left-0 right-0 h-10 rounded-b-3xl" style="background:rgba(13,148,136,.15);"></div>
+      <div class="absolute bottom-10 left-4 right-4 h-1 rounded-full" style="background:rgba(13,148,136,.3);"></div>
+
+      <p class="text-center text-teal-400 font-semibold text-sm mb-4 relative z-10">📋 Meja Kerja RAM (8 Slot)</p>
+
+      <!-- Slots grid -->
+      <div class="desk-grid relative z-10" id="deskSlots">
+        <!-- filled dynamically -->
+      </div>
+
+      <!-- Empty state -->
+      <div id="emptyDesk" class="flex flex-col items-center justify-center py-4 text-center">
+        <div class="text-5xl mb-2 opacity-30">🗂️</div>
+        <p class="text-teal-300 font-semibold text-sm">Meja masih kosong...<br>Klik "Isi Meja Kerja!" untuk mulai!</p>
+      </div>
+
+      <!-- Shutdown overlay -->
+      <div id="shutdownOverlay" class="absolute inset-0 rounded-3xl flex flex-col items-center justify-center hidden z-20"
+           style="background:rgba(15,23,42,.92);">
+        <div class="text-6xl mb-3">💤</div>
+        <p class="text-white font-bold text-xl" style="font-family:'Fredoka One',cursive;">Komputer Mati...</p>
+        <p class="text-gray-300 text-sm mt-1">Semua data di RAM hilang! 😱</p>
+        <button onclick="resetDesk()" class="mt-4 px-5 py-2 rounded-2xl font-bold text-white border-2 border-white/40 bg-white/10 hover:bg-white/20 transition-all"
+                style="font-family:'Fredoka One',cursive;">🔄 Nyalakan Lagi!</button>
+      </div>
+    </div>
+
+    <!-- Control buttons -->
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <button class="btn-fill" id="fillBtn" onclick="fillDesk()">📥 Isi Meja Kerja!</button>
+      <button class="btn-off"  id="offBtn"  onclick="shutDown()">🔌 Matikan Komputer</button>
+    </div>
+    <p class="text-center text-gray-400 text-xs mt-2" id="deskMsg">Klik "Isi Meja Kerja!" untuk menambah program ke RAM!</p>
+  </section>
+
+  <!-- ── 4GB vs 16GB Comparison ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#134e4a;">📐 Meja Kecil vs Meja Besar</h2>
+      <p class="text-gray-500 mt-3 text-sm">RAM 4GB vs RAM 16GB — bedanya apa? 🤔</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <!-- 4GB -->
+      <div class="bg-white rounded-3xl p-5 border-2 border-orange-200 shadow-md">
+        <div class="text-center mb-3">
+          <div class="text-4xl mb-1">😅</div>
+          <h3 class="text-xl font-bold text-orange-700" style="font-family:'Fredoka One',cursive;">RAM 4 GB</h3>
+          <p class="text-xs text-orange-500">Meja Kecil</p>
+        </div>
+        <!-- Mini desk visual -->
+        <div class="bg-orange-50 rounded-2xl p-3 mb-3 border border-orange-100">
+          <div class="grid grid-cols-4 gap-1 mb-2">
+            <div class="bg-orange-400 rounded-lg h-8 text-center text-lg flex items-center justify-center">🎮</div>
+            <div class="bg-orange-400 rounded-lg h-8 text-center text-lg flex items-center justify-center">🌐</div>
+            <div class="bg-orange-400 rounded-lg h-8 text-center text-lg flex items-center justify-center">📄</div>
+            <div class="bg-orange-400 rounded-lg h-8 text-center text-lg flex items-center justify-center">🎵</div>
+          </div>
+          <div class="bg-orange-100 rounded-lg h-8 flex items-center justify-center">
+            <span class="text-orange-600 text-xs font-bold">❌ Penuh! Tidak bisa buka lagi!</span>
+          </div>
+        </div>
+        <ul class="space-y-1 text-sm text-gray-600">
+          <li>😩 Bisa buka ~4 aplikasi</li>
+          <li>🐌 Komputer jadi lambat</li>
+          <li>❌ Susah main game berat</li>
+          <li>💤 Sering freeze / hang</li>
+        </ul>
+      </div>
+
+      <!-- 16GB -->
+      <div class="bg-white rounded-3xl p-5 border-2 border-teal-200 shadow-md">
+        <div class="text-center mb-3">
+          <div class="text-4xl mb-1">😎</div>
+          <h3 class="text-xl font-bold text-teal-700" style="font-family:'Fredoka One',cursive;">RAM 16 GB</h3>
+          <p class="text-xs text-teal-500">Meja Besar</p>
+        </div>
+        <!-- Big desk visual -->
+        <div class="bg-teal-50 rounded-2xl p-3 mb-3 border border-teal-100">
+          <div class="grid grid-cols-4 gap-1 mb-1">
+            <div class="bg-teal-400 rounded-lg h-8 flex items-center justify-center">🎮</div>
+            <div class="bg-teal-400 rounded-lg h-8 flex items-center justify-center">🌐</div>
+            <div class="bg-teal-400 rounded-lg h-8 flex items-center justify-center">📄</div>
+            <div class="bg-teal-400 rounded-lg h-8 flex items-center justify-center">🎵</div>
+          </div>
+          <div class="grid grid-cols-4 gap-1">
+            <div class="bg-teal-300 rounded-lg h-8 flex items-center justify-center">🎬</div>
+            <div class="bg-teal-300 rounded-lg h-8 flex items-center justify-center">📸</div>
+            <div class="bg-teal-300 rounded-lg h-8 flex items-center justify-center">💬</div>
+            <div class="bg-teal-200 rounded-lg h-8 flex items-center justify-center text-xs text-teal-600 font-bold">+8</div>
+          </div>
+        </div>
+        <ul class="space-y-1 text-sm text-gray-600">
+          <li>😄 Bisa buka 15+ aplikasi</li>
+          <li>🚀 Komputer tetap kencang</li>
+          <li>✅ Bisa main game berat</li>
+          <li>⚡ Multitasking lancar jaya</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Verdict -->
+    <div class="mt-4 bg-white rounded-3xl p-4 text-center border-2 border-teal-200 shadow-sm">
+      <p class="text-base font-bold text-gray-700">
+        💡 Semakin besar RAM = <span class="text-teal-600">meja kerja makin luas</span> = <span class="text-purple-600">bisa kerja lebih banyak sekaligus!</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ── RAM Facts Cards ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#134e4a;">🧠 3 Fakta Penting RAM</h2>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="bg-white rounded-3xl p-5 shadow-md text-center border-t-4 border-teal-400 hover:scale-105 transition-all cursor-pointer"
+           onclick="factPop(this,'#ccfbf1')">
+        <div class="text-4xl mb-2">⚡</div>
+        <h3 class="font-bold text-teal-700 text-base mb-2" style="font-family:'Fredoka One',cursive;">Super Cepat</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">
+          RAM bisa kirim data ke CPU jutaan kali lebih cepat dari Hard Disk! Seperti lempar bola ke tangan vs kirim surat. 📮
+        </p>
+      </div>
+      <div class="bg-white rounded-3xl p-5 shadow-md text-center border-t-4 border-red-400 hover:scale-105 transition-all cursor-pointer"
+           onclick="factPop(this,'#fee2e2')">
+        <div class="text-4xl mb-2">💨</div>
+        <h3 class="font-bold text-red-600 text-base mb-2" style="font-family:'Fredoka One',cursive;">Sementara</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">
+          Semua isi RAM langsung hilang saat komputer dimatikan. Itu kenapa kamu harus "Save" dulu sebelum matiin komputer! 💾
+        </p>
+      </div>
+      <div class="bg-white rounded-3xl p-5 shadow-md text-center border-t-4 border-purple-400 hover:scale-105 transition-all cursor-pointer"
+           onclick="factPop(this,'#f3e8ff')">
+        <div class="text-4xl mb-2">🤝</div>
+        <h3 class="font-bold text-purple-700 text-base mb-2" style="font-family:'Fredoka One',cursive;">Tim CPU</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">
+          RAM adalah asisten paling dekat CPU. Tanpa RAM, CPU tidak bisa kerja! Mereka tim impian. 🧠💾
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Fun Fact Banner ── -->
+  <section class="mb-10">
+    <div class="rounded-3xl p-5 relative overflow-hidden text-white"
+         style="background:linear-gradient(135deg,#0f766e,#0d9488,#2dd4bf);">
+      <div class="absolute right-4 top-1/2 -translate-y-1/2 text-8xl opacity-15">💾</div>
+      <div class="relative z-10">
+        <p class="font-bold text-sm mb-2" style="font-family:'Fredoka One',cursive;">🤯 Fakta Gila Hari Ini!</p>
+        <p class="text-teal-50 text-base font-semibold leading-relaxed">
+          RAM pertama di dunia (tahun 1947!) seukuran <strong>lemari besar</strong> dan cuma bisa simpan
+          <strong>4.096 bit</strong> data. RAM HP-mu sekarang 4 GB = <strong>8 miliar kali lebih besar</strong>... dan seukuran kuku jarimu! 😲🔬
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Quiz ── -->
+  <section class="mb-10">
+    <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-teal-100">
+      <h2 class="text-xl font-bold text-center mb-2 text-teal-800" style="font-family:'Fredoka One',cursive;">
+        🧩 Kuis Kilat RAM!
+      </h2>
+      <p class="text-center text-gray-400 text-sm mb-5">3 pertanyaan, pilih jawabanmu! 🎯</p>
+
+      <div class="space-y-5" id="quizContainer">
+        <!-- Q1 -->
+        <div class="bg-teal-50 rounded-2xl p-4" id="q1">
+          <p class="font-bold text-gray-800 text-sm mb-3">1. Apa yang terjadi pada data di RAM kalau komputer dimatikan? 🔌</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="ans(1,'b',this)" class="qbtn">A. Tersimpan permanen 💾</button>
+            <button onclick="ans(1,'a',this)" class="qbtn">B. Hilang semua! 💨</button>
+            <button onclick="ans(1,'b',this)" class="qbtn">C. Pindah ke CPU 🧠</button>
+            <button onclick="ans(1,'b',this)" class="qbtn">D. Tersimpan di internet 🌐</button>
+          </div>
+          <div id="q1r" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+        <!-- Q2 -->
+        <div class="bg-teal-50 rounded-2xl p-4" id="q2">
+          <p class="font-bold text-gray-800 text-sm mb-3">2. Analogi yang paling tepat untuk RAM adalah... 🤔</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="ans(2,'b',this)" class="qbtn">A. Lemari penyimpanan 🗄️</button>
+            <button onclick="ans(2,'a',this)" class="qbtn">B. Meja kerja 📋</button>
+            <button onclick="ans(2,'b',this)" class="qbtn">C. Jantung listrik ⚡</button>
+            <button onclick="ans(2,'b',this)" class="qbtn">D. Otak komputer 🧠</button>
+          </div>
+          <div id="q2r" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+        <!-- Q3 -->
+        <div class="bg-teal-50 rounded-2xl p-4" id="q3">
+          <p class="font-bold text-gray-800 text-sm mb-3">3. Komputer yang RAM-nya lebih besar bisa... 💪</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="ans(3,'b',this)" class="qbtn">A. Lebih hemat listrik ⚡</button>
+            <button onclick="ans(3,'b',this)" class="qbtn">B. Terlihat lebih keren ✨</button>
+            <button onclick="ans(3,'a',this)" class="qbtn">C. Buka lebih banyak aplikasi 🚀</button>
+            <button onclick="ans(3,'b',this)" class="qbtn">D. Terhubung ke internet 🌐</button>
+          </div>
+          <div id="q3r" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+      </div>
+
+      <div id="quizFinal" class="hidden mt-5 text-center p-4 rounded-2xl" style="background:linear-gradient(135deg,#ccfbf1,#a7f3d0);">
+        <div class="text-4xl mb-2" id="qfEmoji">🌟</div>
+        <p class="font-bold text-lg text-teal-800" id="qfText" style="font-family:'Fredoka One',cursive;"></p>
+        <p class="text-sm text-teal-600 mt-1" id="qfSub"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Activity ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#134e4a;">✏️ Aktivitas Hari Ini</h2>
+    </div>
+
+    <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-dashed border-teal-300">
+      <div class="flex items-start gap-4 mb-5">
+        <div class="text-4xl flex-shrink-0">🖊️</div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-800" style="font-family:'Fredoka One',cursive;">
+            Meja Kerjamu yang Super Rapi!
+          </h3>
+          <p class="text-gray-600 text-sm mt-1 leading-relaxed">
+            Gambarlah <strong>meja kerjamu sendiri</strong>! Berapa banyak "aplikasi" atau mainan yang bisa ditaruh?
+            Beri label tiap benda yang ada di mejamu! 🎨
+          </p>
+        </div>
+      </div>
+
+      <!-- What to draw prompts -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+        <div class="bg-teal-50 rounded-xl p-2 text-center text-xs font-bold text-teal-700 border border-teal-200">🎮 Game?</div>
+        <div class="bg-purple-50 rounded-xl p-2 text-center text-xs font-bold text-purple-700 border border-purple-200">📚 Buku?</div>
+        <div class="bg-yellow-50 rounded-xl p-2 text-center text-xs font-bold text-yellow-700 border border-yellow-200">🖊️ Pensil?</div>
+        <div class="bg-orange-50 rounded-xl p-2 text-center text-xs font-bold text-orange-700 border border-orange-200">🍎 Camilan?</div>
+      </div>
+
+      <!-- Draw area -->
+      <div class="draw-area flex flex-col items-center justify-center text-center mb-5"
+           style="background:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(13,148,136,.18) 28px,rgba(13,148,136,.18) 30px),repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(13,148,136,.1) 28px,rgba(13,148,136,.1) 30px);border:3px dashed #0d9488;border-radius:20px;min-height:180px;">
+        <div class="text-5xl mb-3 opacity-30">🖊️</div>
+        <p class="text-gray-400 font-semibold text-sm">Cetak & gambar meja kerjamu di sini!</p>
+      </div>
+
+      <!-- Checklist -->
+      <p class="text-sm font-bold text-gray-700 mb-3">✅ Tandai yang sudah selesai:</p>
+      <div class="space-y-2" id="actChecks">
+        <label class="flex items-center gap-3 cursor-pointer" id="ac1">
+          <input type="checkbox" class="w-5 h-5 accent-teal-500" onchange="actCheck(1)">
+          <span class="text-sm text-gray-700">💾 Aku tau apa itu RAM dan gunanya</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer" id="ac2">
+          <input type="checkbox" class="w-5 h-5 accent-teal-500" onchange="actCheck(2)">
+          <span class="text-sm text-gray-700">📋 Aku sudah main simulasi meja kerja</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer" id="ac3">
+          <input type="checkbox" class="w-5 h-5 accent-teal-500" onchange="actCheck(3)">
+          <span class="text-sm text-gray-700">🎨 Aku sudah gambar meja kerjaku</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer" id="ac4">
+          <input type="checkbox" class="w-5 h-5 accent-teal-500" onchange="actCheck(4)">
+          <span class="text-sm text-gray-700">🧩 Aku sudah jawab kuis RAM</span>
+        </label>
+      </div>
+      <div id="actDone" class="hidden mt-4 p-3 rounded-2xl text-center" style="background:linear-gradient(135deg,#ccfbf1,#a7f3d0);">
+        <p class="font-bold text-teal-800">🎉 Hebat Aslan! Kamu sudah mulai mengerti bagian dalam komputer! ⭐</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Preview Hari 4 ── -->
+  <section class="mb-10">
+    <div class="rounded-3xl p-6 relative overflow-hidden text-white"
+         style="background:linear-gradient(135deg,#1e3a5f,#1d4ed8,#60a5fa);">
+      <div class="absolute right-0 top-0 bottom-0 w-24 flex items-center justify-center text-8xl opacity-20">🏠</div>
+      <div class="relative z-10">
+        <span class="inline-block text-xs font-bold px-3 py-1 rounded-full mb-3" style="background:rgba(255,255,255,.2);">📅 Besok – Hari 4</span>
+        <h3 class="text-xl font-bold mb-2" style="font-family:'Fredoka One',cursive;">
+          Motherboard – Rumah Besar Komputer 🏠
+        </h3>
+        <p class="text-blue-100 text-sm leading-relaxed mb-4">
+          Besok Aslan bakal jelajahi Motherboard — papan besar hijau yang jadi "rumah" untuk semua komponen!
+          Apa saja yang tinggal di dalamnya?
+        </p>
+        <button class="btn-nav btn-fwd" style="background:linear-gradient(135deg,#60a5fa,#818cf8);box-shadow:0 4px 0 #1d4ed8;"
+                onclick="alert('Besok kita bahas Motherboard ya! 😊')">
+          Besok: Motherboard 🏠 →
+        </button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="pb-8 mt-2">
+  <div class="max-w-3xl mx-auto px-4">
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-teal-100 mb-4 text-center">
+      <p class="font-bold text-teal-600 text-lg mb-1" style="font-family:'Fredoka One',cursive;">
+        ⭐ Hebat Aslan! Kamu sudah mulai mengerti bagian dalam komputer! ⭐
+      </p>
+      <p class="text-gray-500 text-sm">RAM, CPU, dan banyak lagi menunggumu! Terus semangat! 💪</p>
+    </div>
+
+    <div class="bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
+      <div class="h-3 rounded-full" style="width:10%;background:linear-gradient(90deg,#0d9488,#34d399);"></div>
+    </div>
+    <p class="text-center text-gray-400 text-xs mb-5">Progres Seri: Hari 3 dari 30 (10%)</p>
+
+   </footer>
+
+<!-- ══════ TAILWIND QUIZ BUTTON STYLE ══════ -->
+<style>
+.qbtn {
+  padding:.5rem .75rem; border-radius:14px; font-size:.82rem; font-weight:700;
+  border:2px solid #e2e8f0; background:white; color:#374151; cursor:pointer;
+  transition:all .2s; text-align:left;
+}
+.qbtn:hover:not(:disabled) { border-color:#0d9488; background:#f0fdfa; }
+.qbtn:disabled { opacity:.7; cursor:not-allowed; }
+</style>
+
+<!-- ══════ JAVASCRIPT ══════ -->
+<script>
+/* ── Desk Simulation ── */
+const items = [
+  {emoji:'🎮',label:'Game'},
+  {emoji:'🌐',label:'Browser'},
+  {emoji:'📄',label:'Dokumen'},
+  {emoji:'🎵',label:'Musik'},
+  {emoji:'📸',label:'Foto'},
+  {emoji:'🎬',label:'Video'},
+  {emoji:'💬',label:'Chat'},
+  {emoji:'🧮',label:'Kalkulator'},
+];
+let filled = 0;
+const MAX = 8;
+
+function renderSlots() {
+  const grid = document.getElementById('deskSlots');
+  grid.innerHTML = '';
+  for (let i = 0; i < filled; i++) {
+    const it = items[i];
+    const div = document.createElement('div');
+    div.className = 'pop-in bg-white rounded-2xl p-2 text-center shadow-sm border-2 border-teal-200';
+    div.style.animationDelay = i * 0.06 + 's';
+    div.innerHTML = `<div class="text-2xl">${it.emoji}</div><p class="text-xs font-bold text-teal-700 mt-1">${it.label}</p>`;
+    grid.appendChild(div);
+  }
+  // empty placeholder
+  if (filled > 0) document.getElementById('emptyDesk').style.display = 'none';
+
+  // update bar
+  const pct = Math.round(filled / MAX * 100);
+  const bar = document.getElementById('ramBar');
+  bar.style.width = pct + '%';
+  const colors = pct < 60
+    ? 'linear-gradient(90deg,#34d399,#0d9488)'
+    : pct < 85
+      ? 'linear-gradient(90deg,#fbbf24,#f97316)'
+      : 'linear-gradient(90deg,#ef4444,#b91c1c)';
+  bar.style.background = colors;
+  document.getElementById('ramPercText').textContent = pct + '%';
+  document.getElementById('ramBarLabel').textContent = filled + ' / ' + MAX + ' slot';
+  if (filled > 0) document.getElementById('ramBarLabel').classList.remove('hidden');
+
+  // msg
+  const msg = document.getElementById('deskMsg');
+  if (filled === 0)        msg.textContent = 'Klik "Isi Meja Kerja!" untuk menambah program ke RAM!';
+  else if (filled < MAX)   msg.textContent = `✅ ${filled} program terbuka. Bisa tambah ${MAX-filled} lagi!`;
+  else                     msg.textContent = '😅 RAM sudah penuh! Kalau buka 1 lagi, komputer bisa jadi lambat!';
+
+  document.getElementById('fillBtn').textContent = filled >= MAX ? '😅 Meja Penuh!' : '📥 Isi Meja Kerja!';
+  document.getElementById('fillBtn').disabled = filled >= MAX;
+}
+
+function fillDesk() {
+  if (filled >= MAX) return;
+  filled = Math.min(filled + 1, MAX);
+  renderSlots();
+
+  // float emoji from RAM SVG area
+  const stage = document.getElementById('deskStage');
+  const it = items[filled-1];
+  const fl = document.createElement('div');
+  fl.className = 'float-emoji';
+  fl.textContent = it.emoji;
+  fl.style.cssText = `left:${40+Math.random()*20}%;top:${50+Math.random()*20}%;animation-delay:0s;`;
+  stage.appendChild(fl);
+  setTimeout(()=>fl.remove(), 1100);
+}
+
+function shutDown() {
+  if (filled === 0) { alert('Meja sudah kosong! Isi dulu ya 😊'); return; }
+  document.getElementById('offBtn').disabled = true;
+  document.getElementById('fillBtn').disabled = true;
+
+  // Animate items out
+  const cards = document.querySelectorAll('#deskSlots > div');
+  cards.forEach((c, i) => {
+    c.style.animation = 'none';
+    setTimeout(()=>{ c.className += ' pop-out'; }, i * 60);
+  });
+
+  setTimeout(()=>{
+    document.getElementById('shutdownOverlay').classList.remove('hidden');
+  }, cards.length * 60 + 350);
+}
+
+function resetDesk() {
+  filled = 0;
+  document.getElementById('shutdownOverlay').classList.add('hidden');
+  document.getElementById('emptyDesk').style.display = '';
+  document.getElementById('deskSlots').innerHTML = '';
+  document.getElementById('offBtn').disabled = false;
+  document.getElementById('fillBtn').disabled = false;
+  document.getElementById('fillBtn').textContent = '📥 Isi Meja Kerja!';
+  document.getElementById('ramBar').style.width = '0%';
+  document.getElementById('ramPercText').textContent = '0%';
+  document.getElementById('ramBarLabel').classList.add('hidden');
+  document.getElementById('ramBarLabel').textContent = '0 / 8 slot';
+  document.getElementById('deskMsg').textContent = 'Meja kerja bersih lagi! Data di RAM hilang saat komputer mati. 💨';
+}
+
+renderSlots();
+
+/* ── Fact card pop ── */
+function factPop(el, bg) {
+  el.style.background = bg;
+  el.style.transform = 'scale(1.06)';
+  setTimeout(()=>{ el.style.background=''; el.style.transform=''; }, 600);
+
+  // confetti burst
+  const cc=['#34d399','#0d9488','#fbbf24','#a78bfa'];
+  const rect = el.getBoundingClientRect();
+  for(let i=0;i<12;i++){
+    const p=document.createElement('div');
+    p.className='confetti-piece';
+    p.style.cssText=`left:${rect.left+rect.width*.5}px;top:${rect.top+rect.height*.3+window.scrollY}px;
+      background:${cc[Math.floor(Math.random()*cc.length)]};
+      --tx:${(Math.random()-.5)*180}px;--ty:${-40-Math.random()*120}px;
+      animation-delay:${Math.random()*.3}s;position:fixed;`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),1400);
+  }
+}
+
+/* ── Quiz ── */
+let qAnswered = {1:false,2:false,3:false};
+let qScore = 0;
+
+function ans(n, correct, btn) {
+  if (qAnswered[n]) return;
+  qAnswered[n] = true;
+
+  const btns = btn.closest(`#q${n}`).querySelectorAll('.qbtn');
+  btns.forEach(b=>b.disabled=true);
+
+  const r = document.getElementById('q'+n+'r');
+  r.classList.remove('hidden');
+
+  if (correct === 'a') {
+    qScore++;
+    btn.style.background='#dcfce7'; btn.style.borderColor='#16a34a';
+    r.textContent='✅ Betul banget! Kamu pintar! 🌟'; r.style.color='#16a34a';
+  } else {
+    btn.style.background='#fee2e2'; btn.style.borderColor='#dc2626';
+    r.style.color='#dc2626';
+    if (n===1) r.textContent='❌ Jawabannya B – Data hilang saat komputer mati! 💨';
+    if (n===2) r.textContent='❌ Jawabannya B – RAM = Meja Kerja! 📋';
+    if (n===3) r.textContent='❌ Jawabannya C – RAM besar = bisa buka lebih banyak aplikasi! 🚀';
+  }
+
+  if (Object.values(qAnswered).every(v=>v)) {
+    setTimeout(()=>{
+      const f = document.getElementById('quizFinal');
+      f.classList.remove('hidden');
+      const e=document.getElementById('qfEmoji'), t=document.getElementById('qfText'), s=document.getElementById('qfSub');
+      if (qScore===3){ e.textContent='🏆'; t.textContent='Sempurna! 3/3 – Kamu jagoan RAM!'; t.style.color='#0f766e'; s.textContent='Wah, RAM Aslan pasti 32 GB! 😂'; }
+      else if(qScore===2){ e.textContent='⭐'; t.textContent=`Bagus! 2/3 Benar!`; t.style.color='#0d9488'; s.textContent='Hampir sempurna! Coba baca lagi ya!'; }
+      else { e.textContent='💪'; t.textContent=`${qScore}/3 – Jangan menyerah!`; t.style.color='#7c3aed'; s.textContent='Scroll ke atas dan baca lagi, pasti bisa!'; }
+
+      if(qScore===3){
+        const cc=['#34d399','#0d9488','#fbbf24','#a78bfa','#38bdf8'];
+        for(let i=0;i<20;i++){
+          const p=document.createElement('div');p.className='confetti-piece';
+          p.style.cssText=`left:${20+Math.random()*60}%;top:60%;background:${cc[Math.floor(Math.random()*cc.length)]};--tx:${(Math.random()-.5)*300}px;--ty:${-80-Math.random()*200}px;animation-delay:${Math.random()*.5}s;position:fixed;`;
+          document.body.appendChild(p);setTimeout(()=>p.remove(),1600);
+        }
+      }
+    }, 400);
+  }
+}
+
+/* ── Activity checks ── */
+let actDone = 0;
+function actCheck(n) {
+  const el = document.getElementById('ac'+n);
+  const cb = el.querySelector('input');
+  if (cb.checked) { actDone++; el.querySelector('span').style.textDecoration='line-through'; el.querySelector('span').style.opacity='.5'; }
+  else { actDone--; el.querySelector('span').style.textDecoration=''; el.querySelector('span').style.opacity=''; }
+  if (actDone >= 4) {
+    document.getElementById('actDone').classList.remove('hidden');
+    const cc=['#34d399','#0d9488','#fbbf24','#a78bfa'];
+    for(let i=0;i<16;i++){
+      const p=document.createElement('div');p.className='confetti-piece';
+      p.style.cssText=`left:${20+Math.random()*60}%;top:70%;background:${cc[Math.floor(Math.random()*cc.length)]};--tx:${(Math.random()-.5)*250}px;--ty:${-60-Math.random()*180}px;animation-delay:${Math.random()*.5}s;position:fixed;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1600);
+    }
+  } else {
+    document.getElementById('actDone').classList.add('hidden');
+  }
+}
+</script>
+</body>
+</html>

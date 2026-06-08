@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 15: Monster di Balik Layar | Petualangan Kapten Cerdas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deep: #070e1f;
+  --navy: #0b1f4a;
+  --ocean: #103a80;
+  --bright: #1565c0;
+  --glow: #42a5f5;
+  --sky: #29b6f6;
+  --foam: #e3f2fd;
+  --gold: #ffd54f;
+  --gold2: #ffab00;
+  --orange: #ff7043;
+  --monster-green: #00e676;
+  --monster-purple: #e040fb;
+  --monster-red: #ff1744;
+  --warn: #ff6d00;
+  --safe: #69f0ae;
+  --white: #ffffff;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--deep);
+  height:100vh;
+  overflow:hidden;
+}
+
+/* ── BACK BUTTON ── */
+.back-btn{
+  position:fixed;top:14px;left:14px;z-index:9999;
+  background:rgba(255,255,255,0.12);backdrop-filter:blur(10px);
+  border:1.5px solid rgba(255,255,255,0.25);color:#fff;
+  padding:8px 18px;border-radius:50px;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;
+  text-decoration:none;display:flex;align-items:center;gap:6px;
+  transition:all .3s;box-shadow:0 4px 15px rgba(0,0,0,0.3);
+}
+.back-btn:hover{background:rgba(255,255,255,0.22);transform:translateX(-3px);}
+
+/* ── BACKGROUND ── */
+.bg{position:fixed;inset:0;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 0%,#0d2d6b 0%,#070e1f 65%);
+}
+
+/* Stars */
+.star-bg{position:absolute;inset:0;}
+.star-dot{position:absolute;border-radius:50%;background:#fff;animation:twinkle ease-in-out infinite;}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(1);}50%{opacity:.9;transform:scale(1.4);}}
+
+/* Fog / mist layers */
+.mist{
+  position:absolute;width:150%;height:200px;
+  border-radius:50%;
+  background:radial-gradient(ellipse,rgba(16,58,128,0.45) 0%,transparent 70%);
+  animation:mistDrift ease-in-out infinite;
+}
+.mist-1{bottom:-40px;left:-20%;animation-duration:14s;}
+.mist-2{bottom:30px;left:10%;animation-duration:18s;animation-delay:-7s;opacity:.6;}
+@keyframes mistDrift{0%,100%{transform:translateX(0) scaleX(1);}50%{transform:translateX(4%) scaleX(1.04);}}
+
+/* Floating bubbles */
+.bubble{position:absolute;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.35),rgba(255,255,255,.04));
+  border:1px solid rgba(255,255,255,.18);
+  animation:bubbleUp linear infinite;
+}
+@keyframes bubbleUp{0%{transform:translateY(0) translateX(0);opacity:0;}10%{opacity:1;}90%{opacity:.5;}100%{transform:translateY(-105vh) translateX(25px);opacity:0;}}
+
+/* ── BOOK ── */
+.book-wrap{
+  position:relative;z-index:10;
+  width:100%;height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:18px;
+}
+.book{
+  width:100%;max-width:780px;
+  height:calc(100vh - 36px);max-height:920px;
+  background:linear-gradient(160deg,rgba(11,31,74,.97) 0%,rgba(16,58,128,.94) 100%);
+  backdrop-filter:blur(22px);
+  border-radius:28px;
+  border:2px solid rgba(66,165,245,.35);
+  box-shadow:0 0 90px rgba(16,58,128,.7),0 40px 80px rgba(0,0,0,.7),
+             inset 0 1px 0 rgba(255,255,255,.12);
+  display:flex;flex-direction:column;overflow:hidden;position:relative;
+}
+.book::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--gold),var(--monster-purple),var(--glow),var(--gold));
+  background-size:300% 100%;animation:shimmer 4s linear infinite;
+}
+@keyframes shimmer{0%{background-position:0%}100%{background-position:300%}}
+
+/* ── SLIDES ── */
+.slides{flex:1;position:relative;overflow:hidden;}
+.slide{
+  position:absolute;inset:0;
+  padding:28px 34px 18px;
+  overflow-y:auto;
+  opacity:0;transform:translateX(55px);
+  transition:all .48s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;
+  scrollbar-width:thin;scrollbar-color:rgba(66,165,245,.35) transparent;
+}
+.slide::-webkit-scrollbar{width:4px;}
+.slide::-webkit-scrollbar-thumb{background:rgba(66,165,245,.35);border-radius:2px;}
+.slide.active{opacity:1;transform:translateX(0);pointer-events:all;}
+.slide.out-left{opacity:0;transform:translateX(-55px);}
+
+/* ── PROGRESS ── */
+.prog-wrap{padding:0 34px 10px;background:rgba(0,0,0,.22);}
+.prog-row{display:flex;justify-content:space-between;align-items:center;
+  color:rgba(255,255,255,.55);font-size:11px;font-weight:700;margin-bottom:5px;}
+.prog-track{height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;
+  background:linear-gradient(90deg,var(--gold2),var(--warn));
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 10px rgba(255,171,0,.5);}
+
+/* ── NAV ── */
+.nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 22px;
+  background:rgba(0,0,0,.28);
+  border-top:1px solid rgba(255,255,255,.07);
+}
+.nbtn{
+  background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.18);
+  color:#fff;padding:9px 20px;border-radius:50px;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;
+  cursor:pointer;transition:all .28s;display:flex;align-items:center;gap:7px;
+}
+.nbtn:hover:not(:disabled){background:rgba(255,255,255,.2);transform:scale(1.05);}
+.nbtn:disabled{opacity:.28;cursor:not-allowed;}
+.dots{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:190px;}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s;}
+.dot.on{width:22px;border-radius:4px;background:var(--gold);box-shadow:0 0 8px rgba(255,213,79,.6);}
+
+/* ── TYPOGRAPHY ── */
+.ttl{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--gold);
+  text-shadow:0 2px 12px rgba(255,213,79,.4);line-height:1.2;margin-bottom:14px;}
+.sub{font-family:'Fredoka One',cursive;font-size:1.25rem;color:var(--sky);margin-bottom:10px;}
+.txt{color:rgba(255,255,255,.9);font-size:.97rem;line-height:1.72;font-weight:600;margin-bottom:13px;}
+.txt b{color:var(--gold);}
+.box{background:rgba(255,255,255,.07);border:1.5px solid rgba(66,165,245,.28);
+  border-radius:16px;padding:15px 19px;margin:13px 0;}
+
+/* ── COVER ── */
+.cover-center{text-align:center;padding-top:8px;}
+.badge{display:inline-flex;align-items:center;gap:7px;
+  background:linear-gradient(135deg,var(--gold2),var(--gold));
+  color:var(--deep);padding:7px 20px;border-radius:50px;
+  font-family:'Fredoka One',cursive;font-size:.95rem;
+  box-shadow:0 4px 18px rgba(255,171,0,.45);margin-bottom:14px;}
+.cover-monster-row{display:flex;justify-content:center;gap:18px;margin:16px 0;}
+.c-mon{font-size:54px;animation:monBob ease-in-out infinite;}
+.c-mon:nth-child(1){animation-duration:2.8s;filter:drop-shadow(0 0 14px rgba(224,64,251,.7));}
+.c-mon:nth-child(2){animation-duration:3.2s;animation-delay:.5s;filter:drop-shadow(0 0 14px rgba(255,23,68,.6));}
+.c-mon:nth-child(3){animation-duration:2.5s;animation-delay:1s;filter:drop-shadow(0 0 14px rgba(0,230,118,.6));}
+@keyframes monBob{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-12px) rotate(4deg);}}
+.cover-ttl{font-family:'Fredoka One',cursive;font-size:2.6rem;color:#fff;
+  text-shadow:0 4px 22px rgba(0,0,0,.6);line-height:1.1;margin-bottom:6px;}
+.cover-ttl span{color:var(--monster-purple);text-shadow:0 0 22px rgba(224,64,251,.65);}
+.captain-chip{display:inline-flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.09);border:2px solid rgba(255,255,255,.22);
+  border-radius:50px;padding:10px 24px;
+  font-family:'Fredoka One',cursive;font-size:1.15rem;color:var(--sky);margin-top:13px;
+  box-shadow:0 4px 20px rgba(0,0,0,.3);}
+.mini-badge{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);
+  border-radius:8px;padding:7px 15px;font-size:.82rem;
+  color:rgba(255,255,255,.55);margin-top:14px;display:inline-block;}
+.week-chip{display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,rgba(224,64,251,.25),rgba(255,23,68,.15));
+  border:1.5px solid rgba(224,64,251,.4);
+  border-radius:50px;padding:8px 18px;
+  font-family:'Fredoka One',cursive;font-size:.88rem;color:var(--monster-purple);margin-top:10px;}
+
+/* ── MONSTER POPUP GAME ── */
+.mon-stage{
+  background:rgba(0,0,0,.3);border-radius:20px;
+  padding:18px;margin:14px 0;
+  border:2px dashed rgba(224,64,251,.35);
+  text-align:center;position:relative;min-height:180px;
+}
+.mon-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px;}
+.mon-card{
+  background:rgba(255,255,255,.07);border-radius:16px;
+  padding:14px 8px;cursor:pointer;
+  border:2px solid rgba(255,255,255,.12);
+  transition:all .35s;position:relative;overflow:hidden;
+}
+.mon-card:hover:not(.open){transform:scale(1.05);border-color:rgba(224,64,251,.45);}
+.mon-card .mc-face{font-size:34px;display:block;margin-bottom:5px;
+  transition:all .35s;animation:monShake 3s ease-in-out infinite;}
+.mon-card .mc-label{font-size:.75rem;font-weight:700;color:rgba(255,255,255,.75);
+  transition:all .35s;}
+.mon-card .mc-reveal{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  border-radius:14px;opacity:0;transition:opacity .35s;
+  padding:8px;font-weight:800;font-size:.8rem;line-height:1.3;text-align:center;
+}
+.mon-card.open .mc-reveal{opacity:1;}
+.mon-card.open .mc-face,.mon-card.open .mc-label{opacity:0;}
+.mon-card.danger .mc-reveal{background:rgba(255,23,68,.8);color:#fff;}
+.mon-card.caution .mc-reveal{background:rgba(255,109,0,.8);color:#fff;}
+.mon-card.danger{border-color:rgba(255,23,68,.5);}
+.mon-card.caution{border-color:rgba(255,109,0,.5);}
+@keyframes monShake{0%,100%{transform:rotate(0);}92%{transform:rotate(0);}94%{transform:rotate(-6deg);}96%{transform:rotate(6deg);}98%{transform:rotate(-4deg);}}
+
+/* ── TRAIT CARDS ── */
+.trait{
+  display:flex;align-items:flex-start;gap:13px;
+  background:rgba(255,255,255,.06);border-radius:15px;
+  padding:13px 16px;margin-bottom:11px;
+  border-left:4px solid;transition:all .28s;cursor:default;
+}
+.trait:hover{background:rgba(255,255,255,.1);transform:translateX(4px);}
+.trait .ti{font-size:26px;flex-shrink:0;}
+.trait .tt{font-family:'Fredoka One',cursive;font-size:.95rem;margin-bottom:3px;}
+.trait .td{font-size:.85rem;color:rgba(255,255,255,.8);font-weight:600;line-height:1.48;}
+
+/* ── DIALOGUE ── */
+.dlg{display:flex;gap:13px;align-items:flex-start;
+  background:rgba(255,255,255,.06);border-radius:15px;padding:13px 15px;margin:11px 0;}
+.dlg .av{font-size:34px;flex-shrink:0;}
+.dlg .dc .dn{font-family:'Fredoka One',cursive;font-size:.88rem;color:var(--gold);margin-bottom:3px;}
+.dlg .dc .dt{font-size:.88rem;color:rgba(255,255,255,.88);font-weight:600;line-height:1.5;font-style:italic;}
+
+/* ── DANGER GRID ── */
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:13px 0;}
+.dpill{
+  background:linear-gradient(135deg,rgba(255,23,68,.18),rgba(255,23,68,.05));
+  border:1.5px solid rgba(255,23,68,.38);border-radius:15px;
+  padding:13px;text-align:center;transition:all .28s;
+}
+.dpill:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(255,23,68,.28);}
+.dpill .di{font-size:28px;display:block;margin-bottom:5px;}
+.dpill .dt{font-size:.8rem;font-weight:700;color:rgba(255,255,255,.85);line-height:1.38;}
+
+/* ── SAFE STEPS ── */
+.sstep{
+  display:flex;align-items:flex-start;gap:13px;
+  background:rgba(255,255,255,.06);border-radius:14px;
+  padding:12px 15px;margin-bottom:10px;
+  transition:all .28s;cursor:default;border:1.5px solid transparent;
+}
+.sstep:hover{background:rgba(105,240,174,.08);border-color:rgba(105,240,174,.25);transform:translateX(3px);}
+.sstep .sn{width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold2),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--deep);
+  flex-shrink:0;box-shadow:0 2px 8px rgba(255,171,0,.4);}
+.sstep .sc .sh{font-family:'Fredoka One',cursive;font-size:.97rem;color:var(--sky);margin-bottom:3px;}
+.sstep .sc .sd{font-size:.84rem;color:rgba(255,255,255,.8);font-weight:600;line-height:1.42;}
+
+/* ── BIG PANIC BUTTON ── */
+.panic-btn{
+  display:block;width:100%;max-width:340px;margin:18px auto;
+  background:linear-gradient(135deg,#d50000,#ff1744);
+  color:#fff;border:none;border-radius:20px;
+  padding:18px 24px;text-align:center;cursor:pointer;
+  font-family:'Fredoka One',cursive;font-size:1.25rem;
+  box-shadow:0 0 30px rgba(255,23,68,.5);
+  transition:all .3s;animation:panicPulse 2s ease-in-out infinite;
+}
+.panic-btn:hover{transform:scale(1.04);box-shadow:0 0 45px rgba(255,23,68,.7);}
+@keyframes panicPulse{0%,100%{box-shadow:0 0 30px rgba(255,23,68,.4);}50%{box-shadow:0 0 50px rgba(255,23,68,.75);}}
+.panic-result{
+  display:none;background:rgba(105,240,174,.15);
+  border:2px solid rgba(105,240,174,.4);border-radius:16px;
+  padding:16px;margin-top:14px;text-align:center;
+}
+.panic-result.show{display:block;}
+
+/* ── LESSON GRID ── */
+.lgrid{display:grid;gap:9px;}
+.litem{display:flex;align-items:center;gap:13px;
+  background:rgba(255,255,255,.06);border-radius:13px;
+  padding:13px 15px;border:1.5px solid rgba(66,165,245,.18);transition:all .28s;}
+.litem:hover{background:rgba(255,255,255,.1);transform:scale(1.01);}
+.litem .lic{font-size:24px;flex-shrink:0;}
+.litem .lit{font-size:.88rem;font-weight:700;color:rgba(255,255,255,.9);line-height:1.4;}
+
+/* ── CHALLENGE ── */
+.chal-box{
+  background:linear-gradient(135deg,rgba(255,213,79,.13),rgba(255,109,0,.09));
+  border:2px solid rgba(255,213,79,.38);border-radius:20px;padding:20px;
+}
+.chal-ttl{font-family:'Fredoka One',cursive;font-size:1.45rem;color:var(--gold);margin-bottom:11px;text-align:center;}
+.ctask{
+  display:flex;align-items:flex-start;gap:12px;
+  background:rgba(255,255,255,.07);border-radius:14px;
+  padding:13px 15px;margin-bottom:9px;cursor:pointer;
+  transition:all .28s;border:1.5px solid transparent;
+}
+.ctask:hover{background:rgba(255,255,255,.11);border-color:rgba(255,213,79,.3);}
+.ctask.done{background:rgba(105,240,174,.14);border-color:rgba(105,240,174,.38);}
+.ctask.done .cchk{background:var(--safe);color:var(--deep);border-color:var(--safe);}
+.cchk{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.38);
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+  flex-shrink:0;transition:all .28s;color:transparent;}
+.ctask.done .cchk{color:var(--deep);}
+.ctxt{font-size:.88rem;font-weight:700;color:rgba(255,255,255,.9);line-height:1.42;}
+
+/* ── CLOSING ── */
+.star-row{display:flex;justify-content:center;gap:10px;margin:14px 0;}
+.cstar{font-size:34px;animation:starPop 2s ease-in-out infinite;}
+.cstar:nth-child(2){animation-delay:.3s;}
+.cstar:nth-child(3){animation-delay:.6s;}
+@keyframes starPop{0%,100%{transform:scale(1) rotate(0);}50%{transform:scale(1.2) rotate(8deg);}}
+.close-card{
+  background:linear-gradient(135deg,rgba(105,240,174,.13),rgba(66,165,245,.09));
+  border:2px solid rgba(105,240,174,.28);border-radius:20px;
+  padding:20px;text-align:center;margin-top:13px;
+}
+
+/* ── MONSTER SCENE (cover art inline) ── */
+.scene-box{
+  position:relative;
+  background:linear-gradient(180deg,rgba(7,14,31,.9) 0%,rgba(11,31,74,.8) 100%);
+  border-radius:18px;padding:20px;margin:14px 0;
+  border:1.5px solid rgba(224,64,251,.25);overflow:hidden;
+  min-height:130px;display:flex;align-items:center;justify-content:center;gap:20px;
+}
+.scene-screen{
+  width:90px;height:70px;background:#0a1020;border-radius:10px;
+  border:3px solid rgba(66,165,245,.5);position:relative;
+  box-shadow:0 0 20px rgba(66,165,245,.3);flex-shrink:0;
+}
+.scene-screen::after{
+  content:'💻';position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:22px;
+}
+.screen-monster{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:36px;animation:peekPop 4s ease-in-out infinite;
+  filter:drop-shadow(0 0 12px rgba(224,64,251,.9));
+}
+@keyframes peekPop{
+  0%,100%{transform:translateY(20px) scale(.5);opacity:0;}
+  25%,75%{transform:translateY(0) scale(1);opacity:1;}
+  50%{transform:translateY(-3px) scale(1.08);opacity:1;}
+}
+.scene-captain{font-size:44px;filter:drop-shadow(0 0 10px rgba(255,213,79,.5));}
+.vs-arrow{font-size:22px;color:rgba(255,255,255,.35);}
+
+/* ── WARNING BADGE ── */
+.warn-band{
+  display:flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,rgba(255,109,0,.22),rgba(255,23,68,.12));
+  border:1.5px solid rgba(255,109,0,.4);border-radius:14px;
+  padding:12px 16px;margin:13px 0;
+}
+.warn-band .wb-icon{font-size:24px;flex-shrink:0;}
+.warn-band .wb-txt{font-size:.88rem;font-weight:700;color:rgba(255,255,255,.88);line-height:1.45;}
+
+/* MONSTER REVEAL ANIMATION */
+@keyframes monReveal{
+  0%{transform:scale(0) rotate(-10deg);opacity:0;}
+  70%{transform:scale(1.1) rotate(3deg);opacity:1;}
+  100%{transform:scale(1) rotate(0);opacity:1;}
+}
+.mon-card.open .mc-reveal{animation:monReveal .4s ease;}
+
+/* responsive */
+@media(max-width:600px){
+  .slide{padding:18px 18px 14px;}
+  .cover-ttl{font-size:2rem;}
+  .ttl{font-size:1.65rem;}
+  .prog-wrap{padding:0 18px 8px;}
+  .nav{padding:9px 14px;}
+  .mon-grid{gap:8px;}
+  .dgrid{grid-template-columns:1fr 1fr;}
+  .cover-monster-row .c-mon{font-size:42px;}
+}
+</style>
+</head>
+<body>
+
+<a href="../perpustakaan.html" class="back-btn">← Kembali ke Perpustakaan</a>
+
+<!-- BG -->
+<div class="bg" id="bgLayer">
+  <div class="star-bg" id="starBg"></div>
+  <div class="mist mist-1"></div>
+  <div class="mist mist-2"></div>
+</div>
+
+<!-- BOOK -->
+<div class="book-wrap">
+<div class="book">
+
+  <!-- SLIDES -->
+  <div class="slides" id="slidesEl">
+
+    <!-- S0: COVER -->
+    <div class="slide active" id="s0">
+      <div class="cover-center">
+        <div class="badge">⚓ Hari 15 dari 30 ⚓</div>
+        <div class="week-chip">🛡️ Minggu 3 – Keselamatan &amp; Perlindungan</div>
+        <div class="cover-monster-row">
+          <span class="c-mon">👾</span>
+          <span class="c-mon">🤡</span>
+          <span class="c-mon">👻</span>
+        </div>
+        <h1 class="cover-ttl">Monster yang<br><span>Sembunyi di Balik</span><br>Layar</h1>
+        <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:rgba(255,255,255,.65);margin:8px 0;">Siapa saja yang mengintai di Lautan Digital?</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0;">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:rgba(224,64,251,.7);animation:monBob 2s infinite;"></span>
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:rgba(255,23,68,.7);animation:monBob 2.4s .3s infinite;"></span>
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:rgba(0,230,118,.7);animation:monBob 2s .6s infinite;"></span>
+        </div>
+        <div style="background:rgba(255,255,255,.07);border-radius:15px;padding:12px 18px;margin:12px 0;border:1.5px solid rgba(255,255,255,.1);">
+          <p style="font-size:.9rem;color:rgba(255,255,255,.72);font-weight:600;line-height:1.65;">
+            Di balik layar yang bercahaya,<br>ada makhluk yang berpura-pura jadi temanmu.<br>Tapi Kapten Cerdas tidak mudah ditipu! 🛡️
+          </p>
+        </div>
+        <div class="captain-chip">⚓ Kapten Aslan</div>
+        <div class="mini-badge">📚 Seri: Petualangan Kapten Cerdas di Lautan Digital</div>
+      </div>
+    </div>
+
+    <!-- S1: PENGANTAR -->
+    <div class="slide" id="s1">
+      <h2 class="ttl">🌊 Memasuki Minggu Keselamatan!</h2>
+      <p class="txt">Kapten Aslan, kamu luar biasa! Sudah 14 hari berlayar di Lautan Digital! 🎉</p>
+      <div class="box">
+        <p style="font-size:.88rem;color:rgba(255,255,255,.72);font-weight:600;line-height:1.65;">
+          📖 <b style="color:var(--gold)">Perjalananmu sejauh ini:</b><br>
+          Kamu sudah mengenal Lautan Digital, menguasai kapal (HP &amp; tablet), memahami arus internet, menemukan berlian ilmu, dan bisa membedakan ikan beracun. Kamu sudah menjadi pelaut yang tangguh!
+        </p>
+      </div>
+      <p class="txt">Sekarang kita memasuki <b>Minggu 3 — Keselamatan dan Perlindungan</b>. Ini adalah minggu paling penting! 🛡️</p>
+      <div class="scene-box">
+        <div class="scene-captain">⚓</div>
+        <div class="vs-arrow">👁️</div>
+        <div class="scene-screen">
+          <div class="screen-monster">👾</div>
+        </div>
+      </div>
+      <p class="txt">Lautan Digital bukan hanya tempat yang menyenangkan. Di sudut-sudut gelap yang tersembunyi, ada <b>monster-monster</b> yang berpura-pura baik. Mereka mengintai dari balik layar...</p>
+      <div class="warn-band">
+        <span class="wb-icon">⚠️</span>
+        <span class="wb-txt">Tapi tenang! Monster-monster ini bisa dikalahkan oleh Kapten yang <b>cerdas, waspada, dan berani melapor!</b></span>
+      </div>
+    </div>
+
+    <!-- S2: CERITA UTAMA -->
+    <div class="slide" id="s2">
+      <h2 class="ttl">📖 Aslan Bertemu Monster!</h2>
+      <p class="txt">Suatu sore, Kapten Aslan sedang bermain game online di kapalnya yang nyaman...</p>
+      <div class="dlg">
+        <span class="av">⚓</span>
+        <div class="dc">
+          <div class="dn">Kapten Aslan</div>
+          <div class="dt">"Seru banget game ini! Aku hampir naik level nih..."</div>
+        </div>
+      </div>
+      <p class="txt">Tiba-tiba, muncul pesan dari akun bernama <b style="color:var(--monster-purple);">"KapalBaru99"</b>. Profilnya bergambar anak seusia Aslan dengan wajah yang ramah.</p>
+      <div class="dlg">
+        <span class="av">👾</span>
+        <div class="dc">
+          <div class="dn" style="color:var(--monster-purple);">KapalBaru99 (Monster)</div>
+          <div class="dt">"Hei! Aku juga suka game ini! Boleh kita temenan? Aku kasih kamu item langka gratis! Tapi kirim dulu foto kamu dong, biar aku kenal..."</div>
+        </div>
+      </div>
+      <div class="dlg">
+        <span class="av">⚓</span>
+        <div class="dc">
+          <div class="dn">Kapten Aslan (berpikir keras)</div>
+          <div class="dt">"Tunggu... kenapa dia minta fotoku? Aku kan belum pernah ketemu dia. Dan item gratis? Sepertinya ada yang tidak beres..."</div>
+        </div>
+      </div>
+      <div class="box" style="border-color:rgba(0,230,118,.3);background:rgba(0,230,118,.07);">
+        <p style="font-size:.88rem;color:rgba(255,255,255,.85);font-weight:600;line-height:1.65;">
+          ✅ <b style="color:var(--safe)">Naluri Kapten Aslan yang tajam langsung berdering!</b> Apa yang kamu lakukan kalau mendapat pesan seperti ini?
+        </p>
+      </div>
+      <p class="txt">Aslan tidak membalas pesan itu. Ia langsung berlari ke geladak dan menemui <b>Kapten Utama</b> — yaitu Ayahnya!</p>
+      <div class="dlg">
+        <span class="av">⚓</span>
+        <div class="dc">
+          <div class="dn">Kapten Aslan (berani)</div>
+          <div class="dt">"Ayah! Ada orang asing minta fotoku di game online. Aku tidak kasih, tapi aku mau lapor!"</div>
+        </div>
+      </div>
+      <p class="txt">Ayah Aslan sangat bangga! Itulah reaksi <b>Kapten Cerdas sejati!</b> 🦸</p>
+    </div>
+
+    <!-- S3: APA ITU MONSTER -->
+    <div class="slide" id="s3">
+      <h2 class="ttl">👾 Siapa Monster di Balik Layar?</h2>
+      <p class="txt">Monster di Lautan Digital <b>tidak kelihatan wujud aslinya</b>. Mereka bersembunyi di balik foto palsu dan nama palsu. Ada beberapa jenis monster yang perlu kamu kenali:</p>
+
+      <div class="trait" style="border-left-color:#e040fb;">
+        <span class="ti">🎭</span>
+        <div>
+          <div class="tt" style="color:var(--monster-purple);">Monster Penyamar (Online Predator)</div>
+          <div class="td">Orang dewasa yang berpura-pura menjadi anak seusiamu untuk mendekatimu. Mereka berbohong tentang usia, nama, dan siapa mereka sebenarnya.</div>
+        </div>
+      </div>
+
+      <div class="trait" style="border-left-color:#ff1744;">
+        <span class="ti">💸</span>
+        <div>
+          <div class="tt" style="color:#ff6b6b;">Monster Penipu (Scammer)</div>
+          <div class="td">Mereka menjanjikan hadiah, uang, atau item game gratis — tapi sebenarnya ingin mencuri data atau uang dari kamu atau orang tuamu!</div>
+        </div>
+      </div>
+
+      <div class="trait" style="border-left-color:#ff6d00;">
+        <span class="ti">😈</span>
+        <div>
+          <div class="tt" style="color:#ffb74d;">Monster Pengganggu (Troll &amp; Bully)</div>
+          <div class="td">Mereka sengaja mengirim pesan jahat, menghina, atau menakut-nakuti hanya untuk melihat kamu sedih. Ini juga termasuk cyberbullying!</div>
+        </div>
+      </div>
+
+      <div class="trait" style="border-left-color:#00e676;">
+        <span class="ti">🕵️</span>
+        <div>
+          <div class="tt" style="color:var(--monster-green);">Monster Pencuri Informasi (Phisher)</div>
+          <div class="td">Mereka mengirim link atau pesan palsu yang kelihatan resmi untuk mencuri kata sandi, nomor HP, atau data penting lainnya.</div>
+        </div>
+      </div>
+
+      <div class="warn-band">
+        <span class="wb-icon">🔍</span>
+        <span class="wb-txt">Semua monster ini punya satu kesamaan: <b>mereka selalu berpura-pura baik di awal!</b></span>
+      </div>
+    </div>
+
+    <!-- S4: CIRI-CIRI (GAME) -->
+    <div class="slide" id="s4">
+      <h2 class="ttl">🔍 Kenali Ciri Monster!</h2>
+      <p class="txt">Klik setiap monster untuk mengungkap tanda bahayanya!</p>
+      <div class="mon-stage">
+        <p style="color:rgba(255,255,255,.5);font-size:.82rem;font-weight:700;margin-bottom:4px;">👆 Tap monster untuk melihat rahasianya!</p>
+        <div class="mon-grid" id="monGame">
+          <div class="mon-card danger" onclick="openMon(this)">
+            <span class="mc-face">🎁</span>
+            <span class="mc-label">Tawaran Hadiah</span>
+            <div class="mc-reveal">🚨 BAHAYA!<br><small>"Item gratis untukmu!" — tawaran terlalu bagus selalu ada jebakan tersembunyi</small></div>
+          </div>
+          <div class="mon-card danger" onclick="openMon(this)">
+            <span class="mc-face">📸</span>
+            <span class="mc-label">Minta Foto</span>
+            <div class="mc-reveal">🚨 BAHAYA!<br><small>Tidak ada alasan orang asing perlu fotomu. Ini tanda monster penyamar!</small></div>
+          </div>
+          <div class="mon-card caution" onclick="openMon(this)">
+            <span class="mc-face">🤫</span>
+            <span class="mc-label">Minta Rahasia</span>
+            <div class="mc-reveal">⚠️ WASPADA!<br><small>"Jangan cerita ke ayah/ibu ya..." — orang baik tidak pernah minta kamu menyembunyikan sesuatu dari orang tua!</small></div>
+          </div>
+          <div class="mon-card danger" onclick="openMon(this)">
+            <span class="mc-face">📍</span>
+            <span class="mc-label">Tanya Lokasi</span>
+            <div class="mc-reveal">🚨 BAHAYA!<br><small>"Kamu tinggal di mana? Sekolah di mana?" — tidak perlu memberitahu alamat kepada siapapun online!</small></div>
+          </div>
+          <div class="mon-card caution" onclick="openMon(this)">
+            <span class="mc-face">📞</span>
+            <span class="mc-label">Paksa Ketemu</span>
+            <div class="mc-reveal">⚠️ WASPADA!<br><small>"Ayo kita ketemu langsung!" — jangan pernah setuju ketemu orang yang hanya kamu kenal online!</small></div>
+          </div>
+          <div class="mon-card danger" onclick="openMon(this)">
+            <span class="mc-face">💬</span>
+            <span class="mc-label">Bicara Aneh</span>
+            <div class="mc-reveal">🚨 BAHAYA!<br><small>Kalau ada yang bicara hal yang membuatmu tidak nyaman, itu sinyal untuk langsung pergi dan lapor!</small></div>
+          </div>
+        </div>
+      </div>
+      <button class="reset-btn" onclick="resetMonGame()" style="background:linear-gradient(135deg,var(--glow),var(--sky));color:var(--deep);border:none;padding:9px 22px;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.88rem;cursor:pointer;display:block;margin:10px auto;transition:all .28s;">🔄 Coba Lagi</button>
+    </div>
+
+    <!-- S5: BAHAYA -->
+    <div class="slide" id="s5">
+      <h2 class="ttl">⚠️ Mengapa Monster Berbahaya?</h2>
+      <p class="txt">Bayangkan kalau kamu tidak berhati-hati dan percaya pada monster... ini yang bisa terjadi:</p>
+      <div class="dgrid">
+        <div class="dpill">
+          <span class="di">😰</span>
+          <div class="dt">Kamu bisa menjadi korban penipuan dan kehilangan uang orang tua</div>
+        </div>
+        <div class="dpill">
+          <span class="di">📱</span>
+          <div class="dt">Data pribadi dicuri dan disalahgunakan oleh orang jahat</div>
+        </div>
+        <div class="dpill">
+          <span class="di">😢</span>
+          <div class="dt">Mendapat pesan jahat dan ancaman yang membuatmu tidak aman</div>
+        </div>
+        <div class="dpill">
+          <span class="di">🙈</span>
+          <div class="dt">Foto atau informasimu disebarkan tanpa izin ke orang-orang asing</div>
+        </div>
+      </div>
+      <div class="dlg" style="margin-top:13px;">
+        <span class="av">👦</span>
+        <div class="dc">
+          <div class="dn">Contoh Nyata</div>
+          <div class="dt">Dita menerima pesan dari "anak perempuan" yang mengaku baru pindah ke kotanya. Setelah berhari-hari chatting, "anak" itu meminta foto Dita untuk "kenangan". Ternyata bukan anak kecil sama sekali — melainkan orang dewasa yang berbahaya!</div>
+        </div>
+      </div>
+      <div class="box" style="border-color:rgba(255,109,0,.35);background:rgba(255,109,0,.08);margin-top:13px;">
+        <p style="font-size:.88rem;color:rgba(255,255,255,.85);font-weight:600;line-height:1.65;">
+          💡 <b style="color:var(--warn)">Yang perlu diingat:</b> Monster digital tidak kelihatan menakutkan dari luar. Mereka terlihat ramah, lucu, dan seperti teman yang menyenangkan. Itulah yang membuat mereka berbahaya!
+        </p>
+      </div>
+    </div>
+
+    <!-- S6: CARA MENGHINDARI -->
+    <div class="slide" id="s6">
+      <h2 class="ttl">🛡️ Cara Mengalahkan Monster</h2>
+      <p class="txt">Kapten Cerdas selalu punya strategi! Ikuti langkah-langkah ajaib ini:</p>
+      <div class="sstep">
+        <div class="sn">1</div>
+        <div class="sc">
+          <div class="sh">🚫 Jangan bicara dengan orang asing</div>
+          <div class="sd">Di dunia nyata kamu tidak mau bicara dengan orang yang tidak dikenal, bukan? Di dunia digital pun sama! Tolak friend request dari orang yang tidak kamu kenal di kehidupan nyata.</div>
+        </div>
+      </div>
+      <div class="sstep">
+        <div class="sn">2</div>
+        <div class="sc">
+          <div class="sh">🔒 Jaga data pribadimu</div>
+          <div class="sd">Nama lengkap, sekolah, alamat rumah, nomor HP, dan foto diri adalah <b>harta karunmu</b>. Jangan pernah berikan kepada siapapun online tanpa izin orang tua!</div>
+        </div>
+      </div>
+      <div class="sstep">
+        <div class="sn">3</div>
+        <div class="sc">
+          <div class="sh">🔐 Set akun jadi Private</div>
+          <div class="sd">Pastikan akun media sosialmu diset "private" sehingga hanya orang yang kamu kenal bisa melihat postinganmu. Minta bantuan orang tua untuk mengaturnya!</div>
+        </div>
+      </div>
+      <div class="sstep">
+        <div class="sn">4</div>
+        <div class="sc">
+          <div class="sh">🙅 Percaya pada insting</div>
+          <div class="sd">Kalau ada sesuatu yang terasa aneh, tidak nyaman, atau terlalu bagus untuk jadi kenyataan — PERCAYA perasaanmu! Lebih baik salah waspada daripada salah percaya.</div>
+        </div>
+      </div>
+      <div class="sstep">
+        <div class="sn">5</div>
+        <div class="sc">
+          <div class="sh">🔇 Blokir dan laporkan</div>
+          <div class="sd">Semua platform online punya tombol "blokir" dan "laporkan". Gunakan segera kalau ada yang membuatmu tidak nyaman! Melaporkan adalah tindakan pemberani.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S7: LAPOR KE ORANG TUA -->
+    <div class="slide" id="s7">
+      <h2 class="ttl">🆘 Sudah Ketemu Monster? Lapor!</h2>
+      <p class="txt">Kalau kamu bertemu monster online, <b>satu hal paling penting yang harus kamu lakukan adalah...</b></p>
+      <button class="panic-btn" id="panicBtn" onclick="showPanic()">
+        🚨 TEKAN INI — APA YANG HARUS DILAKUKAN?
+      </button>
+      <div class="panic-result" id="panicResult">
+        <p style="font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--safe);margin-bottom:12px;">✅ Langsung Lapor ke Orang Dewasa!</p>
+        <div style="text-align:left;">
+          <div class="sstep" style="margin-bottom:8px;">
+            <div class="sn" style="background:linear-gradient(135deg,var(--safe),var(--monster-green));width:28px;height:28px;font-size:.85rem;">1</div>
+            <div class="sc"><div class="sd"><b style="color:var(--safe)">JANGAN membalas pesan monster</b> — cukup hentikan percakapan.</div></div>
+          </div>
+          <div class="sstep" style="margin-bottom:8px;">
+            <div class="sn" style="background:linear-gradient(135deg,var(--safe),var(--monster-green));width:28px;height:28px;font-size:.85rem;">2</div>
+            <div class="sc"><div class="sd"><b style="color:var(--safe)">Pergi ke orang tua, guru, atau orang dewasa yang kamu percaya</b> dan ceritakan semuanya.</div></div>
+          </div>
+          <div class="sstep" style="margin-bottom:8px;">
+            <div class="sn" style="background:linear-gradient(135deg,var(--safe),var(--monster-green));width:28px;height:28px;font-size:.85rem;">3</div>
+            <div class="sc"><div class="sd"><b style="color:var(--safe)">Screenshot percakapan</b> sebagai bukti — minta bantuan orang tua melakukan ini.</div></div>
+          </div>
+          <div class="sstep" style="margin-bottom:8px;">
+            <div class="sn" style="background:linear-gradient(135deg,var(--safe),var(--monster-green));width:28px;height:28px;font-size:.85rem;">4</div>
+            <div class="sc"><div class="sd"><b style="color:var(--safe)">Blokir dan laporkan akun monster</b> tersebut di platform yang kamu gunakan.</div></div>
+          </div>
+          <div class="sstep">
+            <div class="sn" style="background:linear-gradient(135deg,var(--safe),var(--monster-green));width:28px;height:28px;font-size:.85rem;">5</div>
+            <div class="sc"><div class="sd"><b style="color:var(--safe)">Kamu TIDAK salah!</b> Melaporkan adalah tindakan paling berani dan paling pintar yang bisa kamu lakukan.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="box" style="border-color:rgba(105,240,174,.3);background:rgba(105,240,174,.07);margin-top:13px;">
+        <p style="font-size:.88rem;color:rgba(255,255,255,.85);font-weight:600;line-height:1.65;">
+          🦸 <b style="color:var(--safe)">Ingat:</b> Melaporkan bukan berarti kamu lemah! Justru itu tanda Kapten yang berani dan bertanggung jawab. Monster paling takut pada Kapten yang punya tim yang kuat — yaitu orang tua dan orang-orang yang menyayangimu!
+        </p>
+      </div>
+    </div>
+
+    <!-- S8: PELAJARAN -->
+    <div class="slide" id="s8">
+      <h2 class="ttl">💡 Pelajaran Hari Ini</h2>
+      <p class="txt" style="margin-bottom:15px;">Harta karun ilmu Kapten Aslan hari ini! ⚓</p>
+      <div class="lgrid">
+        <div class="litem">
+          <span class="lic">👾</span>
+          <span class="lit"><b style="color:var(--sky)">Monster digital itu nyata</b> — orang jahat bersembunyi di balik akun palsu yang terlihat ramah dan lucu.</span>
+        </div>
+        <div class="litem">
+          <span class="lic">🔒</span>
+          <span class="lit"><b style="color:var(--sky)">Data pribadi = harta karun</b> — nama, alamat, sekolah, foto, dan nomor HP tidak boleh diberikan kepada siapapun online.</span>
+        </div>
+        <div class="litem">
+          <span class="lic">🚫</span>
+          <span class="lit"><b style="color:var(--sky)">Orang asing di online tetap asing</b> — walau sudah chatting lama, kamu belum benar-benar mengenal mereka.</span>
+        </div>
+        <div class="litem">
+          <span class="lic">🤫</span>
+          <span class="lit"><b style="color:var(--sky)">Orang baik tidak minta rahasia</b> — kalau ada yang minta kamu menyembunyikan percakapan dari orang tua, itu tanda bahaya!</span>
+        </div>
+        <div class="litem">
+          <span class="lic">🆘</span>
+          <span class="lit"><b style="color:var(--sky)">Lapor langsung ke orang dewasa</b> — tidak ada monster yang terlalu besar untuk dikalahkan bersama orang tua!</span>
+        </div>
+        <div class="litem">
+          <span class="lic">💪</span>
+          <span class="lit"><b style="color:var(--sky)">Melapor adalah tindakan berani</b> — bukan tanda kelemahan, tapi tanda Kapten yang cerdas dan bertanggung jawab.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- S9: TANTANGAN -->
+    <div class="slide" id="s9">
+      <h2 class="ttl">🎯 Tantangan Kapten Aslan!</h2>
+      <p class="txt">Misi spesial hari ini untuk Aslan! Tap setiap misi untuk menandainya selesai:</p>
+      <div class="chal-box">
+        <div class="chal-ttl">⚓ Misi Perlindungan Hari Ini ⚓</div>
+        <div class="ctask" onclick="toggleTask(this)">
+          <div class="cchk">✓</div>
+          <span class="ctxt">👨‍👩‍👧 <b>Bicara dengan ayah atau ibu</b> — ceritakan apa yang sudah kamu pelajari hari ini tentang monster di balik layar.</span>
+        </div>
+        <div class="ctask" onclick="toggleTask(this)">
+          <div class="cchk">✓</div>
+          <span class="ctxt">🔐 <b>Cek akun media sosialmu</b> (jika ada) bersama orang tua — pastikan sudah diset "private"!</span>
+        </div>
+        <div class="ctask" onclick="toggleTask(this)">
+          <div class="cchk">✓</div>
+          <span class="ctxt">📝 <b>Buat daftar 3 orang dewasa terpercaya</b> yang bisa kamu hubungi kalau bertemu monster online.</span>
+        </div>
+        <div class="ctask" onclick="toggleTask(this)">
+          <div class="cchk">✓</div>
+          <span class="ctxt">🎮 <b>Periksa daftar teman online-mu</b> — apakah ada yang tidak kamu kenal di dunia nyata? Tanyakan ke orang tua apa yang harus dilakukan!</span>
+        </div>
+        <div class="ctask" onclick="toggleTask(this)">
+          <div class="cchk">✓</div>
+          <span class="ctxt">🗣️ <b>Ajarkan 1 teman</b> — ceritakan satu ciri-ciri monster digital yang sudah kamu pelajari kepada sahabatmu!</span>
+        </div>
+      </div>
+      <p style="text-align:center;margin-top:12px;color:rgba(255,255,255,.5);font-size:.82rem;font-weight:700;">
+        👆 Tap setiap misi untuk menandainya selesai!
+      </p>
+    </div>
+
+    <!-- S10: PENUTUP -->
+    <div class="slide" id="s10">
+      <div style="text-align:center;">
+        <div class="star-row">
+          <span class="cstar">⭐</span>
+          <span class="cstar">🌟</span>
+          <span class="cstar">⭐</span>
+        </div>
+        <h2 class="ttl" style="font-size:1.9rem;">Hebat, Kapten Aslan! 🎉</h2>
+        <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:var(--sky);margin-bottom:13px;">Kamu kini siap menghadapi monster di Lautan Digital!</p>
+        <div class="close-card">
+          <span style="font-size:50px;display:block;margin-bottom:11px;animation:monBob 3s ease-in-out infinite;">⚓</span>
+          <p style="font-family:'Fredoka One',cursive;font-size:1.15rem;color:var(--safe);margin-bottom:9px;">Kapten Pelindung Aslan</p>
+          <p style="font-size:.88rem;color:rgba(255,255,255,.82);font-weight:600;line-height:1.7;">
+            Kamu bukan hanya Kapten yang cerdas — kamu juga Kapten yang <b style="color:var(--gold)">aman dan terlindungi!</b> Dengan ilmu yang kamu miliki hari ini, tidak ada monster yang bisa menipumu. Dan ingat: kamu tidak pernah sendirian — orang tuamu selalu siap jadi Kapten Utamamu! 🛡️
+          </p>
+        </div>
+        <div style="background:rgba(255,213,79,.09);border:2px dashed rgba(255,213,79,.35);border-radius:15px;padding:14px;margin:13px 0;">
+          <p style="font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--gold);margin-bottom:7px;">🗓️ Preview Hari Berikutnya</p>
+          <p style="font-size:.86rem;color:rgba(255,255,255,.72);font-weight:600;line-height:1.52;">
+            <b style="color:white;">Hari 16: Jangan Kasih Kunci Rumah ke Orang Asing (Privasi)</b> 🔑<br>
+            Kapten Aslan akan belajar menjaga privasi — harta karun terpenting yang ada di dalam dirimu!
+          </p>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap;">
+          <span style="font-size:24px;">👾</span>
+          <span style="font-size:18px;color:rgba(255,255,255,.4);">+</span>
+          <span style="font-size:24px;">🛡️</span>
+          <span style="font-size:18px;color:rgba(255,255,255,.4);">=</span>
+          <span style="font-size:24px;">🏳️</span>
+          <span style="font-size:18px;color:rgba(255,255,255,.4);">|</span>
+          <span style="font-size:24px;">⚓</span>
+          <span style="font-size:18px;color:rgba(255,255,255,.4);">+</span>
+          <span style="font-size:24px;">🆘</span>
+          <span style="font-size:18px;color:rgba(255,255,255,.4);">=</span>
+          <span style="font-size:24px;">🦸</span>
+        </div>
+        <p style="font-size:.75rem;color:rgba(255,255,255,.4);margin-top:8px;font-weight:700;">Monster tidak bisa dikalahkan sendirian + lapor = Kapten Sejati!</p>
+      </div>
+    </div>
+
+  </div><!-- /slides -->
+
+  <!-- PROGRESS -->
+  <div class="prog-wrap">
+    <div class="prog-row">
+      <span id="progLabel">Halaman 1 dari 11</span>
+      <span id="progPct">9%</span>
+    </div>
+    <div class="prog-track">
+      <div class="prog-fill" id="progFill" style="width:9%"></div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav">
+    <button class="nbtn" id="prevBtn" onclick="go(-1)" disabled>← Sebelumnya</button>
+    <div class="dots" id="dotsEl"></div>
+    <button class="nbtn" id="nextBtn" onclick="go(1)">Selanjutnya →</button>
+  </div>
+
+</div><!-- /book -->
+</div>
+
+<script>
+// ── BACKGROUND STARS ──
+const starBg = document.getElementById('starBg');
+for(let i=0;i<80;i++){
+  const s=document.createElement('div');
+  s.className='star-dot';
+  const sz=Math.random()*2.5+.8;
+  s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;
+    animation-duration:${Math.random()*3+2}s;animation-delay:${Math.random()*4}s;`;
+  starBg.appendChild(s);
+}
+// Bubbles
+const bg=document.getElementById('bgLayer');
+for(let i=0;i<14;i++){
+  const b=document.createElement('div');b.className='bubble';
+  const sz=Math.random()*14+5;
+  b.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;
+    bottom:${Math.random()*25}%;animation-duration:${Math.random()*9+7}s;
+    animation-delay:${Math.random()*7}s;`;
+  bg.appendChild(b);
+}
+
+// ── SLIDE ENGINE ──
+const TOTAL=11;
+let cur=0;
+
+function buildDots(){
+  const c=document.getElementById('dotsEl');c.innerHTML='';
+  for(let i=0;i<TOTAL;i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i===0?' on':'');
+    d.onclick=()=>jump(i);
+    c.appendChild(d);
+  }
+}
+
+function updateUI(){
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+  const pct=Math.round((cur+1)/TOTAL*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progLabel').textContent=`Halaman ${cur+1} dari ${TOTAL}`;
+  document.getElementById('progPct').textContent=pct+'%';
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===TOTAL-1;
+}
+
+function jump(target){
+  if(target===cur)return;
+  const old=document.getElementById('s'+cur);
+  const nxt=document.getElementById('s'+target);
+  old.classList.remove('active');old.classList.add('out-left');
+  nxt.style.transform=target>cur?'translateX(55px)':'translateX(-55px)';
+  nxt.style.opacity='0';
+  nxt.classList.add('active');
+  setTimeout(()=>{
+    old.classList.remove('out-left');old.style.transform='';
+    nxt.style.transform='';nxt.style.opacity='';
+    nxt.scrollTop=0;
+  },480);
+  cur=target;updateUI();
+}
+
+function go(d){const t=cur+d;if(t>=0&&t<TOTAL)jump(t);}
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+// Touch swipe
+let tx=0;
+document.querySelector('.book').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.querySelector('.book').addEventListener('touchend',e=>{
+  const dx=tx-e.changedTouches[0].clientX;
+  if(Math.abs(dx)>48)go(dx>0?1:-1);
+},{passive:true});
+
+// ── MONSTER GAME ──
+function openMon(card){
+  if(!card.classList.contains('open')){
+    card.classList.add('open');
+    card.style.boxShadow=card.classList.contains('danger')?
+      '0 0 22px rgba(255,23,68,.5)':'0 0 22px rgba(255,109,0,.5)';
+  }
+}
+function resetMonGame(){
+  document.querySelectorAll('.mon-card').forEach(c=>{
+    c.classList.remove('open');c.style.boxShadow='';
+  });
+}
+
+// ── PANIC BUTTON ──
+function showPanic(){
+  const r=document.getElementById('panicResult');
+  const b=document.getElementById('panicBtn');
+  r.classList.add('show');
+  b.textContent='✅ Kamu sudah tahu sekarang!';
+  b.style.background='linear-gradient(135deg,#1b5e20,#388e3c)';
+  b.style.animation='none';
+}
+
+// ── CHALLENGE TASKS ──
+function toggleTask(el){
+  el.classList.toggle('done');
+  const c=el.querySelector('.cchk');
+  if(el.classList.contains('done')){
+    c.style.background='var(--safe)';c.style.color='var(--deep)';c.style.borderColor='var(--safe)';
+  } else {
+    c.style.background='';c.style.color='transparent';c.style.borderColor='rgba(255,255,255,.38)';
+  }
+}
+
+buildDots();updateUI();
+</script>
+</body>
+</html>

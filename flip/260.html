@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 30: Menuju Bintang — Kapten Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   ROOT & RESET
+═══════════════════════════════════════════════ */
+:root {
+  --cosmos:   #04021a;
+  --deep:     #08053d;
+  --nebula:   #1a0852;
+  --purple:   #6d28d9;
+  --violet:   #8b5cf6;
+  --neon:     #a78bfa;
+  --sky:      #38bdf8;
+  --cyan:     #22d3ee;
+  --earth:    #10b981;
+  --gold:     #fbbf24;
+  --amber:    #f59e0b;
+  --star:     #fef9c3;
+  --white:    #ffffff;
+  --radius:   28px;
+  --page-w:   820px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--cosmos);
+  color: var(--star);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════════
+   COSMIC BACKGROUND
+═══════════════════════════════════════════════ */
+#cosmos-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background: radial-gradient(ellipse at 20% 50%, #160a4a 0%, #04021a 50%, #000005 100%);
+  overflow: hidden;
+}
+.nebula-blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); opacity: .18; pointer-events: none;
+}
+.nb1 { width:700px;height:700px;top:-200px;left:-150px;background:radial-gradient(circle,#6d28d9,transparent); }
+.nb2 { width:500px;height:500px;bottom:-100px;right:-100px;background:radial-gradient(circle,#0ea5e9,transparent); }
+.nb3 { width:400px;height:400px;top:40%;left:55%;background:radial-gradient(circle,#10b981,transparent); }
+
+/* ═══════════════════════════════════════════════
+   STARFIELD
+═══════════════════════════════════════════════ */
+#starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.star-dot {
+  position: absolute; border-radius: 50%;
+  background: white; animation: twinkle ease-in-out infinite alternate;
+}
+@keyframes twinkle {
+  from { opacity: .1; transform: scale(1); }
+  to   { opacity: 1;  transform: scale(1.8); }
+}
+.shooting-star {
+  position: absolute; height: 2px; width: 80px;
+  background: linear-gradient(90deg, white, transparent);
+  border-radius: 2px;
+  animation: shoot linear infinite;
+  opacity: 0;
+}
+@keyframes shoot {
+  0%   { transform: translateX(-100px) translateY(0) rotate(-25deg); opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateX(120vw) translateY(50vh) rotate(-25deg); opacity: 0; }
+}
+
+/* ═══════════════════════════════════════════════
+   TOP NAV
+═══════════════════════════════════════════════ */
+.top-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 28px;
+  background: rgba(4,2,26,.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(167,139,250,.2);
+}
+.back-btn {
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none;
+  background: linear-gradient(135deg, #065f46, #10b981);
+  color: white; padding: 10px 20px; border-radius: 50px;
+  font-size: 14px; font-weight: 800;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 4px 14px rgba(16,185,129,.4);
+  font-family: 'Nunito', sans-serif;
+}
+.back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16,185,129,.55); }
+.nav-center {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(13px,2vw,17px);
+  color: var(--neon);
+  letter-spacing: .5px;
+}
+.nav-badge {
+  background: linear-gradient(135deg,var(--gold),var(--amber));
+  color: #1a0500; padding: 7px 16px; border-radius: 50px;
+  font-size: 12px; font-weight: 900; letter-spacing: .5px;
+}
+
+/* ═══════════════════════════════════════════════
+   PROGRESS BAR
+═══════════════════════════════════════════════ */
+.progress-wrap {
+  position: fixed; top: 64px; left: 0; right: 0; z-index: 199;
+  height: 5px; background: rgba(255,255,255,.06);
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--earth), var(--cyan), var(--violet), var(--gold));
+  transition: width .4s ease; border-radius: 0 4px 4px 0;
+}
+
+/* ═══════════════════════════════════════════════
+   BOOK WRAPPER
+═══════════════════════════════════════════════ */
+.book-wrapper {
+  position: relative; z-index: 10;
+  max-width: var(--page-w);
+  margin: 0 auto;
+  padding: 80px 20px 40px;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGES
+═══════════════════════════════════════════════ */
+.page {
+  display: none;
+  animation: pageIn .6s cubic-bezier(.16,1,.3,1) forwards;
+}
+.page.active { display: block; }
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(40px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ═══════════════════════════════════════════════
+   CARDS / SECTIONS
+═══════════════════════════════════════════════ */
+.card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(167,139,250,.16);
+  border-radius: var(--radius);
+  padding: 36px;
+  margin-bottom: 24px;
+  backdrop-filter: blur(12px);
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: var(--accent, linear-gradient(90deg,var(--violet),var(--cyan)));
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.card h2 {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(22px,4vw,30px);
+  color: var(--neon); margin-bottom: 12px;
+}
+.card h3 {
+  font-size: 18px; font-weight: 800;
+  color: var(--cyan); margin: 18px 0 10px;
+}
+.card p {
+  font-size: clamp(15px,2.5vw,17px);
+  line-height: 1.9; opacity: .9; margin-bottom: 12px;
+}
+
+.section-header { text-align: center; margin-bottom: 32px; padding-top: 16px; }
+.section-header .tag {
+  display: inline-block;
+  background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.3);
+  color: var(--neon); padding: 5px 18px; border-radius: 50px;
+  font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.section-header h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(26px,5.5vw,44px); line-height: 1.2;
+}
+
+/* ═══════════════════════════════════════════════
+   NAV BUTTONS
+═══════════════════════════════════════════════ */
+.nav-btns {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 16px; margin-top: 40px; padding-top: 24px;
+  border-top: 1px solid rgba(167,139,250,.14);
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 26px; border-radius: 50px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px; font-weight: 900;
+  cursor: pointer; border: none;
+  transition: transform .2s, box-shadow .2s;
+}
+.btn:hover  { transform: translateY(-3px); }
+.btn:active { transform: translateY(0); }
+.btn-prev {
+  background: rgba(255,255,255,.08); color: var(--star);
+  border: 1px solid rgba(167,139,250,.22);
+}
+.btn-next {
+  background: linear-gradient(135deg,var(--purple),var(--violet));
+  color: white;
+  box-shadow: 0 4px 20px rgba(109,40,217,.45);
+  flex: 1; justify-content: center; max-width: 300px;
+}
+.btn-next:hover { box-shadow: 0 6px 28px rgba(109,40,217,.65); }
+.btn-gold {
+  background: linear-gradient(135deg,var(--gold),var(--amber));
+  color: #1a0a00;
+  box-shadow: 0 4px 20px rgba(251,191,36,.45);
+  flex: 1; justify-content: center; max-width: 300px;
+  font-size: 16px; padding: 16px 28px;
+}
+.btn-gold:hover { box-shadow: 0 6px 28px rgba(251,191,36,.65); }
+.page-indicator { font-size: 13px; opacity: .45; font-weight: 700; white-space: nowrap; }
+
+/* ═══════════════════════════════════════════════
+   PAGE 1 — COVER
+═══════════════════════════════════════════════ */
+.cover-wrap {
+  min-height: calc(100vh - 80px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 40px 20px;
+  position: relative;
+}
+
+/* Galaxy spinner */
+.galaxy-wrap {
+  width: 260px; height: 260px;
+  position: relative; margin: 0 auto 36px;
+}
+.galaxy-core {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at center,
+    #fff8e1 0%, #fbbf24 12%, #8b5cf6 35%, #1a0852 65%, transparent 100%);
+  box-shadow:
+    0 0 0 12px rgba(139,92,246,.1),
+    0 0 0 30px rgba(139,92,246,.06),
+    0 0 100px rgba(139,92,246,.5),
+    0 0 200px rgba(56,189,248,.2);
+  animation: galaxy-pulse 3s ease-in-out infinite alternate;
+}
+@keyframes galaxy-pulse {
+  from { transform: scale(1); }
+  to   { transform: scale(1.04); }
+}
+.galaxy-ring {
+  position: absolute; inset: -20px;
+  border-radius: 50%;
+  border: 2px solid rgba(167,139,250,.25);
+  animation: galaxy-spin linear infinite;
+}
+.gr1 { animation-duration: 12s; }
+.gr2 { inset: -44px; border-color: rgba(56,189,248,.18); border-width: 1.5px; animation-duration: 20s; animation-direction: reverse; }
+.gr3 { inset: -70px; border-color: rgba(16,185,129,.12); border-width: 1px; animation-duration: 30s; }
+@keyframes galaxy-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+/* Orbiting rocket */
+.orbit-rocket {
+  position: absolute; inset: -30px;
+  animation: galaxy-spin 8s linear infinite;
+}
+.rocket-dot {
+  position: absolute; top: 0; left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  filter: drop-shadow(0 0 12px rgba(251,191,36,.8));
+}
+
+/* Earth in galaxy */
+.earth-icon {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 72px;
+  animation: earth-spin 20s linear infinite;
+  filter: drop-shadow(0 0 20px rgba(16,185,129,.6));
+}
+@keyframes earth-spin { from{transform:translate(-50%,-50%) rotate(0)} to{transform:translate(-50%,-50%) rotate(360deg)} }
+
+/* Floating icons */
+.cover-float {
+  position: absolute; font-size: 24px;
+  animation: cfloat ease-in-out infinite;
+}
+.cf1 { top:5%;left:5%;animation-duration:5s;animation-delay:0s; }
+.cf2 { top:8%;right:8%;animation-duration:4s;animation-delay:-2s; }
+.cf3 { bottom:22%;left:3%;animation-duration:6s;animation-delay:-4s; }
+.cf4 { bottom:20%;right:5%;animation-duration:5s;animation-delay:-1s; }
+@keyframes cfloat {
+  0%,100%{ transform:translateY(0) rotate(0deg); }
+  50%    { transform:translateY(-14px) rotate(10deg); }
+}
+
+.cover-series {
+  background: rgba(167,139,250,.15); border: 1px solid rgba(167,139,250,.3);
+  color: var(--neon); padding: 5px 20px; border-radius: 50px;
+  font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 16px; display: inline-block;
+}
+.cover-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(28px,7vw,58px); line-height: 1.15;
+  background: linear-gradient(135deg, var(--star), var(--gold), var(--neon), var(--cyan));
+  background-size: 300%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s ease infinite; margin-bottom: 8px;
+}
+@keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+.cover-sub { font-size: clamp(15px,3vw,20px); opacity: .7; margin-bottom: 28px; }
+.cover-day-30 {
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  color: #1a0a00; padding: 8px 24px; border-radius: 50px;
+  font-size: 14px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 24px; display: inline-block;
+  box-shadow: 0 4px 20px rgba(251,191,36,.4);
+}
+.cover-name {
+  background: linear-gradient(135deg,rgba(139,92,246,.2),rgba(56,189,248,.2));
+  border: 2px solid rgba(139,92,246,.38);
+  border-radius: 22px; padding: 18px 36px; margin-bottom: 44px;
+  backdrop-filter: blur(10px);
+}
+.cover-name p { font-size: 14px; opacity: .7; margin-bottom: 4px; }
+.cover-name h2 {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(22px,4vw,34px); color: var(--gold);
+}
+
+/* ═══════════════════════════════════════════════
+   TIMELINE (page 4)
+═══════════════════════════════════════════════ */
+.timeline { position: relative; padding-left: 28px; margin: 20px 0; }
+.timeline::before {
+  content: '';
+  position: absolute; left: 11px; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(180deg,var(--violet),var(--cyan),var(--earth));
+  border-radius: 2px;
+}
+.tl-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(167,139,250,.08);
+}
+.tl-item:last-child { border-bottom: none; }
+.tl-dot {
+  position: absolute; left: 4px;
+  width: 16px; height: 16px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 4px;
+  box-shadow: 0 0 10px currentColor;
+}
+.tl-content { padding-left: 20px; }
+.tl-content strong { display: block; font-size: 15px; font-weight: 900; margin-bottom: 2px; }
+.tl-content span { font-size: 13px; opacity: .75; line-height: 1.5; }
+
+/* ═══════════════════════════════════════════════
+   MISSION CARDS (future tech)
+═══════════════════════════════════════════════ */
+.mission-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 16px; margin: 20px 0; }
+.mission-card {
+  border-radius: 20px; padding: 24px 20px; text-align: center;
+  transition: transform .2s, box-shadow .2s;
+  position: relative; overflow: hidden;
+}
+.mission-card:hover { transform: translateY(-5px); }
+.mission-card .mc-icon { font-size: 52px; display: block; margin-bottom: 12px; }
+.mission-card strong { font-family: 'Fredoka One',cursive; font-size: 18px; display: block; margin-bottom: 6px; }
+.mission-card p { font-size: 13px; line-height: 1.65; opacity: .85; }
+.mc-blue   { background:rgba(56,189,248,.12);border:2px solid rgba(56,189,248,.28); }
+.mc-violet { background:rgba(139,92,246,.12);border:2px solid rgba(139,92,246,.28); }
+.mc-gold   { background:rgba(251,191,36,.12); border:2px solid rgba(251,191,36,.28); }
+.mc-green  { background:rgba(16,185,129,.12); border:2px solid rgba(16,185,129,.28); }
+
+/* ═══════════════════════════════════════════════
+   ACHIEVEMENT BADGES
+═══════════════════════════════════════════════ */
+.badge-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; justify-content: center; }
+.badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 16px; border-radius: 50px;
+  font-size: 13px; font-weight: 800;
+  transition: transform .15s;
+}
+.badge:hover { transform: scale(1.05); }
+
+/* ═══════════════════════════════════════════════
+   CELEBRATION PAGE (page 8)
+═══════════════════════════════════════════════ */
+.celebration-wrap {
+  text-align: center; padding: 40px 20px;
+  position: relative;
+}
+.trophy-mega {
+  font-size: 110px; display: block; margin: 0 auto 24px;
+  animation: trophy-bounce 1s cubic-bezier(.36,.07,.19,.97);
+  filter: drop-shadow(0 10px 30px rgba(251,191,36,.6));
+}
+@keyframes trophy-bounce {
+  0%  { transform: scale(0) rotate(-10deg); opacity: 0; }
+  60% { transform: scale(1.15) rotate(3deg); }
+  80% { transform: scale(.95) rotate(-1deg); }
+  100%{ transform: scale(1) rotate(0); opacity: 1; }
+}
+.celeb-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(28px,6vw,50px);
+  background: linear-gradient(135deg, var(--gold), var(--star), var(--neon));
+  background-size: 200%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s ease infinite;
+  margin-bottom: 16px;
+}
+.celeb-text {
+  font-size: clamp(15px,2.5vw,18px);
+  max-width: 560px; margin: 0 auto 28px;
+  line-height: 1.9; opacity: .92;
+}
+.stars-row { display: flex; justify-content: center; gap: 8px; margin: 16px 0; }
+.star-item { font-size: 36px; animation: star-pop ease-in-out infinite alternate; }
+.star-item:nth-child(1){ animation-duration:1.5s; animation-delay:0s; }
+.star-item:nth-child(2){ animation-duration:1.8s; animation-delay:.2s; }
+.star-item:nth-child(3){ animation-duration:1.3s; animation-delay:.4s; }
+.star-item:nth-child(4){ animation-duration:2s;   animation-delay:.6s; }
+.star-item:nth-child(5){ animation-duration:1.6s; animation-delay:.8s; }
+@keyframes star-pop {
+  from { transform: scale(1); filter: brightness(1); }
+  to   { transform: scale(1.3); filter: brightness(1.5); }
+}
+
+/* ═══════════════════════════════════════════════
+   INTERACTIVE EARTH (clickable)
+═══════════════════════════════════════════════ */
+.interactive-earth {
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%,
+    #6ee7b7 0%, #10b981 30%, #065f46 60%, #022c22 100%);
+  box-shadow: 0 0 0 8px rgba(16,185,129,.15), 0 0 60px rgba(16,185,129,.4),
+    inset -20px -15px 40px rgba(0,0,0,.4);
+  margin: 0 auto 16px; cursor: pointer;
+  animation: earth-rot 20s linear infinite;
+  transition: transform .3s, box-shadow .3s;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 60px;
+  position: relative; overflow: hidden;
+}
+.interactive-earth:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 12px rgba(16,185,129,.2), 0 0 80px rgba(16,185,129,.6),
+    inset -20px -15px 40px rgba(0,0,0,.4);
+}
+@keyframes earth-rot {
+  from { filter: hue-rotate(0deg); }
+  to   { filter: hue-rotate(30deg); }
+}
+.earth-timeline-popup {
+  display: none; margin-top: 16px;
+  background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.3);
+  border-radius: 18px; padding: 20px 24px;
+  animation: fadeUp .4s ease;
+}
+.earth-timeline-popup.show { display: block; }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════
+   ROCKET LAUNCH (clickable)
+═══════════════════════════════════════════════ */
+.rocket-launch-area {
+  text-align: center; padding: 20px; cursor: pointer;
+  user-select: none;
+}
+.rocket-emoji {
+  font-size: 80px; display: block; margin: 0 auto 12px;
+  transition: transform .3s;
+  filter: drop-shadow(0 0 16px rgba(251,191,36,.4));
+}
+.rocket-launch-area:hover .rocket-emoji { transform: translateY(-8px) scale(1.05); }
+.rocket-launch-area.launched .rocket-emoji {
+  animation: launch-rocket .8s ease forwards;
+}
+@keyframes launch-rocket {
+  0%   { transform: translateY(0) rotate(0deg); }
+  20%  { transform: translateY(-10px) rotate(-5deg); }
+  100% { transform: translateY(-300px) rotate(-10deg) scale(.5); opacity: 0; }
+}
+.rocket-trail {
+  height: 4px; width: 0; background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  border-radius: 4px; margin: 0 auto; transition: width .5s ease;
+}
+.launched .rocket-trail { width: 60%; }
+.launch-msg { font-size: 14px; opacity: .7; font-style: italic; margin-top: 8px; }
+
+/* ═══════════════════════════════════════════════
+   CONFETTI PARTICLES (closing page)
+═══════════════════════════════════════════════ */
+#confetti-canvas {
+  position: fixed; inset: 0; z-index: 500;
+  pointer-events: none; opacity: 0;
+  transition: opacity .3s;
+}
+#confetti-canvas.active { opacity: 1; }
+
+/* ═══════════════════════════════════════════════
+   QUOTE BOX
+═══════════════════════════════════════════════ */
+.quote-box {
+  background: linear-gradient(135deg,rgba(139,92,246,.1),rgba(56,189,248,.08));
+  border-left: 4px solid var(--violet);
+  border-radius: 0 16px 16px 0;
+  padding: 20px 24px; margin: 20px 0; text-align: left;
+}
+.quote-box p { font-size: 17px; font-style: italic; line-height: 1.85; opacity: .92; }
+.quote-box cite { font-size: 13px; opacity: .55; margin-top: 8px; display: block; font-style: normal; font-weight: 800; }
+
+/* ═══════════════════════════════════════════════
+   CHALLENGE CARD
+═══════════════════════════════════════════════ */
+.challenge-card {
+  background: linear-gradient(135deg,rgba(109,40,217,.16),rgba(56,189,248,.12));
+  border: 2px solid rgba(139,92,246,.24);
+  border-radius: var(--radius); padding: 32px; margin: 20px 0;
+}
+.challenge-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 24px; color: var(--gold); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.ch-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 0; border-bottom: 1px solid rgba(167,139,250,.1);
+}
+.ch-item:last-child { border-bottom: none; }
+.ch-num {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg,var(--purple),var(--violet));
+  color: white; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 14px; flex-shrink: 0; margin-top: 2px;
+}
+.ch-item p { font-size: 15px; line-height: 1.7; opacity: .9; }
+
+/* ═══════════════════════════════════════════════
+   FINAL PAGE — COSMOS CLOSING
+═══════════════════════════════════════════════ */
+.final-wrap {
+  min-height: calc(100vh - 160px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 40px 20px;
+  position: relative;
+}
+.final-planet {
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%,
+    #6ee7b7 0%, #10b981 25%, #0369a1 55%, #1e3a5f 80%, #0c1a2e 100%);
+  box-shadow:
+    0 0 0 10px rgba(16,185,129,.12),
+    0 0 0 26px rgba(56,189,248,.07),
+    0 0 100px rgba(16,185,129,.5),
+    inset -30px -20px 60px rgba(0,0,0,.5);
+  margin: 0 auto 36px;
+  animation: final-float 4s ease-in-out infinite;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 80px;
+}
+@keyframes final-float {
+  0%,100%{ transform:translateY(0) rotate(-1deg); }
+  50%    { transform:translateY(-16px) rotate(1deg); }
+}
+.final-planet::before {
+  content:'';
+  position:absolute;top:15%;left:10%;right:10%;height:20%;
+  background:rgba(255,255,255,.08);
+  border-radius:50%;filter:blur(10px);
+}
+.final-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(28px,6vw,52px);
+  background: linear-gradient(135deg,var(--star),var(--gold),var(--neon));
+  background-size: 200%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text; animation:shimmer 3s ease infinite;
+  margin-bottom: 16px;
+}
+.final-msg {
+  font-size: clamp(16px,2.5vw,19px);
+  max-width: 540px; margin: 0 auto 28px;
+  line-height: 1.9; opacity: .92;
+}
+.final-special {
+  background: linear-gradient(135deg,rgba(251,191,36,.15),rgba(139,92,246,.15));
+  border: 2px solid rgba(251,191,36,.35);
+  border-radius: 22px; padding: 24px 32px;
+  max-width: 520px; margin: 0 auto 32px;
+}
+.final-special p { font-size: 16px; line-height: 1.85; font-style: italic; opacity: .92; }
+.final-special strong { color: var(--gold); font-size: 18px; }
+
+/* ═══════════════════════════════════════════════
+   ANALOGY / INFO BOXES
+═══════════════════════════════════════════════ */
+.info-box {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(167,139,250,.14);
+  border-radius: 16px; padding: 18px 22px; margin: 14px 0;
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.info-box .ib-icon { font-size: 32px; flex-shrink: 0; margin-top: 2px; }
+.info-box p { font-size: clamp(14px,2.5vw,16px); line-height: 1.8; opacity: .9; margin: 0; }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media(max-width:600px){
+  .book-wrapper{ padding:76px 14px 32px; }
+  .card{ padding:24px 18px; }
+  .nav-btns{ flex-wrap:wrap; }
+  .btn-next,.btn-gold{ max-width:100%; }
+  .mission-grid{ grid-template-columns:1fr 1fr; }
+  .top-nav{ padding:12px 16px; }
+  .nav-center{ display:none; }
+}
+@media(min-width:768px) and (max-width:1024px){
+  .book-wrapper{ padding:80px 32px 40px; }
+  .card p{ font-size:18px; }
+}
+::-webkit-scrollbar{ width:5px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:rgba(139,92,246,.3); border-radius:4px; }
+</style>
+</head>
+<body>
+
+<div id="cosmos-bg">
+  <div class="nebula-blob nb1"></div>
+  <div class="nebula-blob nb2"></div>
+  <div class="nebula-blob nb3"></div>
+</div>
+<div id="starfield"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+  <div class="nav-center">Kapten Cerdas: Jejak Manusia di Bumi</div>
+  <span class="nav-badge">🏆 Hari ke-30</span>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<!-- ═══════════════ BOOK WRAPPER ═══════════════ -->
+<div class="book-wrapper">
+
+<!-- ══ PAGE 1: COVER ══ -->
+<div class="page active" id="page-1">
+  <div class="cover-wrap">
+    <span class="cover-float cf1">🌌</span>
+    <span class="cover-float cf2">⭐</span>
+    <span class="cover-float cf3">🛸</span>
+    <span class="cover-float cf4">🌠</span>
+
+    <div class="galaxy-wrap">
+      <div class="galaxy-ring gr1"></div>
+      <div class="galaxy-ring gr2"></div>
+      <div class="galaxy-ring gr3"></div>
+      <div class="orbit-rocket">
+        <div class="rocket-dot">🚀</div>
+      </div>
+      <div class="galaxy-core"></div>
+      <div class="earth-icon">🌍</div>
+    </div>
+
+    <span class="cover-series">📚 Petualangan Kapten Cerdas: Jejak Manusia di Bumi</span>
+    <div class="cover-day-30">⭐ Hari ke-30 • Episode Terakhir ⭐</div>
+    <h1 class="cover-title">Petualangan<br>Manusia Berikutnya</h1>
+    <p class="cover-sub">🚀 Menuju Bintang-Bintang!</p>
+
+    <div class="cover-name">
+      <p>Dipersembahkan khusus untuk Kapten Cerdas:</p>
+      <h2>🌟 Aslan 🌟</h2>
+      <p style="font-size:13px;margin-top:6px;opacity:.65;">Penjelajah Sejati • 30 Hari Petualangan • Kelas 4 SD</p>
+    </div>
+
+    <div class="nav-btns" style="justify-content:center;border:none;padding-top:0;">
+      <button class="btn btn-gold" onclick="goPage(2)" style="max-width:310px;font-size:17px;padding:18px 36px;">
+        🚀 Mulai Petualangan Terakhir!
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE 2: PENGANTAR ══ -->
+<div class="page" id="page-2">
+  <div class="section-header">
+    <span class="tag">✨ Pengantar Epik</span>
+    <h1>Hari yang Paling<br>Istimewa Telah Tiba! 🌟</h1>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--earth),var(--cyan));">
+    <span style="font-size:60px;display:block;margin-bottom:16px;filter:drop-shadow(0 4px 12px rgba(16,185,129,.5));">🌍</span>
+    <p>Hei, <strong>Aslan</strong>! Setelah 30 hari yang luar biasa, kita sudah sampai di hari terakhir. Hari paling spesial dari seluruh petualangan kita.</p>
+    <p>Bayangkan ini: kamu berdiri di puncak gunung tertinggi di bumi — dari sana kamu bisa melihat ke belakang, ke seluruh perjalanan panjang manusia dari awal hingga sekarang. Dan kamu juga bisa melihat ke depan — ke cakrawala tak terbatas yang penuh kemungkinan.</p>
+    <p>Inilah yang akan kita lakukan hari ini. Kita akan menatap seluruh sejarah 4,6 miliar tahun Bumi dalam satu pandangan — lalu kita akan menatap masa depan yang menunggu <strong>kamu</strong> untuk menjadi bagian dari pembuatannya. 🌠</p>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--gold),var(--amber));">
+    <h2>🎯 Petualangan Hari Ini</h2>
+    <div class="info-box">
+      <span class="ib-icon">⏰</span>
+      <p><strong>Mengulang waktu:</strong> Kita akan melihat seluruh 30 hari perjalanan kita dalam satu panorama yang epik — dari sel pertama di lautan purba sampai kita hari ini.</p>
+    </div>
+    <div class="info-box">
+      <span class="ib-icon">🚀</span>
+      <p><strong>Melihat ke depan:</strong> Mars, koloni luar angkasa, kecerdasan buatan, teknologi yang belum ada namanya — semua menunggu di masa depanmu.</p>
+    </div>
+    <div class="info-box">
+      <span class="ib-icon">🏆</span>
+      <p><strong>Merayakan kemenanganmu:</strong> Kamu sudah menyelesaikan 30 hari petualangan sains — dan hari ini kita merayakannya dengan layak!</p>
+    </div>
+    <div class="info-box">
+      <span class="ib-icon">🌟</span>
+      <p><strong>Menerima amanat:</strong> Ada satu pesan paling penting yang akan diberikan Kapten Cerdas kepadamu hari ini. Sebuah amanat yang hanya bisa diberikan kepada penjelajah sejati sepertimu.</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+    <span class="page-indicator">2 dari 14</span>
+    <button class="btn btn-next" onclick="goPage(3)">Kisah Epik Dimulai! 🌌 →</button>
+  </div>
+</div>
+
+<!-- ══ PAGE 3: KISAH EPIK ASLAN ══ -->
+<div class="page" id="page-3">
+  <div class="section-header">
+    <span class="tag">🌌 Kisah Utama</span>
+    <h1>Aslan Melihat<br>Seluruh Perjalanan Manusia</h1>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--deep),var(--violet));">
+    <p style="font-style:italic;font-size:16px;line-height:2;color:rgba(254,249,195,.85);">
+      "Malam itu, Kapten Cerdas membawa Aslan naik ke kapal petualangan terakhir — sebuah pesawat bening seperti kristal yang bisa menembus waktu dan ruang. <br><br>
+      Dari ketinggian angkasa, Aslan melihat Bumi berputar pelan di bawahnya. Biru. Hijau. Putih. Begitu kecil, tapi begitu penuh cerita.<br><br>
+      <em>'Aslan,'</em> kata Kapten Cerdas pelan, <em>'Bumi itu sudah berusia 4,6 miliar tahun. Selama itu, ia sudah melewati segalanya — ledakan gunung berapi yang menyelimuti langit, salju yang menutupi seluruh permukaan, meteorit yang mengakhiri zaman dinosaurus. Tapi ia tetap di sini. Kuat dan indah.'</em><br><br>
+      Aslan mengangguk. Ia ingat semua petualangan mereka — dari melihat lahirnya lautan, bertemu Lucy sang Australopithecus, menyaksikan manusia pertama yang menyalakan api, dan melihat bagaimana tulisan pertama diukir di batu oleh tangan-tangan kecil yang gemetar karena kedinginan ribuan tahun lalu.<br><br>
+      <em>'Tapi yang paling luar biasa,'</em> lanjut Kapten Cerdas sambil tersenyum, <em>'bukan gunung berapi, bukan dinosaurus, bukan bahkan bintang-bintang itu. Yang paling luar biasa adalah manusia — makhluk kecil yang rentan tapi punya sesuatu yang tidak dimiliki planet manapun: <strong>rasa ingin tahu</strong>. Dan kamu, Aslan, adalah salah satu dari mereka.'</em>"
+    </p>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--earth),var(--sky));">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div class="interactive-earth" id="earthBtn" onclick="toggleTimeline()" title="Klik untuk melihat perjalanan waktu!">
+        🌍
+      </div>
+      <p style="font-size:13px;opacity:.6;margin-top:8px;">👆 Klik Bumi untuk melihat perjalanan waktu manusia!</p>
+      <div class="earth-timeline-popup" id="earthTimeline">
+        <p style="font-size:14px;font-weight:800;color:var(--cyan);margin-bottom:12px;">⏰ 4.6 Miliar Tahun dalam Sekejap!</p>
+        <div style="display:flex;flex-direction:column;gap:8px;text-align:left;">
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span>🌊</span><span><strong>4.6 Miliar tahun lalu</strong> — Bumi lahir dari debu kosmik</span></div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span>🦠</span><span><strong>3.8 Miliar tahun lalu</strong> — Sel hidup pertama muncul di lautan</span></div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span>🐟</span><span><strong>500 Juta tahun lalu</strong> — Ikan pertama berenang di laut</span></div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span>🦕</span><span><strong>240 Juta tahun lalu</strong> — Dinosaurus menguasai Bumi</span></div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span>🐒</span><span><strong>7 Juta tahun lalu</strong> — Nenek moyang manusia pertama muncul</span></div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span>🔥</span><span><strong>1.5 Juta tahun lalu</strong> — Manusia menguasai api</span></div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span>🌾</span><span><strong>12.000 tahun lalu</strong> — Revolusi pertanian dimulai</span></div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span>🏛️</span><span><strong>5.000 tahun lalu</strong> — Peradaban besar pertama berdiri</span></div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span>💻</span><span><strong>80 tahun lalu</strong> — Komputer dan internet lahir</span></div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span>🌟</span><span><strong>Hari ini</strong> — Kamu ada di sini, membaca ini!</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+    <span class="page-indicator">3 dari 14</span>
+    <button class="btn btn-next" onclick="goPage(4)">Ringkasan 30 Hari! 📚 →</button>
+  </div>
+</div>
+
+<!-- ══ PAGE 4: RINGKASAN 30 HARI ══ -->
+<div class="page" id="page-4">
+  <div class="section-header">
+    <span class="tag">📚 Perjalanan Kita</span>
+    <h1>30 Hari,<br>Satu Kisah Terbesar!</h1>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--violet),var(--earth));">
+    <h2>Jejak Petualanganmu, Aslan! 👣</h2>
+    <p>Dalam 30 hari ini, kamu telah melakukan sesuatu yang luar biasa — kamu merangkum 4,6 miliar tahun sejarah hidup dalam satu bulan perjalanan belajar! Ini yang sudah kamu capai:</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--earth);color:var(--earth);"></div>
+        <div class="tl-content">
+          <strong style="color:var(--earth);">🌊 Minggu 1: Asal Usul Kehidupan</strong>
+          <span>Dari lahirnya Bumi dan lautan, kemunculan sel pertama, ikan naik ke darat, zaman dinosaurus, hingga bertemu Lucy sang Australopithecus — nenek moyang kita!</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--sky);color:var(--sky);"></div>
+        <div class="tl-content">
+          <strong style="color:var(--sky);">🔥 Minggu 2: Manusia Purba & Evolusi Otak</strong>
+          <span>Dari Homo Habilis yang membuat alat pertama, Homo Erectus yang berani keluar Afrika, misteri api, Neanderthal dan Denisovan, hingga lahirnya Homo Sapiens — kita!</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--gold);color:var(--gold);"></div>
+        <div class="tl-content">
+          <strong style="color:var(--gold);">🏛️ Minggu 3: Peradaban Awal</strong>
+          <span>Dari revolusi pertanian, lahirnya desa dan kota, sungai Nil dan Mesopotamia, penemuan tulisan dan roda, piramida, hingga perdagangan antar bangsa pertama!</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--neon);color:var(--neon);"></div>
+        <div class="tl-content">
+          <strong style="color:var(--neon);">🚀 Minggu 4: Menuju Dunia Modern</strong>
+          <span>Dari zaman logam, ilmu pengetahuan dan filsafat, penjelajahan samudra, revolusi industri, komputer dan internet — hingga hari ini: kamu membaca ini!</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--gold),var(--amber));">
+    <h2>🏅 Pencapaian Luar Biasamu!</h2>
+    <div class="badge-grid">
+      <div class="badge" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.35);color:#6ee7b7;">🌊 Pelaut Lautan Purba</div>
+      <div class="badge" style="background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.35);color:var(--neon);">🦕 Penakluk Zaman Dino</div>
+      <div class="badge" style="background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.35);color:var(--gold);">🔥 Penemu Api</div>
+      <div class="badge" style="background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.35);color:var(--sky);">🏛️ Arsitek Peradaban</div>
+      <div class="badge" style="background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.35);color:#fca5a5;">📜 Penulis Sejarah</div>
+      <div class="badge" style="background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.35);color:#fde047;">⚙️ Insinyur Revolusi</div>
+      <div class="badge" style="background:rgba(20,184,166,.15);border:1px solid rgba(20,184,166,.35);color:#5eead4;">💻 Warga Digital</div>
+      <div class="badge" style="background:linear-gradient(135deg,rgba(251,191,36,.2),rgba(139,92,246,.2));border:1px solid rgba(251,191,36,.4);color:var(--gold);">🏆 KAPTEN CERDAS SEJATI</div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+    <span class="page-indicator">4 dari 14</span>
+    <button class="btn btn-next" onclick="goPage(5)">Dari Gua ke Bintang! ⭐ →</button>
+  </div>
+</div>
+
+<!-- ══ PAGE 5: DARI GUA KE BINTANG ══ -->
+<div class="page" id="page-5">
+  <div class="section-header">
+    <span class="tag">⭐ Pencapaian Manusia</span>
+    <h1>Dari Gua Gelap<br>ke Puncak Bintang!</h1>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--earth),var(--gold));">
+    <span style="font-size:56px;display:block;margin-bottom:16px;">🏆</span>
+    <h2>Apa yang Sudah Manusia Capai?</h2>
+    <p>Dua juta tahun lalu, nenek moyang kita tidur di pohon atau di gua, takut pada singa, dan tidak tahu apa yang ada di balik gunung. Tidak ada bahasa. Tidak ada tulisan. Tidak ada api.</p>
+    <p>Hari ini, <strong>manusia sudah menginjakkan kaki di Bulan</strong>. Kita punya robot yang berkeliaran di Mars. Kita bisa berkomunikasi dengan siapa saja di seluruh dunia dalam hitungan detik. Kita punya mesin yang bisa berpikir. Kita punya obat yang bisa menyembuhkan penyakit yang dulu mematikan.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0;">
+      <div style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.24);border-radius:16px;padding:16px;text-align:center;">
+        <span style="font-size:40px;display:block;margin-bottom:8px;">🚀</span>
+        <strong style="display:block;font-size:14px;margin-bottom:4px;">1969</strong>
+        <span style="font-size:13px;opacity:.8;">Manusia pertama mendarat di Bulan</span>
+      </div>
+      <div style="background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.22);border-radius:16px;padding:16px;text-align:center;">
+        <span style="font-size:40px;display:block;margin-bottom:8px;">🤖</span>
+        <strong style="display:block;font-size:14px;margin-bottom:4px;">2021</strong>
+        <span style="font-size:13px;opacity:.8;">Robot Perseverance mendarat di Mars</span>
+      </div>
+      <div style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.22);border-radius:16px;padding:16px;text-align:center;">
+        <span style="font-size:40px;display:block;margin-bottom:8px;">🌐</span>
+        <strong style="display:block;font-size:14px;margin-bottom:4px;">5 Miliar+</strong>
+        <span style="font-size:13px;opacity:.8;">Orang terhubung via internet</span>
+      </div>
+      <div style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.22);border-radius:16px;padding:16px;text-align:center;">
+        <span style="font-size:40px;display:block;margin-bottom:8px;">🧬</span>
+        <strong style="display:block;font-size:14px;margin-bottom:4px;">2003</strong>
+        <span style="font-size:13px;opacity:.8;">Peta lengkap DNA manusia selesai dipetakan</span>
+      </div>
+    </div>
+
+    <div class="quote-box">
+      <p>"Nenek moyang kita hidup di gua dan menatap bintang dengan penuh tanda tanya. Hari ini, kita tidak lagi hanya menatap — kita sudah mulai melangkah ke sana. Dan generasimu, Aslan, akan melangkah lebih jauh dari siapapun sebelumnya."</p>
+      <cite>— Kapten Cerdas</cite>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+    <span class="page-indicator">5 dari 14</span>
+    <button class="btn btn-next" onclick="goPage(6)">Petualangan Berikutnya! 🚀 →</button>
+  </div>
+</div>
+
+<!-- ══ PAGE 6: MENUJU BINTANG ══ -->
+<div class="page" id="page-6">
+  <div class="section-header">
+    <span class="tag">🚀 Masa Depan</span>
+    <h1>Petualangan Berikutnya:<br><span style="color:var(--gold)">Menuju Bintang!</span></h1>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--purple),var(--sky));">
+    <div class="rocket-launch-area" id="rocketArea" onclick="launchRocket()">
+      <span class="rocket-emoji" id="rocketEmoji">🚀</span>
+      <div class="rocket-trail" id="rocketTrail"></div>
+      <p class="launch-msg">👆 Klik roket untuk meluncurkan ke luar angkasa!</p>
+    </div>
+
+    <h2>Apa yang Menunggu di Depan?</h2>
+    <p>Selama 30 hari ini kita melihat ke belakang — ke masa lalu yang panjang dan penuh kejutan. Tapi sekarang, Aslan, saatnya kita putar kepala dan menatap ke depan. Ke masa depan yang sedang dibangun <strong>saat ini</strong>, dan akan menjadi milikmu sepenuhnya.</p>
+  </div>
+
+  <div class="mission-grid">
+    <div class="mission-card mc-blue">
+      <span class="mc-icon">🔴</span>
+      <strong>Koloni Mars</strong>
+      <p>Para ilmuwan merencanakan koloni pertama manusia di Mars sekitar tahun 2040–2050. Generasimu mungkin akan menjadi yang pertama lahir di planet lain! 👨‍🚀</p>
+    </div>
+    <div class="mission-card mc-violet">
+      <span class="mc-icon">🛸</span>
+      <strong>Perjalanan Antar Bintang</strong>
+      <p>Bintang terdekat Bumi (Proxima Centauri) berjarak 4,2 tahun cahaya. Ilmuwan sedang merancang kapal yang bisa menempuh perjalanan itu dalam hitungan dekade!</p>
+    </div>
+    <div class="mission-card mc-gold">
+      <span class="mc-icon">🤖</span>
+      <strong>Kecerdasan Buatan</strong>
+      <p>AI semakin cerdas setiap harinya. Di masa depanmu, AI akan membantu dokter menyembuhkan kanker, membantu ilmuwan memecahkan misteri alam semesta, dan banyak lagi!</p>
+    </div>
+    <div class="mission-card mc-green">
+      <span class="mc-icon">🌍</span>
+      <strong>Menyelamatkan Bumi</strong>
+      <p>Energi matahari, angin, dan teknologi hijau akan menggantikan bahan bakar fosil. Generasimu akan memimpin revolusi hijau terbesar dalam sejarah manusia!</p>
+    </div>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--cyan),var(--earth));">
+    <h3>🌌 Dan Lebih Jauh Lagi…</h3>
+    <div class="info-box">
+      <span class="ib-icon">🔭</span>
+      <p><strong>Teleskop Generasi Berikutnya</strong> — Manusia akan membangun teleskop yang bisa melihat planet-planet di tata surya lain dan mungkin menemukan tanda-tanda kehidupan di luar Bumi!</p>
+    </div>
+    <div class="info-box">
+      <span class="ib-icon">🧬</span>
+      <p><strong>Bioteknologi Super</strong> — Ilmuwan mungkin akan bisa memperbaiki gen penyebab penyakit, membuat manusia hidup jauh lebih lama, dan bahkan menghidupkan kembali spesies yang punah!</p>
+    </div>
+    <div class="info-box">
+      <span class="ib-icon">⚡</span>
+      <p><strong>Energi Tak Terbatas</strong> — Fusi nuklir (cara kerja Matahari) sedang dikembangkan untuk memberikan energi bersih tak terbatas kepada seluruh umat manusia!</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+    <span class="page-indicator">6 dari 14</span>
+    <button class="btn btn-next" onclick="goPage(7)">Peran Aslan! 🌟 →</button>
+  </div>
+</div>
+
+<!-- ══ PAGE 7: PERAN ASLAN ══ -->
+<div class="page" id="page-7">
+  <div class="section-header">
+    <span class="tag">🌟 Generasi Penerus</span>
+    <h1>Peranmu di<br>Masa Depan, Aslan!</h1>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--gold),var(--violet));">
+    <span style="font-size:60px;display:block;margin-bottom:16px;text-align:center;">👨‍🚀</span>
+    <h2>Kamu Bukan Penonton — Kamu Pemainnya!</h2>
+    <p>Aslan, dengarkan ini baik-baik. Semua penemuan besar yang kita bicarakan — Mars, AI, energi bersih, perjalanan antar bintang — tidak akan terjadi dengan sendirinya.</p>
+    <p>Mereka akan terjadi karena ada <strong>anak-anak sepertimu sekarang</strong>, yang sedang tumbuh, belajar, dan penasaran — yang suatu hari nanti akan menjadi ilmuwan, insinyur, penjelajah, pemimpin, dan pemikir yang akan membuat semuanya nyata.</p>
+    <p>Kamu berusia 10 tahun sekarang. Pada tahun 2040, saat koloni Mars mungkin pertama kali berdiri, kamu baru berusia 26 tahun. <strong>Kamu berada tepat di generasi yang tepat, di waktu yang tepat, untuk mengubah dunia.</strong> 🌍</p>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--sky),var(--neon));">
+    <h2>💡 Apa yang Bisa Kamu Lakukan Sekarang?</h2>
+    <div class="info-box">
+      <span class="ib-icon">📚</span>
+      <p><strong>Terus belajar dengan rasa ingin tahu</strong> — Rasa ingin tahu adalah bahan bakar terpenting bagi setiap penjelajah besar. Jangan pernah berhenti bertanya "mengapa?" dan "bagaimana?".</p>
+    </div>
+    <div class="info-box">
+      <span class="ib-icon">🔬</span>
+      <p><strong>Cintai sains dan teknologi</strong> — Tidak perlu menjadi genius. Cukup jatuh cinta pada proses menemukan hal baru. Ilmu pengetahuan bukan tentang hafalan — ini tentang petualangan!</p>
+    </div>
+    <div class="info-box">
+      <span class="ib-icon">🤝</span>
+      <p><strong>Pelajari sejarah untuk memahami manusia</strong> — Seperti yang kamu pelajari 30 hari ini, memahami dari mana kita berasal membantu kita tahu ke mana kita harus pergi.</p>
+    </div>
+    <div class="info-box">
+      <span class="ib-icon">❤️</span>
+      <p><strong>Jaga Bumi ini</strong> — Ini satu-satunya rumah yang kita punya (untuk sekarang!). Setiap tindakan kecil untuk menjaga lingkungan adalah kontribusi nyata untuk generasi berikutnya.</p>
+    </div>
+    <div class="info-box">
+      <span class="ib-icon">🌟</span>
+      <p><strong>Bermimpilah yang besar</strong> — Semua penemuan besar dimulai dari satu pikiran yang berani. Izinkan dirimu bermimpi tentang hal-hal yang "mustahil" — karena di sanalah terobosan terbesar tersembunyi.</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+    <span class="page-indicator">7 dari 14</span>
+    <button class="btn btn-next" onclick="goPage(8)">Ucapan Selamat Spesial! 🎉 →</button>
+  </div>
+</div>
+
+<!-- ══ PAGE 8: UCAPAN SELAMAT (PALING SPESIAL) ══ -->
+<div class="page" id="page-8">
+  <div class="celebration-wrap">
+    <div class="stars-row">
+      <span class="star-item">⭐</span>
+      <span class="star-item">🌟</span>
+      <span class="star-item">✨</span>
+      <span class="star-item">🌟</span>
+      <span class="star-item">⭐</span>
+    </div>
+
+    <span class="trophy-mega">🏆</span>
+
+    <h2 class="celeb-title">SELAMAT, Aslan!</h2>
+
+    <div class="stars-row">
+      <span class="star-item">✨</span>
+      <span class="star-item">⭐</span>
+      <span class="star-item">🌟</span>
+      <span class="star-item">⭐</span>
+      <span class="star-item">✨</span>
+    </div>
+
+    <p class="celeb-text">
+      Kamu baru saja menyelesaikan sesuatu yang luar biasa — <strong>30 hari petualangan sains dan sejarah</strong> yang membawa kamu melewati 4,6 miliar tahun waktu, dari sel pertama di lautan purba hingga hari ini.
+    </p>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--gold),var(--amber),var(--gold));background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.35);margin-bottom:24px;">
+      <p style="font-size:clamp(16px,2.5vw,19px);line-height:2;text-align:center;font-style:italic;color:rgba(255,255,255,.95);">
+        "Aslan, kamu bukan anak biasa. Kamu adalah anak yang memilih untuk mengetahui — bukan sekadar menonton. Kamu sudah menempuh perjalanan yang kebanyakan orang dewasa pun belum pernah lakukan. Kamu adalah bukti nyata bahwa rasa ingin tahu, ketekunan, dan keberanian untuk terus belajar adalah kekuatan terbesar yang bisa dimiliki seorang manusia.
+        <br><br>
+        Setiap halaman yang kamu baca, setiap fakta yang kamu pelajari, setiap pertanyaan yang muncul di benakmu — semua itu adalah batu bata yang sedang membangun versi terbaik dari dirimu. Versi yang suatu hari nanti akan membuat perbedaan nyata di dunia ini.
+        <br><br>
+        Hari ini, dengan sepenuh hati, Kapten Cerdas memberi gelar tertinggi kepada seorang penjelajah sejati:
+        <br><br>
+        <strong style='font-size:clamp(20px,4vw,28px);color:var(--gold);font-family:Fredoka One,cursive;'>⭐ KAPTEN CERDAS AGUNG ⭐</strong>
+        <br><br>
+        Gelar ini bukan dari kertas. Ini terukir di setiap pikiran yang pernah kamu renungkan, di setiap rasa penasaran yang tidak kamu padamkan, dan di setiap langkah perjalanan belajarmu yang tidak pernah kamu serah."
+      </p>
+    </div>
+
+    <div class="badge-grid" style="justify-content:center;margin-bottom:24px;">
+      <div class="badge" style="background:linear-gradient(135deg,rgba(251,191,36,.25),rgba(251,191,36,.1));border:2px solid var(--gold);color:var(--gold);font-size:15px;padding:12px 24px;">🏆 Kapten Cerdas Agung</div>
+      <div class="badge" style="background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.4);color:var(--neon);">🌌 Penjelajah Waktu</div>
+      <div class="badge" style="background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;">🌍 Penjaga Bumi</div>
+      <div class="badge" style="background:rgba(56,189,248,.2);border:1px solid rgba(56,189,248,.4);color:var(--sky);">🚀 Astronot Masa Depan</div>
+      <div class="badge" style="background:rgba(220,38,38,.2);border:1px solid rgba(220,38,38,.4);color:#fca5a5;">❤️ Pecinta Sains Sejati</div>
+    </div>
+
+    <button class="btn btn-gold" onclick="triggerConfetti();goPage(9)" style="max-width:400px;font-size:17px;padding:18px 36px;margin:0 auto;display:flex;">
+      🎉 Rayakan Kemenanganku!
+    </button>
+  </div>
+</div>
+
+<!-- ══ PAGE 9: PESAN KAPTEN CERDAS ══ -->
+<div class="page" id="page-9">
+  <div class="section-header">
+    <span class="tag">💬 Pesan Khusus</span>
+    <h1>Pesan Terakhir<br>Kapten Cerdas</h1>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--purple),var(--gold));">
+    <span style="font-size:60px;display:block;margin-bottom:16px;text-align:center;">🎖️</span>
+    <p style="font-style:italic;font-size:17px;line-height:2;color:rgba(254,249,195,.9);">
+      "Aslan, ini adalah pesan terakhirku untukmu — tapi bukan karena perjalanan kita berakhir. Justru sebaliknya.<br><br>
+
+      Selama 30 hari kamu belajar bersamaku, aku melihat sesuatu yang tidak selalu aku lihat: seorang penjelajah muda yang sungguh-sungguh ingin memahami dunia — tidak hanya menghafal fakta, tapi benar-benar ingin <em>mengerti</em>.<br><br>
+
+      Ketahuilah ini, Aslan: <strong>manusia adalah satu-satunya makhluk di alam semesta yang bisa memahami alam semesta itu sendiri</strong>. Bintang-bintang tidak tahu bahwa mereka bersinar. Gunung tidak tahu bahwa mereka tinggi. Tapi kamu — kamu bisa memandang Matahari dan berkata, 'Aku tahu bagaimana kamu bekerja.' Itu adalah keajaiban terbesar dari semua keajaiban.<br><br>
+
+      Gunakan anugerah itu dengan bijak. Jangan hanya belajar untuk nilai — belajarlah untuk menjadi lebih bijak. Jangan hanya mencari tahu untuk lulus ujian — carilah tahu untuk membuat hidup orang lain lebih baik.<br><br>
+
+      Dan di hari-hari gelap ketika kamu merasa kecil dan tidak penting, ingatlah ini: nenek moyangmu dua juta tahun lalu hanya punya sepotong batu dan sepotong harapan. Dan lihat sejauh mana manusia sudah melangkah. Bayangkan sejauh apa lagi yang akan dicapai — dengan <em>kamu</em> sebagai bagian dari perjalanannya.<br><br>
+
+      Selalu dengan bangga,<br>
+      <strong>— Kapten Cerdas</strong> 🎖️"
+    </p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="goPage(8)">← Kembali</button>
+    <span class="page-indicator">9 dari 14</span>
+    <button class="btn btn-next" onclick="goPage(10)">Pelajaran Terbesar! 💡 →</button>
+  </div>
+</div>
+
+<!-- ══ PAGE 10: PELAJARAN TERBESAR ══ -->
+<div class="page" id="page-10">
+  <div class="section-header">
+    <span class="tag">💡 Hikmah Terdalam</span>
+    <h1>Pelajaran Terbesar<br>dari 30 Hari Ini</h1>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--sky),var(--earth));">
+    <h2>🌍 Satu Kebenaran yang Mengubah Segalanya</h2>
+    <p>Dari semua fakta yang kamu pelajari — tentang DNA, dinosaurus, piramida, revolusi industri, dan luar angkasa — ada <strong>satu pelajaran terbesar</strong> yang merangkum semuanya:</p>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--gold),var(--violet),var(--cyan));background:rgba(251,191,36,.06);border-color:rgba(251,191,36,.25);">
+    <p style="text-align:center;font-size:clamp(18px,4vw,26px);font-family:'Fredoka One',cursive;line-height:1.6;color:rgba(255,255,255,.95);">
+      "Setiap kemajuan besar dalam sejarah manusia dimulai dari satu hal yang sama: seorang manusia yang tidak mau menerima bahwa hal ini mustahil."
+    </p>
+    <p style="text-align:center;font-size:14px;opacity:.6;margin-top:12px;">— Pelajaran terbesar dari 4,6 miliar tahun sejarah Bumi</p>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--violet),var(--earth));">
+    <div class="info-box">
+      <span class="ib-icon">🦠</span>
+      <p>Sel pertama tidak "tahu" bahwa membuat kehidupan itu mustahil. Ia hanya... ada. Dan dari sana, semua bermula.</p>
+    </div>
+    <div class="info-box">
+      <span class="ib-icon">🔥</span>
+      <p>Homo Erectus yang pertama mengambil api dari petir dan membawanya ke gua tidak "tahu" bahwa itu berbahaya. Ia hanya penasaran dan berani.</p>
+    </div>
+    <div class="info-box">
+      <span class="ib-icon">🌾</span>
+      <p>Manusia pertama yang menanam benih tidak "tahu" ia sedang merevolusi peradaban. Ia hanya mencoba sesuatu yang baru.</p>
+    </div>
+    <div class="info-box">
+      <span class="ib-icon">🚀</span>
+      <p>Orang-orang yang mengirim manusia ke Bulan tidak berhenti ketika semua orang bilang "mustahil". Mereka hanya terus mencoba.</p>
+    </div>
+
+    <div style="margin-top:20px;padding:20px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.28);border-radius:16px;text-align:center;">
+      <p style="font-size:16px;font-weight:800;color:var(--neon);">Kuncinya selalu sama: Rasa Ingin Tahu + Keberanian + Ketekunan</p>
+      <p style="font-size:14px;opacity:.8;margin-top:8px;">Dan ketiga hal itu? Kamu sudah memiliki semuanya, Aslan. 🌟</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="goPage(9)">← Kembali</button>
+    <span class="page-indicator">10 dari 14</span>
+    <button class="btn btn-next" onclick="goPage(11)">Tantangan Terakhir! ⚡ →</button>
+  </div>
+</div>
+
+<!-- ══ PAGE 11: TANTANGAN AKHIR ══ -->
+<div class="page" id="page-11">
+  <div class="section-header">
+    <span class="tag">⚡ Misi Terakhir</span>
+    <h1>Tantangan Akhir<br>untuk Kapten Aslan!</h1>
+  </div>
+
+  <div class="challenge-card">
+    <div class="challenge-title">🏆 Misi Agung Kapten Cerdas</div>
+    <p style="font-size:15px;opacity:.8;margin-bottom:20px;">Ini adalah tantangan terakhir dan terpenting dari seluruh perjalanan 30 hari kita. Bukan ujian nilai — ini adalah tantangan untuk hidupmu.</p>
+
+    <div class="ch-item">
+      <div class="ch-num">1</div>
+      <div><p><strong>Tuliskan mimpimu!</strong> 📝 Ambil kertas kosong dan tulis satu kalimat: "Kalau aku besar nanti, aku ingin mengubah dunia dengan cara…" Isi titik-titiknya. Tidak perlu masuk akal sekarang. Mimpi besar yang ditulis seringkali jadi nyata.</p></div>
+    </div>
+    <div class="ch-item">
+      <div class="ch-num">2</div>
+      <div><p><strong>Ceritakan ke satu orang!</strong> 🗣️ Pilih satu orang di keluargamu dan ceritakan satu hal paling mengagumkan yang kamu pelajari selama 30 hari ini. Mengajarkan orang lain adalah cara terbaik membuktikan bahwa kamu benar-benar memahaminya.</p></div>
+    </div>
+    <div class="ch-item">
+      <div class="ch-num">3</div>
+      <div><p><strong>Satu pertanyaan besar!</strong> ❓ Tuliskan satu pertanyaan terbesar tentang alam semesta atau manusia yang masih ingin kamu tahu jawabannya. Simpan pertanyaan itu. Itu adalah kompasmu untuk belajar selanjutnya.</p></div>
+    </div>
+    <div class="ch-item">
+      <div class="ch-num">4</div>
+      <div><p><strong>Komitmen 30 hari berikutnya!</strong> 📅 Petualangan ini selesai, tapi belajar tidak pernah berhenti. Pilih satu topik baru yang ingin kamu pelajari di bulan depan dan ceritakan ke orang tuamu. Apakah itu fisika? Biologi? Pemrograman? Seni? Tidak ada batasan!</p></div>
+    </div>
+    <div class="ch-item">
+      <div class="ch-num">5</div>
+      <div><p><strong>Pesan untuk Aslan di masa depan!</strong> 💌 Tulis surat singkat untuk dirimu sendiri 10 tahun ke depan. Ceritakan siapa kamu sekarang, apa yang kamu pelajari, dan apa yang kamu impikan. Simpan di tempat aman. Buka di hari ulang tahunmu ke-20!</p></div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="goPage(10)">← Kembali</button>
+    <span class="page-indicator">11 dari 14</span>
+    <button class="btn btn-next" onclick="goPage(12)">Galeri Kehormatan! 🌟 →</button>
+  </div>
+</div>
+
+<!-- ══ PAGE 12: GALERI KEHORMATAN ══ -->
+<div class="page" id="page-12">
+  <div class="section-header">
+    <span class="tag">🌟 Galeri Kehormatan</span>
+    <h1>Jejakmu Dalam<br>Perjalanan Ini</h1>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--gold),var(--amber));">
+    <h2>📊 Statistik Petualanganmu</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin:16px 0;">
+      <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.28);border-radius:16px;padding:18px;text-align:center;">
+        <div style="font-family:'Fredoka One',cursive;font-size:36px;color:var(--earth);">30</div>
+        <div style="font-size:13px;opacity:.75;margin-top:4px;">Hari Petualangan</div>
+      </div>
+      <div style="background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.28);border-radius:16px;padding:18px;text-align:center;">
+        <div style="font-family:'Fredoka One',cursive;font-size:36px;color:var(--neon);">4,6 M</div>
+        <div style="font-size:13px;opacity:.75;margin-top:4px;">Tahun Dijelajahi</div>
+      </div>
+      <div style="background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.28);border-radius:16px;padding:18px;text-align:center;">
+        <div style="font-family:'Fredoka One',cursive;font-size:36px;color:var(--gold);">100+</div>
+        <div style="font-size:13px;opacity:.75;margin-top:4px;">Fakta Dipelajari</div>
+      </div>
+      <div style="background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.28);border-radius:16px;padding:18px;text-align:center;">
+        <div style="font-family:'Fredoka One',cursive;font-size:36px;color:var(--sky);">∞</div>
+        <div style="font-size:13px;opacity:.75;margin-top:4px;">Rasa Ingin Tahu</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--violet),var(--neon));">
+    <h2>🤝 Manusia-Manusia yang Kamu Temui</h2>
+    <p style="margin-bottom:16px;">Dalam perjalanan ini, kamu sudah bertemu dengan tokoh-tokoh luar biasa lintas jutaan tahun:</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+      <span class="badge" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#6ee7b7;">🦠 Sel Pertama (3.8 Miliar tahun lalu)</span>
+      <span class="badge" style="background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);color:var(--gold);">🦴 Lucy the Australopithecus</span>
+      <span class="badge" style="background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);color:var(--neon);">🪨 Homo Habilis si Pembuat Alat</span>
+      <span class="badge" style="background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);color:var(--sky);">🔥 Homo Erectus si Penakluk Api</span>
+      <span class="badge" style="background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);color:#fca5a5);">🧊 Neanderthal, Sepupu Kita</span>
+      <span class="badge" style="background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.3);color:#fde047);">🌾 Petani Pertama</span>
+      <span class="badge" style="background:rgba(20,184,166,.15);border:1px solid rgba(20,184,166,.3);color:#5eead4;">✍️ Penulis Pertama</span>
+      <span class="badge" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);color:#d8b4fe;">🏛️ Raja dan Ratu Peradaban</span>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="goPage(11)">← Kembali</button>
+    <span class="page-indicator">12 dari 14</span>
+    <button class="btn btn-next" onclick="goPage(13)">Hampir Selesai! 🚀 →</button>
+  </div>
+</div>
+
+<!-- ══ PAGE 13: SEBELUM PENUTUP ══ -->
+<div class="page" id="page-13">
+  <div class="section-header">
+    <span class="tag">💫 Satu Langkah Lagi</span>
+    <h1>Sebelum Kita<br>Mengakhiri Perjalanan...</h1>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--sky),var(--violet));">
+    <span style="font-size:60px;display:block;margin-bottom:16px;text-align:center;">🌌</span>
+    <h2>Renungkan Ini Sejenak</h2>
+    <p>Di alam semesta yang luasnya tak terbayangkan — miliaran galaksi, triliunan bintang, quadriliun planet — ada satu planet kecil biru yang mengorbit satu bintang biasa di salah satu lengan galaksi yang bahkan bukan yang paling besar.</p>
+    <p>Di planet kecil itu, ada makhluk yang tumbuh dari sel tunggal selama miliaran tahun evolusi. Makhluk itu belajar berjalan, berbicara, dan akhirnya bertanya — tidak hanya "apa yang ada di balik gunung itu?" tapi juga "apa yang ada di balik bintang-bintang itu?"</p>
+    <p>Kamu adalah makhluk itu, Aslan. Dan fakta bahwa kamu bahkan bisa memahami betapa luar biasanya ini — <strong>itulah keajaiban terbesar dari seluruh alam semesta.</strong> 🌟</p>
+
+    <div class="quote-box">
+      <p>"Kita adalah cara alam semesta memahami dirinya sendiri."</p>
+      <cite>— Carl Sagan, Astronom dan Penulis Sains</cite>
+    </div>
+  </div>
+
+  <div class="card" style="--accent:linear-gradient(90deg,var(--gold),var(--earth));">
+    <h2>🙏 Terima Kasih, Aslan!</h2>
+    <p>Terima kasih sudah menjadi petualang yang luar biasa. Terima kasih atas rasa ingin tahu yang tidak pernah padam. Terima kasih sudah percaya bahwa belajar adalah petualangan terbesar.</p>
+    <p>Dan di atas segalanya — <strong>terima kasih sudah menjadi dirimu sendiri</strong>. Aslan yang penuh semangat, yang tidak takut bertanya, yang terus mencari dan terus tumbuh.</p>
+    <p>Ini bukan akhir. Ini adalah <em>awal</em> dari petualangan sesungguhnya. 🚀</p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="goPage(12)">← Kembali</button>
+    <span class="page-indicator">13 dari 14</span>
+    <button class="btn btn-gold" onclick="goPage(14);triggerFinalStars();" style="max-width:280px;">
+      🌟 Halaman Penutup yang Megah →
+    </button>
+  </div>
+</div>
+
+<!-- ══ PAGE 14: CLOSING — MEGAH ══ -->
+<div class="page" id="page-14">
+  <div class="final-wrap">
+    <div class="final-planet">🌍</div>
+
+    <h1 class="final-title">Selamat Jalan,<br>Kapten Aslan! 🚀</h1>
+
+    <p class="final-msg">
+      Bumi ini pernah tidak punya siapapun. Lalu muncul sel kecil. Lalu ikan. Lalu manusia purba. Lalu kamu. Dan suatu hari nanti — karena generasi sepertimu — manusia akan menyentuh bintang-bintang yang selama ini hanya bisa kita tatap dari bawah.
+    </p>
+
+    <div class="final-special">
+      <p>
+        <strong>Aslan</strong>, dalam 30 hari ini kamu sudah membuktikan satu hal yang paling penting: bahwa belajar bukan beban — belajar adalah hadiah terbesar yang pernah ada.
+        <br><br>
+        Kamu adalah bagian dari kisah panjang manusia yang sudah berlangsung jutaan tahun. Dan kisah itu belum selesai — ia terus berlanjut, di setiap langkahmu, di setiap pilihanmu, di setiap mimpi yang kamu berani kejar.
+        <br><br>
+        <strong>Ad Astra, Aslan.</strong><br>
+        <span style="font-size:13px;opacity:.7;">(Latin: "Menuju Bintang-Bintang")</span>
+      </p>
+    </div>
+
+    <div class="badge-grid" style="justify-content:center;margin-bottom:32px;">
+      <div class="badge" style="background:linear-gradient(135deg,rgba(251,191,36,.3),rgba(251,191,36,.1));border:2px solid var(--gold);color:var(--gold);font-size:16px;padding:14px 28px;font-family:'Fredoka One',cursive;">
+        🏆 KAPTEN CERDAS AGUNG — Aslan
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:36px;">
+      <span class="badge" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.35);color:#6ee7b7;">🌍 30 Hari ✓</span>
+      <span class="badge" style="background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.35);color:var(--neon);">🌌 4.6 Miliar Tahun ✓</span>
+      <span class="badge" style="background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.35);color:var(--sky);">🚀 Siap ke Bintang ✓</span>
+    </div>
+
+    <button class="btn btn-gold" onclick="triggerFinalConfetti()" style="max-width:380px;margin:0 auto;display:flex;font-size:17px;padding:18px 36px;">
+      🎊 Rayakan! Petualangan Selesai!
+    </button>
+
+    <p style="margin-top:28px;font-size:13px;opacity:.45;font-style:italic;">
+      Seri "Petualangan Kapten Cerdas: Jejak Manusia di Bumi" — Hari 1 s/d Hari 30 ✓ Tamat
+    </p>
+  </div>
+</div>
+
+</div><!-- /.book-wrapper -->
+
+<script>
+/* ═════════════════════════════════════════
+   STARFIELD GENERATOR
+═════════════════════════════════════════ */
+(function buildStars() {
+  const sf = document.getElementById('starfield');
+  for (let i = 0; i < 200; i++) {
+    const s = document.createElement('div');
+    s.className = 'star-dot';
+    const sz = Math.random() * 2.8 + .4;
+    const warm = Math.random() > .75;
+    s.style.cssText = `
+      width:${sz}px;height:${sz}px;
+      top:${Math.random()*100}%;left:${Math.random()*100}%;
+      background:${warm ? '#fde68a' : 'white'};
+      animation-duration:${2+Math.random()*5}s;
+      animation-delay:${Math.random()*5}s;
+    `;
+    sf.appendChild(s);
+  }
+  // Shooting stars
+  for (let i = 0; i < 4; i++) {
+    const ss = document.createElement('div');
+    ss.className = 'shooting-star';
+    ss.style.cssText = `
+      top:${10+Math.random()*40}%;left:${Math.random()*30}%;
+      animation-duration:${5+Math.random()*8}s;
+      animation-delay:${Math.random()*12}s;
+    `;
+    sf.appendChild(ss);
+  }
+})();
+
+/* ═════════════════════════════════════════
+   PAGE NAVIGATION
+═════════════════════════════════════════ */
+const TOTAL = 14;
+let current = 1;
+
+function goPage(n) {
+  if (n < 1 || n > TOTAL) return;
+  document.getElementById('page-' + current).classList.remove('active');
+  current = n;
+  document.getElementById('page-' + current).classList.add('active');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+  const pct = ((current - 1) / (TOTAL - 1)) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+/* ═════════════════════════════════════════
+   INTERACTIVE EARTH TIMELINE
+═════════════════════════════════════════ */
+function toggleTimeline() {
+  const tl = document.getElementById('earthTimeline');
+  tl.classList.toggle('show');
+}
+
+/* ═════════════════════════════════════════
+   ROCKET LAUNCH INTERACTION
+═════════════════════════════════════════ */
+let rockLaunched = false;
+function launchRocket() {
+  if (rockLaunched) {
+    // Reset
+    const area = document.getElementById('rocketArea');
+    const em = document.getElementById('rocketEmoji');
+    const trail = document.getElementById('rocketTrail');
+    area.classList.remove('launched');
+    em.style.animation = '';
+    em.style.opacity = '1';
+    em.style.transform = '';
+    trail.style.width = '0';
+    rockLaunched = false;
+    void em.offsetWidth; // reflow
+    return;
+  }
+  rockLaunched = true;
+  const area = document.getElementById('rocketArea');
+  area.classList.add('launched');
+  document.getElementById('rocketTrail').style.width = '60%';
+  setTimeout(() => {
+    const em = document.getElementById('rocketEmoji');
+    em.style.opacity = '0';
+    // re-appear after 2s
+    setTimeout(() => {
+      area.classList.remove('launched');
+      em.style.animation = '';
+      em.style.opacity = '1';
+      em.style.transform = '';
+      document.getElementById('rocketTrail').style.width = '0';
+      rockLaunched = false;
+    }, 2000);
+  }, 800);
+}
+
+/* ═════════════════════════════════════════
+   CONFETTI SYSTEM
+═════════════════════════════════════════ */
+const canvas = document.getElementById('confetti-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let animFrame = null;
+
+function triggerConfetti() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.classList.add('active');
+  particles = [];
+  const colors = ['#fbbf24','#8b5cf6','#22d3ee','#10b981','#f472b6','#ffffff','#fde68a'];
+  for (let i = 0; i < 180; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      w: Math.random() * 10 + 4,
+      h: Math.random() * 14 + 6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vy: Math.random() * 3 + 2,
+      vx: (Math.random() - .5) * 2,
+      rot: Math.random() * 360,
+      rotV: (Math.random() - .5) * 5,
+      opacity: 1,
+    });
+  }
+  if (animFrame) cancelAnimationFrame(animFrame);
+  animateConfetti();
+  setTimeout(() => {
+    canvas.classList.remove('active');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+  }, 4000);
+}
+
+function triggerFinalConfetti() {
+  triggerConfetti();
+}
+function triggerFinalStars() {
+  setTimeout(triggerConfetti, 400);
+}
+
+function animateConfetti() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p => {
+    ctx.save();
+    ctx.globalAlpha = p.opacity;
+    ctx.fillStyle = p.color;
+    ctx.translate(p.x + p.w/2, p.y + p.h/2);
+    ctx.rotate(p.rot * Math.PI/180);
+    ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+    ctx.restore();
+    p.y += p.vy; p.x += p.vx; p.rot += p.rotV;
+    if (p.y > canvas.height * .8) p.opacity -= .02;
+  });
+  particles = particles.filter(p => p.opacity > 0);
+  if (particles.length > 0) animFrame = requestAnimationFrame(animateConfetti);
+}
+
+/* ═════════════════════════════════════════
+   KEYBOARD NAVIGATION
+═════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(current - 1);
+});
+
+/* Init */
+updateProgress();
+</script>
+</body>
+</html>

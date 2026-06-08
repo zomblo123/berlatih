@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 5: Power Supply – Jantung yang Kasih Listrik</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow:  #fbbf24;
+    --amber:   #f59e0b;
+    --red:     #ef4444;
+    --electric:#facc15;
+    --deep:    #78350f;
+    --bg:      #fffbeb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 5% 10%,  rgba(251,191,36,.20) 0%, transparent 42%),
+      radial-gradient(circle at 90% 85%, rgba(239,68,68,.10)  0%, transparent 38%),
+      radial-gradient(circle at 50% 98%, rgba(245,158,11,.12) 0%, transparent 40%);
+    min-height: 100vh; overflow-x: hidden;
+  }
+  h1,h2,h3,.display { font-family:'Fredoka One',cursive; }
+
+  /* ── Header ── */
+  .header-grad {
+    background: linear-gradient(135deg,#78350f 0%,#b45309 35%,#d97706 65%,#fbbf24 100%);
+    position: relative; overflow: hidden;
+  }
+  .header-grad::after {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background: url("data:image/svg+xml,%3Csvg width='70' height='70' viewBox='0 0 70 70' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpolygon points='35,5 45,25 65,25 50,40 55,60 35,48 15,60 20,40 5,25 25,25'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* ── Speech bubble ── */
+  .bubble {
+    position: relative; background: white;
+    border-radius: 22px; border: 3px solid #d97706;
+    box-shadow: 4px 4px 0 #d97706;
+  }
+  .bubble::before { content:''; position:absolute; bottom:-22px; left:30px; border:12px solid transparent; border-top-color:#d97706; }
+  .bubble::after  { content:''; position:absolute; bottom:-15px; left:33px; border:10px solid transparent; border-top-color:white; }
+
+  /* ── Aslan bounce ── */
+  @keyframes bounceAslan { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  .aslan-bounce { animation: bounceAslan 2.2s ease-in-out infinite; }
+
+  /* ── Lightning bolt flash ── */
+  @keyframes boltFlash {
+    0%,100%{ opacity:.3; transform:scale(.95); }
+    50%    { opacity:1;  transform:scale(1.08); filter:drop-shadow(0 0 12px #fbbf24); }
+  }
+  .bolt-flash { animation: boltFlash 1.2s ease-in-out infinite; }
+
+  /* ── PSU fan spin ── */
+  @keyframes fanSpin { from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+  .fan-spin { transform-origin: 50% 50%; animation: fanSpin 1.4s linear infinite; }
+  .fan-slow  { transform-origin: 50% 50%; animation: fanSpin 3s linear infinite; }
+
+  /* ── Electricity flow ── */
+  @keyframes electricFlow {
+    0%   { stroke-dashoffset: 300; opacity: 1; }
+    100% { stroke-dashoffset: 0;   opacity: 0.4; }
+  }
+  .elec-line  { stroke-dasharray: 10 6; animation: electricFlow 1s linear infinite; }
+  .elec-line2 { stroke-dasharray: 10 6; animation: electricFlow 1.3s linear infinite .2s; }
+  .elec-line3 { stroke-dasharray: 10 6; animation: electricFlow 0.9s linear infinite .4s; }
+  .elec-line4 { stroke-dasharray: 10 6; animation: electricFlow 1.5s linear infinite .1s; }
+
+  /* ── Power surge glow ── */
+  @keyframes surgeGlow {
+    0%,100%{ filter:drop-shadow(0 0 4px rgba(251,191,36,.3)); }
+    50%    { filter:drop-shadow(0 0 18px rgba(251,191,36,1)) drop-shadow(0 0 35px rgba(239,68,68,.6)); }
+  }
+  .surge-glow { animation: surgeGlow 1.8s ease-in-out infinite; }
+
+  /* ── Voltage bar fill ── */
+  @keyframes voltFill {
+    from { width:0; }
+    to   { width: var(--target-w); }
+  }
+  .volt-fill { animation: voltFill 1.4s cubic-bezier(.4,0,.2,1) forwards; }
+
+  /* ── Pop in ── */
+  @keyframes popIn {
+    0%  { transform:scale(0) rotate(-15deg); opacity:0; }
+    70% { transform:scale(1.15) rotate(5deg); }
+    100%{ transform:scale(1) rotate(0deg); opacity:1; }
+  }
+  .pop-in { animation: popIn .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+  /* ── Float emoji ── */
+  @keyframes floatEmoji {
+    0%  { transform:translateY(0) scale(1); opacity:1; }
+    100%{ transform:translateY(-90px) scale(.5); opacity:0; }
+  }
+  .float-emoji { position:absolute; pointer-events:none; animation:floatEmoji 1s ease-out forwards; font-size:1.4rem; }
+
+  /* ── Confetti ── */
+  @keyframes confettiFly {
+    0%  { transform:translate(0,0) rotate(0deg); opacity:1; }
+    100%{ transform:translate(var(--tx),var(--ty)) rotate(720deg); opacity:0; }
+  }
+  .confetti-piece { position:fixed; width:10px; height:10px; border-radius:2px; pointer-events:none; z-index:100; animation:confettiFly 1.2s ease-out forwards; }
+
+  /* ── Shake ── */
+  @keyframes shake {
+    0%,100%{ transform:translateX(0); }
+    20%{ transform:translateX(-6px) rotate(-2deg); }
+    40%{ transform:translateX(6px) rotate(2deg); }
+    60%{ transform:translateX(-4px); }
+    80%{ transform:translateX(4px); }
+  }
+  .shake { animation: shake .5s ease-in-out; }
+
+  /* ── Buttons ── */
+  .btn-yellow {
+    background: linear-gradient(135deg,#d97706,#fbbf24);
+    color: #1c1917; border:none; border-radius:50px;
+    padding:1rem 2.6rem; font-family:'Fredoka One',cursive;
+    font-size:1.3rem; cursor:pointer;
+    box-shadow:0 6px 0 #b45309, 0 8px 22px rgba(217,119,6,.45);
+    transition:all .15s ease;
+  }
+  .btn-yellow:hover  { transform:translateY(-3px); box-shadow:0 9px 0 #b45309,0 12px 28px rgba(217,119,6,.55); }
+  .btn-yellow:active { transform:translateY(3px);  box-shadow:0 3px 0 #b45309; }
+  .btn-yellow:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+
+  .btn-red {
+    background: linear-gradient(135deg,#dc2626,#ef4444);
+    color:white; border:none; border-radius:50px;
+    padding:1rem 2.6rem; font-family:'Fredoka One',cursive;
+    font-size:1.3rem; cursor:pointer;
+    box-shadow:0 6px 0 #b91c1c, 0 8px 22px rgba(220,38,38,.4);
+    transition:all .15s ease;
+  }
+  .btn-red:hover  { transform:translateY(-3px); }
+  .btn-red:active { transform:translateY(3px); box-shadow:0 3px 0 #b91c1c; }
+  .btn-red:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+
+  /* ── Section underline ── */
+  .sec-title { position:relative; display:inline-block; }
+  .sec-title::after {
+    content:''; position:absolute; bottom:-6px; left:0; right:0; height:5px;
+    border-radius:10px; background:linear-gradient(90deg,#d97706,#fbbf24,#ef4444);
+  }
+
+  /* ── Component card ── */
+  .comp-card {
+    background:white; border-radius:20px; border:3px solid #fde68a;
+    box-shadow:4px 4px 0 #fde68a;
+    cursor:pointer; transition:all .2s ease;
+  }
+  .comp-card:hover { transform:translateY(-4px) scale(1.02); box-shadow:6px 8px 0 #fbbf24; border-color:#fbbf24; }
+  .comp-card.selected { border-color:#d97706; box-shadow:4px 4px 0 #d97706; background:#fffbeb; }
+
+  /* ── Quiz button ── */
+  .qbtn {
+    background:white; border:2.5px solid #fde68a; border-radius:14px;
+    padding:.6rem 1rem; font-family:'Nunito',sans-serif; font-weight:700;
+    font-size:.95rem; cursor:pointer; transition:all .15s ease; text-align:left;
+  }
+  .qbtn:hover:not(:disabled) { border-color:#d97706; background:#fffbeb; transform:translateX(4px); }
+
+  /* ── Volt meter bar ── */
+  .volt-bar-wrap {
+    background:#1c1917; border-radius:12px; height:22px; overflow:hidden;
+    border:2px solid #374151; position:relative;
+  }
+  .volt-bar-inner {
+    height:100%; border-radius:10px; position:relative;
+    transition: width .6s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ── PSU Box interactive ── */
+  .psu-slot {
+    cursor:pointer; transition: filter .2s;
+  }
+  .psu-slot:hover { filter:brightness(1.25); }
+
+  /* ── Info popup ── */
+  .info-popup {
+    display:none; position:absolute;
+    background:white; border-radius:16px; border:3px solid #d97706;
+    box-shadow:6px 6px 0 #d97706;
+    padding:1rem 1.2rem; z-index:30;
+    min-width:180px; max-width:230px;
+  }
+  .info-popup.show { display:block; animation:popIn .35s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+  /* ── Danger badge ── */
+  @keyframes dangerPulse {
+    0%,100%{ box-shadow:0 0 0 0 rgba(239,68,68,0); }
+    50%    { box-shadow:0 0 0 8px rgba(239,68,68,.25); }
+  }
+  .danger-pulse { animation:dangerPulse 2s ease-in-out infinite; }
+
+  /* ── Watt meter needle ── */
+  @keyframes needleSwing {
+    0%,100%{ transform:rotate(-60deg); }
+    50%    { transform:rotate(60deg); }
+  }
+
+  /* ── progress dot ── */
+  .prog-dot { width:14px; height:14px; border-radius:50%; display:inline-block; border:2px solid white; }
+
+  @keyframes slideUp {
+    from{ transform:translateY(20px); opacity:0; }
+    to  { transform:translateY(0);    opacity:1; }
+  }
+  .slide-up { animation:slideUp .4s ease-out forwards; }
+
+  /* ── Cable wiggle ── */
+  @keyframes cableWiggle {
+    0%,100%{ transform:rotate(0deg); }
+    25%    { transform:rotate(3deg); }
+    75%    { transform:rotate(-3deg); }
+  }
+  .cable-wiggle { animation:cableWiggle 2s ease-in-out infinite; transform-origin:top center; }
+
+  @keyframes sparkJump {
+    0%,100%{ opacity:0; transform:scale(0); }
+    50%    { opacity:1; transform:scale(1); }
+  }
+  .spark { animation:sparkJump .6s ease-in-out infinite; }
+  .spark2{ animation:sparkJump .6s ease-in-out infinite .2s; }
+  .spark3{ animation:sparkJump .6s ease-in-out infinite .4s; }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ══════════ HEADER ══════════ -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <div style="position:absolute;top:8px;left:3%;font-size:2.6rem;opacity:.2;animation:bounceAslan 9s ease-in-out infinite;">⚡</div>
+  <div style="position:absolute;top:12px;right:5%;font-size:2.2rem;opacity:.18;animation:bounceAslan 11s ease-in-out infinite .4s;">🔌</div>
+  <div style="position:absolute;bottom:8px;left:22%;font-size:1.8rem;opacity:.15;animation:bounceAslan 13s ease-in-out infinite .8s;">💡</div>
+  <div style="position:absolute;bottom:10px;right:18%;font-size:1.6rem;opacity:.15;animation:bounceAslan 10s ease-in-out infinite 1.2s;">🔋</div>
+  <div style="position:absolute;top:50%;left:50%;font-size:3rem;opacity:.08;animation:boltFlash 1.5s ease-in-out infinite;">⚡</div>
+
+  <div class="max-w-3xl mx-auto relative z-10 text-center">
+    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-3 border border-white/30">
+      <span class="text-xl">🖥️</span>
+      <span style="font-family:'Fredoka One',cursive;font-size:.9rem;letter-spacing:.5px;">Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span class="text-xl">🚀</span>
+    </div>
+    <h1 style="font-family:'Fredoka One',cursive;font-size:clamp(1.6rem,5vw,2.4rem);line-height:1.2;text-shadow:3px 3px 0 rgba(0,0,0,.25);">
+      Hari 5: Power Supply ⚡
+    </h1>
+    <p style="font-family:'Fredoka One',cursive;font-size:clamp(1rem,3vw,1.3rem);opacity:.92;margin-top:.4rem;">
+      Jantung yang Kasih Listrik ke Seluruh Komputer!
+    </p>
+    <!-- Progress -->
+    <div class="mt-4 flex items-center justify-center gap-2 flex-wrap">
+      <span style="font-size:.85rem;opacity:.8;">Progres:</span>
+      <div class="flex gap-1.5">
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <div class="prog-dot" style="background:#fbbf24;border-color:#fbbf24;"></div>
+        <div class="prog-dot" style="background:rgba(255,255,255,.3);"></div>
+        <span style="font-size:.8rem;opacity:.6;">... 30</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ INTRO ══════════ -->
+<section class="max-w-3xl mx-auto px-4 pt-8 pb-2">
+  <div class="flex flex-col sm:flex-row items-center gap-6">
+
+    <!-- PSU + Aslan illustration -->
+    <div class="relative flex-shrink-0" style="width:190px;height:190px;">
+      <svg viewBox="0 0 180 180" width="180" height="180">
+        <!-- PSU box -->
+        <rect x="20" y="55" width="110" height="80" rx="10" fill="#1c1917" stroke="#fbbf24" stroke-width="3"/>
+        <!-- PSU fan grill -->
+        <circle cx="75" cy="95" r="28" fill="#111" stroke="#374151" stroke-width="2"/>
+        <circle cx="75" cy="95" r="22" fill="none" stroke="#374151" stroke-width="1"/>
+        <!-- Fan blades spinning -->
+        <g class="fan-slow" style="transform-box:fill-box;transform-origin:75px 95px;">
+          <path d="M75 95 Q85 75 75 67 Q65 75 75 95" fill="#4b5563"/>
+          <path d="M75 95 Q95 100 100 90 Q90 80 75 95" fill="#4b5563"/>
+          <path d="M75 95 Q65 115 75 123 Q85 115 75 95" fill="#4b5563"/>
+          <path d="M75 95 Q55 90 50 100 Q60 110 75 95" fill="#4b5563"/>
+        </g>
+        <circle cx="75" cy="95" r="6" fill="#6b7280"/>
+        <!-- PSU label -->
+        <text x="75" y="148" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="11">POWER SUPPLY</text>
+        <!-- Power switch -->
+        <rect x="118" y="70" width="18" height="12" rx="4" fill="#1c1917" stroke="#fbbf24" stroke-width="1.5"/>
+        <circle cx="127" cy="76" r="3.5" fill="#22c55e"/>
+        <!-- Cables going out -->
+        <path d="M130 85 Q160 90 165 100" stroke="#fbbf24" stroke-width="3" fill="none" stroke-linecap="round" class="cable-wiggle"/>
+        <path d="M130 90 Q162 98 165 112" stroke="#ef4444" stroke-width="3" fill="none" stroke-linecap="round" class="cable-wiggle" style="animation-delay:.3s"/>
+        <path d="M130 95 Q163 106 165 124" stroke="#38bdf8" stroke-width="3" fill="none" stroke-linecap="round" class="cable-wiggle" style="animation-delay:.6s"/>
+        <!-- Sparks near cables -->
+        <text x="158" y="98" font-size="10" class="spark">⚡</text>
+        <text x="160" y="112" font-size="8" class="spark2">✨</text>
+        <text x="156" y="126" font-size="10" class="spark3">⚡</text>
+        <!-- Electricity going left into board -->
+        <line x1="20" y1="80" x2="0" y2="80" stroke="#fbbf24" stroke-width="3" class="elec-line"/>
+        <line x1="20" y1="95" x2="0" y2="95" stroke="#ef4444" stroke-width="2.5" class="elec-line2"/>
+        <line x1="20" y1="110" x2="0" y2="110" stroke="#38bdf8" stroke-width="2.5" class="elec-line3"/>
+      </svg>
+      <!-- Aslan -->
+      <div class="aslan-bounce" style="position:absolute;bottom:0;right:2px;z-index:10;">
+        <svg viewBox="0 0 50 70" width="50" height="70">
+          <ellipse cx="25" cy="44" rx="15" ry="17" fill="#FBBF24"/>
+          <ellipse cx="25" cy="50" rx="13" ry="12" fill="#DC2626"/>
+          <circle cx="25" cy="24" r="17" fill="#FBBF24"/>
+          <ellipse cx="25" cy="10" rx="17" ry="8" fill="#1C1917"/>
+          <ellipse cx="13" cy="15" rx="6" ry="5" fill="#1C1917"/>
+          <ellipse cx="37" cy="15" rx="6" ry="5" fill="#1C1917"/>
+          <circle cx="18" cy="24" r="3.5" fill="white"/>
+          <circle cx="32" cy="24" r="3.5" fill="white"/>
+          <circle cx="19" cy="25" r="2" fill="#1C1917"/>
+          <circle cx="33" cy="25" r="2" fill="#1C1917"/>
+          <circle cx="19.8" cy="24.2" r=".8" fill="white"/>
+          <circle cx="33.8" cy="24.2" r=".8" fill="white"/>
+          <path d="M18 31 Q25 37 32 31" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="13" cy="29" r="4" fill="#FCA5A5" opacity=".6"/>
+          <circle cx="37" cy="29" r="4" fill="#FCA5A5" opacity=".6"/>
+          <!-- holding bolt -->
+          <text x="35" y="48" font-size="16">⚡</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Bubble -->
+    <div>
+      <div class="bubble p-4 mb-4">
+        <p style="font-size:1.1rem;font-weight:800;color:#1c1917;line-height:1.6;">
+          Hei! Aku <span style="color:#d97706;">Aslan</span> 👋<br>
+          Hari ini kita belajar tentang <strong style="color:#d97706;">Power Supply!</strong> ⚡<br>
+          Power Supply itu seperti <strong>jantung komputer</strong> — dia yang kasih listrik ke semua bagian supaya bisa hidup! 🫀💛
+        </p>
+      </div>
+      <div class="flex items-center gap-2 bg-yellow-50 border-2 border-yellow-300 rounded-xl p-3">
+        <span class="text-2xl">💡</span>
+        <p style="font-size:.9rem;font-weight:700;color:#92400e;">
+          <strong>Fakta Seru:</strong> Power Supply mengubah listrik dari stopkontak (220V) menjadi listrik kecil yang aman untuk komputer (3V, 5V, 12V)! 🔄
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ PSU INTERAKTIF ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-8">
+  <div class="text-center mb-5">
+    <h2 class="sec-title text-2xl md:text-3xl" style="color:#1c1917;">⚡ Jelajahi Power Supply!</h2>
+    <p class="mt-4 text-gray-600 font-semibold">Klik bagian-bagian PSU untuk belajar! 👆</p>
+  </div>
+
+  <div class="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl border-4 border-yellow-500 shadow-2xl p-4 overflow-visible" id="psuStage">
+
+    <svg id="psuSvg" viewBox="0 0 700 420" width="100%" style="display:block;max-height:400px;">
+
+      <!-- ── Wall socket (left) ── -->
+      <g onclick="showInfo('wall')" class="psu-slot">
+        <rect x="18" y="130" width="72" height="120" rx="10" fill="#e5e7eb" stroke="#9ca3af" stroke-width="2.5"/>
+        <rect x="22" y="134" width="64" height="112" rx="7" fill="#f3f4f6"/>
+        <!-- Socket holes -->
+        <ellipse cx="44" cy="175" rx="7" ry="11" fill="#374151"/>
+        <ellipse cx="63" cy="175" rx="7" ry="11" fill="#374151"/>
+        <rect x="44" y="200" width="19" height="9" rx="3" fill="#374151"/>
+        <text x="54" y="258" text-anchor="middle" fill="#6b7280" font-family="Fredoka One,cursive" font-size="11">Stopkontak</text>
+        <text x="54" y="272" text-anchor="middle" fill="#9ca3af" font-family="Fredoka One,cursive" font-size="10">220V ⚡</text>
+      </g>
+
+      <!-- ── Power cable from wall ── -->
+      <g>
+        <path d="M90 190 Q130 190 140 190" stroke="#374151" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M90 190 Q130 190 140 190" stroke="#6b7280" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </g>
+
+      <!-- ── PSU Main Box ── -->
+      <g onclick="showInfo('psu')" class="psu-slot">
+        <rect x="140" y="100" width="180" height="180" rx="14" fill="#111827" stroke="#fbbf24" stroke-width="3.5"/>
+        <!-- Fan grill circle -->
+        <circle cx="230" cy="165" r="55" fill="#0f172a" stroke="#374151" stroke-width="2"/>
+        <circle cx="230" cy="165" r="48" fill="none" stroke="#1f2937" stroke-width="1.5"/>
+        <circle cx="230" cy="165" r="38" fill="none" stroke="#1f2937" stroke-width="1"/>
+        <!-- Grill lines -->
+        <line x1="175" y1="165" x2="285" y2="165" stroke="#1f2937" stroke-width="1.5"/>
+        <line x1="230" y1="110" x2="230" y2="220" stroke="#1f2937" stroke-width="1.5"/>
+        <line x1="191" y1="126" x2="269" y2="204" stroke="#1f2937" stroke-width="1.5"/>
+        <line x1="269" y1="126" x2="191" y2="204" stroke="#1f2937" stroke-width="1.5"/>
+        <!-- Fan blades -->
+        <g id="psuFan" class="fan-slow" style="transform-box:fill-box;transform-origin:230px 165px;">
+          <path d="M230 165 Q248 138 235 118 Q218 130 230 165" fill="#374151"/>
+          <path d="M230 165 Q258 172 268 158 Q255 143 230 165" fill="#374151"/>
+          <path d="M230 165 Q212 192 225 212 Q242 200 230 165" fill="#374151"/>
+          <path d="M230 165 Q202 158 192 172 Q205 187 230 165" fill="#374151"/>
+        </g>
+        <circle cx="230" cy="165" r="9" fill="#4b5563"/>
+        <circle cx="230" cy="165" r="4" fill="#1f2937"/>
+
+        <!-- Ventilation holes (right side of PSU) -->
+        <g fill="#1f2937">
+          <rect x="305" y="115" width="8" height="30" rx="3"/>
+          <rect x="316" y="115" width="8" height="30" rx="3"/>
+          <rect x="305" y="155" width="8" height="30" rx="3"/>
+          <rect x="316" y="155" width="8" height="30" rx="3"/>
+          <rect x="305" y="195" width="8" height="30" rx="3"/>
+          <rect x="316" y="195" width="8" height="30" rx="3"/>
+        </g>
+        <!-- PSU label -->
+        <text x="230" y="236" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="14">POWER SUPPLY</text>
+        <text x="230" y="254" text-anchor="middle" fill="#fde68a" font-family="Fredoka One,cursive" font-size="11">650 Watt ⚡</text>
+        <!-- Power switch on left side -->
+        <rect x="142" y="180" width="16" height="24" rx="4" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
+        <circle cx="150" cy="188" r="5" id="powerLed" fill="#22c55e"/>
+        <text x="150" y="217" text-anchor="middle" fill="#6b7280" font-family="Nunito,sans-serif" font-size="9">ON/OFF</text>
+      </g>
+
+      <!-- ── Cables going RIGHT ── -->
+      <!-- 24-pin ATX to Motherboard -->
+      <g onclick="showInfo('atx')" class="psu-slot">
+        <path d="M320 140 Q380 140 420 140" stroke="#fbbf24" stroke-width="7" fill="none" stroke-linecap="round" class="elec-line"/>
+        <path d="M320 140 Q380 140 420 140" stroke="#1c1917" stroke-width="3" fill="none" stroke-linecap="round" opacity=".5"/>
+        <rect x="420" y="120" width="60" height="40" rx="6" fill="#1c1917" stroke="#fbbf24" stroke-width="2"/>
+        <g fill="#fbbf24" opacity=".8">
+          <rect x="428" y="127" width="5" height="10" rx="1"/>
+          <rect x="436" y="127" width="5" height="10" rx="1"/>
+          <rect x="444" y="127" width="5" height="10" rx="1"/>
+          <rect x="452" y="127" width="5" height="10" rx="1"/>
+          <rect x="460" y="127" width="5" height="10" rx="1"/>
+          <rect x="428" y="142" width="5" height="10" rx="1"/>
+          <rect x="436" y="142" width="5" height="10" rx="1"/>
+          <rect x="444" y="142" width="5" height="10" rx="1"/>
+          <rect x="452" y="142" width="5" height="10" rx="1"/>
+          <rect x="460" y="142" width="5" height="10" rx="1"/>
+        </g>
+        <text x="450" y="176" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="11">24-pin ATX</text>
+        <text x="450" y="190" text-anchor="middle" fill="#fde68a" font-family="Fredoka One,cursive" font-size="10">(ke Motherboard)</text>
+      </g>
+
+      <!-- CPU power cable -->
+      <g onclick="showInfo('cpu4')" class="psu-slot">
+        <path d="M320 160 Q370 160 380 175 Q390 190 420 200" stroke="#ef4444" stroke-width="6" fill="none" stroke-linecap="round" class="elec-line2"/>
+        <rect x="420" y="188" width="48" height="30" rx="5" fill="#1c1917" stroke="#ef4444" stroke-width="2"/>
+        <g fill="#ef4444" opacity=".8">
+          <rect x="427" y="194" width="7" height="16" rx="2"/>
+          <rect x="438" y="194" width="7" height="16" rx="2"/>
+          <rect x="449" y="194" width="7" height="16" rx="2"/>
+          <rect x="460" y="194" width="7" height="16" rx="2"/>
+        </g>
+        <text x="444" y="232" text-anchor="middle" fill="#ef4444" font-family="Fredoka One,cursive" font-size="11">4-pin CPU</text>
+        <text x="444" y="246" text-anchor="middle" fill="#fca5a5" font-family="Fredoka One,cursive" font-size="10">(ke Processor)</text>
+      </g>
+
+      <!-- SATA power cable -->
+      <g onclick="showInfo('sata')" class="psu-slot">
+        <path d="M320 190 Q360 240 390 270 Q410 285 430 285" stroke="#38bdf8" stroke-width="5" fill="none" stroke-linecap="round" class="elec-line3"/>
+        <rect x="430" y="272" width="60" height="22" rx="4" fill="#1c1917" stroke="#38bdf8" stroke-width="2"/>
+        <g fill="#38bdf8" opacity=".8">
+          <rect x="437" y="277" width="4" height="10" rx="1"/>
+          <rect x="444" y="277" width="4" height="10" rx="1"/>
+          <rect x="451" y="277" width="4" height="10" rx="1"/>
+          <rect x="458" y="277" width="4" height="10" rx="1"/>
+          <rect x="465" y="277" width="4" height="10" rx="1"/>
+          <rect x="472" y="277" width="4" height="10" rx="1"/>
+          <rect x="479" y="277" width="4" height="10" rx="1"/>
+        </g>
+        <text x="460" y="308" text-anchor="middle" fill="#38bdf8" font-family="Fredoka One,cursive" font-size="11">SATA Power</text>
+        <text x="460" y="322" text-anchor="middle" fill="#7dd3fc" font-family="Fredoka One,cursive" font-size="10">(ke HDD/SSD)</text>
+      </g>
+
+      <!-- PCIe power cable -->
+      <g onclick="showInfo('pcie')" class="psu-slot">
+        <path d="M320 175 Q350 340 380 360 Q405 370 440 365" stroke="#a78bfa" stroke-width="5" fill="none" stroke-linecap="round" class="elec-line4"/>
+        <rect x="440" y="352" width="52" height="24" rx="5" fill="#1c1917" stroke="#a78bfa" stroke-width="2"/>
+        <g fill="#a78bfa" opacity=".8">
+          <rect x="447" y="358" width="5" height="12" rx="1"/>
+          <rect x="455" y="358" width="5" height="12" rx="1"/>
+          <rect x="463" y="358" width="5" height="12" rx="1"/>
+          <rect x="471" y="358" width="5" height="12" rx="1"/>
+          <rect x="479" y="358" width="5" height="12" rx="1"/>
+          <rect x="487" y="358" width="5" height="12" rx="1"/>
+        </g>
+        <text x="466" y="390" text-anchor="middle" fill="#a78bfa" font-family="Fredoka One,cursive" font-size="11">PCIe Power</text>
+        <text x="466" y="404" text-anchor="middle" fill="#c4b5fd" font-family="Fredoka One,cursive" font-size="10">(ke GPU)</text>
+      </g>
+
+      <!-- ── Voltage labels (right panel) ── -->
+      <g>
+        <rect x="550" y="100" width="130" height="170" rx="12" fill="#1c1917" stroke="#374151" stroke-width="2"/>
+        <text x="615" y="122" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="13">Output</text>
+        <text x="615" y="138" text-anchor="middle" fill="#fde68a" font-family="Fredoka One,cursive" font-size="10">Voltase</text>
+
+        <!-- 12V rail -->
+        <rect x="563" y="148" width="72" height="16" rx="4" fill="#374151"/>
+        <rect x="563" y="148" width="72" height="16" rx="4" fill="#fbbf24" opacity=".15"/>
+        <text x="572" y="160" fill="#fbbf24" font-family="Nunito,sans-serif" font-size="11" font-weight="800">+12V</text>
+        <text x="625" y="160" fill="#86efac" font-family="Nunito,sans-serif" font-size="10" font-weight="700">→ CPU,GPU</text>
+
+        <!-- 5V rail -->
+        <rect x="563" y="172" width="72" height="16" rx="4" fill="#374151"/>
+        <text x="572" y="184" fill="#f97316" font-family="Nunito,sans-serif" font-size="11" font-weight="800">+5V</text>
+        <text x="618" y="184" fill="#86efac" font-family="Nunito,sans-serif" font-size="10" font-weight="700">→ USB</text>
+
+        <!-- 3.3V rail -->
+        <rect x="563" y="196" width="72" height="16" rx="4" fill="#374151"/>
+        <text x="572" y="208" fill="#38bdf8" font-family="Nunito,sans-serif" font-size="11" font-weight="800">+3.3V</text>
+        <text x="625" y="208" fill="#86efac" font-family="Nunito,sans-serif" font-size="10" font-weight="700">→ RAM</text>
+
+        <text x="615" y="240" text-anchor="middle" fill="#6b7280" font-family="Nunito,sans-serif" font-size="9">220V AC → DC</text>
+        <text x="615" y="254" text-anchor="middle" fill="#4b5563" font-family="Nunito,sans-serif" font-size="9">Input → Output</text>
+      </g>
+
+      <!-- Click hint -->
+      <text x="350" y="415" text-anchor="middle" fill="#fbbf24" font-family="Nunito,sans-serif" font-size="11" opacity=".7">👆 Klik kabel atau PSU untuk belajar lebih!</text>
+    </svg>
+
+    <!-- Info popup -->
+    <div id="infoBox" class="info-popup" style="top:8px;right:8px;">
+      <button onclick="closeInfo()" style="position:absolute;top:6px;right:10px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#d97706;">✕</button>
+      <p id="infoTitle" style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#d97706;margin-bottom:.4rem;padding-right:1.5rem;"></p>
+      <p id="infoText" style="font-size:.85rem;font-weight:700;color:#44403c;line-height:1.5;"></p>
+      <p id="infoEmoji" style="font-size:1.5rem;margin-top:.4rem;"></p>
+    </div>
+  </div>
+
+  <!-- Turn on/off button -->
+  <div class="text-center mt-6 space-y-2">
+    <button class="btn-yellow" id="powerBtn" onclick="togglePower()">
+      ⚡ Nyalakan Komputer!
+    </button>
+    <p class="text-gray-500 font-semibold text-sm" id="powerHint">Klik untuk lihat listrik mengalir ke semua komponen! 💡</p>
+  </div>
+</section>
+
+<!-- ══════════ VOLTASE METER INTERAKTIF ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-6">
+  <div class="text-center mb-5">
+    <h2 class="sec-title text-2xl" style="color:#1c1917;">⚡ Pengukur Daya Komputer!</h2>
+    <p class="mt-3 text-gray-500 font-semibold text-sm">Lihat berapa listrik yang dipakai setiap komponen 🔋</p>
+  </div>
+
+  <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-5 border-3 border-yellow-500" style="border:3px solid #fbbf24;">
+    <div class="space-y-4" id="voltMeter">
+
+      <div class="volt-row">
+        <div class="flex justify-between items-center mb-1">
+          <span class="font-extrabold text-yellow-300 text-sm flex items-center gap-2">
+            <span class="text-xl">🧠</span> CPU (Processor)
+          </span>
+          <span class="font-bold text-yellow-200 text-sm" id="cpuWatt">65W</span>
+        </div>
+        <div class="volt-bar-wrap">
+          <div class="volt-bar-inner" id="cpuBar" style="width:0%;background:linear-gradient(90deg,#fbbf24,#f59e0b);">
+            <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.3) 50%,transparent 100%);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="volt-row">
+        <div class="flex justify-between items-center mb-1">
+          <span class="font-extrabold text-red-300 text-sm flex items-center gap-2">
+            <span class="text-xl">🎮</span> GPU (Kartu Grafis)
+          </span>
+          <span class="font-bold text-red-200 text-sm" id="gpuWatt">150W</span>
+        </div>
+        <div class="volt-bar-wrap">
+          <div class="volt-bar-inner" id="gpuBar" style="width:0%;background:linear-gradient(90deg,#ef4444,#dc2626);">
+            <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.3) 50%,transparent 100%);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="volt-row">
+        <div class="flex justify-between items-center mb-1">
+          <span class="font-extrabold text-blue-300 text-sm flex items-center gap-2">
+            <span class="text-xl">📋</span> RAM
+          </span>
+          <span class="font-bold text-blue-200 text-sm" id="ramWatt">5W</span>
+        </div>
+        <div class="volt-bar-wrap">
+          <div class="volt-bar-inner" id="ramBar" style="width:0%;background:linear-gradient(90deg,#38bdf8,#0284c7);">
+            <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.3) 50%,transparent 100%);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="volt-row">
+        <div class="flex justify-between items-center mb-1">
+          <span class="font-extrabold text-green-300 text-sm flex items-center gap-2">
+            <span class="text-xl">💾</span> HDD / SSD
+          </span>
+          <span class="font-bold text-green-200 text-sm" id="hddWatt">10W</span>
+        </div>
+        <div class="volt-bar-wrap">
+          <div class="volt-bar-inner" id="hddBar" style="width:0%;background:linear-gradient(90deg,#10b981,#059669);">
+            <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.3) 50%,transparent 100%);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="volt-row">
+        <div class="flex justify-between items-center mb-1">
+          <span class="font-extrabold text-purple-300 text-sm flex items-center gap-2">
+            <span class="text-xl">🖥️</span> Motherboard
+          </span>
+          <span class="font-bold text-purple-200 text-sm" id="mbWatt">25W</span>
+        </div>
+        <div class="volt-bar-wrap">
+          <div class="volt-bar-inner" id="mbBar" style="width:0%;background:linear-gradient(90deg,#a78bfa,#7c3aed);">
+            <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.3) 50%,transparent 100%);"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- Total -->
+    <div class="mt-4 flex justify-between items-center border-t border-gray-700 pt-4">
+      <span class="font-extrabold text-yellow-300 flex items-center gap-2"><span class="text-xl">⚡</span> Total Daya Dipakai</span>
+      <span class="font-extrabold text-yellow-200 text-lg" id="totalWatt">0W / 650W</span>
+    </div>
+    <div class="volt-bar-wrap mt-2" style="height:28px;">
+      <div class="volt-bar-inner" id="totalBar" style="width:0%;background:linear-gradient(90deg,#fbbf24,#ef4444);">
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.25) 50%,transparent 100%);"></div>
+      </div>
+    </div>
+    <p class="text-center text-gray-400 text-xs font-bold mt-2" id="voltMsg">Klik "Nyalakan Komputer!" di atas untuk melihat ⬆️</p>
+  </div>
+</section>
+
+<!-- ══════════ KONVERSI LISTRIK ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-4">
+  <div class="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-3xl p-6 border-3 border-yellow-200" style="border:3px solid #fde68a;">
+    <h2 class="text-center mb-5" style="font-family:'Fredoka One',cursive;font-size:1.4rem;color:#d97706;">🔄 PSU Mengubah Listrik!</h2>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+
+      <!-- AC Input -->
+      <div class="text-center bg-white rounded-2xl p-4 border-2 border-red-200 shadow-md" style="min-width:120px;">
+        <div class="text-4xl mb-1">🔌</div>
+        <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:#dc2626;">220V AC</p>
+        <p class="text-xs text-gray-500 font-bold mt-1">Dari stopkontak</p>
+        <p class="text-xs text-red-400 font-bold">⚠️ Berbahaya!</p>
+      </div>
+
+      <!-- Arrow + PSU -->
+      <div class="text-center">
+        <div class="text-4xl">⚡</div>
+        <div class="bg-gray-800 text-yellow-300 rounded-xl px-3 py-2 my-1" style="font-family:'Fredoka One',cursive;font-size:.85rem;">
+          PSU mengubah
+        </div>
+        <div class="text-4xl">⚡</div>
+      </div>
+
+      <!-- DC Output -->
+      <div class="bg-white rounded-2xl p-4 border-2 border-yellow-200 shadow-md" style="min-width:130px;">
+        <div class="text-4xl mb-1 text-center">🔋</div>
+        <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:#d97706;text-align:center;">DC Aman!</p>
+        <div class="space-y-1 mt-2">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-yellow-400 flex-shrink-0"></span>
+            <span class="text-xs font-bold text-gray-700">+12V → CPU, GPU</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-orange-400 flex-shrink-0"></span>
+            <span class="text-xs font-bold text-gray-700">+5V → USB, Storage</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-blue-400 flex-shrink-0"></span>
+            <span class="text-xs font-bold text-gray-700">+3.3V → RAM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="text-center mt-4 text-gray-600 font-bold text-sm">
+      🎓 PSU mengubah arus bolak-balik <strong>(AC)</strong> dari PLN menjadi arus searah <strong>(DC)</strong> yang aman untuk komponen!
+    </p>
+  </div>
+</section>
+
+<!-- ══════════ FAKTA SERU ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-6">
+  <div class="text-center mb-5">
+    <h2 class="sec-title text-2xl" style="color:#1c1917;">🌟 Fakta Seru Power Supply!</h2>
+  </div>
+  <div class="grid sm:grid-cols-2 gap-4">
+
+    <div class="bg-white rounded-2xl p-4 border-3 border-yellow-200 shadow cursor-pointer transition hover:-translate-y-1" style="border:3px solid #fde68a;" onclick="factBurst(this,'#fef3c7')">
+      <div class="text-3xl mb-2">🌡️</div>
+      <p class="font-extrabold text-gray-800 text-sm">PSU Bisa Panas!</p>
+      <p class="text-xs text-gray-500 mt-1">Makanya ada kipas di dalam PSU! Kipas itu mendinginkan PSU supaya tidak overheat saat komputer menyala lama. 💨</p>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 border-3 border-red-100 shadow cursor-pointer transition hover:-translate-y-1" style="border:3px solid #fecaca;" onclick="factBurst(this,'#fef2f2')">
+      <div class="text-3xl mb-2">⚠️</div>
+      <p class="font-extrabold text-gray-800 text-sm">PSU Ada Sekringnya!</p>
+      <p class="text-xs text-gray-500 mt-1">Kalau listrik terlalu besar, PSU otomatis mati duluan supaya komponen lain tidak rusak. Dia rela berkorban! 💪</p>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 border-3 border-blue-100 shadow cursor-pointer transition hover:-translate-y-1" style="border:3px solid #bfdbfe;" onclick="factBurst(this,'#eff6ff')">
+      <div class="text-3xl mb-2">💚</div>
+      <p class="font-extrabold text-gray-800 text-sm">PSU Efisiensi 80+!</p>
+      <p class="text-xs text-gray-500 mt-1">PSU bagus punya sertifikat "80 Plus" artinya 80% listrik yang masuk dipakai dengan baik, tidak terbuang sia-sia! 🌱</p>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 border-3 border-green-100 shadow cursor-pointer transition hover:-translate-y-1" style="border:3px solid #bbf7d0;" onclick="factBurst(this,'#f0fdf4')">
+      <div class="text-3xl mb-2">🏋️</div>
+      <p class="font-extrabold text-gray-800 text-sm">Watt = Kekuatan PSU!</p>
+      <p class="text-xs text-gray-500 mt-1">PSU dijual berdasarkan Watt (450W, 650W, 1000W). Komputer gaming butuh PSU yang lebih besar karena GPU-nya rakus listrik! 🎮</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ ANALOGI ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-4">
+  <div class="bg-gradient-to-br from-red-50 to-orange-50 rounded-3xl p-6 border-3 border-red-200" style="border:3px solid #fecaca;">
+    <div class="text-center mb-4">
+      <h2 class="sec-title text-xl" style="color:#dc2626;">🫀 Seperti Jantung Manusia!</h2>
+    </div>
+    <div class="flex flex-col sm:flex-row items-center gap-5">
+      <!-- Heart analogy SVG -->
+      <svg viewBox="0 0 200 160" width="180" height="160" style="flex-shrink:0;">
+        <!-- Body outline -->
+        <ellipse cx="100" cy="110" rx="55" ry="45" fill="#fde68a" stroke="#d97706" stroke-width="2"/>
+        <!-- Head -->
+        <circle cx="100" cy="52" r="35" fill="#fbbf24" stroke="#d97706" stroke-width="2"/>
+        <!-- Heart (chest) -->
+        <path d="M85 108 C85 100 93 97 100 103 C107 97 115 100 115 108 C115 116 100 124 100 124 C100 124 85 116 85 108Z" fill="#ef4444"/>
+        <!-- Pulse lines from heart -->
+        <line x1="55" y1="110" x2="80" y2="110" stroke="#ef4444" stroke-width="2.5"/>
+        <path d="M55 110 L62 110 L65 102 L68 118 L72 104 L75 116 L78 110 L80 110" stroke="#ef4444" stroke-width="2" fill="none"/>
+        <line x1="120" y1="110" x2="145" y2="110" stroke="#ef4444" stroke-width="2.5"/>
+        <path d="M120 110 L122 110 L126 102 L130 118 L134 104 L137 116 L141 110 L145 110" stroke="#ef4444" stroke-width="2" fill="none"/>
+        <!-- Smiley -->
+        <circle cx="88" cy="50" r="4" fill="#1c1917"/>
+        <circle cx="112" cy="50" r="4" fill="#1c1917"/>
+        <path d="M88 62 Q100 70 112 62" fill="none" stroke="#1c1917" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Hair -->
+        <ellipse cx="100" cy="20" rx="33" ry="12" fill="#1c1917"/>
+        <!-- Labels -->
+        <text x="30" y="148" text-anchor="middle" fill="#dc2626" font-family="Fredoka One,cursive" font-size="10">Darah ke tangan</text>
+        <text x="170" y="148" text-anchor="middle" fill="#dc2626" font-family="Fredoka One,cursive" font-size="10">Darah ke kaki</text>
+      </svg>
+      <div>
+        <p class="font-extrabold text-gray-700 text-sm leading-relaxed mb-3">
+          PSU itu persis seperti <strong style="color:#dc2626;">jantung manusia</strong>! 🫀
+        </p>
+        <ul class="space-y-2 text-sm text-gray-600 font-semibold">
+          <li>❤️ Jantung memompa <strong>darah</strong> ke seluruh tubuh</li>
+          <li>⚡ PSU mengalirkan <strong>listrik</strong> ke seluruh komponen</li>
+          <li>🛑 Kalau jantung berhenti → badan mati</li>
+          <li>🔌 Kalau PSU rusak → komputer mati total!</li>
+          <li>💪 Jantung sehat = tubuh sehat</li>
+          <li>🔋 PSU bagus = komputer awet!</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ KUIS ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-8">
+  <div class="text-center mb-5">
+    <h2 class="sec-title text-2xl" style="color:#1c1917;">🎯 Kuis Hari Ini!</h2>
+    <p class="mt-3 text-gray-500 font-semibold">3 pertanyaan, siap? 🤔</p>
+  </div>
+  <div class="space-y-5">
+
+    <!-- Q1 -->
+    <div id="q1" class="bg-white rounded-2xl p-5 shadow-md" style="border:3px solid #fde68a;">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#1c1917;" class="mb-3">
+        1. Apa yang dilakukan Power Supply? ⚡
+      </p>
+      <div class="space-y-2">
+        <button class="qbtn w-full" onclick="ans(1,'b',this)">A. Menyimpan data komputer</button>
+        <button class="qbtn w-full" onclick="ans(1,'a',this)">B. Mengubah listrik PLN menjadi listrik aman untuk komputer</button>
+        <button class="qbtn w-full" onclick="ans(1,'b',this)">C. Menampilkan gambar di layar</button>
+      </div>
+      <p id="q1r" class="hidden mt-2 font-bold text-sm"></p>
+    </div>
+
+    <!-- Q2 -->
+    <div id="q2" class="bg-white rounded-2xl p-5 shadow-md" style="border:3px solid #fde68a;">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#1c1917;" class="mb-3">
+        2. Mengapa ada kipas di dalam PSU? 💨
+      </p>
+      <div class="space-y-2">
+        <button class="qbtn w-full" onclick="ans(2,'b',this)">A. Supaya suara komputer lebih keras</button>
+        <button class="qbtn w-full" onclick="ans(2,'b',this)">B. Untuk menghias PSU supaya kelihatan keren</button>
+        <button class="qbtn w-full" onclick="ans(2,'a',this)">C. Mendinginkan PSU supaya tidak kepanasan</button>
+      </div>
+      <p id="q2r" class="hidden mt-2 font-bold text-sm"></p>
+    </div>
+
+    <!-- Q3 -->
+    <div id="q3" class="bg-white rounded-2xl p-5 shadow-md" style="border:3px solid #fde68a;">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#1c1917;" class="mb-3">
+        3. Komputer gaming biasanya butuh PSU berapa Watt? 🎮
+      </p>
+      <div class="space-y-2">
+        <button class="qbtn w-full" onclick="ans(3,'b',this)">A. 10 Watt, sama seperti lampu tidur</button>
+        <button class="qbtn w-full" onclick="ans(3,'a',this)">B. 500–1000 Watt, karena GPU gaming butuh banyak listrik</button>
+        <button class="qbtn w-full" onclick="ans(3,'b',this)">C. 1 Watt, komputer itu hemat listrik</button>
+      </div>
+      <p id="q3r" class="hidden mt-2 font-bold text-sm"></p>
+    </div>
+  </div>
+
+  <!-- Quiz result -->
+  <div id="quizFinal" class="hidden mt-6 text-center bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl p-6" style="border:3px solid #fde68a;">
+    <div id="qfEmoji" class="text-5xl mb-2"></div>
+    <p id="qfText" style="font-family:'Fredoka One',cursive;font-size:1.4rem;"></p>
+    <p id="qfSub" class="text-gray-500 font-semibold mt-1 text-sm"></p>
+  </div>
+</section>
+
+<!-- ══════════ AKTIVITAS ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-4">
+  <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-6" style="border:3px solid #bbf7d0;">
+    <div class="text-center mb-4">
+      <h2 class="sec-title text-xl" style="color:#059669;">✏️ Tugas Hari Ini!</h2>
+    </div>
+    <div class="flex items-start gap-3 mb-5">
+      <span class="text-3xl flex-shrink-0">🎨</span>
+      <p class="font-bold text-gray-700 text-sm leading-relaxed">
+        <strong style="color:#059669;">Gambarlah</strong> diagram sederhana Power Supply kamu! Tunjukkan: listrik masuk dari stopkontak → PSU → kabel-kabel ke CPU, RAM, HDD, dan GPU. Gunakan warna berbeda untuk setiap kabel! 🌈
+      </p>
+    </div>
+
+    <!-- Template gambar -->
+    <div class="bg-white rounded-2xl p-4 border-2 border-dashed border-green-300 mb-5">
+      <p class="text-center font-bold text-green-600 text-sm mb-3">📝 Template (Gambarlah di sini!)</p>
+      <svg viewBox="0 0 580 220" width="100%" style="max-height:200px;border-radius:12px;background:#f8fafc;border:1.5px solid #e2e8f0;">
+        <!-- Stopkontak -->
+        <rect x="20" y="70" width="60" height="80" rx="8" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="6 3"/>
+        <text x="50" y="164" text-anchor="middle" fill="#9ca3af" font-family="Fredoka One,cursive" font-size="11">Stopkontak</text>
+
+        <!-- Arrow -->
+        <line x1="80" y1="110" x2="120" y2="110" stroke="#d1d5db" stroke-width="2.5" stroke-dasharray="5 3"/>
+        <text x="100" y="130" text-anchor="middle" fill="#d1d5db" font-family="Fredoka One,cursive" font-size="9">kabel</text>
+
+        <!-- PSU box -->
+        <rect x="120" y="70" width="100" height="80" rx="10" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="8 4"/>
+        <text x="170" y="115" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="14">PSU</text>
+        <text x="170" y="132" text-anchor="middle" fill="#fde68a" font-family="Fredoka One,cursive" font-size="10">⚡ ___ Watt</text>
+        <text x="170" y="165" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="10">↑ Tulis wattnya!</text>
+
+        <!-- Output kabel guides -->
+        <line x1="220" y1="90" x2="270" y2="75" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4 3" opacity=".5"/>
+        <line x1="220" y1="100" x2="270" y2="110" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4 3" opacity=".5"/>
+        <line x1="220" y1="115" x2="270" y2="145" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 3" opacity=".5"/>
+        <line x1="220" y1="130" x2="270" y2="180" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4 3" opacity=".5"/>
+
+        <!-- Component boxes -->
+        <rect x="270" y="55" width="70" height="36" rx="6" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="305" y="78" text-anchor="middle" fill="#fbbf24" font-family="Fredoka One,cursive" font-size="11">CPU 🧠</text>
+
+        <rect x="270" y="95" width="70" height="36" rx="6" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="305" y="118" text-anchor="middle" fill="#ef4444" font-family="Fredoka One,cursive" font-size="11">GPU 🎮</text>
+
+        <rect x="270" y="135" width="70" height="36" rx="6" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="305" y="158" text-anchor="middle" fill="#38bdf8" font-family="Fredoka One,cursive" font-size="11">RAM 📋</text>
+
+        <rect x="270" y="175" width="70" height="36" rx="6" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="305" y="198" text-anchor="middle" fill="#a78bfa" font-family="Fredoka One,cursive" font-size="11">HDD 💾</text>
+
+        <!-- Notes area -->
+        <rect x="370" y="55" width="190" height="160" rx="8" fill="none" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="465" y="90" text-anchor="middle" fill="#cbd5e1" font-family="Fredoka One,cursive" font-size="12">Catatan:</text>
+        <line x1="385" y1="110" x2="545" y2="110" stroke="#e2e8f0" stroke-width="1"/>
+        <line x1="385" y1="130" x2="545" y2="130" stroke="#e2e8f0" stroke-width="1"/>
+        <line x1="385" y1="150" x2="545" y2="150" stroke="#e2e8f0" stroke-width="1"/>
+        <line x1="385" y1="170" x2="545" y2="170" stroke="#e2e8f0" stroke-width="1"/>
+        <line x1="385" y1="190" x2="545" y2="190" stroke="#e2e8f0" stroke-width="1"/>
+        <text x="465" y="210" text-anchor="middle" fill="#e2e8f0" font-family="Nunito,sans-serif" font-size="9">✏️ Tulis catatanmu di sini!</text>
+      </svg>
+    </div>
+
+    <!-- Checklist -->
+    <p class="font-bold text-gray-700 mb-3 text-sm">✅ Checklist setelah selesai:</p>
+    <div class="space-y-2">
+      <div id="ac1" class="flex items-center gap-3 bg-white rounded-xl p-3 border-2 border-green-100 cursor-pointer" onclick="actCheck(1)">
+        <input type="checkbox" id="cb1" class="w-5 h-5 accent-green-500" onclick="event.stopPropagation();actCheck(1)">
+        <span class="font-bold text-gray-700 text-sm">Aku tahu PSU tugasnya kasih listrik ke komputer ⚡</span>
+      </div>
+      <div id="ac2" class="flex items-center gap-3 bg-white rounded-xl p-3 border-2 border-green-100 cursor-pointer" onclick="actCheck(2)">
+        <input type="checkbox" id="cb2" class="w-5 h-5 accent-green-500" onclick="event.stopPropagation();actCheck(2)">
+        <span class="font-bold text-gray-700 text-sm">Aku sudah gambar PSU dengan kabel-kabelnya 🎨</span>
+      </div>
+      <div id="ac3" class="flex items-center gap-3 bg-white rounded-xl p-3 border-2 border-green-100 cursor-pointer" onclick="actCheck(3)">
+        <input type="checkbox" id="cb3" class="w-5 h-5 accent-green-500" onclick="event.stopPropagation();actCheck(3)">
+        <span class="font-bold text-gray-700 text-sm">Aku tahu PSU itu seperti jantung komputer 🫀</span>
+      </div>
+      <div id="ac4" class="flex items-center gap-3 bg-white rounded-xl p-3 border-2 border-green-100 cursor-pointer" onclick="actCheck(4)">
+        <input type="checkbox" id="cb4" class="w-5 h-5 accent-green-500" onclick="event.stopPropagation();actCheck(4)">
+        <span class="font-bold text-gray-700 text-sm">Aku hafal: 12V untuk CPU & GPU, 5V untuk USB, 3.3V untuk RAM 🔢</span>
+      </div>
+    </div>
+    <div id="actDone" class="hidden mt-4 text-center bg-green-100 rounded-xl p-4 border-2 border-green-300">
+      <p class="text-3xl mb-1">🎉</p>
+      <p style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#059669;">Aktivitas selesai! Kamu TOP banget, Aslan! ⚡🌟</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ RANGKUMAN ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-6">
+  <div class="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-3xl p-6" style="border:3px solid #fde68a;">
+    <h2 class="text-center mb-4" style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:#d97706;">📚 Rangkuman Hari Ini</h2>
+    <div class="grid sm:grid-cols-3 gap-3 text-center">
+      <div class="bg-white rounded-xl p-4 border-2 border-yellow-100">
+        <div class="text-3xl mb-2">🔄</div>
+        <p class="font-extrabold text-sm text-gray-700">PSU = Pengubah Listrik</p>
+        <p class="text-xs text-gray-500 mt-1">220V AC → 12V/5V/3.3V DC</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 border-2 border-yellow-100">
+        <div class="text-3xl mb-2">🫀</div>
+        <p class="font-extrabold text-sm text-gray-700">PSU = Jantung Komputer</p>
+        <p class="text-xs text-gray-500 mt-1">Tanpa PSU, tidak ada yang hidup</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 border-2 border-yellow-100">
+        <div class="text-3xl mb-2">🏋️</div>
+        <p class="font-extrabold text-sm text-gray-700">Watt = Kekuatan PSU</p>
+        <p class="text-xs text-gray-500 mt-1">Makin besar watt = makin kuat</p>
+      </div>
+    </div>
+    <div class="mt-4 text-center bg-yellow-100 rounded-xl p-3">
+      <p class="font-bold text-yellow-800 text-sm">
+        💬 <em>"PSU rusak? Komputer tidak bisa nyala sama sekali! Makanya PSU harus dijaga baik-baik!"</em> – Aslan ⚡
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="max-w-3xl mx-auto px-4 pb-10 text-center">
+  <div class="bg-gradient-to-r from-yellow-100 to-amber-100 rounded-3xl p-6 border-2 border-yellow-200">
+    <!-- Progress visual -->
+    <div class="flex justify-center gap-1 mb-4 flex-wrap">
+      <div class="w-7 h-7 rounded-full bg-green-400 border-2 border-white flex items-center justify-center text-white font-bold text-xs shadow">1</div>
+      <div class="w-7 h-7 rounded-full bg-green-400 border-2 border-white flex items-center justify-center text-white font-bold text-xs shadow">2</div>
+      <div class="w-7 h-7 rounded-full bg-green-400 border-2 border-white flex items-center justify-center text-white font-bold text-xs shadow">3</div>
+      <div class="w-7 h-7 rounded-full bg-green-400 border-2 border-white flex items-center justify-center text-white font-bold text-xs shadow">4</div>
+      <div class="w-7 h-7 rounded-full bg-yellow-400 flex items-center justify-center text-white font-bold text-xs shadow-lg" style="border:3px solid #d97706;">5</div>
+      <div class="w-7 h-7 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center text-gray-400 font-bold text-xs">6</div>
+      <span class="w-7 h-7 flex items-center justify-center text-gray-400 text-xs font-bold">···</span>
+      <div class="w-7 h-7 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center text-gray-400 font-bold text-xs">30</div>
+    </div>
+
+    <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#d97706;">Hari 5 dari 30 🎓</p>
+
+    <!-- Aslan kecil -->
+    <div class="flex justify-center my-3">
+      <svg viewBox="0 0 60 60" width="64" height="64" class="aslan-bounce">
+        <circle cx="30" cy="22" r="16" fill="#FBBF24"/>
+        <ellipse cx="30" cy="10" rx="16" ry="8" fill="#1C1917"/>
+        <ellipse cx="18" cy="14" rx="6" ry="5" fill="#1C1917"/>
+        <ellipse cx="42" cy="14" rx="6" ry="5" fill="#1C1917"/>
+        <circle cx="23" cy="22" r="3" fill="white"/>
+        <circle cx="37" cy="22" r="3" fill="white"/>
+        <circle cx="24" cy="23" r="1.5" fill="#1C1917"/>
+        <circle cx="38" cy="23" r="1.5" fill="#1C1917"/>
+        <path d="M22 30 Q30 36 38 30" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="18" cy="27" r="3" fill="#FCA5A5" opacity=".6"/>
+        <circle cx="42" cy="27" r="3" fill="#FCA5A5" opacity=".6"/>
+        <ellipse cx="30" cy="48" rx="14" ry="14" fill="#DC2626"/>
+        <text x="30" y="53" text-anchor="middle" font-size="12">⚡</text>
+      </svg>
+    </div>
+
+    <p style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#1c1917;">
+      Kamu sudah mengenal <span style="color:#d97706;">5 bagian penting</span> komputer!
+    </p>
+    <p class="font-bold text-gray-600 mt-1">CPU 🧠 + RAM 📋 + HDD 💾 + Motherboard 🏠 + PSU ⚡ = <span style="color:#f59e0b;">Luar Biasa!</span> 🌟</p>
+    <p class="text-sm font-bold text-gray-400 mt-3">Besok: Hari 6 – Kipas & Pendingin – Biar Komputer Tidak Kepanasan! 🌀</p>
+
+    <div class="mt-4 flex justify-center gap-2 flex-wrap text-xs text-gray-400 font-semibold">
+      <span>📅 Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span>·</span>
+      <span>Seri 30 Hari Belajar Komputer</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════ SCRIPTS ══════════ -->
+<script>
+
+/* ── Component info data ── */
+const infoData = {
+  wall: {
+    title: '🔌 Stopkontak (PLN)',
+    text: 'Sumber listrik dari PLN. Tegangannya 220V AC — berbahaya untuk langsung masuk ke komputer! Makanya butuh PSU untuk mengubahnya.',
+    emoji: '⚠️🏠'
+  },
+  psu: {
+    title: '⚡ Power Supply Unit (PSU)',
+    text: 'Kotak hitam ini mengubah listrik 220V menjadi 3.3V, 5V, dan 12V yang aman untuk semua komponen. Ada kipas di dalamnya untuk mendinginkan!',
+    emoji: '🔄💡'
+  },
+  atx: {
+    title: '🔶 Kabel 24-pin ATX',
+    text: 'Kabel utama terbesar! Mengirim listrik ke seluruh Motherboard. Ini adalah kabel terpenting — tanpanya, komputer tidak bisa nyala!',
+    emoji: '🏠⚡'
+  },
+  cpu4: {
+    title: '🔴 Kabel 4/8-pin CPU',
+    text: 'Kabel khusus untuk CPU (processor). CPU butuh listrik extra lewat kabel ini supaya bisa berpikir super cepat! Voltasenya +12V.',
+    emoji: '🧠💪'
+  },
+  sata: {
+    title: '🔵 Kabel SATA Power',
+    text: 'Kabel listrik untuk Hard Disk dan SSD. Lebih tipis dan panjang supaya bisa menjangkau HDD yang ada di sudut casing.',
+    emoji: '💾📁'
+  },
+  pcie: {
+    title: '🟣 Kabel PCIe Power',
+    text: 'Kabel listrik untuk GPU (kartu grafis). GPU gaming sangat rakus listrik — bisa pakai 2 kabel PCIe sekaligus untuk GPU high-end!',
+    emoji: '🎮🔋'
+  }
+};
+
+function showInfo(id) {
+  const d = infoData[id];
+  if (!d) return;
+  const box = document.getElementById('infoBox');
+  document.getElementById('infoTitle').textContent = d.title;
+  document.getElementById('infoText').textContent = d.text;
+  document.getElementById('infoEmoji').textContent = d.emoji;
+  box.classList.add('show');
+
+  // Float sparks
+  const stage = document.getElementById('psuStage');
+  ['⚡','💡','✨','🔌'].forEach((e, i) => {
+    const fl = document.createElement('div');
+    fl.className = 'float-emoji';
+    fl.textContent = e;
+    fl.style.cssText = `left:${25+Math.random()*50}%;top:${20+Math.random()*50}%;animation-delay:${i*.15}s;z-index:40;`;
+    stage.appendChild(fl);
+    setTimeout(()=>fl.remove(), 1100);
+  });
+}
+
+function closeInfo() {
+  document.getElementById('infoBox').classList.remove('show');
+}
+
+/* ── Power on / off ── */
+let powered = false;
+
+const compWatts = {
+  cpu:{ bar:'cpuBar', label:'cpuWatt', watt:65,  max:650, pct:10,  color:'linear-gradient(90deg,#fbbf24,#f59e0b)' },
+  gpu:{ bar:'gpuBar', label:'gpuWatt', watt:150, max:650, pct:23,  color:'linear-gradient(90deg,#ef4444,#dc2626)' },
+  ram:{ bar:'ramBar', label:'ramWatt', watt:5,   max:650, pct:0.8, color:'linear-gradient(90deg,#38bdf8,#0284c7)' },
+  hdd:{ bar:'hddBar', label:'hddWatt', watt:10,  max:650, pct:1.5, color:'linear-gradient(90deg,#10b981,#059669)' },
+  mb: { bar:'mbBar',  label:'mbWatt',  watt:25,  max:650, pct:3.8, color:'linear-gradient(90deg,#a78bfa,#7c3aed)' },
+};
+
+function togglePower() {
+  powered = !powered;
+  const btn  = document.getElementById('powerBtn');
+  const hint = document.getElementById('powerHint');
+  const led  = document.getElementById('powerLed');
+  const fan  = document.getElementById('psuFan');
+  const msg  = document.getElementById('voltMsg');
+  const total = document.getElementById('totalWatt');
+  const totalBar = document.getElementById('totalBar');
+
+  if (powered) {
+    btn.textContent = '🔴 Matikan Komputer';
+    btn.className = 'btn-red';
+    hint.textContent = '✅ Komputer menyala! Listrik mengalir ke semua komponen! 💡';
+    led.setAttribute('fill', '#22c55e');
+    fan.style.animationDuration = '0.5s';
+
+    // Animate bars
+    let delay = 0;
+    let totalW = 0;
+    Object.values(compWatts).forEach(c => {
+      totalW += c.watt;
+      setTimeout(() => {
+        const bar = document.getElementById(c.bar);
+        bar.style.width = c.pct * 4.2 + '%';
+        bar.style.background = c.color;
+      }, delay);
+      delay += 150;
+    });
+    setTimeout(() => {
+      total.textContent = `${totalW}W / 650W`;
+      totalBar.style.width = ((totalW / 650) * 100) + '%';
+      msg.textContent = `✅ ${totalW}W dipakai dari 650W kapasitas PSU. Masih aman! 👍`;
+    }, delay);
+
+    spawnConfetti();
+  } else {
+    btn.textContent = '⚡ Nyalakan Komputer!';
+    btn.className = 'btn-yellow';
+    hint.textContent = 'Klik untuk lihat listrik mengalir ke semua komponen! 💡';
+    led.setAttribute('fill', '#6b7280');
+    fan.style.animationDuration = '3s';
+
+    Object.values(compWatts).forEach(c => {
+      document.getElementById(c.bar).style.width = '0%';
+    });
+    totalBar.style.width = '0%';
+    total.textContent = '0W / 650W';
+    msg.textContent = 'Komputer mati... Klik nyalakan lagi! ⬆️';
+  }
+}
+
+/* ── Confetti ── */
+function spawnConfetti() {
+  const colors = ['#fbbf24','#f97316','#ef4444','#10b981','#38bdf8','#a78bfa'];
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `
+      left:${15+Math.random()*70}%;
+      top:${20+Math.random()*30}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --tx:${(Math.random()-.5)*280}px;
+      --ty:${-60-Math.random()*160}px;
+      animation-delay:${Math.random()*.5}s;
+      border-radius:${Math.random()>.5?'50%':'3px'};
+    `;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(), 1600);
+  }
+}
+
+function spawnConfettiSmall(el) {
+  const colors = ['#fbbf24','#ef4444','#10b981','#38bdf8'];
+  const rect = el.getBoundingClientRect();
+  for (let i=0;i<10;i++) {
+    const p=document.createElement('div');
+    p.className='confetti-piece';
+    p.style.cssText=`left:${rect.left+rect.width*.5}px;top:${rect.top+window.scrollY}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --tx:${(Math.random()-.5)*160}px;--ty:${-30-Math.random()*110}px;
+      animation-delay:${Math.random()*.25}s;position:fixed;`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),1300);
+  }
+}
+
+/* ── Fact burst ── */
+function factBurst(el, bg) {
+  el.style.background = bg;
+  el.style.transform = 'scale(1.05)';
+  setTimeout(()=>{ el.style.background=''; el.style.transform=''; }, 600);
+  spawnConfettiSmall(el);
+}
+
+/* ── Quiz ── */
+let qAnswered = {1:false,2:false,3:false};
+let qScore = 0;
+
+function ans(n, correct, btn) {
+  if (qAnswered[n]) return;
+  qAnswered[n] = true;
+
+  const btns = btn.closest('#q'+n).querySelectorAll('.qbtn');
+  btns.forEach(b=>b.disabled=true);
+
+  const r = document.getElementById('q'+n+'r');
+  r.classList.remove('hidden');
+
+  if (correct === 'a') {
+    qScore++;
+    btn.style.background='#dcfce7'; btn.style.borderColor='#16a34a';
+    r.textContent='✅ Betul banget! Kamu pintar! 🌟'; r.style.color='#16a34a';
+    spawnConfettiSmall(btn);
+  } else {
+    btn.style.background='#fee2e2'; btn.style.borderColor='#dc2626';
+    r.style.color='#dc2626';
+    if (n===1) r.textContent='❌ Jawabannya B – PSU mengubah listrik PLN menjadi listrik aman! ⚡';
+    if (n===2) r.textContent='❌ Jawabannya C – Kipas untuk mendinginkan PSU! 💨';
+    if (n===3) r.textContent='❌ Jawabannya B – Komputer gaming butuh 500–1000W! 🎮';
+  }
+
+  if (Object.values(qAnswered).every(v=>v)) {
+    setTimeout(() => {
+      const f = document.getElementById('quizFinal');
+      f.classList.remove('hidden');
+      f.scrollIntoView({behavior:'smooth', block:'center'});
+      const e=document.getElementById('qfEmoji'), t=document.getElementById('qfText'), s=document.getElementById('qfSub');
+      if (qScore===3) { e.textContent='🏆'; t.textContent='Sempurna! 3/3 – Kamu ahli Power Supply!'; t.style.color='#d97706'; s.textContent='PSU kamu pasti 1000W! 😄⚡'; spawnConfetti(); }
+      else if (qScore===2) { e.textContent='⭐'; t.textContent='Bagus! 2/3 Benar!'; t.style.color='#f59e0b'; s.textContent='Hampir sempurna! Baca ulang sekali lagi ya!'; }
+      else { e.textContent='💪'; t.textContent=`${qScore}/3 – Ayo semangat!`; t.style.color='#7c3aed'; s.textContent='Scroll ke atas dan pelajari lagi, kamu pasti bisa!'; }
+    }, 400);
+  }
+}
+
+/* ── Activity checklist ── */
+let actDone = 0;
+function actCheck(n) {
+  const el = document.getElementById('ac'+n);
+  const cb = document.getElementById('cb'+n);
+  cb.checked = !cb.checked;
+  const span = el.querySelector('span');
+  if (cb.checked) {
+    actDone++;
+    span.style.textDecoration = 'line-through';
+    span.style.opacity = '.5';
+  } else {
+    actDone--;
+    span.style.textDecoration = '';
+    span.style.opacity = '';
+  }
+  if (actDone >= 4) {
+    document.getElementById('actDone').classList.remove('hidden');
+    spawnConfetti();
+  } else {
+    document.getElementById('actDone').classList.add('hidden');
+  }
+}
+
+</script>
+</body>
+</html>

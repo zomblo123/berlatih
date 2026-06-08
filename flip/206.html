@@ -1,0 +1,1643 @@
+<!-- BUKU DIGITAL ASLAN - Hari 6: Siapa yang Mengatur Hujan dan Petir? -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siapa yang Mengatur Hujan dan Petir? — Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --storm-blue:   #1565c0;
+    --storm-blue2:  #1976d2;
+    --storm-cyan:   #29b6f6;
+    --storm-purple: #7e57c2;
+    --storm-gold:   #fdd835;
+    --storm-yellow: #ffee58;
+    --storm-white:  #e3f2fd;
+    --storm-gray:   #90a4ae;
+    --storm-green:  #26a69a;
+    --storm-teal:   #00897b;
+    --rain-blue:    #42a5f5;
+    --lightning:    #fff176;
+    --dark-bg:      #010d1a;
+    --mid-bg:       #011627;
+    --surface-bg:   #02203d;
+    --text-light:   #e3f2fd;
+    --shadow:       0 8px 32px rgba(0,0,0,0.35);
+    --radius:       24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #010d1a;
+    color: #e3f2fd;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  body.light-mode {
+    background: #e8f4fd;
+    color: #011627;
+  }
+
+  /* ─── FLOATING PARTICLES ─── */
+  .sky-particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .sp {
+    position: absolute;
+    border-radius: 50%;
+    animation: spFloat linear infinite;
+    opacity: 0;
+  }
+  @keyframes spFloat {
+    0%   { opacity: 0.7; transform: translateY(0) rotate(0deg); }
+    60%  { opacity: 0.3; }
+    100% { opacity: 0;   transform: translateY(-110vh) rotate(360deg); }
+  }
+  body.light-mode .sky-particles { opacity: 0.3; }
+
+  /* ─── RAIN ANIMATION ─── */
+  .rain-drop {
+    position: absolute;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, rgba(100,181,246,0.8));
+    border-radius: 2px;
+    animation: rainFall linear infinite;
+    opacity: 0;
+  }
+  @keyframes rainFall {
+    0%   { opacity: 0; transform: translateY(-20px) rotate(15deg); }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.4; }
+    100% { opacity: 0; transform: translateY(100vh) rotate(15deg); }
+  }
+
+  /* ─── TOP NAV ─── */
+  .top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(1,13,26,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(41,182,246,0.18);
+  }
+  body.light-mode .top-nav {
+    background: rgba(232,244,253,0.95);
+    border-color: rgba(21,101,192,0.2);
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--storm-blue), var(--storm-purple));
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 800;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(21,101,192,0.45);
+  }
+  .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(41,182,246,0.6); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .book-day-badge {
+    background: linear-gradient(135deg, var(--storm-blue2), var(--storm-purple));
+    color: white;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  .mode-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,0.18); transform: rotate(20deg); }
+  body.light-mode .mode-btn { background: rgba(0,0,0,0.07); border-color: rgba(0,0,0,0.12); color: #011627; }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-wrap {
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    z-index: 99;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--storm-blue), var(--storm-cyan), var(--storm-purple), var(--storm-gold));
+    transition: width 0.35s ease;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 8px rgba(41,182,246,0.5);
+  }
+
+  /* ─── MAIN CONTAINER ─── */
+  .book-container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 20px 40px;
+  }
+
+  /* ─── PAGES ─── */
+  .page { display: none; animation: fadeUp 0.5s ease forwards; }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── COVER ─── */
+  .cover-page {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    position: relative;
+  }
+
+  /* ── SKY ILLUSTRATION ── */
+  .cover-sky-wrap {
+    width: 240px;
+    height: 220px;
+    position: relative;
+    margin: 0 auto 32px;
+    animation: floatSky 3.5s ease-in-out infinite;
+  }
+  @keyframes floatSky {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-14px); }
+  }
+
+  /* CSS cloud scene */
+  .sky-scene {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+  }
+
+  /* Clouds */
+  .cloud {
+    position: absolute;
+    background: rgba(176,190,197,0.9);
+    border-radius: 50px;
+  }
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: inherit;
+    border-radius: 50%;
+  }
+  .cloud-main {
+    width: 100px; height: 38px;
+    bottom: 60px; left: 30px;
+    background: linear-gradient(180deg, #b0bec5, #78909c);
+    box-shadow: 0 0 20px rgba(100,150,200,0.3);
+  }
+  .cloud-main::before {
+    width: 50px; height: 50px;
+    top: -28px; left: 15px;
+  }
+  .cloud-main::after {
+    width: 38px; height: 38px;
+    top: -20px; left: 45px;
+  }
+
+  .cloud-small {
+    width: 60px; height: 24px;
+    top: 20px; right: 20px;
+    background: linear-gradient(180deg, #cfd8dc, #b0bec5);
+    animation: cloudDrift 6s ease-in-out infinite;
+  }
+  .cloud-small::before {
+    width: 30px; height: 30px;
+    top: -16px; left: 10px;
+  }
+  .cloud-small::after {
+    width: 22px; height: 22px;
+    top: -12px; left: 30px;
+  }
+  @keyframes cloudDrift {
+    0%,100% { transform: translateX(0); }
+    50%     { transform: translateX(6px); }
+  }
+
+  /* Dark storm cloud */
+  .cloud-storm {
+    width: 120px; height: 44px;
+    top: 40px; left: 20px;
+    background: linear-gradient(180deg, #455a64, #263238);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 30px rgba(41,182,246,0.15);
+  }
+  .cloud-storm::before {
+    width: 60px; height: 60px;
+    top: -34px; left: 20px;
+    background: linear-gradient(180deg, #546e7a, #37474f);
+  }
+  .cloud-storm::after {
+    width: 44px; height: 44px;
+    top: -24px; left: 58px;
+    background: linear-gradient(180deg, #546e7a, #37474f);
+  }
+
+  /* Lightning bolt CSS */
+  .lightning-bolt {
+    position: absolute;
+    top: 95px; left: 82px;
+    animation: lightningFlash 2.5s ease-in-out infinite;
+    z-index: 10;
+  }
+  @keyframes lightningFlash {
+    0%,85%,100% { opacity: 0; }
+    87%,91%     { opacity: 1; filter: drop-shadow(0 0 12px #fff176); }
+    89%         { opacity: 0.3; }
+  }
+  .lb-top {
+    width: 0; height: 0;
+    border-left: 12px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 22px solid #fff176;
+    margin-left: 8px;
+  }
+  .lb-bottom {
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 12px solid transparent;
+    border-bottom: 22px solid #fdd835;
+    margin-left: 0px;
+    margin-top: -4px;
+  }
+
+  /* Rain drops from storm cloud */
+  .cover-rain {
+    position: absolute;
+    bottom: 10px; left: 30px;
+    display: flex; gap: 6px;
+  }
+  .cover-raindrop {
+    width: 3px;
+    background: linear-gradient(180deg, rgba(100,181,246,0.8), rgba(41,182,246,0.4));
+    border-radius: 3px;
+    animation: dropFall 1.2s ease-in infinite;
+  }
+  @keyframes dropFall {
+    0%   { opacity: 0; transform: translateY(-15px); height: 10px; }
+    30%  { opacity: 1; }
+    100% { opacity: 0; transform: translateY(25px); height: 18px; }
+  }
+
+  /* Sun peeking */
+  .cover-sun {
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 42px; height: 42px;
+    background: radial-gradient(circle, #fdd835, #f9a825);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(253,216,53,0.5);
+    animation: sunPulse 3s ease-in-out infinite;
+  }
+  @keyframes sunPulse {
+    0%,100% { box-shadow: 0 0 20px rgba(253,216,53,0.5); }
+    50%     { box-shadow: 0 0 35px rgba(253,216,53,0.8); }
+  }
+  .sun-ray {
+    position: absolute;
+    background: #fdd835;
+    border-radius: 2px;
+    transform-origin: center;
+    width: 3px; height: 10px;
+    top: 50%; left: 50%;
+    margin-left: -1.5px; margin-top: -5px;
+  }
+
+  /* Terra Explorer mini capsule */
+  .mini-terra {
+    position: absolute;
+    bottom: 55px; right: 15px;
+    animation: terraHover 3s ease-in-out infinite;
+  }
+  @keyframes terraHover {
+    0%,100% { transform: translateY(0) rotate(-5deg); }
+    50%     { transform: translateY(-8px) rotate(5deg); }
+  }
+  .mt-body {
+    width: 32px; height: 22px;
+    background: linear-gradient(135deg, #1565c0, #0d47a1);
+    border-radius: 10px 10px 6px 6px;
+    position: relative;
+    box-shadow: 0 0 12px rgba(41,182,246,0.5);
+  }
+  .mt-window {
+    width: 14px; height: 10px;
+    background: radial-gradient(circle, #e3f2fd, #29b6f6);
+    border-radius: 50%;
+    position: absolute;
+    top: 4px; left: 9px;
+  }
+  .mt-engine {
+    position: absolute;
+    bottom: -6px; left: 50%;
+    transform: translateX(-50%);
+    width: 10px; height: 8px;
+    background: linear-gradient(180deg, #ff7043, transparent);
+    clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+    animation: engineGlow 0.4s ease-in-out infinite alternate;
+  }
+  @keyframes engineGlow {
+    from { opacity: 0.7; }
+    to   { opacity: 1; filter: brightness(1.3); }
+  }
+
+  /* Floating sky emojis */
+  .floating-sky {
+    position: absolute;
+    font-size: 24px;
+    animation: skyFloat 4s ease-in-out infinite;
+  }
+  .floating-sky:nth-child(1) { top: 5%;  left: 6%;   animation-delay: 0s; }
+  .floating-sky:nth-child(2) { top: 9%;  right: 8%;  animation-delay: -1.5s; }
+  .floating-sky:nth-child(3) { bottom: 28%; left: 5%;  animation-delay: -3s; }
+  .floating-sky:nth-child(4) { bottom: 22%; right: 6%; animation-delay: -2s; }
+  @keyframes skyFloat {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50%     { transform: translateY(-10px) rotate(10deg); }
+  }
+
+  .cover-badge {
+    background: linear-gradient(135deg, var(--storm-blue2), var(--storm-purple));
+    color: white;
+    padding: 6px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: inline-block;
+    box-shadow: 0 0 16px rgba(41,182,246,0.3);
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(28px, 6vw, 50px);
+    line-height: 1.2;
+    background: linear-gradient(135deg, #29b6f6, #7986cb, #fff176, #42a5f5, #29b6f6);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease infinite;
+    margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+
+  .cover-subtitle { font-size: clamp(16px, 3vw, 22px); opacity: 0.75; margin-bottom: 24px; }
+
+  .cover-name-badge {
+    background: linear-gradient(135deg, rgba(41,182,246,0.08), rgba(126,87,194,0.08));
+    border: 2px solid rgba(41,182,246,0.25);
+    border-radius: 20px;
+    padding: 16px 32px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+  }
+  .cover-name-badge p { font-size: 14px; opacity: 0.7; margin-bottom: 4px; }
+  .cover-name-badge h2 { font-family: 'Fredoka One', cursive; font-size: clamp(22px,4vw,32px); color: var(--storm-cyan); }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+  }
+  body.light-mode .card {
+    background: white;
+    border-color: rgba(21,101,192,0.15);
+    box-shadow: 0 4px 24px rgba(41,182,246,0.1);
+    color: #011627;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent, linear-gradient(90deg, var(--storm-blue), var(--storm-cyan)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .card-cloud   { --accent: linear-gradient(90deg, #455a64, #90a4ae, #e3f2fd); }
+  .card-cycle   { --accent: linear-gradient(90deg, #1565c0, #29b6f6, #26c6da); }
+  .card-storm   { --accent: linear-gradient(90deg, #4a148c, #7e57c2, #fff176); }
+  .card-thunder { --accent: linear-gradient(90deg, #263238, #546e7a, #fdd835); }
+  .card-protect { --accent: linear-gradient(90deg, #1b5e20, #43a047, #69f0ae); }
+
+  .card-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    display: block;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  }
+
+  .card h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(22px, 4vw, 30px);
+    margin-bottom: 8px;
+    color: var(--storm-cyan);
+  }
+  body.light-mode .card h2 { color: var(--storm-blue); }
+
+  .card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 20px 0 10px;
+    color: var(--storm-cyan);
+  }
+  body.light-mode .card h3 { color: var(--storm-blue); }
+
+  .card p {
+    font-size: clamp(15px, 2.5vw, 17px);
+    line-height: 1.85;
+    opacity: 0.9;
+    margin-bottom: 14px;
+  }
+
+  /* ─── ANALOGY BOX ─── */
+  .analogy-box {
+    background: linear-gradient(135deg, rgba(41,182,246,0.07), rgba(126,87,194,0.07));
+    border: 2px dashed rgba(41,182,246,0.28);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .analogy-box::before {
+    content: '💡 Analogi Keren!';
+    position: absolute;
+    top: -12px; left: 20px;
+    background: var(--dark-bg);
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--storm-cyan);
+  }
+  body.light-mode .analogy-box { background: linear-gradient(135deg,rgba(41,182,246,0.05),rgba(126,87,194,0.05)); }
+  body.light-mode .analogy-box::before { background: white; }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header { text-align: center; margin-bottom: 32px; padding-top: 20px; }
+  .section-header .tag {
+    display: inline-block;
+    background: rgba(41,182,246,0.1);
+    border: 1px solid rgba(41,182,246,0.28);
+    color: var(--storm-cyan);
+    padding: 4px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-header h1 { font-family: 'Fredoka One', cursive; font-size: clamp(24px,5vw,40px); line-height: 1.2; }
+
+  /* ─── SCENE BOX ─── */
+  .scene-box {
+    background: linear-gradient(135deg, rgba(1,13,26,0.92), rgba(21,101,192,0.12));
+    border: 1px solid rgba(41,182,246,0.15);
+    border-radius: 20px;
+    padding: 28px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .scene-box::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 80% 50%, rgba(41,182,246,0.05), transparent 60%);
+    pointer-events: none;
+  }
+  body.light-mode .scene-box {
+    background: linear-gradient(135deg, rgba(232,244,253,0.97), rgba(41,182,246,0.04));
+    border-color: rgba(21,101,192,0.18);
+  }
+  .scene-title {
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--storm-cyan);
+    margin-bottom: 12px;
+    opacity: 0.8;
+  }
+  .scene-box p { font-size: clamp(15px,2.5vw,17px); line-height: 1.9; font-style: italic; opacity: 0.9; }
+
+  /* ─── CYCLE VISUAL ─── */
+  .cycle-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  .cycle-node {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(41,182,246,0.22);
+    border-radius: 18px;
+    padding: 18px 16px;
+    text-align: center;
+    min-width: 120px;
+    flex: 1;
+    max-width: 160px;
+    transition: transform 0.2s;
+  }
+  .cycle-node:hover { transform: translateY(-4px); }
+  body.light-mode .cycle-node { background: #e8f4fd; }
+  .cycle-node .cn-icon { font-size: 38px; display: block; margin-bottom: 8px; }
+  .cycle-node strong { display: block; font-size: 14px; font-weight: 900; margin-bottom: 4px; color: var(--storm-cyan); }
+  body.light-mode .cycle-node strong { color: var(--storm-blue); }
+  .cycle-node p { font-size: 12px; line-height: 1.5; opacity: 0.75; margin: 0; }
+  .cycle-arrow { font-size: 26px; color: var(--storm-cyan); flex-shrink: 0; opacity: 0.7; }
+
+  /* ─── LIGHTNING EXPLAINER ─── */
+  .lightning-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .ls-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(41,182,246,0.12);
+    transition: transform 0.2s;
+  }
+  .ls-item:hover { transform: translateX(4px); }
+  body.light-mode .ls-item { background: rgba(41,182,246,0.05); }
+  .ls-num {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--storm-blue2), var(--storm-purple));
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 15px;
+    flex-shrink: 0; margin-top: 2px;
+    box-shadow: 0 0 10px rgba(41,182,246,0.3);
+  }
+  .ls-content strong { display: block; font-size: 16px; font-weight: 900; margin-bottom: 5px; }
+  .ls-content p { font-size: 14px; line-height: 1.65; opacity: 0.88; margin: 0; }
+
+  /* ─── TWO COL CARDS ─── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+
+  .mini-card {
+    border-radius: 18px;
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mini-card-blue   { background: rgba(41,182,246,0.08);  border: 1px solid rgba(41,182,246,0.22); }
+  .mini-card-purple { background: rgba(126,87,194,0.1);   border: 1px solid rgba(126,87,194,0.25); }
+  .mini-card-gold   { background: rgba(253,216,53,0.08);  border: 1px solid rgba(253,216,53,0.22); }
+  .mini-card-gray   { background: rgba(144,164,174,0.1);  border: 1px solid rgba(144,164,174,0.22); }
+  body.light-mode .mini-card-blue   { background: rgba(41,182,246,0.06); }
+  body.light-mode .mini-card-purple { background: rgba(126,87,194,0.06); }
+  body.light-mode .mini-card-gold   { background: rgba(253,216,53,0.05); }
+  body.light-mode .mini-card-gray   { background: rgba(144,164,174,0.06); }
+
+  .mini-card .mini-icon { font-size: 36px; }
+  .mini-card strong { font-size: 15px; font-weight: 900; }
+  .mini-card p { font-size: 14px; line-height: 1.6; opacity: 0.85; margin: 0; }
+
+  /* ─── FACT GRID ─── */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .fact-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .fact-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(41,182,246,0.12); }
+  body.light-mode .fact-card { background: #e8f4fd; border-color: rgba(21,101,192,0.15); }
+  .fact-card .fact-emoji { font-size: 40px; margin-bottom: 10px; display: block; }
+  .fact-card .fact-number { font-family: 'Fredoka One', cursive; font-size: 20px; color: var(--storm-cyan); display: block; margin-bottom: 4px; }
+  body.light-mode .fact-card .fact-number { color: var(--storm-blue); }
+  .fact-card .fact-label { font-size: 13px; opacity: 0.7; font-weight: 700; }
+
+  /* ─── SPEED BAR ─── */
+  .speed-bar-wrap {
+    background: rgba(0,0,0,0.25);
+    border-radius: 10px;
+    height: 30px;
+    overflow: hidden;
+    margin: 8px 0;
+    position: relative;
+    border: 1px solid rgba(41,182,246,0.2);
+  }
+  .speed-bar {
+    height: 100%;
+    border-radius: 8px;
+    display: flex; align-items: center; padding-left: 12px;
+    font-size: 12px; font-weight: 900; color: white; white-space: nowrap;
+  }
+
+  /* ─── CHALLENGE ─── */
+  .challenge-card {
+    background: linear-gradient(135deg, rgba(1,13,26,0.88), rgba(21,101,192,0.12));
+    border: 2px solid rgba(41,182,246,0.22);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin: 20px 0;
+  }
+  body.light-mode .challenge-card {
+    background: linear-gradient(135deg, rgba(41,182,246,0.04), rgba(126,87,194,0.04));
+  }
+
+  .challenge-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 24px;
+    color: var(--storm-cyan);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  body.light-mode .challenge-title { color: var(--storm-blue); }
+
+  .challenge-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .challenge-item:last-child { border-bottom: none; }
+  body.light-mode .challenge-item { border-color: rgba(0,0,0,0.05); }
+
+  .challenge-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--storm-blue2), var(--storm-purple));
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 14px;
+    flex-shrink: 0; margin-top: 2px;
+    box-shadow: 0 0 10px rgba(41,182,246,0.3);
+  }
+  .challenge-item p { font-size: 15px; line-height: 1.7; opacity: 0.9; }
+
+  /* ─── NAV BUTTONS ─── */
+  .nav-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  body.light-mode .nav-btns { border-color: rgba(0,0,0,0.05); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover  { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-prev {
+    background: rgba(255,255,255,0.06);
+    color: inherit;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  body.light-mode .btn-prev { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); color:#011627; }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--storm-blue2), var(--storm-purple));
+    color: white;
+    box-shadow: 0 4px 16px rgba(21,101,192,0.35);
+    flex: 1; justify-content: center;
+    max-width: 300px;
+  }
+  .btn-next:hover { box-shadow: 0 6px 24px rgba(41,182,246,0.5); }
+
+  .btn-done {
+    background: linear-gradient(135deg, var(--storm-blue), var(--storm-purple));
+    color: white;
+    box-shadow: 0 4px 16px rgba(21,101,192,0.4);
+    width: 100%; max-width: 400px;
+    margin: 0 auto;
+    justify-content: center;
+    font-size: 17px;
+    padding: 18px 32px;
+  }
+  .btn-done:hover { box-shadow: 0 6px 24px rgba(41,182,246,0.55); }
+
+  .page-indicator { font-size: 13px; opacity: 0.5; font-weight: 700; white-space: nowrap; }
+
+  /* ─── CLOSING ─── */
+  .closing-content { text-align: center; padding: 40px 20px; }
+  .trophy-big {
+    font-size: 100px;
+    display: block; margin: 0 auto 24px;
+    animation: bounceIn 0.8s cubic-bezier(0.36,0.07,0.19,0.97);
+    filter: drop-shadow(0 0 24px rgba(41,182,246,0.6));
+  }
+  @keyframes bounceIn {
+    0%  { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); }
+    100%{ transform: scale(1); opacity: 1; }
+  }
+  .quote-box {
+    background: linear-gradient(135deg, rgba(41,182,246,0.08), rgba(126,87,194,0.08));
+    border-left: 4px solid var(--storm-blue2);
+    border-radius: 0 16px 16px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+    text-align: left;
+  }
+  .quote-box p { font-size: 18px; font-style: italic; line-height: 1.8; }
+  .quote-box cite { font-size: 13px; opacity: 0.6; margin-top: 8px; display: block; font-style: normal; font-weight: 700; }
+
+  /* ─── CLOUD TYPES ─── */
+  .cloud-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .cloud-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(144,164,174,0.2);
+    border-radius: 18px;
+    padding: 18px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .cloud-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(41,182,246,0.12); }
+  body.light-mode .cloud-card { background: #e8f4fd; border-color: rgba(21,101,192,0.15); }
+  .cloud-card .cc-icon { font-size: 44px; display: block; margin-bottom: 10px; }
+  .cloud-card strong { display: block; font-size: 15px; font-weight: 900; margin-bottom: 4px; color: var(--storm-cyan); }
+  body.light-mode .cloud-card strong { color: var(--storm-blue); }
+  .cloud-card .cc-alt { display: block; font-size: 12px; opacity: 0.6; margin-bottom: 8px; font-style: italic; }
+  .cloud-card p { font-size: 13px; line-height: 1.6; opacity: 0.82; margin: 0; }
+  .cc-height {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 800;
+    background: rgba(41,182,246,0.1);
+    color: var(--storm-cyan);
+    border: 1px solid rgba(41,182,246,0.22);
+  }
+  body.light-mode .cc-height { color: var(--storm-blue); background: rgba(21,101,192,0.08); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .book-container { padding: 76px 16px 32px; }
+    .card { padding: 24px 20px; }
+    .nav-btns { flex-wrap: wrap; }
+    .btn-next { max-width: 100%; }
+    .fact-grid { grid-template-columns: 1fr 1fr; }
+    .cloud-grid { grid-template-columns: 1fr 1fr; }
+    .cover-sky-wrap { width: 200px; height: 190px; }
+    .cycle-flow { flex-direction: column; align-items: stretch; }
+    .cycle-arrow { transform: rotate(90deg); margin: 0 auto; }
+  }
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .book-container { padding: 80px 32px 40px; }
+    .card p { font-size: 18px; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(41,182,246,0.28); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- SKY PARTICLES -->
+<div class="sky-particles" id="skyParticles"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+  <div class="nav-right">
+    <span class="book-day-badge">⛈️ Hari ke-6</span>
+    <button class="mode-btn" id="modeBtn" title="Ganti Mode">☀️</button>
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<!-- ═══════════════ BOOK CONTAINER ═══════════════ -->
+<div class="book-container">
+
+  <!-- ── PAGE 1: COVER ── -->
+  <div class="page active" id="page-1">
+    <div class="cover-page">
+      <span class="floating-sky">☁️</span>
+      <span class="floating-sky">⚡</span>
+      <span class="floating-sky">🌧️</span>
+      <span class="floating-sky">🌈</span>
+
+      <!-- Sky illustration -->
+      <div class="cover-sky-wrap">
+        <div class="sky-scene">
+          <!-- Sun -->
+          <div class="cover-sun">
+            <div class="sun-ray" style="transform: rotate(0deg) translate(0,-26px)"></div>
+            <div class="sun-ray" style="transform: rotate(45deg) translate(0,-26px)"></div>
+            <div class="sun-ray" style="transform: rotate(90deg) translate(0,-26px)"></div>
+            <div class="sun-ray" style="transform: rotate(135deg) translate(0,-26px)"></div>
+            <div class="sun-ray" style="transform: rotate(180deg) translate(0,-26px)"></div>
+            <div class="sun-ray" style="transform: rotate(225deg) translate(0,-26px)"></div>
+            <div class="sun-ray" style="transform: rotate(270deg) translate(0,-26px)"></div>
+            <div class="sun-ray" style="transform: rotate(315deg) translate(0,-26px)"></div>
+          </div>
+          <!-- Small white cloud -->
+          <div class="cloud cloud-small"></div>
+          <!-- Dark storm cloud -->
+          <div class="cloud cloud-storm"></div>
+          <!-- Lightning bolt -->
+          <div class="lightning-bolt">
+            <div class="lb-top"></div>
+            <div class="lb-bottom"></div>
+          </div>
+          <!-- Terra Explorer -->
+          <div class="mini-terra">
+            <div class="mt-body">
+              <div class="mt-window"></div>
+              <div class="mt-engine"></div>
+            </div>
+          </div>
+          <!-- Rain drops -->
+          <div class="cover-rain">
+            <div class="cover-raindrop" style="height:14px;animation-delay:0s;"></div>
+            <div class="cover-raindrop" style="height:18px;animation-delay:-0.3s;"></div>
+            <div class="cover-raindrop" style="height:12px;animation-delay:-0.6s;"></div>
+            <div class="cover-raindrop" style="height:16px;animation-delay:-0.9s;"></div>
+            <div class="cover-raindrop" style="height:14px;animation-delay:-0.15s;"></div>
+            <div class="cover-raindrop" style="height:20px;animation-delay:-0.45s;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cover-badge">📚 Buku Sains Petualangan • Hari ke-6</div>
+      <h1 class="cover-title">Siapa yang Mengatur<br>Hujan dan Petir?</h1>
+      <p class="cover-subtitle">⛈️ Rahasia Besar di Balik Awan Gelap!</p>
+
+      <div class="cover-name-badge">
+        <p>Petualangan sains milik:</p>
+        <h2>🌟 Aslan 🌟</h2>
+        <p style="font-size:13px;margin-top:4px;">Penjelajah Langit • Kelas 3 SD</p>
+      </div>
+
+      <div class="nav-btns" style="justify-content:center;border:none;padding-top:0;">
+        <button class="btn btn-next" onclick="goPage(2)" style="max-width:290px;font-size:17px;padding:16px 32px;">
+          ⛈️ Terbang ke Awan!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE 2: PENGANTAR ── -->
+  <div class="page" id="page-2">
+    <div class="section-header">
+      <span class="tag">✉️ Hari Keenam!</span>
+      <h1>Hei Aslan, Siap<br>Terbang ke Dalam Awan? ⛈️</h1>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">⛈️</span>
+      <p>Hei, <strong>Aslan</strong>! Kemarin kamu menyelami keajaiban terumbu karang dan menjadi pejuang bawah laut sejati. Hari ini petualanganmu berlanjut ke tempat yang sama sekali berbeda — bukan ke bawah, tapi ke <strong>atas!</strong></p>
+      <p>Terra Explorer telah dilengkapi roket dan sayap khusus! Hari ini kita akan terbang tinggi ke langit, menembus awan, dan mencari tahu jawaban dari pertanyaan yang pasti pernah kamu tanyakan: <strong>Dari mana datangnya hujan? Dan kenapa petir bisa menyambar sambil mengeluarkan suara keras?</strong> 🌩️</p>
+      <p>Bersiaplah untuk terbang bersama Terra Explorer ke dalam awan gelap yang menggelegar!</p>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Pesan Dari Terra Explorer</p>
+      <p>"Aslan! Hari ini Terra Explorer sudah dimodifikasi spesial — ada baling-baling di atas dan roket di bawah supaya bisa naik ke langit! Sensor cuaca sudah aktif, helm terpasang, sabuk pengaman kencang. Lihat dari jendela... langit cerah di bawah, tapi di atas sana ada awan gelap besar yang bergulung-gulung seperti naga tidur. Di dalamnya ada petir yang menunggu! Ayo kita terbang ke sana dan cari tahu rahasianya!"</p>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--storm-blue2),var(--storm-purple));">
+      <h3>🗺️ Yang Akan Kita Pelajari Hari Ini</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(21,101,192,0.12);border-radius:14px;">
+          <span style="font-size:28px;">☁️</span>
+          <div><strong>Bagaimana Awan Terbentuk?</strong><p style="font-size:13px;margin:0;opacity:0.7;">Kenapa ada gumpalan putih raksasa di langit?</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(41,182,246,0.1);border-radius:14px;">
+          <span style="font-size:28px;">💧</span>
+          <div><strong>Siklus Air yang Ajaib</strong><p style="font-size:13px;margin:0;opacity:0.7;">Perjalanan air dari laut ke langit dan kembali lagi!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(126,87,194,0.1);border-radius:14px;">
+          <span style="font-size:28px;">⚡</span>
+          <div><strong>Misteri Petir</strong><p style="font-size:13px;margin:0;opacity:0.7;">Mengapa terjadi dan seberapa kuat tegangan listriknya?</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(38,38,50,0.4);border-radius:14px;border:1px solid rgba(253,216,53,0.15);">
+          <span style="font-size:28px;">🌩️</span>
+          <div><strong>Guntur: Suara Petir</strong><p style="font-size:13px;margin:0;opacity:0.7;">Kenapa guntur muncul setelah kilat? Ini rahasianya!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(0,137,123,0.1);border-radius:14px;">
+          <span style="font-size:28px;">🌈</span>
+          <div><strong>Fakta Keren Hujan & Petir</strong><p style="font-size:13px;margin:0;opacity:0.7;">Hal-hal mengejutkan yang belum kamu tahu!</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+      <span class="page-indicator">Halaman 2 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(3)">Bagaimana Awan Terbentuk? ☁️ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 3: AWAN ── -->
+  <div class="page" id="page-3">
+    <div class="section-header">
+      <span class="tag">☁️ Bab Satu</span>
+      <h1>Dari Mana Datangnya<br><span style="color:var(--storm-cyan)">Awan di Langit?</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Mendekati Awan!</p>
+      <p>"Terra Explorer naik perlahan... 200 meter... 500 meter... 1.000 meter! Aslan, lihat dari jendela — kita hampir menyentuh awan putih fluffy yang terlihat seperti kapas! Sensor kelembapan mendeteksi jutaan tetes air kecil di sekitar kita. Tunggu — kita masuk ke dalam awan sekarang! Tiba-tiba segalanya menjadi putih kabut seperti berada di dalam susu. Ini adalah inside cloud experience! Dan ini terbuat dari... air? Yuk cari tahu!"</p>
+    </div>
+
+    <div class="card card-cloud">
+      <span class="card-icon">☁️</span>
+      <h2>Awan: Jutaan Tetes Air yang Melayang!</h2>
+      <p>Kamu tahu tidak, bahwa awan yang terlihat seperti kapas raksasa itu sebenarnya terbuat dari <strong>jutaan tetes air yang sangat kecil</strong> (atau kristal es di ketinggian yang sangat tinggi)? Tetes air ini begitu ringan sehingga bisa melayang di udara!</p>
+      <p>Bagaimana air bisa ada di langit? Ini semua dimulai dari <strong>evaporasi</strong> — proses penguapan air di permukaan Bumi.</p>
+
+      <div class="analogy-box">
+        <p>Pernahkah kamu melihat baju basah yang dijemur lama-lama menjadi kering? 👕 Air di baju itu tidak hilang — ia berubah menjadi uap yang tak terlihat dan naik ke udara! Itulah evaporasi. Hal yang sama terjadi di laut, sungai, danau, dan genangan air — setiap hari, triliunan liter air menguap naik ke langit! 🌊➡️💨</p>
+      </div>
+
+      <h3>☁️ Proses Terbentuknya Awan (Step by Step!)</h3>
+      <div class="lightning-steps">
+        <div class="ls-item">
+          <div class="ls-num">1</div>
+          <div class="ls-content">
+            <strong>☀️ Panas Matahari Memanaskan Air</strong>
+            <p>Sinar matahari memanaskan air di laut, sungai, danau, bahkan tanah dan dedaunan. Air yang panas berubah menjadi uap air — molekul air yang sangat kecil dan ringan, tidak terlihat mata.</p>
+          </div>
+        </div>
+        <div class="ls-item">
+          <div class="ls-num">2</div>
+          <div class="ls-content">
+            <strong>💨 Uap Air Naik ke Langit</strong>
+            <p>Uap air yang ringan naik ke atas bersama udara hangat. Semakin tinggi, semakin dingin suhunya. Di puncak gunung, uap air sangat sering mengumpul karena udara sejuk memaksanya berhenti.</p>
+          </div>
+        </div>
+        <div class="ls-item">
+          <div class="ls-num">3</div>
+          <div class="ls-content">
+            <strong>🌡️ Udara Dingin = Kondensasi!</strong>
+            <p>Di ketinggian tertentu, udara menjadi sangat dingin. Uap air yang kedinginan "menyusut" kembali menjadi tetes-tetes air kecil atau kristal es. Proses ini disebut <strong>kondensasi</strong>.</p>
+          </div>
+        </div>
+        <div class="ls-item">
+          <div class="ls-num">4</div>
+          <div class="ls-content">
+            <strong>☁️ Tetes Air Berkumpul = Awan!</strong>
+            <p>Miliaran tetes air berkumpul mengelilingi partikel debu kecil di udara dan membentuk awan! Tetes air yang sangat kecil (10–100 mikrometer) bisa melayang karena gaya angkat udara lebih kuat dari gravitasi.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>🌤️ Jenis-Jenis Awan yang Ada di Langit</h3>
+      <div class="cloud-grid">
+        <div class="cloud-card">
+          <span class="cc-icon">🌸</span>
+          <strong>Cirrus</strong>
+          <span class="cc-alt">"Bulu Halus"</span>
+          <p>Awan tipis seperti rambut di langit tinggi. Terbuat dari kristal es. Pertanda cuaca akan berubah.</p>
+          <span class="cc-height">⬆️ 6.000–12.000 m</span>
+        </div>
+        <div class="cloud-card">
+          <span class="cc-icon">☁️</span>
+          <strong>Cumulus</strong>
+          <span class="cc-alt">"Kapas Raksasa"</span>
+          <p>Awan putih mengembang seperti bunga kol. Tanda cuaca cerah. Yang terbesar bisa lebih tinggi dari Gunung Everest!</p>
+          <span class="cc-height">⬆️ 500–2.000 m</span>
+        </div>
+        <div class="cloud-card">
+          <span class="cc-icon">🌫️</span>
+          <strong>Stratus</strong>
+          <span class="cc-alt">"Selimut Abu"</span>
+          <p>Lapisan awan abu-abu datar menutupi langit. Biasanya menutupi puncak gunung dan menyebabkan hujan gerimis.</p>
+          <span class="cc-height">⬆️ 0–2.000 m</span>
+        </div>
+        <div class="cloud-card">
+          <span class="cc-icon">⛈️</span>
+          <strong>Cumulonimbus</strong>
+          <span class="cc-alt">"Raja Awan Badai"</span>
+          <p>Awan petir raksasa yang bisa setinggi 15 km! Penghasil hujan lebat, petir, dan badai. Yang paling dramatis!</p>
+          <span class="cc-height">⬆️ 500–15.000 m</span>
+        </div>
+      </div>
+
+      <div style="background:rgba(41,182,246,0.08);border:1px solid rgba(41,182,246,0.22);border-radius:16px;padding:18px 20px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🤯 <strong>Tahukah Kamu?</strong> Satu awan Cumulus berukuran sedang beratnya bisa mencapai <strong>500 ton!</strong> Itu setara berat 100 gajah! Tapi awan tetap melayang karena tetes airnya tersebar sangat luas di udara dan gaya angkat udara menopangnya. Fisika yang ajaib! 🐘×100</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+      <span class="page-indicator">Halaman 3 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(4)">Siklus Air yang Ajaib! 💧 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 4: SIKLUS AIR ── -->
+  <div class="page" id="page-4">
+    <div class="section-header">
+      <span class="tag">💧 Bab Dua</span>
+      <h1>Siklus Air:<br><span style="color:var(--storm-cyan)">Perjalanan Air Tak Pernah Berhenti!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Mengikuti Tetes Air!</p>
+      <p>"Aslan, Terra Explorer mengaktifkan mode pelacak! Kita akan mengikuti perjalanan satu tetes air dari awal sampai akhir. Sensor nanoteknologi kita menandai sebuah tetes air di permukaan laut... sekarang lihat: ia menguap, naik, bergabung dengan awan, dan... HUJAN! Ia jatuh kembali ke tanah, mengalir ke sungai, dan kembali ke laut! Ini perjalanan yang sudah berlangsung selama 4,5 MILIAR tahun di Bumi kita! Air yang kamu minum hari ini mungkin pernah diminum dinosaurus! 🦕"</p>
+    </div>
+
+    <div class="card card-cycle">
+      <span class="card-icon">💧</span>
+      <h2>Siklus Air: Daur Ulang Paling Sempurna di Alam!</h2>
+      <p>Air di Bumi tidak pernah benar-benar habis atau bertambah. Jumlahnya tetap sama sejak miliaran tahun lalu! Air hanya berputar terus dalam sebuah siklus yang disebut <strong>Siklus Hidrologi</strong>. Inilah sistem daur ulang paling keren yang pernah ada!</p>
+
+      <div class="cycle-flow">
+        <div class="cycle-node">
+          <span class="cn-icon">🌊</span>
+          <strong>Evaporasi</strong>
+          <p>Air laut, sungai, danau menguap karena panas matahari. Berubah jadi uap tak terlihat.</p>
+        </div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-node">
+          <span class="cn-icon">💨</span>
+          <strong>Transpirasi</strong>
+          <p>Tumbuhan juga melepas uap air dari daunnya. Hutan besar seperti pompa raksasa!</p>
+        </div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-node">
+          <span class="cn-icon">☁️</span>
+          <strong>Kondensasi</strong>
+          <p>Uap air dingin dan berubah jadi tetes air kecil. Berkumpul membentuk awan.</p>
+        </div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-node">
+          <span class="cn-icon">🌧️</span>
+          <strong>Presipitasi</strong>
+          <p>Tetes air terlalu berat, jatuh sebagai hujan, salju, atau hujan es ke bumi.</p>
+        </div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-node">
+          <span class="cn-icon">🏞️</span>
+          <strong>Runoff & Infiltrasi</strong>
+          <p>Air mengalir di permukaan (sungai) atau meresap ke tanah. Kembali ke laut!</p>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Bayangkan siklus air seperti pertunjukan sulap! 🎩 Matahari adalah pesulap yang mengubah air cair menjadi uap yang menghilang. Tapi uap itu tidak benar-benar hilang — ia naik ke langit, berubah kembali menjadi air, dan jatuh sebagai hujan. Sulap yang sama diulang terus-menerus selama miliaran tahun! Tidak ada air baru yang datang ke Bumi, dan tidak ada air yang pergi. 🌍</p>
+      </div>
+
+      <h3>🌧️ Bagaimana Hujan Bisa Jatuh?</h3>
+      <p>Awan terbentuk dari tetes-tetes air yang sangat kecil — terlalu kecil untuk jatuh. Tapi seiring waktu, tetes-tetes ini bertabrakan satu sama lain dan bergabung menjadi lebih besar. Ketika sudah cukup besar dan berat, gravitasi menariknya ke bawah. <strong>Jadilah hujan!</strong></p>
+
+      <div class="two-col">
+        <div class="mini-card mini-card-blue">
+          <span class="mini-icon">🌧️</span>
+          <strong>Hujan Biasa</strong>
+          <p>Tetes hujan ukuran 1–5 mm. Jatuh dari awan Cumulus atau Stratus. Kecepatan jatuh sekitar 9 m/detik.</p>
+        </div>
+        <div class="mini-card mini-card-gray">
+          <span class="mini-icon">🌨️</span>
+          <strong>Hujan Es (Hail)</strong>
+          <p>Di awan badai, tetes air bisa naik-turun berkali-kali, membeku jadi bola es yang bisa sebesar bola golf!</p>
+        </div>
+        <div class="mini-card mini-card-gold">
+          <span class="mini-icon">❄️</span>
+          <strong>Salju</strong>
+          <p>Di negara dingin, tetes air membeku jadi kristal salju indah. Setiap kristal salju punya bentuk unik — tidak ada yang sama persis!</p>
+        </div>
+        <div class="mini-card mini-card-blue">
+          <span class="mini-icon">🌫️</span>
+          <strong>Gerimis</strong>
+          <p>Tetes air sangat kecil (0,1–0,5 mm) dari awan Stratus rendah. Jatuh pelan-pelan seperti kabut yang turun.</p>
+        </div>
+      </div>
+
+      <div style="background:rgba(41,182,246,0.08);border:1px solid rgba(41,182,246,0.22);border-radius:16px;padding:18px 20px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">💡 <strong>Fakta Luar Biasa:</strong> Air yang ada di Bumi sekarang adalah air yang <strong>sama</strong> dengan yang ada pada zaman dinosaurus — bahkan lebih tua! Air tidak diciptakan atau dihancurkan di Bumi, hanya berputar terus dalam siklus. Jadi air yang kamu minum hari ini mungkin pernah ada di dalam tubuh <strong>T-Rex</strong>! 🦖</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+      <span class="page-indicator">Halaman 4 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(5)">Misteri Petir! ⚡ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 5: PETIR ── -->
+  <div class="page" id="page-5">
+    <div class="section-header">
+      <span class="tag">⚡ Bab Tiga</span>
+      <h1>Petir:<br><span style="color:var(--storm-gold)">Listrik Raksasa di Langit!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Masuk ke Awan Badai!</p>
+      <p>"Aslan, Terra Explorer sekarang memasuki awan Cumulonimbus — awan petir terbesar di langit! Perhatikan: di dalam awan ini seperti ada perang! Butiran es dan air saling bertabrakan dengan kecepatan tinggi, naik turun ditiup angin kencang. Sensor listrik mendeteksi tegangan yang menggila — jutaan volt! Tiba-tiba BLAAAR! Kilatan cahaya menyilaukan melintas tepat di depan jendela Terra Explorer! Itu petir! Kita aman di dalam kapsul anti-petir, tapi WOW — itu adalah salah satu kekuatan alam yang paling dahsyat! Ayo cari tahu bagaimana petir bisa terjadi!"</p>
+    </div>
+
+    <div class="card card-storm">
+      <span class="card-icon">⚡</span>
+      <h2>Petir: Listrik Statis Raksasa dari Alam!</h2>
+      <p>Petir sebenarnya adalah <strong>percikan listrik raksasa</strong> — sama seperti percikan kecil yang muncul saat kamu menyentuh besi setelah menggesekkan kaki di karpet! Bedanya... petir jauh lebih besar. SANGAT jauh lebih besar! ⚡</p>
+
+      <h3>⚡ Bagaimana Petir Terbentuk? (Langkah Demi Langkah!)</h3>
+      <div class="lightning-steps">
+        <div class="ls-item">
+          <div class="ls-num">1</div>
+          <div class="ls-content">
+            <strong>🌪️ Angin Kuat di Dalam Awan Badai</strong>
+            <p>Di dalam awan Cumulonimbus, angin bertiup naik-turun dengan sangat kencang (updraft dan downdraft). Butiran es kecil, air, dan partikel lain saling bertabrakan ribuan kali per detik.</p>
+          </div>
+        </div>
+        <div class="ls-item">
+          <div class="ls-num">2</div>
+          <div class="ls-content">
+            <strong>🔋 Pemisahan Muatan Listrik</strong>
+            <p>Tabrakan antar partikel menyebabkan elektron (muatan negatif) berpindah. Partikel berat yang jatuh ke bawah membawa muatan negatif (−). Partikel ringan yang naik membawa muatan positif (+). Awan pun terbelah menjadi dua "kutub" seperti baterai raksasa!</p>
+          </div>
+        </div>
+        <div class="ls-item">
+          <div class="ls-num">3</div>
+          <div class="ls-content">
+            <strong>🌍 Tanah Ikut Terpengaruh</strong>
+            <p>Muatan negatif di bagian bawah awan "mendorong" muatan negatif di tanah menjauh. Akibatnya permukaan tanah menjadi bermuatan positif (+). Sekarang ada tegangan besar antara awan (−) dan tanah (+)!</p>
+          </div>
+        </div>
+        <div class="ls-item">
+          <div class="ls-num">4</div>
+          <div class="ls-content">
+            <strong>⚡ BLAAAR! Petir Menyambar!</strong>
+            <p>Ketika tegangan sudah terlalu besar — jutaan hingga miliaran volt — listrik "melompat" mencari jalan terpendek antara awan dan tanah. Inilah petir! Percikan listrik raksasa yang berlangsung hanya 0,001–0,003 detik! Tapi dalam waktu sekejap itu, suhu di jalur petir mencapai <strong>30.000°C</strong> — 5× lebih panas dari permukaan Matahari! 🌞</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Pernah menyisir rambut dengan cepat lalu mendekatkan sisir ke potongan kertas kecil? Kertas bisa "melompat" ke sisir karena listrik statis! 🪮 Itulah versi miniatur petir. Awan badai seperti sisir raksasa yang mengumpulkan muatan listrik, lalu "melepaskannya" sekaligus ke tanah sebagai petir yang maha dahsyat!</p>
+      </div>
+
+      <h3>⚡ Berbagai Jenis Petir</h3>
+      <div class="two-col">
+        <div class="mini-card mini-card-gold">
+          <span class="mini-icon">⚡</span>
+          <strong>Petir Awan ke Tanah</strong>
+          <p>Jenis paling umum dan berbahaya. Listrik meloncat dari awan ke permukaan tanah, pohon, atau gedung tinggi.</p>
+        </div>
+        <div class="mini-card mini-card-purple">
+          <span class="mini-icon">🌩️</span>
+          <strong>Petir Dalam Awan</strong>
+          <p>Petir yang terjadi di dalam awan sendiri. Lebih sering terjadi dari petir ke tanah! Membuat awan berkilau dari dalam.</p>
+        </div>
+        <div class="mini-card mini-card-blue">
+          <span class="mini-icon">⬆️</span>
+          <strong>Petir Awan ke Awan</strong>
+          <p>Listrik meloncat antar awan yang berbeda di langit. Terlihat seperti cabang berkilau yang merentang di langit.</p>
+        </div>
+        <div class="mini-card mini-card-gray">
+          <span class="mini-icon">🔴</span>
+          <strong>Sprite & Elve</strong>
+          <p>Petir aneh di ATAS awan, berwarna merah atau biru, terjadi di stratosfer! Sangat jarang terlihat dan baru ditemukan tahun 1989.</p>
+        </div>
+      </div>
+
+      <div style="background:rgba(253,216,53,0.08);border:1px solid rgba(253,216,53,0.25);border-radius:16px;padding:18px 20px;margin-top:12px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🔐 <strong>Tips Keamanan Petir:</strong> Saat ada petir, masuk ke dalam rumah atau mobil (bukan di bawah pohon!). Hindari kolam renang, lapangan terbuka, dan memegang benda logam panjang. Tunggu minimal 30 menit setelah petir terakhir terdengar sebelum keluar. Bangunan dan mobil melindungi kita karena memiliki sistem grounding yang aman! 🏠</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+      <span class="page-indicator">Halaman 5 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(6)">Kenapa Ada Guntur? 🌩️ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 6: GUNTUR ── -->
+  <div class="page" id="page-6">
+    <div class="section-header">
+      <span class="tag">🌩️ Bab Empat</span>
+      <h1>Guntur:<br><span style="color:var(--storm-gold)">Suara Petir yang Menggelegar!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Setelah Sambaran Petir!</p>
+      <p>"Aslan! Setelah kilatan petir yang tadi, Terra Explorer mencatat sesuatu yang menarik: kilatan cahaya muncul lebih dulu, BARU KEMUDIAN... DUARRR! Suara menggelegar mengguncang kapsul kita! Kenapa ada jeda antara kilatan dan suara? Sensor fisika mendeteksi jawabannya — ini berhubungan dengan kecepatan cahaya dan kecepatan suara yang sangat berbeda! Ini adalah pelajaran fisika paling keren yang pernah ada! Ayo Aslan, kita pecahkan misteri guntur!"</p>
+    </div>
+
+    <div class="card card-thunder">
+      <span class="card-icon">🌩️</span>
+      <h2>Guntur: Ledakan Udara yang Terlalu Panas!</h2>
+      <p>Kamu pasti bertanya-tanya: kenapa setelah kilatan petir, baru muncul suara guntur yang menggelegar? Dan kenapa kadang guntur terdengar jauh, kadang sangat dekat? Jawabannya ada di dalam fisika yang seru! 🔬</p>
+
+      <h3>🔥 Bagaimana Suara Guntur Terbentuk?</h3>
+      <p>Saat petir menyambar, ia memanaskan udara di sekitar jalurnya hingga <strong>30.000°C dalam sepersekian detik</strong>. Udara yang mendadak super panas ini mengembang dengan sangat cepat — MELEDAK keluar ke segala arah! Ledakan udara inilah yang menjadi <strong>suara guntur</strong>! Seperti balon yang meletus tapi dalam skala yang amat besar. 💥</p>
+
+      <div class="analogy-box">
+        <p>Pernahkah kamu memecahkan balon? 🎈 POP! Suara itu terjadi karena udara di dalam balon yang bertekanan tinggi tiba-tiba meledak ke luar. Guntur adalah hal yang sama, tapi bukan balon yang meledak — melainkan udara di sekitar petir yang "meledak" karena panas yang ekstrem! Dan ukurannya... bukan balon kecil, tapi SALURAN PETIR sepanjang beberapa kilometer!</p>
+      </div>
+
+      <h3>⏱️ Kenapa Kilat Lebih Dulu, Guntur Belakangan?</h3>
+      <p>Ini adalah pertanyaan favorit banyak anak! Jawabannya adalah karena <strong>cahaya jauh lebih cepat dari suara</strong>:</p>
+
+      <div style="margin:16px 0;display:flex;flex-direction:column;gap:10px;">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:800;margin-bottom:6px;">
+            <span>⚡ Kecepatan Cahaya (Kilat)</span>
+            <span style="color:var(--storm-gold);">300.000.000 m/detik!</span>
+          </div>
+          <div class="speed-bar-wrap">
+            <div class="speed-bar" style="width:100%;background:linear-gradient(90deg,#fdd835,#ff8f00);font-size:11px;">Sangat super cepat — nyaris instan! ⚡</div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:800;margin-bottom:6px;">
+            <span>🔊 Kecepatan Suara (Guntur)</span>
+            <span style="color:var(--storm-cyan);">343 m/detik</span>
+          </div>
+          <div class="speed-bar-wrap">
+            <div class="speed-bar" style="width:12%;background:linear-gradient(90deg,#29b6f6,#1565c0);font-size:11px;">Jauh lebih lambat dari cahaya!</div>
+          </div>
+        </div>
+      </div>
+
+      <p style="font-size:15px;line-height:1.8;">Cahaya berpindah hampir seketika — kilat terlihat langsung meski petirnya jauh 10 km. Tapi suara butuh waktu lebih lama. Suara bergerak sekitar <strong>343 meter per detik</strong>, jadi untuk jarak 1 km dibutuhkan sekitar <strong>3 detik</strong>.</p>
+
+      <div style="background:rgba(253,216,53,0.08);border:2px solid rgba(253,216,53,0.25);border-radius:18px;padding:22px;margin:16px 0;">
+        <p style="font-weight:900;font-size:16px;margin-bottom:12px;color:var(--storm-gold);">🧮 Cara Menghitung Jarak Petir!</p>
+        <p style="font-size:15px;line-height:1.8;margin-bottom:12px;">Hitung dalam detik jeda antara kilat dan guntur, lalu bagi dengan 3. Hasilnya adalah perkiraan jarak petir dalam kilometer!</p>
+        <div style="background:rgba(0,0,0,0.2);border-radius:12px;padding:16px;font-size:14px;line-height:1.8;">
+          <p style="margin:0;"><strong>Contoh:</strong><br>
+          🔦 Kilat terlihat → kamu mulai menghitung<br>
+          1... 2... 3... 4... 5... 6 → 🔊 Guntur terdengar!<br>
+          6 detik ÷ 3 = <strong style="color:var(--storm-gold);">2 km</strong> — petir sejauh 2 kilometer dari kamu! 🎯</p>
+        </div>
+      </div>
+
+      <h3>🌩️ Kenapa Guntur Kadang Menggelegar, Kadang Desis?</h3>
+      <p>Guntur terdengar berbeda tergantung jaraknya. Petir dekat terdengar seperti ledakan KERAS dan tajam. Petir jauh terdengar seperti gemuruh panjang — karena gelombang suara memantul di awan dan di pegunungan sebelum sampai ke telinga kita!</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+      <span class="page-indicator">Halaman 6 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(7)">Fakta Keren & Sains Tambahan! 🌈 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 7: FAKTA KEREN ── -->
+  <div class="page" id="page-7">
+    <div class="section-header">
+      <span class="tag">🌈 Bab Lima</span>
+      <h1>Fakta Keren &<br><span style="color:var(--storm-cyan)">Sains Hujan yang Mengejutkan!</span></h1>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--storm-blue),var(--storm-cyan),var(--storm-gold));">
+      <span class="card-icon">🤯</span>
+      <h2>Fakta-Fakta yang Bikin Melongo!</h2>
+      <div class="fact-grid">
+        <div class="fact-card">
+          <span class="fact-emoji">⚡</span>
+          <span class="fact-number">1,4 miliar</span>
+          <span class="fact-label">Petir yang menyambar Bumi setiap tahunnya. Sekitar 44 petir per detik!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌡️</span>
+          <span class="fact-number">30.000°C</span>
+          <span class="fact-label">Suhu jalur petir — 5× lebih panas dari permukaan Matahari yang 6.000°C!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">💧</span>
+          <span class="fact-number">505.000 km³</span>
+          <span class="fact-label">Total air hujan yang jatuh ke Bumi setiap tahun. Cukup mengisi miliaran kolam renang!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌧️</span>
+          <span class="fact-number">11.871 mm</span>
+          <span class="fact-label">Curah hujan tertinggi per tahun di Mawsynram, India — tempat paling basah di Bumi!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">❄️</span>
+          <span class="fact-number">~1.000.000</span>
+          <span class="fact-label">Tetes air yang dibutuhkan untuk membuat satu tetes hujan yang bisa jatuh ke bumi!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🇮🇩</span>
+          <span class="fact-number">2.700 jam</span>
+          <span class="fact-label">Rata-rata petir per tahun di Bogor — menjadikannya salah satu kota paling banyak petir di dunia!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--storm-green),var(--storm-cyan),var(--storm-blue));">
+      <span class="card-icon">🌈</span>
+      <h2>Bonus Sains: Kenapa Ada Pelangi?</h2>
+      <p>Setelah hujan berhenti dan matahari muncul kembali, sering muncul pelangi yang indah! Ini bukan sulap — ada penjelasan sains yang keren di baliknya!</p>
+
+      <div class="lightning-steps">
+        <div class="ls-item">
+          <div class="ls-num">1</div>
+          <div class="ls-content">
+            <strong>☀️ Cahaya Matahari Masuk ke Tetes Air</strong>
+            <p>Cahaya putih matahari sebenarnya adalah campuran dari semua warna pelangi (merah, jingga, kuning, hijau, biru, nila, ungu). Saat cahaya masuk ke tetes air hujan, ia dibiaskan (dibelokkan).</p>
+          </div>
+        </div>
+        <div class="ls-item">
+          <div class="ls-num">2</div>
+          <div class="ls-content">
+            <strong>🌈 Warna Terpisah!</strong>
+            <p>Setiap warna cahaya dibiaskan pada sudut yang sedikit berbeda. Merah paling sedikit dibelokkan, ungu paling banyak. Akibatnya, warna-warna yang tadinya bercampur mulai terpisah!</p>
+          </div>
+        </div>
+        <div class="ls-item">
+          <div class="ls-num">3</div>
+          <div class="ls-content">
+            <strong>💫 Memantul dan Keluar Terpisah</strong>
+            <p>Cahaya memantul di dalam tetes air lalu keluar kembali. Karena tiap warna keluar di sudut berbeda, kita melihat busur warna-warni yang teratur. Itulah pelangi! 🌈</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:20px 0;">
+        <span style="background:#e53935;color:white;padding:8px 16px;border-radius:50px;font-weight:900;font-size:14px;">🔴 Merah</span>
+        <span style="background:#fb8c00;color:white;padding:8px 16px;border-radius:50px;font-weight:900;font-size:14px;">🟠 Jingga</span>
+        <span style="background:#fdd835;color:#333;padding:8px 16px;border-radius:50px;font-weight:900;font-size:14px;">🟡 Kuning</span>
+        <span style="background:#43a047;color:white;padding:8px 16px;border-radius:50px;font-weight:900;font-size:14px;">🟢 Hijau</span>
+        <span style="background:#1e88e5;color:white;padding:8px 16px;border-radius:50px;font-weight:900;font-size:14px;">🔵 Biru</span>
+        <span style="background:#3949ab;color:white;padding:8px 16px;border-radius:50px;font-weight:900;font-size:14px;">💙 Nila</span>
+        <span style="background:#8e24aa;color:white;padding:8px 16px;border-radius:50px;font-weight:900;font-size:14px;">🟣 Ungu</span>
+      </div>
+
+      <div style="background:rgba(41,182,246,0.08);border:1px solid rgba(41,182,246,0.22);border-radius:16px;padding:18px 20px;">
+        <p style="margin:0;font-size:14px;line-height:1.7;">🌈 <strong>Mnemonic Keren!</strong> Cara mudah mengingat urutan warna pelangi dalam Bahasa Indonesia: <strong>"Me Ji Ku Hi Bi Ni U"</strong> → <strong>Me</strong>rah, <strong>Ji</strong>ngga, <strong>Ku</strong>ning, <strong>Hi</strong>jau, <strong>Bi</strong>ru, <strong>Ni</strong>la, <strong>U</strong>ngu! Coba hafal sekarang! 🎵</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+      <span class="page-indicator">Halaman 7 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(8)">Tantangan Aslan! ⚡ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 8: TANTANGAN + PENUTUP ── -->
+  <div class="page" id="page-8">
+    <div class="section-header">
+      <span class="tag">⚡ Tantangan Aslan</span>
+      <h1>Buktikan Kamu<br>Ahli Meteorologi Cilik! ⛈️</h1>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-title">🏆 Misi Langit & Badai Aslan</div>
+      <p style="font-size:15px;opacity:0.8;margin-bottom:20px;">Kamu sudah menjelajahi langit bersama Terra Explorer dan menembus awan badai! Saatnya membuktikan kemampuan ilmuwan cuacamu dengan tantangan-tantangan seru berikut!</p>
+
+      <div class="challenge-item">
+        <div class="challenge-num">1</div>
+        <div>
+          <p><strong>Buat Awan di Dalam Botol!</strong> ☁️ Siapkan botol plastik bening, air panas (minta bantuan orang tua), dan es batu. Masukkan sedikit air panas ke dalam botol, lalu letakkan es batu di mulut botol. Amati apa yang terjadi — kamu akan melihat "awan" muncul di dalam botol! Air panas menguap (evaporasi), lalu bertemu udara dingin dari es dan mengalami kondensasi. Persis proses terbentuknya awan! Foto hasilnya dan jelaskan ke orang tua. 📸</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">2</div>
+        <div>
+          <p><strong>Detektif Petir!</strong> ⚡ Saat ada hujan dan petir (dari dalam rumah yang aman!), hitung jeda waktu antara kilat dan guntur. Pakai rumus yang sudah kamu pelajari (detik ÷ 3 = kilometer) untuk menghitung seberapa jauh petirnya. Catat di kertas: jam berapa, berapa detik jeda, dan berapa kilometer jaraknya. Jadilah detektif cuaca keluargamu! Apakah petirnya mendekat atau menjauh seiring waktu? 🕵️</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">3</div>
+        <div>
+          <p><strong>Kuis Kilat Meteorologi!</strong> ⚡ Jawab tanpa melihat buku: (a) Apa nama proses air menguap karena panas matahari? (b) Apa nama proses uap air berubah kembali jadi tetes air? (c) Awan apakah yang menghasilkan petir? (d) Kenapa kilat terlihat lebih dulu dari suara guntur? (e) Berapa suhu jalur petir — lebih panas atau lebih dingin dari permukaan Matahari? Tulis jawabanmu dan cek lagi di buku! 📝</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">4</div>
+        <div>
+          <p><strong>Gambar Siklus Air Ajaib!</strong> 🎨 Gambar siklus air lengkap dalam selembar kertas besar! Harus ada: matahari menyinari laut (evaporasi), awan terbentuk di langit (kondensasi), hujan jatuh dari awan (presipitasi), air mengalir di sungai kembali ke laut (runoff). Beri warna dan label setiap tahapannya. Tunjukkan kepada teman atau saudara sambil menjelaskan — kamu akan menjadi guru sains mereka! 🖌️</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">5</div>
+        <div>
+          <p><strong>Buat Pelangi Sendiri!</strong> 🌈 Di hari yang cerah, pergi ke halaman dengan membawa selang air. Posisikan punggungmu ke arah matahari dan semprotkan air ke depanmu. Lihat apa yang terjadi — kamu bisa membuat pelangimu sendiri! Tetes air dari selang membiaskan cahaya matahari persis seperti tetes hujan. Coba temukan sudut terbaik agar pelangginya terlihat jelas. Sains yang bisa kamu mainkan! 🌞</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENUTUP -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--storm-blue),var(--storm-cyan),var(--storm-purple),var(--storm-gold));margin-top:32px;">
+      <div class="closing-content">
+        <span class="trophy-big">⛈️</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(24px,5vw,36px);margin-bottom:16px;">
+          Luar Biasa, Aslan! 🎉
+        </h2>
+        <p style="font-size:clamp(15px,2.5vw,17px);max-width:500px;margin:0 auto 24px;line-height:1.8;opacity:0.9;">
+          Kamu telah menyelesaikan Hari ke-6 dan menjelajahi rahasia langit! Dari tetes air yang menguap, awan raksasa yang terbentuk, hingga petir dahsyat yang menggelegar — sekarang kamu tahu bahwa semua itu adalah sains yang luar biasa. Kamu adalah <strong>Meteorologis Cilik</strong> sejati Indonesia!
+        </p>
+
+        <div class="quote-box" style="max-width:520px;margin:0 auto 28px;">
+          <p>"Setiap tetes hujan yang jatuh menyimpan perjalanan panjang — dari lautan ke langit, dari awan ke tanah, dan kembali lagi. Alam tidak pernah berhenti bekerja, dan seorang ilmuwan sejati tidak pernah berhenti bertanya."</p>
+          <cite>— Untuk Aslan, Penjelajah Langit & Meteorologis Cilik Indonesia ⛈️</cite>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px;">
+          <span style="background:rgba(21,101,192,0.15);border:1px solid rgba(41,182,246,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">☁️ Ahli Pembentukan Awan</span>
+          <span style="background:rgba(126,87,194,0.12);border:1px solid rgba(126,87,194,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">⚡ Master Petir & Guntur</span>
+          <span style="background:rgba(41,182,246,0.12);border:1px solid rgba(41,182,246,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">💧 Pakar Siklus Air</span>
+          <span style="background:rgba(253,216,53,0.12);border:1px solid rgba(253,216,53,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🌈 Ilmuwan Pelangi</span>
+        </div>
+
+        <button class="btn btn-done" onclick="selesaiMembaca()">
+          ✅ Saya Sudah Selesai Membaca!
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(7)">← Kembali</button>
+      <span class="page-indicator">Halaman 8 dari 8</span>
+      <span></span>
+    </div>
+  </div>
+
+</div><!-- end book-container -->
+
+<script>
+  // ── SKY PARTICLES ──
+  const container = document.getElementById('skyParticles');
+  const colors = ['#29b6f6','#7986cb','#90a4ae','#fff176','#80deea','#e3f2fd','#b0bec5'];
+  const shapes = ['circle', 'drop', 'crystal'];
+
+  for (let i = 0; i < 55; i++) {
+    const p = document.createElement('div');
+    p.className = 'sp';
+    const size = Math.random() * 6 + 2;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const isRain = Math.random() > 0.6;
+    p.style.cssText = `
+      width:${isRain ? 2 : size}px;
+      height:${isRain ? size * 4 : size}px;
+      left:${Math.random()*100}%;
+      bottom:${Math.random()*20}%;
+      background:${color};
+      box-shadow:0 0 ${size*2}px ${color}88;
+      border-radius:${isRain ? '2px' : '50%'};
+      animation-duration:${6 + Math.random()*10}s;
+      animation-delay:${Math.random()*10}s;
+      opacity:0;
+    `;
+    container.appendChild(p);
+  }
+
+  // ── PAGES ──
+  const TOTAL = 8;
+  let current = 1;
+
+  function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── DARK / LIGHT MODE ──
+  const modeBtn = document.getElementById('modeBtn');
+  let isLight = false;
+  modeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+    modeBtn.textContent = isLight ? '🌙' : '☀️';
+  });
+
+  // ── SELESAI MEMBACA ──
+  function selesaiMembaca() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);
+      z-index:999;display:flex;align-items:center;justify-content:center;
+      padding:20px;animation:fadeUp 0.3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="background:linear-gradient(135deg,#010d1a,#011627);border:2px solid rgba(41,182,246,0.38);border-radius:28px;padding:40px;max-width:440px;width:100%;text-align:center;color:white;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#29b6f6,#7986cb,#fff176,#29b6f6);box-shadow:0 0 12px rgba(41,182,246,0.5);"></div>
+        <span style="font-size:80px;display:block;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(41,182,246,0.6));">⛈️</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:12px;background:linear-gradient(135deg,#29b6f6,#7986cb,#fff176);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Keren Banget, Aslan!</h2>
+        <p style="font-size:16px;line-height:1.8;opacity:0.9;margin-bottom:24px;">Hari ke-6 selesai! 🎉<br>Kamu sudah menjelajahi <strong>rahasia hujan, petir, dan siklus air</strong> — dari tetes air yang menguap hingga kilatan petir yang menggelegar di langit.<br><br>Kamu kini adalah Meteorologis Cilik Indonesia yang sesungguhnya! 🇮🇩<br>Sampai jumpa di Hari ke-7! 🚀</p>
+        <button onclick="this.closest('div').parentElement.remove()" style="background:linear-gradient(135deg,#1565c0,#7e57c2);color:white;border:none;padding:14px 32px;border-radius:50px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(21,101,192,0.45);">Mantap! Tutup ⛈️</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+  }
+
+  // ── KEYBOARD NAV ──
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(current - 1);
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>

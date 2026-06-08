@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Hari 1: Kapten Cerdas Menemukan Lautan Digital | Aslan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Fredoka:wght@300;400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ocean-deep:   #0b2a45;
+            --ocean-mid:    #1257a0;
+            --ocean-light:  #1a8fe3;
+            --sky:          #87ceeb;
+            --sky-light:    #e0f6ff;
+            --gold:         #f5a623;
+            --gold-light:   #fde68a;
+            --coral:        #f97316;
+            --white:        #ffffff;
+            --cream:        #fffbeb;
+            --teal:         #0891b2;
+            --green-sea:    #10b981;
+            --ff-title:     'Fredoka One', cursive;
+            --ff-body:      'Poppins', sans-serif;
+            --ff-display:   'Fredoka', sans-serif;
+            --shadow-page:  0 24px 64px rgba(11,42,69,.38), 0 6px 0 rgba(11,42,69,.25);
+        }
+
+        *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+
+        html, body {
+            height: 100%;
+            font-family: var(--ff-body);
+            background: linear-gradient(165deg, #0b2a45 0%, #1257a0 45%, #1a8fe3 75%, #87ceeb 100%);
+            overflow: hidden;
+        }
+
+        /* ── BUBBLES ─────────────────────────── */
+        #bgBubbles {
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        .bubble {
+            position: absolute; border-radius: 50%;
+            background: rgba(255,255,255,.07);
+            animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+            0%   { transform: translateY(110vh) scale(0); opacity: 0; }
+            8%   { opacity: 1; }
+            92%  { opacity: .5; }
+            100% { transform: translateY(-120px) scale(1); opacity: 0; }
+        }
+
+        /* ── BACK BUTTON ────────────────────── */
+        .btn-back {
+            position: fixed; top: 14px; left: 14px; z-index: 200;
+            display: flex; align-items: center; gap: 7px;
+            background: rgba(255,255,255,.14); backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(255,255,255,.3); color: white;
+            padding: 9px 18px; border-radius: 50px;
+            font-family: var(--ff-display); font-size: 13px; font-weight: 500;
+            text-decoration: none; transition: all .3s ease; cursor: pointer;
+        }
+        .btn-back:hover { background: rgba(255,255,255,.24); transform: translateX(-3px); }
+
+        /* ── SOUND BUTTON ───────────────────── */
+        #soundBtn {
+            position: fixed; top: 14px; right: 14px; z-index: 200;
+            width: 46px; height: 46px; border-radius: 50%;
+            background: rgba(255,255,255,.14); backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(255,255,255,.3);
+            color: white; font-size: 20px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all .3s ease;
+        }
+        #soundBtn:hover { background: rgba(255,255,255,.25); transform: scale(1.1); }
+
+        /* ── BOOK WRAPPER ─────────────────── */
+        .book-wrapper {
+            position: relative; z-index: 10;
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; padding: 72px 18px 90px;
+            overflow-y: auto;
+        }
+
+        .book { width: 100%; max-width: 700px; }
+
+        /* ── PAGE BASE ───────────────────── */
+        .page {
+            display: none;
+            background: white;
+            border-radius: 26px;
+            box-shadow: var(--shadow-page);
+            position: relative;
+            overflow: hidden;
+            animation: pageIn .45s cubic-bezier(.34,1.56,.64,1);
+        }
+        .page.active { display: block; }
+
+        @keyframes pageIn {
+            from { opacity:0; transform: scale(.9) translateY(22px); }
+            to   { opacity:1; transform: scale(1) translateY(0); }
+        }
+
+        /* Folded corner decoration */
+        .page::after {
+            content: ''; position: absolute; bottom: 0; right: 0;
+            width: 38px; height: 38px;
+            background: linear-gradient(225deg, var(--ocean-light) 0%, transparent 100%);
+            opacity: .25; border-radius: 20px 0 26px 0;
+        }
+
+        /* ── PAGE NUMBER PILL ───────────── */
+        .page-num {
+            position: absolute; top: 14px; right: 18px;
+            background: rgba(18,87,160,.1);
+            border: 1px solid rgba(18,87,160,.15);
+            padding: 3px 12px; border-radius: 20px;
+            font-family: var(--ff-display); font-size: 12px;
+            color: var(--ocean-mid); font-weight: 600;
+        }
+        .page-num.inv {
+            background: rgba(255,255,255,.15);
+            border-color: rgba(255,255,255,.2);
+            color: rgba(255,255,255,.8);
+        }
+
+        /* ── PAGE HEADER ─────────────────── */
+        .page-head {
+            display: flex; align-items: center; gap: 13px;
+            margin-bottom: 22px;
+        }
+        .ph-icon {
+            width: 50px; height: 50px; border-radius: 16px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 24px;
+        }
+        .ph-title {
+            font-family: var(--ff-title); font-size: clamp(20px,3.5vw,26px);
+            color: var(--ocean-deep); line-height: 1.2;
+        }
+        .ph-sub {
+            font-size: 12px; color: var(--ocean-mid);
+            font-weight: 500; margin-top: 2px;
+        }
+        .ph-title.inv { color: white; }
+        .ph-sub.inv   { color: rgba(255,255,255,.7); }
+
+        /* ── STORY PAGE ─────────────────── */
+        .story-pg { padding: 38px; background: linear-gradient(135deg, #fffbeb 0%, #e0f6ff 100%); }
+
+        /* speech bubble */
+        .bubble-speech {
+            background: white; border-radius: 18px; padding: 14px 18px;
+            box-shadow: 0 4px 18px rgba(18,87,160,.1);
+            border: 2px solid rgba(18,87,160,.08);
+            margin-bottom: 14px;
+        }
+        .bubble-speech p { font-size: 14.5px; line-height: 1.75; color: #1a3558; }
+        .bubble-speech strong { color: var(--ocean-mid); }
+        .bubble-speech.tail-l::before,
+        .bubble-speech.tail-r::after {
+            content: ''; position: absolute;
+            border: 11px solid transparent;
+        }
+        .bubble-speech.tail-l { position: relative; }
+        .bubble-speech.tail-l::before {
+            position: absolute; left: 22px; bottom: -13px;
+            border-top: 13px solid white; border-bottom: none;
+        }
+
+        /* character row */
+        .char-row {
+            display: flex; align-items: flex-end; gap: 11px;
+            margin-bottom: 18px;
+        }
+        .char-row.flip { flex-direction: row-reverse; }
+
+        .avatar-wrap { display: flex; flex-direction: column; align-items: center; }
+        .avatar {
+            width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0;
+            overflow: hidden; border: 3px solid var(--gold);
+            box-shadow: 0 4px 12px rgba(245,166,35,.3);
+            display: flex; align-items: center; justify-content: center; font-size: 26px;
+        }
+        .avatar-lbl {
+            font-family: var(--ff-display); font-size: 10px;
+            color: var(--ocean-mid); margin-top: 3px; font-weight: 600;
+        }
+
+        .story-txt { font-size: 14.5px; line-height: 1.8; color: #1a3558; margin-bottom: 14px; }
+        .story-txt em { color: var(--ocean-light); font-style: normal; font-weight: 600; }
+
+        .hl-box {
+            background: linear-gradient(135deg, #e0f6ff, #d2f2fd);
+            border-left: 4px solid var(--ocean-light);
+            border-radius: 12px; padding: 14px 18px; margin: 14px 0;
+        }
+        .hl-box p { font-size: 13.5px; line-height: 1.65; color: var(--ocean-deep); }
+
+        /* ── COVER PAGE ─────────────────── */
+        .cover-pg {
+            display: flex; flex-direction: column; min-height: 560px;
+            background: none;
+        }
+        .cover-sky {
+            background: linear-gradient(180deg,#0b2a45 0%,#1257a0 42%,#1a8fe3 72%,#4ec3e0 100%);
+            flex: 1; padding: 36px 36px 0; position: relative; overflow: hidden;
+        }
+        .cover-ocean {
+            height: 130px; position: relative; overflow: hidden;
+            background: linear-gradient(180deg,#0c6ab5 0%,#0a4e82 100%);
+        }
+
+        /* stars */
+        .star {
+            position: absolute; background: white; border-radius: 50%;
+            animation: twinkle var(--dur,2s) ease-in-out infinite var(--del,0s);
+        }
+        @keyframes twinkle {
+            0%,100% { opacity:.25; transform: scale(1); }
+            50%      { opacity:1;   transform: scale(1.4); }
+        }
+
+        /* moon */
+        .moon {
+            position: absolute; top: 22px; right: 52px;
+            width: 48px; height: 48px;
+            background: radial-gradient(circle at 36% 38%, #fde68a, #f5a623);
+            border-radius: 50%; box-shadow: 0 0 32px rgba(245,166,35,.65);
+            animation: moonGlow 3s ease-in-out infinite;
+        }
+        @keyframes moonGlow {
+            0%,100% { box-shadow: 0 0 30px rgba(245,166,35,.55); }
+            50%      { box-shadow: 0 0 54px rgba(245,166,35,.95); }
+        }
+
+        /* series badge */
+        .series-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(245,166,35,.18);
+            border: 1.5px solid rgba(245,166,35,.45);
+            padding: 5px 15px; border-radius: 50px;
+            font-size: 12px; font-family: var(--ff-display);
+            color: #fde68a; margin-bottom: 14px;
+        }
+        .day-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--gold); color: var(--ocean-deep);
+            width: 44px; height: 44px; border-radius: 12px;
+            font-family: var(--ff-title); font-size: 20px;
+            box-shadow: 0 4px 16px rgba(245,166,35,.5);
+            margin-bottom: 14px; transform: rotate(-5deg);
+        }
+        .cover-title {
+            font-family: var(--ff-title);
+            font-size: clamp(26px,5vw,44px); line-height: 1.1;
+            color: white; text-shadow: 0 3px 18px rgba(0,0,0,.3);
+            margin-bottom: 6px;
+        }
+        .cover-title span { color: var(--gold); }
+        .cover-sub {
+            font-family: var(--ff-display); font-size: 14px;
+            color: rgba(255,255,255,.8); margin-bottom: 22px;
+        }
+        .captain-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--gold); color: var(--ocean-deep);
+            padding: 10px 20px; border-radius: 50px;
+            font-family: var(--ff-title); font-size: 15.5px;
+            box-shadow: 0 6px 22px rgba(245,166,35,.45);
+            animation: bounceBadge 2.5s ease-in-out infinite;
+        }
+        @keyframes bounceBadge {
+            0%,100% { transform: translateY(0); }
+            50%      { transform: translateY(-6px); }
+        }
+
+        /* ship in cover */
+        .ship-wrap {
+            position: absolute; bottom: 0; right: 28px;
+            animation: shipSail 4s ease-in-out infinite;
+        }
+        @keyframes shipSail {
+            0%,100% { transform: translateY(0) rotate(-1deg); }
+            50%      { transform: translateY(-10px) rotate(1deg); }
+        }
+
+        /* fish deco */
+        .fish-fly {
+            position: absolute; font-size: 20px;
+            animation: swimAcross linear infinite;
+        }
+        @keyframes swimAcross {
+            from { transform: translateX(-80px); }
+            to   { transform: translateX(110vw); }
+        }
+
+        /* ── VISUAL / OCEAN SCENE ─────────── */
+        .visual-pg {
+            background: linear-gradient(160deg,#0b2a45 0%,#1257a0 55%,#0891b2 100%);
+            color: white; padding: 36px;
+        }
+        .ocean-scene {
+            position: relative; border-radius: 18px; height: 270px;
+            overflow: hidden; margin: 18px 0;
+            background: linear-gradient(180deg,#87ceeb 0%,#1a8fe3 38%,#0b4882 100%);
+        }
+
+        /* ── MAP PAGE ─────────────────────── */
+        .map-pg {
+            background: linear-gradient(160deg,#0b2a45,#1257a0); color: white; padding: 36px;
+        }
+        .map-area {
+            background: linear-gradient(160deg,#1a8fe3,#0891b2);
+            border-radius: 18px; padding: 18px;
+            position: relative; min-height: 290px; overflow: hidden;
+        }
+        .island-btn {
+            position: absolute; display: flex; flex-direction: column;
+            align-items: center; cursor: pointer;
+            transition: all .3s ease;
+        }
+        .island-btn:hover { transform: scale(1.15) translateY(-5px); }
+        .island-circle {
+            width: 50px; height: 50px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; box-shadow: 0 6px 22px rgba(0,0,0,.32); margin-bottom: 5px;
+        }
+        .island-lbl {
+            font-size: 10px; font-weight: 600; text-align: center;
+            background: rgba(0,0,0,.45); padding: 2px 8px; border-radius: 20px;
+        }
+
+        /* ── LESSON PAGE ──────────────────── */
+        .lesson-pg { padding: 36px; background: linear-gradient(135deg,#e0f6ff 0%,#fffbeb 100%); }
+        .lesson-item {
+            display: flex; gap: 14px; align-items: flex-start;
+            padding: 14px; background: white; border-radius: 16px;
+            margin-bottom: 10px; box-shadow: 0 3px 14px rgba(18,87,160,.08);
+            cursor: pointer; transition: all .3s ease;
+            border: 2px solid transparent;
+        }
+        .lesson-item:hover { transform: translateX(5px); border-color: var(--ocean-light); }
+        .lesson-item.open   { border-color: var(--gold); background: linear-gradient(135deg,#fffbeb,white); }
+        .lesson-icon {
+            width: 44px; height: 44px; border-radius: 13px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 22px;
+        }
+        .lesson-txt h4 { font-family: var(--ff-display); font-size: 14.5px; font-weight: 600; color: var(--ocean-deep); margin-bottom: 3px; }
+        .lesson-txt p  { font-size: 12.5px; line-height: 1.5; color: #4a6a8a; }
+        .lesson-extra { display:none; margin-top:9px; padding-top:9px; border-top:1px solid #e0f6ff; }
+        .lesson-extra p { font-size: 12px; color: #2d6a9f; }
+        .lesson-item.open .lesson-extra { display: block; animation: fadeUp .3s ease; }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+        /* ── CHALLENGE PAGE ───────────────── */
+        .chal-pg {
+            background: linear-gradient(135deg,#0b2a45 0%,#1257a0 100%);
+            color: white; padding: 36px;
+        }
+        .chal-card {
+            background: rgba(255,255,255,.09); backdrop-filter: blur(8px);
+            border: 1.5px solid rgba(255,255,255,.18);
+            border-radius: 18px; padding: 18px; margin-bottom: 13px;
+            cursor: pointer; transition: all .3s ease;
+        }
+        .chal-card:hover { background: rgba(255,255,255,.16); transform: translateY(-3px); }
+        .chal-card.done  { background: rgba(245,166,35,.2); border-color: var(--gold); }
+        .chal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+        .chal-label { display:flex; align-items:center; gap:7px; font-family:var(--ff-display); font-size:13px; font-weight:600; color:var(--gold); }
+        .chal-check {
+            width:28px; height:28px; border-radius:8px;
+            border:2px solid rgba(255,255,255,.4);
+            display:flex; align-items:center; justify-content:center; font-size:15px;
+            transition: all .3s ease;
+        }
+        .chal-card.done .chal-check { background: var(--gold); border-color: var(--gold); color: var(--ocean-deep); }
+        .chal-card h4 { font-family:var(--ff-display); font-size:15px; font-weight:600; margin-bottom:5px; }
+        .chal-card p  { font-size:12.5px; line-height:1.6; opacity:.85; }
+
+        /* ── QUIZ PAGE ────────────────────── */
+        .quiz-pg { padding: 36px; background: linear-gradient(135deg,#fffbeb,#e0f6ff); }
+        .quiz-q {
+            background: linear-gradient(135deg,var(--ocean-deep),var(--ocean-mid));
+            color:white; border-radius:18px; padding:22px; margin-bottom:18px; text-align:center;
+        }
+        .quiz-q p { font-family:var(--ff-display); font-size:17px; font-weight:600; line-height:1.45; }
+        .quiz-opts { display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+        .quiz-opt {
+            background: white; border: 2px solid #dde8f5;
+            border-radius: 15px; padding: 14px 10px; cursor: pointer;
+            transition: all .3s ease;
+            font-family: var(--ff-display); font-size: 13.5px; font-weight: 500;
+            color: var(--ocean-deep); text-align: center;
+            display: flex; flex-direction: column; align-items: center; gap: 7px;
+        }
+        .quiz-opt .q-emoji { font-size: 28px; }
+        .quiz-opt:hover:not(.locked) { border-color:var(--ocean-light); transform:translateY(-3px); box-shadow:0 6px 20px rgba(18,87,160,.15); }
+        .quiz-opt.correct { background:linear-gradient(135deg,#d1fae5,#a7f3d0); border-color:#10b981; }
+        .quiz-opt.wrong   { background:linear-gradient(135deg,#fee2e2,#fecaca); border-color:#ef4444; }
+        .quiz-result { display:none; margin-top:14px; border-radius:15px; overflow:hidden; }
+        .quiz-result.show { display:block; animation: fadeUp .4s ease; }
+
+        /* ── CLOSING PAGE ─────────────────── */
+        .close-pg {
+            background: linear-gradient(160deg,var(--ocean-deep) 0%,var(--ocean-mid) 100%);
+            color: white; padding: 46px 36px; text-align: center;
+            min-height: 540px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+        }
+        .quote-box {
+            background: rgba(255,255,255,.08);
+            border: 2px solid rgba(245,166,35,.4);
+            border-radius: 22px; padding: 28px; margin: 22px 0; position: relative;
+        }
+        .quote-box::before {
+            content:'\201C'; position:absolute; top:-22px; left:18px;
+            font-family: Georgia,serif; font-size:82px; color:var(--gold);
+            line-height:1; opacity:.5;
+        }
+        .qt { font-family:var(--ff-title); font-size:19px; line-height:1.45; color:white; }
+        .qt-auth { font-size:12.5px; color:rgba(255,255,255,.55); margin-top:9px; }
+
+        .badge-anim {
+            background: linear-gradient(135deg,var(--gold),var(--coral));
+            border-radius:50%; width:96px; height:96px;
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            box-shadow:0 0 40px rgba(245,166,35,.6); margin:0 auto 22px;
+            animation: badgeSpin .5s ease, badgeFloat 3s ease-in-out infinite .5s;
+        }
+        @keyframes badgeSpin  { from{transform:rotate(-200deg) scale(0)} to{transform:rotate(0deg) scale(1)} }
+        @keyframes badgeFloat { 0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-10px) rotate(3deg)} }
+
+        /* ── RULES PAGE ───────────────────── */
+        .rules-pg {
+            background: linear-gradient(135deg,#0b2a45,#1257a0,#0891b2);
+            padding: 36px; color: white;
+        }
+        .rule-row {
+            background: rgba(255,255,255,.1); border-radius:15px; padding:15px;
+            display:flex; gap:13px; align-items:center;
+            border-left: 4px solid var(--rule-color, var(--gold));
+            margin-bottom: 9px;
+        }
+        .rule-row-icon { font-size:26px; flex-shrink:0; }
+        .rule-row-title { font-family:var(--ff-display); font-weight:600; font-size:14.5px; margin-bottom:2px; }
+        .rule-row-desc  { font-size:11.5px; opacity:.8; line-height:1.55; }
+
+        /* ── BADGE PAGE ───────────────────── */
+        .badge-pg {
+            background: linear-gradient(135deg,#0b2a45 0%,#1257a0 100%);
+            color: white; padding: 36px;
+        }
+
+        /* ── POPUP ────────────────────────── */
+        #popOverlay {
+            display:none; position:fixed; inset:0;
+            background:rgba(11,42,69,.55); z-index:500;
+            backdrop-filter:blur(5px);
+        }
+        #popOverlay.on { display:block; }
+        #popBox {
+            display:none; position:fixed; top:50%; left:50%;
+            transform:translate(-50%,-50%) scale(.82);
+            z-index:510; background:white; border-radius:22px;
+            padding:28px; max-width:370px; width:92%;
+            box-shadow:0 32px 80px rgba(11,42,69,.55);
+        }
+        #popBox.on { display:block; animation:popIn .3s cubic-bezier(.34,1.56,.64,1) forwards; }
+        @keyframes popIn { to{transform:translate(-50%,-50%) scale(1);} }
+        .pop-close {
+            position:absolute; top:14px; right:14px;
+            width:30px; height:30px; border-radius:50%; background:#f0f4f8;
+            border:none; cursor:pointer; font-size:15px;
+            display:flex; align-items:center; justify-content:center;
+        }
+
+        /* ── PROGRESS & NAV ───────────────── */
+        .progress-bar-ui {
+            position: fixed; bottom: 62px; left: 50%;
+            transform: translateX(-50%); z-index: 150;
+            display: flex; align-items: center; gap: 9px;
+            background: rgba(11,42,69,.65); backdrop-filter: blur(12px);
+            padding: 7px 15px; border-radius: 50px;
+            border: 1px solid rgba(255,255,255,.2);
+        }
+        .pg-label { font-family:var(--ff-display); font-size:12.5px; color:rgba(255,255,255,.8); white-space:nowrap; }
+        .dots-row { display:flex; gap:5px; }
+        .dot-item {
+            width:8px; height:8px; border-radius:50%;
+            background:rgba(255,255,255,.22); cursor:pointer;
+            transition: all .3s ease;
+        }
+        .dot-item.active  { background:var(--gold); transform:scale(1.3); box-shadow:0 0 7px rgba(245,166,35,.6); }
+        .dot-item.visited { background:rgba(255,255,255,.6); }
+
+        .nav-row {
+            position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+            z-index:150; display:flex; gap:11px;
+        }
+        .btn-nav {
+            display:flex; align-items:center; gap:7px;
+            padding: 11px 26px; border-radius:50px;
+            font-family:var(--ff-display); font-size:14.5px; font-weight:600;
+            border:none; cursor:pointer;
+            transition: all .3s cubic-bezier(.34,1.56,.64,1);
+        }
+        .btn-prev {
+            background:rgba(255,255,255,.14); backdrop-filter:blur(10px);
+            color:white; border:1.5px solid rgba(255,255,255,.28);
+        }
+        .btn-prev:hover { background:rgba(255,255,255,.24); transform:translateX(-3px); }
+        .btn-next {
+            background:var(--gold); color:var(--ocean-deep);
+            box-shadow:0 6px 22px rgba(245,166,35,.45);
+        }
+        .btn-next:hover { background:#fbbf24; transform:translateX(3px) scale(1.03); box-shadow:0 9px 28px rgba(245,166,35,.65); }
+        .btn-nav:disabled { opacity:.3; cursor:not-allowed; transform:none !important; }
+
+        /* ── BACKGROUND WAVES ─────────────── */
+        .bg-wave {
+            position:fixed; bottom:0; left:0; width:100%;
+            pointer-events:none; z-index:0;
+        }
+
+        /* ── CHEST REVEAL ─────────────────── */
+        .chest-wrap { text-align:center; cursor:pointer; margin:16px auto; }
+        .chest-em {
+            font-size:68px; display:block;
+            animation:chestPulse 2s ease-in-out infinite;
+        }
+        @keyframes chestPulse {
+            0%,100%{transform:scale(1)}
+            50%{transform:scale(1.1) rotate(5deg)}
+        }
+        .chest-hint { font-size:12px; color:var(--ocean-mid); margin-top:6px; font-family:var(--ff-display); }
+        .reward-grid { display:none; grid-template-columns:1fr 1fr 1fr; gap:11px; margin-top:14px; }
+        .reward-grid.show { display:grid; animation:fadeUp .5s ease; }
+        .ri-card {
+            background:linear-gradient(135deg,#fffbeb,#fde68a);
+            border-radius:14px; padding:14px 8px; text-align:center;
+            box-shadow:0 4px 14px rgba(245,166,35,.2);
+        }
+        .ri-card .ri-icon { font-size:30px; display:block; margin-bottom:5px; }
+        .ri-card .ri-name { font-size:10.5px; font-family:var(--ff-display); font-weight:600; color:var(--ocean-deep); }
+
+        /* ── SCENE ANIMATIONS ─────────────── */
+        .scene-fish { position:absolute; animation:sceneFish 8s ease-in-out infinite; }
+        @keyframes sceneFish {
+            0%   { transform:translateX(0) scaleX(1); }
+            45%  { transform:translateX(170px) scaleX(1); }
+            50%  { transform:translateX(170px) scaleX(-1); }
+            95%  { transform:translateX(0) scaleX(-1); }
+            100% { transform:translateX(0) scaleX(1); }
+        }
+
+        /* ── RESPONSIVE ────────────────────── */
+        @media (max-width:560px) {
+            .story-pg,.visual-pg,.lesson-pg,.chal-pg,.quiz-pg,.close-pg,
+            .rules-pg,.badge-pg,.map-pg { padding:24px; }
+            .quiz-opts { grid-template-columns:1fr; }
+            .btn-nav   { padding:10px 20px; font-size:13.5px; }
+            .cover-sky { padding:28px 24px 0; }
+            .ocean-scene { height:220px; }
+        }
+
+        /* ── MISC ─────────────────────────── */
+        .sparkle { display:inline-block; animation:sparkAnim 1.6s ease-in-out infinite; }
+        @keyframes sparkAnim {
+            0%,100%{transform:scale(1) rotate(0); opacity:1}
+            50%{transform:scale(1.35) rotate(22deg); opacity:.7}
+        }
+        .hint-txt {
+            position:absolute; bottom:9px; left:50%; transform:translateX(-50%);
+            font-size:10.5px; color:rgba(255,255,255,.55);
+            font-family:var(--ff-display); white-space:nowrap;
+            animation:pulseFade 2.5s ease-in-out infinite;
+        }
+        @keyframes pulseFade { 0%,100%{opacity:.5} 50%{opacity:1} }
+    </style>
+</head>
+<body>
+
+<!-- Bubbles BG -->
+<div id="bgBubbles"></div>
+
+<!-- Back button -->
+<a href="../perpustakaan.html" class="btn-back">← Kembali ke Perpustakaan</a>
+
+<!-- Sound toggle -->
+<button id="soundBtn" onclick="toggleSound()" title="Musik laut">🔇</button>
+
+<!-- Book -->
+<div class="book-wrapper">
+<div class="book" id="book">
+
+    <!-- ═══════════════ PAGE 1 · COVER ═══════════════ -->
+    <div class="page cover-pg active" data-page="1">
+        <div class="cover-sky" id="coverSky">
+            <div id="starsWrap"></div>
+            <div class="moon"></div>
+
+            <div style="position:relative;z-index:2">
+                <div class="series-badge">⚓ Seri Petualangan Kapten Cerdas · 30 Hari</div><br>
+                <div class="day-badge">1</div>
+                <h1 class="cover-title">Kapten Cerdas<br>Menemukan <span>Lautan Digital</span></h1>
+                <p class="cover-sub">📚 Buku Digital Interaktif untuk Penjelajah Muda</p>
+                <div class="captain-badge">⚓ Kapten Aslan 🌟</div>
+            </div>
+
+            <!-- Ship SVG -->
+            <div class="ship-wrap">
+                <svg width="195" height="155" viewBox="0 0 195 155" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="97" cy="128" rx="68" ry="16" fill="#0a3a6a" opacity=".4"/>
+                    <rect x="28" y="96" width="138" height="34" rx="8" fill="#e07020"/>
+                    <polygon points="18,130 28,96 166,96 177,130" fill="#c05818"/>
+                    <circle cx="70" cy="111" r="8" fill="#87ceeb" stroke="white" stroke-width="2"/>
+                    <circle cx="97" cy="111" r="8" fill="#87ceeb" stroke="white" stroke-width="2"/>
+                    <circle cx="124" cy="111" r="8" fill="#87ceeb" stroke="white" stroke-width="2"/>
+                    <rect x="94" y="26" width="6" height="78" rx="2" fill="#7a3e0a"/>
+                    <polygon points="100,28 100,88 154,66" fill="white" opacity=".92"/>
+                    <polygon points="94,28 94,88 42,66" fill="white" opacity=".72"/>
+                    <polygon points="100,27 100,15 124,21" fill="#f5a623"/>
+                    <text x="104" y="24" font-size="8" fill="#0b2a45">★</text>
+                    <path d="M8,136 Q28,128 48,136 Q68,144 88,136 Q108,128 128,136 Q148,144 168,136 Q188,128 210,136" stroke="#1a8fe3" stroke-width="2.5" fill="none"/>
+                    <path d="M0,146 Q24,138 48,146 Q72,154 96,146 Q120,138 144,146 Q168,154 192,146" stroke="#0d6fad" stroke-width="2.5" fill="none"/>
+                </svg>
+            </div>
+
+            <div style="position:absolute;top:58px;left:28px;font-size:18px;animation:twinkle 2s ease-in-out infinite .5s">✨</div>
+            <div style="position:absolute;top:38px;left:175px;font-size:14px;animation:twinkle 2s ease-in-out infinite 1.1s">⭐</div>
+            <div style="position:absolute;top:90px;left:55px;font-size:12px;animation:twinkle 3s ease-in-out infinite 0.3s">💫</div>
+        </div>
+
+        <div class="cover-ocean">
+            <svg style="position:absolute;top:0;width:100%;height:30px" viewBox="0 0 700 30" preserveAspectRatio="none">
+                <path d="M0,15 Q87,0 175,15 Q262,30 350,15 Q437,0 525,15 Q612,30 700,15 L700,0 L0,0Z" fill="#4ec3e0" opacity=".6"/>
+            </svg>
+            <div style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:13px;color:rgba(255,255,255,.75);font-family:var(--ff-display);white-space:nowrap;text-align:center;">
+                🌊 Lautan Digital menantimu, Kapten! 🌊
+            </div>
+            <div class="fish-fly" style="bottom:28px;animation-duration:9s;animation-delay:-2s">🐠</div>
+            <div class="fish-fly" style="bottom:12px;animation-duration:13s;animation-delay:-7s">🐟</div>
+        </div>
+
+        <div class="page-num inv">Hal. 1 / 16</div>
+        <div class="hint-txt" style="bottom:14px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.55)">👇 Tekan Selanjutnya untuk mulai petualangan!</div>
+    </div>
+
+    <!-- ═══════════════ PAGE 2 · WELCOME ═══════════════ -->
+    <div class="page story-pg" data-page="2">
+        <div class="page-num">Hal. 2 / 16</div>
+        <div class="page-head">
+            <div class="ph-icon" style="background:linear-gradient(135deg,#f5a623,#f97316)">🎖️</div>
+            <div>
+                <div class="ph-title">Selamat Datang, Kapten!</div>
+                <div class="ph-sub">Pesan khusus untuk Aslan</div>
+            </div>
+        </div>
+
+        <div style="background:linear-gradient(135deg,#0b2a45,#1257a0);border-radius:20px;padding:22px;margin-bottom:18px;color:white;text-align:center;">
+            <div style="font-size:58px;margin-bottom:10px;animation:badgeFloat 3s ease-in-out infinite">⚓</div>
+            <div style="font-family:var(--ff-title);font-size:19px;margin-bottom:7px">Sertifikat Kapten Muda</div>
+            <div style="font-size:13px;opacity:.75;margin-bottom:10px">Dengan bangga diberikan kepada:</div>
+            <div style="font-family:var(--ff-title);font-size:26px;color:var(--gold);text-shadow:0 0 22px rgba(245,166,35,.5)">Aslan</div>
+            <div style="font-size:12.5px;opacity:.65;margin-top:7px">sebagai Kapten Cerdas Lautan Digital 🌟</div>
+        </div>
+
+        <div class="bubble-speech">
+            <p>✉️ <strong>Hei, Kapten Aslan!</strong> Kamu memegang buku yang sangat spesial. Buku ini akan membawamu dalam petualangan luar biasa selama <strong>30 hari</strong> di Lautan Digital yang menakjubkan!</p>
+        </div>
+
+        <div class="hl-box">
+            <p>🌟 <strong>Kamu adalah Kapten Cerdas!</strong> Setiap hari, kamu akan belajar cara berlayar dengan bijak — menemukan harta karun ilmu, menghindari bahaya, dan menjadi nahkoda yang bertanggung jawab.</p>
+        </div>
+
+        <p class="story-txt">Siapkan dirimu, Kapten Aslan. <em>Petualangan dimulai hari ini!</em> ⚓🌊</p>
+    </div>
+
+    <!-- ═══════════════ PAGE 3 · STORY OPEN ═══════════════ -->
+    <div class="page story-pg" data-page="3">
+        <div class="page-num">Hal. 3 / 16</div>
+        <div class="page-head">
+            <div class="ph-icon" style="background:linear-gradient(135deg,#1257a0,#0891b2)">📖</div>
+            <div>
+                <div class="ph-title">Suatu Pagi yang Ajaib</div>
+                <div class="ph-sub">Petualangan Aslan dimulai...</div>
+            </div>
+        </div>
+
+        <div style="background:linear-gradient(135deg,#fff9e6,#fffbeb);border-radius:14px;padding:14px 18px;margin-bottom:14px;border-left:4px solid #f5a623">
+            <p style="font-size:12.5px;color:#92400e;font-style:italic;font-family:var(--ff-display)">📍 Di sebuah kamar yang nyaman, pagi hari cerah...</p>
+        </div>
+
+        <p class="story-txt">Pagi itu, <em>Aslan</em> terbangun lebih awal dari biasanya. Ada sesuatu yang berbeda — di meja belajarnya, ada sebuah <em>kotak misterius</em> berwarna biru laut!</p>
+
+        <div class="char-row">
+            <div class="avatar-wrap">
+                <div class="avatar" style="background:linear-gradient(135deg,#1257a0,#0891b2)">👦</div>
+                <div class="avatar-lbl">Kapten Aslan</div>
+            </div>
+            <div class="bubble-speech tail-l" style="flex:1">
+                <p><em>"Wah... kotak apa ini?"</em> bisik Aslan penasaran. Ia membuka perlahan, dan — <strong>WHOOOOSH!</strong> Cahaya biru muncul dari dalam kotak!</p>
+            </div>
+        </div>
+
+        <p class="story-txt">Dari dalam kotak, keluarlah sebuah <em>peta ajaib</em> yang berkilauan — peta Lautan Digital! Dan di pinggirnya tertulis dalam huruf emas:</p>
+
+        <div style="background:linear-gradient(135deg,#0b2a45,#1257a0);border-radius:15px;padding:18px;text-align:center;color:white">
+            <div style="font-size:22px;margin-bottom:7px">🗺️✨</div>
+            <div style="font-family:var(--ff-title);font-size:17px;color:#fde68a;line-height:1.4">"Untuk Kapten Aslan — Penjelajah Lautan Digital yang Pemberani"</div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ PAGE 4 · STORY 2 ═══════════════ -->
+    <div class="page story-pg" data-page="4">
+        <div class="page-num">Hal. 4 / 16</div>
+        <div class="page-head">
+            <div class="ph-icon" style="background:linear-gradient(135deg,#0891b2,#10b981)">🌊</div>
+            <div>
+                <div class="ph-title">Lautan yang Tidak Terlihat</div>
+                <div class="ph-sub">Kapten Aslan bertemu Navigator Cerdas...</div>
+            </div>
+        </div>
+
+        <p class="story-txt">Aslan terus membaca peta itu. Tiba-tiba, muncullah suara dari dalam peta — suara seperti ombak laut yang tenang. <em>"Selamat datang, Kapten Aslan!"</em></p>
+
+        <div class="char-row flip">
+            <div class="avatar-wrap">
+                <div class="avatar" style="background:linear-gradient(135deg,#0891b2,#10b981)">🧭</div>
+                <div class="avatar-lbl">Navigator</div>
+            </div>
+            <div class="bubble-speech" style="flex:1">
+                <p><strong>"Aku adalah Navigator Cerdas!"</strong> kata suara itu. <em>"Aku akan memandumu menjelajahi Lautan Digital — lautan paling luas di dunia!"</em></p>
+            </div>
+        </div>
+
+        <div class="char-row">
+            <div class="avatar-wrap">
+                <div class="avatar" style="background:linear-gradient(135deg,#1257a0,#0891b2)">👦</div>
+                <div class="avatar-lbl">Kapten Aslan</div>
+            </div>
+            <div class="bubble-speech tail-l" style="flex:1">
+                <p><em>"Lautan Digital?"</em> Aslan mengernyit bingung. <em>"Aku belum pernah dengar itu. Apakah ada ikannya?"</em></p>
+            </div>
+        </div>
+
+        <div class="char-row flip">
+            <div class="avatar-wrap">
+                <div class="avatar" style="background:linear-gradient(135deg,#0891b2,#10b981)">🧭</div>
+                <div class="avatar-lbl">Navigator</div>
+            </div>
+            <div class="bubble-speech" style="flex:1">
+                <p><strong>"Ha ha ha!"</strong> Navigator Cerdas tertawa. <em>"Ada ikan-ikan informasi, harta karun ilmu, dan juga... ada bahayanya kalau tidak hati-hati!"</em> 🐠</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ PAGE 5 · OCEAN SCENE ═══════════════ -->
+    <div class="page visual-pg" data-page="5">
+        <div class="page-num inv">Hal. 5 / 16</div>
+        <div class="page-head">
+            <div class="ph-icon" style="background:linear-gradient(135deg,#f5a623,#f97316)">🌍</div>
+            <div>
+                <div class="ph-title inv">Apa Itu Lautan Digital?</div>
+                <div class="ph-sub inv">👆 Klik pada setiap elemen untuk belajar!</div>
+            </div>
+        </div>
+
+        <div class="ocean-scene">
+            <!-- Sky half -->
+            <div style="position:absolute;top:0;left:0;width:100%;height:46%;background:linear-gradient(180deg,#87ceeb,#4ec3e0)">
+                <!-- Cloud 1 -->
+                <div style="position:absolute;top:14px;left:38px;width:68px;height:20px;background:rgba(255,255,255,.85);border-radius:20px">
+                    <div style="position:absolute;top:-10px;left:10px;width:28px;height:28px;background:rgba(255,255,255,.85);border-radius:50%"></div>
+                    <div style="position:absolute;top:-14px;left:28px;width:22px;height:22px;background:rgba(255,255,255,.85);border-radius:50%"></div>
+                </div>
+                <!-- Cloud 2 -->
+                <div style="position:absolute;top:18px;right:55px;width:52px;height:17px;background:rgba(255,255,255,.75);border-radius:20px">
+                    <div style="position:absolute;top:-8px;left:8px;width:20px;height:20px;background:rgba(255,255,255,.75);border-radius:50%"></div>
+                </div>
+                <!-- Sun clickable -->
+                <div onclick="showPop('sun')" style="position:absolute;top:8px;right:18px;width:36px;height:36px;background:radial-gradient(#fde68a,#f5a623);border-radius:50%;box-shadow:0 0 22px rgba(245,166,35,.7);cursor:pointer;transition:transform .3s ease;display:flex;align-items:center;justify-content:center;font-size:18px" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">☀️</div>
+            </div>
+
+            <!-- Sea half -->
+            <div style="position:absolute;bottom:0;left:0;width:100%;height:57%;background:linear-gradient(180deg,#1a8fe3,#0b4882)">
+                <div class="scene-fish" onclick="showPop('fish')" style="bottom:28px;left:18px;font-size:22px;cursor:pointer" title="Klik!">🐠</div>
+                <div onclick="showPop('treasure')" style="position:absolute;bottom:8px;right:38px;font-size:26px;cursor:pointer;animation:chestPulse 2s ease-in-out infinite" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform='scale(1)'" title="Klik!">💎</div>
+                <div onclick="showPop('coral')" style="position:absolute;bottom:4px;left:100px;font-size:22px;cursor:pointer" title="Klik!">🪸</div>
+                <!-- Ship on water -->
+                <div onclick="showPop('ship')" style="position:absolute;top:-26px;left:50%;transform:translateX(-50%);font-size:36px;cursor:pointer;animation:shipSail 4s ease-in-out infinite" title="Klik kapal!">⛵</div>
+            </div>
+
+            <!-- Wave separator -->
+            <svg style="position:absolute;top:42%;width:100%" viewBox="0 0 700 20" preserveAspectRatio="none">
+                <path d="M0,10 Q87,0 175,10 Q262,20 350,10 Q437,0 525,10 Q612,20 700,10 L700,20 L0,20Z" fill="#1a8fe3"/>
+            </svg>
+
+            <div class="hint-txt">👆 Klik gambar untuk belajar!</div>
+        </div>
+
+        <p style="font-size:13px;color:rgba(255,255,255,.75);text-align:center;font-family:var(--ff-display)">
+            🌐 <strong style="color:var(--gold-light)">Lautan Digital</strong> adalah seluruh dunia internet — tempat informasi, video, gambar, dan cerita mengalir seperti air laut!
+        </p>
+    </div>
+
+    <!-- ═══════════════ PAGE 6 · MAP ═══════════════ -->
+    <div class="page map-pg" data-page="6">
+        <div class="page-num inv">Hal. 6 / 16</div>
+        <div class="page-head">
+            <div class="ph-icon" style="background:linear-gradient(135deg,#7c3aed,#4f46e5)">🗺️</div>
+            <div>
+                <div class="ph-title inv">Peta Lautan Digital</div>
+                <div class="ph-sub inv">👆 Klik pulau-pulau untuk menjelajahi!</div>
+            </div>
+        </div>
+
+        <div class="map-area">
+            <svg style="position:absolute;bottom:18px;width:100%;opacity:.28" viewBox="0 0 500 20" preserveAspectRatio="none">
+                <path d="M0,10 Q62,0 125,10 Q187,20 250,10 Q312,0 375,10 Q437,20 500,10" stroke="white" stroke-width="1.5" fill="none"/>
+            </svg>
+
+            <div class="island-btn" style="top:16px;left:18px" onclick="showPop('youtube')">
+                <div class="island-circle" style="background:linear-gradient(135deg,#dc2626,#991b1b)">▶️</div>
+                <div class="island-lbl">YouTube</div>
+            </div>
+            <div class="island-btn" style="top:16px;right:28px" onclick="showPop('tiktok')">
+                <div class="island-circle" style="background:linear-gradient(135deg,#0f172a,#1e293b)">🎵</div>
+                <div class="island-lbl">TikTok</div>
+            </div>
+            <div class="island-btn" style="top:110px;left:72px" onclick="showPop('google')">
+                <div class="island-circle" style="background:linear-gradient(135deg,#2563eb,#1d4ed8)">🔍</div>
+                <div class="island-lbl">Google</div>
+            </div>
+            <div class="island-btn" style="top:100px;right:72px" onclick="showPop('ig')">
+                <div class="island-circle" style="background:linear-gradient(135deg,#7c3aed,#db2777)">📷</div>
+                <div class="island-lbl">Instagram</div>
+            </div>
+            <div class="island-btn" style="bottom:28px;left:50%;transform:translateX(-50%)" onclick="showPop('internet')">
+                <div class="island-circle" style="background:linear-gradient(135deg,#f5a623,#f97316);box-shadow:0 0 22px rgba(245,166,35,.6);animation:bounceBadge 2s ease-in-out infinite">🏠</div>
+                <div class="island-lbl" style="color:var(--gold-light)">Kapal Aslan</div>
+            </div>
+            <div class="island-btn" style="bottom:55px;left:16px" onclick="showPop('edukasi')">
+                <div class="island-circle" style="background:linear-gradient(135deg,#059669,#0d9488)">📚</div>
+                <div class="island-lbl">Edukasi</div>
+            </div>
+            <div class="island-btn" style="bottom:55px;right:16px" onclick="showPop('games')">
+                <div class="island-circle" style="background:linear-gradient(135deg,#d97706,#b45309)">🎮</div>
+                <div class="island-lbl">Games</div>
+            </div>
+
+            <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:.18" viewBox="0 0 400 280" preserveAspectRatio="none">
+                <line x1="50" y1="46" x2="200" y2="235" stroke="white" stroke-width="1" stroke-dasharray="5,5"/>
+                <line x1="350" y1="46" x2="200" y2="235" stroke="white" stroke-width="1" stroke-dasharray="5,5"/>
+                <line x1="90" y1="137" x2="200" y2="235" stroke="white" stroke-width="1" stroke-dasharray="5,5"/>
+                <line x1="310" y1="126" x2="200" y2="235" stroke="white" stroke-width="1" stroke-dasharray="5,5"/>
+            </svg>
+        </div>
+        <p style="font-size:11.5px;color:rgba(255,255,255,.55);text-align:center;font-family:var(--ff-display);margin-top:9px">🧭 Berlayarlah dengan bijak — jangan lupa bawa peta kebijakan!</p>
+    </div>
+
+    <!-- ═══════════════ PAGE 7 · KAPAL ═══════════════ -->
+    <div class="page story-pg" data-page="7">
+        <div class="page-num">Hal. 7 / 16</div>
+        <div class="page-head">
+            <div class="ph-icon" style="background:linear-gradient(135deg,#1257a0,#0891b2)">⛵</div>
+            <div>
+                <div class="ph-title">Kapal Ajaib Aslan</div>
+                <div class="ph-sub">Setiap Kapten butuh kapalnya sendiri!</div>
+            </div>
+        </div>
+
+        <p class="story-txt"><em>"Navigator,"</em> kata Aslan penasaran, <em>"kalau ini lautan, aku butuh kapal! Bagaimana aku bisa berlayar?"</em></p>
+
+        <div class="char-row flip">
+            <div class="avatar-wrap">
+                <div class="avatar" style="background:linear-gradient(135deg,#0891b2,#10b981)">🧭</div>
+                <div class="avatar-lbl">Navigator</div>
+            </div>
+            <div class="bubble-speech" style="flex:1">
+                <p><strong>"Kapalmu sudah ada!"</strong> kata Navigator. <em>"Kapal paling canggih di zaman ini — HP dan tablet yang kamu miliki!"</em></p>
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:14px 0">
+            <div onclick="showPop('kapal1')" style="background:linear-gradient(135deg,#0b2a45,#1257a0);border-radius:15px;padding:16px;text-align:center;color:white;cursor:pointer;transition:transform .3s" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="font-size:34px;margin-bottom:7px">📱</div>
+                <div style="font-family:var(--ff-display);font-weight:600;font-size:14px">Handphone</div>
+                <div style="font-size:11px;opacity:.7;margin-top:3px">Kapal Mini yang Ringan</div>
+            </div>
+            <div onclick="showPop('kapal2')" style="background:linear-gradient(135deg,#0891b2,#059669);border-radius:15px;padding:16px;text-align:center;color:white;cursor:pointer;transition:transform .3s" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="font-size:34px;margin-bottom:7px">💻</div>
+                <div style="font-family:var(--ff-display);font-weight:600;font-size:14px">Tablet / Laptop</div>
+                <div style="font-size:11px;opacity:.7;margin-top:3px">Kapal Besar yang Powerful</div>
+            </div>
+        </div>
+
+        <div class="hl-box">
+            <p>⚠️ <strong>Ingat, Kapten Aslan!</strong> Kapal yang baik butuh nahkoda yang bijak. Artinya — yang mengendalikan HP-mu adalah <strong>KAMU</strong>, bukan sebaliknya!</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════ PAGE 8 · TREASURE ═══════════════ -->
+    <div class="page story-pg" data-page="8">
+        <div class="page-num">Hal. 8 / 16</div>
+        <div class="page-head">
+            <div class="ph-icon" style="background:linear-gradient(135deg,#f5a623,#f97316)">💎</div>
+            <div>
+                <div class="ph-title">Harta Karun Digital</div>
+                <div class="ph-sub">Buka peti dan temukan hadiahnya!</div>
+            </div>
+        </div>
+
+        <p class="story-txt">Navigator Cerdas berkata: <em>"Di Lautan Digital, ada banyak HARTA KARUN! Tapi juga ada jebakan. Maka kamu harus menjadi Kapten yang cerdas, Aslan!"</em></p>
+
+        <div class="chest-wrap" onclick="revealTreasure()" id="chestBtn">
+            <span class="chest-em" id="chestEm">🪙</span>
+            <div class="chest-hint" id="chestHint">👆 Klik untuk buka peti harta!</div>
+        </div>
+
+        <div class="reward-grid" id="rewardGrid">
+            <div class="ri-card"><span class="ri-icon">📚</span><div class="ri-name">Ilmu Pengetahuan</div></div>
+            <div class="ri-card"><span class="ri-icon">🎨</span><div class="ri-name">Kreativitas</div></div>
+            <div class="ri-card"><span class="ri-icon">👫</span><div class="ri-name">Teman Baru</div></div>
+            <div class="ri-card"><span class="ri-icon">🎵</span><div class="ri-name">Hiburan Seru</div></div>
+            <div class="ri-card"><span class="ri-icon">🔭</span><div class="ri-name">Eksplorasi</div></div>
+            <div class="ri-card"><span class="ri-icon">🌍</span><div class="ri-name">Wawasan Dunia</div></div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ PAGE 9 · QUIZ ═══════════════ -->
+    <div class="page quiz-pg" data-page="9">
+        <div class="page-num">Hal. 9 / 16</div>
+        <div class="page-head">
+            <div class="ph-icon" style="background:linear-gradient(135deg,#7c3aed,#4f46e5)">🎯</div>
+            <div>
+                <div class="ph-title">Uji Pengetahuanmu!</div>
+                <div class="ph-sub">Quiz Kapten Muda — pilih jawaban yang benar</div>
+            </div>
+        </div>
+
+        <div class="quiz-q">
+            <div style="font-size:30px;margin-bottom:7px">🤔</div>
+            <p>Menurut kamu, apa itu <strong>"Lautan Digital"</strong>?</p>
+        </div>
+
+        <div class="quiz-opts" id="quizOpts">
+            <div class="quiz-opt" onclick="checkAns(this,false)"><span class="q-emoji">🌊</span>Laut sungguhan yang ada ikannya</div>
+            <div class="quiz-opt" onclick="checkAns(this,true)"><span class="q-emoji">🌐</span>Dunia internet tempat informasi mengalir</div>
+            <div class="quiz-opt" onclick="checkAns(this,false)"><span class="q-emoji">🗺️</span>Nama sebuah negara di Afrika</div>
+            <div class="quiz-opt" onclick="checkAns(this,false)"><span class="q-emoji">🎮</span>Nama game online yang populer</div>
+        </div>
+
+        <div class="quiz-result" id="quizRes"></div>
+    </div>
+
+    <!-- ═══════════════ PAGE 10 · LESSONS ═══════════════ -->
+    <div class="page lesson-pg" data-page="10">
+        <div class="page-num">Hal. 10 / 16</div>
+        <div class="page-head">
+            <div class="ph-icon" style="background:linear-gradient(135deg,#1257a0,#0891b2)">⚓</div>
+            <div>
+                <div class="ph-title">Pelajaran Hari Ini</div>
+                <div class="ph-sub">👆 Klik setiap kartu untuk info lebih lengkap!</div>
+            </div>
+        </div>
+
+        <div class="lesson-item" onclick="toggleLesson(this)">
+            <div class="lesson-icon" style="background:linear-gradient(135deg,#1257a0,#0891b2)">🌐</div>
+            <div class="lesson-txt">
+                <h4>1. Lautan Digital = Internet</h4>
+                <p>Internet adalah lautan informasi paling luas di dunia</p>
+                <div class="lesson-extra"><p>💡 Internet menghubungkan miliaran orang di seluruh penjuru dunia. Seperti lautan yang menyatukan benua, internet menyatukan semua manusia!</p></div>
+            </div>
+        </div>
+
+        <div class="lesson-item" onclick="toggleLesson(this)">
+            <div class="lesson-icon" style="background:linear-gradient(135deg,#f5a623,#f97316)">⛵</div>
+            <div class="lesson-txt">
+                <h4>2. HP &amp; Tablet = Kapal Ajaib</h4>
+                <p>Perangkat digitalmu adalah kapalmu untuk berlayar</p>
+                <div class="lesson-extra"><p>💡 Rawat kapalmu — charge teratur, pakai dengan bijak, simpan di tempat aman. Nahkoda yang baik merawat kapalnya!</p></div>
+            </div>
+        </div>
+
+        <div class="lesson-item" onclick="toggleLesson(this)">
+            <div class="lesson-icon" style="background:linear-gradient(135deg,#10b981,#059669)">💎</div>
+            <div class="lesson-txt">
+                <h4>3. Ada Harta &amp; Ada Bahaya</h4>
+                <p>Lautan Digital punya dua sisi yang perlu diketahui</p>
+                <div class="lesson-extra"><p>💡 Internet penuh ilmu bermanfaat, tapi ada juga konten negatif. Kapten cerdas tahu cara memilih konten yang bermanfaat!</p></div>
+            </div>
+        </div>
+
+        <div class="lesson-item" onclick="toggleLesson(this)">
+            <div class="lesson-icon" style="background:linear-gradient(135deg,#7c3aed,#4f46e5)">🧭</div>
+            <div class="lesson-txt">
+                <h4>4. Kamu adalah Nahkodanya!</h4>
+                <p>Kamu yang menentukan ke mana dan berapa lama berlayar</p>
+                <div class="lesson-extra"><p>💡 Jadilah aktif mengendalikan screen time-mu! Kamu yang pegang kemudi kapal digital, bukan sebaliknya.</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ PAGE 11 · RULES ═══════════════ -->
+    <div class="page rules-pg" data-page="11">
+        <div class="page-num inv">Hal. 11 / 16</div>
+        <div class="page-head">
+            <div class="ph-icon" style="background:rgba(255,255,255,.15)">📜</div>
+            <div>
+                <div class="ph-title inv">Aturan Kapten Cerdas</div>
+                <div class="ph-sub inv">5 Peraturan Berlayar yang Bijak</div>
+            </div>
+        </div>
+
+        <div class="rule-row" style="--rule-color:#f5a623">
+            <div class="rule-row-icon">⏰</div>
+            <div><div class="rule-row-title">Atur Waktu Berlayar</div><div class="rule-row-desc">Maksimal 2 jam per hari untuk layar di luar waktu belajar</div></div>
+        </div>
+        <div class="rule-row" style="--rule-color:#34d399">
+            <div class="rule-row-icon">🔐</div>
+            <div><div class="rule-row-title">Jaga Informasi Pribadi</div><div class="rule-row-desc">Jangan bagikan nama, alamat, atau nomor HP ke orang asing</div></div>
+        </div>
+        <div class="rule-row" style="--rule-color:#60a5fa">
+            <div class="rule-row-icon">🧠</div>
+            <div><div class="rule-row-title">Berpikir Sebelum Klik</div><div class="rule-row-desc">Tidak semua yang menarik itu baik. Pikir dulu sebelum klik!</div></div>
+        </div>
+        <div class="rule-row" style="--rule-color:#f87171">
+            <div class="rule-row-icon">🤝</div>
+            <div><div class="rule-row-title">Minta Izin Orang Tua</div><div class="rule-row-desc">Untuk aplikasi baru atau pembelian online, selalu minta izin</div></div>
+        </div>
+        <div class="rule-row" style="--rule-color:#c084fc">
+            <div class="rule-row-icon">🆘</div>
+            <div><div class="rule-row-title">Berani Minta Tolong</div><div class="rule-row-desc">Kalau ada yang tidak nyaman, cerita ke orang yang dipercaya</div></div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ PAGE 12 · CHALLENGE ═══════════════ -->
+    <div class="page chal-pg" data-page="12">
+        <div class="page-num inv">Hal. 12 / 16</div>
+        <div class="page-head">
+            <div class="ph-icon" style="background:linear-gradient(135deg,#f5a623,#f97316)">🎯</div>
+            <div>
+                <div class="ph-title inv">Tantangan Kapten Aslan!</div>
+                <div class="ph-sub inv">Klik untuk tandai sudah selesai ✓</div>
+            </div>
+        </div>
+
+        <div class="chal-card" onclick="toggleChal(this)">
+            <div class="chal-head">
+                <div class="chal-label">⭐ Tantangan 1 · Mudah</div>
+                <div class="chal-check">○</div>
+            </div>
+            <h4>🔍 Jelajahi Internet Hari Ini</h4>
+            <p>Gunakan internet untuk mencari satu fakta menarik tentang hewan laut favoritmu. Ceritakan hasilnya ke keluarga!</p>
+        </div>
+
+        <div class="chal-card" onclick="toggleChal(this)">
+            <div class="chal-head">
+                <div class="chal-label">⭐⭐ Tantangan 2 · Sedang</div>
+                <div class="chal-check">○</div>
+            </div>
+            <h4>⏱️ Catat Waktu Layarmu</h4>
+            <p>Hari ini, catat berapa jam kamu menggunakan HP atau tablet. Tulis di buku catatan dan bandingkan dengan 2 jam sehat!</p>
+        </div>
+
+        <div class="chal-card" onclick="toggleChal(this)">
+            <div class="chal-head">
+                <div class="chal-label">⭐⭐⭐ Tantangan 3 · Jago</div>
+                <div class="chal-check">○</div>
+            </div>
+            <h4>🎨 Gambar Lautan Digitalmu</h4>
+            <p>Gambar lautan digital versimu sendiri! Tambahkan kapal Aslan, pulau-pulau favorit, dan harta karunnmu. Kreasi bebas!</p>
+        </div>
+
+        <div id="chalScore" style="text-align:center;margin-top:11px;font-family:var(--ff-display);font-size:13px;color:rgba(255,255,255,.65)">
+            Selesaikan tantangan untuk mendapat bintang! ⭐
+        </div>
+    </div>
+
+    <!-- ═══════════════ PAGE 13 · STORY CLOSE ═══════════════ -->
+    <div class="page story-pg" data-page="13">
+        <div class="page-num">Hal. 13 / 16</div>
+        <div class="page-head">
+            <div class="ph-icon" style="background:linear-gradient(135deg,#0891b2,#10b981)">🌅</div>
+            <div>
+                <div class="ph-title">Akhir Petualangan Hari Ini</div>
+                <div class="ph-sub">Kapten Aslan kembali ke pelabuhan...</div>
+            </div>
+        </div>
+
+        <p class="story-txt">Matahari mulai terbenam di Lautan Digital. Kapten Aslan memandang cakrawala yang indah — warna jingga dan emas bercampur di langit.</p>
+
+        <div class="char-row flip">
+            <div class="avatar-wrap">
+                <div class="avatar" style="background:linear-gradient(135deg,#0891b2,#10b981)">🧭</div>
+                <div class="avatar-lbl">Navigator</div>
+            </div>
+            <div class="bubble-speech" style="flex:1">
+                <p><strong>"Kapten Aslan, hari ini kamu luar biasa!"</strong> kata Navigator Cerdas bangga. <em>"Kamu sudah mengenal Lautan Digital. Ini baru permulaan petualangan yang panjang!"</em></p>
+            </div>
+        </div>
+
+        <div class="char-row">
+            <div class="avatar-wrap">
+                <div class="avatar" style="background:linear-gradient(135deg,#1257a0,#0891b2)">👦</div>
+                <div class="avatar-lbl">Kapten Aslan</div>
+            </div>
+            <div class="bubble-speech tail-l" style="flex:1">
+                <p>Aslan tersenyum lebar. <em>"Besok aku mau jelajahi lebih jauh! Aku siap jadi Kapten Cerdas yang paling bijak!"</em> 💪</p>
+            </div>
+        </div>
+
+        <div style="background:linear-gradient(135deg,#fff9e6,#fde68a);border-radius:15px;padding:15px;text-align:center;border:2px solid #f5a623;margin-top:6px">
+            <div style="font-size:34px;margin-bottom:7px">🏆</div>
+            <div style="font-family:var(--ff-title);font-size:16px;color:#92400e">Hari 1 Berhasil Diselesaikan!</div>
+            <div style="font-size:12.5px;color:#b45309;margin-top:4px">Kapten Aslan telah memulai perjalanannya 🌟</div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ PAGE 14 · BADGES ═══════════════ -->
+    <div class="page badge-pg" data-page="14">
+        <div class="page-num inv">Hal. 14 / 16</div>
+        <div style="text-align:center;margin-bottom:18px">
+            <div style="font-family:var(--ff-title);font-size:22px;margin-bottom:5px">🏅 Lencana Hari Ini</div>
+            <div style="font-size:13px;opacity:.7;font-family:var(--ff-display)">Lencana yang kamu raih hari ini, Kapten!</div>
+        </div>
+
+        <div class="badge-anim">
+            <div style="font-size:36px">⚓</div>
+            <div style="font-family:var(--ff-title);font-size:9.5px;margin-top:3px;text-align:center">KAPTEN<br>MUDA</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;margin:14px 0">
+            <div style="background:rgba(255,255,255,.1);border-radius:15px;padding:13px;text-align:center;border:1.5px solid rgba(245,166,35,.4)">
+                <div style="font-size:27px;margin-bottom:5px">🌊</div>
+                <div style="font-size:10px;font-family:var(--ff-display);font-weight:600">Penjelajah<br>Lautan</div>
+            </div>
+            <div style="background:rgba(255,255,255,.1);border-radius:15px;padding:13px;text-align:center;border:1.5px solid rgba(245,166,35,.4)">
+                <div style="font-size:27px;margin-bottom:5px">🗺️</div>
+                <div style="font-size:10px;font-family:var(--ff-display);font-weight:600">Pembaca<br>Peta</div>
+            </div>
+            <div style="background:rgba(255,255,255,.06);border-radius:15px;padding:13px;text-align:center;border:1.5px solid rgba(255,255,255,.15);opacity:.38">
+                <div style="font-size:27px;margin-bottom:5px">🔒</div>
+                <div style="font-size:10px;font-family:var(--ff-display);font-weight:600">Terkunci<br>Hari 2</div>
+            </div>
+        </div>
+
+        <div style="background:rgba(245,166,35,.15);border:1.5px solid rgba(245,166,35,.3);border-radius:15px;padding:13px;text-align:center">
+            <div style="font-size:13px;font-family:var(--ff-display)">⭐ Poin hari ini: <strong style="color:var(--gold)">+150 poin</strong></div>
+            <div style="font-size:11.5px;opacity:.65;margin-top:4px">Selesaikan tantangan untuk dapat lebih banyak poin!</div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ PAGE 15 · PREVIEW ═══════════════ -->
+    <div class="page" style="background:linear-gradient(160deg,#0891b2,#0b4882);padding:36px;color:white" data-page="15">
+        <div class="page-num inv">Hal. 15 / 16</div>
+        <div class="page-head">
+            <div class="ph-icon" style="background:rgba(255,255,255,.14)">🔭</div>
+            <div>
+                <div class="ph-title inv">Besok di Hari 2</div>
+                <div class="ph-sub inv">Petualangan apa yang menantimu?</div>
+            </div>
+        </div>
+
+        <div style="background:rgba(255,255,255,.1);backdrop-filter:blur(8px);border:1.5px solid rgba(255,255,255,.18);border-radius:18px;padding:18px;display:flex;gap:14px;align-items:center;cursor:pointer;transition:all .3s ease;margin-bottom:18px" onmouseover="this.style.background='rgba(255,255,255,.17)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">
+            <div style="font-size:46px;flex-shrink:0">📱</div>
+            <div>
+                <div style="font-family:var(--ff-title);font-size:17px;margin-bottom:5px">Hari 2: Kapal Ajaib Bernama Tablet dan HP</div>
+                <div style="font-size:12.5px;opacity:.8;line-height:1.55">Kenali lebih dalam kapalmu — cara merawat, menggunakan secara bijak, dan memaksimalkan potensinya!</div>
+                <div style="margin-top:9px;display:flex;gap:7px;flex-wrap:wrap">
+                    <span style="background:rgba(255,255,255,.15);border-radius:20px;padding:3px 9px;font-size:10.5px;font-family:var(--ff-display)">📱 Jenis Perangkat</span>
+                    <span style="background:rgba(255,255,255,.15);border-radius:20px;padding:3px 9px;font-size:10.5px;font-family:var(--ff-display)">🔋 Rawat Kapal</span>
+                    <span style="background:rgba(255,255,255,.15);border-radius:20px;padding:3px 9px;font-size:10.5px;font-family:var(--ff-display)">⚙️ Pengaturan Aman</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="background:rgba(255,255,255,.08);border-radius:15px;padding:15px">
+            <div style="font-family:var(--ff-display);font-size:13.5px;font-weight:600;margin-bottom:7px">📚 Progress Petualanganmu:</div>
+            <div style="background:rgba(255,255,255,.1);border-radius:20px;height:10px;overflow:hidden;margin-bottom:5px">
+                <div style="background:linear-gradient(90deg,#f5a623,#f97316);height:100%;width:3.3%;border-radius:20px;transition:width 1.2s ease"></div>
+            </div>
+            <div style="font-size:11.5px;opacity:.65;text-align:right;font-family:var(--ff-display)">1 / 30 Hari Selesai · 3.3%</div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ PAGE 16 · CLOSING ═══════════════ -->
+    <div class="page close-pg" data-page="16">
+        <div class="page-num inv">Hal. 16 / 16</div>
+
+        <div style="font-size:58px;margin-bottom:14px;animation:badgeFloat 3s ease-in-out infinite">🏴‍☠️</div>
+        <h2 style="font-family:var(--ff-title);font-size:27px;margin-bottom:7px;color:var(--gold)">Selamat, Kapten Aslan!</h2>
+        <p style="font-family:var(--ff-display);font-size:14px;opacity:.8;margin-bottom:22px">Hari 1 petualanganmu akan dimulai! 🌟</p>
+
+        <div class="quote-box">
+            <div class="qt">"Lautan yang luas menjadi milik pelaut yang berani, bukan yang hanya berdiri di tepian pantai."</div>
+            <div class="qt-auth">— Bijak seorang Kapten Cerdas</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;margin:18px 0;text-align:center">
+            <div style="background:rgba(255,255,255,.08);border-radius:15px;padding:14px">
+                <div style="font-size:24px;margin-bottom:4px">📖</div>
+                <div style="font-size:11px;font-family:var(--ff-display);opacity:.8">1 Hari<br>Selesai</div>
+            </div>
+            <div style="background:rgba(255,255,255,.08);border-radius:15px;padding:14px">
+                <div style="font-size:24px;margin-bottom:4px">⭐</div>
+                <div style="font-size:11px;font-family:var(--ff-display);opacity:.8">2 Lencana<br>Diraih</div>
+            </div>
+            <div style="background:rgba(255,255,255,.08);border-radius:15px;padding:14px">
+                <div style="font-size:24px;margin-bottom:4px">🎯</div>
+                <div style="font-size:11px;font-family:var(--ff-display);opacity:.8">3 Tantangan<br>Menanti</div>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <button onclick="window.location.href='../perpustakaan.html'" style="background:white;color:var(--ocean-deep);border:none;padding:13px 22px;border-radius:50px;font-family:var(--ff-display);font-size:13.5px;font-weight:600;cursor:pointer;transition:all .3s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                📚 Kembali ke Perpustakaan
+            </button>
+            <button onclick="goPage(1)" style="background:var(--gold);color:var(--ocean-deep);border:none;padding:13px 22px;border-radius:50px;font-family:var(--ff-display);font-size:13.5px;font-weight:600;cursor:pointer;transition:all .3s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                🔄 Baca Ulang
+            </button>
+        </div>
+    </div>
+
+</div><!-- /book -->
+</div><!-- /book-wrapper -->
+
+<!-- Progress bar -->
+<div class="progress-bar-ui">
+    <span class="pg-label" id="pgLabel">📖 1 / 16</span>
+    <div class="dots-row" id="dotsRow"></div>
+</div>
+
+<!-- Nav buttons -->
+<div class="nav-row">
+    <button class="btn-nav btn-prev" id="btnPrev" onclick="prevPage()" disabled>← Sebelumnya</button>
+    <button class="btn-nav btn-next" id="btnNext" onclick="nextPage()">Selanjutnya →</button>
+</div>
+
+<!-- Popup -->
+<div id="popOverlay" onclick="closePop()"></div>
+<div id="popBox">
+    <button class="pop-close" onclick="closePop()">✕</button>
+    <div id="popContent"></div>
+</div>
+
+<!-- BG Wave -->
+<svg class="bg-wave" viewBox="0 0 1440 90" preserveAspectRatio="none" style="height:72px">
+    <path d="M0,45 Q180,9 360,45 Q540,81 720,45 Q900,9 1080,45 Q1260,81 1440,45 L1440,90 L0,90Z" fill="rgba(11,42,69,.5)"/>
+    <path d="M0,60 Q180,28 360,60 Q540,92 720,60 Q900,28 1080,60 Q1260,92 1440,60 L1440,90 L0,90Z" fill="rgba(11,42,69,.7)"/>
+</svg>
+
+<script>
+// ════════════════════════════════
+//  STATE
+// ════════════════════════════════
+const TOTAL = 16;
+let cur = 1;
+let soundOn = false;
+let audioCtx = null;
+let audioNodes = [];
+let quizDone = false;
+let treasureOpen = false;
+let chalCount = 0;
+
+// ════════════════════════════════
+//  POPUP DATA
+// ════════════════════════════════
+const POPS = {
+    sun: { icon:'☀️', title:'Matahari Digital',
+        text:'Seperti matahari memberi cahaya dan energi, internet memberi cahaya ilmu ke seluruh dunia! Tanpa internet, banyak informasi tidak bisa kita akses dengan mudah.' },
+    fish: { icon:'🐠', title:'Ikan Informasi',
+        text:'Di Lautan Digital ada miliaran "ikan informasi" — artikel, video, gambar, dan cerita. Seperti ikan di laut, ada yang bergizi (bermanfaat) dan ada yang berbahaya (informasi palsu)!' },
+    treasure: { icon:'💎', title:'Harta Karun Digital',
+        text:'Harta karun di Lautan Digital adalah ILMU! Buku digital gratis, video edukasi, kursus online — semua tersedia. Kapten Cerdas tahu cara menemukannya!' },
+    coral: { icon:'🪸', title:'Terumbu Karang Digital',
+        text:'Terumbu karang adalah rumah bagi banyak makhluk laut. Di dunia digital ada "komunitas online" — tempat orang berkumpul dan berbagi. Pilih komunitas yang positif!' },
+    ship: { icon:'⛵', title:'Kapal Kapten Aslan',
+        text:'Inilah kapalmu, Kapten! HP atau tablet adalah kapal yang membawamu menjelajahi Lautan Digital. Rawat kapalmu, kendalikan dengan bijak, dan pilih rute yang tepat!' },
+    youtube: { icon:'▶️', title:'Pulau YouTube',
+        text:'YouTube adalah pulau video terbesar! Ada jutaan video dari tutorial, pelajaran sains, hingga hiburan. Manfaatkan untuk belajar hal-hal positif dan gunakan dengan bijak!' },
+    tiktok: { icon:'🎵', title:'Pulau TikTok',
+        text:'TikTok adalah pulau video pendek yang sangat menghibur! Tapi hati-hati — pulau ini bisa membuat kamu tidak sadar sudah berjam-jam di sana. Atur waktumu, Kapten!' },
+    google: { icon:'🔍', title:'Pulau Google',
+        text:'Google adalah peta terbesar Lautan Digital! Kalau ingin tahu sesuatu, tanya Google. Tapi selalu periksa apakah sumbernya terpercaya, ya Kapten!' },
+    ig: { icon:'📷', title:'Pulau Instagram',
+        text:'Instagram adalah pulau foto dan cerita. Banyak inspirasi di sini. Tapi ingat, tidak semua yang indah di Instagram mencerminkan kenyataan sebenarnya.' },
+    internet: { icon:'🏠', title:'Pelabuhan Aslan',
+        text:'Ini adalah basecamp-mu, Kapten Aslan! Dari sini kamu bisa berlayar ke mana saja. Selalu ingat jalan pulang — artinya, jangan lupa dunia nyata di sekitarmu!' },
+    edukasi: { icon:'📚', title:'Pulau Edukasi',
+        text:'Pulau Edukasi adalah harta karun terbesar di Lautan Digital! Khan Academy, Zenius, Wikipedia — semua tersedia gratis. Inilah tujuan berlayar yang paling berharga!' },
+    games: { icon:'🎮', title:'Pulau Games',
+        text:'Bermain game boleh saja, Kapten! Game bisa melatih logika dan kreativitas. Tapi batasi waktunya — maksimal 1 jam per hari, dan pilih game yang sesuai usiamu.' },
+    kapal1: { icon:'📱', title:'Handphone: Kapal Mini',
+        text:'HP adalah kapal kecil yang praktis — bisa dibawa ke mana saja! Jaga jarak minimal 30 cm dari mata, dan jangan pakai di tempat gelap ya, Kapten!' },
+    kapal2: { icon:'💻', title:'Tablet/Laptop: Kapal Besar',
+        text:'Tablet atau laptop adalah kapal yang nyaman untuk belajar. Layarnya lebih luas, cocok untuk membaca dan belajar online. Duduk tegak saat menggunakannya!' },
+};
+
+// ════════════════════════════════
+//  INIT
+// ════════════════════════════════
+function init() {
+    makeBubbles();
+    makeStars();
+    makeDots();
+    updateNav();
+}
+
+function makeBubbles() {
+    const c = document.getElementById('bgBubbles');
+    for (let i = 0; i < 16; i++) {
+        const b = document.createElement('div');
+        b.className = 'bubble';
+        const s = Math.random() * 42 + 10;
+        b.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;animation-duration:${Math.random()*8+6}s;animation-delay:${Math.random()*8}s`;
+        c.appendChild(b);
+    }
+}
+
+function makeStars() {
+    const c = document.getElementById('starsWrap');
+    if (!c) return;
+    for (let i = 0; i < 32; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const sz = Math.random() * 3 + 1;
+        s.style.cssText = `--dur:${Math.random()*2+1.5}s;--del:${Math.random()*2}s;width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;position:absolute`;
+        c.appendChild(s);
+    }
+}
+
+function makeDots() {
+    const row = document.getElementById('dotsRow');
+    row.innerHTML = '';
+    for (let i = 1; i <= TOTAL; i++) {
+        const d = document.createElement('div');
+        d.className = 'dot-item' + (i === cur ? ' active' : '');
+        d.onclick = () => goPage(i);
+        d.title = `Halaman ${i}`;
+        row.appendChild(d);
+    }
+}
+
+// ════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════
+function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.page')[n - 1].classList.add('active');
+    cur = n;
+    updateNav();
+    // scroll book back to top
+    document.querySelector('.book-wrapper').scrollTop = 0;
+}
+
+function nextPage() { if (cur < TOTAL) goPage(cur + 1); }
+function prevPage() { if (cur > 1)    goPage(cur - 1); }
+
+function updateNav() {
+    document.getElementById('btnPrev').disabled = cur === 1;
+    document.getElementById('btnNext').disabled = cur === TOTAL;
+    document.getElementById('pgLabel').textContent = `📖 ${cur} / ${TOTAL}`;
+
+    document.querySelectorAll('.dot-item').forEach((d, i) => {
+        d.classList.remove('active', 'visited');
+        if (i + 1 === cur) d.classList.add('active');
+        else if (i + 1 < cur) d.classList.add('visited');
+    });
+
+    const nx = document.getElementById('btnNext');
+    if (cur === TOTAL) nx.textContent = 'Selesai ✓';
+    else if (cur === TOTAL - 1) nx.textContent = 'Halaman Penutup →';
+    else nx.textContent = 'Selanjutnya →';
+}
+
+// ════════════════════════════════
+//  SWIPE
+// ════════════════════════════════
+let tx = 0, ty = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:true});
+document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    const dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 48) {
+        if (dx < 0) nextPage(); else prevPage();
+    }
+}, {passive:true});
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') nextPage();
+    if (e.key === 'ArrowLeft')  prevPage();
+});
+
+// ════════════════════════════════
+//  POPUP
+// ════════════════════════════════
+function showPop(key) {
+    const d = POPS[key];
+    if (!d) return;
+    document.getElementById('popContent').innerHTML = `
+        <div style="text-align:center;margin-bottom:14px">
+            <div style="font-size:46px;margin-bottom:7px">${d.icon}</div>
+            <h3 style="font-family:var(--ff-title);font-size:19px;color:var(--ocean-deep)">${d.title}</h3>
+        </div>
+        <p style="font-size:13.5px;line-height:1.72;color:#1a3558;font-family:var(--ff-body)">${d.text}</p>`;
+    document.getElementById('popBox').classList.add('on');
+    document.getElementById('popOverlay').classList.add('on');
+}
+function closePop() {
+    document.getElementById('popBox').classList.remove('on');
+    document.getElementById('popOverlay').classList.remove('on');
+}
+
+// ════════════════════════════════
+//  LESSON TOGGLE
+// ════════════════════════════════
+function toggleLesson(el) { el.classList.toggle('open'); }
+
+// ════════════════════════════════
+//  CHALLENGE
+// ════════════════════════════════
+function toggleChal(card) {
+    card.classList.toggle('done');
+    const chk = card.querySelector('.chal-check');
+    chalCount += card.classList.contains('done') ? 1 : -1;
+    chk.textContent = card.classList.contains('done') ? '✓' : '○';
+    const msgs = [
+        'Selesaikan tantangan untuk mendapat bintang! ⭐',
+        'Bagus! 1 tantangan selesai! ⭐ +50 poin',
+        'Keren! 2 tantangan selesai! ⭐⭐ +100 poin',
+        'LUAR BIASA! Semua tantangan selesai! 🏆 +200 poin'
+    ];
+    const sc = document.getElementById('chalScore');
+    const n = Math.max(0, Math.min(chalCount, 3));
+    sc.innerHTML = `<div style="animation:fadeUp .3s ease">${msgs[n]}</div>`;
+    if (n === 3) Object.assign(sc.style, {background:'rgba(245,166,35,.22)',borderRadius:'11px',padding:'9px',color:'var(--gold)',fontWeight:'600'});
+}
+
+// ════════════════════════════════
+//  QUIZ
+// ════════════════════════════════
+function checkAns(el, correct) {
+    if (quizDone) return;
+    quizDone = true;
+    document.querySelectorAll('.quiz-opt').forEach(o => o.classList.add('locked'));
+    el.classList.add(correct ? 'correct' : 'wrong');
+    if (!correct) {
+        document.querySelectorAll('.quiz-opt').forEach(o => {
+            if (o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+        });
+    }
+    const res = document.getElementById('quizRes');
+    res.innerHTML = correct
+        ? `<div style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);border-radius:14px;padding:18px;border:2px solid #10b981;text-align:center"><div style="font-size:36px;margin-bottom:6px">🎉</div><div style="font-family:var(--ff-title);font-size:19px;color:#065f46;margin-bottom:5px">BENAR! Kapten Cerdas!</div><p style="font-size:12.5px;color:#047857">Lautan Digital adalah dunia internet — tempat miliaran orang bertukar informasi setiap hari!</p></div>`
+        : `<div style="background:linear-gradient(135deg,#fff3cd,#fde68a);border-radius:14px;padding:18px;border:2px solid #f5a623;text-align:center"><div style="font-size:36px;margin-bottom:6px">💪</div><div style="font-family:var(--ff-title);font-size:19px;color:#92400e;margin-bottom:5px">Hampir Betul!</div><p style="font-size:12.5px;color:#b45309">Jawaban benar: Lautan Digital adalah dunia internet! Coba ingat ya Kapten 😊</p></div>`;
+    res.classList.add('show');
+}
+
+// ════════════════════════════════
+//  TREASURE CHEST
+// ════════════════════════════════
+function revealTreasure() {
+    if (treasureOpen) return;
+    treasureOpen = true;
+    const em = document.getElementById('chestEm');
+    const grid = document.getElementById('rewardGrid');
+    em.style.animation = 'none';
+    em.textContent = '🎁';
+    setTimeout(() => {
+        em.textContent = '✨🪙✨';
+        em.style.fontSize = '38px';
+        document.getElementById('chestHint').textContent = '🎊 Kamu menemukan harta karun digital!';
+        grid.classList.add('show');
+    }, 320);
+}
+
+// ════════════════════════════════
+//  SOUND (Web Audio brown noise ocean)
+// ════════════════════════════════
+function toggleSound() {
+    soundOn = !soundOn;
+    document.getElementById('soundBtn').textContent = soundOn ? '🔊' : '🔇';
+    soundOn ? startOcean() : stopOcean();
+}
+
+function startOcean() {
+    try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const buf = audioCtx.sampleRate * 2;
+        const b = audioCtx.createBuffer(1, buf, audioCtx.sampleRate);
+        const d = b.getChannelData(0);
+        let last = 0;
+        for (let i = 0; i < buf; i++) {
+            const w = Math.random() * 2 - 1;
+            d[i] = (last + .02 * w) / 1.02;
+            last = d[i];
+            d[i] *= 3.5;
+        }
+        const src = audioCtx.createBufferSource();
+        src.buffer = b; src.loop = true;
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(.06, audioCtx.currentTime);
+
+        // LFO for wave effect
+        const lfo = audioCtx.createOscillator();
+        const lfoG = audioCtx.createGain();
+        lfo.frequency.value = 0.12; lfoG.gain.value = 0.03;
+        lfo.connect(lfoG); lfoG.connect(gain.gain);
+        lfo.start();
+
+        src.connect(gain); gain.connect(audioCtx.destination);
+        src.start();
+        audioNodes = [src, gain, lfo, lfoG];
+    } catch(e) { console.warn('Audio unavailable'); }
+}
+
+function stopOcean() {
+    audioNodes.forEach(n => { try { n.disconnect(); if (n.stop) n.stop(); } catch(e){} });
+    audioNodes = [];
+    if (audioCtx) { audioCtx.close(); audioCtx = null; }
+}
+
+// ════════════════════════════════
+//  BOOT
+// ════════════════════════════════
+init();
+</script>
+</body>
+</html>

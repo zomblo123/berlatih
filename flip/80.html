@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petualangan Aslan di Negeri AI – Hari 20</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --biru: #1E88E5;
+      --biru-muda: #64B5F6;
+      --biru-tua: #0D47A1;
+      --cyan: #00BCD4;
+      --cyan-muda: #80DEEA;
+      --kuning: #FFD600;
+      --hijau: #43A047;
+      --hijau-muda: #A5D6A7;
+      --oranye: #FF6F00;
+      --merah-muda: #FF4081;
+      --ungu: #7C4DFF;
+      --teal: #00897B;
+      --bg: #E0F7FA;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      background-image:
+        radial-gradient(circle at 10% 15%, #B2EBF255 0%, transparent 40%),
+        radial-gradient(circle at 88% 80%, #E3F2FD66 0%, transparent 40%),
+        radial-gradient(circle at 55% 50%, #F0F4C355 0%, transparent 50%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .font-kartun { font-family: 'Fredoka One', cursive; }
+
+    /* ===== FLOATING BG SHAPES ===== */
+    .shapes-bg {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .shape {
+      position: absolute;
+      animation: floatShape linear infinite;
+      opacity: 0.1;
+    }
+    @keyframes floatShape {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.1; }
+      90%  { opacity: 0.1; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ===== TOP BACK LINK ===== */
+    .top-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.92);
+      color: var(--biru-tua);
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      padding: 8px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      transition: all 0.2s ease;
+      border: 2px solid rgba(255,255,255,0.8);
+      z-index: 10;
+      position: relative;
+    }
+    .top-back-link:hover {
+      background: #fff;
+      transform: translateX(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+
+    /* ===== HEADER ===== */
+    .header-bar {
+      background: linear-gradient(135deg, #006064 0%, #00838F 25%, #00ACC1 55%, #26C6DA 80%, #4DD0E1 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .header-bar::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        55deg,
+        transparent 0px, transparent 20px,
+        rgba(255,255,255,0.04) 20px, rgba(255,255,255,0.04) 40px
+      );
+    }
+    .header-bar::after {
+      content: '🤖 ChatGPT • YouTube • Siri • Maps • Translate • Spotify 🎵';
+      position: absolute;
+      bottom: 8px; right: 0;
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.15);
+      letter-spacing: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 100%;
+      text-align: center;
+    }
+
+    .badge-hari {
+      background: var(--kuning);
+      color: #006064;
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      padding: 4px 18px;
+      border-radius: 999px;
+      display: inline-block;
+      box-shadow: 0 4px 0 #F9A825;
+      animation: bounceIn 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes bounceIn {
+      0%   { transform: scale(0.3); opacity: 0; }
+      60%  { transform: scale(1.12); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .aslan-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2rem, 6vw, 4rem);
+      color: #fff;
+      text-shadow: 0 5px 0 #006064, 0 8px 20px rgba(0,0,0,0.3);
+      letter-spacing: 1px;
+      animation: slideDown 0.7s ease both 0.2s;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-40px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+    .subtitle-header {
+      font-size: clamp(0.85rem, 2.5vw, 1.2rem);
+      color: #B2EBF2;
+      animation: slideDown 0.7s ease both 0.4s;
+    }
+
+    /* ===== TIER BADGE ===== */
+    .tier-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #FF6F00, #FFB300);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.1rem;
+      padding: 8px 24px;
+      border-radius: 999px;
+      box-shadow: 0 6px 0 #E65100, 0 8px 20px rgba(255,111,0,0.4);
+      animation: bounceIn 0.8s cubic-bezier(.36,.07,.19,.97) both 0.6s;
+    }
+
+    /* ===== CARD BASE ===== */
+    .card {
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 8px 32px rgba(0,188,212,0.12), 0 2px 8px rgba(0,0,0,0.07);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 5px;
+    }
+    .card-cyan::before   { background: linear-gradient(90deg, #00ACC1, #80DEEA); }
+    .card-yellow::before { background: linear-gradient(90deg, #FFD600, #FFAB40); }
+    .card-green::before  { background: linear-gradient(90deg, #43A047, #A5D6A7); }
+    .card-orange::before { background: linear-gradient(90deg, #FF6F00, #FFB300); }
+    .card-purple::before { background: linear-gradient(90deg, #7C4DFF, #B388FF); }
+    .card-teal::before   { background: linear-gradient(90deg, #00897B, #4DB6AC); }
+    .card-pink::before   { background: linear-gradient(90deg, #E91E63, #F48FB1); }
+
+    /* ===== MAIN ILLUSTRATION ===== */
+    .main-illus {
+      background: linear-gradient(145deg, #E0F7FA 0%, #B2EBF2 40%, #E8F5E9 100%);
+      border-radius: 28px;
+      border: 5px solid #fff;
+      box-shadow: 0 12px 40px rgba(0,150,136,0.2), 0 4px 0 #00ACC1;
+      position: relative;
+      overflow: hidden;
+      min-height: 380px;
+    }
+    .illus-title-badge {
+      position: absolute; top: 14px; left: 14px;
+      background: var(--kuning);
+      color: #006064;
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.85rem;
+      padding: 4px 14px;
+      border-radius: 999px;
+      box-shadow: 0 3px 0 #F9A825;
+      z-index: 5;
+    }
+
+    /* ===== APP ICONS ROW ===== */
+    .app-icon {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      animation: floatIcon ease-in-out infinite;
+    }
+    .app-icon-circle {
+      width: 62px; height: 62px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      border: 3px solid #fff;
+      transition: transform 0.2s;
+      cursor: default;
+    }
+    .app-icon-circle:hover { transform: scale(1.15) rotate(-5deg); }
+    .app-icon span.lbl {
+      font-size: 0.7rem; font-weight: 800; color: #37474F; text-align: center;
+    }
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    /* ===== STORY TEXT ===== */
+    .story-text {
+      font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+      line-height: 2;
+      color: #37474F;
+      font-weight: 600;
+    }
+    .hl-cyan {
+      background: linear-gradient(120deg, #B2EBF2, #80DEEA);
+      padding: 2px 8px; border-radius: 8px;
+      color: #006064; font-weight: 800;
+    }
+    .hl-yellow {
+      background: linear-gradient(120deg, #FFF176, #FFD600);
+      padding: 2px 8px; border-radius: 8px;
+      color: #E65100; font-weight: 800;
+    }
+    .hl-green {
+      background: linear-gradient(120deg, #C8E6C9, #A5D6A7);
+      padding: 2px 8px; border-radius: 8px;
+      color: #2E7D32; font-weight: 800;
+    }
+    .hl-orange {
+      background: linear-gradient(120deg, #FFE0B2, #FFCC80);
+      padding: 2px 8px; border-radius: 8px;
+      color: #BF360C; font-weight: 800;
+    }
+
+    /* ===== ANALOGY CARD ===== */
+    .analogy-item {
+      background: linear-gradient(135deg, #fff 0%, #F0FFF4 100%);
+      border-radius: 20px;
+      border: 3px solid #A5D6A7;
+      padding: 16px;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .analogy-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(67,160,71,0.2);
+    }
+    .analogy-emoji { font-size: 2.4rem; margin-bottom: 6px; }
+    .analogy-title { font-family: 'Fredoka One', cursive; font-size: 1rem; color: #2E7D32; }
+    .analogy-desc  { font-size: 0.82rem; font-weight: 700; color: #546E7A; margin-top: 4px; }
+
+    /* ===== COMIC STRIP ===== */
+    .comic-panel {
+      background: #fff;
+      border: 3px solid #00ACC1;
+      border-radius: 20px;
+      box-shadow: 4px 4px 0 #00ACC1;
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .comic-panel:hover { transform: scale(1.03) rotate(-1deg); }
+    .comic-panel-header {
+      background: linear-gradient(90deg, #00ACC1, #4DD0E1);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      text-align: center;
+    }
+    .comic-scene {
+      min-height: 130px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+      flex-direction: column;
+      gap: 4px;
+      padding: 12px 8px 6px;
+      position: relative;
+    }
+    .speech-bubble {
+      background: #fff;
+      border: 2px solid #00ACC1;
+      border-radius: 14px;
+      padding: 6px 10px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #006064;
+      text-align: center;
+      position: relative;
+      max-width: 140px;
+      box-shadow: 2px 2px 0 #00ACC1;
+    }
+    .speech-bubble::before {
+      content: '';
+      position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 10px solid #00ACC1;
+    }
+    .comic-caption {
+      background: #E0F7FA;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #006064;
+      padding: 6px 10px;
+      text-align: center;
+      border-top: 2px solid #B2EBF2;
+    }
+
+    /* ===== FACT BOXES ===== */
+    .fact-box {
+      border-radius: 20px;
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .fact-box::after {
+      content: attr(data-emoji);
+      position: absolute;
+      right: 12px; top: 12px;
+      font-size: 2.5rem;
+      opacity: 0.2;
+    }
+    .fact-box h3 { font-family: 'Fredoka One', cursive; font-size: 1.05rem; margin-bottom: 6px; }
+    .fact-box p  { font-size: 0.88rem; font-weight: 700; line-height: 1.7; }
+
+    /* ===== QUIZ ===== */
+    .quiz-option {
+      background: #fff;
+      border: 3px solid #B2EBF2;
+      border-radius: 16px;
+      padding: 12px 20px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #37474F;
+      transition: all 0.2s;
+      text-align: left;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .quiz-option:hover {
+      border-color: #00ACC1;
+      background: #E0F7FA;
+      transform: translateX(4px);
+    }
+    .quiz-option.correct {
+      border-color: #43A047;
+      background: #E8F5E9;
+      color: #2E7D32;
+    }
+    .quiz-option.wrong {
+      border-color: #E53935;
+      background: #FFEBEE;
+      color: #C62828;
+    }
+    .quiz-option .opt-letter {
+      min-width: 34px; height: 34px;
+      background: linear-gradient(135deg, #00ACC1, #4DD0E1);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+    }
+    .quiz-option.correct .opt-letter { background: linear-gradient(135deg, #43A047, #81C784); }
+    .quiz-option.wrong .opt-letter   { background: linear-gradient(135deg, #E53935, #EF9A9A); }
+
+    #quiz-result {
+      border-radius: 20px;
+      padding: 18px 24px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.4rem;
+      text-align: center;
+      display: none;
+      animation: bounceIn 0.5s ease;
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    .progress-track {
+      background: #B2EBF2;
+      border-radius: 999px;
+      height: 16px;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #00ACC1, #FFD600, #43A047);
+      background-size: 200% 100%;
+      animation: progressAnim 3s linear infinite;
+      width: 66.7%; /* Hari 20 dari 30 = 66.7% */
+      transition: width 1.5s ease;
+    }
+    @keyframes progressAnim {
+      0%   { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    /* ===== SCROLL REVEAL ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== ROBO FLOAT ===== */
+    @keyframes roboFloat {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50%       { transform: translateY(-12px) rotate(3deg); }
+    }
+    .robo-anim { animation: roboFloat 3s ease-in-out infinite; display: inline-block; }
+
+    /* ===== PULSE STAR ===== */
+    @keyframes pulseStar {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%       { transform: scale(1.3); opacity: 0.7; }
+    }
+    .pulse-star { animation: pulseStar 1.5s ease-in-out infinite; display: inline-block; }
+
+    /* ===== NARROW AI METER ===== */
+    .narrow-meter {
+      background: #E0F7FA;
+      border-radius: 16px;
+      padding: 10px 14px;
+      border: 2px solid #B2EBF2;
+    }
+    .narrow-meter-bar {
+      height: 14px;
+      border-radius: 999px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== FLOATING BACKGROUND SHAPES ===== -->
+<div class="shapes-bg">
+  <div class="shape" style="font-size:2rem;left:5%;animation-duration:12s;animation-delay:0s;">🤖</div>
+  <div class="shape" style="font-size:1.5rem;left:20%;animation-duration:15s;animation-delay:3s;">⭐</div>
+  <div class="shape" style="font-size:1.8rem;left:42%;animation-duration:10s;animation-delay:1s;">💬</div>
+  <div class="shape" style="font-size:2rem;left:60%;animation-duration:18s;animation-delay:5s;">🎵</div>
+  <div class="shape" style="font-size:1.5rem;left:75%;animation-duration:13s;animation-delay:2s;">🎮</div>
+  <div class="shape" style="font-size:1.8rem;left:88%;animation-duration:16s;animation-delay:7s;">📱</div>
+  <div class="shape" style="font-size:1.4rem;left:33%;animation-duration:14s;animation-delay:9s;">🧠</div>
+  <div class="shape" style="font-size:1.6rem;left:55%;animation-duration:11s;animation-delay:4s;">✨</div>
+</div>
+
+<!-- ===== MAIN WRAPPER ===== -->
+<div style="position:relative;z-index:1;">
+
+  <!-- ===== HEADER BAR ===== -->
+  <div class="header-bar">
+    <div class="max-w-4xl mx-auto px-5 py-5">
+
+      <!-- Top Back Link -->
+      <div class="mb-4">
+        <a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+      </div>
+
+      <!-- Badge + Title -->
+      <div class="text-center pb-4">
+        <div class="mb-3">
+          <span class="badge-hari">📅 HARI KE-20</span>
+          &nbsp;
+          <span class="tier-badge">🏆 TIER 4</span>
+        </div>
+        <h1 class="aslan-name">Narrow AI 🤖</h1>
+        <p class="subtitle-header mt-2">AI Sempit yang Kita Pakai Setiap Hari!</p>
+
+        <!-- Progress Bar -->
+        <div class="mt-5 max-w-sm mx-auto">
+          <div class="flex justify-between mb-1" style="font-size:0.8rem;color:#B2EBF2;font-weight:800;">
+            <span>⚡ Progress Aslan</span>
+            <span>20 / 30 Hari</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CONTENT ===== -->
+  <div class="max-w-4xl mx-auto px-4 py-8 space-y-8">
+
+    <!-- ===== MAIN ILLUSTRATION ===== -->
+    <div class="card card-cyan reveal">
+      <div class="main-illus p-6">
+        <span class="illus-title-badge">🎨 Ilustrasi Hari Ini</span>
+
+        <!-- Characters top row -->
+        <div class="flex justify-center items-end gap-6 mb-6 mt-8 flex-wrap">
+          <!-- Aslan -->
+          <div class="text-center">
+            <div style="font-size:5rem;line-height:1;">🧒</div>
+            <div style="background:linear-gradient(135deg,#00ACC1,#4DD0E1);color:#fff;border-radius:12px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:0.85rem;margin-top:4px;box-shadow:0 3px 0 #006064;">Aslan</div>
+          </div>
+          <!-- Robo -->
+          <div class="text-center robo-anim">
+            <div style="font-size:4.5rem;line-height:1;">🤖</div>
+            <div style="background:linear-gradient(135deg,#43A047,#81C784);color:#fff;border-radius:12px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:0.85rem;margin-top:4px;box-shadow:0 3px 0 #2E7D32;">Robo</div>
+          </div>
+        </div>
+
+        <!-- Robo Speech Bubble -->
+        <div class="flex justify-center mb-6">
+          <div style="background:#fff;border:3px solid #00ACC1;border-radius:20px;padding:12px 20px;max-width:480px;text-align:center;box-shadow:0 6px 20px rgba(0,150,200,0.2);position:relative;">
+            <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:1.2rem;">💬</div>
+            <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#006064;margin-top:4px;">
+              "Aslan, semua AI yang kamu pakai sekarang... itu namanya Narrow AI!"
+            </p>
+          </div>
+        </div>
+
+        <!-- App Icons Grid -->
+        <div class="flex justify-center flex-wrap gap-4">
+          <div class="app-icon" style="animation-duration:2.5s;animation-delay:0s;">
+            <div class="app-icon-circle" style="background:linear-gradient(135deg,#10A37F,#1ABC9C);">🧠</div>
+            <span class="lbl">ChatGPT</span>
+          </div>
+          <div class="app-icon" style="animation-duration:3s;animation-delay:0.3s;">
+            <div class="app-icon-circle" style="background:linear-gradient(135deg,#FF0000,#FF6B6B);">▶️</div>
+            <span class="lbl">YouTube</span>
+          </div>
+          <div class="app-icon" style="animation-duration:2.8s;animation-delay:0.6s;">
+            <div class="app-icon-circle" style="background:linear-gradient(135deg,#1DB954,#58D68D);">🎵</div>
+            <span class="lbl">Spotify</span>
+          </div>
+          <div class="app-icon" style="animation-duration:3.2s;animation-delay:0.9s;">
+            <div class="app-icon-circle" style="background:linear-gradient(135deg,#4285F4,#74B9FF);">🗺️</div>
+            <span class="lbl">Google Maps</span>
+          </div>
+          <div class="app-icon" style="animation-duration:2.6s;animation-delay:1.2s;">
+            <div class="app-icon-circle" style="background:linear-gradient(135deg,#8E24AA,#CE93D8);">🎨</div>
+            <span class="lbl">AI Gambar</span>
+          </div>
+          <div class="app-icon" style="animation-duration:3.4s;animation-delay:1.5s;">
+            <div class="app-icon-circle" style="background:linear-gradient(135deg,#FF6F00,#FFCC02);">🛒</div>
+            <span class="lbl">Tokopedia</span>
+          </div>
+          <div class="app-icon" style="animation-duration:2.9s;animation-delay:1.8s;">
+            <div class="app-icon-circle" style="background:linear-gradient(135deg,#0084FF,#74B9FF);">💬</div>
+            <span class="lbl">Siri/Alexa</span>
+          </div>
+        </div>
+
+        <p style="text-align:center;font-family:'Fredoka One',cursive;font-size:0.9rem;color:#00838F;margin-top:16px;">
+          ✨ Semua ini adalah Narrow AI – AI yang hebat, tapi hanya di satu hal saja!
+        </p>
+      </div>
+    </div>
+
+    <!-- ===== PENJELASAN SEDERHANA ===== -->
+    <div class="card card-cyan p-7 reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <div style="background:linear-gradient(135deg,#00ACC1,#4DD0E1);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 0 #006064;flex-shrink:0;">📖</div>
+        <h2 class="font-kartun" style="font-size:1.7rem;color:#006064;">Apa Itu Narrow AI?</h2>
+      </div>
+
+      <p class="story-text">
+        Kamu tahu <span class="hl-cyan">ChatGPT</span> yang bisa menjawab pertanyaan? Atau
+        <span class="hl-yellow">YouTube</span> yang selalu tahu video apa yang kamu suka?
+        Itu semua adalah <span class="hl-orange">Narrow AI</span> – atau AI Sempit!
+      </p>
+      <br>
+      <p class="story-text">
+        Narrow AI adalah AI yang <span class="hl-cyan">sangat pintar di satu tugas saja</span>,
+        tapi tidak bisa melakukan hal lain. ChatGPT jago ngobrol, tapi tidak bisa
+        nyetir mobil. Spotify jago cari lagu, tapi tidak bisa masak mie instan untukmu! 😄
+      </p>
+      <br>
+      <p class="story-text">
+        Hampir <span class="hl-green">semua AI yang kita pakai sekarang</span> adalah Narrow AI.
+        Mereka seperti <strong>juara</strong> di bidangnya masing-masing!
+        Semua AI di Tier 1–4 termasuk Narrow AI. Keren, kan? <span class="pulse-star">⭐</span>
+      </p>
+    </div>
+
+    <!-- ===== NARROW AI METER ===== -->
+    <div class="card card-orange p-6 reveal">
+      <h2 class="font-kartun text-center mb-5" style="font-size:1.6rem;color:#E65100;">📊 Seberapa "Sempit" AI Ini?</h2>
+      <div class="space-y-3">
+        <div class="narrow-meter">
+          <div class="flex justify-between items-center">
+            <span style="font-weight:800;font-size:0.9rem;color:#37474F;">🧠 ChatGPT – Bisa Ngobrol</span>
+            <span style="font-family:'Fredoka One',cursive;color:#00ACC1;">95%</span>
+          </div>
+          <div class="narrow-meter-bar" style="background:linear-gradient(90deg,#00ACC1,#4DD0E1);width:95%;"></div>
+          <p style="font-size:0.75rem;color:#546E7A;font-weight:700;margin-top:4px;">❌ Tapi tidak bisa mengemudi, memasak, atau berlari</p>
+        </div>
+        <div class="narrow-meter">
+          <div class="flex justify-between items-center">
+            <span style="font-weight:800;font-size:0.9rem;color:#37474F;">▶️ YouTube AI – Rekomendasi Video</span>
+            <span style="font-family:'Fredoka One',cursive;color:#FF6B6B;">98%</span>
+          </div>
+          <div class="narrow-meter-bar" style="background:linear-gradient(90deg,#FF0000,#FF6B6B);width:98%;"></div>
+          <p style="font-size:0.75rem;color:#546E7A;font-weight:700;margin-top:4px;">❌ Tapi tidak bisa menjawab pertanyaan matematika</p>
+        </div>
+        <div class="narrow-meter">
+          <div class="flex justify-between items-center">
+            <span style="font-weight:800;font-size:0.9rem;color:#37474F;">🗺️ Google Maps – Navigasi Jalan</span>
+            <span style="font-family:'Fredoka One',cursive;color:#43A047;">99%</span>
+          </div>
+          <div class="narrow-meter-bar" style="background:linear-gradient(90deg,#43A047,#81C784);width:99%;"></div>
+          <p style="font-size:0.75rem;color:#546E7A;font-weight:700;margin-top:4px;">❌ Tapi tidak bisa menyanyikan lagu atau menggambar</p>
+        </div>
+        <div class="narrow-meter">
+          <div class="flex justify-between items-center">
+            <span style="font-weight:800;font-size:0.9rem;color:#37474F;">🎨 Midjourney – Buat Gambar</span>
+            <span style="font-family:'Fredoka One',cursive;color:#8E24AA;">97%</span>
+          </div>
+          <div class="narrow-meter-bar" style="background:linear-gradient(90deg,#8E24AA,#CE93D8);width:97%;"></div>
+          <p style="font-size:0.75rem;color:#546E7A;font-weight:700;margin-top:4px;">❌ Tapi tidak bisa bermain catur atau menavigasi jalan</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ANALOGI LUCU ===== -->
+    <div class="card card-green p-7 reveal">
+      <div class="flex items-center gap-3 mb-6">
+        <div style="background:linear-gradient(135deg,#43A047,#81C784);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 0 #2E7D32;flex-shrink:0;">🤣</div>
+        <h2 class="font-kartun" style="font-size:1.7rem;color:#2E7D32;">Analogi Lucu!</h2>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border-radius:20px;border:3px solid #A5D6A7;padding:16px 20px;margin-bottom:20px;text-align:center;">
+        <p style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#2E7D32;">
+          🏆 Narrow AI itu seperti Juara Olimpiade!
+        </p>
+        <p style="font-size:0.95rem;font-weight:700;color:#546E7A;margin-top:6px;">
+          Mereka jago banget di satu hal, tapi tidak bisa semuanya!
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <div class="analogy-item">
+          <div class="analogy-emoji">🏃</div>
+          <div class="analogy-title">Pelari Cepat</div>
+          <div class="analogy-desc">Juara lari, tapi tidak bisa renang atau main bola</div>
+        </div>
+        <div class="analogy-item">
+          <div class="analogy-emoji">👨‍🍳</div>
+          <div class="analogy-title">Koki Jago</div>
+          <div class="analogy-desc">Masak enak banget, tapi tidak bisa coding atau nyanyi</div>
+        </div>
+        <div class="analogy-item">
+          <div class="analogy-emoji">🎹</div>
+          <div class="analogy-title">Pianis Hebat</div>
+          <div class="analogy-desc">Main piano sempurna, tapi tidak bisa nyetir mobil</div>
+        </div>
+        <div class="analogy-item">
+          <div class="analogy-emoji">🧮</div>
+          <div class="analogy-title">Ahli Matematika</div>
+          <div class="analogy-desc">Hitung super cepat, tapi tidak bisa melukis gambar</div>
+        </div>
+      </div>
+
+      <div style="background:#fff;border-radius:16px;border:3px dashed #43A047;padding:14px 18px;margin-top:16px;text-align:center;">
+        <p style="font-size:1rem;font-weight:800;color:#2E7D32;">
+          🤖 Sama seperti ChatGPT – jago ngobrol & jawab pertanyaan, tapi tidak bisa nyetir mobilmu atau masak nasi goreng! 😂
+        </p>
+      </div>
+    </div>
+
+    <!-- ===== COMIC STRIP ===== -->
+    <div class="card card-purple p-7 reveal">
+      <div class="flex items-center gap-3 mb-6">
+        <div style="background:linear-gradient(135deg,#7C4DFF,#B388FF);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 0 #4527A0;flex-shrink:0;">📖</div>
+        <h2 class="font-kartun" style="font-size:1.7rem;color:#4527A0;">Komik: Satu Hari Bersama Narrow AI</h2>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+
+        <!-- Panel 1 -->
+        <div class="comic-panel">
+          <div class="comic-panel-header">Panel 1 🌅</div>
+          <div class="comic-scene">
+            <div>🧒💬</div>
+            <div class="speech-bubble">"YouTube, kasih aku video lucu kucing!"</div>
+            <div style="font-size:2rem;margin-top:4px;">▶️</div>
+          </div>
+          <div class="comic-caption">YouTube AI tahu video apa yang kamu suka!</div>
+        </div>
+
+        <!-- Panel 2 -->
+        <div class="comic-panel">
+          <div class="comic-panel-header">Panel 2 🚗</div>
+          <div class="comic-scene">
+            <div>🧒💭</div>
+            <div class="speech-bubble">"YouTube, bisa anterin aku ke sekolah?"</div>
+            <div style="font-size:2rem;margin-top:4px;">😅❌</div>
+          </div>
+          <div class="comic-caption">YouTube bingung – itu bukan tugasnya!</div>
+        </div>
+
+        <!-- Panel 3 -->
+        <div class="comic-panel">
+          <div class="comic-panel-header">Panel 3 🎵</div>
+          <div class="comic-scene">
+            <div>🧒🎧</div>
+            <div class="speech-bubble">"Spotify, putar lagu kesukaanku!"</div>
+            <div style="font-size:2rem;margin-top:4px;">🎵✅</div>
+          </div>
+          <div class="comic-caption">Spotify langsung kasih lagu yang tepat!</div>
+        </div>
+
+        <!-- Panel 4 -->
+        <div class="comic-panel">
+          <div class="comic-panel-header">Panel 4 🤖</div>
+          <div class="comic-scene">
+            <div class="robo-anim" style="font-size:2.5rem;">🤖</div>
+            <div class="speech-bubble">"Narrow AI = Ahli di 1 hal. Itu kelebihannya!"</div>
+          </div>
+          <div class="comic-caption">Robo menjelaskan dengan bangga! 😄</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== FAKTA KEREN ===== -->
+    <div class="reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <div style="background:linear-gradient(135deg,#FFD600,#FFAB40);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 0 #F9A825;flex-shrink:0;">⚡</div>
+        <h2 class="font-kartun" style="font-size:1.7rem;color:#E65100;">Fakta Keren tentang Narrow AI!</h2>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+        <div class="fact-box" data-emoji="🏆" style="background:linear-gradient(135deg,#E0F7FA,#B2EBF2);border:3px solid #00ACC1;">
+          <h3 style="color:#006064;">🌍 Ada di Mana-Mana!</h3>
+          <p style="color:#004D5E;">Lebih dari 95% AI yang ada di dunia saat ini adalah Narrow AI. Mulai dari filter foto Instagram sampai deteksi wajah di HP-mu!</p>
+        </div>
+
+        <div class="fact-box" data-emoji="⚡" style="background:linear-gradient(135deg,#FFF8E1,#FFF176);border:3px solid #FFD600;">
+          <h3 style="color:#E65100;">🚀 Super Cepat!</h3>
+          <p style="color:#BF360C;">AI di Chess.com bisa berpikir 100 juta kemungkinan gerakan dalam 1 detik. Manusia paling pintar pun kalah cepat!</p>
+        </div>
+
+        <div class="fact-box" data-emoji="💊" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:3px solid #43A047;">
+          <h3 style="color:#2E7D32;">🏥 Menyelamatkan Nyawa!</h3>
+          <p style="color:#1B5E20;">Narrow AI di rumah sakit bisa mendeteksi kanker dari foto rontgen dengan akurasi 97% – lebih teliti dari banyak dokter!</p>
+        </div>
+
+        <div class="fact-box" data-emoji="🎮" style="background:linear-gradient(135deg,#EDE7F6,#D1C4E9);border:3px solid #7C4DFF;">
+          <h3 style="color:#4527A0;">🎯 Spesialis Sejati!</h3>
+          <p style="color:#311B92;">AlphaGo adalah Narrow AI yang menang dari juara dunia Go. Tapi kalau ditanya "berapa 2+2?", dia tidak akan bisa menjawab!</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== TIER TIMELINE ===== -->
+    <div class="card card-teal p-7 reveal">
+      <h2 class="font-kartun text-center mb-5" style="font-size:1.6rem;color:#004D40;">🗺️ Kamu Sudah Sampai Mana?</h2>
+      <div class="flex items-center justify-between gap-2 flex-wrap justify-center">
+        <div class="text-center p-3" style="opacity:0.6;">
+          <div style="font-size:1.8rem;">🟢</div>
+          <div style="font-family:'Fredoka One',cursive;font-size:0.75rem;color:#546E7A;">Tier 1<br>Aturan</div>
+        </div>
+        <div style="flex:1;height:4px;background:linear-gradient(90deg,#43A047,#00ACC1);border-radius:4px;min-width:20px;opacity:0.4;"></div>
+        <div class="text-center p-3" style="opacity:0.6;">
+          <div style="font-size:1.8rem;">🔵</div>
+          <div style="font-family:'Fredoka One',cursive;font-size:0.75rem;color:#546E7A;">Tier 2<br>ML</div>
+        </div>
+        <div style="flex:1;height:4px;background:linear-gradient(90deg,#00ACC1,#4DD0E1);border-radius:4px;min-width:20px;opacity:0.4;"></div>
+        <div class="text-center p-3" style="opacity:0.6;">
+          <div style="font-size:1.8rem;">🟣</div>
+          <div style="font-family:'Fredoka One',cursive;font-size:0.75rem;color:#546E7A;">Tier 3<br>Deep</div>
+        </div>
+        <div style="flex:1;height:4px;background:linear-gradient(90deg,#00ACC1,#FFD600);border-radius:4px;min-width:20px;"></div>
+        <div class="text-center p-3" style="background:linear-gradient(135deg,#E0F7FA,#B2EBF2);border-radius:16px;border:3px solid #00ACC1;box-shadow:0 4px 12px rgba(0,188,212,0.3);">
+          <div style="font-size:2rem;">🟡</div>
+          <div style="font-family:'Fredoka One',cursive;font-size:0.8rem;color:#006064;">Tier 4<br>Narrow AI</div>
+          <div style="font-size:0.65rem;background:#FFD600;color:#006064;border-radius:8px;padding:2px 6px;font-weight:800;margin-top:3px;">← SEKARANG!</div>
+        </div>
+        <div style="flex:1;height:4px;background:#E0E0E0;border-radius:4px;min-width:20px;opacity:0.4;"></div>
+        <div class="text-center p-3" style="opacity:0.4;">
+          <div style="font-size:1.8rem;">🔴</div>
+          <div style="font-family:'Fredoka One',cursive;font-size:0.75rem;color:#546E7A;">Tier 5–6<br>AGI/ASI</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PERTANYAAN INTERAKTIF ===== -->
+    <div class="card card-pink p-7 reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <div style="background:linear-gradient(135deg,#E91E63,#F48FB1);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 0 #880E4F;flex-shrink:0;">🧩</div>
+        <h2 class="font-kartun" style="font-size:1.7rem;color:#880E4F;">Aslan Mau Coba Quiz?</h2>
+      </div>
+
+      <!-- Question 1 -->
+      <div id="q1-section" class="mb-6">
+        <div style="background:linear-gradient(135deg,#FCE4EC,#F8BBD9);border-radius:16px;padding:14px 18px;margin-bottom:14px;border:2px solid #F48FB1;">
+          <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#880E4F;">
+            ❓ Pertanyaan 1: Mana di bawah ini yang BUKAN contoh Narrow AI?
+          </p>
+        </div>
+        <div class="space-y-3" id="q1-options">
+          <button class="quiz-option w-full" onclick="checkAnswer(this, 'q1', false)">
+            <span class="opt-letter">A</span> ChatGPT yang bisa menjawab pertanyaan
+          </button>
+          <button class="quiz-option w-full" onclick="checkAnswer(this, 'q1', true)">
+            <span class="opt-letter">B</span> Robot yang bisa melakukan SEMUA hal seperti manusia
+          </button>
+          <button class="quiz-option w-full" onclick="checkAnswer(this, 'q1', false)">
+            <span class="opt-letter">C</span> YouTube yang merekomendasikan video
+          </button>
+          <button class="quiz-option w-full" onclick="checkAnswer(this, 'q1', false)">
+            <span class="opt-letter">D</span> Google Maps yang menunjukkan jalan
+          </button>
+        </div>
+        <div id="q1-result" class="quiz-result"></div>
+      </div>
+
+      <!-- Question 2 -->
+      <div id="q2-section">
+        <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:16px;padding:14px 18px;margin-bottom:14px;border:2px solid #81C784;">
+          <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#2E7D32;">
+            ❓ Pertanyaan 2: Kenapa Narrow AI disebut "sempit"?
+          </p>
+        </div>
+        <div class="space-y-3" id="q2-options">
+          <button class="quiz-option w-full" onclick="checkAnswer(this, 'q2', false)">
+            <span class="opt-letter">A</span> Karena AI itu berukuran kecil dan tipis
+          </button>
+          <button class="quiz-option w-full" onclick="checkAnswer(this, 'q2', false)">
+            <span class="opt-letter">B</span> Karena AI itu hanya bisa digunakan oleh anak kecil
+          </button>
+          <button class="quiz-option w-full" onclick="checkAnswer(this, 'q2', true)">
+            <span class="opt-letter">C</span> Karena hanya bisa melakukan satu tugas saja, tidak semua hal
+          </button>
+          <button class="quiz-option w-full" onclick="checkAnswer(this, 'q2', false)">
+            <span class="opt-letter">D</span> Karena AI itu lambat dan tidak pintar
+          </button>
+        </div>
+        <div id="q2-result" class="quiz-result"></div>
+      </div>
+
+      <!-- Final result -->
+      <div id="final-result" class="mt-5" style="display:none;"></div>
+    </div>
+
+    <!-- ===== RANGKUMAN ===== -->
+    <div class="card card-cyan p-7 reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <div style="background:linear-gradient(135deg,#00ACC1,#4DD0E1);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 0 #006064;flex-shrink:0;">🌟</div>
+        <h2 class="font-kartun" style="font-size:1.7rem;color:#006064;">Yang Aslan Pelajari Hari Ini!</h2>
+      </div>
+      <div class="space-y-3">
+        <div style="display:flex;align-items:flex-start;gap:12px;background:#E0F7FA;border-radius:14px;padding:12px 16px;border-left:5px solid #00ACC1;">
+          <span style="font-size:1.3rem;flex-shrink:0;">✅</span>
+          <p style="font-weight:800;color:#37474F;font-size:0.95rem;">Narrow AI adalah AI yang <strong>sangat pintar di satu tugas saja</strong></p>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;background:#E8F5E9;border-radius:14px;padding:12px 16px;border-left:5px solid #43A047;">
+          <span style="font-size:1.3rem;flex-shrink:0;">✅</span>
+          <p style="font-weight:800;color:#37474F;font-size:0.95rem;">ChatGPT, YouTube, Spotify, Google Maps = semua <strong>Narrow AI</strong></p>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;background:#FFF8E1;border-radius:14px;padding:12px 16px;border-left:5px solid #FFD600;">
+          <span style="font-size:1.3rem;flex-shrink:0;">✅</span>
+          <p style="font-weight:800;color:#37474F;font-size:0.95rem;">Narrow AI tidak bisa melakukan hal lain di luar tugasnya</p>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;background:#EDE7F6;border-radius:14px;padding:12px 16px;border-left:5px solid #7C4DFF;">
+          <span style="font-size:1.3rem;flex-shrink:0;">✅</span>
+          <p style="font-weight:800;color:#37474F;font-size:0.95rem;">95% AI di dunia saat ini adalah Narrow AI – termasuk yang kamu pakai sehari-hari!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="text-center py-6 reveal">
+      <div style="display:inline-flex;align-items:center;gap:12px;background:#fff;border-radius:24px;padding:16px 28px;box-shadow:0 8px 24px rgba(0,188,212,0.15);border:3px solid #B2EBF2;">
+        <span style="font-size:2.5rem;" class="robo-anim">🤖</span>
+        <div style="text-align:left;">
+          <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#006064;">Hari 20 selesai! Kamu hebat, Aslan! 🎉</p>
+          <p style="font-size:0.85rem;font-weight:700;color:#546E7A;">Besok: Tier 5 & 6 – AGI dan ASI, AI Masa Depan! 🚀</p>
+        </div>
+      </div>
+      <div class="mt-4" style="font-size:0.8rem;font-weight:700;color:#90A4AE;">
+        🌟 Petualangan Aslan di Negeri AI • Hari 20 dari 30
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main wrapper -->
+
+
+<script>
+  // ===== SCROLL REVEAL =====
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ===== QUIZ LOGIC =====
+  const answered = { q1: false, q2: false };
+
+  function checkAnswer(btn, qId, isCorrect) {
+    if (answered[qId]) return;
+    answered[qId] = true;
+
+    const opts = document.querySelectorAll(`#${qId}-options .quiz-option`);
+    opts.forEach(o => {
+      o.style.pointerEvents = 'none';
+      o.style.opacity = '0.7';
+    });
+    btn.style.opacity = '1';
+    btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+    const result = document.getElementById(`${qId}-result`);
+    result.style.display = 'block';
+    result.style.marginTop = '12px';
+
+    if (isCorrect) {
+      result.innerHTML = `
+        <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:3px solid #43A047;border-radius:16px;padding:14px 18px;text-align:center;">
+          <p style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:#2E7D32;">🎉 Benar banget, Aslan! Kamu pintar!</p>
+          <p style="font-size:0.88rem;font-weight:700;color:#388E3C;margin-top:4px;">
+            ${qId === 'q1'
+              ? 'Robot yang bisa SEMUA hal itu namanya AGI – bukan Narrow AI! Narrow AI hanya ahli di 1 tugas.'
+              : '"Sempit" artinya hanya bisa 1 tugas saja. ChatGPT pintar ngobrol, tapi tidak bisa nyetir mobil!'}
+          </p>
+        </div>`;
+    } else {
+      // Show correct answer
+      opts.forEach(o => {
+        if (o.getAttribute('onclick').includes('true')) {
+          o.style.opacity = '1';
+          o.classList.add('correct');
+        }
+      });
+      result.innerHTML = `
+        <div style="background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border:3px solid #E53935;border-radius:16px;padding:14px 18px;text-align:center;">
+          <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#C62828;">😅 Hampir! Coba lihat jawaban yang benar ya!</p>
+          <p style="font-size:0.88rem;font-weight:700;color:#B71C1C;margin-top:4px;">
+            ${qId === 'q1'
+              ? 'Jawaban B benar! Robot yang bisa semua hal itu adalah AGI (Tier 5), bukan Narrow AI.'
+              : 'Jawaban C benar! "Sempit" = hanya bisa melakukan 1 tugas spesifik saja.'}
+          </p>
+        </div>`;
+    }
+
+    if (answered.q1 && answered.q2) {
+      setTimeout(() => showFinalResult(), 400);
+    }
+  }
+
+  function showFinalResult() {
+    const final = document.getElementById('final-result');
+    final.style.display = 'block';
+    final.innerHTML = `
+      <div style="background:linear-gradient(135deg,#E0F7FA,#B2EBF2);border:3px solid #00ACC1;border-radius:20px;padding:20px;text-align:center;animation:bounceIn 0.5s ease;">
+        <div style="font-size:3rem;margin-bottom:8px;">🏆🤖⭐</div>
+        <p style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:#006064;">Quiz Selesai!</p>
+        <p style="font-size:1rem;font-weight:800;color:#00838F;margin-top:6px;">
+          Kamu sekarang sudah paham tentang Narrow AI! <br>Robo bangga sama kamu, Aslan! 😄
+        </p>
+      </div>`;
+  }
+</script>
+
+</body>
+</html>

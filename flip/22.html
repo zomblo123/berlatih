@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Flipbook #22 – Ada Lovelace: Gadis Pintar Penemu Coding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --cream:   #fdf6ec;
+    --parchment: #f5e9d0;
+    --ink:     #2d1b4e;
+    --royal:   #5b2d8e;
+    --gold:    #b8860b;
+    --gold-lt: #f0c040;
+    --rose:    #c2185b;
+    --sage:    #4a7c59;
+    --active-dot: #7c3aed;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--cream);
+    background-image:
+      radial-gradient(ellipse at 20% 10%, #f3e0ff55 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, #fff3c455 0%, transparent 50%);
+    font-family: 'Quicksand', sans-serif;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 12px 32px;
+  }
+
+  /* ── PAPER TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── HEADER BADGE ── */
+  .series-badge {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    background: var(--ink);
+    padding: 4px 16px;
+    border-radius: 99px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    position: relative; z-index: 1;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline-wrap {
+    width: 100%; max-width: 600px;
+    position: relative; z-index: 1;
+    display: flex; align-items: center;
+    gap: 0; margin-bottom: 14px;
+    padding: 0 4px;
+  }
+  .tl-dot {
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    background: #d6c5f0;
+    border: 2px solid #c4a8e8;
+    flex-shrink: 0;
+    transition: all .35s ease;
+    cursor: pointer;
+    position: relative;
+  }
+  .tl-dot.active {
+    background: var(--active-dot);
+    border-color: var(--active-dot);
+    box-shadow: 0 0 0 4px #7c3aed33;
+    transform: scale(1.35);
+  }
+  .tl-dot.visited {
+    background: #a78bda;
+    border-color: #a78bda;
+  }
+  .tl-line {
+    flex: 1; height: 2px;
+    background: linear-gradient(90deg, #a78bda, #d6c5f0);
+    border-radius: 2px;
+  }
+  .tl-label {
+    position: absolute;
+    top: 18px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: var(--royal);
+    white-space: nowrap;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity .2s;
+  }
+  .tl-dot.active .tl-label { opacity: 1; }
+
+  /* ── BOOK CARD ── */
+  .book-card {
+    width: 100%; max-width: 600px;
+    min-height: 420px;
+    background: var(--parchment);
+    border-radius: 28px;
+    box-shadow:
+      inset 0 2px 8px #0000001a,
+      inset 0 -2px 6px #ffffff88,
+      0 12px 40px #5b2d8e22,
+      0 2px 0 #b8860b44;
+    border: 1.5px solid #e2c97e88;
+    padding: 32px 28px 28px;
+    position: relative; z-index: 1;
+    overflow: hidden;
+  }
+
+  /* decorative corner flourish */
+  .book-card::before,
+  .book-card::after {
+    content: '❧';
+    position: absolute;
+    font-size: 28px;
+    color: #b8860b33;
+  }
+  .book-card::before { top: 10px; left: 14px; }
+  .book-card::after  { bottom: 10px; right: 14px; transform: rotate(180deg); }
+
+  /* spine line on left */
+  .book-card .spine {
+    position: absolute; left: 22px; top: 20px; bottom: 20px;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, #b8860b66, transparent);
+    border-radius: 2px;
+  }
+
+  /* ── PAGE SLIDE ANIMATION ── */
+  .page-view {
+    display: none;
+    animation: slideUp .45s cubic-bezier(.22,1,.36,1) both;
+  }
+  .page-view.active { display: flex; flex-direction: column; align-items: center; }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .page-num {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .page-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(17px, 4.5vw, 26px);
+    font-weight: 800;
+    color: var(--royal);
+    text-align: center;
+    line-height: 1.25;
+    margin-bottom: 6px;
+  }
+  .page-sub {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(12px, 3vw, 15px);
+    font-weight: 600;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 14px;
+    font-style: italic;
+  }
+  .page-body {
+    font-size: clamp(14px, 3.5vw, 16px);
+    line-height: 1.75;
+    color: #3b2563;
+    text-align: center;
+    max-width: 480px;
+  }
+  .page-body.left { text-align: left; }
+
+  .divider {
+    width: 80px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    border-radius: 2px;
+    margin: 10px auto 16px;
+  }
+
+  /* ── SVG ICON AREA ── */
+  .icon-wrap {
+    margin: 10px 0 16px;
+    display: flex; justify-content: center; align-items: center;
+  }
+
+  /* ── BULLET LIST ── */
+  .fact-list {
+    list-style: none; padding: 0; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 10px;
+    max-width: 400px; text-align: left;
+  }
+  .fact-list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: #fff8ee;
+    border-left: 3px solid var(--gold);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: clamp(13px, 3.2vw, 15px);
+    line-height: 1.55;
+    color: #3b2563;
+    box-shadow: 0 1px 4px #5b2d8e0d;
+  }
+  .fact-list li .bullet {
+    flex-shrink: 0;
+    font-size: 18px;
+    line-height: 1.3;
+  }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box {
+    background: linear-gradient(135deg, #f3e0ff, #fff3c4);
+    border-radius: 16px;
+    border: 1.5px solid #c4a8e8;
+    padding: 16px 20px;
+    margin: 8px 0 4px;
+    font-size: clamp(13px, 3.2vw, 15px);
+    line-height: 1.7;
+    color: #2d1b4e;
+    text-align: center;
+    max-width: 460px;
+  }
+
+  /* ── COVER PAGE SPECIFIC ── */
+  .cover-glow {
+    background: radial-gradient(ellipse at center, #f0c04022, transparent 70%);
+    border-radius: 50%;
+    width: 200px; height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 8px;
+  }
+
+  /* ── ENDING CARD ── */
+  .ending-card {
+    background: linear-gradient(135deg, #2d1b4e, #5b2d8e);
+    color: #fff;
+    border-radius: 18px;
+    padding: 18px 22px;
+    text-align: center;
+    max-width: 440px;
+    margin: 8px auto 0;
+  }
+  .ending-card .title {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    color: var(--gold-lt);
+    margin-bottom: 6px;
+  }
+  .ending-card p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #e0d4f7;
+    margin: 0;
+  }
+
+  /* ── NAV BUTTONS ── */
+  .nav-row {
+    width: 100%; max-width: 600px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+    position: relative; z-index: 1;
+  }
+  .btn-nav {
+    min-width: 56px; min-height: 56px;
+    border-radius: 18px;
+    border: none; cursor: pointer;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: transform .18s, box-shadow .18s, opacity .18s;
+    padding: 14px 22px;
+    text-decoration: none;
+  }
+  .btn-nav:active { transform: scale(.95); }
+
+  .btn-back {
+    background: #fff;
+    color: var(--royal);
+    border: 2px solid #c4a8e8;
+    box-shadow: 0 3px 12px #5b2d8e18;
+  }
+  .btn-back:hover { box-shadow: 0 6px 20px #5b2d8e28; transform: translateY(-2px); }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--royal), #7c3aed);
+    color: #fff;
+    box-shadow: 0 4px 18px #7c3aed44;
+    flex: 1;
+  }
+  .btn-next:hover { box-shadow: 0 8px 28px #7c3aed55; transform: translateY(-2px); }
+
+  .btn-library {
+    background: linear-gradient(135deg, var(--gold), #d4a017);
+    color: var(--ink);
+    box-shadow: 0 4px 18px #b8860b33;
+    font-weight: 700;
+    padding: 14px 24px;
+    border-radius: 18px;
+    border: none; cursor: pointer;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 15px;
+    display: flex; align-items: center; gap: 8px;
+    text-decoration: none;
+    transition: transform .18s, box-shadow .18s;
+  }
+  .btn-library:hover { transform: translateY(-2px); box-shadow: 0 8px 28px #b8860b44; }
+
+  .btn-disabled {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* page counter pill */
+  .page-counter {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--royal);
+    background: #f0e8ff;
+    border-radius: 99px;
+    padding: 6px 16px;
+    letter-spacing: 1px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 400px) {
+    .book-card { padding: 24px 18px 20px; border-radius: 20px; }
+    .btn-nav, .btn-library { font-size: 13px; padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="series-badge">✦ Perpustakaan Digital · Seri Edukasi #22 ✦</div>
+
+<!-- TIMELINE -->
+<div class="timeline-wrap" id="timeline"></div>
+
+<!-- BOOK CARD -->
+<div class="book-card">
+  <div class="spine"></div>
+
+  <!-- PAGE 1: COVER -->
+  <div class="page-view" data-page="1">
+    <div class="page-num">Flipbook · No. 22</div>
+    <div class="cover-glow">
+      <!-- Crown + Quill SVG -->
+      <svg width="130" height="130" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="65" cy="65" r="60" fill="#5b2d8e11" stroke="#b8860b" stroke-width="1.5"/>
+        <!-- Crown -->
+        <polygon points="30,82 30,58 45,70 65,48 85,70 100,58 100,82" fill="#b8860b" opacity="0.85"/>
+        <rect x="28" y="82" width="74" height="8" rx="4" fill="#b8860b" opacity="0.7"/>
+        <!-- Jewels -->
+        <circle cx="65" cy="56" r="5" fill="#f0c040"/>
+        <circle cx="44" cy="69" r="3.5" fill="#c2185b"/>
+        <circle cx="86" cy="69" r="3.5" fill="#4a7c59"/>
+        <!-- Quill -->
+        <path d="M72 98 Q80 72 95 55" stroke="#5b2d8e" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M95 55 Q78 65 72 98" fill="#a78bda" opacity="0.5"/>
+        <!-- Stars -->
+        <text x="20" y="48" font-size="14" fill="#f0c040" opacity="0.7">✦</text>
+        <text x="96" y="105" font-size="10" fill="#b8860b" opacity="0.6">✦</text>
+        <text x="50" y="112" font-size="8" fill="#c2185b" opacity="0.5">✦</text>
+      </svg>
+    </div>
+    <div class="page-title">Ada Lovelace</div>
+    <div class="page-sub">Gadis Pintar Penemu Coding</div>
+    <div class="divider"></div>
+    <p class="page-body">
+      Siapa gadis pertama yang menulis<br/>
+      <strong style="color:var(--royal)">program komputer</strong> di dunia?
+    </p>
+    <div style="margin-top:14px;font-size:13px;color:#9c7bc0;font-style:italic;">
+      Inggris, Abad ke-19 · Sebuah kisah luar biasa menanti…
+    </div>
+  </div>
+
+  <!-- PAGE 2: PENGENALAN -->
+  <div class="page-view" data-page="2">
+    <div class="page-num">Halaman 2 · Pengenalan</div>
+    <div class="icon-wrap">
+      <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="35" cy="35" r="32" fill="#f3e0ff" stroke="#a78bda" stroke-width="1.5"/>
+        <!-- lightbulb -->
+        <path d="M35 14 C25 14 19 21 19 29 C19 35.5 23 40.5 29 43 L29 50 L41 50 L41 43 C47 40.5 51 35.5 51 29 C51 21 45 14 35 14Z" fill="#f0c040" opacity="0.9"/>
+        <rect x="28" y="50" width="14" height="4" rx="2" fill="#b8860b"/>
+        <rect x="30" y="54" width="10" height="3" rx="1.5" fill="#b8860b" opacity="0.7"/>
+        <!-- shine -->
+        <path d="M27 22 Q31 18 36 19" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+    </div>
+    <div class="page-title">Tahukah Kamu?</div>
+    <div class="divider"></div>
+    <p class="page-body">
+      Kita sering mendengar nama
+      <strong style="color:var(--royal)">Bill Gates, Steve Jobs,</strong> atau <strong style="color:var(--royal)">Mark Zuckerberg.</strong>
+    </p>
+    <div class="highlight-box" style="margin-top:16px;">
+      🌟 Tapi orang <em>pertama</em> yang menulis<br/>
+      <strong>program komputer di dunia</strong><br/>
+      adalah seorang… <strong style="color:var(--royal);font-size:17px;">GADIS!</strong><br/>
+      Namanya <strong style="color:var(--rose)">Ada Lovelace</strong> 💜
+    </div>
+  </div>
+
+  <!-- PAGE 3: SIAPA ADA -->
+  <div class="page-view" data-page="3">
+    <div class="page-num">Halaman 3 · Siapa Ada Lovelace?</div>
+    <div class="icon-wrap">
+      <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="35" cy="35" r="32" fill="#fff3c4" stroke="#b8860b" stroke-width="1.5"/>
+        <!-- Book open -->
+        <rect x="14" y="22" width="20" height="28" rx="3" fill="#5b2d8e" opacity="0.8"/>
+        <rect x="36" y="22" width="20" height="28" rx="3" fill="#7c3aed" opacity="0.7"/>
+        <rect x="33" y="20" width="4" height="32" rx="2" fill="#b8860b"/>
+        <!-- lines on book -->
+        <line x1="18" y1="30" x2="30" y2="30" stroke="white" stroke-width="1.5" opacity="0.6"/>
+        <line x1="18" y1="35" x2="30" y2="35" stroke="white" stroke-width="1.5" opacity="0.6"/>
+        <line x1="18" y1="40" x2="26" y2="40" stroke="white" stroke-width="1.5" opacity="0.6"/>
+        <line x1="40" y1="30" x2="52" y2="30" stroke="white" stroke-width="1.5" opacity="0.6"/>
+        <line x1="40" y1="35" x2="52" y2="35" stroke="white" stroke-width="1.5" opacity="0.6"/>
+        <!-- UK flag hint -->
+        <text x="22" y="58" font-size="16">🇬🇧</text>
+      </svg>
+    </div>
+    <div class="page-title">Ada Lahir di Inggris</div>
+    <div class="divider"></div>
+    <ul class="fact-list">
+      <li><span class="bullet">📅</span> Lahir di <strong>London, Inggris</strong> pada tahun <strong>1815</strong></li>
+      <li><span class="bullet">📜</span> Ayahnya adalah <strong>Lord Byron</strong> — penyair terkenal di seluruh Eropa</li>
+      <li><span class="bullet">🔢</span> Tapi Ada lebih suka <strong>matematika &amp; sains</strong> daripada puisi!</li>
+      <li><span class="bullet">👑</span> Dia bergelar bangsawan: <strong>Countess of Lovelace</strong></li>
+    </ul>
+  </div>
+
+  <!-- PAGE 4: MESIN AJAIB -->
+  <div class="page-view" data-page="4">
+    <div class="page-num">Halaman 4 · Bertemu Mesin Ajaib</div>
+    <div class="icon-wrap">
+      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="36" cy="36" r="33" fill="#e8f5e9" stroke="#4a7c59" stroke-width="1.5"/>
+        <!-- Big gear -->
+        <g transform="translate(20,20)">
+          <circle cx="16" cy="16" r="8" fill="#5b2d8e" opacity="0.8"/>
+          <circle cx="16" cy="16" r="4" fill="#b8860b"/>
+          <path d="M16 2 L18 7 L14 7 Z" fill="#5b2d8e" opacity="0.8"/>
+          <path d="M16 30 L18 25 L14 25 Z" fill="#5b2d8e" opacity="0.8"/>
+          <path d="M2 16 L7 18 L7 14 Z" fill="#5b2d8e" opacity="0.8"/>
+          <path d="M30 16 L25 18 L25 14 Z" fill="#5b2d8e" opacity="0.8"/>
+          <path d="M5.5 5.5 L9.5 9.5 L7 12 Z" fill="#5b2d8e" opacity="0.8"/>
+          <path d="M26.5 26.5 L22.5 22.5 L25 20 Z" fill="#5b2d8e" opacity="0.8"/>
+          <path d="M26.5 5.5 L22.5 9.5 L25 12 Z" fill="#5b2d8e" opacity="0.8"/>
+          <path d="M5.5 26.5 L9.5 22.5 L7 20 Z" fill="#5b2d8e" opacity="0.8"/>
+        </g>
+        <!-- Small gear -->
+        <g transform="translate(42,38)">
+          <circle cx="8" cy="8" r="5" fill="#7c3aed" opacity="0.7"/>
+          <circle cx="8" cy="8" r="2.5" fill="#f0c040"/>
+          <path d="M8 1 L9.2 4.2 L6.8 4.2 Z" fill="#7c3aed" opacity="0.7"/>
+          <path d="M8 15 L9.2 11.8 L6.8 11.8 Z" fill="#7c3aed" opacity="0.7"/>
+          <path d="M1 8 L4.2 9.2 L4.2 6.8 Z" fill="#7c3aed" opacity="0.7"/>
+          <path d="M15 8 L11.8 9.2 L11.8 6.8 Z" fill="#7c3aed" opacity="0.7"/>
+        </g>
+      </svg>
+    </div>
+    <div class="page-title">Bertemu Mesin Ajaib!</div>
+    <div class="divider"></div>
+    <p class="page-body">
+      Saat berusia <strong style="color:var(--royal)">17 tahun</strong>, Ada bertemu
+      <strong style="color:var(--royal)">Charles Babbage</strong> — seorang ilmuwan jenius.
+    </p>
+    <div class="highlight-box" style="margin-top:14px;">
+      ⚙️ Babbage menciptakan <strong>Analytical Engine</strong> —<br/>
+      <em>mesin hitung pertama di dunia!</em><br/><br/>
+      Ada langsung terpesona dan ingin tahu<br/>
+      apa lagi yang bisa dilakukan mesin ini… 🤩
+    </div>
+  </div>
+
+  <!-- PAGE 5: IDE JENIUS -->
+  <div class="page-view" data-page="5">
+    <div class="page-num">Halaman 5 · Ide Jenius Ada</div>
+    <div class="icon-wrap">
+      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="36" cy="36" r="33" fill="#fce4ec" stroke="#c2185b" stroke-width="1.5"/>
+        <!-- Quill -->
+        <path d="M48 12 Q56 20 38 44 L28 56 L32 42 Q44 28 48 12Z" fill="#a78bda" opacity="0.85"/>
+        <path d="M48 12 Q38 22 32 42" stroke="white" stroke-width="1.2" opacity="0.6"/>
+        <path d="M28 56 L30 46 L36 48 Z" fill="#5b2d8e"/>
+        <!-- Code symbols -->
+        <text x="14" y="30" font-size="13" fill="#c2185b" font-weight="bold" opacity="0.8">&lt;/&gt;</text>
+        <text x="14" y="46" font-size="11" fill="#5b2d8e" opacity="0.7">101</text>
+        <text x="50" y="60" font-size="11" fill="#4a7c59" opacity="0.7">∑</text>
+      </svg>
+    </div>
+    <div class="page-title">Program Pertama di Dunia!</div>
+    <div class="divider"></div>
+    <p class="page-body">
+      Ada menyadari sesuatu yang <em>luar biasa</em>:
+    </p>
+    <div class="highlight-box" style="margin-top:12px;text-align:left;">
+      💡 Mesin Babbage bukan hanya bisa <strong>menghitung angka</strong>…<br/><br/>
+      Kalau diberi <strong>instruksi yang tepat</strong>, mesin itu bisa melakukan <strong>hal-hal lain!</strong><br/><br/>
+      Maka Ada pun menulis instruksi panjang untuk mesin itu.<br/>
+      Inilah <strong style="color:var(--royal)">program komputer pertama di dunia!</strong> 🌍
+    </div>
+  </div>
+
+  <!-- PAGE 6: KONTRIBUSI -->
+  <div class="page-view" data-page="6">
+    <div class="page-num">Halaman 6 · Kontribusi Besar Ada</div>
+    <div class="icon-wrap">
+      <svg width="68" height="68" viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="34" cy="34" r="31" fill="#e8eaf6" stroke="#5b2d8e" stroke-width="1.5"/>
+        <!-- Star medal -->
+        <polygon points="34,10 38,24 52,24 41,33 45,47 34,38 23,47 27,33 16,24 30,24" fill="#f0c040" opacity="0.9" stroke="#b8860b" stroke-width="1"/>
+        <circle cx="34" cy="30" r="6" fill="#5b2d8e"/>
+        <text x="31" y="34" font-size="8" fill="white" font-weight="bold">A</text>
+      </svg>
+    </div>
+    <div class="page-title">Kontribusi Besar Ada</div>
+    <div class="divider"></div>
+    <ul class="fact-list">
+      <li><span class="bullet">📓</span> Menulis <strong>catatan yang sangat detail</strong> tentang cara kerja mesin</li>
+      <li><span class="bullet">🎵</span> Membayangkan komputer bisa membuat <strong>musik, gambar, dan banyak hal</strong> lainnya</li>
+      <li><span class="bullet">⏳</span> Visinya <strong>100 tahun lebih cepat</strong> dari zamannya — benar-benar luar biasa!</li>
+    </ul>
+  </div>
+
+  <!-- PAGE 7: FAKTA KEREN -->
+  <div class="page-view" data-page="7">
+    <div class="page-num">Halaman 7 · Fakta Keren tentang Ada</div>
+    <div class="icon-wrap">
+      <svg width="68" height="68" viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="34" cy="34" r="31" fill="#fff8e1" stroke="#b8860b" stroke-width="1.5"/>
+        <text x="20" y="42" font-size="32" opacity="0.85">💻</text>
+        <text x="40" y="22" font-size="18">✨</text>
+      </svg>
+    </div>
+    <div class="page-title">Fakta Keren Ada!</div>
+    <div class="divider"></div>
+    <ul class="fact-list">
+      <li><span class="bullet">💻</span> Namanya diabadikan sebagai <strong>bahasa pemrograman "Ada"</strong></li>
+      <li><span class="bullet">🏆</span> Diakui sebagai <strong>programmer pertama di dunia</strong></li>
+      <li><span class="bullet">👑</span> Bergelar resmi: <strong>Countess of Lovelace</strong></li>
+      <li><span class="bullet">🚀</span> Hidup di abad ke-19, tapi pikirannya seperti <strong>orang masa kini!</strong></li>
+    </ul>
+  </div>
+
+  <!-- PAGE 8: MENGAPA PENTING -->
+  <div class="page-view" data-page="8">
+    <div class="page-num">Halaman 8 · Mengapa Ada Penting?</div>
+    <div class="icon-wrap">
+      <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="35" cy="35" r="32" fill="#e0f2f1" stroke="#4a7c59" stroke-width="1.5"/>
+        <!-- Math symbols -->
+        <text x="12" y="32" font-size="20" fill="#5b2d8e" opacity="0.8" font-weight="bold">∑</text>
+        <text x="38" y="28" font-size="16" fill="#b8860b" opacity="0.8">π</text>
+        <text x="26" y="52" font-size="16" fill="#c2185b" opacity="0.8">∞</text>
+        <text x="48" y="50" font-size="14" fill="#4a7c59" opacity="0.8">√</text>
+        <!-- Brain outline rough -->
+        <path d="M22 40 Q18 30 25 25 Q30 18 38 22 Q46 18 50 27 Q56 32 50 40 Q46 46 38 44 Q30 46 22 40Z" stroke="#7c3aed" stroke-width="2" fill="none" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="page-title">Mengapa Ada Sangat Penting?</div>
+    <div class="divider"></div>
+    <div class="highlight-box">
+      Sebelum Ada, orang hanya berpikir komputer itu cuma untuk
+      <strong>menghitung angka</strong>. 🔢<br/><br/>
+      Ada adalah orang <strong>pertama di dunia</strong> yang mengerti:<br/>
+      komputer bisa melakukan <strong>segala hal</strong>…<br/>
+      asal kita memberi perintah yang tepat.<br/><br/>
+      Itulah yang kita sebut <strong style="color:var(--royal);font-size:16px;">CODING!</strong> 💻
+    </div>
+  </div>
+
+  <!-- PAGE 9: PESAN ANAK PEREMPUAN -->
+  <div class="page-view" data-page="9">
+    <div class="page-num">Halaman 9 · Pesan untuk Semua Anak Perempuan</div>
+    <div class="icon-wrap">
+      <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="35" cy="35" r="32" fill="#fce4ec" stroke="#c2185b" stroke-width="1.5"/>
+        <text x="17" y="46" font-size="36">👧</text>
+        <text x="44" y="26" font-size="18">💪</text>
+        <text x="44" y="48" font-size="14">⭐</text>
+      </svg>
+    </div>
+    <div class="page-title">Pesan Spesial!</div>
+    <div class="divider"></div>
+    <div class="highlight-box" style="background:linear-gradient(135deg,#fce4ec,#f3e0ff);border-color:#c2185b;">
+      💜 <strong>Gadis-gadis juga bisa HEBAT</strong><br/>
+      di bidang sains, matematika, dan coding!<br/><br/>
+      Jangan pernah ragu untuk menyukai<br/>
+      hal-hal yang "dianggap sulit".<br/><br/>
+      <em style="color:var(--rose);">Ada membuktikan itu, 200 tahun yang lalu!</em>
+    </div>
+    <p class="page-body" style="margin-top:14px;font-size:13px;color:#7c3aed;">
+      ✦ Kecerdasan tidak mengenal jenis kelamin ✦
+    </p>
+  </div>
+
+  <!-- PAGE 10: WARISAN -->
+  <div class="page-view" data-page="10">
+    <div class="page-num">Halaman 10 · Warisan Ada Lovelace</div>
+    <div class="icon-wrap">
+      <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="35" cy="35" r="32" fill="#e8f5e9" stroke="#4a7c59" stroke-width="1.5"/>
+        <!-- Globe-like grid -->
+        <circle cx="35" cy="35" r="18" stroke="#5b2d8e" stroke-width="1.5" fill="none"/>
+        <ellipse cx="35" cy="35" rx="10" ry="18" stroke="#5b2d8e" stroke-width="1.2" fill="none"/>
+        <line x1="17" y1="35" x2="53" y2="35" stroke="#5b2d8e" stroke-width="1.2"/>
+        <line x1="20" y1="25" x2="50" y2="25" stroke="#5b2d8e" stroke-width="1" opacity="0.6"/>
+        <line x1="20" y1="45" x2="50" y2="45" stroke="#5b2d8e" stroke-width="1" opacity="0.6"/>
+        <!-- People dots -->
+        <circle cx="26" cy="32" r="3" fill="#c2185b"/>
+        <circle cx="44" cy="38" r="3" fill="#4a7c59"/>
+        <circle cx="35" cy="22" r="3" fill="#b8860b"/>
+        <circle cx="35" cy="48" r="3" fill="#7c3aed"/>
+      </svg>
+    </div>
+    <div class="page-title">Warisan yang Abadi</div>
+    <div class="divider"></div>
+    <p class="page-body">
+      Sekarang <strong style="color:var(--royal)">jutaan programmer</strong> di seluruh dunia —<br/>
+      laki-laki maupun perempuan — mengikuti jejak Ada.
+    </p>
+    <div class="highlight-box" style="margin-top:14px;">
+      ⌨️ Setiap kali kita menulis kode,<br/>
+      kita sedang melanjutkan<br/>
+      <strong>ide-ide cemerlang Ada Lovelace.</strong><br/><br/>
+      Warisannya hidup dalam setiap baris kode! 💜
+    </div>
+  </div>
+
+  <!-- PAGE 11: PESAN PENTING -->
+  <div class="page-view" data-page="11">
+    <div class="page-num">Halaman 11 · Pesan Penting!</div>
+    <div class="icon-wrap">
+      <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="35" cy="35" r="32" fill="#ede7f6" stroke="#7c3aed" stroke-width="1.5"/>
+        <text x="15" y="44" font-size="32">🤝</text>
+        <text x="44" y="28" font-size="18">💻</text>
+        <text x="8"  y="24" font-size="14">👦</text>
+        <text x="48" y="54" font-size="14">👧</text>
+      </svg>
+    </div>
+    <div class="page-title">Coding untuk Semua!</div>
+    <div class="divider"></div>
+    <div class="highlight-box" style="background:linear-gradient(135deg,#ede7f6,#e8f5e9);border-color:#7c3aed;font-size:16px;">
+      <strong style="font-size:20px;color:var(--royal)">Coding bukan hanya untuk cowok.</strong><br/><br/>
+      👦 Siapa pun bisa belajar coding.<br/>
+      👧 Termasuk <strong>KAMU!</strong><br/><br/>
+      Yang dibutuhkan hanya<br/>
+      <strong>rasa ingin tahu &amp; mau mencoba.</strong> 🚀
+    </div>
+    <p class="page-body" style="margin-top:14px;font-size:13px;color:#7c3aed;font-style:italic;">
+      Ada Lovelace membuktikan ini sejak 1843!
+    </p>
+  </div>
+
+  <!-- PAGE 12: ENDING -->
+  <div class="page-view" data-page="12">
+    <div class="page-num">Halaman 12 · Selesai! 🎉</div>
+    <div class="icon-wrap">
+      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="36" cy="36" r="33" fill="#fff3c4" stroke="#b8860b" stroke-width="1.5"/>
+        <!-- Ribbon / award -->
+        <circle cx="36" cy="30" r="14" fill="#5b2d8e" opacity="0.85"/>
+        <polygon points="28,42 36,56 36,56 44,42" fill="#7c3aed" opacity="0.7"/>
+        <polygon points="32,42 36,56 36,42" fill="#5b2d8e" opacity="0.6"/>
+        <text x="29" y="35" font-size="13" fill="#f0c040" font-weight="bold">ADA</text>
+        <!-- Stars around -->
+        <text x="10" y="22" font-size="14" fill="#f0c040">⭐</text>
+        <text x="54" y="22" font-size="14" fill="#f0c040">⭐</text>
+        <text x="10" y="56" font-size="12" fill="#c2185b">✦</text>
+        <text x="56" y="56" font-size="12" fill="#c2185b">✦</text>
+      </svg>
+    </div>
+    <div class="page-title">Kamu Sudah Mengenal Ada Lovelace!</div>
+    <div class="divider"></div>
+    <p class="page-body" style="margin-bottom:12px;">
+      Dia membuktikan bahwa <strong>ide besar</strong> bisa datang dari siapa saja,<br/>
+      termasuk seorang gadis dari abad ke-19. 💜
+    </p>
+    <div class="ending-card">
+      <div class="title">✦ Selanjutnya: Flipbook #23 ✦</div>
+      <p><strong style="color:var(--gold-lt)">Bill Gates</strong> — Anak yang Suka Main Komputer 🖥️<br/><br/>
+      Kalau ada yang ingin ditanyakan tentang Ada Lovelace, coding, atau hal lainnya,<br/>
+      <strong style="color:var(--gold-lt)">tanya saja ke Ayah Sigit ya!</strong><br/>
+      Ayah siap jelasin dengan senang hati 😊</p>
+    </div>
+  </div>
+
+</div><!-- .book-card -->
+
+<!-- NAV ROW -->
+<div class="nav-row" id="navRow">
+  <button class="btn-nav btn-back" id="btnBack" onclick="navigate(-1)">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+    Kembali
+  </button>
+  <span class="page-counter" id="pageCounter">1 / 12</span>
+  <button class="btn-nav btn-next" id="btnNext" onclick="navigate(1)">
+    Lanjut
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+</div>
+
+<!-- LIBRARY BUTTON (shown on last page) -->
+<div id="libraryRow" style="display:none;margin-top:12px;width:100%;max-width:600px;display:none;justify-content:center;z-index:1;">
+  <a href="..\/perpustakaan.html" class="btn-library">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+    Kembali ke Perpustakaan
+  </a>
+</div>
+
+<script>
+  const TOTAL = 12;
+  let current = 1;
+  let visited = new Set([1]);
+
+  // Build timeline
+  const tl = document.getElementById('timeline');
+  for (let i = 1; i <= TOTAL; i++) {
+    if (i > 1) {
+      const line = document.createElement('div');
+      line.className = 'tl-line';
+      tl.appendChild(line);
+    }
+    const dot = document.createElement('div');
+    dot.className = 'tl-dot' + (i === 1 ? ' active' : '');
+    dot.dataset.page = i;
+    dot.title = `Halaman ${i}`;
+    const label = document.createElement('span');
+    label.className = 'tl-label';
+    label.textContent = i;
+    dot.appendChild(label);
+    dot.addEventListener('click', () => goTo(i));
+    tl.appendChild(dot);
+  }
+
+  function goTo(n) {
+    if (n < 1 || n > TOTAL) return;
+
+    // Hide current page
+    const prev = document.querySelector(`.page-view[data-page="${current}"]`);
+    if (prev) prev.classList.remove('active');
+
+    current = n;
+    visited.add(n);
+
+    // Show new page (force re-animation)
+    const next = document.querySelector(`.page-view[data-page="${current}"]`);
+    if (next) {
+      next.classList.remove('active');
+      void next.offsetWidth; // reflow
+      next.classList.add('active');
+    }
+
+    updateUI();
+  }
+
+  function navigate(dir) { goTo(current + dir); }
+
+  function updateUI() {
+    // Timeline dots
+    document.querySelectorAll('.tl-dot').forEach(dot => {
+      const p = parseInt(dot.dataset.page);
+      dot.classList.toggle('active', p === current);
+      dot.classList.toggle('visited', visited.has(p) && p !== current);
+    });
+
+    // Buttons
+    const btnBack = document.getElementById('btnBack');
+    const btnNext = document.getElementById('btnNext');
+    btnBack.classList.toggle('btn-disabled', current === 1);
+    btnNext.classList.toggle('btn-disabled', current === TOTAL);
+
+    // Page counter
+    document.getElementById('pageCounter').textContent = `${current} / ${TOTAL}`;
+
+    // Library button
+    const libRow = document.getElementById('libraryRow');
+    if (current === TOTAL) {
+      libRow.style.display = 'flex';
+    } else {
+      libRow.style.display = 'none';
+    }
+  }
+
+  // Init: show page 1
+  document.querySelector('.page-view[data-page="1"]').classList.add('active');
+  updateUI();
+</script>
+</body>
+</html>

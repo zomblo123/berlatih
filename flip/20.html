@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flip 20 – Belanja Online: Siapa yang Mengatur Toko di HP?</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --shopee: #EE4D2D;
+    --tokped: #00AA5B;
+    --lazada: #0F146B;
+    --lazada-light: #2563EB;
+    --bg: #F7F8FC;
+    --card: #FFFFFF;
+    --text: #1E293B;
+    --muted: #64748B;
+    --progress-h: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(238,77,45,0.06) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(0,170,91,0.06) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(37,99,235,0.04) 0%, transparent 60%);
+  }
+
+  h1, h2, h3, .font-fredoka { font-family: 'Fredoka', sans-serif; }
+
+  /* ─── PROGRESS BAR ─── */
+  #progress-wrap {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--progress-h);
+    background: #E2E8F0;
+    z-index: 100;
+  }
+  #progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--shopee), #FF6B35, var(--tokped));
+    border-radius: 0 9999px 9999px 0;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 0 10px rgba(238,77,45,0.4);
+  }
+
+  /* ─── BOOK WRAPPER ─── */
+  #book {
+    width: 100%;
+    max-width: 480px;
+    background: var(--card);
+    border-radius: 24px;
+    box-shadow:
+      0 4px 6px rgba(0,0,0,0.05),
+      0 10px 40px rgba(0,0,0,0.10),
+      0 1px 0 rgba(255,255,255,0.9) inset;
+    overflow: hidden;
+    position: relative;
+    margin-top: 10px;
+  }
+
+  /* ─── PAGE HEADER STRIPE ─── */
+  .page-stripe {
+    height: 5px;
+    width: 100%;
+  }
+
+  /* ─── PAGE ─── */
+  .page {
+    display: none;
+    flex-direction: column;
+    min-height: 560px;
+    padding: 28px 28px 20px;
+    animation: fadeSlideIn 0.4s ease;
+  }
+  .page.active { display: flex; }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── ILLUSTRATION AREA ─── */
+  .illus-box {
+    width: 100%;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 22px;
+    position: relative;
+    overflow: hidden;
+    min-height: 170px;
+  }
+
+  /* ─── NAV ─── */
+  #nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 28px 20px;
+    border-top: 1px solid #F1F5F9;
+    gap: 10px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn:active { transform: scale(0.96); }
+
+  .btn-prev {
+    background: #F1F5F9;
+    color: var(--text);
+  }
+  .btn-prev:hover { background: #E2E8F0; }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--shopee) 0%, #FF6B35 100%);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(238,77,45,0.35);
+  }
+  .btn-next:hover {
+    box-shadow: 0 6px 20px rgba(238,77,45,0.45);
+    transform: translateY(-1px);
+  }
+
+  .btn-lib {
+    background: linear-gradient(135deg, var(--lazada-light) 0%, var(--lazada) 100%);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(37,99,235,0.35);
+    font-size: 13px;
+    padding: 10px 18px;
+  }
+  .btn-lib:hover {
+    box-shadow: 0 6px 20px rgba(37,99,235,0.45);
+    transform: translateY(-1px);
+  }
+
+  /* ─── CART ANIMATION ─── */
+  .cart-anim {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%) scale(0);
+    pointer-events: none;
+    font-size: 20px;
+    z-index: 10;
+  }
+  .cart-burst {
+    animation: cartBurst 0.6s ease forwards;
+  }
+  @keyframes cartBurst {
+    0%   { transform: translate(-50%,-50%) scale(0); opacity:1; }
+    60%  { transform: translate(-50%, -120%) scale(1.3); opacity:1; }
+    100% { transform: translate(-50%, -180%) scale(0.5); opacity:0; }
+  }
+
+  /* ─── FLYING ITEM ─── */
+  .fly-item {
+    position: fixed;
+    pointer-events: none;
+    font-size: 22px;
+    z-index: 999;
+    transition: none;
+  }
+  .fly-item.flying {
+    animation: flyToCart 0.7s cubic-bezier(0.2,0.8,0.8,1.2) forwards;
+  }
+  @keyframes flyToCart {
+    0%   { transform: scale(1) rotate(0deg); opacity:1; }
+    70%  { transform: scale(0.6) rotate(20deg); opacity:0.8; }
+    100% { transform: scale(0) rotate(40deg); opacity:0; }
+  }
+
+  /* ─── PAGE COUNTER ─── */
+  #page-counter {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── CHIPS / BADGES ─── */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 3px 3px;
+  }
+
+  /* ─── LIST ITEMS ─── */
+  .list-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    background: #F8FAFC;
+    border-radius: 12px;
+    border-left: 3px solid transparent;
+  }
+
+  /* ─── STEP CARD ─── */
+  .step-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    background: #F8FAFC;
+    transition: transform 0.2s ease;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: white;
+  }
+
+  /* ─── COVER ─── */
+  #cover-bg {
+    background: linear-gradient(145deg, #1E293B 0%, #0F172A 100%);
+    border-radius: 24px 24px 0 0;
+    padding: 36px 28px 28px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  #cover-bg::before {
+    content:'';
+    position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(238,77,45,0.25) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(0,170,91,0.2) 0%, transparent 50%),
+      radial-gradient(circle at 50% 10%, rgba(37,99,235,0.2) 0%, transparent 40%);
+  }
+  #cover-bg * { position: relative; }
+
+  /* ─── FLOATING DOTS DECO ─── */
+  .dot-deco {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    position: absolute;
+    opacity: 0.4;
+  }
+
+  /* ─── TABLET LANDSCAPE ─── */
+  @media (min-width: 768px) and (orientation: landscape),
+         (min-width: 900px) {
+    #book { max-width: 840px; }
+    .page { flex-direction: row; min-height: 440px; padding: 32px; gap: 28px; }
+    .page-content-left { flex: 1; }
+    .page-illus-right { width: 300px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .illus-box { margin-bottom: 0; min-height: 280px; height: 100%; }
+    #cover-bg { border-radius: 24px 24px 0 0; }
+  }
+
+  /* ─── TOOLTIP ─── */
+  .tip-box {
+    background: linear-gradient(135deg, #FFF7ED, #FEF3C7);
+    border: 1.5px solid #FCD34D;
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: #92400E;
+  }
+
+  /* ─── BADGE strip ─── */
+  .brand-strip {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .tag-shopee { background: rgba(238,77,45,0.1); color: var(--shopee); }
+  .tag-tokped { background: rgba(0,170,91,0.1); color: var(--tokped); }
+  .tag-lazada { background: rgba(37,99,235,0.1); color: var(--lazada-light); }
+
+  .warning-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    background: #FFF5F5;
+    border-radius: 12px;
+    border-left: 3px solid #EF4444;
+  }
+
+  /* ─── PING DOT ─── */
+  .ping-dot {
+    position:absolute;
+    top: 8px; right: 8px;
+    width: 10px; height: 10px;
+    background: var(--tokped);
+    border-radius: 50%;
+    animation: ping 1.5s ease infinite;
+  }
+  @keyframes ping {
+    0%,100% { transform:scale(1); opacity:1; }
+    50% { transform:scale(1.7); opacity:0.4; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-wrap">
+  <div id="progress-bar" style="width:8.33%"></div>
+</div>
+
+<!-- Book -->
+<div id="book">
+
+  <!-- ══════════════════════════════════════
+       PAGE 1 – COVER
+  ══════════════════════════════════════ -->
+  <div class="page active" id="page-1">
+    <!-- Full-width cover header -->
+    <div id="cover-bg" style="margin:-28px -28px 22px; border-radius:0;">
+      <!-- Floating dots -->
+      <div class="dot-deco" style="top:20%;left:8%;background:#EE4D2D;width:12px;height:12px;"></div>
+      <div class="dot-deco" style="top:60%;left:5%;background:#00AA5B;width:8px;height:8px;"></div>
+      <div class="dot-deco" style="top:15%;right:10%;background:#2563EB;width:10px;height:10px;"></div>
+      <div class="dot-deco" style="bottom:20%;right:7%;background:#FCD34D;width:6px;height:6px;"></div>
+
+      <!-- Series badge -->
+      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:999px;padding:5px 14px;margin-bottom:18px;">
+        <span style="font-size:13px;color:rgba(255,255,255,0.8);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;">📚 Flip Series · Edisi 20</span>
+      </div>
+
+      <!-- Big illustration -->
+      <div style="font-size:72px;line-height:1;margin-bottom:16px;filter:drop-shadow(0 8px 20px rgba(0,0,0,0.3));">📱</div>
+
+      <h1 class="font-fredoka" style="font-size:28px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:10px;">
+        Belanja Online:<br>Siapa yang Mengatur<br>Toko di HP?
+      </h1>
+      <p style="font-size:13px;color:rgba(255,255,255,0.65);font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:20px;">
+        Rahasia di balik Shopee, Tokopedia, dan Lazada
+      </p>
+      <div class="brand-strip" style="justify-content:center;">
+        <span class="chip tag-shopee">🟠 Shopee</span>
+        <span class="chip tag-tokped">🟢 Tokopedia</span>
+        <span class="chip tag-lazada">🔵 Lazada</span>
+      </div>
+    </div>
+
+    <p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:10px;">
+      Pernahkah kamu bertanya-tanya, bagaimana toko yang ada di HP bisa menjual jutaan barang tanpa gedung? Yuk, kita ungkap rahasianya bersama! 🚀
+    </p>
+    <div class="tip-box">
+      💡 <strong>Tips baca:</strong> Tekan tombol <strong style="color:var(--shopee);">Next →</strong> untuk membalik halaman!
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PAGE 2 – PENGENALAN
+  ══════════════════════════════════════ -->
+  <div class="page" id="page-2">
+    <div class="page-content-left" style="flex:1;">
+      <div class="brand-strip">
+        <span class="chip tag-shopee">Halaman 2</span>
+        <span class="chip" style="background:#F0FDF4;color:#16A34A;">Pengenalan</span>
+      </div>
+      <h2 class="font-fredoka" style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.3;">
+        Toko di HP?<br>Gimana Caranya? 🤔
+      </h2>
+      <p style="font-size:14.5px;line-height:1.8;color:var(--text);margin-bottom:14px;">
+        Kamu pernah belanja mainan, baju, atau makanan lewat HP? Toko di aplikasi itu <strong>tidak ada bangunannya</strong>, tapi barangnya banyak sekali.
+      </p>
+      <p style="font-size:14.5px;line-height:1.8;color:var(--text);">
+        Lalu siapa yang mengatur semua itu? Ada <strong style="color:var(--shopee);">ribuan orang</strong> dan <strong style="color:var(--tokped);">sistem komputer canggih</strong> yang bekerja setiap detiknya!
+      </p>
+    </div>
+    <div class="page-illus-right">
+      <div class="illus-box" style="background:linear-gradient(135deg,#FFF7ED,#FFEDD5);">
+        <div class="ping-dot"></div>
+        <div style="text-align:center;">
+          <div style="font-size:56px;margin-bottom:8px;">🛒</div>
+          <div style="display:flex;gap:6px;justify-content:center;margin-bottom:6px;">
+            <span style="font-size:28px;">👕</span>
+            <span style="font-size:28px;">🧸</span>
+            <span style="font-size:28px;">🍕</span>
+          </div>
+          <div style="font-size:12px;color:#C2410C;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;">Jutaan produk tersedia!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PAGE 3 – TOKO TANPA GEDUNG
+  ══════════════════════════════════════ -->
+  <div class="page" id="page-3">
+    <div class="page-content-left" style="flex:1;">
+      <div class="brand-strip">
+        <span class="chip tag-tokped">Halaman 3</span>
+        <span class="chip" style="background:#F0FDF4;color:#16A34A;">E-Commerce</span>
+      </div>
+      <h2 class="font-fredoka" style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.3;">
+        Toko Tanpa Gedung 🏗️
+      </h2>
+      <p style="font-size:14.5px;line-height:1.8;color:var(--text);margin-bottom:16px;">
+        Belanja online disebut <strong style="color:var(--tokped);">e-commerce</strong>. Toko ini ada di <strong>server komputer</strong> (komputer besar di cloud), bukan di gedung biasa.
+      </p>
+      <div class="step-card" style="background:#F0FDF4;">
+        <span style="font-size:26px;">☁️</span>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:#15803D;">Cloud Server</div>
+          <div style="font-size:13px;color:var(--muted);">Gudang data raksasa di internet</div>
+        </div>
+      </div>
+      <div class="step-card" style="background:#FFF7ED;">
+        <span style="font-size:26px;">📱</span>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:#C2410C;">Aplikasi HP</div>
+          <div style="font-size:13px;color:var(--muted);">Jendela untuk melihat semua barang</div>
+        </div>
+      </div>
+      <div class="step-card" style="background:#EFF6FF;">
+        <span style="font-size:26px;">🌐</span>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:#1D4ED8;">Internet</div>
+          <div style="font-size:13px;color:var(--muted);">Jembatan antara kamu dan toko</div>
+        </div>
+      </div>
+    </div>
+    <div class="page-illus-right">
+      <div class="illus-box" style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);">
+        <div style="text-align:center;">
+          <div style="font-size:50px;margin-bottom:6px;">🏢</div>
+          <div style="font-size:18px;color:#DC2626;font-weight:700;font-family:'Fredoka',sans-serif;text-decoration:line-through;opacity:0.5;">Gedung Biasa</div>
+          <div style="font-size:30px;margin:8px 0;">⬇️</div>
+          <div style="font-size:50px;">☁️</div>
+          <div style="font-size:14px;color:#15803D;font-weight:700;font-family:'Fredoka',sans-serif;">Cloud Server!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PAGE 4 – SIAPA YANG MENGATUR?
+  ══════════════════════════════════════ -->
+  <div class="page" id="page-4">
+    <div class="page-content-left" style="flex:1;">
+      <div class="brand-strip">
+        <span class="chip tag-shopee">Halaman 4</span>
+        <span class="chip" style="background:#FFF1F2;color:#BE123C;">Tim Kerja</span>
+      </div>
+      <h2 class="font-fredoka" style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.3;">
+        Siapa yang Mengatur? 👥
+      </h2>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:14px;line-height:1.6;">
+        Banyak tim yang bekerja keras di belakang layar!
+      </p>
+      <div class="list-row" style="border-color:var(--shopee);">
+        <span style="font-size:22px;">💻</span>
+        <div><strong style="color:var(--shopee);">Programmer</strong><br><span style="font-size:13px;color:var(--muted);">Membuat dan menjaga aplikasi berjalan</span></div>
+      </div>
+      <div class="list-row" style="border-color:#A855F7;">
+        <span style="font-size:22px;">🎨</span>
+        <div><strong style="color:#A855F7;">Desainer</strong><br><span style="font-size:13px;color:var(--muted);">Membuat tampilan indah dan mudah dipakai</span></div>
+      </div>
+      <div class="list-row" style="border-color:var(--tokped);">
+        <span style="font-size:22px;">📦</span>
+        <div><strong style="color:var(--tokped);">Manajemen Barang</strong><br><span style="font-size:13px;color:var(--muted);">Mengatur stok dan info produk</span></div>
+      </div>
+      <div class="list-row" style="border-color:#F59E0B;">
+        <span style="font-size:22px;">🚚</span>
+        <div><strong style="color:#D97706;">Kurir & Logistik</strong><br><span style="font-size:13px;color:var(--muted);">Mengantarkan barang ke rumah kamu</span></div>
+      </div>
+      <div class="list-row" style="border-color:var(--lazada-light);">
+        <span style="font-size:22px;">🎧</span>
+        <div><strong style="color:var(--lazada-light);">Customer Service</strong><br><span style="font-size:13px;color:var(--muted);">Membantu saat ada masalah</span></div>
+      </div>
+    </div>
+    <div class="page-illus-right">
+      <div class="illus-box" style="background:linear-gradient(135deg,#FDF4FF,#FAE8FF);">
+        <div style="text-align:center;">
+          <div style="font-size:48px;margin-bottom:12px;">🏭</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:160px;">
+            <div style="background:rgba(238,77,45,0.12);border-radius:10px;padding:8px;text-align:center;font-size:20px;">💻</div>
+            <div style="background:rgba(168,85,247,0.12);border-radius:10px;padding:8px;text-align:center;font-size:20px;">🎨</div>
+            <div style="background:rgba(0,170,91,0.12);border-radius:10px;padding:8px;text-align:center;font-size:20px;">📦</div>
+            <div style="background:rgba(245,158,11,0.12);border-radius:10px;padding:8px;text-align:center;font-size:20px;">🚚</div>
+          </div>
+          <div style="font-size:12px;color:#7C3AED;font-weight:600;margin-top:10px;font-family:'Plus Jakarta Sans',sans-serif;">Tim yang luar biasa!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PAGE 5 – CARA KERJA
+  ══════════════════════════════════════ -->
+  <div class="page" id="page-5">
+    <div class="page-content-left" style="flex:1;">
+      <div class="brand-strip">
+        <span class="chip tag-tokped">Halaman 5</span>
+        <span class="chip" style="background:#ECFDF5;color:#059669;">Cara Kerja</span>
+      </div>
+      <h2 class="font-fredoka" style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.3;">
+        Cara Kerja Toko Online 🔄
+      </h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Dari klik sampai paket tiba, ini prosesnya:</p>
+
+      <div class="step-card">
+        <div class="step-num" style="background:var(--shopee);">1</div>
+        <div><strong style="font-size:14px;">Penjual memasang barang</strong><br><span style="font-size:12px;color:var(--muted);">Upload foto, harga, dan deskripsi</span></div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:#8B5CF6;">2</div>
+        <div><strong style="font-size:14px;">Kamu mencari & memilih</strong><br><span style="font-size:12px;color:var(--muted);">Ketik kata kunci, lihat-lihat, masuk keranjang</span></div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:var(--tokped);">3</div>
+        <div><strong style="font-size:14px;">Klik "Beli"</strong><br><span style="font-size:12px;color:var(--muted);">Konfirmasi pesanan</span></div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:#F59E0B;">4</div>
+        <div><strong style="font-size:14px;">Uang masuk ke sistem</strong><br><span style="font-size:12px;color:var(--muted);">Transfer aman via aplikasi</span></div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:var(--lazada-light);">5</div>
+        <div><strong style="font-size:14px;">Penjual packing & kirim</strong><br><span style="font-size:12px;color:var(--muted);">Kurir ambil dan antar ke rumah</span></div>
+      </div>
+    </div>
+    <div class="page-illus-right">
+      <div class="illus-box" style="background:linear-gradient(135deg,#ECFDF5,#D1FAE5);">
+        <div style="text-align:center;">
+          <div style="font-size:42px;">🛍️</div>
+          <div style="font-size:20px;margin:6px 0;">⬇️</div>
+          <div style="font-size:42px;">📦</div>
+          <div style="font-size:20px;margin:6px 0;">⬇️</div>
+          <div style="font-size:42px;">🚚</div>
+          <div style="font-size:20px;margin:6px 0;">⬇️</div>
+          <div style="font-size:42px;">🏠</div>
+          <div style="font-size:12px;color:var(--tokped);font-weight:700;margin-top:8px;font-family:'Plus Jakarta Sans',sans-serif;">Sampai di rumah!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PAGE 6 – KERJA CODING
+  ══════════════════════════════════════ -->
+  <div class="page" id="page-6">
+    <div class="page-content-left" style="flex:1;">
+      <div class="brand-strip">
+        <span class="chip tag-lazada">Halaman 6</span>
+        <span class="chip" style="background:#EFF6FF;color:#1D4ED8;">Coding</span>
+      </div>
+      <h2 class="font-fredoka" style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.3;">
+        Kerja Coding di Belakang Layar 👨‍💻
+      </h2>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:12px;line-height:1.6;">
+        Programmer menulis kode agar toko online bisa:
+      </p>
+      <div class="list-row" style="border-color:var(--lazada-light);">
+        <span style="font-size:20px;">🔍</span>
+        <div style="font-size:13.5px;color:var(--text);">Menampilkan <strong>jutaan produk</strong> sekaligus</div>
+      </div>
+      <div class="list-row" style="border-color:var(--shopee);">
+        <span style="font-size:20px;">⌨️</span>
+        <div style="font-size:13.5px;color:var(--text);">Mencari barang sesuai <strong>kata kunci</strong></div>
+      </div>
+      <div class="list-row" style="border-color:var(--tokped);">
+        <span style="font-size:20px;">🧮</span>
+        <div style="font-size:13.5px;color:var(--text);">Menghitung <strong>harga + ongkir</strong> otomatis</div>
+      </div>
+      <div class="list-row" style="border-color:#F59E0B;">
+        <span style="font-size:20px;">📊</span>
+        <div style="font-size:13.5px;color:var(--text);">Menjaga <strong>stok barang</strong> agar tidak salah</div>
+      </div>
+      <div class="list-row" style="border-color:#EF4444;">
+        <span style="font-size:20px;">🔒</span>
+        <div style="font-size:13.5px;color:var(--text);">Melindungi <strong>data pribadi</strong> dan pembayaran</div>
+      </div>
+    </div>
+    <div class="page-illus-right">
+      <div class="illus-box" style="background:linear-gradient(135deg,#0F172A,#1E293B);">
+        <div style="text-align:center;font-family:monospace;">
+          <div style="color:#00AA5B;font-size:12px;text-align:left;padding:8px;background:rgba(0,0,0,0.3);border-radius:8px;margin-bottom:8px;line-height:1.8;">
+            <span style="color:#64748B;">// kode ajaib 🪄</span><br>
+            <span style="color:#7DD3FC;">function</span>
+            <span style="color:#FDE68A;"> cariBarang</span>
+            <span style="color:#fff;">(kata) {</span><br>
+            &nbsp;&nbsp;<span style="color:#7DD3FC;">return</span>
+            <span style="color:#fff;"> produk</span><br>
+            &nbsp;&nbsp;<span style="color:#7DD3FC;">.filter</span>
+            <span style="color:#fff;">(p =></span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#FCA5A5;">p.nama</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#fff;">.includes(kata))</span><br>
+            <span style="color:#fff;">}</span>
+          </div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);font-family:'Plus Jakarta Sans',sans-serif;">Inilah sedikit keajaiban coding! ✨</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PAGE 7 – FAKTA KEREN
+  ══════════════════════════════════════ -->
+  <div class="page" id="page-7">
+    <div class="page-content-left" style="flex:1;">
+      <div class="brand-strip">
+        <span class="chip tag-shopee">Halaman 7</span>
+        <span class="chip" style="background:#FFF7ED;color:#C2410C;">Fakta Keren</span>
+      </div>
+      <h2 class="font-fredoka" style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.3;">
+        Fakta Keren yang Bikin Melongo! 🤯
+      </h2>
+
+      <div style="background:linear-gradient(135deg,#FFF7ED,#FFEDD5);border-radius:16px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-10px;right:-10px;font-size:48px;opacity:0.15;">⚡</div>
+        <div style="font-size:32px;font-family:'Fredoka',sans-serif;font-weight:700;color:var(--shopee);">1.000+</div>
+        <div style="font-size:14px;font-weight:600;color:#9A3412;">pesanan diproses dalam 1 menit!</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">Bayangkan cepetnya! Lebih cepat dari kedipan mata.</div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-radius:16px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-10px;right:-10px;font-size:48px;opacity:0.15;">🤖</div>
+        <div style="font-size:28px;margin-bottom:6px;">🤖 Robot Packing!</div>
+        <div style="font-size:13.5px;font-weight:600;color:#15803D;">Ada robot di gudang yang membantu packing barang — otomatis dan super cepat!</div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:16px;padding:16px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-10px;right:-10px;font-size:48px;opacity:0.15;">🛋️</div>
+        <div style="font-size:28px;margin-bottom:6px;">🛋️ Belanja Santai!</div>
+        <div style="font-size:13.5px;font-weight:600;color:#1D4ED8;">Kamu bisa belanja dari rumah sambil rebahan di kasur!</div>
+      </div>
+    </div>
+    <div class="page-illus-right">
+      <div class="illus-box" style="background:linear-gradient(135deg,#FFF7ED,#FFEDD5);">
+        <div style="text-align:center;">
+          <div style="font-size:60px;animation:bounce 1s ease infinite alternate;">🤖</div>
+          <div style="margin-top:10px;display:flex;gap:8px;justify-content:center;">
+            <span style="font-size:24px;">📦</span>
+            <span style="font-size:24px;">📦</span>
+            <span style="font-size:24px;">📦</span>
+          </div>
+          <div style="font-size:12px;color:#C2410C;font-weight:700;margin-top:8px;font-family:'Plus Jakarta Sans',sans-serif;">Robot packing 24 jam!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <style>@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-10px)}}</style>
+
+  <!-- ══════════════════════════════════════
+       PAGE 8 – LOGISTIK
+  ══════════════════════════════════════ -->
+  <div class="page" id="page-8">
+    <div class="page-content-left" style="flex:1;">
+      <div class="brand-strip">
+        <span class="chip tag-tokped">Halaman 8</span>
+        <span class="chip" style="background:#FFF7ED;color:#D97706;">Logistik</span>
+      </div>
+      <h2 class="font-fredoka" style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.3;">
+        Bagaimana Barang Sampai<br>ke Rumah? 🏠
+      </h2>
+      <p style="font-size:14px;line-height:1.8;color:var(--text);margin-bottom:16px;">
+        Ada <strong style="color:var(--tokped);">sistem logistik yang canggih</strong> di balik setiap paket yang kamu terima!
+      </p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Aplikasi menghubungkan:</p>
+
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <div style="background:rgba(238,77,45,0.12);border-radius:12px;padding:10px 14px;text-align:center;">
+          <div style="font-size:24px;">🏪</div>
+          <div style="font-size:11px;font-weight:700;color:var(--shopee);margin-top:4px;">Penjual</div>
+        </div>
+        <div style="color:#94A3B8;font-size:18px;font-weight:700;">→</div>
+        <div style="background:rgba(0,170,91,0.12);border-radius:12px;padding:10px 14px;text-align:center;">
+          <div style="font-size:24px;">🏭</div>
+          <div style="font-size:11px;font-weight:700;color:var(--tokped);margin-top:4px;">Gudang</div>
+        </div>
+        <div style="color:#94A3B8;font-size:18px;font-weight:700;">→</div>
+        <div style="background:rgba(245,158,11,0.12);border-radius:12px;padding:10px 14px;text-align:center;">
+          <div style="font-size:24px;">🚚</div>
+          <div style="font-size:11px;font-weight:700;color:#D97706;margin-top:4px;">Kurir</div>
+        </div>
+        <div style="color:#94A3B8;font-size:18px;font-weight:700;">→</div>
+        <div style="background:rgba(37,99,235,0.12);border-radius:12px;padding:10px 14px;text-align:center;">
+          <div style="font-size:24px;">🏠</div>
+          <div style="font-size:11px;font-weight:700;color:var(--lazada-light);margin-top:4px;">Rumahmu</div>
+        </div>
+      </div>
+
+      <div class="tip-box" style="margin-top:14px;">
+        🔍 Kamu bisa <strong>lacak paket</strong> secara real-time lewat aplikasi! Cukup klik "Lacak Pesanan" dan lihat posisi paket kamu sekarang.
+      </div>
+    </div>
+    <div class="page-illus-right">
+      <div class="illus-box" style="background:linear-gradient(135deg,#FFFBEB,#FEF3C7);">
+        <div style="text-align:center;">
+          <div style="font-size:52px;margin-bottom:8px;">🚚</div>
+          <div style="background:#D97706;height:4px;border-radius:2px;margin:10px 0;position:relative;">
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10px;height:10px;background:#FCD34D;border-radius:50%;box-shadow:0 0 0 3px rgba(217,119,6,0.3);"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#92400E;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;">
+            <span>Penjual</span><span>Gudang</span><span>Kurir</span><span>Kamu!</span>
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--tokped);font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;">📍 Paket di perjalanan!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PAGE 9 – KEUNTUNGAN
+  ══════════════════════════════════════ -->
+  <div class="page" id="page-9">
+    <div class="page-content-left" style="flex:1;">
+      <div class="brand-strip">
+        <span class="chip tag-shopee">Halaman 9</span>
+        <span class="chip" style="background:#ECFDF5;color:#059669;">Keuntungan</span>
+      </div>
+      <h2 class="font-fredoka" style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.3;">
+        Keuntungan Belanja Online 🎉
+      </h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Kenapa belanja online jadi favorit banyak orang?</p>
+
+      <div class="list-row" style="border-color:var(--shopee);">
+        <span style="font-size:22px;">🕛</span>
+        <div><strong style="color:var(--shopee);">Bisa belanja 24 jam</strong><br><span style="font-size:12px;color:var(--muted);">Tengah malam pun toko tetap buka!</span></div>
+      </div>
+      <div class="list-row" style="border-color:var(--tokped);">
+        <span style="font-size:22px;">🛒</span>
+        <div><strong style="color:var(--tokped);">Banyak pilihan</strong><br><span style="font-size:12px;color:var(--muted);">Dari jutaan penjual di seluruh Indonesia</span></div>
+      </div>
+      <div class="list-row" style="border-color:var(--lazada-light);">
+        <span style="font-size:22px;">💰</span>
+        <div><strong style="color:var(--lazada-light);">Bisa bandingkan harga</strong><br><span style="font-size:12px;color:var(--muted);">Pilih yang paling murah dan terbaik</span></div>
+      </div>
+      <div class="list-row" style="border-color:#8B5CF6;">
+        <span style="font-size:22px;">🏡</span>
+        <div><strong style="color:#8B5CF6;">Bisa dari desa sekalipun!</strong><br><span style="font-size:12px;color:var(--muted);">Tidak perlu ke kota untuk berbelanja</span></div>
+      </div>
+    </div>
+    <div class="page-illus-right">
+      <div class="illus-box" style="background:linear-gradient(135deg,#ECFDF5,#D1FAE5);">
+        <div style="text-align:center;">
+          <div style="font-size:52px;margin-bottom:10px;">🎊</div>
+          <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;max-width:170px;margin:0 auto;">
+            <div style="background:rgba(238,77,45,0.15);border-radius:8px;padding:6px 8px;font-size:11px;font-weight:700;color:var(--shopee);">24 JAM</div>
+            <div style="background:rgba(0,170,91,0.15);border-radius:8px;padding:6px 8px;font-size:11px;font-weight:700;color:var(--tokped);">JUTAAN PRODUK</div>
+            <div style="background:rgba(37,99,235,0.15);border-radius:8px;padding:6px 8px;font-size:11px;font-weight:700;color:var(--lazada-light);">MURAH</div>
+            <div style="background:rgba(139,92,246,0.15);border-radius:8px;padding:6px 8px;font-size:11px;font-weight:700;color:#8B5CF6;">DARI DESA</div>
+          </div>
+          <div style="margin-top:12px;font-size:13px;color:var(--tokped);font-weight:700;font-family:'Fredoka',sans-serif;">Serba praktis! ✨</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PAGE 10 – YANG HARUS DIWASPADAI
+  ══════════════════════════════════════ -->
+  <div class="page" id="page-10">
+    <div class="page-content-left" style="flex:1;">
+      <div class="brand-strip">
+        <span class="chip" style="background:#FFF1F2;color:#BE123C;">Halaman 10</span>
+        <span class="chip" style="background:#FFF1F2;color:#BE123C;">⚠️ Waspada</span>
+      </div>
+      <h2 class="font-fredoka" style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.3;">
+        Yang Harus Diwaspadai 🔐
+      </h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Jangan sampai senangnya belanja jadi masalah!</p>
+
+      <div class="warning-row">
+        <span style="font-size:20px;">🚫</span>
+        <div style="font-size:13.5px;color:var(--text);">Jangan sembarangan kasih <strong>data kartu kredit</strong> ke situs yang tidak jelas</div>
+      </div>
+      <div class="warning-row">
+        <span style="font-size:20px;">⭐</span>
+        <div style="font-size:13.5px;color:var(--text);">Pilih <strong>penjual yang terpercaya</strong> — lihat rating dan reviewnya</div>
+      </div>
+      <div class="warning-row">
+        <span style="font-size:20px;">🎁</span>
+        <div style="font-size:13.5px;color:var(--text);">Hati-hati dengan <strong>diskon yang terlalu menggiurkan</strong> — bisa jadi penipuan!</div>
+      </div>
+      <div class="warning-row">
+        <span style="font-size:20px;">🛑</span>
+        <div style="font-size:13.5px;color:var(--text);">Jangan <strong>ketagihan belanja</strong> terus — kelola uang dengan bijak</div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#FFF1F2,#FFE4E6);border-radius:12px;padding:12px 14px;margin-top:12px;border:1.5px solid #FECDD3;">
+        <div style="font-size:13px;color:#9F1239;font-weight:600;">🔒 Kunci Keamanan: Selalu belanja di aplikasi resmi yang terverifikasi!</div>
+      </div>
+    </div>
+    <div class="page-illus-right">
+      <div class="illus-box" style="background:linear-gradient(135deg,#FFF1F2,#FFE4E6);">
+        <div style="text-align:center;">
+          <div style="font-size:52px;margin-bottom:10px;">🛡️</div>
+          <div style="font-size:14px;font-family:'Fredoka',sans-serif;font-weight:700;color:#BE123C;margin-bottom:8px;">Jaga Keamananmu!</div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#9F1239;font-weight:600;">
+              <span>🔒</span><span>Data Pribadi Aman</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#9F1239;font-weight:600;">
+              <span>✅</span><span>Penjual Terpercaya</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#9F1239;font-weight:600;">
+              <span>💡</span><span>Belanja Bijak</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PAGE 11 – PESAN PENTING
+  ══════════════════════════════════════ -->
+  <div class="page" id="page-11">
+    <div class="page-content-left" style="flex:1;">
+      <div class="brand-strip">
+        <span class="chip tag-lazada">Halaman 11</span>
+        <span class="chip" style="background:#EFF6FF;color:#1D4ED8;">Pesan Penting</span>
+      </div>
+      <h2 class="font-fredoka" style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.3;">
+        Pesan Penting dari Ayah 💙
+      </h2>
+
+      <div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:16px;padding:18px;margin-bottom:16px;border-left:4px solid var(--lazada-light);">
+        <p style="font-size:14.5px;line-height:1.85;color:var(--text);">
+          Semua kemudahan belanja online ini dibuat oleh <strong style="color:var(--lazada-light);">programmer</strong> menggunakan <strong style="color:var(--shopee);">coding</strong>.
+        </p>
+        <br>
+        <p style="font-size:14.5px;line-height:1.85;color:var(--text);">
+          Merekalah yang membuat toko di HP bisa berfungsi dengan baik — mulai dari tampilan, pencarian, pembayaran, hingga pelacakan paket.
+        </p>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-radius:14px;padding:14px 16px;">
+        <p style="font-size:14px;line-height:1.8;color:#15803D;font-weight:600;">
+          🌟 Siapa tahu, suatu hari nanti <em>kamu</em> yang akan membuat aplikasi belanja online yang lebih keren!
+        </p>
+      </div>
+
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="chip" style="background:rgba(238,77,45,0.1);color:var(--shopee);">💻 Coding</span>
+        <span class="chip" style="background:rgba(0,170,91,0.1);color:var(--tokped);">🚀 Inovasi</span>
+        <span class="chip" style="background:rgba(37,99,235,0.1);color:var(--lazada-light);">🌟 Masa Depan</span>
+      </div>
+    </div>
+    <div class="page-illus-right">
+      <div class="illus-box" style="background:linear-gradient(135deg,#0F172A,#1E293B);">
+        <div style="text-align:center;">
+          <div style="font-size:48px;margin-bottom:12px;">👨‍💻</div>
+          <div style="font-size:12px;font-family:monospace;color:#00AA5B;text-align:left;padding:8px;background:rgba(0,0,0,0.3);border-radius:8px;line-height:1.8;">
+            <span style="color:#64748B;">// masa depanmu</span><br>
+            <span style="color:#7DD3FC;">const</span>
+            <span style="color:#FDE68A;"> kamu</span>
+            <span style="color:#fff;"> = {</span><br>
+            &nbsp;<span style="color:#FCA5A5;">mimpi</span>
+            <span style="color:#fff;">: </span>
+            <span style="color:#86EFAC;">"besar"</span><span style="color:#fff;">,</span><br>
+            &nbsp;<span style="color:#FCA5A5;">koding</span>
+            <span style="color:#fff;">: </span>
+            <span style="color:#86EFAC;">"bisa"</span><span style="color:#fff;">,</span><br>
+            &nbsp;<span style="color:#FCA5A5;">masa_depan</span>
+            <span style="color:#fff;">: </span>
+            <span style="color:#86EFAC;">"cerah"</span><br>
+            <span style="color:#fff;">}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PAGE 12 – ENDING
+  ══════════════════════════════════════ -->
+  <div class="page" id="page-12">
+    <!-- Full-width ending header -->
+    <div style="margin:-28px -28px 22px;background:linear-gradient(145deg,#0F172A,#1E293B);padding:32px 28px;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(0,170,91,0.2) 0%,transparent 50%),radial-gradient(circle at 70% 50%,rgba(238,77,45,0.2) 0%,transparent 50%);"></div>
+      <div style="position:relative;">
+        <div style="font-size:60px;margin-bottom:10px;animation:bounce 1s ease infinite alternate;">🎉</div>
+        <h2 class="font-fredoka" style="font-size:26px;font-weight:700;color:#fff;margin-bottom:8px;">Kamu Sudah Tahu!</h2>
+        <p style="font-size:14px;color:rgba(255,255,255,0.75);font-family:'Plus Jakarta Sans',sans-serif;line-height:1.6;">
+          Siapa yang mengatur toko di HP.<br>Keren banget kan? 🚀
+        </p>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#ECFDF5,#D1FAE5);border-radius:14px;padding:16px;margin-bottom:14px;border-left:4px solid var(--tokped);">
+      <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:var(--tokped);margin-bottom:6px;">📚 Selanjutnya...</div>
+      <p style="font-size:13.5px;line-height:1.7;color:#15803D;font-weight:500;">
+        Tunggu <strong>Flipbook Bab 21:</strong><br>
+        <em>"HP Kamu Itu Komputer Kecil yang Super Pintar"</em> 📱✨
+      </p>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#FFF7ED,#FFEDD5);border-radius:14px;padding:16px;margin-bottom:16px;border-left:4px solid var(--shopee);">
+      <div style="font-size:14px;line-height:1.75;color:#9A3412;">
+        Kalau ada yang ingin ditanyakan tentang belanja online, coding, atau hal lainnya, tanya saja ke <strong>Ayah Sigit</strong> ya! Ayah siap jelasin kapan saja. 😊❤️
+      </div>
+    </div>
+
+    <!-- Library button -->
+    <div style="text-align:center;">
+      <a href="..\/perpustakaan.html" class="btn btn-lib" style="text-decoration:none;display:inline-flex;margin-bottom:6px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        🏠 Kembali ke Perpustakaan
+      </a>
+    </div>
+  </div>
+
+  <!-- ── NAV ── -->
+  <div id="nav">
+    <button class="btn btn-prev" id="btn-prev" onclick="goPage(-1)" disabled>
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      Prev
+    </button>
+
+    <span id="page-counter">1 / 12</span>
+
+    <button class="btn btn-next" id="btn-next" onclick="goPage(1)">
+      Next
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      <span class="cart-anim" id="cart-anim">🛒</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  const TOTAL = 12;
+  let current = 1;
+
+  const items = ['📦','🛍️','⭐','🧸','👕','📱','💳','🚀'];
+
+  function goPage(dir) {
+    const next = current + dir;
+    if (next < 1 || next > TOTAL) return;
+
+    // Cart animation on Next
+    if (dir > 0) {
+      animateCart();
+    }
+
+    document.getElementById('page-' + current).classList.remove('active');
+    current = next;
+    document.getElementById('page-' + current).classList.add('active');
+
+    updateUI();
+  }
+
+  function updateUI() {
+    // Progress bar
+    const pct = (current / TOTAL) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+
+    // Counter
+    document.getElementById('page-counter').textContent = current + ' / ' + TOTAL;
+
+    // Buttons
+    document.getElementById('btn-prev').disabled = current === 1;
+
+    const btnNext = document.getElementById('btn-next');
+    if (current === TOTAL) {
+      btnNext.style.display = 'none';
+    } else {
+      btnNext.style.display = 'inline-flex';
+    }
+  }
+
+  function animateCart() {
+    // Burst
+    const cartAnim = document.getElementById('cart-anim');
+    cartAnim.classList.remove('cart-burst');
+    void cartAnim.offsetWidth;
+    cartAnim.classList.add('cart-burst');
+    cartAnim.addEventListener('animationend', () => cartAnim.classList.remove('cart-burst'), {once:true});
+
+    // Flying item
+    const btn = document.getElementById('btn-next');
+    const rect = btn.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = 'fly-item';
+    el.textContent = items[Math.floor(Math.random()*items.length)];
+    el.style.left = (rect.left + rect.width/2) + 'px';
+    el.style.top  = (rect.top + rect.height/2) + 'px';
+    document.body.appendChild(el);
+    requestAnimationFrame(() => el.classList.add('flying'));
+    el.addEventListener('animationend', () => el.remove());
+  }
+
+  // Initial state
+  updateUI();
+</script>
+</body>
+</html>

@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Hari 27: Evolusi Manusia Masih Berlanjut? – Kapten Cerdas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════════════ */
+:root {
+  --sky:     #38bdf8;
+  --sky-d:   #0369a1;
+  --sky-dd:  #0c2d4a;
+  --green:   #22c55e;
+  --green-d: #15803d;
+  --gold:    #f59e0b;
+  --gold-l:  #fde68a;
+  --purple:  #7c3aed;
+  --purple-l:#c4b5fd;
+  --purple-d:#3b0764;
+  --pink:    #ec4899;
+  --dark:    #0f172a;
+  --mid:     #1e293b;
+  --text:    #e2e8f0;
+  --textd:   #94a3b8;
+  --white:   #ffffff;
+  --r: 1rem;
+  --page-w: 820px;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family:'Nunito',sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  overflow: hidden;
+  height: 100dvh;
+  width: 100%;
+  user-select: none;
+}
+
+/* ── BACK BUTTON ── */
+#backBtn {
+  position: fixed;
+  top: 14px; left: 16px;
+  z-index: 9999;
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.12);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255,255,255,.2);
+  color: white;
+  padding: 7px 14px;
+  border-radius: 50px;
+  font-family:'Nunito',sans-serif;
+  font-weight: 800;
+  font-size: .78rem;
+  cursor: pointer;
+  transition: all .25s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+#backBtn:hover {
+  background: rgba(255,255,255,.22);
+  transform: translateX(-2px);
+}
+
+/* ── PROGRESS BAR ── */
+#progressWrap {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: rgba(255,255,255,.08);
+  z-index: 9998;
+}
+#progressBar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sky), var(--purple), var(--gold));
+  transition: width .5s cubic-bezier(.22,1,.36,1);
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── PAGE INDICATOR ── */
+#pageIndicator {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15,23,42,.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.12);
+  padding: 8px 18px;
+  border-radius: 50px;
+}
+.page-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.25);
+  transition: all .3s ease;
+  cursor: pointer;
+}
+.page-dot.active {
+  background: var(--gold);
+  width: 22px;
+  border-radius: 4px;
+  box-shadow: 0 0 8px var(--gold);
+}
+#pageLabel {
+  font-size: .7rem;
+  font-weight: 800;
+  color: var(--textd);
+  font-family:'Fredoka One',cursive;
+  letter-spacing:.5px;
+}
+
+/* ── NAV ARROWS ── */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9998;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.1);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255,255,255,.18);
+  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex; align-items:center; justify-content:center;
+  transition: all .25s ease;
+}
+.nav-arrow:hover { background:rgba(255,255,255,.22); transform:translateY(-50%) scale(1.08); }
+.nav-arrow:disabled { opacity:.25; cursor:default; pointer-events:none; }
+#prevBtn { left: 12px; }
+#nextBtn { right: 12px; }
+
+/* ── FLIPBOOK CONTAINER ── */
+#bookContainer {
+  width: 100%;
+  height: 100dvh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── SLIDE ── */
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 52px 60px 64px;
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity .55s cubic-bezier(.22,1,.36,1), transform .55s cubic-bezier(.22,1,.36,1);
+  pointer-events: none;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+.slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: all;
+}
+.slide.exit-left {
+  opacity: 0;
+  transform: translateX(-60px);
+}
+
+/* ── CARD ── */
+.card {
+  background: rgba(30,41,59,.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 24px;
+  box-shadow: 0 32px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04);
+  width: 100%;
+  max-width: var(--page-w);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── ANIMATED STARS BG ── */
+.stars-bg { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+.star { position:absolute; border-radius:50%; background:white; animation:twinkle var(--dur,3s) ease-in-out infinite var(--delay,0s); }
+@keyframes twinkle { 0%,100%{opacity:.1;transform:scale(1);} 50%{opacity:.8;transform:scale(1.4);} }
+
+/* ── GLOBAL ANIMATIONS ── */
+@keyframes fadeUp   { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fadeIn   { from{opacity:0;} to{opacity:1;} }
+@keyframes slideLeft{ from{opacity:0;transform:translateX(30px);} to{opacity:1;transform:translateX(0);} }
+@keyframes pulse    { 0%,100%{transform:scale(1);} 50%{transform:scale(1.04);} }
+@keyframes float    { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+@keyframes glow     { 0%,100%{filter:drop-shadow(0 0 6px currentColor);} 50%{filter:drop-shadow(0 0 18px currentColor);} }
+@keyframes rotateDNA{ from{transform:rotateY(0deg);} to{transform:rotateY(360deg);} }
+@keyframes shimmer  { 0%{background-position:-200% center;} 100%{background-position:200% center;} }
+@keyframes bounce   { 0%,100%{transform:translateY(0);} 40%{transform:translateY(-12px);} 60%{transform:translateY(-6px);} }
+@keyframes spinSlow { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+@keyframes rgbBorder{ 0%,100%{border-color:var(--sky);} 33%{border-color:var(--purple);} 66%{border-color:var(--gold);} }
+
+.fade-up   { animation: fadeUp   .7s ease both; }
+.float-anim{ animation: float    3s ease-in-out infinite; }
+.pulse-anim{ animation: pulse    2.5s ease-in-out infinite; }
+.glow-anim { animation: glow     2s ease-in-out infinite; }
+.bounce-anim{ animation: bounce  1.6s ease-in-out infinite; }
+
+/* ═══════════ SLIDE 1 – COVER ═══════════ */
+#slide-1 {
+  background: radial-gradient(ellipse at 20% 10%, rgba(56,189,248,.25) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 90%, rgba(124,58,237,.3) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 50%, rgba(245,158,11,.1) 0%, transparent 70%),
+              linear-gradient(160deg, #0c1a2e 0%, #0f172a 50%, #1a0a2e 100%);
+}
+.cover-title {
+  font-family:'Fredoka One',cursive;
+  font-size: clamp(2rem,5.5vw,3.4rem);
+  line-height: 1.15;
+  background: linear-gradient(135deg, #ffffff 0%, var(--gold) 40%, var(--sky) 80%, var(--purple-l) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% auto;
+  animation: shimmer 4s linear infinite;
+}
+.day-badge {
+  font-family:'Fredoka One',cursive;
+  font-size:.85rem;
+  background: linear-gradient(135deg, var(--gold), #f97316);
+  color: #1a0500;
+  padding: 4px 14px;
+  border-radius: 50px;
+  display: inline-block;
+  letter-spacing:.5px;
+}
+.series-badge {
+  font-size: .72rem;
+  font-weight: 800;
+  color: var(--sky);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: .8;
+}
+
+/* ─ DNA helix visual ─ */
+#dnaSvg {
+  animation: float 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px rgba(56,189,248,.6));
+}
+
+/* ── Aslan captain character ── */
+.aslan-wrap {
+  animation: float 3.5s ease-in-out infinite;
+  filter: drop-shadow(0 12px 24px rgba(0,0,0,.5));
+}
+
+/* ═══════════ SLIDE GENERAL HEADERS ═══════════ */
+.slide-header {
+  padding: 28px 32px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  position: relative;
+}
+.slide-chapter {
+  font-size: .7rem; font-weight: 800;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--sky);
+  margin-bottom: 6px;
+}
+.slide-title {
+  font-family:'Fredoka One',cursive;
+  font-size: clamp(1.4rem,3.5vw,2rem);
+  color: white;
+  line-height: 1.2;
+}
+.slide-subtitle {
+  font-size: .85rem; font-weight: 700;
+  color: var(--textd);
+  margin-top: 4px;
+}
+.slide-body {
+  padding: 24px 32px 28px;
+}
+
+/* ── Story text ── */
+.story-text {
+  font-size: .98rem;
+  line-height: 1.85;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+.story-text strong { color: var(--gold); }
+.story-text em { color: var(--sky); font-style: normal; font-weight: 800; }
+
+.highlight-box {
+  background: linear-gradient(135deg, rgba(56,189,248,.12), rgba(124,58,237,.12));
+  border: 1px solid rgba(56,189,248,.25);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin: 14px 0;
+}
+
+/* ── Evolution timeline ── */
+.evo-timeline {
+  position: relative;
+  padding-left: 20px;
+}
+.evo-timeline::before {
+  content:'';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--green), var(--sky), var(--purple));
+  border-radius: 2px;
+}
+.evo-item {
+  position: relative;
+  padding: 12px 0 12px 24px;
+  cursor: pointer;
+  transition: all .25s ease;
+}
+.evo-item::before {
+  content:'';
+  position: absolute;
+  left: -14px; top: 50%;
+  transform: translateY(-50%);
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--dot-color, var(--sky));
+  border: 2px solid var(--dark);
+  box-shadow: 0 0 10px var(--dot-color, var(--sky));
+  transition: all .3s ease;
+}
+.evo-item:hover::before { transform: translateY(-50%) scale(1.4); }
+.evo-item:hover { transform: translateX(4px); }
+.evo-label { font-family:'Fredoka One',cursive; font-size:.95rem; color:white; }
+.evo-desc  { font-size:.78rem; color:var(--textd); margin-top:2px; font-weight:700; }
+
+/* ── Interactive slider (future human) ── */
+.slider-wrap { position: relative; }
+.range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--green), var(--sky), var(--purple));
+  outline: none;
+  cursor: pointer;
+}
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--gold);
+  box-shadow: 0 0 12px var(--gold);
+  cursor: pointer;
+  transition: transform .2s ease;
+}
+.range-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+/* ── Change cards ── */
+.change-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 16px;
+  padding: 16px;
+  transition: all .3s ease;
+  cursor: pointer;
+}
+.change-card:hover {
+  background: rgba(255,255,255,.09);
+  border-color: var(--sky);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(56,189,248,.2);
+}
+.change-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
+.change-title { font-family:'Fredoka One',cursive; font-size:.9rem; color:white; }
+.change-body  { font-size:.72rem; color:var(--textd); margin-top:4px; font-weight:700; line-height:1.5; }
+.change-popup {
+  display: none;
+  font-size: .72rem;
+  color: var(--gold);
+  margin-top: 8px;
+  font-weight: 800;
+  padding: 8px;
+  background: rgba(245,158,11,.1);
+  border-radius: 8px;
+  border: 1px solid rgba(245,158,11,.25);
+}
+.change-card.open .change-popup { display: block; animation: fadeUp .3s ease; }
+
+/* ── DNA spinner ── */
+#dnaSpinContainer { perspective: 600px; }
+#dnaSpinner { animation: rotateDNA 4s linear infinite; transform-style: preserve-3d; }
+
+/* ── Points list ── */
+.point-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  animation: fadeUp .5s ease both;
+}
+.point-row:last-child { border-bottom: none; }
+.point-icon { font-size: 1.6rem; flex-shrink: 0; filter:drop-shadow(0 0 6px rgba(255,255,255,.3)); }
+.point-text { font-size: .88rem; color: #cbd5e1; font-weight: 700; line-height: 1.6; }
+.point-text strong { color: white; }
+
+/* ── Challenge box ── */
+.challenge-box {
+  background: linear-gradient(135deg, rgba(245,158,11,.15), rgba(124,58,237,.15));
+  border: 2px solid var(--gold);
+  border-radius: 20px;
+  padding: 22px;
+  position: relative;
+  overflow: hidden;
+  animation: rgbBorder 4s ease-in-out infinite;
+}
+.challenge-box::before {
+  content:'';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 30%, rgba(245,158,11,.1), transparent 60%);
+  pointer-events: none;
+}
+.challenge-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 10px 12px;
+  background: rgba(255,255,255,.04);
+  border-radius: 12px;
+  margin-top: 10px;
+  transition: all .25s ease;
+  cursor: pointer;
+}
+.challenge-item:hover { background: rgba(255,255,255,.09); }
+.challenge-check {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  flex-shrink: 0;
+  display: flex; align-items:center; justify-content:center;
+  font-size:.75rem;
+  transition: all .3s ease;
+}
+.challenge-item.done .challenge-check {
+  background: var(--green);
+  border-color: var(--green);
+}
+.challenge-text { font-size:.82rem; color:#cbd5e1; font-weight:700; line-height:1.5; }
+
+/* ── Closing slide ── */
+#slide-11 {
+  background: radial-gradient(ellipse at 30% 20%, rgba(34,197,94,.2), transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(245,158,11,.2), transparent 50%),
+              linear-gradient(160deg, #0c2d1a 0%, #0f172a 50%, #1a1a0a 100%);
+}
+
+/* ─ Teaser card ─ */
+.teaser-card {
+  background: linear-gradient(135deg, rgba(56,189,248,.15), rgba(124,58,237,.15));
+  border: 1px solid rgba(56,189,248,.3);
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex; align-items:center; gap: 16px;
+}
+
+/* ─ Human evolution silhouette slider ─ */
+#humanSliderWrap { position: relative; overflow: hidden; border-radius: 16px; }
+#humanFigureArea {
+  width: 100%; height: 180px;
+  background: linear-gradient(135deg, rgba(56,189,248,.08), rgba(124,58,237,.08));
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 14px;
+  display: flex; align-items:flex-end; justify-content:space-around;
+  padding: 10px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.human-fig {
+  display: flex; flex-direction:column; align-items:center; gap:4px;
+  transition: all .5s ease;
+}
+.human-fig .fig-label {
+  font-size: .6rem; font-weight: 800;
+  color: var(--textd);
+  text-align: center;
+  font-family:'Fredoka One',cursive;
+}
+
+/* ─ Future features ─ */
+.future-feature {
+  background: rgba(124,58,237,.1);
+  border: 1px solid rgba(124,58,237,.3);
+  border-radius: 14px;
+  padding: 14px 16px;
+  transition: all .3s ease;
+  cursor: pointer;
+}
+.future-feature:hover {
+  background: rgba(124,58,237,.2);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(124,58,237,.3);
+}
+.future-feature.revealed .future-body { display:block; animation:fadeUp .3s ease; }
+.future-feature .future-body { display:none; }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .slide { padding: 52px 12px 68px; }
+  .slide-header { padding: 20px 18px 14px; }
+  .slide-body    { padding: 16px 18px 20px; }
+  #prevBtn { left: 6px; }
+  #nextBtn { right: 6px; }
+  .nav-arrow { width: 38px; height: 38px; font-size: 1.1rem; }
+}
+@media (max-width: 400px) {
+  .slide { padding: 52px 6px 68px; }
+}
+
+/* ── Scroll within card ── */
+.card { max-height: calc(100dvh - 110px); overflow-y: auto; scroll-behavior: smooth; }
+.card::-webkit-scrollbar { width: 4px; }
+.card::-webkit-scrollbar-track { background: transparent; }
+.card::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+
+/* ── Confetti ── */
+.confetti-bit {
+  position:fixed; border-radius:2px; pointer-events:none; z-index:9999;
+  animation: confettiFall 1.2s ease-out forwards;
+}
+@keyframes confettiFall {
+  0%   { transform: translate(0,0) rotate(0deg); opacity:1; }
+  100% { transform: translate(var(--cx), var(--cy)) rotate(720deg); opacity:0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════
+     BACK BUTTON
+═══════════════════════ -->
+<a href="../perpustakaan.html" id="backBtn">← Perpustakaan</a>
+
+<!-- ═══════════════════════
+     PROGRESS BAR
+═══════════════════════ -->
+<div id="progressWrap"><div id="progressBar" style="width:9.09%"></div></div>
+
+<!-- ═══════════════════════
+     NAV ARROWS
+═══════════════════════ -->
+<button class="nav-arrow" id="prevBtn" onclick="navigate(-1)" disabled>&#8592;</button>
+<button class="nav-arrow" id="nextBtn" onclick="navigate(1)">&#8594;</button>
+
+<!-- ═══════════════════════
+     PAGE INDICATOR
+═══════════════════════ -->
+<div id="pageIndicator">
+  <span id="pageLabel">1 / 11</span>
+</div>
+
+<!-- ═══════════════════════
+     BOOK CONTAINER
+═══════════════════════ -->
+<div id="bookContainer">
+
+<!-- ════════════════════════════════════════════
+     SLIDE 1 – COVER
+════════════════════════════════════════════ -->
+<div class="slide active" id="slide-1">
+  <!-- Stars background -->
+  <div class="stars-bg" id="starsContainer"></div>
+
+  <div style="width:100%;max-width:var(--page-w);display:flex;flex-direction:column;align-items:center;gap:0;position:relative;z-index:1;">
+
+    <!-- Header badges -->
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;justify-content:center;" class="fade-up">
+      <span class="day-badge">📅 Hari 27 dari 30</span>
+      <span class="series-badge">🚀 Petualangan Kapten Cerdas</span>
+    </div>
+
+    <!-- Main card -->
+    <div class="card" style="background:rgba(15,23,42,.82);">
+      <div style="position:relative;padding:36px 32px 28px;text-align:center;overflow:hidden;">
+        <!-- Glow orbs -->
+        <div style="position:absolute;top:-40px;left:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.18),transparent 70%);pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.2),transparent 70%);pointer-events:none;"></div>
+
+        <div class="fade-up" style="animation-delay:.1s">
+          <p style="font-family:'Fredoka One',cursive;font-size:.8rem;letter-spacing:2px;color:var(--sky);text-transform:uppercase;margin-bottom:10px;">Jejak Manusia di Bumi</p>
+          <h1 class="cover-title">Evolusi Manusia<br>Masih Berlanjut?</h1>
+          <p style="font-size:.95rem;color:var(--textd);margin-top:10px;font-weight:700;">Perjalanan Waktu Bersama Aslan 🧬</p>
+        </div>
+
+        <!-- Characters + DNA -->
+        <div style="display:flex;align-items:flex-end;justify-content:center;gap:24px;margin:24px 0;" class="fade-up" style="animation-delay:.25s">
+
+          <!-- Aslan Captain -->
+          <div class="aslan-wrap">
+            <svg width="100" height="145" viewBox="0 0 100 145" fill="none">
+              <!-- Cape -->
+              <path d="M18 75 Q10 110 8 140 L30 135 Q28 110 35 90Z" fill="#7c3aed" opacity=".85"/>
+              <path d="M82 75 Q90 110 92 140 L70 135 Q72 110 65 90Z" fill="#7c3aed" opacity=".85"/>
+              <!-- Body -->
+              <rect x="28" y="72" width="44" height="52" rx="12" fill="#0369a1"/>
+              <rect x="28" y="85" width="44" height="5" rx="2" fill="#38bdf8" opacity=".5"/>
+              <!-- Belt -->
+              <rect x="28" y="105" width="44" height="8" rx="4" fill="#f59e0b"/>
+              <circle cx="50" cy="109" r="4" fill="#fde68a"/>
+              <!-- Collar -->
+              <path d="M38 72 L50 82 L62 72" fill="#38bdf8" opacity=".4"/>
+              <!-- Arms -->
+              <rect x="8"  y="75" width="18" height="32" rx="9" fill="#0369a1"/>
+              <rect x="74" y="75" width="18" height="32" rx="9" fill="#0369a1"/>
+              <!-- Right hand holds DNA -->
+              <circle cx="84" cy="107" r="6" fill="#f9a825"/>
+              <!-- Legs -->
+              <rect x="32" y="118" width="16" height="24" rx="8" fill="#0c2d4a"/>
+              <rect x="52" y="118" width="16" height="24" rx="8" fill="#0c2d4a"/>
+              <ellipse cx="40" cy="141" rx="10" ry="5" fill="#0f172a"/>
+              <ellipse cx="60" cy="141" rx="10" ry="5" fill="#0f172a"/>
+              <!-- Neck -->
+              <rect x="42" y="62" width="16" height="12" rx="6" fill="#f9a825"/>
+              <!-- Head -->
+              <ellipse cx="50" cy="46" rx="28" ry="26" fill="#f9a825"/>
+              <!-- Hat captain -->
+              <ellipse cx="50" cy="22" rx="32" ry="7" fill="#0c2d4a"/>
+              <rect x="24" y="10" width="52" height="16" rx="5" fill="#0369a1"/>
+              <rect x="28" y="12" width="44" height="8" rx="3" fill="#38bdf8" opacity=".3"/>
+              <circle cx="50" cy="10" r="4" fill="#f59e0b"/>
+              <text x="40" y="22" font-size="9" fill="#fde68a" font-family="Fredoka One,cursive" font-weight="bold">DNA</text>
+              <!-- Hair under hat -->
+              <rect x="22" y="23" width="56" height="10" rx="5" fill="#2d1b00"/>
+              <!-- Eyes -->
+              <ellipse cx="40" cy="46" rx="6" ry="7" fill="white"/>
+              <ellipse cx="60" cy="46" rx="6" ry="7" fill="white"/>
+              <ellipse cx="40.5" cy="47" rx="3.5" ry="4.5" fill="#0c2d4a"/>
+              <ellipse cx="60.5" cy="47" rx="3.5" ry="4.5" fill="#0c2d4a"/>
+              <circle cx="42" cy="45" r="1.5" fill="white"/>
+              <circle cx="62" cy="45" r="1.5" fill="white"/>
+              <!-- Smile -->
+              <path d="M38 57 Q50 66 62 57" stroke="#2d1b00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <!-- Cheeks -->
+              <ellipse cx="32" cy="54" rx="5" ry="3" fill="#ffb347" opacity=".5"/>
+              <ellipse cx="68" cy="54" rx="5" ry="3" fill="#ffb347" opacity=".5"/>
+            </svg>
+          </div>
+
+          <!-- DNA Helix SVG -->
+          <svg id="dnaSvg" width="70" height="160" viewBox="0 0 70 160">
+            <!-- DNA helix strand 1 -->
+            <path d="M35 5 C60 15, 10 35, 35 45 C60 55, 10 75, 35 85 C60 95, 10 115, 35 125 C60 135, 10 155, 35 155" stroke="#38bdf8" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- DNA helix strand 2 -->
+            <path d="M35 5 C10 15, 60 35, 35 45 C10 55, 60 75, 35 85 C10 95, 60 115, 35 125 C10 135, 60 155, 35 155" stroke="#a78bfa" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- Cross bridges -->
+            <line x1="14" y1="20" x2="56" y2="20" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" opacity=".9"/>
+            <line x1="56" y1="45" x2="14" y2="45" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" opacity=".9"/>
+            <line x1="14" y1="70" x2="56" y2="70" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" opacity=".9"/>
+            <line x1="56" y1="95" x2="14" y2="95" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" opacity=".9"/>
+            <line x1="14" y1="120" x2="56" y2="120" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" opacity=".9"/>
+            <line x1="56" y1="145" x2="14" y2="145" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" opacity=".9"/>
+            <!-- Node dots -->
+            <circle cx="14" cy="20"  r="5" fill="#22c55e"  filter="url(#gf)"/>
+            <circle cx="56" cy="20"  r="5" fill="#22c55e"  filter="url(#gf)"/>
+            <circle cx="14" cy="45"  r="5" fill="#f59e0b"  filter="url(#gf)"/>
+            <circle cx="56" cy="45"  r="5" fill="#f59e0b"  filter="url(#gf)"/>
+            <circle cx="14" cy="70"  r="5" fill="#ec4899"  filter="url(#gf)"/>
+            <circle cx="56" cy="70"  r="5" fill="#ec4899"  filter="url(#gf)"/>
+            <circle cx="14" cy="95"  r="5" fill="#22c55e"  filter="url(#gf)"/>
+            <circle cx="56" cy="95"  r="5" fill="#22c55e"  filter="url(#gf)"/>
+            <circle cx="14" cy="120" r="5" fill="#38bdf8"  filter="url(#gf)"/>
+            <circle cx="56" cy="120" r="5" fill="#38bdf8"  filter="url(#gf)"/>
+            <circle cx="14" cy="145" r="5" fill="#f59e0b"  filter="url(#gf)"/>
+            <circle cx="56" cy="145" r="5" fill="#f59e0b"  filter="url(#gf)"/>
+            <defs>
+              <filter id="gf" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+          </svg>
+
+          <!-- Future human silhouette -->
+          <div style="animation:float 4s ease-in-out infinite .8s;">
+            <svg width="72" height="145" viewBox="0 0 72 145" fill="none" opacity=".75">
+              <!-- Holographic future human -->
+              <ellipse cx="36" cy="30" rx="18" ry="20" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4 3"/>
+              <ellipse cx="36" cy="30" rx="12" ry="13" fill="rgba(124,58,237,.15)"/>
+              <!-- Brain glow -->
+              <ellipse cx="36" cy="24" rx="10" ry="8" fill="rgba(56,189,248,.2)"/>
+              <path d="M28 24 Q36 18 44 24" stroke="#38bdf8" stroke-width="1.5" fill="none"/>
+              <!-- Eyes glow -->
+              <ellipse cx="30" cy="32" rx="3" ry="3" fill="#38bdf8" opacity=".8"/>
+              <ellipse cx="42" cy="32" rx="3" ry="3" fill="#38bdf8" opacity=".8"/>
+              <!-- Body hologram -->
+              <rect x="24" y="52" width="24" height="40" rx="8" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="3 2"/>
+              <rect x="24" y="52" width="24" height="40" rx="8" fill="rgba(124,58,237,.1)"/>
+              <!-- Tech lines on body -->
+              <line x1="28" y1="60" x2="44" y2="60" stroke="#38bdf8" stroke-width="1" opacity=".6"/>
+              <line x1="28" y1="68" x2="40" y2="68" stroke="#38bdf8" stroke-width="1" opacity=".6"/>
+              <line x1="28" y1="76" x2="44" y2="76" stroke="#7c3aed" stroke-width="1" opacity=".6"/>
+              <!-- Neck -->
+              <rect x="32" y="50" width="8" height="6" rx="3" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+              <!-- Arms -->
+              <rect x="6"  y="54" width="16" height="28" rx="6" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="3 2"/>
+              <rect x="50" y="54" width="16" height="28" rx="6" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="3 2"/>
+              <!-- Legs -->
+              <rect x="24" y="90" width="10" height="30" rx="5" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="3 2"/>
+              <rect x="38" y="90" width="10" height="30" rx="5" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="3 2"/>
+              <!-- Floating data particles -->
+              <circle cx="10" cy="30" r="2" fill="#f59e0b" opacity=".7" style="animation:twinkle 2s ease-in-out infinite;"/>
+              <circle cx="62" cy="50" r="2" fill="#22c55e" opacity=".7" style="animation:twinkle 2.5s ease-in-out infinite .4s;"/>
+              <circle cx="8"  cy="75" r="1.5" fill="#38bdf8" opacity=".6" style="animation:twinkle 1.8s ease-in-out infinite .8s;"/>
+              <circle cx="64" cy="20" r="1.5" fill="#ec4899" opacity=".6" style="animation:twinkle 3s ease-in-out infinite .2s;"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Sub description -->
+        <div class="fade-up" style="animation-delay:.4s;margin-top:4px;">
+          <p style="font-size:.88rem;color:var(--textd);font-weight:700;line-height:1.7;max-width:500px;margin:0 auto;">
+            🧬 Apakah tubuh manusia masih berubah sampai sekarang?<br>
+            Dan bagaimana bentuk manusia di masa depan nanti? 🚀
+          </p>
+        </div>
+
+        <!-- Start button -->
+        <div class="fade-up" style="animation-delay:.55s;margin-top:22px;">
+          <button onclick="navigate(1)" style="
+            background: linear-gradient(135deg, var(--sky), var(--purple));
+            color: white; border: none; border-radius: 50px;
+            padding: 12px 32px; font-family:'Fredoka One',cursive;
+            font-size: 1.05rem; cursor: pointer;
+            box-shadow: 0 6px 24px rgba(56,189,248,.4);
+            transition: all .25s ease; letter-spacing:.5px;
+          " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            ▶ Mulai Petualangan!
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 2 – PENGANTAR CERITA
+════════════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+  <div style="width:100%;max-width:var(--page-w);">
+    <div class="card">
+      <div class="slide-header" style="background:linear-gradient(135deg,rgba(56,189,248,.12),rgba(34,197,94,.08));">
+        <p class="slide-chapter">✨ Pembuka</p>
+        <h2 class="slide-title">Aslan di Tepi Waktu</h2>
+        <p class="slide-subtitle">Sebuah perjalanan melintasi jutaan tahun evolusi 🕰️</p>
+      </div>
+      <div class="slide-body">
+
+        <!-- Story scene illustration -->
+        <div style="background:linear-gradient(135deg,rgba(12,45,74,.8),rgba(26,10,46,.8));border-radius:16px;padding:20px;margin-bottom:18px;border:1px solid rgba(56,189,248,.15);position:relative;overflow:hidden;">
+          <!-- Decorative stars inside -->
+          <div style="position:absolute;top:8px;right:12px;font-size:1.5rem;animation:twinkle 2s ease-in-out infinite;">✨</div>
+          <div style="position:absolute;bottom:10px;left:16px;font-size:1rem;animation:twinkle 3s ease-in-out infinite .5s;">⭐</div>
+
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <div style="font-size:3.5rem;animation:float 3s ease-in-out infinite;">🚀</div>
+            <div style="flex:1;min-width:200px;">
+              <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:var(--sky);margin-bottom:8px;">Kapten Aslan bercerita...</p>
+              <p class="story-text" style="font-size:.88rem;">
+                Angin berdesir pelan di tepi Sungai Waktu yang ajaib. <strong>Kapten Aslan</strong> berdiri tegak di atas jembatan kristal — jembatan yang bisa melihat ke masa lalu dan masa depan sekaligus.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <p class="story-text">
+          Di sebelah kirinya, Aslan melihat bayangan manusia purba yang membungkuk, berbulu lebat, memukul-mukul batu membuat alat. Di sebelah kanannya, bayangan manusia masa depan berdiri tegak, kepalanya lebih besar, matanya berbinar cerdas, dengan teknologi melekat di tangannya.
+        </p>
+
+        <div class="highlight-box" style="margin:16px 0;">
+          <p style="font-family:'Fredoka One',cursive;font-size:.88rem;color:var(--gold);">🤔 Aslan bertanya-tanya dengan penuh rasa ingin tahu:</p>
+          <p class="story-text" style="margin-top:6px;font-size:.88rem;">
+            <em>"Apakah manusia masih terus berubah sampai sekarang? Atau sudah berhenti? Dan jika masih berlanjut… akan jadi seperti apa kita jutaan tahun lagi?"</em>
+          </p>
+        </div>
+
+        <p class="story-text">
+          Kompas emasnya bergetar. Peta Evolusi miliknya menyala dengan cahaya biru-ungu. Inilah saatnya Kapten Aslan menjawab misteri terbesar tentang dirinya sendiri — <strong>asal-usul dan masa depan manusia!</strong>
+        </p>
+
+        <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:120px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:12px;padding:12px;text-align:center;">
+            <p style="font-size:1.4rem;">🦴</p>
+            <p style="font-family:'Fredoka One',cursive;font-size:.75rem;color:var(--green);">7 Juta Tahun</p>
+            <p style="font-size:.65rem;color:var(--textd);font-weight:700;">Nenek moyang pertama</p>
+          </div>
+          <div style="flex:1;min-width:120px;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.25);border-radius:12px;padding:12px;text-align:center;">
+            <p style="font-size:1.4rem;">🧬</p>
+            <p style="font-family:'Fredoka One',cursive;font-size:.75rem;color:var(--sky);">Sekarang</p>
+            <p style="font-size:.65rem;color:var(--textd);font-weight:700;">Homo sapiens modern</p>
+          </div>
+          <div style="flex:1;min-width:120px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.25);border-radius:12px;padding:12px;text-align:center;">
+            <p style="font-size:1.4rem;">🔮</p>
+            <p style="font-family:'Fredoka One',cursive;font-size:.75rem;color:var(--purple-l);">Masa Depan</p>
+            <p style="font-size:.65rem;color:var(--textd);font-weight:700;">Manusia masa depan?</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 3 – APA ITU EVOLUSI?
+════════════════════════════════════════════ -->
+<div class="slide" id="slide-3">
+  <div style="width:100%;max-width:var(--page-w);">
+    <div class="card">
+      <div class="slide-header" style="background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(56,189,248,.08));">
+        <p class="slide-chapter">📖 Bab 1 – Penjelasan</p>
+        <h2 class="slide-title">Apa Itu Evolusi? 🌱</h2>
+        <p class="slide-subtitle">Seperti pohon besar yang terus tumbuh dan berubah</p>
+      </div>
+      <div class="slide-body">
+
+        <!-- Analogy visual -->
+        <div style="display:flex;gap:16px;align-items:center;margin-bottom:18px;flex-wrap:wrap;">
+          <div style="font-size:5rem;animation:float 4s ease-in-out infinite;flex-shrink:0;">🌳</div>
+          <div style="flex:1;">
+            <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:var(--green);margin-bottom:8px;">Evolusi Seperti Pohon Besar!</p>
+            <p class="story-text" style="font-size:.88rem;">
+              Bayangkan sebuah pohon yang tumbuh sangat pelan — begitu pelan hingga kamu tidak bisa melihatnya dalam satu hari. Tapi kalau kamu lihat foto pohon itu tiap 100 tahun sekali... <strong>wah, betapa besar perubahan yang terjadi!</strong>
+            </p>
+          </div>
+        </div>
+
+        <p class="story-text">
+          <strong>Evolusi</strong> adalah perubahan pada makhluk hidup yang terjadi <em>sangat perlahan</em> dari generasi ke generasi. Bukan kamu yang berubah, bukan juga orang tuamu. Tapi setelah ribuan bahkan jutaan generasi… perbedaannya bisa sangat besar!
+        </p>
+
+        <!-- Key definition box -->
+        <div style="background:linear-gradient(135deg,rgba(34,197,94,.15),rgba(56,189,248,.1));border:1.5px solid rgba(34,197,94,.35);border-radius:16px;padding:18px;margin:16px 0;">
+          <p style="font-family:'Fredoka One',cursive;font-size:.85rem;color:var(--green);margin-bottom:10px;">🔑 Cara Evolusi Bekerja:</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="background:rgba(0,0,0,.2);border-radius:10px;padding:10px;">
+              <p style="font-size:1.2rem;margin-bottom:4px;">🎲</p>
+              <p style="font-family:'Fredoka One',cursive;font-size:.78rem;color:white;">Mutasi Acak</p>
+              <p style="font-size:.68rem;color:var(--textd);margin-top:2px;font-weight:700;">Gen kadang berubah sedikit saat menyalin diri</p>
+            </div>
+            <div style="background:rgba(0,0,0,.2);border-radius:10px;padding:10px;">
+              <p style="font-size:1.2rem;margin-bottom:4px;">🏆</p>
+              <p style="font-family:'Fredoka One',cursive;font-size:.78rem;color:white;">Seleksi Alam</p>
+              <p style="font-size:.68rem;color:var(--textd);margin-top:2px;font-weight:700;">Yang lebih "cocok" dengan lingkungan bertahan hidup</p>
+            </div>
+            <div style="background:rgba(0,0,0,.2);border-radius:10px;padding:10px;">
+              <p style="font-size:1.2rem;margin-bottom:4px;">👶</p>
+              <p style="font-family:'Fredoka One',cursive;font-size:.78rem;color:white;">Diwariskan</p>
+              <p style="font-size:.68rem;color:var(--textd);margin-top:2px;font-weight:700;">Sifat berguna diwariskan ke anak cucu</p>
+            </div>
+            <div style="background:rgba(0,0,0,.2);border-radius:10px;padding:10px;">
+              <p style="font-size:1.2rem;margin-bottom:4px;">⏳</p>
+              <p style="font-family:'Fredoka One',cursive;font-size:.78rem;color:white;">Ribuan Generasi</p>
+              <p style="font-size:.68rem;color:var(--textd);margin-top:2px;font-weight:700;">Perubahan kecil menumpuk jadi besar</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <p class="story-text" style="font-size:.86rem;">
+            💡 Analogi seru: Evolusi seperti <strong>tim olahraga yang terus berlatih</strong> — bukan satu pemain yang tiba-tiba hebat, tapi seluruh tim yang pelan-pelan jadi lebih baik dari generasi ke generasi!
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 4 – PERJALANAN EVOLUSI MANUSIA
+════════════════════════════════════════════ -->
+<div class="slide" id="slide-4">
+  <div style="width:100%;max-width:var(--page-w);">
+    <div class="card">
+      <div class="slide-header" style="background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(34,197,94,.08));">
+        <p class="slide-chapter">🦕 Bab 2 – Timeline</p>
+        <h2 class="slide-title">Perjalanan Panjang Manusia 🦶</h2>
+        <p class="slide-subtitle">Klik setiap titik untuk melihat ceritanya!</p>
+      </div>
+      <div class="slide-body">
+
+        <!-- Interactive timeline -->
+        <div class="evo-timeline" id="evoTimeline">
+          <div class="evo-item" style="--dot-color:#22c55e;" onclick="toggleEvoItem(this)">
+            <p class="evo-label">🦍 7 Juta Tahun Lalu – Nenek Moyang Bersama</p>
+            <p class="evo-desc">Leluhur manusia dan simpanse masih satu keluarga</p>
+            <div style="display:none;margin-top:8px;padding:10px;background:rgba(34,197,94,.1);border-radius:10px;border:1px solid rgba(34,197,94,.25);">
+              <p style="font-size:.75rem;color:#86efac;font-weight:700;line-height:1.6;">Kita dan simpanse berbagi 98,7% DNA yang sama! Bayangkan kamu dan temanmu hanya beda 1 huruf dalam 100 halaman buku yang sama. Nenek moyang ini hidup di hutan Afrika dan belum bisa berjalan tegak.</p>
+            </div>
+          </div>
+          <div class="evo-item" style="--dot-color:#38bdf8;" onclick="toggleEvoItem(this)">
+            <p class="evo-label">🚶 3,9 Juta Tahun – Berjalan Tegak (Lucy)</p>
+            <p class="evo-desc">Australopithecus mulai berdiri dua kaki</p>
+            <div style="display:none;margin-top:8px;padding:10px;background:rgba(56,189,248,.1);border-radius:10px;border:1px solid rgba(56,189,248,.25);">
+              <p style="font-size:.75rem;color:#7dd3fc;font-weight:700;line-height:1.6;">Lucy adalah nama fosil Australopithecus yang ditemukan di Ethiopia. Tingginya hanya 1,1 meter, tapi sudah bisa berjalan tegak! Berjalan tegak membebaskan tangan untuk membawa makanan dan membuat alat — perubahan besar yang dimulai dari sini.</p>
+            </div>
+          </div>
+          <div class="evo-item" style="--dot-color:#f59e0b;" onclick="toggleEvoItem(this)">
+            <p class="evo-label">🔨 2,4 Juta Tahun – Homo Habilis, Pembuat Alat</p>
+            <p class="evo-desc">Manusia pertama yang membuat perkakas dari batu</p>
+            <div style="display:none;margin-top:8px;padding:10px;background:rgba(245,158,11,.1);border-radius:10px;border:1px solid rgba(245,158,11,.25);">
+              <p style="font-size:.75rem;color:#fde68a;font-weight:700;line-height:1.6;">Otak mulai membesar. Homo Habilis artinya "manusia yang terampil". Mereka memukul batu tertentu untuk membuat pisau tajam. Ini seperti manusia pertama yang menemukan gunting — revolusioner!</p>
+            </div>
+          </div>
+          <div class="evo-item" style="--dot-color:#ec4899;" onclick="toggleEvoItem(this)">
+            <p class="evo-label">🔥 1 Juta Tahun – Homo Erectus & Api</p>
+            <p class="evo-desc">Pertama menguasai api dan memasak makanan</p>
+            <div style="display:none;margin-top:8px;padding:10px;background:rgba(236,72,153,.1);border-radius:10px;border:1px solid rgba(236,72,153,.25);">
+              <p style="font-size:.75rem;color:#f9a8d4;font-weight:700;line-height:1.6;">Api mengubah segalanya! Makanan yang dimasak lebih mudah dicerna, memberi lebih banyak energi ke otak. Ilmuwan Richard Wrangham menyebutnya "hipotesis memasak" — api dan masak adalah bahan bakar evolusi otak manusia!</p>
+            </div>
+          </div>
+          <div class="evo-item" style="--dot-color:#a78bfa;" onclick="toggleEvoItem(this)">
+            <p class="evo-label">🧠 300.000 Tahun – Homo Sapiens Muncul!</p>
+            <p class="evo-desc">Otak terbesar, seni pertama, dan bahasa berkembang</p>
+            <div style="display:none;margin-top:8px;padding:10px;background:rgba(124,58,237,.1);border-radius:10px;border:1px solid rgba(124,58,237,.25);">
+              <p style="font-size:.75rem;color:#c4b5fd;font-weight:700;line-height:1.6;">Kita adalah Homo sapiens! Artinya "manusia yang bijaksana". Kita mulai membuat lukisan di gua, menggunakan bahasa kompleks, dan bekerja sama dalam kelompok besar. Ini seperti upgrade komputer paling dahsyat dalam sejarah!</p>
+            </div>
+          </div>
+          <div class="evo-item" style="--dot-color:#38bdf8;" onclick="toggleEvoItem(this)">
+            <p class="evo-label">🌍 70.000 Tahun – Keluar dari Afrika</p>
+            <p class="evo-desc">Homo sapiens menyebar ke seluruh penjuru Bumi</p>
+            <div style="display:none;margin-top:8px;padding:10px;background:rgba(56,189,248,.1);border-radius:10px;border:1px solid rgba(56,189,248,.25);">
+              <p style="font-size:.75rem;color:#7dd3fc;font-weight:700;line-height:1.6;">Sekelompok kecil manusia — mungkin hanya beberapa ribu orang — nekat keluar Afrika menjelajahi dunia baru. Mereka melintasi padang pasir, gunung, dan lautan. Dari sinilah semua manusia di Bumi saat ini berasal!</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-box" style="margin-top:14px;">
+          <p style="font-size:.8rem;color:var(--sky);font-weight:800;">💡 Klik setiap titik di atas untuk membuka detail ceritanya!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 5 – APAKAH EVOLUSI BERHENTI?
+════════════════════════════════════════════ -->
+<div class="slide" id="slide-5">
+  <div style="width:100%;max-width:var(--page-w);">
+    <div class="card">
+      <div class="slide-header" style="background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(236,72,153,.08));">
+        <p class="slide-chapter">🔬 Bab 3 – Pertanyaan Besar</p>
+        <h2 class="slide-title">Apakah Evolusi Sudah Berhenti? 🤔</h2>
+        <p class="slide-subtitle">Jawabannya mungkin mengejutkan kamu!</p>
+      </div>
+      <div class="slide-body">
+
+        <!-- Big misconception busted -->
+        <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:140px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:14px;padding:14px;text-align:center;">
+            <p style="font-size:2rem;">❌</p>
+            <p style="font-family:'Fredoka One',cursive;font-size:.82rem;color:#fca5a5;margin-top:4px;">Mitos</p>
+            <p style="font-size:.72rem;color:var(--textd);margin-top:4px;font-weight:700;">"Karena manusia sudah pintar dan punya teknologi, evolusi sudah berhenti!"</p>
+          </div>
+          <div style="display:flex;align-items:center;font-size:2rem;color:var(--gold);">→</div>
+          <div style="flex:1;min-width:140px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:14px;padding:14px;text-align:center;">
+            <p style="font-size:2rem;">✅</p>
+            <p style="font-family:'Fredoka One',cursive;font-size:.82rem;color:#86efac;margin-top:4px;">Kenyataan</p>
+            <p style="font-size:.72rem;color:var(--textd);margin-top:4px;font-weight:700;">"Evolusi MASIH berlanjut! Hanya saja lebih lambat dan lebih halus dari sebelumnya."</p>
+          </div>
+        </div>
+
+        <p class="story-text">
+          Para ilmuwan menemukan bahwa <strong>evolusi tidak pernah berhenti</strong> — bahkan pada manusia modern. Selama makhluk hidup masih berkembang biak dan ada perbedaan antar individu, seleksi alam terus bekerja.
+        </p>
+
+        <div style="background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(56,189,248,.08));border:1px solid rgba(124,58,237,.25);border-radius:16px;padding:16px;margin:14px 0;">
+          <p style="font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--purple-l);margin-bottom:10px;">🌊 Kenapa lebih lambat sekarang?</p>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="font-size:1rem;flex-shrink:0;">💊</span>
+              <p style="font-size:.8rem;color:#cbd5e1;font-weight:700;line-height:1.5;"><strong>Teknologi medis</strong> membantu lebih banyak orang bertahan hidup — seleksi alam jadi lebih "lembut"</p>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="font-size:1rem;flex-shrink:0;">🌐</span>
+              <p style="font-size:.8rem;color:#cbd5e1;font-weight:700;line-height:1.5;"><strong>Globalisasi</strong> mencampur gen dari seluruh dunia — keragaman makin besar</p>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="font-size:1rem;flex-shrink:0;">🏙️</span>
+              <p style="font-size:.8rem;color:#cbd5e1;font-weight:700;line-height:1.5;"><strong>Lingkungan berubah lebih cepat</strong> dari yang bisa diikuti evolusi biologis — makanya kita pakai budaya dan teknologi sebagai "evolusi cepat"!</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <p class="story-text" style="font-size:.86rem;">
+            🎯 <strong>Fakta menarik:</strong> Ilmuwan dari Universitas Chicago menemukan bukti bahwa gen manusia telah berubah dalam 10.000 tahun terakhir, dan perubahannya bahkan <em>lebih cepat dari rata-rata</em> dalam sejarah evolusi manusia!
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 6 – PERUBAHAN YANG MASIH TERJADI (INTERAKTIF)
+════════════════════════════════════════════ -->
+<div class="slide" id="slide-6">
+  <div style="width:100%;max-width:var(--page-w);">
+    <div class="card">
+      <div class="slide-header" style="background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(245,158,11,.08));">
+        <p class="slide-chapter">🔎 Bab 4 – Bukti Nyata</p>
+        <h2 class="slide-title">Perubahan yang Sedang Terjadi! 🌿</h2>
+        <p class="slide-subtitle">Klik setiap kartu untuk lihat penjelasannya!</p>
+      </div>
+      <div class="slide-body">
+        <p class="story-text" style="margin-bottom:16px;">
+          Para ilmuwan sudah menemukan beberapa perubahan nyata yang terjadi pada manusia modern. Ini bukan khayalan — ini <strong>ilmu pengetahuan yang sudah dibuktikan!</strong>
+        </p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" id="changeCards">
+          <div class="change-card" onclick="toggleChangeCard(this)">
+            <span class="change-icon">📏</span>
+            <p class="change-title">Tubuh Makin Tinggi</p>
+            <p class="change-body">Rata-rata manusia makin tinggi dalam 150 tahun terakhir.</p>
+            <div class="change-popup">
+              🌟 Rata-rata orang Eropa kini 11 cm lebih tinggi dari nenek moyang mereka 150 tahun lalu! Sebagian besar karena makanan lebih baik, tapi ada juga faktor genetik yang berubah secara bertahap.
+            </div>
+          </div>
+          <div class="change-card" onclick="toggleChangeCard(this)">
+            <span class="change-icon">🥛</span>
+            <p class="change-title">Toleransi Minum Susu</p>
+            <p class="change-body">Gen baru memungkinkan orang dewasa minum susu.</p>
+            <div class="change-popup">
+              🌟 10.000 tahun lalu, hampir semua orang dewasa tidak bisa minum susu! Tapi saat manusia mulai beternak sapi, gen "laktase" yang memungkinkan mencerna susu menyebar cepat. Kini 35% manusia dewasa punya gen ini!
+            </div>
+          </div>
+          <div class="change-card" onclick="toggleChangeCard(this)">
+            <span class="change-icon">🦷</span>
+            <p class="change-title">Gigi Bungsu Hilang</p>
+            <p class="change-body">Makin banyak orang yang lahir tanpa gigi bungsu.</p>
+            <div class="change-popup">
+              🌟 Dulu rahang manusia lebih besar untuk mengunyah makanan keras. Tapi karena kita kini memasak makanan, rahang mengecil. Gigi bungsu jadi tidak perlu. Sekarang ~35% orang lahir tanpa salah satu gigi bungsu mereka!
+            </div>
+          </div>
+          <div class="change-card" onclick="toggleChangeCard(this)">
+            <span class="change-icon">🏔️</span>
+            <p class="change-title">Hidup di Ketinggian</p>
+            <p class="change-body">Orang Tibet berevolusi cepat untuk hidup di pegunungan.</p>
+            <div class="change-popup">
+              🌟 Orang Tibet di dataran tinggi punya gen khusus (EPAS1) yang membantu darah mengangkut oksigen lebih efisien! Gen ini menyebar dalam hanya 3.000 tahun — salah satu evolusi tercepat yang pernah ditemukan pada manusia!
+            </div>
+          </div>
+          <div class="change-card" onclick="toggleChangeCard(this)">
+            <span class="change-icon">🧠</span>
+            <p class="change-title">Otak Tetap Berubah</p>
+            <p class="change-body">Struktur koneksi otak terus beradaptasi.</p>
+            <div class="change-popup">
+              🌟 Penelitian menunjukkan gen yang terkait dengan ukuran dan kompleksitas otak masih mengalami seleksi! Otak manusia modern juga secara fisik sedikit lebih kecil dari 20.000 tahun lalu, tapi koneksinya lebih efisien — seperti komputer yang makin tipis tapi makin kencang!
+            </div>
+          </div>
+          <div class="change-card" onclick="toggleChangeCard(this)">
+            <span class="change-icon">🦠</span>
+            <p class="change-title">Tahan Penyakit Baru</p>
+            <p class="change-body">Gen imun terus berevolusi merespons patogen baru.</p>
+            <div class="change-popup">
+              🌟 Setelah wabah besar seperti Maut Hitam (Black Death) di abad ke-14, gen yang memberi ketahanan terhadap penyakit menyebar pesat. Gen imun manusia adalah salah satu bagian DNA yang paling cepat berevolusi!
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 7 – SLIDER MANUSIA PURBA → MASA DEPAN
+════════════════════════════════════════════ -->
+<div class="slide" id="slide-7">
+  <div style="width:100%;max-width:var(--page-w);">
+    <div class="card">
+      <div class="slide-header" style="background:linear-gradient(135deg,rgba(56,189,248,.12),rgba(124,58,237,.1));">
+        <p class="slide-chapter">🎛️ Bab 5 – Interaktif</p>
+        <h2 class="slide-title">Dari Purba ke Masa Depan! ⏩</h2>
+        <p class="slide-subtitle">Geser slider untuk melihat perjalanan manusia!</p>
+      </div>
+      <div class="slide-body">
+
+        <!-- Human evolution slider -->
+        <div id="humanFigureArea">
+          <!-- Figures generated by JS -->
+        </div>
+
+        <!-- Slider -->
+        <div style="margin:16px 0;">
+          <input type="range" class="range-slider" id="humanSlider" min="0" max="4" step="1" value="2" oninput="updateHumanSlider(this.value)">
+          <div style="display:flex;justify-content:space-between;margin-top:6px;">
+            <span style="font-size:.65rem;color:var(--textd);font-weight:800;">🦍 Purba</span>
+            <span style="font-size:.65rem;color:var(--sky);font-weight:800;font-family:'Fredoka One',cursive;" id="sliderLabel">Homo Sapiens (Kita!)</span>
+            <span style="font-size:.65rem;color:var(--purple-l);font-weight:800;">🔮 Masa Depan</span>
+          </div>
+        </div>
+
+        <!-- Info panel for slider -->
+        <div id="sliderInfo" style="background:linear-gradient(135deg,rgba(56,189,248,.1),rgba(124,58,237,.08));border:1px solid rgba(56,189,248,.2);border-radius:16px;padding:16px;transition:all .3s ease;">
+          <p id="sliderName" style="font-family:'Fredoka One',cursive;font-size:1rem;color:white;margin-bottom:6px;">🧑 Homo Sapiens Modern</p>
+          <p id="sliderDesc" style="font-size:.8rem;color:#cbd5e1;font-weight:700;line-height:1.6;">Otak terbesar, bisa bicara dan berpikir kompleks. Hidup dalam komunitas besar dengan budaya yang kaya. Inilah kamu — manusia paling luar biasa yang pernah ada di Bumi!</p>
+          <div id="sliderStats" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 8 – EVOLUSI MASA DEPAN
+════════════════════════════════════════════ -->
+<div class="slide" id="slide-8">
+  <div style="width:100%;max-width:var(--page-w);">
+    <div class="card">
+      <div class="slide-header" style="background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(56,189,248,.08));">
+        <p class="slide-chapter">🔮 Bab 6 – Masa Depan</p>
+        <h2 class="slide-title">Manusia di Masa Depan! 🚀</h2>
+        <p class="slide-subtitle">Teori sains tentang bagaimana kita mungkin berubah — klik untuk baca!</p>
+      </div>
+      <div class="slide-body">
+
+        <p class="story-text" style="margin-bottom:16px;">
+          Jika manusia terus berevolusi selama jutaan tahun lagi, para ilmuwan memiliki beberapa prediksi menarik. <em>Ingat, ini teori ilmiah — bukan kepastian!</em>
+        </p>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="future-feature" onclick="this.classList.toggle('revealed')">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;gap:10px;align-items:center;">
+                <span style="font-size:1.6rem;">🧠</span>
+                <div>
+                  <p style="font-family:'Fredoka One',cursive;font-size:.88rem;color:white;">Otak Lebih Efisien</p>
+                  <p style="font-size:.7rem;color:var(--textd);font-weight:700;">Bukan makin besar, tapi makin pintar!</p>
+                </div>
+              </div>
+              <span style="color:var(--purple-l);font-size:.8rem;">+ tap</span>
+            </div>
+            <div class="future-body" style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(124,58,237,.2);">
+              <p style="font-size:.78rem;color:#c4b5fd;font-weight:700;line-height:1.6;">Otak manusia sudah sedikit mengecil dalam 20.000 tahun terakhir — tapi BUKAN berarti makin bodoh! Sebaliknya, koneksi antar neuron makin efisien. Di masa depan, otak mungkin makin kecil tapi kemampuannya jauh lebih luar biasa. Seperti chip komputer yang makin kecil tapi makin kencang! 🖥️</p>
+            </div>
+          </div>
+
+          <div class="future-feature" onclick="this.classList.toggle('revealed')">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;gap:10px;align-items:center;">
+                <span style="font-size:1.6rem;">👁️</span>
+                <div>
+                  <p style="font-family:'Fredoka One',cursive;font-size:.88rem;color:white;">Mata Lebih Besar?</p>
+                  <p style="font-size:.7rem;color:var(--textd);font-weight:700;">Adaptasi terhadap dunia digital</p>
+                </div>
+              </div>
+              <span style="color:var(--purple-l);font-size:.8rem;">+ tap</span>
+            </div>
+            <div class="future-body" style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(124,58,237,.2);">
+              <p style="font-size:.78rem;color:#c4b5fd;font-weight:700;line-height:1.6;">Beberapa ilmuwan berteori bahwa jika manusia terus menghabiskan waktu di layar dengan cahaya buatan, mata mungkin pelan-pelan beradaptasi. Tapi ini masih spekulasi! Yang pasti, tingkat miopia (mata minus) meningkat pesat di seluruh dunia — ini contoh perubahan yang kita amati SEKARANG! 📱</p>
+            </div>
+          </div>
+
+          <div class="future-feature" onclick="this.classList.toggle('revealed')">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;gap:10px;align-items:center;">
+                <span style="font-size:1.6rem;">🦷</span>
+                <div>
+                  <p style="font-family:'Fredoka One',cursive;font-size:.88rem;color:white;">Rahang & Gigi Mengecil</p>
+                  <p style="font-size:.7rem;color:var(--textd);font-weight:700;">Makanan lunak = rahang kurang dipakai</p>
+                </div>
+              </div>
+              <span style="color:var(--purple-l);font-size:.8rem;">+ tap</span>
+            </div>
+            <div class="future-body" style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(124,58,237,.2);">
+              <p style="font-size:.78rem;color:#c4b5fd;font-weight:700;line-height:1.6;">Kita sudah memasak dan memproses makanan selama ratusan ribu tahun. Ini membuat rahang makin kecil dari generasi ke generasi. Di masa depan, gigi mungkin makin sedikit. Beberapa ilmuwan bahkan berteori manusia mungkin tidak punya gigi bungsu sama sekali dalam beberapa ribu tahun lagi! 😬</p>
+            </div>
+          </div>
+
+          <div class="future-feature" onclick="this.classList.toggle('revealed')">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;gap:10px;align-items:center;">
+                <span style="font-size:1.6rem;">🧬</span>
+                <div>
+                  <p style="font-family:'Fredoka One',cursive;font-size:.88rem;color:white;">Evolusi Buatan (CRISPR)</p>
+                  <p style="font-size:.7rem;color:var(--textd);font-weight:700;">Manusia mulai mengedit DNA sendiri!</p>
+                </div>
+              </div>
+              <span style="color:var(--purple-l);font-size:.8rem;">+ tap</span>
+            </div>
+            <div class="future-body" style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(124,58,237,.2);">
+              <p style="font-size:.78rem;color:#c4b5fd;font-weight:700;line-height:1.6;">Teknologi CRISPR memungkinkan ilmuwan mengedit gen dengan presisi seperti mengedit kata di dokumen. Ini membuka kemungkinan evolusi yang dipercepat — tapi juga membawa pertanyaan etis besar: apakah kita <em>seharusnya</em> mengubah DNA kita sendiri? Ini perdebatan sains dan moral yang masih berlangsung! ⚗️</p>
+            </div>
+          </div>
+
+          <div class="future-feature" onclick="this.classList.toggle('revealed')">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;gap:10px;align-items:center;">
+                <span style="font-size:1.6rem;">🤝</span>
+                <div>
+                  <p style="font-family:'Fredoka One',cursive;font-size:.88rem;color:white;">Evolusi Budaya — Yang Paling Cepat!</p>
+                  <p style="font-size:.7rem;color:var(--textd);font-weight:700;">Cara berpikir & berperilaku berubah lebih cepat dari gen</p>
+                </div>
+              </div>
+              <span style="color:var(--purple-l);font-size:.8rem;">+ tap</span>
+            </div>
+            <div class="future-body" style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(124,58,237,.2);">
+              <p style="font-size:.78rem;color:#c4b5fd;font-weight:700;line-height:1.6;">Ini yang paling menarik! Manusia berevolusi bukan hanya secara biologis, tapi juga secara <em>budaya</em>. Nilai-nilai, pengetahuan, cara berempati, cara bekerja sama — ini semua berubah JAUH lebih cepat dari gen. Dan kamu, Aslan, bisa ikut mempengaruhi evolusi budaya manusia dengan pilihan dan tindakanmu! 🌟</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 9 – DNA SPINNER + PELAJARAN HARI INI
+════════════════════════════════════════════ -->
+<div class="slide" id="slide-9">
+  <div style="width:100%;max-width:var(--page-w);">
+    <div class="card">
+      <div class="slide-header" style="background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(34,197,94,.08));">
+        <p class="slide-chapter">⭐ Rangkuman</p>
+        <h2 class="slide-title">Pelajaran Hari Ini! 📚</h2>
+        <p class="slide-subtitle">Hal-hal paling penting yang Aslan pelajari hari ini</p>
+      </div>
+      <div class="slide-body">
+
+        <!-- DNA spinner visual -->
+        <div style="display:flex;justify-content:center;margin-bottom:18px;" id="dnaSpinContainer">
+          <div id="dnaSpinner">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(56,189,248,.15)" stroke-width="2"/>
+              <circle cx="50" cy="50" r="32" fill="none" stroke="rgba(124,58,237,.15)" stroke-width="2"/>
+              <circle cx="50" cy="50" r="22" fill="rgba(56,189,248,.08)" stroke="rgba(56,189,248,.3)" stroke-width="1.5"/>
+              <!-- ACGT bases spinning -->
+              <text x="50" y="25" text-anchor="middle" font-size="9" fill="#22c55e" font-weight="bold">A</text>
+              <text x="75" y="54" text-anchor="middle" font-size="9" fill="#38bdf8" font-weight="bold">T</text>
+              <text x="50" y="80" text-anchor="middle" font-size="9" fill="#f59e0b" font-weight="bold">G</text>
+              <text x="25" y="54" text-anchor="middle" font-size="9" fill="#ec4899" font-weight="bold">C</text>
+              <!-- Center -->
+              <circle cx="50" cy="50" r="12" fill="rgba(245,158,11,.2)" stroke="var(--gold)" stroke-width="1.5"/>
+              <text x="50" y="54" text-anchor="middle" font-size="8" fill="var(--gold)" font-weight="bold">DNA</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Points list -->
+        <div>
+          <div class="point-row" style="animation-delay:.1s;">
+            <span class="point-icon">🧬</span>
+            <p class="point-text"><strong>Evolusi tidak pernah berhenti</strong> — tubuh manusia masih berubah perlahan, bahkan sampai hari ini.</p>
+          </div>
+          <div class="point-row" style="animation-delay:.2s;">
+            <span class="point-icon">🥛</span>
+            <p class="point-text"><strong>Gen terus berubah merespons lingkungan</strong> — contohnya toleransi susu, ketahanan terhadap penyakit, dan adaptasi ketinggian.</p>
+          </div>
+          <div class="point-row" style="animation-delay:.3s;">
+            <span class="point-icon">🌍</span>
+            <p class="point-text"><strong>Evolusi kita kini lebih banyak terjadi di budaya dan pengetahuan</strong> — lebih cepat dari perubahan gen!</p>
+          </div>
+          <div class="point-row" style="animation-delay:.4s;">
+            <span class="point-icon">🔮</span>
+            <p class="point-text"><strong>Teknologi (seperti CRISPR) membuka kemungkinan evolusi baru</strong> — yang memerlukan kebijaksanaan dan etika.</p>
+          </div>
+          <div class="point-row" style="animation-delay:.5s;">
+            <span class="point-icon">⭐</span>
+            <p class="point-text"><strong>Kamu adalah bagian dari evolusi itu!</strong> — Setiap anak yang belajar, berpikir, dan berbuat baik ikut menggerakkan evolusi budaya manusia.</p>
+          </div>
+        </div>
+
+        <div class="highlight-box" style="margin-top:16px;">
+          <p class="story-text" style="font-size:.86rem;text-align:center;">
+            🌟 <strong>"Manusia bukan puncak evolusi — kita adalah titik terbaru dalam perjalanan yang masih terus berjalan."</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 10 – TANTANGAN HARIAN
+════════════════════════════════════════════ -->
+<div class="slide" id="slide-10">
+  <div style="width:100%;max-width:var(--page-w);">
+    <div class="card">
+      <div class="slide-header" style="background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(236,72,153,.08));">
+        <p class="slide-chapter">🎯 Tantangan</p>
+        <h2 class="slide-title">Tantangan Aslan Hari Ini! 💪</h2>
+        <p class="slide-subtitle">Selesaikan semua untuk jadi Kapten Cerdas sejati!</p>
+      </div>
+      <div class="slide-body">
+
+        <div class="challenge-box">
+          <div style="display:flex;gap:12px;align-items:center;">
+            <span style="font-size:2.5rem;animation:bounce 1.8s ease-in-out infinite;">🏆</span>
+            <div>
+              <p style="font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--gold);">Misi Kapten Cerdas</p>
+              <p style="font-size:.75rem;color:var(--textd);font-weight:700;">Klik setiap tantangan saat kamu sudah menyelesaikannya!</p>
+            </div>
+          </div>
+
+          <div class="challenge-item" onclick="completeChallenge(this)">
+            <div class="challenge-check"></div>
+            <p class="challenge-text"><strong>🔬 Tantangan Pengamatan:</strong> Cari satu tanda "evolusi mini" pada dirimu sendiri — apakah kamu punya gigi bungsu? Apakah kamu bisa melipat lidah? Bagikan ke keluargamu!</p>
+          </div>
+
+          <div class="challenge-item" onclick="completeChallenge(this)">
+            <div class="challenge-check"></div>
+            <p class="challenge-text"><strong>✏️ Tantangan Kreatif:</strong> Gambarlah atau tuliskan bagaimana menurutmu manusia akan terlihat 1 juta tahun dari sekarang. Imajinasikan dengan bebas!</p>
+          </div>
+
+          <div class="challenge-item" onclick="completeChallenge(this)">
+            <div class="challenge-check"></div>
+            <p class="challenge-text"><strong>🗣️ Tantangan Diskusi:</strong> Tanyakan kepada orang tuamu — apakah mereka bisa minum susu tanpa sakit perut? Bandingkan dengan kakek-nenek! Ini contoh nyata variasi genetik dalam keluarga.</p>
+          </div>
+
+          <div class="challenge-item" onclick="completeChallenge(this)">
+            <div class="challenge-check"></div>
+            <p class="challenge-text"><strong>💭 Tantangan Berpikir:</strong> Tuliskan 3 hal yang ingin kamu wariskan kepada generasi berikutnya — bukan gen, tapi nilai, pengetahuan, atau kebiasaan baik. Ini adalah "evolusi budaya" yang bisa kamu mulai hari ini!</p>
+          </div>
+
+          <div class="challenge-item" onclick="completeChallenge(this)">
+            <div class="challenge-check"></div>
+            <p class="challenge-text"><strong>📖 Tantangan Membaca:</strong> Cari satu fakta baru tentang evolusi manusia di buku atau internet bersama orang tua, dan ceritakan ke teman atau adikmu!</p>
+          </div>
+
+          <!-- Score display -->
+          <div id="challengeScore" style="margin-top:14px;text-align:center;padding:12px;background:rgba(0,0,0,.2);border-radius:12px;">
+            <p style="font-family:'Fredoka One',cursive;font-size:.85rem;color:var(--textd);">Tantangan Selesai: <span id="challengeCount" style="color:var(--gold);">0 / 5</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 11 – PENUTUP
+════════════════════════════════════════════ -->
+<div class="slide" id="slide-11">
+  <!-- Stars BG -->
+  <div class="stars-bg" id="closingStars"></div>
+
+  <div style="width:100%;max-width:var(--page-w);position:relative;z-index:1;">
+    <div class="card" style="background:rgba(12,29,26,.85);">
+      <div style="padding:30px 28px;text-align:center;position:relative;overflow:hidden;">
+        <!-- Glow orbs -->
+        <div style="position:absolute;top:-30px;left:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.18),transparent 70%);pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,.15),transparent 70%);pointer-events:none;"></div>
+
+        <p style="font-size:2.5rem;animation:bounce 1.8s ease-in-out infinite;margin-bottom:8px;">🌟</p>
+        <p style="font-family:'Fredoka One',cursive;font-size:.78rem;letter-spacing:2px;color:var(--green);text-transform:uppercase;margin-bottom:8px;">Selamat!</p>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(1.4rem,4vw,2rem);color:white;margin-bottom:4px;line-height:1.2;">
+          Aslan<br>Telah Menjelajahi Evolusi! 🧬
+        </h2>
+        <p style="font-size:.85rem;color:var(--textd);font-weight:700;margin-bottom:20px;">Hari 27 dari 30 — Tinggal 3 hari lagi!</p>
+
+        <!-- Motivational quote -->
+        <div style="background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(56,189,248,.08));border:1px solid rgba(34,197,94,.25);border-radius:16px;padding:18px;margin-bottom:18px;">
+          <p style="font-size:1.4rem;margin-bottom:8px;">💬</p>
+          <p style="font-family:'Fredoka One',cursive;font-size:.92rem;color:white;line-height:1.6;margin-bottom:6px;">
+            "Evolusi tidak memilih yang terkuat atau yang paling pintar — <br>melainkan yang paling mampu beradaptasi dan bekerja sama."
+          </p>
+          <p style="font-size:.72rem;color:var(--green);font-weight:800;">— Terinspirasi dari Charles Darwin 🌿</p>
+        </div>
+
+        <!-- Personal message -->
+        <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:14px;padding:14px;margin-bottom:18px;">
+          <p style="font-size:.85rem;color:#fde68a;font-weight:700;line-height:1.7;">
+            ✨ <strong>Pesan Khusus untuk Aslan:</strong><br>
+            Kamu bukan hanya produk evolusi jutaan tahun — kamu juga <em>arsitek masa depan</em>! Setiap buku yang kamu baca, setiap rasa ingin tahu yang kamu ikuti, setiap kebaikan yang kamu lakukan adalah bentuk evolusi budaya yang kamu kontribusikan untuk umat manusia. <strong>Teruslah tumbuh, Kapten Cerdas! 🚀</strong>
+          </p>
+        </div>
+
+        <!-- Tomorrow's teaser -->
+        <div class="teaser-card" style="text-align:left;margin-bottom:16px;">
+          <span style="font-size:2.5rem;flex-shrink:0;animation:float 3s ease-in-out infinite;">🌌</span>
+          <div>
+            <p style="font-size:.65rem;font-weight:800;color:var(--sky);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Besok – Hari 28</p>
+            <p style="font-family:'Fredoka One',cursive;font-size:.9rem;color:white;margin-bottom:4px;">Menjadi Manusia yang Bijak di Zaman Sekarang 🦉</p>
+            <p style="font-size:.72rem;color:var(--textd);font-weight:700;">Bagaimana semua pengetahuan tentang evolusi dan sejarah membantu kita menjadi manusia yang lebih baik? Apa tanggung jawab kita sebagai Homo sapiens masa kini?</p>
+          </div>
+        </div>
+
+        <!-- Action button -->
+        <button onclick="celebrate()" style="
+          background: linear-gradient(135deg, var(--green), var(--sky));
+          color: white; border: none; border-radius: 50px;
+          padding: 13px 36px; font-family:'Fredoka One',cursive;
+          font-size: 1.05rem; cursor: pointer;
+          box-shadow: 0 6px 24px rgba(34,197,94,.4);
+          transition: all .25s ease; letter-spacing:.5px;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          🎉 Selesai! Rayakan!
+        </button>
+
+        <!-- Day badge footer -->
+        <p style="font-size:.68rem;color:var(--textd);margin-top:16px;font-weight:700;">
+          📅 Seri: Petualangan Kapten Cerdas · Hari 27/30 · Jejak Manusia di Bumi
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end bookContainer -->
+
+<script>
+// ═══════════════════════════════════════════
+// CORE NAVIGATION
+// ═══════════════════════════════════════════
+const TOTAL = 11;
+let current = 1;
+
+function navigate(dir) {
+  const prev = current;
+  current = Math.max(1, Math.min(TOTAL, current + dir));
+  if (current === prev) return;
+
+  const prevSlide = document.getElementById('slide-' + prev);
+  const nextSlide = document.getElementById('slide-' + current);
+
+  prevSlide.classList.add(dir > 0 ? 'exit-left' : '');
+  prevSlide.style.transform = dir > 0 ? 'translateX(-60px)' : 'translateX(60px)';
+  prevSlide.style.opacity = '0';
+  prevSlide.style.pointerEvents = 'none';
+
+  setTimeout(() => {
+    prevSlide.classList.remove('active','exit-left');
+    prevSlide.style.transform = '';
+    prevSlide.style.opacity = '';
+  }, 560);
+
+  nextSlide.style.transform = dir > 0 ? 'translateX(60px)' : 'translateX(-60px)';
+  nextSlide.style.opacity = '0';
+  nextSlide.style.transition = 'none';
+  nextSlide.classList.add('active');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      nextSlide.style.transition = '';
+      nextSlide.style.transform = 'translateX(0)';
+      nextSlide.style.opacity = '1';
+      nextSlide.style.pointerEvents = 'all';
+    });
+  });
+
+  // Scroll card to top
+  const card = nextSlide.querySelector('.card');
+  if (card) card.scrollTop = 0;
+
+  updateUI();
+
+  // Slide-specific inits
+  if (current === 7) initHumanSlider();
+  if (current === 9) startDNASpinner();
+}
+
+function updateUI() {
+  document.getElementById('progressBar').style.width = (current / TOTAL * 100) + '%';
+  document.getElementById('pageLabel').textContent = current + ' / ' + TOTAL;
+  document.getElementById('prevBtn').disabled = current === 1;
+  document.getElementById('nextBtn').disabled = current === TOTAL;
+  updateDots();
+}
+
+function updateDots() {
+  const ind = document.getElementById('pageIndicator');
+  // remove old dots
+  ind.querySelectorAll('.page-dot').forEach(d => d.remove());
+  const label = document.getElementById('pageLabel');
+  for (let i = 1; i <= TOTAL; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'page-dot' + (i === current ? ' active' : '');
+    dot.onclick = () => navigate(i - current);
+    ind.insertBefore(dot, label);
+  }
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') navigate(1);
+  if (e.key === 'ArrowLeft') navigate(-1);
+});
+
+// Touch swipe
+let touchX = 0;
+document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const dx = touchX - e.changedTouches[0].clientX;
+  if (Math.abs(dx) > 50) navigate(dx > 0 ? 1 : -1);
+});
+
+// ═══════════════════════════════════════════
+// STARS BACKGROUND
+// ═══════════════════════════════════════════
+function createStars(containerId, count = 60) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 3 + 1;
+    s.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;top:${Math.random()*100}%;
+      --dur:${2+Math.random()*4}s;
+      --delay:${Math.random()*4}s;
+    `;
+    c.appendChild(s);
+  }
+}
+createStars('starsContainer', 80);
+createStars('closingStars', 60);
+
+// ═══════════════════════════════════════════
+// EVOLUTION TIMELINE TOGGLE
+// ═══════════════════════════════════════════
+function toggleEvoItem(el) {
+  const detail = el.querySelector('div[style*="display:none"], div:not([class])');
+  const panels = document.querySelectorAll('.evo-item div[style*="display"]');
+  panels.forEach(p => { if (p !== detail) { p.style.display = 'none'; } });
+  if (detail) {
+    detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
+  }
+}
+
+// Fix evo items: find the hidden detail divs
+document.querySelectorAll('.evo-item').forEach(item => {
+  const details = item.querySelectorAll('div');
+  details.forEach(d => {
+    if (d.style.display === 'none') {
+      d.setAttribute('data-detail', 'true');
+    }
+  });
+});
+
+// ═══════════════════════════════════════════
+// CHANGE CARDS TOGGLE
+// ═══════════════════════════════════════════
+function toggleChangeCard(el) {
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.change-card').forEach(c => c.classList.remove('open'));
+  if (!isOpen) el.classList.add('open');
+}
+
+// ═══════════════════════════════════════════
+// HUMAN EVOLUTION SLIDER
+// ═══════════════════════════════════════════
+const humanData = [
+  {
+    name: '🦍 Australopithecus',
+    time: '3.9 Juta Tahun Lalu',
+    desc: 'Berjalan tegak tapi masih mirip kera. Otak sebesar 450cc. Tidak punya bahasa tapi sudah menggunakan batu sederhana.',
+    color: '#22c55e',
+    svg: `<svg width="52" height="120" viewBox="0 0 52 120" fill="none">
+      <ellipse cx="26" cy="110" rx="14" ry="5" fill="rgba(0,0,0,.3)"/>
+      <ellipse cx="26" cy="18" rx="13" ry="12" fill="#8B7355"/>
+      <ellipse cx="26" cy="12" rx="11" ry="8" fill="#654321"/>
+      <rect x="18" y="30" width="16" height="35" rx="5" fill="#8B7355"/>
+      <rect x="6" y="32" width="10" height="28" rx="5" fill="#8B7355"/>
+      <rect x="36" y="32" width="10" height="28" rx="5" fill="#8B7355"/>
+      <rect x="16" y="62" width="9" height="30" rx="4" fill="#7a6245"/>
+      <rect x="27" y="62" width="9" height="30" rx="4" fill="#7a6245"/>
+      <ellipse cx="21" cy="16" rx="3" ry="3" fill="#2d1b00"/>
+      <ellipse cx="31" cy="16" rx="3" ry="3" fill="#2d1b00"/>
+      <path d="M20 23 Q26 27 32 23" stroke="#654321" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </svg>`,
+    stats: [
+      {label:'Otak',val:'450cc',col:'#22c55e'},
+      {label:'Tinggi',val:'110cm',col:'#38bdf8'},
+      {label:'Bahasa',val:'Tidak ada',col:'#f59e0b'}
+    ]
+  },
+  {
+    name: '🔨 Homo Habilis',
+    time: '2.4 Juta Tahun Lalu',
+    desc: 'Otak lebih besar! Mulai membuat alat batu. Kelompok sosial pertama yang terorganisir.',
+    color: '#38bdf8',
+    svg: `<svg width="52" height="120" viewBox="0 0 52 120" fill="none">
+      <ellipse cx="26" cy="115" rx="13" ry="5" fill="rgba(0,0,0,.3)"/>
+      <ellipse cx="26" cy="18" rx="12" ry="13" fill="#B8860B"/>
+      <ellipse cx="26" cy="11" rx="10" ry="7" fill="#8B6914"/>
+      <rect x="18" y="31" width="16" height="38" rx="6" fill="#B8860B"/>
+      <rect x="7" y="33" width="10" height="30" rx="5" fill="#B8860B"/>
+      <rect x="35" y="33" width="10" height="30" rx="5" fill="#B8860B"/>
+      <rect x="17" y="67" width="9" height="32" rx="4" fill="#a07830"/>
+      <rect x="26" y="67" width="9" height="32" rx="4" fill="#a07830"/>
+      <ellipse cx="21" cy="17" rx="3" ry="3.5" fill="#1a0800"/>
+      <ellipse cx="31" cy="17" rx="3" ry="3.5" fill="#1a0800"/>
+      <circle cx="22" cy="15" r="1" fill="white"/>
+      <circle cx="32" cy="15" r="1" fill="white"/>
+      <path d="M21 24 Q26 28 31 24" stroke="#8B6914" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </svg>`,
+    stats: [
+      {label:'Otak',val:'650cc',col:'#22c55e'},
+      {label:'Tinggi',val:'130cm',col:'#38bdf8'},
+      {label:'Alat',val:'Batu kasar',col:'#f59e0b'}
+    ]
+  },
+  {
+    name: '🧑 Homo Sapiens Modern',
+    time: 'Sekarang — Kamu!',
+    desc: 'Otak terbesar dan paling kompleks. Bahasa, seni, sains, teknologi. Menguasai seluruh Bumi dan menjelajahi luar angkasa!',
+    color: '#f59e0b',
+    svg: `<svg width="52" height="120" viewBox="0 0 52 120" fill="none">
+      <ellipse cx="26" cy="116" rx="13" ry="5" fill="rgba(0,0,0,.3)"/>
+      <rect x="18" y="68" width="9" height="32" rx="5" fill="#1565C0"/>
+      <rect x="25" y="68" width="9" height="32" rx="5" fill="#1565C0"/>
+      <ellipse cx="21.5" cy="99" rx="8" ry="4" fill="#0D47A1"/>
+      <ellipse cx="30.5" cy="99" rx="8" ry="4" fill="#0D47A1"/>
+      <rect x="17" y="32" width="18" height="38" rx="7" fill="#1976D2"/>
+      <rect x="5"  y="34" width="11" height="32" rx="5" fill="#1976D2"/>
+      <rect x="36" y="34" width="11" height="32" rx="5" fill="#1976D2"/>
+      <rect x="22" y="66" width="8" height="6" rx="2" fill="#f59e0b"/>
+      <rect x="20" y="24" width="12" height="10" rx="3" fill="#2d1b00"/>
+      <ellipse cx="26" cy="18" rx="13" ry="12" fill="#F9A825"/>
+      <ellipse cx="20" cy="17" rx="3.5" ry="4" fill="white"/>
+      <ellipse cx="32" cy="17" rx="3.5" ry="4" fill="white"/>
+      <ellipse cx="20.5" cy="18" rx="2" ry="2.5" fill="#1a0800"/>
+      <ellipse cx="32.5" cy="18" rx="2" ry="2.5" fill="#1a0800"/>
+      <circle cx="21.5" cy="17" r="1" fill="white"/>
+      <circle cx="33.5" cy="17" r="1" fill="white"/>
+      <path d="M20 25 Q26 30 32 25" stroke="#1a0800" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="15" cy="22" rx="4" ry="3" fill="#ffb347" opacity=".4"/>
+      <ellipse cx="37" cy="22" rx="4" ry="3" fill="#ffb347" opacity=".4"/>
+    </svg>`,
+    stats: [
+      {label:'Otak',val:'1.400cc',col:'#22c55e'},
+      {label:'Tinggi',val:'165-180cm',col:'#38bdf8'},
+      {label:'Teknologi',val:'AI & Luar Angkasa!',col:'#f59e0b'}
+    ]
+  },
+  {
+    name: '🔮 Homo Sapiens 100 Tahun Lagi',
+    time: 'Masa Depan Dekat',
+    desc: 'Rata-rata lebih tinggi, harapan hidup lebih panjang, teknologi menyatu dengan biologi. CRISPR mungkin menghapus penyakit genetik.',
+    color: '#a78bfa',
+    svg: `<svg width="52" height="120" viewBox="0 0 52 120" fill="none">
+      <ellipse cx="26" cy="116" rx="12" ry="5" fill="rgba(0,0,0,.3)"/>
+      <rect x="18" y="70" width="9" height="34" rx="5" fill="#4527A0"/>
+      <rect x="25" y="70" width="9" height="34" rx="5" fill="#4527A0"/>
+      <ellipse cx="22" cy="103" rx="8" ry="4" fill="#311B92"/>
+      <ellipse cx="30" cy="103" rx="8" ry="4" fill="#311B92"/>
+      <rect x="17" y="30" width="18" height="42" rx="7" fill="#5E35B1"/>
+      <rect x="4"  y="32" width="12" height="34" rx="6" fill="#5E35B1"/>
+      <rect x="36" y="32" width="12" height="34" rx="6" fill="#5E35B1"/>
+      <!-- Tech implant on arm -->
+      <rect x="8" y="42" width="8" height="5" rx="2" fill="#38bdf8" opacity=".7"/>
+      <rect x="36" y="38" width="8" height="5" rx="2" fill="#f59e0b" opacity=".7"/>
+      <rect x="21" y="66" width="10" height="7" rx="3" fill="#7c3aed"/>
+      <ellipse cx="26" cy="18" rx="14" ry="12" fill="#F9A825"/>
+      <ellipse cx="26" cy="11" rx="12" ry="7" fill="#2d1b00" opacity=".5"/>
+      <!-- Bigger brain glow -->
+      <ellipse cx="26" cy="14" rx="10" ry="6" fill="rgba(56,189,248,.2)"/>
+      <ellipse cx="19" cy="16" rx="4" ry="4.5" fill="white"/>
+      <ellipse cx="33" cy="16" rx="4" ry="4.5" fill="white"/>
+      <ellipse cx="20" cy="17" rx="2.5" ry="3" fill="#38bdf8"/>
+      <ellipse cx="34" cy="17" rx="2.5" ry="3" fill="#38bdf8"/>
+      <circle cx="21" cy="16" r="1" fill="white"/>
+      <circle cx="35" cy="16" r="1" fill="white"/>
+      <path d="M20 25 Q26 30 32 25" stroke="#1a0800" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>`,
+    stats: [
+      {label:'Otak',val:'Lebih efisien',col:'#a78bfa'},
+      {label:'Hidup',val:'120+ tahun',col:'#38bdf8'},
+      {label:'Teknologi',val:'Terintegrasi',col:'#f59e0b'}
+    ]
+  },
+  {
+    name: '🌌 Homo Futurus – Jutaan Tahun Lagi',
+    time: 'Masa Depan Jauh',
+    desc: 'Spekulasi ilmiah! Mungkin lebih tinggi, otak lebih kompleks, atau bahkan berevolusi berbeda di planet lain. Ini masih misteri!',
+    color: '#7c3aed',
+    svg: `<svg width="52" height="120" viewBox="0 0 52 120" fill="none">
+      <ellipse cx="26" cy="116" rx="11" ry="4" fill="rgba(124,58,237,.3)"/>
+      <!-- Holographic body -->
+      <rect x="17" y="68" width="9" height="34" rx="5" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4 3"/>
+      <rect x="26" y="68" width="9" height="34" rx="5" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4 3"/>
+      <rect x="16" y="28" width="20" height="42" rx="8" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4 3"/>
+      <rect x="4"  y="30" width="11" height="36" rx="5" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <rect x="37" y="30" width="11" height="36" rx="5" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <!-- Tech lines -->
+      <line x1="18" y1="42" x2="34" y2="42" stroke="#38bdf8" stroke-width="1" opacity=".6"/>
+      <line x1="18" y1="52" x2="30" y2="52" stroke="#f59e0b" stroke-width="1" opacity=".6"/>
+      <!-- Big head/brain -->
+      <ellipse cx="26" cy="17" rx="17" ry="15" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="5 3"/>
+      <ellipse cx="26" cy="17" rx="13" ry="11" fill="rgba(56,189,248,.12)"/>
+      <!-- Brain glow -->
+      <ellipse cx="26" cy="12" rx="10" ry="7" fill="rgba(56,189,248,.2)"/>
+      <!-- Large glowing eyes -->
+      <ellipse cx="19" cy="18" rx="5" ry="5" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+      <ellipse cx="33" cy="18" rx="5" ry="5" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+      <ellipse cx="19" cy="18" rx="3" ry="3" fill="#38bdf8" opacity=".8"/>
+      <ellipse cx="33" cy="18" rx="3" ry="3" fill="#38bdf8" opacity=".8"/>
+      <circle cx="20" cy="17" r="1.2" fill="white"/>
+      <circle cx="34" cy="17" r="1.2" fill="white"/>
+      <!-- Data particles -->
+      <circle cx="6"  cy="25" r="2" fill="#f59e0b" opacity=".8" style="animation:twinkle 2s ease-in-out infinite;"/>
+      <circle cx="46" cy="40" r="2" fill="#22c55e" opacity=".8" style="animation:twinkle 2.5s ease-in-out infinite .3s;"/>
+      <circle cx="4"  cy="65" r="1.5" fill="#38bdf8" opacity=".7" style="animation:twinkle 1.8s ease-in-out infinite .6s;"/>
+    </svg>`,
+    stats: [
+      {label:'Biologi',val:'Sangat berbeda',col:'#a78bfa'},
+      {label:'Habitat',val:'Bumi / Planet lain?',col:'#38bdf8'},
+      {label:'Status',val:'Spekulasi ilmiah',col:'#ec4899'}
+    ]
+  }
+];
+
+function initHumanSlider() {
+  updateHumanSlider(2);
+}
+
+function updateHumanSlider(val) {
+  val = parseInt(val);
+  const data = humanData[val];
+  const area = document.getElementById('humanFigureArea');
+  if (!area) return;
+
+  // Render figures
+  area.innerHTML = '';
+  humanData.forEach((d, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'human-fig';
+    wrap.style.opacity = i === val ? '1' : (Math.abs(i-val) === 1 ? '.4' : '.15');
+    wrap.style.transform = i === val ? 'scale(1.15)' : 'scale(0.85)';
+    wrap.style.filter = i === val ? `drop-shadow(0 0 12px ${d.color})` : 'none';
+    wrap.innerHTML = d.svg + `<span class="fig-label">${d.time.split(' ')[0]}</span>`;
+    area.appendChild(wrap);
+  });
+
+  // Update info
+  document.getElementById('sliderLabel').textContent = data.name;
+  document.getElementById('sliderLabel').style.color = data.color;
+  document.getElementById('sliderName').textContent = data.name;
+  document.getElementById('sliderName').style.color = data.color;
+  document.getElementById('sliderDesc').textContent = data.desc;
+
+  const statsEl = document.getElementById('sliderStats');
+  statsEl.innerHTML = data.stats.map(s =>
+    `<span style="background:rgba(0,0,0,.3);border:1px solid ${s.col}33;color:${s.col};padding:3px 10px;border-radius:50px;font-size:.68rem;font-weight:800;font-family:'Fredoka One',cursive;">${s.label}: ${s.val}</span>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════
+// DNA SPINNER (slide 9)
+// ═══════════════════════════════════════════
+let dnaAngle = 0;
+let dnaAnimId = null;
+function startDNASpinner() {
+  if (dnaAnimId) return;
+  function animDNA() {
+    dnaAngle += 1.2;
+    const el = document.getElementById('dnaSpinner');
+    if (el) el.style.transform = `rotateZ(${dnaAngle}deg)`;
+    dnaAnimId = requestAnimationFrame(animDNA);
+  }
+  animDNA();
+}
+
+// ═══════════════════════════════════════════
+// CHALLENGE TRACKER
+// ═══════════════════════════════════════════
+let challengeDone = 0;
+function completeChallenge(el) {
+  if (el.classList.contains('done')) return;
+  el.classList.add('done');
+  el.querySelector('.challenge-check').textContent = '✓';
+  challengeDone++;
+  document.getElementById('challengeCount').textContent = challengeDone + ' / 5';
+  if (challengeDone === 5) {
+    fireConfetti();
+    document.getElementById('challengeScore').style.background = 'rgba(34,197,94,.15)';
+    document.getElementById('challengeCount').style.color = '#4ade80';
+    document.getElementById('challengeCount').textContent = '5 / 5 🏆 Sempurna!';
+  }
+}
+
+// ═══════════════════════════════════════════
+// CELEBRATE CONFETTI
+// ═══════════════════════════════════════════
+function celebrate() {
+  fireConfetti();
+  setTimeout(fireConfetti, 300);
+  setTimeout(fireConfetti, 600);
+}
+
+function fireConfetti() {
+  const colors = ['#38bdf8','#22c55e','#f59e0b','#ec4899','#a78bfa','#ffffff'];
+  for (let i = 0; i < 50; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-bit';
+    el.style.width  = (6+Math.random()*8)+'px';
+    el.style.height = (6+Math.random()*8)+'px';
+    el.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.left = (20+Math.random()*60)+'vw';
+    el.style.top  = (Math.random()*40+20)+'vh';
+    const a = (Math.random()*360)*Math.PI/180;
+    const d = 80+Math.random()*200;
+    el.style.setProperty('--cx', (Math.cos(a)*d)+'px');
+    el.style.setProperty('--cy', (Math.sin(a)*d)+'px');
+    el.style.animationDuration = (0.8+Math.random()*.8)+'s';
+    el.style.animationDelay   = (Math.random()*.3)+'s';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1500);
+  }
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+updateUI();
+</script>
+</body>
+</html>

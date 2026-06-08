@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 8: Bit & Byte – Batu Bata Terkecil di Komputer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cyan:    #22d3ee;
+    --lime:    #a3e635;
+    --yellow:  #facc15;
+    --pink:    #f472b6;
+    --purple:  #a78bfa;
+    --orange:  #fb923c;
+    --bg:      #0f172a;
+    --card:    #1e293b;
+    --border:  #334155;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanline texture */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,.012) 2px, rgba(255,255,255,.012) 4px);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* Binary rain background */
+  #binaryRain {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; opacity: .07;
+  }
+  .rain-col {
+    position: absolute; top: -100px; color: var(--cyan);
+    font-family: 'VT323', monospace; font-size: 1rem; line-height: 1.4;
+    animation: rainFall linear infinite;
+    white-space: nowrap;
+  }
+  @keyframes rainFall {
+    from { transform: translateY(-120px); }
+    to   { transform: translateY(110vh); }
+  }
+
+  /* Content above bg */
+  .content { position: relative; z-index: 1; }
+
+  h1,h2,h3 { font-family: 'Fredoka One', cursive; }
+  .mono { font-family: 'VT323', monospace; }
+
+  /* ── Header ── */
+  .header-grad {
+    background: linear-gradient(135deg, #0c1445 0%, #1a1c6b 40%, #0d3b7a 70%, #0369a1 100%);
+    border-bottom: 2px solid var(--cyan);
+    box-shadow: 0 0 30px rgba(34,211,238,.25);
+    position: relative; overflow: hidden;
+  }
+  .header-grad::after {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 0%, rgba(34,211,238,.18) 0%, transparent 70%);
+  }
+
+  /* ── Neon glow text ── */
+  .glow-cyan  { text-shadow: 0 0 8px var(--cyan),  0 0 20px var(--cyan); }
+  .glow-lime  { text-shadow: 0 0 8px var(--lime),  0 0 20px var(--lime); }
+  .glow-yellow{ text-shadow: 0 0 8px var(--yellow), 0 0 20px var(--yellow); }
+  .glow-pink  { text-shadow: 0 0 8px var(--pink),  0 0 20px var(--pink); }
+
+  /* ── Aslan bounce ── */
+  @keyframes bounceAslan { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  .aslan-bounce { animation: bounceAslan 2.4s ease-in-out infinite; }
+
+  /* ── Bit box ── */
+  .bit-box {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    border: 2.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'VT323', monospace; font-size: 1.5rem;
+    cursor: pointer;
+    transition: all .2s ease;
+    user-select: none;
+    position: relative;
+  }
+  .bit-box.off {
+    background: #1e293b; color: #475569;
+    border-color: #334155;
+  }
+  .bit-box.on {
+    background: #0c4a6e;
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan), inset 0 0 8px rgba(34,211,238,.2);
+    text-shadow: 0 0 6px var(--cyan);
+  }
+  .bit-box:hover { transform: scale(1.12); }
+  .bit-box.on:hover { box-shadow: 0 0 18px var(--cyan), inset 0 0 14px rgba(34,211,238,.3); }
+
+  /* Bit flip animation */
+  @keyframes bitFlip {
+    0%   { transform: rotateY(0deg); }
+    50%  { transform: rotateY(90deg) scale(1.2); }
+    100% { transform: rotateY(0deg); }
+  }
+  .bit-flip { animation: bitFlip .35s ease-in-out; }
+
+  /* ── Byte group ── */
+  .byte-group {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 12px 14px;
+    display: inline-flex; gap: 5px; flex-wrap: wrap;
+    transition: all .3s ease;
+  }
+  .byte-group:hover {
+    border-color: var(--cyan);
+    box-shadow: 0 0 16px rgba(34,211,238,.18);
+  }
+
+  /* ── Neon card ── */
+  .neon-card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    transition: all .25s ease;
+  }
+  .neon-card:hover {
+    border-color: var(--cyan);
+    box-shadow: 0 0 20px rgba(34,211,238,.15), 0 8px 30px rgba(0,0,0,.3);
+    transform: translateY(-3px);
+  }
+
+  /* ── Speech bubble dark ── */
+  .bubble-dark {
+    background: var(--card);
+    border: 2.5px solid var(--cyan);
+    border-radius: 22px;
+    box-shadow: 0 0 14px rgba(34,211,238,.2), 4px 4px 0 rgba(34,211,238,.3);
+    position: relative;
+  }
+  .bubble-dark::before { content:''; position:absolute; bottom:-22px; left:30px; border:12px solid transparent; border-top-color:var(--cyan); }
+  .bubble-dark::after  { content:''; position:absolute; bottom:-15px; left:33px; border:10px solid transparent; border-top-color:var(--card); }
+
+  /* ── Pixel font display ── */
+  .pixel-display {
+    background: #050b14;
+    border: 2px solid var(--cyan);
+    border-radius: 12px;
+    font-family: 'VT323', monospace;
+    color: var(--cyan);
+    box-shadow: 0 0 16px rgba(34,211,238,.3), inset 0 0 30px rgba(0,0,0,.5);
+    padding: 16px;
+  }
+
+  /* ── Buttons ── */
+  .btn-cyan {
+    background: transparent;
+    border: 2.5px solid var(--cyan); color: var(--cyan);
+    border-radius: 50px; padding: .9rem 2.4rem;
+    font-family: 'Fredoka One', cursive; font-size: 1.2rem;
+    cursor: pointer; letter-spacing: .5px;
+    box-shadow: 0 0 14px rgba(34,211,238,.3), inset 0 0 0 0 rgba(34,211,238,0);
+    transition: all .2s ease;
+  }
+  .btn-cyan:hover {
+    background: rgba(34,211,238,.1);
+    box-shadow: 0 0 24px rgba(34,211,238,.6), 0 0 8px rgba(34,211,238,.4);
+    transform: translateY(-2px);
+  }
+  .btn-cyan:active { transform: translateY(1px); }
+
+  .btn-lime {
+    background: transparent;
+    border: 2.5px solid var(--lime); color: var(--lime);
+    border-radius: 50px; padding: .9rem 2.4rem;
+    font-family: 'Fredoka One', cursive; font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 0 14px rgba(163,230,53,.25);
+    transition: all .2s ease;
+  }
+  .btn-lime:hover {
+    background: rgba(163,230,53,.1);
+    box-shadow: 0 0 24px rgba(163,230,53,.5);
+    transform: translateY(-2px);
+  }
+
+  .btn-yellow {
+    background: var(--yellow);
+    color: #1c1917; border: none;
+    border-radius: 50px; padding: 1rem 2.6rem;
+    font-family: 'Fredoka One', cursive; font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #a16207, 0 8px 22px rgba(250,204,21,.35);
+    transition: all .15s ease;
+  }
+  .btn-yellow:hover  { transform: translateY(-3px); box-shadow: 0 9px 0 #a16207, 0 12px 28px rgba(250,204,21,.5); }
+  .btn-yellow:active { transform: translateY(3px); box-shadow: 0 3px 0 #a16207; }
+
+  /* ── Pop in ── */
+  @keyframes popIn {
+    0%  { transform:scale(0) rotate(-15deg); opacity:0; }
+    70% { transform:scale(1.15) rotate(5deg); }
+    100%{ transform:scale(1) rotate(0deg); opacity:1; }
+  }
+  .pop-in { animation: popIn .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+  /* ── Float emoji ── */
+  @keyframes floatUp {
+    0%  { transform:translateY(0) scale(1); opacity:1; }
+    100%{ transform:translateY(-80px) scale(.4); opacity:0; }
+  }
+  .float-up { position:absolute; pointer-events:none; animation:floatUp .9s ease-out forwards; }
+
+  /* ── Confetti ── */
+  @keyframes confettiFly {
+    0%  { transform:translate(0,0) rotate(0deg); opacity:1; }
+    100%{ transform:translate(var(--tx),var(--ty)) rotate(720deg); opacity:0; }
+  }
+  .confetti-piece { position:fixed; width:9px; height:9px; border-radius:2px; pointer-events:none; z-index:200; animation:confettiFly 1.3s ease-out forwards; }
+
+  /* ── Progress dot ── */
+  .prog-dot { width:13px; height:13px; border-radius:50%; display:inline-block; border:2px solid rgba(255,255,255,.3); }
+
+  /* ── Section title underline ── */
+  .sec-title { position:relative; display:inline-block; }
+  .sec-title::after {
+    content:''; position:absolute; bottom:-6px; left:0; right:0; height:4px;
+    border-radius:10px; background:linear-gradient(90deg,var(--cyan),var(--lime),var(--yellow));
+    box-shadow: 0 0 8px rgba(34,211,238,.5);
+  }
+
+  /* ── ASCII art display ── */
+  @keyframes cursorBlink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+  .cursor { animation: cursorBlink .8s ease-in-out infinite; }
+
+  /* ── Lamp glow ── */
+  @keyframes lampGlow {
+    0%,100%{ box-shadow: 0 0 6px var(--yellow), 0 0 14px var(--yellow); }
+    50%    { box-shadow: 0 0 12px var(--yellow), 0 0 28px var(--yellow), 0 0 44px rgba(250,204,21,.4); }
+  }
+  .lamp-glow { animation: lampGlow 1.5s ease-in-out infinite; }
+
+  @keyframes lampOff {
+    0%,100%{ box-shadow: 0 0 2px #374151; }
+  }
+  .lamp-off { box-shadow: 0 0 2px #374151; }
+
+  /* ── Brick build animation ── */
+  @keyframes brickDrop {
+    from { transform: translateY(-40px) rotate(-8deg); opacity:0; }
+    to   { transform: translateY(0) rotate(0deg);      opacity:1; }
+  }
+  .brick-drop { animation: brickDrop .4s cubic-bezier(.34,1.56,.64,1) both; }
+
+  /* ── Quiz button ── */
+  .qbtn {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 14px; padding: .6rem 1rem;
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: .9rem;
+    cursor: pointer; transition: all .15s ease; text-align: left; color: #cbd5e1;
+    width: 100%;
+  }
+  .qbtn:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); background: rgba(34,211,238,.05); transform: translateX(4px); }
+
+  /* ── Slide up ── */
+  @keyframes slideUp {
+    from { transform:translateY(20px); opacity:0; }
+    to   { transform:translateY(0);    opacity:1; }
+  }
+  .slide-up { animation: slideUp .4s ease-out forwards; }
+
+  /* ── Bit grid animation ── */
+  @keyframes bitPulse {
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.05); }
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width:8px; }
+  ::-webkit-scrollbar-track { background:#0f172a; }
+  ::-webkit-scrollbar-thumb { background:#334155; border-radius:4px; }
+  ::-webkit-scrollbar-thumb:hover { background:#475569; }
+
+  /* ── Checklist item ── */
+  .check-item {
+    background: var(--card); border-radius:14px;
+    border: 2px solid var(--border);
+    cursor: pointer; transition: all .15s ease;
+  }
+  .check-item:hover { border-color: var(--lime); }
+  .check-item.done { border-color: var(--lime); background: rgba(163,230,53,.07); }
+
+  /* ── Lamp SVG pulse ── */
+  @keyframes lampSvgOn {
+    0%,100%{ filter:drop-shadow(0 0 4px #facc15) drop-shadow(0 0 10px #facc15); }
+    50%    { filter:drop-shadow(0 0 8px #facc15) drop-shadow(0 0 22px rgba(250,204,21,.8)); }
+  }
+  .lamp-svg-on  { animation: lampSvgOn 1.4s ease-in-out infinite; }
+
+  /* Byte-to-letter reveal */
+  @keyframes letterReveal {
+    0%   { opacity:0; transform:scale(0) rotate(-20deg); }
+    60%  { transform:scale(1.3) rotate(5deg); }
+    100% { opacity:1; transform:scale(1) rotate(0deg); }
+  }
+  .letter-reveal { animation: letterReveal .6s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+  @keyframes neonFlicker {
+    0%,19%,21%,23%,25%,54%,56%,100%{ opacity:1; }
+    20%,22%,24%,55%{ opacity:.4; }
+  }
+  .neon-flicker { animation: neonFlicker 8s ease-in-out infinite; }
+
+  .tag-pill {
+    display:inline-flex; align-items:center; gap:5px;
+    background:rgba(34,211,238,.12); border:1.5px solid rgba(34,211,238,.3);
+    border-radius:50px; padding:.2rem .8rem;
+    font-size:.8rem; font-weight:800; color:var(--cyan);
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- Binary Rain Background -->
+<div id="binaryRain" aria-hidden="true"></div>
+
+<div class="content">
+
+<!-- ══════════ HEADER ══════════ -->
+<header class="header-grad text-white py-6 px-4 relative overflow-hidden">
+  <!-- Corner decorations -->
+  <div style="position:absolute;top:10px;left:10px;font-family:'VT323',monospace;font-size:1.1rem;color:rgba(34,211,238,.3);">01001000</div>
+  <div style="position:absolute;top:10px;right:10px;font-family:'VT323',monospace;font-size:1.1rem;color:rgba(34,211,238,.3);">01100001</div>
+  <div style="position:absolute;bottom:6px;left:15px;font-family:'VT323',monospace;font-size:.9rem;color:rgba(163,230,53,.25);">10110100</div>
+  <div style="position:absolute;bottom:6px;right:15px;font-family:'VT323',monospace;font-size:.9rem;color:rgba(163,230,53,.25);">11001010</div>
+
+  <div class="max-w-3xl mx-auto relative z-10 text-center">
+    <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-3 border border-white/20">
+      <span class="text-lg">🖥️</span>
+      <span style="font-family:'Fredoka One',cursive;font-size:.85rem;letter-spacing:.5px;color:#bae6fd;">Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span class="text-lg">🚀</span>
+    </div>
+    <h1 class="glow-cyan neon-flicker" style="font-family:'Fredoka One',cursive;font-size:clamp(1.6rem,5vw,2.5rem);line-height:1.2;color:white;text-shadow:0 0 10px var(--cyan),0 0 30px rgba(34,211,238,.5),3px 3px 0 rgba(0,0,0,.4);">
+      Hari 8: Bit &amp; Byte 💡
+    </h1>
+    <p style="font-family:'Fredoka One',cursive;font-size:clamp(1rem,3vw,1.25rem);color:#a5f3fc;margin-top:.4rem;">
+      Batu Bata Terkecil di Komputer!
+    </p>
+    <!-- Progress -->
+    <div class="mt-4 flex items-center justify-center gap-2 flex-wrap">
+      <span style="font-size:.8rem;color:#94a3b8;">Progres:</span>
+      <div class="flex gap-1.5 flex-wrap justify-center">
+        <div class="prog-dot" style="background:#34d399;" title="Hari 1-7 ✓"></div>
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <div class="prog-dot" style="background:#34d399;"></div>
+        <div class="prog-dot" style="background:var(--yellow);border-color:var(--yellow);box-shadow:0 0 6px var(--yellow);" title="Hari 8 – Sekarang!"></div>
+        <div class="prog-dot" style="background:rgba(255,255,255,.15);"></div>
+        <span style="font-size:.75rem;color:#64748b;">... 30</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ INTRO ══════════ -->
+<section class="max-w-3xl mx-auto px-4 pt-8 pb-2">
+  <div class="flex flex-col sm:flex-row items-center gap-6">
+
+    <!-- Aslan + bricks SVG -->
+    <div class="relative flex-shrink-0 aslan-bounce" style="width:190px;height:200px;">
+      <svg viewBox="0 0 180 200" width="180" height="200">
+        <!-- Ground shadow -->
+        <ellipse cx="90" cy="195" rx="55" ry="8" fill="rgba(34,211,238,.1)"/>
+
+        <!-- Colored bricks in arms -->
+        <rect x="30" y="110" width="22" height="16" rx="4" fill="#f472b6" stroke="#db2777" stroke-width="1.5" transform="rotate(-15 41 118)"/>
+        <rect x="20" y="125" width="18" height="14" rx="3" fill="#facc15" stroke="#ca8a04" stroke-width="1.5" transform="rotate(-10 29 132)"/>
+        <rect x="26" y="95" width="16" height="12" rx="3" fill="#22d3ee" stroke="#0891b2" stroke-width="1.5" transform="rotate(8 34 101)"/>
+
+        <rect x="125" y="108" width="22" height="16" rx="4" fill="#a3e635" stroke="#65a30d" stroke-width="1.5" transform="rotate(15 136 116)"/>
+        <rect x="132" y="124" width="18" height="14" rx="3" fill="#fb923c" stroke="#c2410c" stroke-width="1.5" transform="rotate(10 141 131)"/>
+        <rect x="128" y="93" width="16" height="12" rx="3" fill="#a78bfa" stroke="#6d28d9" stroke-width="1.5" transform="rotate(-8 136 99)"/>
+
+        <!-- Body -->
+        <ellipse cx="90" cy="150" rx="30" ry="35" fill="#FBBF24"/>
+        <!-- Shirt (cyan theme!) -->
+        <ellipse cx="90" cy="160" rx="26" ry="25" fill="#0891b2"/>
+        <!-- Shirt text -->
+        <text x="90" y="165" text-anchor="middle" fill="white" font-family="VT323,monospace" font-size="11">01</text>
+
+        <!-- Head -->
+        <circle cx="90" cy="88" r="36" fill="#FBBF24"/>
+        <!-- Hair -->
+        <ellipse cx="90" cy="57" rx="36" ry="16" fill="#1C1917"/>
+        <ellipse cx="62" cy="67" rx="12" ry="11" fill="#1C1917"/>
+        <ellipse cx="118" cy="67" rx="12" ry="11" fill="#1C1917"/>
+        <!-- Ears -->
+        <circle cx="54" cy="90" r="8" fill="#FBBF24"/>
+        <circle cx="126" cy="90" r="8" fill="#FBBF24"/>
+        <!-- Eyes -->
+        <circle cx="76" cy="88" r="7" fill="white"/>
+        <circle cx="104" cy="88" r="7" fill="white"/>
+        <circle cx="77.5" cy="89.5" r="4" fill="#1C1917"/>
+        <circle cx="105.5" cy="89.5" r="4" fill="#1C1917"/>
+        <circle cx="78.8" cy="88.2" r="1.6" fill="white"/>
+        <circle cx="106.8" cy="88.2" r="1.6" fill="white"/>
+        <!-- Excited eyebrows -->
+        <path d="M68 78 Q76 72 82 76" fill="none" stroke="#1C1917" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M98 76 Q104 72 112 78" fill="none" stroke="#1C1917" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Big smile -->
+        <path d="M72 100 Q90 116 108 100" fill="none" stroke="#B45309" stroke-width="3" stroke-linecap="round"/>
+        <!-- Teeth -->
+        <path d="M78 103 Q90 112 102 103" fill="white" opacity=".7"/>
+        <!-- Cheeks -->
+        <circle cx="65" cy="96" r="8" fill="#FCA5A5" opacity=".6"/>
+        <circle cx="115" cy="96" r="8" fill="#FCA5A5" opacity=".6"/>
+
+        <!-- Arms holding bricks -->
+        <path d="M60 140 Q38 125 32 108" fill="none" stroke="#FBBF24" stroke-width="12" stroke-linecap="round"/>
+        <path d="M120 140 Q142 125 148 108" fill="none" stroke="#FBBF24" stroke-width="12" stroke-linecap="round"/>
+
+        <!-- Legs -->
+        <rect x="68" y="180" width="18" height="14" rx="5" fill="#1D4ED8"/>
+        <rect x="94" y="180" width="18" height="14" rx="5" fill="#1D4ED8"/>
+      </svg>
+    </div>
+
+    <!-- Bubble -->
+    <div>
+      <div class="bubble-dark p-4 mb-4">
+        <p style="font-size:1.05rem;font-weight:800;color:#e2e8f0;line-height:1.65;">
+          Hai! Aku <span style="color:var(--cyan);">Aslan</span> 👋<br>
+          Hari ini kita belajar hal <strong style="color:var(--yellow);">TERKECIL</strong> di komputer!<br>
+          Namanya <strong style="color:var(--cyan);">Bit</strong> dan <strong style="color:var(--lime);">Byte</strong>. 💡<br>
+          Bayangkan mereka seperti <strong style="color:var(--pink);">batu bata terkecil</strong> yang dipakai komputer untuk membangun segalanya! 🧱
+        </p>
+      </div>
+      <div class="flex items-center gap-2 rounded-xl p-3" style="background:rgba(250,204,21,.08);border:2px solid rgba(250,204,21,.3);">
+        <span class="text-2xl">💡</span>
+        <p style="font-size:.88rem;font-weight:700;color:#fde68a;">
+          <strong>Fakta Keren:</strong> Semua foto, lagu, video, dan game di komputer — semuanya terbuat dari angka <strong style="color:var(--cyan);">0</strong> dan <strong style="color:var(--cyan);">1</strong>! 🤯
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ APA ITU BIT? ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-8">
+  <div class="text-center mb-6">
+    <h2 class="sec-title text-2xl md:text-3xl" style="color:white;">💡 Apa itu BIT?</h2>
+  </div>
+
+  <div class="grid sm:grid-cols-2 gap-5">
+
+    <!-- Bit OFF -->
+    <div class="neon-card p-5 text-center" id="bitOffCard">
+      <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:#64748b;margin-bottom:12px;">BIT = 0 (Mati 🔴)</p>
+      <!-- Lamp OFF SVG -->
+      <div class="flex justify-center mb-3">
+        <svg viewBox="0 0 80 110" width="80" height="110" id="lampOff">
+          <!-- Base -->
+          <rect x="30" y="90" width="20" height="8" rx="3" fill="#374151"/>
+          <rect x="28" y="98" width="24" height="6" rx="3" fill="#4b5563"/>
+          <!-- Bulb socket -->
+          <rect x="34" y="74" width="12" height="18" rx="4" fill="#374151"/>
+          <!-- Bulb -->
+          <ellipse cx="40" cy="62" rx="22" ry="24" fill="#1e293b" stroke="#374151" stroke-width="2"/>
+          <!-- Filament dim -->
+          <path d="M33 66 Q37 60 40 64 Q43 60 47 66" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- X mark on bulb -->
+          <line x1="32" y1="54" x2="48" y2="72" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" opacity=".5"/>
+          <line x1="48" y1="54" x2="32" y2="72" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" opacity=".5"/>
+        </svg>
+      </div>
+      <div class="bit-box off mx-auto text-2xl" style="width:56px;height:56px;font-size:2rem;">0</div>
+      <p class="mt-3 font-bold text-sm" style="color:#64748b;">Lampu mati = tidak ada informasi</p>
+    </div>
+
+    <!-- Bit ON -->
+    <div class="neon-card p-5 text-center" id="bitOnCard" style="border-color:rgba(250,204,21,.4);box-shadow:0 0 20px rgba(250,204,21,.1);">
+      <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:var(--yellow);margin-bottom:12px;">BIT = 1 (Nyala 🟡)</p>
+      <!-- Lamp ON SVG -->
+      <div class="flex justify-center mb-3">
+        <svg viewBox="0 0 80 110" width="80" height="110" class="lamp-svg-on" id="lampOnSvg">
+          <!-- Glow halo -->
+          <circle cx="40" cy="58" r="35" fill="rgba(250,204,21,.12)"/>
+          <circle cx="40" cy="58" r="28" fill="rgba(250,204,21,.08)"/>
+          <!-- Base -->
+          <rect x="30" y="90" width="20" height="8" rx="3" fill="#374151"/>
+          <rect x="28" y="98" width="24" height="6" rx="3" fill="#4b5563"/>
+          <!-- Socket -->
+          <rect x="34" y="74" width="12" height="18" rx="4" fill="#374151"/>
+          <!-- Bulb body -->
+          <ellipse cx="40" cy="62" rx="22" ry="24" fill="#fef3c7" stroke="#fbbf24" stroke-width="2.5"/>
+          <!-- Glow fill -->
+          <ellipse cx="40" cy="62" rx="17" ry="19" fill="#fbbf24" opacity=".7"/>
+          <!-- Filament bright -->
+          <path d="M33 66 Q37 60 40 64 Q43 60 47 66" fill="none" stroke="#1c1917" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Sparkles -->
+          <text x="10" y="30" font-size="12" opacity=".8" class="spark1">✨</text>
+          <text x="55" y="22" font-size="10" opacity=".7" class="spark2">⭐</text>
+          <text x="62" y="48" font-size="11" opacity=".9" class="spark3">✨</text>
+          <text x="5" y="52" font-size="9" opacity=".6" class="spark2">⭐</text>
+        </svg>
+      </div>
+      <div class="bit-box on mx-auto text-2xl" style="width:56px;height:56px;font-size:2rem;">1</div>
+      <p class="mt-3 font-bold text-sm" style="color:var(--yellow);">Lampu nyala = ada informasi!</p>
+    </div>
+  </div>
+
+  <!-- Bit summary -->
+  <div class="mt-5 rounded-2xl p-4 flex items-center gap-4" style="background:rgba(34,211,238,.05);border:2px solid rgba(34,211,238,.2);">
+    <span class="text-3xl flex-shrink-0">🧱</span>
+    <div>
+      <p class="font-extrabold" style="color:var(--cyan);">Bit = angka 0 atau 1</p>
+      <p class="text-sm font-bold" style="color:#94a3b8;margin-top:2px;">Seperti saklar lampu: hanya bisa MATI (0) atau NYALA (1)! Tidak ada di antaranya. Sesederhana itu! 😄</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ TOMBOL NYALAKAN BIT ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-4">
+  <div class="rounded-3xl p-6" style="background:var(--card);border:2px solid var(--border);">
+    <div class="text-center mb-4">
+      <h2 class="sec-title text-xl" style="color:white;">⚡ Coba Nyalakan Bit-mu!</h2>
+      <p class="mt-3 font-bold text-sm" style="color:#94a3b8;">Klik setiap kotak untuk nyalakan atau matikan bitnya! 👆</p>
+    </div>
+
+    <!-- 8 interactive bits = 1 byte -->
+    <div class="flex justify-center gap-2 flex-wrap mb-4" id="interactiveBits">
+      <!-- Rendered by JS -->
+    </div>
+
+    <!-- Value display -->
+    <div class="pixel-display text-center mb-5">
+      <p class="mono text-sm" style="color:#475569;">NILAI DECIMAL:</p>
+      <p class="mono text-4xl glow-cyan" id="decimalVal">0</p>
+      <p class="mono text-sm mt-1" style="color:#475569;">= <span id="charVal" style="color:var(--lime);">NUL</span></p>
+    </div>
+
+    <div class="flex gap-3 justify-center flex-wrap">
+      <button class="btn-cyan" onclick="allBitsOff()">🔴 Matikan Semua</button>
+      <button class="btn-lime" onclick="allBitsOn()">🟢 Nyalakan Semua</button>
+      <button class="btn-yellow" onclick="setLetter('A')">✨ Tunjukkan "A"!</button>
+    </div>
+    <p class="text-center mt-3 font-bold text-xs" style="color:#64748b;" id="bitHint">Huruf "A" = nilai 65 = <span style="color:var(--cyan);">01000001</span> dalam biner!</p>
+  </div>
+</section>
+
+<!-- ══════════ APA ITU BYTE? ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-8">
+  <div class="text-center mb-6">
+    <h2 class="sec-title text-2xl" style="color:white;">🧱 Apa itu BYTE?</h2>
+  </div>
+
+  <div class="neon-card p-6">
+    <!-- Byte visual: 8 bits stacked -->
+    <div class="text-center mb-5">
+      <p style="font-family:'Fredoka One',cursive;font-size:1rem;color:#94a3b8;margin-bottom:12px;">1 Byte = 8 Bit bekerja bersama! 🤝</p>
+      <div class="byte-group mx-auto justify-center" style="display:inline-flex;">
+        <div class="bit-box on" style="width:38px;height:38px;font-size:1.3rem;">0</div>
+        <div class="bit-box on" style="width:38px;height:38px;font-size:1.3rem;">1</div>
+        <div class="bit-box off" style="width:38px;height:38px;font-size:1.3rem;">0</div>
+        <div class="bit-box off" style="width:38px;height:38px;font-size:1.3rem;">0</div>
+        <div class="bit-box off" style="width:38px;height:38px;font-size:1.3rem;">0</div>
+        <div class="bit-box off" style="width:38px;height:38px;font-size:1.3rem;">0</div>
+        <div class="bit-box on" style="width:38px;height:38px;font-size:1.3rem;">0</div>
+        <div class="bit-box on" style="width:38px;height:38px;font-size:1.3rem;">1</div>
+      </div>
+      <div class="flex justify-center items-center gap-3 mt-3">
+        <span class="mono text-xl" style="color:var(--cyan);">01000001</span>
+        <span class="text-xl">→</span>
+        <span style="font-family:'Fredoka One',cursive;font-size:2.5rem;color:var(--lime);" class="glow-lime">A</span>
+      </div>
+      <p class="mt-2 font-bold text-sm" style="color:#64748b;">8 bit ini mewakili huruf "A"! Keren kan? 🎉</p>
+    </div>
+
+    <!-- Byte explanation grid -->
+    <div class="grid sm:grid-cols-3 gap-4">
+      <div class="rounded-xl p-4 text-center" style="background:rgba(34,211,238,.06);border:2px solid rgba(34,211,238,.15);">
+        <div class="text-3xl mb-2">🔢</div>
+        <p class="font-extrabold text-sm" style="color:var(--cyan);">1 Byte = 8 Bit</p>
+        <p class="text-xs mt-1" style="color:#64748b;">Seperti 8 teman yang bersatu buat menyampaikan pesan!</p>
+      </div>
+      <div class="rounded-xl p-4 text-center" style="background:rgba(163,230,53,.06);border:2px solid rgba(163,230,53,.15);">
+        <div class="text-3xl mb-2">🔤</div>
+        <p class="font-extrabold text-sm" style="color:var(--lime);">1 Byte = 1 Huruf</p>
+        <p class="text-xs mt-1" style="color:#64748b;">Setiap huruf (A, B, C...) disimpan sebagai 1 byte di komputer!</p>
+      </div>
+      <div class="rounded-xl p-4 text-center" style="background:rgba(250,204,21,.06);border:2px solid rgba(250,204,21,.15);">
+        <div class="text-3xl mb-2">📊</div>
+        <p class="font-extrabold text-sm" style="color:var(--yellow);">256 Pilihan</p>
+        <p class="text-xs mt-1" style="color:#64748b;">1 Byte bisa mewakili 256 nilai berbeda (dari 0 sampai 255)!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BYTE BUILDER INTERAKTIF ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-2">
+  <div class="text-center mb-5">
+    <h2 class="sec-title text-2xl" style="color:white;">🏗️ Byte Builder!</h2>
+    <p class="mt-3 font-semibold text-sm" style="color:#94a3b8;">Klik huruf untuk lihat byte-nya! ✨</p>
+  </div>
+
+  <div class="rounded-3xl p-6" style="background:var(--card);border:2px solid var(--border);">
+    <!-- Letter selector -->
+    <div class="flex flex-wrap gap-2 justify-center mb-5" id="letterSelector">
+      <!-- Generated by JS -->
+    </div>
+
+    <!-- Byte display -->
+    <div class="text-center mb-4">
+      <p class="font-bold text-sm mb-2" style="color:#64748b;">Huruf yang dipilih:</p>
+      <p id="selectedLetterDisplay" style="font-family:'Fredoka One',cursive;font-size:5rem;color:var(--lime);" class="glow-lime">A</p>
+    </div>
+
+    <!-- Byte bits display -->
+    <div class="flex justify-center gap-2 flex-wrap mb-3" id="byteBitsDisplay">
+      <!-- Generated by JS -->
+    </div>
+
+    <div class="pixel-display text-center mt-3">
+      <div class="flex justify-center gap-6 flex-wrap">
+        <div>
+          <p class="mono text-xs" style="color:#475569;">BINER</p>
+          <p class="mono text-xl glow-cyan" id="byteBuilderBin">01000001</p>
+        </div>
+        <div>
+          <p class="mono text-xs" style="color:#475569;">DESIMAL</p>
+          <p class="mono text-xl glow-yellow" id="byteBuilderDec">65</p>
+        </div>
+        <div>
+          <p class="mono text-xs" style="color:#475569;">HURUF</p>
+          <p class="mono text-xl glow-lime" id="byteBuilderChar">A</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ KONVERSI ASLAN ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-8">
+  <div class="text-center mb-5">
+    <h2 class="sec-title text-2xl" style="color:white;">🔢 "ASLAN" dalam Byte!</h2>
+    <p class="mt-3 font-semibold text-sm" style="color:#94a3b8;">Nama Aslan juga tersimpan sebagai byte di komputer! 🤩</p>
+  </div>
+
+  <div class="rounded-3xl p-5" style="background:var(--card);border:2px solid rgba(163,230,53,.25);">
+    <div class="space-y-3" id="aslanBytes">
+      <!-- Generated by JS -->
+    </div>
+    <div class="mt-4 rounded-xl p-3 text-center" style="background:rgba(163,230,53,.06);border:2px solid rgba(163,230,53,.2);">
+      <p class="font-extrabold text-sm" style="color:var(--lime);">
+        ✅ Nama "ASLAN" = <span style="color:var(--cyan);">5 huruf</span> × 1 byte = <strong>5 Byte!</strong>
+      </p>
+      <p class="text-xs mt-1" style="color:#64748b;">Di komputer, setiap huruf namamu tersimpan sebagai 8 lampu (bit)!</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ TANGGA UKURAN ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-4">
+  <div class="text-center mb-5">
+    <h2 class="sec-title text-2xl" style="color:white;">📏 Tangga Ukuran Data!</h2>
+    <p class="mt-3 font-semibold text-sm" style="color:#94a3b8;">Dari yang terkecil sampai yang terbesar ⬆️</p>
+  </div>
+
+  <div class="space-y-3" id="sizeStairs">
+    <!-- Generated by JS -->
+  </div>
+
+  <div class="mt-5 rounded-2xl p-4 flex items-center gap-3" style="background:rgba(250,204,21,.06);border:2px solid rgba(250,204,21,.2);">
+    <span class="text-3xl">💬</span>
+    <div>
+      <p class="font-extrabold" style="color:var(--yellow);">Besok kita belajar Kilobyte (KB)!</p>
+      <p class="text-sm font-bold" style="color:#64748b;margin-top:2px;">KB = 1.024 Byte = seperti tas kecil berisi banyak batu bata! 🎒</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ KUIS ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-8">
+  <div class="text-center mb-5">
+    <h2 class="sec-title text-2xl" style="color:white;">🎯 Kuis Bit &amp; Byte!</h2>
+    <p class="mt-3 font-semibold text-sm" style="color:#94a3b8;">3 pertanyaan, siap, Go! 🚀</p>
+  </div>
+
+  <div class="space-y-5">
+    <div id="q1" class="neon-card p-5">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:white;" class="mb-3">
+        1. Berapa banyak bit dalam 1 Byte? 🔢
+      </p>
+      <div class="space-y-2">
+        <button class="qbtn" onclick="ans(1,'b',this)">A. 4 bit</button>
+        <button class="qbtn" onclick="ans(1,'a',this)">B. 8 bit</button>
+        <button class="qbtn" onclick="ans(1,'b',this)">C. 16 bit</button>
+      </div>
+      <p id="q1r" class="hidden mt-2 font-bold text-sm"></p>
+    </div>
+
+    <div id="q2" class="neon-card p-5">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:white;" class="mb-3">
+        2. Bit hanya bisa bernilai angka berapa saja? 💡
+      </p>
+      <div class="space-y-2">
+        <button class="qbtn" onclick="ans(2,'b',this)">A. 0, 1, 2, 3, 4</button>
+        <button class="qbtn" onclick="ans(2,'a',this)">B. 0 atau 1 saja</button>
+        <button class="qbtn" onclick="ans(2,'b',this)">C. 1 sampai 10</button>
+      </div>
+      <p id="q2r" class="hidden mt-2 font-bold text-sm"></p>
+    </div>
+
+    <div id="q3" class="neon-card p-5">
+      <p style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:white;" class="mb-3">
+        3. Kata "HALO" punya berapa byte? 📝
+      </p>
+      <div class="space-y-2">
+        <button class="qbtn" onclick="ans(3,'b',this)">A. 2 Byte</button>
+        <button class="qbtn" onclick="ans(3,'b',this)">B. 8 Byte</button>
+        <button class="qbtn" onclick="ans(3,'a',this)">C. 4 Byte</button>
+      </div>
+      <p id="q3r" class="hidden mt-2 font-bold text-sm"></p>
+    </div>
+  </div>
+
+  <div id="quizFinal" class="hidden mt-6 text-center rounded-2xl p-6" style="background:var(--card);border:3px solid var(--yellow);">
+    <div id="qfEmoji" class="text-5xl mb-2"></div>
+    <p id="qfText" style="font-family:'Fredoka One',cursive;font-size:1.4rem;"></p>
+    <p id="qfSub" class="mt-1 font-bold text-sm" style="color:#94a3b8;"></p>
+  </div>
+</section>
+
+<!-- ══════════ AKTIVITAS ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-4">
+  <div class="rounded-3xl p-6" style="background:rgba(163,230,53,.05);border:3px solid rgba(163,230,53,.3);">
+    <div class="text-center mb-4">
+      <h2 class="sec-title text-xl" style="color:var(--lime);">✏️ Tugas Hari Ini!</h2>
+    </div>
+    <div class="flex items-start gap-3 mb-5">
+      <span class="text-3xl flex-shrink-0">🎨</span>
+      <p class="font-bold text-sm leading-relaxed" style="color:#cbd5e1;">
+        <strong style="color:var(--lime);">Gambarlah</strong> 8 kotak kecil seperti ini: <span class="mono" style="color:var(--cyan);">☐ ☐ ☐ ☐ ☐ ☐ ☐ ☐</span><br>
+        Itu adalah 1 Byte! Lalu isi dengan angka 0 atau 1 untuk menulis nama atau kata favoritmu! 🧱
+      </p>
+    </div>
+
+    <!-- Contoh pola bit -->
+    <div class="rounded-xl p-4 mb-5" style="background:var(--card);border:2px solid var(--border);">
+      <p class="font-bold text-xs mb-3 text-center" style="color:#64748b;">📝 Contoh — Huruf "H" = 72 = <span class="mono" style="color:var(--cyan);">01001000</span></p>
+      <div class="overflow-x-auto">
+        <table class="mx-auto text-center" style="border-collapse:separate;border-spacing:4px;">
+          <thead>
+            <tr>
+              <th colspan="8" style="font-family:'Fredoka One',cursive;font-size:1rem;color:var(--lime);padding-bottom:8px;">H A L O</th>
+            </tr>
+          </thead>
+          <tbody id="haloTable">
+            <!-- Generated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Template kosong untuk diisi -->
+    <p class="font-bold text-sm mb-3" style="color:var(--cyan);">🎯 Coba tulis namamu sendiri di bawah ini!</p>
+    <div class="pixel-display p-4 mb-5 relative">
+      <p class="mono text-sm mb-2" style="color:#475569;">TULIS NAMA / KATA FAVORITMU:</p>
+      <input type="text" id="nameInput" maxlength="8" placeholder="Contoh: ASLAN"
+        class="mono text-xl bg-transparent border-0 outline-none text-center w-full"
+        style="color:var(--lime);letter-spacing:4px;caret-color:var(--cyan);"
+        oninput="updateCustomBytes()"/>
+      <div class="mt-3" id="customBytesDisplay"></div>
+    </div>
+
+    <!-- Checklist -->
+    <p class="font-bold text-sm mb-3" style="color:var(--cyan);">✅ Checklist:</p>
+    <div class="space-y-2">
+      <div id="ac1" class="check-item flex items-center gap-3 p-3 cursor-pointer" onclick="actCheck(1)">
+        <input type="checkbox" id="cb1" class="w-5 h-5" style="accent-color:var(--lime);" onclick="event.stopPropagation();actCheck(1)">
+        <span class="font-bold text-sm" style="color:#cbd5e1;" id="ac1t">Aku tahu Bit = 0 atau 1 (nyala/mati) 💡</span>
+      </div>
+      <div id="ac2" class="check-item flex items-center gap-3 p-3 cursor-pointer" onclick="actCheck(2)">
+        <input type="checkbox" id="cb2" class="w-5 h-5" style="accent-color:var(--lime);" onclick="event.stopPropagation();actCheck(2)">
+        <span class="font-bold text-sm" style="color:#cbd5e1;" id="ac2t">Aku tahu 1 Byte = 8 Bit bersama 🧱</span>
+      </div>
+      <div id="ac3" class="check-item flex items-center gap-3 p-3 cursor-pointer" onclick="actCheck(3)">
+        <input type="checkbox" id="cb3" class="w-5 h-5" style="accent-color:var(--lime);" onclick="event.stopPropagation();actCheck(3)">
+        <span class="font-bold text-sm" style="color:#cbd5e1;" id="ac3t">Aku sudah coba nyalakan bit-bit di atas ⚡</span>
+      </div>
+      <div id="ac4" class="check-item flex items-center gap-3 p-3 cursor-pointer" onclick="actCheck(4)">
+        <input type="checkbox" id="cb4" class="w-5 h-5" style="accent-color:var(--lime);" onclick="event.stopPropagation();actCheck(4)">
+        <span class="font-bold text-sm" style="color:#cbd5e1;" id="ac4t">Aku tahu nama "ASLAN" = 5 Byte! ✨</span>
+      </div>
+    </div>
+    <div id="actDone" class="hidden mt-4 text-center rounded-xl p-4" style="background:rgba(163,230,53,.1);border:2px solid var(--lime);">
+      <p class="text-3xl mb-1">🔥</p>
+      <p style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--lime);" class="glow-lime">Mantap banget, Aslan! Kamu paham Bit &amp; Byte! 💪</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ RANGKUMAN ══════════ -->
+<section class="max-w-3xl mx-auto px-4 py-6">
+  <div class="rounded-3xl p-6" style="background:var(--card);border:2px solid rgba(250,204,21,.25);">
+    <h2 class="text-center mb-4" style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--yellow);" class="glow-yellow">📚 Rangkuman Hari Ini</h2>
+    <div class="grid sm:grid-cols-3 gap-3 text-center">
+      <div class="rounded-xl p-4" style="background:rgba(34,211,238,.06);border:2px solid rgba(34,211,238,.15);">
+        <div class="mono text-2xl mb-2" style="color:var(--cyan);">0 | 1</div>
+        <p class="font-extrabold text-sm" style="color:var(--cyan);">Bit</p>
+        <p class="text-xs mt-1" style="color:#64748b;">Angka terkecil, hanya 0 atau 1</p>
+      </div>
+      <div class="rounded-xl p-4" style="background:rgba(163,230,53,.06);border:2px solid rgba(163,230,53,.15);">
+        <div class="mono text-2xl mb-2" style="color:var(--lime);">×8</div>
+        <p class="font-extrabold text-sm" style="color:var(--lime);">Byte</p>
+        <p class="text-xs mt-1" style="color:#64748b;">8 Bit = 1 Byte = 1 Huruf</p>
+      </div>
+      <div class="rounded-xl p-4" style="background:rgba(250,204,21,.06);border:2px solid rgba(250,204,21,.15);">
+        <div class="text-2xl mb-2">🌍</div>
+        <p class="font-extrabold text-sm" style="color:var(--yellow);">Semua Data</p>
+        <p class="text-xs mt-1" style="color:#64748b;">Foto, lagu, game — semua dari 0 dan 1!</p>
+      </div>
+    </div>
+    <div class="mt-4 rounded-xl p-3 text-center" style="background:rgba(250,204,21,.06);border:2px solid rgba(250,204,21,.15);">
+      <p class="font-bold text-sm" style="color:#fde68a;">
+        💬 <em>"Komputer tidak pernah lihat 'A' atau '🐱'. Yang dia lihat hanya: 01000001 dan 00111111... keren banget kan!"</em> – Aslan 😄
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="max-w-3xl mx-auto px-4 pb-10 text-center">
+  <div class="rounded-3xl p-6" style="background:var(--card);border:2px solid var(--border);">
+    <!-- Progress -->
+    <div class="flex justify-center gap-1 mb-4 flex-wrap">
+      <div class="w-7 h-7 rounded-full bg-emerald-500 border-2 border-emerald-700 flex items-center justify-center text-white font-bold text-xs" style="font-size:.55rem;">1-7</div>
+      <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs" style="background:var(--yellow);border:3px solid #a16207;color:#1c1917;font-size:.7rem;box-shadow:0 0 8px rgba(250,204,21,.5);">8</div>
+      <div class="w-7 h-7 rounded-full flex items-center justify-center text-gray-500 font-bold text-xs" style="background:#1e293b;border:2px solid #334155;font-size:.7rem;">9</div>
+      <span class="w-7 h-7 flex items-center justify-center text-gray-600 text-xs font-bold">···</span>
+      <div class="w-7 h-7 rounded-full flex items-center justify-center text-gray-500 font-bold text-xs" style="background:#1e293b;border:2px solid #334155;font-size:.7rem;">30</div>
+    </div>
+
+    <p style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--yellow);" class="glow-yellow">Hari 8 dari 30 🎓</p>
+
+    <!-- Aslan kecil -->
+    <div class="flex justify-center my-3">
+      <svg viewBox="0 0 60 70" width="70" height="70" class="aslan-bounce">
+        <circle cx="30" cy="26" r="20" fill="#FBBF24"/>
+        <ellipse cx="30" cy="10" rx="20" ry="9" fill="#1C1917"/>
+        <ellipse cx="16" cy="17" rx="7" ry="6" fill="#1C1917"/>
+        <ellipse cx="44" cy="17" rx="7" ry="6" fill="#1C1917"/>
+        <circle cx="22" cy="26" r="4" fill="white"/>
+        <circle cx="38" cy="26" r="4" fill="white"/>
+        <circle cx="23" cy="27" r="2" fill="#1C1917"/>
+        <circle cx="39" cy="27" r="2" fill="#1C1917"/>
+        <path d="M20 35 Q30 43 40 35" fill="none" stroke="#B45309" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="15" cy="31" r="5" fill="#FCA5A5" opacity=".6"/>
+        <circle cx="45" cy="31" r="5" fill="#FCA5A5" opacity=".6"/>
+        <ellipse cx="30" cy="57" rx="18" ry="16" fill="#0891b2"/>
+        <text x="30" y="62" text-anchor="middle" font-family="VT323,monospace" font-size="12" fill="white">01</text>
+      </svg>
+    </div>
+
+    <p style="font-family:'Fredoka One',cursive;font-size:1.15rem;color:white;">
+      Kamu sekarang tahu bahan terkecil komputer!
+    </p>
+    <p style="font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--yellow);margin-top:4px;" class="glow-yellow">
+      Mantap Aslan! 🔥
+    </p>
+    <p class="font-bold text-sm mt-2" style="color:#64748b;">Bit 🔲 + Byte 🧱 + KB 🎒 + MB 📦 + GB 🏠 = Data dunia!</p>
+
+    <div class="mt-4 flex justify-center gap-2 flex-wrap text-xs font-semibold" style="color:#475569;">
+      <span>📅 Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span>·</span>
+      <span>Seri 30 Hari Belajar Komputer</span>
+    </div>
+  </div>
+</footer>
+
+</div><!-- end .content -->
+
+<script>
+// ══════════════════════════════════════════
+// BINARY RAIN BACKGROUND
+// ══════════════════════════════════════════
+(function() {
+  const rain = document.getElementById('binaryRain');
+  const cols = Math.floor(window.innerWidth / 22);
+  for (let i = 0; i < cols; i++) {
+    const col = document.createElement('div');
+    col.className = 'rain-col';
+    let text = '';
+    for (let j = 0; j < 30; j++) text += (Math.random() > .5 ? '1' : '0') + '\n';
+    col.textContent = text;
+    col.style.left = (i * 22) + 'px';
+    col.style.animationDuration = (6 + Math.random() * 14) + 's';
+    col.style.animationDelay = (-Math.random() * 14) + 's';
+    col.style.fontSize = (Math.random() > .7 ? '1.1rem' : '.85rem');
+    rain.appendChild(col);
+  }
+})();
+
+// ══════════════════════════════════════════
+// INTERACTIVE BITS (8-bit playground)
+// ══════════════════════════════════════════
+const bitState = [0,0,0,0,0,0,0,0];
+
+function renderInteractiveBits() {
+  const container = document.getElementById('interactiveBits');
+  container.innerHTML = '';
+  bitState.forEach((v, i) => {
+    const box = document.createElement('div');
+    box.className = 'bit-box ' + (v ? 'on' : 'off');
+    box.textContent = v;
+    box.dataset.idx = i;
+    box.onclick = () => toggleBit(i, box);
+    container.appendChild(box);
+  });
+  updateDecimal();
+}
+
+function toggleBit(i, el) {
+  bitState[i] = bitState[i] ? 0 : 1;
+  el.className = 'bit-box ' + (bitState[i] ? 'on' : 'off');
+  el.textContent = bitState[i];
+  el.classList.add('bit-flip');
+  setTimeout(() => el.classList.remove('bit-flip'), 350);
+  updateDecimal();
+  floatParticle(el, bitState[i] ? '💡' : '💤');
+}
+
+function updateDecimal() {
+  const val = parseInt(bitState.join(''), 2);
+  document.getElementById('decimalVal').textContent = val;
+  const ch = val >= 32 && val <= 126 ? String.fromCharCode(val) : '—';
+  document.getElementById('charVal').textContent = ch === '—' ? `nilai ${val}` : `"${ch}"`;
+}
+
+function allBitsOff() {
+  bitState.fill(0);
+  renderInteractiveBits();
+}
+
+function allBitsOn() {
+  bitState.fill(1);
+  renderInteractiveBits();
+  spawnConfetti();
+}
+
+function setLetter(ch) {
+  const code = ch.charCodeAt(0);
+  const bin = code.toString(2).padStart(8, '0');
+  bin.split('').forEach((b, i) => bitState[i] = parseInt(b));
+  renderInteractiveBits();
+  spawnConfetti();
+  document.getElementById('bitHint').innerHTML = `Huruf "${ch}" = nilai ${code} = <span style="color:var(--cyan);">${bin}</span> dalam biner!`;
+}
+
+// ══════════════════════════════════════════
+// BYTE BUILDER (letter selector)
+// ══════════════════════════════════════════
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+let selectedLetter = 'A';
+
+function renderLetterSelector() {
+  const sel = document.getElementById('letterSelector');
+  sel.innerHTML = '';
+  letters.forEach(l => {
+    const btn = document.createElement('button');
+    btn.textContent = l;
+    btn.style.cssText = `
+      font-family:'Fredoka One',cursive;font-size:1rem;
+      padding:.35rem .6rem; border-radius:10px; cursor:pointer;
+      border:2px solid ${l === selectedLetter ? 'var(--lime)' : 'var(--border)'};
+      background:${l === selectedLetter ? 'rgba(163,230,53,.12)' : 'var(--card)'};
+      color:${l === selectedLetter ? 'var(--lime)' : '#94a3b8'};
+      transition:all .15s ease;
+      box-shadow:${l === selectedLetter ? '0 0 8px rgba(163,230,53,.3)' : 'none'};
+    `;
+    btn.onclick = () => selectLetter(l);
+    sel.appendChild(btn);
+  });
+}
+
+function selectLetter(l) {
+  selectedLetter = l;
+  renderLetterSelector();
+  updateByteBuilder();
+}
+
+function updateByteBuilder() {
+  const code = selectedLetter.charCodeAt(0);
+  const bin = code.toString(2).padStart(8, '0');
+
+  document.getElementById('selectedLetterDisplay').textContent = selectedLetter;
+  document.getElementById('byteBuilderBin').textContent = bin;
+  document.getElementById('byteBuilderDec').textContent = code;
+  document.getElementById('byteBuilderChar').textContent = selectedLetter;
+
+  const container = document.getElementById('byteBitsDisplay');
+  container.innerHTML = '';
+  bin.split('').forEach((b, idx) => {
+    const box = document.createElement('div');
+    box.className = 'bit-box ' + (b === '1' ? 'on' : 'off');
+    box.style.cssText = 'width:40px;height:40px;font-size:1.25rem;';
+    box.textContent = b;
+    box.style.animationDelay = (idx * 0.05) + 's';
+    box.classList.add('brick-drop');
+    container.appendChild(box);
+  });
+}
+
+// ══════════════════════════════════════════
+// ASLAN BYTES
+// ══════════════════════════════════════════
+const aslanColors = ['var(--cyan)','var(--lime)','var(--yellow)','var(--pink)','var(--purple)'];
+function renderAslanBytes() {
+  const word = 'ASLAN';
+  const container = document.getElementById('aslanBytes');
+  container.innerHTML = '';
+  word.split('').forEach((ch, idx) => {
+    const code = ch.charCodeAt(0);
+    const bin = code.toString(2).padStart(8,'0');
+    const color = aslanColors[idx];
+
+    const row = document.createElement('div');
+    row.className = 'rounded-xl p-3 flex items-center gap-3 flex-wrap';
+    row.style.cssText = `background:rgba(255,255,255,.03);border:1.5px solid rgba(255,255,255,.07);`;
+    row.style.animationDelay = idx * .1 + 's';
+    row.innerHTML = `
+      <span style="font-family:'Fredoka One',cursive;font-size:2rem;color:${color};min-width:36px;text-align:center;">${ch}</span>
+      <span class="mono" style="font-size:.8rem;color:#475569;">= ${code} =</span>
+      <div class="flex gap-1 flex-wrap">
+        ${bin.split('').map(b => `<div class="bit-box ${b==='1'?'on':'off'}" style="width:32px;height:32px;font-size:1rem;border-color:${b==='1'?color:'var(--border)'}; ${b==='1'?`box-shadow:0 0 8px ${color};color:${color};`:''}">${b}</div>`).join('')}
+      </div>
+      <span class="tag-pill" style="background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);color:#64748b;">Byte ${idx+1}</span>
+    `;
+    container.appendChild(row);
+  });
+}
+
+// ══════════════════════════════════════════
+// SIZE STAIRS
+// ══════════════════════════════════════════
+const sizes = [
+  { name:'Bit',      val:'0 atau 1',      emoji:'💡', color:'var(--cyan)',   example:'Satu lampu nyala/mati',    width:15 },
+  { name:'Byte',     val:'8 Bit',          emoji:'🧱', color:'var(--lime)',   example:'Satu huruf "A"',           width:28 },
+  { name:'Kilobyte', val:'1.024 Byte',     emoji:'🎒', color:'var(--yellow)', example:'Satu pesan singkat',       width:43 },
+  { name:'Megabyte', val:'1.024 KB',       emoji:'📸', color:'var(--pink)',   example:'Satu foto kamera',         width:58 },
+  { name:'Gigabyte', val:'1.024 MB',       emoji:'🎬', color:'var(--purple)', example:'Satu film panjang',        width:75 },
+  { name:'Terabyte', val:'1.024 GB',       emoji:'🏗️', color:'var(--orange)', example:'Banyak sekali film!',      width:90 },
+];
+function renderSizeStairs() {
+  const container = document.getElementById('sizeStairs');
+  sizes.forEach((s, i) => {
+    const row = document.createElement('div');
+    row.className = 'flex items-center gap-3 slide-up';
+    row.style.animationDelay = i * .08 + 's';
+    row.innerHTML = `
+      <span class="text-2xl flex-shrink-0">${s.emoji}</span>
+      <div class="flex-1">
+        <div class="flex justify-between items-center mb-1">
+          <span style="font-family:'Fredoka One',cursive;font-size:.95rem;color:${s.color};">${s.name}</span>
+          <span class="mono text-xs" style="color:#64748b;">${s.val}</span>
+        </div>
+        <div style="background:#1e293b;border-radius:8px;height:20px;overflow:hidden;border:1.5px solid var(--border);">
+          <div style="width:${s.width}%;height:100%;background:${s.color};border-radius:6px;opacity:.7;transition:width 1s ease;box-shadow:0 0 6px ${s.color};"></div>
+        </div>
+        <p class="text-xs mt-1" style="color:#475569;">${s.example}</p>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+// ══════════════════════════════════════════
+// HALO TABLE
+// ══════════════════════════════════════════
+function renderHaloTable() {
+  const word = 'HALO';
+  const tbody = document.getElementById('haloTable');
+  tbody.innerHTML = '';
+  const colors = ['var(--cyan)','var(--lime)','var(--pink)','var(--yellow)'];
+  word.split('').forEach((ch, ri) => {
+    const code = ch.charCodeAt(0);
+    const bin = code.toString(2).padStart(8,'0');
+    const tr = document.createElement('tr');
+    // Letter cell
+    const td0 = document.createElement('td');
+    td0.style.cssText = `font-family:'Fredoka One',cursive;font-size:1.1rem;color:${colors[ri]};padding:4px 8px 4px 0;`;
+    td0.textContent = ch;
+    tr.appendChild(td0);
+    // Bit cells
+    bin.split('').forEach(b => {
+      const td = document.createElement('td');
+      td.style.cssText = `padding:3px;`;
+      const box = document.createElement('div');
+      box.className = 'bit-box ' + (b === '1' ? 'on' : 'off');
+      box.style.cssText = `width:28px;height:28px;font-size:.9rem;pointer-events:none;${b==='1'?`border-color:${colors[ri]};color:${colors[ri]};box-shadow:0 0 6px ${colors[ri]};`:''}`;
+      box.textContent = b;
+      td.appendChild(box);
+      tr.appendChild(td);
+    });
+    // Decimal label
+    const tdD = document.createElement('td');
+    tdD.style.cssText = `font-family:'VT323',monospace;font-size:1rem;color:#475569;padding-left:6px;`;
+    tdD.textContent = `= ${code}`;
+    tr.appendChild(tdD);
+    tbody.appendChild(tr);
+  });
+}
+
+// ══════════════════════════════════════════
+// CUSTOM BYTES (name input)
+// ══════════════════════════════════════════
+function updateCustomBytes() {
+  const text = document.getElementById('nameInput').value.toUpperCase();
+  const container = document.getElementById('customBytesDisplay');
+  if (!text) { container.innerHTML = ''; return; }
+  container.innerHTML = '';
+  const colors = ['var(--cyan)','var(--lime)','var(--yellow)','var(--pink)','var(--purple)','var(--orange)','var(--cyan)','var(--lime)'];
+  text.split('').slice(0, 8).forEach((ch, i) => {
+    const code = ch.charCodeAt(0);
+    const bin = code.toString(2).padStart(8, '0');
+    const color = colors[i % colors.length];
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;';
+    row.innerHTML = `
+      <span style="font-family:'Fredoka One',cursive;font-size:1.4rem;color:${color};min-width:28px;">${ch}</span>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        ${bin.split('').map(b => `<div class="bit-box ${b==='1'?'on':'off'}" style="width:28px;height:28px;font-size:.85rem;${b==='1'?`border-color:${color};color:${color};box-shadow:0 0 5px ${color};`:''}">${b}</div>`).join('')}
+      </div>
+      <span class="mono" style="font-size:.85rem;color:#475569;">${code}</span>
+    `;
+    container.appendChild(row);
+  });
+}
+
+// ══════════════════════════════════════════
+// CONFETTI
+// ══════════════════════════════════════════
+function spawnConfetti() {
+  const colors = ['#22d3ee','#a3e635','#facc15','#f472b6','#a78bfa','#fb923c'];
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `
+      left:${15 + Math.random() * 70}%;
+      top:${10 + Math.random() * 30}%;
+      background:${colors[Math.floor(Math.random() * colors.length)]};
+      --tx:${(Math.random() - .5) * 300}px;
+      --ty:${-60 - Math.random() * 170}px;
+      animation-delay:${Math.random() * .5}s;
+      border-radius:${Math.random() > .5 ? '50%' : '3px'};
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1600);
+  }
+}
+
+function spawnConfettiSmall(el) {
+  const colors = ['#22d3ee','#a3e635','#facc15','#f472b6'];
+  const rect = el.getBoundingClientRect();
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `
+      left:${rect.left + rect.width * .5}px;
+      top:${rect.top + window.scrollY * .2}px;
+      background:${colors[Math.floor(Math.random() * colors.length)]};
+      --tx:${(Math.random() - .5) * 160}px;
+      --ty:${-30 - Math.random() * 110}px;
+      animation-delay:${Math.random() * .25}s;
+      position:fixed;
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1400);
+  }
+}
+
+function floatParticle(el, emoji) {
+  const rect = el.getBoundingClientRect();
+  const f = document.createElement('div');
+  f.className = 'float-up';
+  f.textContent = emoji;
+  f.style.cssText = `
+    position:fixed;
+    left:${rect.left + rect.width / 2 - 10}px;
+    top:${rect.top - 10}px;
+    font-size:1.2rem;
+    pointer-events:none;
+    z-index:200;
+  `;
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 900);
+}
+
+// ══════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════
+let qAnswered = {1:false, 2:false, 3:false};
+let qScore = 0;
+
+function ans(n, correct, btn) {
+  if (qAnswered[n]) return;
+  qAnswered[n] = true;
+  const btns = btn.closest('#q' + n).querySelectorAll('.qbtn');
+  btns.forEach(b => b.disabled = true);
+  const r = document.getElementById('q' + n + 'r');
+  r.classList.remove('hidden');
+
+  if (correct === 'a') {
+    qScore++;
+    btn.style.background = 'rgba(163,230,53,.12)';
+    btn.style.borderColor = 'var(--lime)';
+    btn.style.color = 'var(--lime)';
+    r.style.color = 'var(--lime)';
+    r.textContent = '✅ Betul banget! Kamu jenius! 🌟';
+    spawnConfettiSmall(btn);
+  } else {
+    btn.style.background = 'rgba(239,68,68,.08)';
+    btn.style.borderColor = '#ef4444';
+    btn.style.color = '#ef4444';
+    r.style.color = '#f87171';
+    if (n === 1) r.textContent = '❌ Jawabannya B – 1 Byte = 8 bit! 🔢';
+    if (n === 2) r.textContent = '❌ Jawabannya B – Bit hanya 0 atau 1! 💡';
+    if (n === 3) r.textContent = '❌ Jawabannya C – H+A+L+O = 4 huruf = 4 Byte! 📝';
+  }
+
+  if (Object.values(qAnswered).every(v => v)) {
+    setTimeout(() => {
+      const f = document.getElementById('quizFinal');
+      f.classList.remove('hidden');
+      f.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const e = document.getElementById('qfEmoji'), t = document.getElementById('qfText'), s = document.getElementById('qfSub');
+      if (qScore === 3) {
+        e.textContent = '🏆'; t.textContent = 'Sempurna! 3/3 – Kamu master Bit & Byte!';
+        t.style.color = 'var(--yellow)'; s.textContent = '01001011 01000101 01010010 01000101 01001110 = KEREN! 🔥';
+        spawnConfetti();
+      } else if (qScore === 2) {
+        e.textContent = '⭐'; t.textContent = 'Bagus! 2/3 Benar!';
+        t.style.color = 'var(--cyan)'; s.textContent = 'Hampir sempurna! Baca ulang sekali lagi ya!';
+      } else {
+        e.textContent = '💪'; t.textContent = `${qScore}/3 – Ayo semangat!`;
+        t.style.color = 'var(--purple)'; s.textContent = 'Scroll ke atas dan pelajari lagi, kamu pasti bisa!';
+      }
+    }, 400);
+  }
+}
+
+// ══════════════════════════════════════════
+// ACTIVITY CHECKLIST
+// ══════════════════════════════════════════
+let actDone = 0;
+function actCheck(n) {
+  const el = document.getElementById('ac' + n);
+  const cb = document.getElementById('cb' + n);
+  const span = document.getElementById('ac' + n + 't');
+  cb.checked = !cb.checked;
+  if (cb.checked) {
+    actDone++;
+    el.classList.add('done');
+    span.style.textDecoration = 'line-through';
+    span.style.opacity = '.5';
+  } else {
+    actDone--;
+    el.classList.remove('done');
+    span.style.textDecoration = '';
+    span.style.opacity = '';
+  }
+  if (actDone >= 4) {
+    document.getElementById('actDone').classList.remove('hidden');
+    spawnConfetti();
+  } else {
+    document.getElementById('actDone').classList.add('hidden');
+  }
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+renderInteractiveBits();
+renderLetterSelector();
+updateByteBuilder();
+renderAslanBytes();
+renderSizeStairs();
+renderHaloTable();
+</script>
+</body>
+</html>

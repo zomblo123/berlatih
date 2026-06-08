@@ -1,0 +1,1132 @@
+ <!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petualangan Aslan di Negeri AI – Hari 8: Deep Blue!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --biru-tua: #0D2B6E;
+      --biru:     #1565C0;
+      --biru-mid: #1976D2;
+      --biru-muda:#42A5F5;
+      --biru-pale:#E3F2FD;
+      --merah:    #C62828;
+      --merah-mid:#E53935;
+      --emas:     #FFD600;
+      --emas-mid: #FFC107;
+      --putih:    #FFFFFF;
+      --bg:       #EBF3FD;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      background-image:
+        radial-gradient(circle at 10% 15%, rgba(21,101,192,0.12) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(255,214,0,0.10) 0%, transparent 50%),
+        repeating-conic-gradient(rgba(21,101,192,0.04) 0% 25%, transparent 0% 50%) 0 0 / 48px 48px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .font-kartun { font-family: 'Fredoka One', cursive; }
+
+    /* ---- FLOATING BG ---- */
+    .shapes-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .shape {
+      position: absolute;
+      animation: floatUp linear infinite;
+      opacity: 0.12;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      8%   { opacity: 0.12; }
+      92%  { opacity: 0.12; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ---- TOP BACK LINK ---- */
+    .top-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      padding: 8px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      border: 2px solid rgba(255,255,255,0.45);
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    }
+    .top-back-link:hover { background: rgba(255,255,255,0.40); transform: translateX(-3px); }
+
+    /* ---- HEADER ---- */
+    .header-bar {
+      background: linear-gradient(135deg, #0D2B6E 0%, #1565C0 40%, #1E88E5 70%, #42A5F5 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .header-bar::before {
+      content:'';
+      position: absolute; inset: 0;
+      background: repeating-conic-gradient(rgba(255,255,255,0.06) 0% 25%, transparent 0% 50%) 0 0 / 32px 32px;
+    }
+    .header-bar::after {
+      content:'';
+      position: absolute; bottom: -2px; left: 0; right: 0; height: 6px;
+      background: linear-gradient(90deg, #FFD600, #C62828, #FFD600, #C62828, #FFD600);
+    }
+
+    .badge-hari {
+      background: var(--emas);
+      color: var(--biru-tua);
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      padding: 4px 18px;
+      border-radius: 999px;
+      display: inline-block;
+      box-shadow: 0 4px 0 #b8860b;
+      animation: bounceIn 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes bounceIn {
+      0%   { transform: scale(0.3); opacity: 0; }
+      60%  { transform: scale(1.14); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .judul-header {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2rem, 6.5vw, 4rem);
+      color: #fff;
+      text-shadow: 0 5px 0 #0D2B6E, 0 8px 20px rgba(0,0,0,0.4);
+      letter-spacing: 1px;
+      animation: slideDown 0.7s ease both 0.2s;
+    }
+    .subtitle-header {
+      font-size: clamp(0.9rem, 2.5vw, 1.25rem);
+      color: #BBDEFB;
+      animation: slideDown 0.7s ease both 0.4s;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-40px); opacity: 0; }
+      to   { transform: translateY(0);     opacity: 1; }
+    }
+
+    /* ---- CARDS ---- */
+    .card {
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 8px 32px rgba(21,101,192,0.12), 0 2px 8px rgba(0,0,0,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before { content:''; position: absolute; top:0; left:0; right:0; height:5px; }
+    .card-blue::before    { background: linear-gradient(90deg, #1565C0, #42A5F5); }
+    .card-red::before     { background: linear-gradient(90deg, #C62828, #EF9A9A); }
+    .card-gold::before    { background: linear-gradient(90deg, #FFD600, #FFA000); }
+    .card-purple::before  { background: linear-gradient(90deg, #6A1B9A, #CE93D8); }
+    .card-green::before   { background: linear-gradient(90deg, #2E7D32, #81C784); }
+    .card-chess::before   { background: repeating-linear-gradient(90deg,#0D2B6E 0,#0D2B6E 20px,#FFD600 20px,#FFD600 40px); }
+
+    /* ---- REVEAL ---- */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ---- ARENA ILLUSTRATION ---- */
+    .arena-wrap {
+      background: linear-gradient(135deg, #0D2B6E 0%, #1565C0 60%, #C62828 100%);
+      border-radius: 24px;
+      padding: 28px 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 16px 50px rgba(13,43,110,0.35);
+    }
+    .arena-wrap::before {
+      content:'';
+      position: absolute; inset:0;
+      background: repeating-conic-gradient(rgba(255,255,255,0.05) 0% 25%, transparent 0% 50%) 0 0 / 28px 28px;
+    }
+    .arena-title {
+      font-family: 'Fredoka One', cursive;
+      color: var(--emas);
+      font-size: clamp(1.3rem,4vw,2.2rem);
+      text-shadow: 0 3px 10px rgba(0,0,0,0.4);
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .vs-badge {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2rem,6vw,3.5rem);
+      color: #fff;
+      text-shadow: 0 4px 0 #C62828, 0 8px 20px rgba(0,0,0,0.5);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.12);} }
+
+    .fighter-box {
+      background: rgba(255,255,255,0.12);
+      border-radius: 20px;
+      border: 2px solid rgba(255,255,255,0.25);
+      backdrop-filter: blur(6px);
+      padding: 16px 12px;
+      text-align: center;
+      flex: 1;
+    }
+    .fighter-emoji { font-size: clamp(3rem,9vw,5rem); display:block; line-height:1.1; }
+    .fighter-name {
+      font-family: 'Fredoka One', cursive;
+      color: #fff;
+      font-size: clamp(0.85rem,2.5vw,1.1rem);
+      text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      margin-top:6px;
+    }
+    .fighter-stat {
+      font-size: 0.72rem;
+      color: #BBDEFB;
+      font-weight: 700;
+      margin-top:4px;
+    }
+    .winner-glow { box-shadow: 0 0 28px 8px rgba(255,214,0,0.6); border-color: var(--emas) !important; }
+
+    .score-board {
+      background: rgba(0,0,0,0.45);
+      border-radius: 14px;
+      padding: 10px 20px;
+      font-family: 'Fredoka One', cursive;
+      color: #fff;
+      letter-spacing: 2px;
+      font-size: clamp(1.1rem,4vw,1.8rem);
+      text-align: center;
+      border: 2px solid rgba(255,214,0,0.4);
+      margin-top: 8px;
+    }
+
+    .aslan-robo-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 18px;
+      position: relative;
+      z-index: 2;
+    }
+    .aslan-char { font-size: clamp(2.2rem,6vw,3.5rem); animation: bounce 1.5s ease-in-out infinite; }
+    .robo-char  { font-size: clamp(1.8rem,5vw,3rem); animation: bounce 1.5s ease-in-out infinite 0.4s; }
+    @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-12px);} }
+
+    .speech-bubble {
+      background: rgba(255,255,255,0.95);
+      border-radius: 18px 18px 18px 4px;
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #0D2B6E;
+      position: relative;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+      max-width: 160px;
+      text-align: center;
+    }
+
+    /* ---- STORY ---- */
+    .story-text {
+      font-size: clamp(1.05rem,2.5vw,1.2rem);
+      line-height: 2;
+      color: #37474F;
+      font-weight: 600;
+    }
+    .hl-gold {
+      background: linear-gradient(120deg,#FFF176 0%,#FFD600 100%);
+      padding: 2px 8px; border-radius: 8px;
+      color: #0D2B6E; font-weight: 800;
+    }
+    .hl-blue {
+      background: linear-gradient(120deg,#BBDEFB 0%,#42A5F5 100%);
+      padding: 2px 8px; border-radius: 8px;
+      color: #0D2B6E; font-weight: 800;
+    }
+    .hl-red {
+      background: linear-gradient(120deg,#FFCDD2 0%,#E57373 100%);
+      padding: 2px 8px; border-radius: 8px;
+      color: #B71C1C; font-weight: 800;
+    }
+    .drop-cap::first-letter {
+      font-family: 'Fredoka One', cursive;
+      font-size: 3.8rem;
+      color: var(--biru);
+      float: left;
+      line-height: 1;
+      margin-right: 8px;
+      margin-top: 4px;
+      text-shadow: 0 4px 0 #BBDEFB;
+    }
+
+    /* ---- ANALOGI ---- */
+    .analogi-box {
+      background: linear-gradient(135deg,#FFF9C4,#FFF176);
+      border: 3px dashed #FFD600;
+      border-radius: 22px;
+      padding: 20px 24px;
+      position: relative;
+    }
+    .analogi-box::before {
+      content:'💡';
+      position: absolute; top:-18px; left:50%; transform:translateX(-50%);
+      font-size:2rem;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    }
+
+    /* ---- KOMIK STRIP ---- */
+    .komik-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (min-width: 640px) {
+      .komik-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .panel {
+      border-radius: 18px;
+      overflow: hidden;
+      border: 3px solid #0D2B6E;
+      background: #fff;
+      box-shadow: 4px 4px 0 #0D2B6E;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .panel:hover { transform: scale(1.04) rotate(-1deg); box-shadow: 6px 6px 0 #C62828; }
+    .panel-scene {
+      padding: 14px 10px 8px;
+      text-align: center;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .panel-num {
+      position: absolute; top:6px; left:8px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.8rem;
+      background: #0D2B6E;
+      color: #FFD600;
+      width:22px; height:22px;
+      border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .panel-caption {
+      background: #0D2B6E;
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 7px 8px;
+      text-align: center;
+      line-height: 1.4;
+    }
+    .panel-emoji-big { font-size: 2.8rem; line-height: 1.15; }
+    .panel-emoji-sm  { font-size: 1.5rem; }
+
+    /* ---- FAKTA KEREN ---- */
+    .fakta-grid {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 12px;
+    }
+    @media(min-width:600px){ .fakta-grid{ grid-template-columns: repeat(3,1fr); } }
+    .fakta-card {
+      border-radius: 18px;
+      padding: 16px 12px;
+      text-align: center;
+      border: 3px solid transparent;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      transition: transform 0.2s;
+    }
+    .fakta-card:hover { transform: translateY(-4px); }
+    .fakta-num {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.9rem;
+      line-height: 1.1;
+    }
+    .fakta-label { font-size: 0.78rem; font-weight: 800; margin-top:4px; line-height:1.4; }
+
+    /* ---- MINI CHART BAR ---- */
+    .bar-wrap { display:flex; align-items:flex-end; gap:8px; justify-content:center; margin:10px 0; }
+    .bar-item { display:flex; flex-direction:column; align-items:center; gap:4px; }
+    .bar {
+      border-radius: 6px 6px 0 0;
+      width: 38px;
+      transition: height 1s ease;
+      position: relative;
+    }
+    .bar-label { font-size: 0.68rem; font-weight:800; color:#37474F; text-align:center; max-width:48px; }
+    .bar-val {
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.9rem;
+      color: #0D2B6E;
+    }
+
+    /* ---- QUIZ ---- */
+    .quiz-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 2.5px solid #BBDEFB;
+      background: #fff;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #37474F;
+      text-align: left;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .quiz-option:hover { border-color: #1565C0; background: #E3F2FD; transform: scale(1.02); }
+    .quiz-option.correct { background:#E8F5E9; border-color:#43A047; color:#2E7D32; }
+    .quiz-option.wrong   { background:#FFEBEE; border-color:#E53935; color:#C62828; }
+    .quiz-result {
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    /* ---- OPEN QUESTION ---- */
+    .open-q-wrap {
+      background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+      border: 3px solid #1565C0;
+      border-radius: 22px;
+      padding: 20px;
+    }
+    .open-q-input {
+      width: 100%;
+      border: 2.5px solid #90CAF9;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #37474F;
+      resize: vertical;
+      min-height: 90px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .open-q-input:focus { border-color: #1565C0; }
+    .send-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg,#1565C0,#42A5F5);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      padding: 10px 24px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #0D2B6E;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .send-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #0D2B6E; }
+    .send-btn:active{ transform: translateY(2px);  box-shadow: 0 2px 0 #0D2B6E; }
+    .open-response {
+      display: none;
+      border-radius: 16px;
+      padding: 14px 18px;
+      background: linear-gradient(135deg,#0D2B6E,#1565C0);
+      color:#fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      margin-top: 12px;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    /* ---- NEXT BTN ---- */
+    .next-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #C62828 0%, #E53935 50%, #FF5252 100%);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(1.1rem,3vw,1.5rem);
+      padding: 18px 40px;
+      border-radius: 999px;
+      text-decoration: none;
+      box-shadow: 0 8px 0 #7F0000, 0 12px 28px rgba(198,40,40,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      animation: nextPulse 2s ease-in-out infinite;
+      border: 3px solid rgba(255,255,255,0.3);
+    }
+    .next-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 0 #7F0000, 0 18px 36px rgba(198,40,40,0.5);
+    }
+    .next-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 4px 0 #7F0000;
+    }
+    @keyframes nextPulse {
+      0%,100%{ box-shadow: 0 8px 0 #7F0000, 0 12px 28px rgba(198,40,40,0.4); }
+      50%    { box-shadow: 0 8px 0 #7F0000, 0 12px 40px rgba(198,40,40,0.7); }
+    }
+
+    /* ---- DIVIDER ---- */
+    .divider {
+      text-align: center;
+      color: #90CAF9;
+      font-size: 1.3rem;
+      letter-spacing: 8px;
+      margin: 4px 0;
+      font-weight: 800;
+    }
+
+    /* ---- SPARKLE ---- */
+    .sparkle { animation: sparkleAnim 1.8s ease-in-out infinite; }
+    @keyframes sparkleAnim { 0%,100%{transform:scale(1) rotate(0deg);} 50%{transform:scale(1.18) rotate(12deg);} }
+
+    /* ---- MASCOT FLOAT ---- */
+    .mascot-float { animation: mascotFloat 3s ease-in-out infinite; }
+    @keyframes mascotFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-14px);} }
+
+    /* ---- TROPHY SPIN ---- */
+    .trophy { animation: trophySpin 2.5s ease-in-out infinite; }
+    @keyframes trophySpin { 0%,100%{transform:rotate(-8deg) scale(1);} 50%{transform:rotate(8deg) scale(1.12);} }
+
+    /* ---- TIMELINE ---- */
+    .timeline { position:relative; padding-left:28px; }
+    .timeline::before {
+      content:'';
+      position:absolute; left:9px; top:0; bottom:0; width:3px;
+      background: linear-gradient(to bottom,#1565C0,#42A5F5,#FFD600);
+      border-radius:3px;
+    }
+    .timeline-item { position:relative; margin-bottom:20px; }
+    .timeline-dot {
+      position:absolute; left:-28px; top:4px;
+      width:24px; height:24px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.85rem; border:2px solid #fff;
+      box-shadow:0 2px 8px rgba(0,0,0,0.2);
+    }
+    .timeline-year {
+      font-family:'Fredoka One',cursive;
+      font-size:0.9rem;
+      margin-bottom:4px;
+    }
+
+    /* ---- GLOW ---- */
+    .glow-gold { text-shadow: 0 0 20px rgba(255,214,0,0.8), 0 0 40px rgba(255,214,0,0.4); }
+    .glow-blue { text-shadow: 0 0 20px rgba(66,165,245,0.8), 0 0 40px rgba(66,165,245,0.4); }
+
+    /* ---- SCORE COUNTER ---- */
+    .score-counter {
+      font-family:'Fredoka One',cursive;
+      font-size:3.5rem;
+      animation: scoreAnim 0.8s ease both;
+    }
+    @keyframes scoreAnim {
+      0% { transform:scale(0.3) rotate(-20deg); opacity:0; }
+      70%{ transform:scale(1.15) rotate(5deg); }
+      100%{ transform:scale(1) rotate(0); opacity:1; }
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media(max-width:640px){
+      .fighter-box{ padding:12px 8px; }
+      .fakta-grid{ grid-template-columns:repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== FLOATING BACKGROUND ===== -->
+<div class="shapes-bg" id="shapesBg"></div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="relative z-10 max-w-2xl mx-auto px-4 pb-16">
+
+  <!-- ===== HEADER ===== -->
+  <div class="header-bar -mx-4 px-6 pt-5 pb-10 mb-6 text-center">
+    <div class="text-left mb-4">
+      <a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+    </div>
+    <div class="badge-hari mb-3">⚔️ HARI 8 dari 30</div>
+    <h1 class="judul-header mb-2">
+      Hari 8: Deep Blue<br/>Mengalahkan Manusia di Catur! ♟️
+    </h1>
+    <p class="subtitle-header">
+      🤖 vs 🧑 — Pertandingan Terbesar Abad Ini!
+    </p>
+  </div>
+
+  <!-- ===== ARENA ILLUSTRATION ===== -->
+  <div class="reveal arena-wrap mb-6">
+    <div class="arena-title mb-4">🏟️ ARENA CATUR DUNIA — NEW YORK, 1997 🏟️</div>
+    <div class="flex items-stretch gap-4 relative z-10">
+      <!-- Kasparov -->
+      <div class="fighter-box">
+        <span class="fighter-emoji">🧑‍💼</span>
+        <div class="fighter-name">Garry Kasparov</div>
+        <div class="fighter-stat">🌍 Juara Dunia #1<br/>No. 1 selama 20 tahun!</div>
+      </div>
+      <!-- VS -->
+      <div class="flex flex-col items-center justify-center px-2">
+        <div class="vs-badge">VS</div>
+        <div class="score-board">3½ – 2½</div>
+        <div style="font-family:'Fredoka One',cursive;color:var(--emas);font-size:0.85rem;margin-top:6px;">DEEP BLUE MENANG! 🏆</div>
+      </div>
+      <!-- Deep Blue -->
+      <div class="fighter-box winner-glow">
+        <span class="fighter-emoji">🤖</span>
+        <div class="fighter-name">Deep Blue</div>
+        <div class="fighter-stat">💻 Komputer IBM<br/>200 juta posisi/detik!</div>
+      </div>
+    </div>
+    <!-- Aslan & Robo nonton -->
+    <div class="aslan-robo-row">
+      <div class="text-center">
+        <span class="aslan-char">🧒🎒</span>
+        <div class="speech-bubble mt-2" style="border-radius:18px 18px 4px 18px;">Waaah! Luar biasa! 😱</div>
+      </div>
+      <div style="font-size:2rem;padding-bottom:8px;">🍿</div>
+      <div class="text-center">
+        <span class="robo-char">🤖✨</span>
+        <div class="speech-bubble mt-2">AI bisa menang! 🎉</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CERITA UTAMA ===== -->
+  <div class="reveal card card-blue p-6 mb-6">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-3xl sparkle">📖</span>
+      <h2 class="font-kartun text-2xl md:text-3xl text-blue-700">Apa yang Terjadi?</h2>
+    </div>
+    <p class="story-text drop-cap">
+      Bayangkan kamu <span class="hl-gold">jagoan catur terhebat di dunia</span> — tidak ada yang bisa mengalahkanmu!
+      Itulah Garry Kasparov. Selama bertahun-tahun, dia adalah raja catur dunia yang tak terkalahkan. 👑
+    </p>
+    <p class="story-text mt-4">
+      Tapi pada tahun <span class="hl-blue">1997</span>, sebuah komputer raksasa bernama <span class="hl-blue">Deep Blue</span>
+      buatan IBM menantangnya! Deep Blue bukan sekadar komputer biasa —
+      dia bisa menganalisis <span class="hl-gold">200 juta posisi catur hanya dalam SATU detik!</span> ⚡
+    </p>
+    <p class="story-text mt-4">
+      Dalam pertandingan 6 game yang mendebarkan, Deep Blue berhasil menang dengan skor
+      <span class="hl-red">3½ berbanding 2½</span>. Seluruh dunia terkejut! 🌍
+      Untuk pertama kalinya dalam sejarah, <span class="hl-gold">mesin berhasil mengalahkan juara catur dunia!</span>
+      Ini adalah momen bersejarah yang mengubah dunia AI selamanya! 🚀
+    </p>
+  </div>
+
+  <!-- ===== ANALOGI LUCU ===== -->
+  <div class="reveal mb-6 pt-4">
+    <div class="analogi-box mt-6">
+      <div class="font-kartun text-2xl text-yellow-700 text-center mb-3">Analogi Lucu dari Robo! 🤖</div>
+      <div class="flex items-start gap-3">
+        <span class="text-4xl flex-shrink-0">🤖</span>
+        <p class="story-text text-yellow-800">
+          "Bayangkan kamu adalah <span style="font-weight:900;">murid terpintar di sekolah</span> yang selalu juara olimpiade catur! 🏆
+          Tiba-tiba muncul teman baru yang belajar catur setiap detik, siang dan malam, tanpa tidur, tanpa bosen,
+          dan bisa ingat <span style="font-weight:900;">SEMUA kemungkinan gerakan</span> yang pernah ada!
+          Itulah Deep Blue — seperti teman yang belajar lebih rajin dari siapapun di dunia! 📚⚡"
+        </p>
+      </div>
+      <div class="text-center mt-3">
+        <span class="text-2xl">♟️🤖📚⚡🏆</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">♟️ ♟️ ♟️</div>
+
+  <!-- ===== KOMIK STRIP ===== -->
+  <div class="reveal card card-chess p-6 mb-6 mt-4">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-3xl sparkle">🎨</span>
+      <h2 class="font-kartun text-2xl md:text-3xl text-blue-900">Komik Strip: Pertandingan Abad Ini!</h2>
+    </div>
+    <div class="komik-grid">
+
+      <!-- Panel 1 -->
+      <div class="panel">
+        <div class="panel-num">1</div>
+        <div class="panel-scene" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);">
+          <div class="panel-emoji-big">🧑‍💼</div>
+          <div style="font-size:1.3rem;margin-top:4px;">♟️♟️♟️</div>
+          <div class="speech-bubble mt-2" style="font-size:0.68rem;">
+            "Aku sudah 20 tahun jadi juara! Tak ada yang bisa mengalahkanku!" 😤
+          </div>
+        </div>
+        <div class="panel-caption">Kasparov, sang juara catur dunia yang tak terkalahkan!</div>
+      </div>
+
+      <!-- Panel 2 -->
+      <div class="panel">
+        <div class="panel-num">2</div>
+        <div class="panel-scene" style="background:linear-gradient(135deg,#0D2B6E,#1565C0);">
+          <div class="panel-emoji-big" style="filter:drop-shadow(0 0 12px #FFD600);">🖥️</div>
+          <div style="font-size:1rem;color:#FFD600;font-weight:900;font-family:'Fredoka One',cursive;margin-top:4px;">
+            DEEP BLUE
+          </div>
+          <div style="font-size:0.65rem;color:#BBDEFB;font-weight:800;margin-top:4px;text-align:center;">
+            ⚡ 200 juta posisi/detik<br/>💾 IBM Supercomputer
+          </div>
+        </div>
+        <div class="panel-caption" style="background:#0D2B6E;">Deep Blue siap bertanding! Komputer super dari IBM! 💻</div>
+      </div>
+
+      <!-- Panel 3 -->
+      <div class="panel">
+        <div class="panel-num">3</div>
+        <div class="panel-scene" style="background:linear-gradient(135deg,#FFF9C4,#FFD600);">
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
+            <span class="panel-emoji-sm">🧑‍💼</span>
+            <div style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:#C62828;">VS</div>
+            <span class="panel-emoji-sm">🖥️</span>
+          </div>
+          <div style="font-size:0.7rem;font-weight:900;color:#0D2B6E;text-align:center;margin-top:8px;">
+            6 game dimainkan!<br/>♟️♟️♟️♟️♟️♟️<br/>Seluruh dunia menonton!
+          </div>
+        </div>
+        <div class="panel-caption" style="background:#b8860b;">Pertandingan dimulai! New York, Mei 1997! 🌍</div>
+      </div>
+
+      <!-- Panel 4 -->
+      <div class="panel">
+        <div class="panel-num">4</div>
+        <div class="panel-scene" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">
+          <div class="panel-emoji-big trophy">🏆</div>
+          <div style="font-size:0.72rem;font-weight:900;color:#1B5E20;text-align:center;margin-top:8px;">
+            DEEP BLUE MENANG! 🎉<br/>Skor: 3½ – 2½<br/>Sejarah baru dimulai!
+          </div>
+        </div>
+        <div class="panel-caption" style="background:#2E7D32;">
+          🎊 Deep Blue juara! AI pertama yang kalahkan manusia di catur dunia!
+        </div>
+      </div>
+
+    </div>
+    <p class="text-center text-blue-600 font-bold text-xs mt-3">
+      👆 Klik panel untuk efek kejutan!
+    </p>
+  </div>
+
+  <!-- ===== FAKTA KEREN ===== -->
+  <div class="reveal card card-gold p-6 mb-6">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-3xl sparkle">🌟</span>
+      <h2 class="font-kartun text-2xl md:text-3xl text-yellow-700">Fakta Keren Deep Blue! ⚡</h2>
+    </div>
+    <div class="fakta-grid">
+
+      <div class="fakta-card" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-color:#1565C0;">
+        <span style="font-size:2rem;">⚡</span>
+        <div class="fakta-num text-blue-700">200 Juta</div>
+        <div class="fakta-label text-blue-600">Posisi catur per detik yang bisa dianalisis!</div>
+      </div>
+
+      <div class="fakta-card" style="background:linear-gradient(135deg,#FFF9C4,#FFE082);border-color:#FFD600;">
+        <span style="font-size:2rem;">📅</span>
+        <div class="fakta-num text-yellow-700">1997</div>
+        <div class="fakta-label text-yellow-600">Tahun bersejarah Deep Blue menang!</div>
+      </div>
+
+      <div class="fakta-card" style="background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border-color:#E53935;">
+        <span style="font-size:2rem;">🎮</span>
+        <div class="fakta-num text-red-700">6</div>
+        <div class="fakta-label text-red-600">Game yang dimainkan dalam pertandingan!</div>
+      </div>
+
+      <div class="fakta-card" style="background:linear-gradient(135deg,#F3E5F5,#E1BEE7);border-color:#7B1FA2;">
+        <span style="font-size:2rem;">🖥️</span>
+        <div class="fakta-num text-purple-700">IBM</div>
+        <div class="fakta-label text-purple-600">Perusahaan teknologi yang menciptakan Deep Blue!</div>
+      </div>
+
+      <div class="fakta-card" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-color:#388E3C;">
+        <span style="font-size:2rem;">🌍</span>
+        <div class="fakta-num text-green-700">Dunia</div>
+        <div class="fakta-label text-green-600">Seluruh dunia menyaksikan pertandingan bersejarah ini!</div>
+      </div>
+
+      <div class="fakta-card" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border-color:#F57C00;">
+        <span style="font-size:2rem;">🧠</span>
+        <div class="fakta-num text-orange-700">12 Langkah</div>
+        <div class="fakta-label text-orange-600">Deep Blue bisa hitung strategi 12 langkah ke depan!</div>
+      </div>
+
+    </div>
+
+    <!-- Mini bar chart -->
+    <div class="mt-5 p-4 rounded-2xl" style="background:#F9FAFB;border:2px dashed #E3F2FD;">
+      <div class="font-kartun text-lg text-blue-700 text-center mb-3">⚡ Siapa yang Lebih Cepat?</div>
+      <div class="bar-wrap" id="barChart">
+        <div class="bar-item">
+          <div class="bar-val" id="val1">0</div>
+          <div class="bar" id="bar1" style="height:0px;background:linear-gradient(to top,#1565C0,#42A5F5);"></div>
+          <div class="bar-label">🧑 Manusia<br/>(3/detik)</div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-val" id="val2">0</div>
+          <div class="bar" id="bar2" style="height:0px;background:linear-gradient(to top,#C62828,#FF5252);"></div>
+          <div class="bar-label">🖥️ Deep Blue<br/>(200 juta/dtk)</div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-val" id="val3">0</div>
+          <div class="bar" id="bar3" style="height:0px;background:linear-gradient(to top,#FFD600,#FFC107);"></div>
+          <div class="bar-label">🤖 AlphaZero<br/>(lebih cepat!)</div>
+        </div>
+      </div>
+      <p class="text-center text-xs font-bold text-gray-500 mt-2">📊 Perbandingan kecepatan analisis posisi catur</p>
+    </div>
+  </div>
+
+  <div class="divider">🏆 🏆 🏆</div>
+
+  <!-- ===== TIMELINE ===== -->
+  <div class="reveal card card-blue p-6 mb-6 mt-4">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-3xl sparkle">⏳</span>
+      <h2 class="font-kartun text-2xl md:text-3xl text-blue-700">Perjalanan AI Mengalahkan Catur!</h2>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:#388E3C;color:#fff;font-size:0.7rem;">✏️</div>
+        <div class="timeline-year text-green-700">1950 — Program Catur Pertama di Dunia!</div>
+        <p class="text-gray-600 text-sm font-semibold">
+          Alan Turing menulis program catur di atas <strong>kertas</strong> karena komputer belum ada!
+          Dia melakukan simulasi manual — bayangkan betapa sabarnya! 😅
+        </p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:#7B1FA2;color:#fff;font-size:0.7rem;">💾</div>
+        <div class="timeline-year text-purple-700">1988 — Deep Thought Kalahkan Grandmaster!</div>
+        <p class="text-gray-600 text-sm font-semibold">
+          Pendahulu Deep Blue bernama <strong>Deep Thought</strong> berhasil mengalahkan grandmaster catur
+          untuk pertama kali! Anak kecil Deep Blue sudah hebat! 💪
+        </p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:#1565C0;color:#FFD600;font-size:0.7rem;">🖥️</div>
+        <div class="timeline-year text-blue-700">1997 — Deep Blue Menang! SEJARAH! 🏆</div>
+        <p class="text-gray-600 text-sm font-semibold">
+          <strong>Deep Blue</strong> mengalahkan Garry Kasparov, juara catur dunia nomor 1!
+          Skor 3½–2½. Dunia terkejut — era baru AI dimulai! 🌍
+        </p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:#FFD600;color:#0D2B6E;font-size:0.7rem;">🌟</div>
+        <div class="timeline-year text-yellow-700">2017 — AlphaZero Belajar Sendiri dalam 4 Jam!</div>
+        <p class="text-gray-600 text-sm font-semibold">
+          AI dari Google bernama <strong>AlphaZero</strong> belajar catur dari nol dalam 4 jam
+          dan mengalahkan semua program catur yang ada! Gila! 🤯
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== KUIS INTERAKTIF ===== -->
+  <div class="reveal card card-blue p-6 mb-6">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-3xl sparkle">🧠</span>
+      <div>
+        <h2 class="font-kartun text-2xl md:text-3xl text-blue-700">Kuis untuk Aslan!</h2>
+        <p class="text-blue-500 font-bold text-sm">Seberapa tajam pikiranmu hari ini? 💡</p>
+      </div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="bg-blue-50 rounded-2xl p-5 mb-4 border-2 border-blue-200 mt-4" id="quiz1">
+      <p class="font-bold text-blue-700 text-base mb-1">❓ Pertanyaan 1 dari 3</p>
+      <p class="font-extrabold text-blue-900 text-base mb-4">
+        Pada tahun berapa Deep Blue mengalahkan Garry Kasparov? 📅
+      </p>
+      <div class="flex flex-col gap-3" id="q1-options">
+        <button class="quiz-option" onclick="jawab(this,'q1',false)"><span class="text-lg">🙅</span> <span>1990</span></button>
+        <button class="quiz-option" onclick="jawab(this,'q1',true)"><span class="text-lg">🤔</span> <span>1997</span></button>
+        <button class="quiz-option" onclick="jawab(this,'q1',false)"><span class="text-lg">😅</span> <span>2005</span></button>
+        <button class="quiz-option" onclick="jawab(this,'q1',false)"><span class="text-lg">🧐</span> <span>2017</span></button>
+      </div>
+      <div class="quiz-result mt-3" id="q1-result"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="bg-red-50 rounded-2xl p-5 mb-4 border-2 border-red-200" id="quiz2">
+      <p class="font-bold text-red-700 text-base mb-1">❓ Pertanyaan 2 dari 3</p>
+      <p class="font-extrabold text-red-900 text-base mb-4">
+        Berapa posisi catur yang bisa dianalisis Deep Blue dalam 1 detik? ⚡
+      </p>
+      <div class="flex flex-col gap-3" id="q2-options">
+        <button class="quiz-option" onclick="jawab(this,'q2',false)" style="border-color:#FFCDD2;"><span class="text-lg">🙅</span> <span>1.000 posisi</span></button>
+        <button class="quiz-option" onclick="jawab(this,'q2',false)" style="border-color:#FFCDD2;"><span class="text-lg">😅</span> <span>1 juta posisi</span></button>
+        <button class="quiz-option" onclick="jawab(this,'q2',true)" style="border-color:#FFCDD2;"><span class="text-lg">🤔</span> <span>200 juta posisi</span></button>
+        <button class="quiz-option" onclick="jawab(this,'q2',false)" style="border-color:#FFCDD2;"><span class="text-lg">🧐</span> <span>1 triliun posisi</span></button>
+      </div>
+      <div class="quiz-result mt-3" id="q2-result"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="bg-yellow-50 rounded-2xl p-5 border-2 border-yellow-200" id="quiz3">
+      <p class="font-bold text-yellow-700 text-base mb-1">❓ Pertanyaan 3 dari 3</p>
+      <p class="font-extrabold text-yellow-900 text-base mb-4">
+        Perusahaan apa yang membuat Deep Blue? 🏢
+      </p>
+      <div class="flex flex-col gap-3" id="q3-options">
+        <button class="quiz-option" onclick="jawab(this,'q3',false)" style="border-color:#FFF176;"><span class="text-lg">🙅</span> <span>Google</span></button>
+        <button class="quiz-option" onclick="jawab(this,'q3',false)" style="border-color:#FFF176;"><span class="text-lg">😅</span> <span>Microsoft</span></button>
+        <button class="quiz-option" onclick="jawab(this,'q3',true)" style="border-color:#FFF176;"><span class="text-lg">🤔</span> <span>IBM</span></button>
+        <button class="quiz-option" onclick="jawab(this,'q3',false)" style="border-color:#FFF176;"><span class="text-lg">🧐</span> <span>Apple</span></button>
+      </div>
+      <div class="quiz-result mt-3" id="q3-result"></div>
+    </div>
+
+    <!-- Skor -->
+    <div id="skor-area" class="hidden mt-5 text-center">
+      <div class="rounded-2xl p-5 text-white" style="background:linear-gradient(135deg,#0D2B6E,#1565C0);">
+        <div class="font-kartun text-3xl mb-1">🏆 Hasil Kuis Aslan!</div>
+        <div id="skor-text" class="font-bold text-xl"></div>
+        <div id="skor-pesan" class="font-semibold text-sm mt-1 opacity-90"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PERTANYAAN TERBUKA INTERAKTIF ===== -->
+  <div class="reveal card card-purple p-6 mb-6">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-3xl sparkle">💬</span>
+      <div>
+        <h2 class="font-kartun text-2xl md:text-3xl text-purple-700">Pertanyaan untuk Aslan! 🤔</h2>
+        <p class="text-purple-500 font-bold text-sm">Apa pendapat kamu?</p>
+      </div>
+    </div>
+    <div class="open-q-wrap">
+      <p class="font-extrabold text-blue-800 text-base mb-4">
+        🎮 <span class="hl-gold">Menurut Aslan</span>, bisakah AI mengalahkan manusia di game lain,
+        misalnya video game, basket, atau bahkan masak-memasak? Kenapa? 🤖🎯
+      </p>
+      <textarea
+        class="open-q-input"
+        id="openAnswer"
+        placeholder="Tulis jawabanmu di sini, Aslan! Tidak ada jawaban salah — semua ide kamu keren! 💡✨"
+      ></textarea>
+      <div class="text-right mt-3">
+        <button class="send-btn" onclick="kirimJawaban()">
+          Kirim Jawaban! 🚀
+        </button>
+      </div>
+      <div class="open-response" id="openResponse"></div>
+    </div>
+  </div>
+
+  <!-- ===== PESAN MOTIVASI ===== -->
+  <div class="reveal card card-chess p-6 mb-8 text-center" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);">
+    <span class="text-5xl mascot-float block mb-3">🤖</span>
+    <h3 class="font-kartun text-2xl text-blue-700 mb-2">Pesan dari Deep Blue untuk Aslan! 💌</h3>
+    <p class="text-blue-800 font-bold text-base leading-relaxed">
+      "Hei Aslan! Aku bisa menganalisis 200 juta posisi per detik,<br/>
+      tapi aku tidak bisa <span style="color:#0D2B6E;font-weight:900;">bermimpi, berkreasi, dan merasakan kegembiraan</span>.<br/>
+      Kamu punya sesuatu yang tidak aku punya — <span style="color:#C62828;font-weight:900;">imajinasi!</span><br/>
+      Manusia dan AI bisa bekerja sama — hasilnya bakal lebih keren! ♟️🤖❤️"
+    </p>
+    <div class="text-3xl mt-4">♟️💡🧒🤖🌟</div>
+  </div>
+
+  <!-- ===== PROGRESS DOTS ===== -->
+  <div class="text-center mb-6">
+    <div class="font-kartun text-blue-500 text-sm mb-2">Hari 8 dari 30</div>
+    <div class="flex justify-center gap-1 flex-wrap">
+      <span id="d1"  class="w-3 h-3 rounded-full inline-block" style="background:#1565C0;"></span>
+      <span id="d2"  class="w-3 h-3 rounded-full inline-block" style="background:#1565C0;"></span>
+      <span id="d3"  class="w-3 h-3 rounded-full inline-block" style="background:#1565C0;"></span>
+      <span id="d4"  class="w-3 h-3 rounded-full inline-block" style="background:#1565C0;"></span>
+      <span id="d5"  class="w-3 h-3 rounded-full inline-block" style="background:#1565C0;"></span>
+      <span id="d6"  class="w-3 h-3 rounded-full inline-block" style="background:#1565C0;"></span>
+      <span id="d7"  class="w-3 h-3 rounded-full inline-block" style="background:#1565C0;"></span>
+      <span id="d8"  class="w-3 h-3 rounded-full inline-block" style="background:#FFD600;box-shadow:0 0 8px #FFD600;"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+      <span class="w-3 h-3 rounded-full inline-block bg-blue-100"></span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="text-center mt-4 font-bold text-xs" style="color:#90CAF9;">
+    ♟️ Petualangan Aslan di Negeri AI • Hari 8 dari 30 ♟️
+  </div>
+
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+  /* ---- FLOATING SHAPES ---- */
+  (function(){
+    const items = ['♟️','🏆','⭐','🤖','✨','💡','🎉','⚡','🌟','💻'];
+    const cols  = ['#1565C0','#FFD600','#C62828','#42A5F5','#0D2B6E'];
+    const container = document.getElementById('shapesBg');
+    for(let i=0; i<26; i++){
+      const s = document.createElement('div');
+      s.className='shape';
+      const isEmoji = Math.random()>0.45;
+      const size = Math.random()*26+10;
+      if(isEmoji){
+        s.style.cssText=`left:${Math.random()*100}%;font-size:${size}px;animation-duration:${Math.random()*15+8}s;animation-delay:${Math.random()*14}s;`;
+        s.textContent = items[Math.floor(Math.random()*items.length)];
+      } else {
+        s.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${Math.random()*15+8}s;animation-delay:${Math.random()*14}s;border-radius:${Math.random()>0.5?'50%':'25%'};`;
+      }
+      container.appendChild(s);
+    }
+  })();
+
+  /* ---- SCROLL REVEAL ---- */
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{ threshold:0.08 });
+  reveals.forEach(r=>observer.observe(r));
+
+  /* ---- PANEL CLICK ---- */
+  document.querySelectorAll('.panel').forEach(panel=>{
+    panel.addEventListener('click',function(){
+      this.style.transform='scale(1.06) rotate(1deg)';
+      this.style.boxShadow='8px 8px 0 #FFD600';
+      setTimeout(()=>{ this.style.transform=''; this.style.boxShadow=''; },350);
+    });
+  });
+
+  /* ---- BAR CHART ANIMATION ---- */
+  function animateBars(){
+    const data=[
+      {id:'bar1',valId:'val1',target:10, label:'3/dtk'},
+      {id:'bar2',valId:'val2',target:160,label:'200jt/dtk'},
+      {id:'bar3',valId:'val3',target:200,label:'∞/dtk'},
+    ];
+    data.forEach((d,i)=>{
+      setTimeout(()=>{
+        const bar=document.getElementById(d.id);
+        const val=document.getElementById(d.valId);
+        bar.style.height = d.target+'px';
+        val.textContent = d.label;
+      }, i*400+300);
+    });
+  }
+  // trigger on first view of fakta card
+  const faktaObs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ animateBars(); faktaObs.disconnect(); }
+    });
+  },{threshold:0.3});
+  const barChart=document.getElementById('barChart');
+  if(barChart) faktaObs.observe(barChart);
+
+  /* ---- QUIZ ---- */
+  const skor={q1:null,q2:null,q3:null};
+  const msgs={
+    benar:'🎉 Bravo! Jawabanmu benar, Aslan! Setajam Deep Blue! 🌟♟️',
+    salah:'😅 Belum tepat nih! Yuk baca lagi ceritanya! 📖'
+  };
+
+  function jawab(btn, quizId, benar){
+    const opts=document.getElementById(quizId+'-options');
+    if(opts.querySelector('.correct')||opts.querySelector('.wrong')) return;
+    const res=document.getElementById(quizId+'-result');
+    skor[quizId]=benar;
+    Array.from(opts.querySelectorAll('.quiz-option')).forEach(b=>b.style.pointerEvents='none');
+    if(benar){
+      btn.classList.add('correct');
+      btn.querySelector('span:first-child').textContent='✅';
+      res.style.cssText='display:block;background:#E8F5E9;color:#2E7D32;border:2px solid #43A047;border-radius:12px;padding:10px 14px;font-weight:800;font-size:0.9rem;';
+      res.innerHTML=msgs.benar;
+    } else {
+      btn.classList.add('wrong');
+      btn.querySelector('span:first-child').textContent='❌';
+      res.style.cssText='display:block;background:#FFEBEE;color:#C62828;border:2px solid #E53935;border-radius:12px;padding:10px 14px;font-weight:800;font-size:0.9rem;';
+      res.innerHTML=msgs.salah;
+    }
+    if(skor.q1!==null && skor.q2!==null && skor.q3!==null) tampilSkor();
+  }
+
+  function tampilSkor(){
+    const total=(skor.q1?1:0)+(skor.q2?1:0)+(skor.q3?1:0);
+    const area=document.getElementById('skor-area');
+    const pesan=[
+      ['😔 Belum beruntung... Yuk baca lagi! 💪','Nilai: 0/3'],
+      ['🙂 Lumayan! Masih bisa lebih baik!','Nilai: 1/3'],
+      ['😊 Bagus sekali! Hampir setajam Deep Blue!','Nilai: 2/3'],
+      ['🏆 SEMPURNA! Kamu selevel Deep Blue! 🎉','Nilai: 3/3'],
+    ];
+    area.classList.remove('hidden');
+    document.getElementById('skor-text').textContent=pesan[total][1];
+    document.getElementById('skor-pesan').textContent=pesan[total][0];
+  }
+
+  /* ---- OPEN QUESTION ---- */
+  const openResponses=[
+    '🤖 Wah, ide yang keren banget, Aslan! AI memang sudah bisa mengalahkan manusia di banyak game seperti Go, Dota 2, dan StarCraft! Di masa depan, mungkin AI bisa membantu manusia masak dengan resep terbaik juga! Yang penting, manusia dan AI bekerja sama — hasilnya pasti lebih luar biasa! 🌟',
+    '💡 Jawabanmu sangat kreatif! Benar sekali — AI sudah bisa mengalahkan manusia di beberapa game. Tapi ada yang AI tidak bisa lakukan: merasakan kesenangan bermain, persahabatan, dan semangat kompetisi seperti yang kamu rasakan! Itulah keistimewaan manusia! 🧒❤️',
+    '🌟 Luar biasa, Aslan! Kamu berpikir seperti seorang ilmuwan AI! AI memang bisa lebih cepat dan teliti dari manusia di banyak hal. Tapi kreativitas dan imajinasi seperti yang kamu punya — itulah yang membuat manusia istimewa! 🚀',
+    '🏆 Pemikiran yang sangat bagus! AI terus berkembang dan bisa membantu manusia di berbagai bidang. Siapa tahu, AI masa depan yang kamu ciptakan bisa lebih hebat dari Deep Blue! Terus belajar ya, Aslan! ♟️🤖',
+  ];
+
+  function kirimJawaban(){
+    const input=document.getElementById('openAnswer');
+    const resp=document.getElementById('openResponse');
+    if(input.value.trim().length < 5){
+      input.style.borderColor='#E53935';
+      input.placeholder='Tulis dulu jawabannya ya Aslan! Minimal beberapa kata! 😊';
+      setTimeout(()=>{ input.style.borderColor='#90CAF9'; },2000);
+      return;
+    }
+    const msg=openResponses[Math.floor(Math.random()*openResponses.length)];
+    resp.style.display='block';
+    resp.innerHTML=msg;
+    resp.style.animation='none';
+    void resp.offsetWidth;
+    resp.style.animation='bounceIn 0.5s ease both';
+    input.style.borderColor='#43A047';
+    const btn=document.querySelector('.send-btn');
+    btn.textContent='✅ Terkirim! Robo sudah baca!';
+    btn.style.background='linear-gradient(135deg,#2E7D32,#43A047)';
+    btn.disabled=true;
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Aslan's English Adventure — Day 26: The Brave Little Lantern</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #070510;
+    --deep:    #0c0820;
+    --sky:     #3b82f6;
+    --amber:   #f59e0b;
+    --gold:    #fbbf24;
+    --emerald: #10b981;
+    --coral:   #f97316;
+    --purple:  #8b5cf6;
+    --violet:  #7c3aed;
+    --rose:    #f43f5e;
+    --pink:    #ec4899;
+    --white:   #ffffff;
+    --lantern: #fb923c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star {
+    position: absolute; border-radius: 50%; background: white;
+    animation: twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:.15;transform:scale(1);}50%{opacity:.9;transform:scale(1.5);} }
+
+  /* Warm glow particles */
+  .mist {
+    position: fixed; pointer-events: none; z-index: 0; border-radius: 50%;
+    background: radial-gradient(circle, #fb923c50 0%, #f59e0b18 60%, transparent 100%);
+    animation: mistdrift var(--md,12s) ease-in-out infinite var(--mdelay,0s);
+    filter: blur(10px);
+  }
+  @keyframes mistdrift {
+    0%{transform:translate(0,0) scale(1);opacity:0;}
+    20%{opacity:.5;}
+    60%{transform:translate(var(--mx,40px),var(--my,-60px)) scale(1.4);opacity:.25;}
+    100%{transform:translate(var(--mx2,-30px),var(--my2,-120px)) scale(.6);opacity:0;}
+  }
+
+  .shoot {
+    position: fixed; top: 10%; left: -10%;
+    width: 160px; height: 2px;
+    background: linear-gradient(90deg, transparent, #fbbf24, transparent);
+    animation: shoot 11s linear infinite 3s; z-index: 0;
+  }
+  @keyframes shoot {
+    0%{left:-10%;top:10%;opacity:0;}5%{opacity:1;}38%{left:110%;top:28%;opacity:0;}100%{left:110%;top:28%;opacity:0;}
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 36px 20px 60px; }
+
+  /* ===== HERO ===== */
+  .hero { text-align: center; margin-bottom: 44px; animation: fadeDown .8s ease both; }
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
+  .hero-badge {
+    display: inline-flex; gap: 8px;
+    background: rgba(251,146,60,.13); border: 1px solid rgba(251,146,60,.34);
+    color: #fdba74; padding: 7px 22px; border-radius: 100px;
+    font-size: .8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Baloo 2', cursive; font-size: clamp(2rem,6vw,3.2rem);
+    font-weight: 800; color: var(--white); line-height: 1.15; margin-bottom: 12px;
+  }
+  .hero h1 .accent { background: linear-gradient(135deg,#fbbf24,#fb923c); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero-sub { color: rgba(255,255,255,.55); font-size: 1rem; max-width: 500px; margin: 0 auto 28px; line-height: 1.6; }
+  .hero-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .tag { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.7); padding:6px 16px; border-radius:100px; font-size:.78rem; font-weight:600; backdrop-filter:blur(8px); }
+
+  .progress-wrap { background:rgba(255,255,255,.07); border-radius:100px; height:8px; margin-bottom:40px; overflow:hidden; border:1px solid rgba(255,255,255,.08); }
+  .progress-bar { height:100%; background:linear-gradient(90deg,#fbbf24,#fb923c); border-radius:100px; width:0%; transition:width .6s ease; }
+  .progress-label { text-align:right; font-size:.75rem; color:rgba(255,255,255,.4); margin-top:6px; font-weight:600; }
+
+  /* ===== ILLUSTRATION ===== */
+  .illustration-card {
+    background: linear-gradient(135deg,#0c0820 0%,#1a100a 50%,#070510 100%);
+    border-radius: 32px; padding: 32px 24px 24px; margin-bottom: 40px;
+    text-align: center; position: relative; overflow: hidden; animation: fadeUp .9s ease .1s both;
+    border: 1px solid rgba(251,146,60,.18);
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+  .illus-svg { max-width: 290px; width: 100%; position: relative; z-index: 1; }
+  .illus-quote { color:rgba(255,255,255,.75); font-size:.95rem; font-weight:600; margin-top:16px; font-style:italic; }
+  .illus-quote strong { color:#fbbf24; font-style:normal; }
+
+  /* ===== SPEED CONTROLS ===== */
+  .speed-controls {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 16px; animation: fadeUp .9s ease .15s both;
+  }
+  .speed-label { color: rgba(255,255,255,.5); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .speed-btn {
+    padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06); color: rgba(255,255,255,.6);
+    font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s;
+    backdrop-filter: blur(8px); font-family: 'Nunito', sans-serif;
+  }
+  .speed-btn:hover { background: rgba(255,255,255,.12); color: white; }
+  .speed-btn.active {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    color: white; border-color: transparent;
+    box-shadow: 0 4px 16px rgba(217,119,6,.45);
+  }
+
+  .master-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:40px; animation:fadeUp .9s ease .2s both; }
+  .btn-master { display:inline-flex; align-items:center; gap:10px; padding:13px 28px; border-radius:100px; border:none; cursor:pointer; font-weight:700; transition:transform .15s; font-family:'Nunito',sans-serif; font-size:.95rem; }
+  .btn-master:active { transform:scale(.97); }
+  .btn-play-all { background:linear-gradient(135deg,#d97706,#92400e); color:white; box-shadow:0 6px 24px rgba(217,119,6,.45); }
+  .btn-stop { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:rgba(255,255,255,.75); backdrop-filter:blur(8px); }
+
+  /* ===== CHAPTERS ===== */
+  .chapter {
+    background: linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.09); border-radius: 28px;
+    margin-bottom: 24px; overflow: hidden; backdrop-filter: blur(12px);
+    transition: transform .2s; animation: fadeUp .7s ease both;
+  }
+  .chapter:hover { transform: translateY(-3px); }
+  .chapter:nth-child(1){animation-delay:.1s;}.chapter:nth-child(2){animation-delay:.2s;}
+  .chapter:nth-child(3){animation-delay:.3s;}.chapter:nth-child(4){animation-delay:.4s;}
+  .chapter:nth-child(5){animation-delay:.5s;}
+  .chapter-accent { height: 4px; }
+  .ch1 .chapter-accent{background:linear-gradient(90deg,#fde68a,#f59e0b);}
+  .ch2 .chapter-accent{background:linear-gradient(90deg,#fdba74,#ea580c);}
+  .ch3 .chapter-accent{background:linear-gradient(90deg,#818cf8,#4338ca);}
+  .ch4 .chapter-accent{background:linear-gradient(90deg,#6ee7b7,#059669);}
+  .ch5 .chapter-accent{background:linear-gradient(90deg,#fbbf24,#fb923c);}
+  .chapter-inner { padding: 28px 28px 24px; }
+  .chapter-head { display:flex; align-items:center; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+  .chapter-num {
+    width:52px; height:52px; border-radius:16px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2',cursive; font-size:1.3rem; font-weight:800; color:white;
+  }
+  .ch1 .chapter-num{background:linear-gradient(135deg,#fde68a,#d97706);}
+  .ch2 .chapter-num{background:linear-gradient(135deg,#fdba74,#ea580c);}
+  .ch3 .chapter-num{background:linear-gradient(135deg,#818cf8,#4338ca);}
+  .ch4 .chapter-num{background:linear-gradient(135deg,#6ee7b7,#059669);}
+  .ch5 .chapter-num{background:linear-gradient(135deg,#fbbf24,#b45309);}
+  .chapter-meta { flex:1; min-width:0; }
+  .chapter-tag { font-size:.7rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.35); margin-bottom:4px; }
+  .chapter-title { font-family:'Baloo 2',cursive; font-size:1.05rem; font-weight:700; color:var(--white); line-height:1.3; }
+  .btn-listen {
+    flex-shrink:0; display:inline-flex; align-items:center; gap:8px;
+    padding:10px 20px; border-radius:100px; border:none; cursor:pointer;
+    font-size:.82rem; font-weight:700; transition:all .2s; font-family:'Nunito',sans-serif;
+  }
+  .ch1 .btn-listen{background:rgba(253,230,138,.15);color:#fef3c7;border:1px solid rgba(253,230,138,.3);}
+  .ch2 .btn-listen{background:rgba(253,186,116,.15);color:#fed7aa;border:1px solid rgba(253,186,116,.3);}
+  .ch3 .btn-listen{background:rgba(129,140,248,.15);color:#c7d2fe;border:1px solid rgba(129,140,248,.3);}
+  .ch4 .btn-listen{background:rgba(110,231,183,.15);color:#a7f3d0;border:1px solid rgba(110,231,183,.3);}
+  .ch5 .btn-listen{background:rgba(251,191,36,.15);color:#fde68a;border:1px solid rgba(251,191,36,.3);}
+  .btn-listen:hover{filter:brightness(1.15);transform:scale(1.04);}
+  .btn-listen.playing::before{content:'⏸';margin-right:4px;}
+  .wave-bars{display:none;align-items:center;gap:2px;height:16px;}
+  .btn-listen.playing .wave-bars{display:flex;}
+  .wave-bar{width:3px;border-radius:2px;background:currentColor;animation:wave var(--dur,.5s) infinite alternate;}
+  @keyframes wave{from{height:3px;}to{height:14px;}}
+
+  .chapter-text {
+    font-size: 1rem; line-height: 1.95; color: rgba(255,255,255,.85);
+    padding: 20px 22px; background: rgba(0,0,0,.25);
+    border-radius: 16px; border: 1px solid rgba(255,255,255,.05);
+    position: relative; word-spacing: 2px;
+  }
+  .chapter-text .read-marker {
+    position:absolute; top:12px; right:14px;
+    font-size:.75rem; font-weight:700; color:#fbbf24;
+    opacity:0; transition:opacity .4s;
+  }
+  .chapter.done .chapter-text .read-marker { opacity:1; }
+
+  .w {
+    display: inline; border-radius: 5px; padding: 1px 2px;
+    cursor: pointer; transition: background 0.08s; white-space: normal;
+  }
+  .w:hover { background: rgba(251,191,36,0.22); }
+  .hl { color: #fbbf24; font-weight: 700; }
+
+  .vocab-box { margin-top:16px; padding:16px 20px; background:rgba(255,255,255,.04); border-radius:14px; border:1px solid rgba(255,255,255,.07); }
+  .vocab-title { font-size:.72rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:10px; }
+  .vocab-pills { display:flex; flex-wrap:wrap; gap:8px; }
+  .vocab-pill {
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
+    border-radius:100px; padding:5px 14px; font-size:.8rem; font-weight:600;
+    color:rgba(255,255,255,.65); cursor:pointer; transition:all .18s;
+  }
+  .vocab-pill:hover{background:rgba(255,255,255,.14);color:var(--white);transform:scale(1.06);}
+
+  .motivation-card {
+    background: linear-gradient(135deg,#0c0820 0%,#1a100a 60%,#070510 100%);
+    border: 1px solid rgba(251,146,60,.2); border-radius:28px;
+    padding:36px 32px; text-align:center; margin-top:40px;
+    position:relative; overflow:hidden; animation:fadeUp .7s ease .6s both;
+  }
+  .motivation-card .star-icon{font-size:2.8rem;margin-bottom:16px;display:block;animation:spin 6s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);}50%{transform:rotate(180deg);}to{transform:rotate(360deg);}}
+  .motivation-card h2{font-family:'Baloo 2',cursive;font-size:clamp(1.2rem,4vw,1.7rem);font-weight:800;color:#fbbf24;margin-bottom:14px;}
+  .motivation-card p{color:rgba(255,255,255,.7);font-size:.97rem;line-height:1.7;max-width:520px;margin:0 auto;}
+  .challenge-box{margin-top:24px;background:rgba(251,146,60,.09);border:1px solid rgba(251,146,60,.22);border-radius:16px;padding:18px 22px;}
+  .challenge-box p{font-size:.9rem;font-weight:600;color:rgba(255,255,255,.75);}
+  .challenge-box strong{color:#fbbf24;}
+  .footer{text-align:center;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.3);font-size:.82rem;font-weight:600;}
+
+  .word-toast {
+    position:fixed; bottom:28px; left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:rgba(0,0,0,.92); backdrop-filter:blur(12px);
+    color:#fbbf24; padding:12px 28px; border-radius:100px;
+    font-size:.9rem; font-weight:600;
+    box-shadow:0 8px 32px rgba(0,0,0,.4);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    z-index:9999; white-space:nowrap;
+    border:1px solid rgba(251,191,36,.3); font-family:monospace;
+  }
+  .word-toast.show{transform:translateX(-50%) translateY(0);}
+  .word-toast small{color:#aaa;font-size:0.7rem;margin-left:8px;}
+
+  @media(max-width:600px){
+    .chapter-inner{padding:20px 18px 18px;}
+    .btn-listen span{display:none;}
+    .chapter-num{width:44px;height:44px;font-size:1.1rem;}
+    .word-toast{white-space:normal;max-width:90vw;text-align:center;}
+    .speed-controls{gap:6px;}
+    .speed-btn{padding:7px 14px;font-size:.75rem;}
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<div class="stars" id="stars"></div>
+<div class="shoot"></div>
+
+<div class="wrapper">
+  <header class="hero">
+    <div class="hero-badge">🏮 Day 26 – Late Beginner | ✨ Click ANY word for Indonesian meaning</div>
+    <h1>The Brave Little<br><span class="accent">Lantern</span></h1>
+    <p class="hero-sub">A story about <strong style="color:#fbbf24">Aslan</strong> who finds a small talking lantern that is afraid of the dark — and together they learn that the bravest light is the one that shines even when it is most afraid. 🏮🌙✨</p>
+    <div class="hero-tags">
+      <span class="tag">⭐ Late Beginner</span>
+      <span class="tag">🎧 Listen & Learn</span>
+      <span class="tag">📚 5 Chapters</span>
+      <span class="tag">🏆 Vocabulary</span>
+      <span class="tag">🔍 Click words for meaning</span>
+    </div>
+  </header>
+
+  <div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-label" id="progressLabel">0 of 5 chapters read</div>
+  </div>
+
+  <!-- ILLUSTRATION -->
+  <div class="illustration-card">
+    <svg class="illus-svg" viewBox="0 0 300 210" xmlns="http://www.w3.org/2000/svg">
+      <!-- Deep night sky background -->
+      <rect x="0" y="0" width="300" height="210" fill="#04030f" rx="14"/>
+
+      <!-- Stars in sky -->
+      <circle cx="20" cy="18" r="1.2" fill="white" opacity=".7"><animate attributeName="opacity" values=".2;.9;.2" dur="2.2s" repeatCount="indefinite"/></circle>
+      <circle cx="55" cy="12" r="1" fill="#fde68a" opacity=".6"><animate attributeName="opacity" values=".1;.8;.1" dur="2.7s" repeatCount="indefinite" begin=".5s"/></circle>
+      <circle cx="95" cy="22" r="1.4" fill="white" opacity=".7"><animate attributeName="opacity" values=".3;1;.3" dur="1.9s" repeatCount="indefinite" begin=".3s"/></circle>
+      <circle cx="180" cy="14" r="1" fill="#fbbf24" opacity=".6"><animate attributeName="opacity" values=".1;.7;.1" dur="2.5s" repeatCount="indefinite" begin=".8s"/></circle>
+      <circle cx="230" cy="20" r="1.3" fill="white" opacity=".8"><animate attributeName="opacity" values=".2;.9;.2" dur="2.1s" repeatCount="indefinite" begin=".4s"/></circle>
+      <circle cx="270" cy="16" r="1" fill="#fde68a" opacity=".5"><animate attributeName="opacity" values=".2;.7;.2" dur="3s" repeatCount="indefinite" begin="1s"/></circle>
+      <circle cx="140" cy="10" r="1.2" fill="white" opacity=".6"><animate attributeName="opacity" values=".1;.8;.1" dur="2.4s" repeatCount="indefinite" begin=".6s"/></circle>
+      <circle cx="42" cy="35" r="1" fill="#fdba74" opacity=".4"><animate attributeName="opacity" values=".2;.6;.2" dur="2.8s" repeatCount="indefinite" begin=".2s"/></circle>
+
+      <!-- Moon -->
+      <circle cx="252" cy="44" r="24" fill="#fef9c3" opacity=".88"/>
+      <circle cx="260" cy="38" r="17" fill="#04030f" opacity=".22"/>
+      <!-- Moon craters -->
+      <circle cx="245" cy="50" r="3" fill="#fef08a" opacity=".35"/>
+      <circle cx="255" cy="42" r="2" fill="#fef08a" opacity=".25"/>
+
+      <!-- Dark forest / silhouette trees far -->
+      <rect x="0" y="145" width="300" height="65" fill="#06050f"/>
+      <!-- Tree silhouettes -->
+      <rect x="0" y="90" width="14" height="120" rx="3" fill="#080614"/>
+      <ellipse cx="7" cy="85" rx="18" ry="28" fill="#090717"/>
+      <ellipse cx="2" cy="70" rx="12" ry="20" fill="#080614"/>
+      <rect x="22" y="105" width="10" height="105" rx="3" fill="#080614"/>
+      <ellipse cx="27" cy="100" rx="14" ry="22" fill="#090717"/>
+      <rect x="262" y="95" width="14" height="115" rx="3" fill="#080614"/>
+      <ellipse cx="269" cy="90" rx="18" ry="26" fill="#090717"/>
+      <rect x="278" y="110" width="10" height="100" rx="3" fill="#080614"/>
+      <ellipse cx="283" cy="106" rx="13" ry="20" fill="#080614"/>
+      <!-- Mid-distance trees -->
+      <rect x="44" y="118" width="10" height="92" rx="2" fill="#0a0818"/>
+      <ellipse cx="49" cy="113" rx="13" ry="18" fill="#0b0919"/>
+      <rect x="244" y="122" width="10" height="88" rx="2" fill="#0a0818"/>
+      <ellipse cx="249" cy="117" rx="13" ry="17" fill="#0b0919"/>
+
+      <!-- Path / ground -->
+      <ellipse cx="150" cy="200" rx="140" ry="18" fill="#0e0b1a"/>
+      <!-- Path highlight -->
+      <path d="M100 210 Q150 190 200 210" stroke="#1a1430" stroke-width="2" fill="none" opacity=".6"/>
+
+      <!-- ===== LANTERN ===== -->
+      <defs>
+        <radialGradient id="glowBig" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stop-color="#fbbf24" stop-opacity=".55"/>
+          <stop offset="50%" stop-color="#f97316" stop-opacity=".2"/>
+          <stop offset="100%" stop-color="#ea580c" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="flameGrad" cx="50%" cy="70%" r="65%">
+          <stop offset="0%" stop-color="#fef9c3"/>
+          <stop offset="35%" stop-color="#fbbf24"/>
+          <stop offset="100%" stop-color="#ea580c"/>
+        </radialGradient>
+        <radialGradient id="lanternBody" cx="40%" cy="30%" r="70%">
+          <stop offset="0%" stop-color="#78350f"/>
+          <stop offset="60%" stop-color="#431407"/>
+          <stop offset="100%" stop-color="#1c0702"/>
+        </radialGradient>
+        <filter id="warmBlur">
+          <feGaussianBlur stdDeviation="7"/>
+        </filter>
+        <filter id="softBlur">
+          <feGaussianBlur stdDeviation="3"/>
+        </filter>
+      </defs>
+
+      <!-- Big warm glow orb behind lantern -->
+      <circle cx="150" cy="115" r="70" fill="url(#glowBig)" filter="url(#warmBlur)"><animate attributeName="r" values="70;80;70" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values=".85;1;.85" dur="3s" repeatCount="indefinite"/></circle>
+      <!-- Secondary glow -->
+      <circle cx="150" cy="115" r="45" fill="#fbbf24" opacity=".12" filter="url(#warmBlur)"><animate attributeName="r" values="45;52;45" dur="2.5s" repeatCount="indefinite" begin=".4s"/></circle>
+
+      <!-- Lantern top hook/cap -->
+      <rect x="144" y="52" width="12" height="6" rx="3" fill="#92400e"/>
+      <path d="M148 52 Q150 44 152 52" stroke="#78350f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- Hook ring -->
+      <circle cx="150" cy="44" r="4" fill="none" stroke="#92400e" stroke-width="2.5"/>
+
+      <!-- Lantern top cap -->
+      <rect x="138" y="57" width="24" height="7" rx="3.5" fill="#92400e"/>
+      <ellipse cx="150" cy="57" rx="12" ry="3" fill="#a16207"/>
+
+      <!-- Lantern body frame -->
+      <rect x="133" y="63" width="34" height="52" rx="6" fill="url(#lanternBody)" stroke="#92400e" stroke-width="2"/>
+      <!-- Lantern glass panes (warm glow inside) -->
+      <rect x="136" y="66" width="28" height="46" rx="4" fill="#fbbf24" opacity=".18"/>
+      <rect x="136" y="66" width="28" height="46" rx="4" fill="#fef3c7" opacity=".08"/>
+      <!-- Lantern vertical bars -->
+      <line x1="150" y1="64" x2="150" y2="116" stroke="#92400e" stroke-width="1.5" opacity=".7"/>
+      <line x1="138" y1="89" x2="162" y2="89" stroke="#92400e" stroke-width="1.5" opacity=".7"/>
+      <!-- Lantern frame corner detail -->
+      <rect x="133" y="63" width="6" height="52" rx="3" fill="#92400e" opacity=".6"/>
+      <rect x="161" y="63" width="6" height="52" rx="3" fill="#92400e" opacity=".6"/>
+
+      <!-- Flame inside lantern -->
+      <ellipse cx="150" cy="100" rx="7" ry="10" fill="url(#flameGrad)"><animate attributeName="ry" values="10;12;9;11;10" dur="1.2s" repeatCount="indefinite"/><animate attributeName="rx" values="7;5;8;6;7" dur="1.2s" repeatCount="indefinite"/></ellipse>
+      <ellipse cx="150" cy="98" rx="4" ry="6" fill="#fef9c3" opacity=".8"><animate attributeName="ry" values="6;8;5;7;6" dur="1s" repeatCount="indefinite" begin=".1s"/></ellipse>
+      <!-- Flame tip -->
+      <path d="M147 94 Q150 86 153 94" fill="#fbbf24" opacity=".9"><animate attributeName="d" values="M147 94 Q150 86 153 94;M147 94 Q150 84 153 94;M148 94 Q150 88 152 94" dur="1.1s" repeatCount="indefinite"/></path>
+
+      <!-- Lantern base -->
+      <rect x="136" y="114" width="28" height="7" rx="3.5" fill="#92400e"/>
+      <ellipse cx="150" cy="121" rx="14" ry="3.5" fill="#78350f"/>
+      <!-- Lantern stand/base bottom -->
+      <rect x="140" y="120" width="20" height="5" rx="2.5" fill="#451a03"/>
+
+      <!-- Lantern face — cute eyes and smile (it's a talking lantern!) -->
+      <!-- Left eye -->
+      <ellipse cx="144" cy="82" rx="3" ry="3.5" fill="#1c0702"/>
+      <circle cx="145" cy="81" r="1.2" fill="white" opacity=".9"/>
+      <!-- Right eye -->
+      <ellipse cx="156" cy="82" rx="3" ry="3.5" fill="#1c0702"/>
+      <circle cx="157" cy="81" r="1.2" fill="white" opacity=".9"/>
+      <!-- Smile -->
+      <path d="M144 88 Q150 93 156 88" stroke="#1c0702" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <!-- Rosy cheeks -->
+      <ellipse cx="140" cy="87" rx="4" ry="2.5" fill="#fb923c" opacity=".35"/>
+      <ellipse cx="160" cy="87" rx="4" ry="2.5" fill="#fb923c" opacity=".35"/>
+
+      <!-- Light rays from lantern -->
+      <line x1="150" y1="65" x2="150" y2="48" stroke="#fbbf24" stroke-width="1.5" opacity=".3"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></line>
+      <line x1="133" y1="75" x2="118" y2="65" stroke="#fbbf24" stroke-width="1.5" opacity=".25"><animate attributeName="opacity" values=".25;.6;.25" dur="2.3s" repeatCount="indefinite" begin=".3s"/></line>
+      <line x1="167" y1="75" x2="182" y2="65" stroke="#fbbf24" stroke-width="1.5" opacity=".25"><animate attributeName="opacity" values=".25;.6;.25" dur="2.1s" repeatCount="indefinite" begin=".6s"/></line>
+      <line x1="133" y1="89" x2="114" y2="89" stroke="#fbbf24" stroke-width="1.5" opacity=".2"><animate attributeName="opacity" values=".2;.55;.2" dur="2.5s" repeatCount="indefinite" begin=".4s"/></line>
+      <line x1="167" y1="89" x2="186" y2="89" stroke="#fbbf24" stroke-width="1.5" opacity=".2"><animate attributeName="opacity" values=".2;.55;.2" dur="2.2s" repeatCount="indefinite" begin=".2s"/></line>
+
+      <!-- Sparkles around lantern -->
+      <text x="108" y="78" fill="#fbbf24" font-size="9" opacity=".65"><animate attributeName="opacity" values=".65;1;.3;.65" dur="2s" repeatCount="indefinite"/>✦</text>
+      <text x="183" y="72" fill="#fde68a" font-size="8" opacity=".5"><animate attributeName="opacity" values=".5;.9;.2;.5" dur="2.5s" repeatCount="indefinite" begin=".5s"/>✦</text>
+      <text x="104" y="108" fill="#fb923c" font-size="7" opacity=".45"><animate attributeName="opacity" values=".45;.8;.2;.45" dur="2.8s" repeatCount="indefinite" begin=".8s"/>✦</text>
+      <text x="187" y="105" fill="#fbbf24" font-size="9" opacity=".5"><animate attributeName="opacity" values=".5;.9;.25;.5" dur="2.2s" repeatCount="indefinite" begin=".3s"/>✦</text>
+
+      <!-- ASLAN holding the lantern chain -->
+      <!-- Body -->
+      <circle cx="210" cy="140" r="11" fill="#c8956c"/>
+      <!-- Hair -->
+      <path d="M199 136 Q210 128 221 136 Q221 131 210 130 Q199 131 199 136Z" fill="#5c3a1e"/>
+      <!-- Shirt -->
+      <rect x="202" y="151" width="16" height="20" rx="4" fill="#2563eb"/>
+      <!-- Arm holding the lantern (left arm reaching toward lantern) -->
+      <line x1="202" y1="155" x2="168" y2="125" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+      <!-- Hand glow at lantern -->
+      <circle cx="166" cy="124" r="4" fill="#fde68a" opacity=".6"><animate attributeName="opacity" values=".4;.8;.4" dur="2s" repeatCount="indefinite"/></circle>
+      <!-- Right arm relaxed -->
+      <line x1="218" y1="155" x2="224" y2="166" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
+      <!-- Legs -->
+      <line x1="206" y1="171" x2="203" y2="183" stroke="#1e3a8a" stroke-width="5" stroke-linecap="round"/>
+      <line x1="216" y1="171" x2="219" y2="183" stroke="#1e3a8a" stroke-width="5" stroke-linecap="round"/>
+      <!-- Shoes -->
+      <ellipse cx="202" cy="184" rx="5" ry="3" fill="#1e1b4b"/>
+      <ellipse cx="220" cy="184" rx="5" ry="3" fill="#1e1b4b"/>
+      <!-- Aslan face — eyes wide with wonder -->
+      <circle cx="206" cy="139" r="2.3" fill="#2d1a08"/>
+      <circle cx="214" cy="139" r="2.3" fill="#2d1a08"/>
+      <circle cx="206.8" cy="138.3" r=".9" fill="white"/>
+      <circle cx="214.8" cy="138.3" r=".9" fill="white"/>
+      <!-- Smile -->
+      <path d="M205 144 Q210 148 215 144" stroke="#2d1a08" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+      <!-- Warm ground glow from lantern light -->
+      <ellipse cx="150" cy="200" rx="90" ry="12" fill="#fbbf24" opacity=".06" filter="url(#warmBlur)"><animate attributeName="opacity" values=".06;.18;.06" dur="3s" repeatCount="indefinite"/></ellipse>
+
+      <!-- Little speech bubble from lantern -->
+      <rect x="58" y="60" width="68" height="28" rx="10" fill="#1a1020" stroke="#fbbf24" stroke-width="1.2" opacity=".9"/>
+      <polygon points="100,88 108,96 116,88" fill="#1a1020" stroke="#fbbf24" stroke-width="1.2"/>
+      <text x="92" y="78" fill="#fde68a" font-size="8.5" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700">I am scared...</text>
+      <text x="92" y="89" fill="#fdba74" font-size="7.5" text-anchor="middle" font-family="Nunito,sans-serif">but I can shine! 🏮</text>
+    </svg>
+    <p class="illus-quote">Aslan held the little lantern close and said: <strong>"Don't be afraid — shine with me."</strong> 🏮✨</p>
+  </div>
+
+  <!-- SPEED CONTROLS -->
+  <div class="speed-controls">
+    <span class="speed-label">🎚️ Speed:</span>
+    <button class="speed-btn" data-rate="0.65">🐢 Slow</button>
+    <button class="speed-btn active" data-rate="0.88">🚶 Normal</button>
+    <button class="speed-btn" data-rate="1.15">🚀 Fast</button>
+  </div>
+
+  <div class="master-controls">
+    <button class="btn-master btn-play-all" id="playAllBtn">🎧 <span>Play All Story</span></button>
+    <button class="btn-master btn-stop" id="stopBtn">⏹ <span>Stop Reading</span></button>
+  </div>
+
+  <div id="chapters">
+
+    <!-- CHAPTER 1 -->
+    <div class="chapter ch1" id="ch1">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">01</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter One</div>
+            <div class="chapter-title">🏚️ The Old Lantern in the Attic</div>
+          </div>
+          <button class="btn-listen" data-ch="1">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.5s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text1">
+          <span class="read-marker">✅ Read!</span>
+          One rainy afternoon, Aslan was helping his grandmother <span class="hl">tidy</span> up the old attic. The attic smelled of wood and dust, and every corner was full of forgotten things. Aslan moved boxes, folded old blankets, and swept the dusty floor. Then, behind a tall stack of boxes, he found something small and round. It was an old brass <span class="hl">lantern</span>. The lantern was no bigger than Aslan's two hands put together. Its metal body was a warm golden color, and its tiny glass window was perfectly clear. Aslan picked it up carefully. The moment his fingers touched the handle, a small flame appeared inside the lantern. The flame was soft and warm, like a friendly fire. Aslan stared at it, surprised. Then he heard something even more surprising — a tiny, high voice coming from inside the lantern. "Oh! Hello there," said the voice. "I have been waiting a very long time for someone kind to find me."
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="tidy">tidy</span><span class="vocab-pill" data-word="lantern">lantern</span><span class="vocab-pill" data-word="attic">attic</span><span class="vocab-pill" data-word="brass">brass</span><span class="vocab-pill" data-word="flame">flame</span><span class="vocab-pill" data-word="dusty">dusty</span><span class="vocab-pill" data-word="handle">handle</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 2 -->
+    <div class="chapter ch2" id="ch2">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">02</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Two</div>
+            <div class="chapter-title">😨 The Lantern That Was Afraid</div>
+          </div>
+          <button class="btn-listen" data-ch="2">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text2">
+          <span class="read-marker">✅ Read!</span>
+          Aslan brought the lantern to his room and sat on the bed. "What is your name?" Aslan asked. The little voice replied, "My name is Lumi." Aslan smiled. "That is a beautiful name. Why were you hiding in the attic?" Lumi's flame <span class="hl">flickered</span> and grew very small. "Because I am afraid," Lumi said in a quiet voice. "Afraid of what?" asked Aslan, leaning closer. "Of the dark," Lumi whispered. Aslan blinked. He could not believe it. A lantern — a creature made of light — was afraid of the dark. "But you ARE the light," said Aslan gently. "I know," said Lumi sadly. "But every time I go outside at night and see how big and dark the world is, my flame becomes very small and I feel like I cannot <span class="hl">shine</span> at all. I have been hiding for so long that I almost forgot I could glow." Aslan looked at the little lantern with great <span class="hl">kindness</span>. He understood that feeling very well.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="flickered">flickered</span><span class="vocab-pill" data-word="shine">shine</span><span class="vocab-pill" data-word="kindness">kindness</span><span class="vocab-pill" data-word="afraid">afraid</span><span class="vocab-pill" data-word="whispered">whispered</span><span class="vocab-pill" data-word="glow">glow</span><span class="vocab-pill" data-word="hiding">hiding</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 3 -->
+    <div class="chapter ch3" id="ch3">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">03</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Three</div>
+            <div class="chapter-title">🌲 Into the Dark Forest</div>
+          </div>
+          <button class="btn-listen" data-ch="3">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text3">
+          <span class="read-marker">✅ Read!</span>
+          That same evening, Aslan's grandmother called him. "Aslan, I need you to walk down the forest path and bring this basket to old Mr. Yusuf's cottage. He is sick and needs food." The forest path was long and there were no streetlights. It would be very dark. Aslan looked at Lumi. "Do you want to come with me?" he asked. Lumi's flame <span class="hl">trembled</span>. "The forest at night… it is very dark," Lumi said nervously. "I know," said Aslan. "That is exactly why I need you." There was a long silence. Then Lumi said in a small but <span class="hl">determined</span> voice, "Okay. I will try." Aslan smiled warmly and picked up the lantern and the basket. They stepped out of the house together into the dark, cool night. The moment they left the light of the house, the darkness surrounded them like a thick, soft blanket. Lumi's flame trembled wildly. "I am scared," Lumi said. "That is okay," said Aslan calmly. "I am right here. Take one step at a time."
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="trembled">trembled</span><span class="vocab-pill" data-word="determined">determined</span><span class="vocab-pill" data-word="cottage">cottage</span><span class="vocab-pill" data-word="nervously">nervously</span><span class="vocab-pill" data-word="surrounded">surrounded</span><span class="vocab-pill" data-word="darkness">darkness</span><span class="vocab-pill" data-word="calmly">calmly</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 4 -->
+    <div class="chapter ch4" id="ch4">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">04</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Four</div>
+            <div class="chapter-title">💡 Facing the Darkness</div>
+          </div>
+          <button class="btn-listen" data-ch="4">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.15s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text4">
+          <span class="read-marker">✅ Read!</span>
+          As Aslan and Lumi walked deeper into the forest, the trees grew tall and the path became hard to see. Lumi's light flickered and trembled with every strange sound — the hoot of an owl, the rustle of leaves, the crack of a twig. "I cannot do this," Lumi cried. "What if I go out? What if my flame disappears and you are left all alone?" Aslan stopped walking. He held the lantern up gently and looked into Lumi's little glowing face. "Lumi," he said quietly, "look around. Look at what your light is doing right now, even while you are afraid." Lumi looked. The warm circle of golden light reached the mossy path, the tree trunks, the ferns, and even a family of <span class="hl">fireflies</span> sitting on a low branch. "You are lighting the way," said Aslan. "You ARE shining — even while you are <span class="hl">trembling</span>. That is what courage really means. Not the absence of fear — but shining anyway." Lumi went quiet for a long moment. Then, very slowly, Lumi's flame grew a little bigger. And a little bigger. And a little bigger still.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="fireflies">fireflies</span><span class="vocab-pill" data-word="trembling">trembling</span><span class="vocab-pill" data-word="courage">courage</span><span class="vocab-pill" data-word="absence">absence</span><span class="vocab-pill" data-word="rustle">rustle</span><span class="vocab-pill" data-word="disappears">disappears</span><span class="vocab-pill" data-word="ferns">ferns</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 5 -->
+    <div class="chapter ch5" id="ch5">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">05</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Five</div>
+            <div class="chapter-title">🌟 The Bravest Light</div>
+          </div>
+          <button class="btn-listen" data-ch="5">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text5">
+          <span class="read-marker">✅ Read!</span>
+          Aslan and Lumi reached old Mr. Yusuf's cottage safely. The old man opened the door and his tired face broke into a wide, <span class="hl">grateful</span> smile when he saw the warm glow of the lantern. "You found the forest path at night!" he said, amazed. "The lantern helped me," said Aslan, holding Lumi up proudly. Lumi's flame burned bright and steady — not trembling at all now. On the walk back home, Lumi was quiet for a while. Then the small voice spoke again, softer and warmer than before. "Aslan, I think I understand now. The darkness was never the real problem. The real problem was that I forgot I had something to give. When you reminded me that my light was helping you, helping the path, helping Mr. Yusuf… I was not afraid anymore." Aslan nodded slowly. "And that," he said, "is the most important <span class="hl">lesson</span> I have ever learned too. When we focus on giving our light to others, we stop being afraid of the dark." That night, Lumi hung by Aslan's window and lit up the room with a warm, steady, <span class="hl">peaceful</span> glow — the glow of a lantern that had finally, truly learned to be brave.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="grateful">grateful</span><span class="vocab-pill" data-word="lesson">lesson</span><span class="vocab-pill" data-word="peaceful">peaceful</span><span class="vocab-pill" data-word="steady">steady</span><span class="vocab-pill" data-word="proudly">proudly</span><span class="vocab-pill" data-word="reminded">reminded</span><span class="vocab-pill" data-word="focus">focus</span></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="motivation-card">
+    <span class="star-icon">🏮</span>
+    <h2>You are a brave light, Aslan! 🌟</h2>
+    <p>Just like Lumi discovered, <strong style="color:#fbbf24">courage is not the absence of fear — it is choosing to shine anyway.</strong> Every single person has a light inside them. Sometimes fear makes that light feel very small. But even a small, trembling flame can light up an entire dark path for someone who needs it. Your kindness, your effort, your smile — these are your light. Don't hide them. ✨🏮</p>
+    <div class="challenge-box"><p>💪 <strong>Today's Challenge:</strong> Think of one person in your life who might need some light today — a friend, a family member, a classmate. Do one small kind thing for them and notice how your own light grows brighter too! 🏮💛</p></div>
+  </div>
+
+  <footer class="footer">Made with ❤️ for <span style="color:#fbbf24">Aslan</span> • Day 26 complete • Click any word for Indonesian meaning 🖱️</footer>
+</div>
+
+<div id="wordToast" class="word-toast">📖</div>
+
+<script>
+// ===== STARS + WARM GLOW PARTICLES =====
+(function(){
+  const wrap = document.getElementById('stars');
+  for(let i=0;i<90;i++){
+    const s=document.createElement('div'); s.className='star';
+    const size=Math.random()*2.5+0.6;
+    s.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--delay:-${(Math.random()*5).toFixed(1)}s;`;
+    wrap.appendChild(s);
+  }
+  for(let i=0;i<10;i++){
+    const m=document.createElement('div'); m.className='mist';
+    const size=Math.random()*80+40;
+    const mx=(Math.random()*60-30).toFixed(0);
+    const my=-(Math.random()*50+20);
+    const mx2=(Math.random()*50-25).toFixed(0);
+    const my2=-(Math.random()*100+60);
+    m.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*90}%;left:${Math.random()*100}%;--md:${(Math.random()*6+9).toFixed(1)}s;--mdelay:-${(Math.random()*10).toFixed(1)}s;--mx:${mx}px;--my:${my}px;--mx2:${mx2}px;--my2:${my2}px;`;
+    wrap.appendChild(m);
+  }
+})();
+
+// ===== DICTIONARY =====
+const dictionary = {
+  "aslan":"Aslan (nama tokoh utama kita — si pemberani!)",
+  "one":"satu / suatu",
+  "rainy":"hujan / hari hujan",
+  "afternoon":"sore hari",
+  "helping":"membantu (sedang)",
+  "grandmother":"nenek",
+  "tidy":"merapikan / membereskan",
+  "old":"tua / lama",
+  "attic":"loteng / kamar di bawah atap",
+  "smelled":"berbau (masa lalu smell)",
+  "wood":"kayu",
+  "dust":"debu",
+  "every":"setiap",
+  "corner":"sudut",
+  "full":"penuh",
+  "forgotten":"terlupakan",
+  "things":"benda-benda",
+  "moved":"memindahkan (masa lalu move)",
+  "boxes":"kotak-kotak",
+  "folded":"melipat (masa lalu fold)",
+  "blankets":"selimut-selimut",
+  "swept":"menyapu (masa lalu sweep)",
+  "dusty":"berdebu",
+  "floor":"lantai",
+  "behind":"di belakang",
+  "tall":"tinggi",
+  "stack":"tumpukan",
+  "found":"menemukan (masa lalu find)",
+  "something":"sesuatu",
+  "small":"kecil",
+  "round":"bulat",
+  "brass":"kuningan (logam berwarna emas)",
+  "lantern":"lentera",
+  "bigger":"lebih besar",
+  "hands":"tangan-tangan",
+  "together":"bersama-sama",
+  "metal":"logam",
+  "body":"tubuh / badan",
+  "warm":"hangat",
+  "golden":"berwarna emas",
+  "color":"warna",
+  "tiny":"sangat kecil / mungil",
+  "glass":"kaca",
+  "window":"jendela kecil",
+  "perfectly":"dengan sempurna",
+  "clear":"bersih / jernih",
+  "picked":"mengambil / meraih (masa lalu pick)",
+  "carefully":"dengan hati-hati",
+  "moment":"saat / momen",
+  "fingers":"jari-jari",
+  "touched":"menyentuh (masa lalu touch)",
+  "handle":"pegangan / gagang",
+  "flame":"nyala api / api kecil",
+  "appeared":"muncul (masa lalu appear)",
+  "inside":"di dalam",
+  "soft":"lembut",
+  "friendly":"ramah / bersahabat",
+  "fire":"api",
+  "stared":"menatap (masa lalu stare)",
+  "surprised":"terkejut / kaget",
+  "heard":"mendengar (masa lalu hear)",
+  "even":"bahkan",
+  "voice":"suara",
+  "coming":"datang (sedang)",
+  "hello":"halo",
+  "there":"di sana",
+  "waiting":"menunggu (sedang)",
+  "very":"sangat",
+  "long":"lama / panjang",
+  "time":"waktu",
+  "someone":"seseorang",
+  "kind":"baik hati",
+  "find":"menemukan",
+  "brought":"membawa (masa lalu bring)",
+  "room":"kamar",
+  "sat":"duduk (masa lalu sit)",
+  "bed":"tempat tidur",
+  "name":"nama",
+  "asked":"bertanya (masa lalu ask)",
+  "replied":"menjawab (masa lalu reply)",
+  "lumi":"Lumi (nama lentera ajaib)",
+  "smiled":"tersenyum (masa lalu smile)",
+  "beautiful":"indah",
+  "hiding":"bersembunyi (sedang)",
+  "flickered":"berkedip-kedip (masa lalu flicker)",
+  "grew":"menjadi (masa lalu grow)",
+  "quiet":"hening / pelan",
+  "afraid":"takut",
+  "leaning":"membungkuk / mencondongkan (sedang)",
+  "closer":"lebih dekat",
+  "dark":"gelap",
+  "whispered":"berbisik (masa lalu whisper)",
+  "blinked":"berkedip (masa lalu blink)",
+  "believe":"percaya",
+  "creature":"makhluk",
+  "light":"cahaya / lampu",
+  "gently":"dengan lembut",
+  "outside":"di luar",
+  "night":"malam",
+  "big":"besar",
+  "world":"dunia",
+  "becomes":"menjadi",
+  "shine":"bersinar / bercahaya",
+  "forget":"melupakan",
+  "glow":"cahaya / bersinar",
+  "looked":"melihat / menatap (masa lalu look)",
+  "great":"besar / luar biasa",
+  "kindness":"kebaikan hati",
+  "understood":"mengerti (masa lalu understand)",
+  "feeling":"perasaan",
+  "well":"dengan baik",
+  "same":"sama",
+  "evening":"petang / malam",
+  "called":"memanggil (masa lalu call)",
+  "need":"membutuhkan",
+  "walk":"berjalan",
+  "forest":"hutan",
+  "path":"jalan setapak",
+  "basket":"keranjang",
+  "cottage":"rumah kecil / pondok",
+  "sick":"sakit",
+  "food":"makanan",
+  "streetlights":"lampu jalan",
+  "dark":"gelap",
+  "want":"ingin",
+  "come":"datang",
+  "trembled":"gemetar (masa lalu tremble)",
+  "nervously":"dengan gugup / dengan gelisah",
+  "exactly":"persis / tepat",
+  "silence":"keheningan",
+  "determined":"bertekad / penuh tekad",
+  "okay":"oke / baiklah",
+  "warmly":"dengan hangat",
+  "stepped":"melangkah (masa lalu step)",
+  "left":"meninggalkan / ke kiri (masa lalu leave)",
+  "darkness":"kegelapan",
+  "surrounded":"mengelilingi (masa lalu surround)",
+  "thick":"tebal",
+  "blanket":"selimut",
+  "wildly":"dengan liar / dengan hebat",
+  "scared":"ketakutan / takut",
+  "calmly":"dengan tenang",
+  "right":"tepat / benar",
+  "here":"di sini",
+  "step":"langkah",
+  "deeper":"lebih dalam",
+  "trees":"pohon-pohon",
+  "hard":"sulit / keras",
+  "see":"melihat",
+  "every":"setiap",
+  "strange":"aneh / asing",
+  "sound":"suara",
+  "hoot":"suara burung hantu / hoo-hoo",
+  "owl":"burung hantu",
+  "rustle":"gemeresik / suara daun bergerak",
+  "leaves":"daun-daun",
+  "crack":"retakan / suara patahan",
+  "twig":"ranting kecil",
+  "cried":"menangis / berseru (masa lalu cry)",
+  "disappears":"menghilang",
+  "alone":"sendirian",
+  "stopped":"berhenti (masa lalu stop)",
+  "walking":"berjalan (sedang)",
+  "held":"memegang (masa lalu hold)",
+  "up":"ke atas",
+  "looked":"melihat (masa lalu look)",
+  "around":"sekitar / di sekitar",
+  "circle":"lingkaran",
+  "reached":"mencapai (masa lalu reach)",
+  "mossy":"berlumut",
+  "trunks":"batang-batang pohon",
+  "ferns":"pakis-pakis (tanaman hijau)",
+  "family":"keluarga",
+  "fireflies":"kunang-kunang",
+  "sitting":"duduk (sedang)",
+  "low":"rendah",
+  "branch":"ranting / cabang",
+  "lighting":"menerangi (sedang)",
+  "way":"jalan",
+  "shining":"bersinar (sedang)",
+  "trembling":"gemetar (sedang)",
+  "courage":"keberanian",
+  "absence":"ketiadaan / tidak adanya",
+  "fear":"ketakutan / rasa takut",
+  "anyway":"bagaimanapun / tetap saja",
+  "slowly":"perlahan-lahan",
+  "bigger":"lebih besar",
+  "still":"masih / tetap",
+  "reached":"sampai di (masa lalu reach)",
+  "safely":"dengan aman",
+  "opened":"membuka (masa lalu open)",
+  "door":"pintu",
+  "tired":"lelah / capek",
+  "face":"wajah",
+  "broke":"retak menjadi (masa lalu break)",
+  "wide":"lebar / luas",
+  "grateful":"bersyukur / berterima kasih",
+  "amazed":"terkagum-kagum",
+  "helped":"membantu (masa lalu help)",
+  "holding":"memegang (sedang)",
+  "proudly":"dengan bangga",
+  "burned":"menyala / terbakar (masa lalu burn)",
+  "bright":"terang",
+  "steady":"stabil / kokoh / tidak gemetar",
+  "back":"kembali / pulang",
+  "home":"rumah",
+  "while":"sementara / sebentar",
+  "spoke":"berbicara (masa lalu speak)",
+  "softer":"lebih lembut",
+  "warmer":"lebih hangat",
+  "before":"sebelumnya",
+  "understand":"mengerti / memahami",
+  "problem":"masalah",
+  "forgot":"melupakan (masa lalu forget)",
+  "give":"memberikan",
+  "reminded":"mengingatkan (masa lalu remind)",
+  "reminded":"mengingatkan (masa lalu remind)",
+  "helping":"membantu (sedang)",
+  "anymore":"lagi / tidak lagi",
+  "nodded":"mengangguk (masa lalu nod)",
+  "lesson":"pelajaran",
+  "learned":"belajar / mendapat pelajaran (masa lalu learn)",
+  "focus":"fokus / berkonsentrasi",
+  "giving":"memberikan (sedang)",
+  "stop":"berhenti",
+  "hung":"tergantung / digantungkan (masa lalu hang)",
+  "window":"jendela",
+  "lit":"menerangi (masa lalu light)",
+  "peaceful":"damai / tenang",
+  "finally":"akhirnya",
+  "truly":"benar-benar / sungguh-sungguh",
+  "brave":"berani",
+  "bravest":"paling berani",
+  "important":"penting",
+  "others":"orang lain"
+};
+
+function showMeaning(word) {
+  let clean = word.toLowerCase().replace(/[.,!?;:()'"«»""''—–\-]/g,'');
+  let meaning = dictionary[clean];
+  if(!meaning){
+    if(clean.endsWith('s') && dictionary[clean.slice(0,-1)]) meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('es') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('ed') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('d') && dictionary[clean.slice(0,-1)]) meaning=dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ing') && dictionary[clean.slice(0,-3)]) meaning=dictionary[clean.slice(0,-3)];
+    else if(clean.endsWith('ly') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('er') && dictionary[clean.slice(0,-2)]) meaning=dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('est') && dictionary[clean.slice(0,-3)]) meaning=dictionary[clean.slice(0,-3)];
+    else if(clean.endsWith('ies') && dictionary[clean.slice(0,-3)+'y']) meaning=dictionary[clean.slice(0,-3)+'y'];
+    else meaning="❓ arti belum tersedia, coba cek kamus";
+  }
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `📖 <strong>${clean}</strong> → ${meaning} <small>🇮🇩</small>`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>toast.classList.remove('show'), 2800);
+}
+
+// ===== WORD WRAPPING =====
+function wrapWords(div) {
+  if(div.dataset.wrapped) return;
+  div.dataset.wrapped = "1";
+  function processNode(node) {
+    if(node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      if(!text.trim()) return;
+      const frag = document.createDocumentFragment();
+      const parts = text.split(/(\s+)/);
+      parts.forEach(part => {
+        if(/^\s+$/.test(part)) {
+          frag.appendChild(document.createTextNode(part));
+        } else if(part.length > 0) {
+          const match = part.match(/^([^a-zA-Z0-9']*)([a-zA-Z0-9'][a-zA-Z0-9']*)([^a-zA-Z0-9']*)$/);
+          if(match) {
+            if(match[1]) frag.appendChild(document.createTextNode(match[1]));
+            const span = document.createElement('span');
+            span.className = 'w';
+            span.textContent = match[2];
+            span.addEventListener('click', (e)=>{ e.stopPropagation(); showMeaning(match[2]); });
+            frag.appendChild(span);
+            if(match[3]) frag.appendChild(document.createTextNode(match[3]));
+          } else {
+            frag.appendChild(document.createTextNode(part));
+          }
+        }
+      });
+      node.parentNode.replaceChild(frag, node);
+    } else if(node.nodeType === Node.ELEMENT_NODE) {
+      if(node.classList && (node.classList.contains('read-marker') || node.classList.contains('w'))) return;
+      if(node.tagName === 'SCRIPT' || node.tagName === 'STYLE') return;
+      Array.from(node.childNodes).forEach(child => processNode(child));
+    }
+  }
+  const marker = div.querySelector('.read-marker');
+  const markerEl = marker ? marker.cloneNode(true) : null;
+  if(marker) marker.remove();
+  processNode(div);
+  if(markerEl) div.insertAdjacentElement('afterbegin', markerEl);
+}
+
+function wrapAllChapters() {
+  document.querySelectorAll('.chapter-text').forEach(div => wrapWords(div));
+}
+
+// ===== SPEED CONTROL =====
+let speechRate = 0.88;
+
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    speechRate = parseFloat(btn.dataset.rate);
+    if(currentUtt) { showSpeedChangeTip(); }
+  });
+});
+
+function showSpeedChangeTip() {
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `⚡ Speed changed! Press Stop then Listen again to apply.`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>toast.classList.remove('show'), 2500);
+}
+
+// ===== SPEECH =====
+let currentUtt = null;
+let isPlayingAll = false;
+let readChapters = new Set();
+
+const stories = {
+  1: "One rainy afternoon, Aslan was helping his grandmother tidy up the old attic. The attic smelled of wood and dust, and every corner was full of forgotten things. Aslan moved boxes, folded old blankets, and swept the dusty floor. Then, behind a tall stack of boxes, he found something small and round. It was an old brass lantern. The lantern was no bigger than Aslan's two hands put together. Its metal body was a warm golden color, and its tiny glass window was perfectly clear. Aslan picked it up carefully. The moment his fingers touched the handle, a small flame appeared inside the lantern. The flame was soft and warm, like a friendly fire. Aslan stared at it, surprised. Then he heard something even more surprising — a tiny, high voice coming from inside the lantern. Oh! Hello there, said the voice. I have been waiting a very long time for someone kind to find me.",
+  2: "Aslan brought the lantern to his room and sat on the bed. What is your name? Aslan asked. The little voice replied, My name is Lumi. Aslan smiled. That is a beautiful name. Why were you hiding in the attic? Lumi's flame flickered and grew very small. Because I am afraid, Lumi said in a quiet voice. Afraid of what? asked Aslan, leaning closer. Of the dark, Lumi whispered. Aslan blinked. He could not believe it. A lantern — a creature made of light — was afraid of the dark. But you ARE the light, said Aslan gently. I know, said Lumi sadly. But every time I go outside at night and see how big and dark the world is, my flame becomes very small and I feel like I cannot shine at all. I have been hiding for so long that I almost forgot I could glow. Aslan looked at the little lantern with great kindness. He understood that feeling very well.",
+  3: "That same evening, Aslan's grandmother called him. Aslan, I need you to walk down the forest path and bring this basket to old Mr. Yusuf's cottage. He is sick and needs food. The forest path was long and there were no streetlights. It would be very dark. Aslan looked at Lumi. Do you want to come with me? he asked. Lumi's flame trembled. The forest at night is very dark, Lumi said nervously. I know, said Aslan. That is exactly why I need you. There was a long silence. Then Lumi said in a small but determined voice, Okay. I will try. Aslan smiled warmly and picked up the lantern and the basket. They stepped out of the house together into the dark, cool night. The moment they left the light of the house, the darkness surrounded them like a thick, soft blanket. Lumi's flame trembled wildly. I am scared, Lumi said. That is okay, said Aslan calmly. I am right here. Take one step at a time.",
+  4: "As Aslan and Lumi walked deeper into the forest, the trees grew tall and the path became hard to see. Lumi's light flickered and trembled with every strange sound — the hoot of an owl, the rustle of leaves, the crack of a twig. I cannot do this, Lumi cried. What if I go out? What if my flame disappears and you are left all alone? Aslan stopped walking. He held the lantern up gently and looked into Lumi's little glowing face. Lumi, he said quietly, look around. Look at what your light is doing right now, even while you are afraid. Lumi looked. The warm circle of golden light reached the mossy path, the tree trunks, the ferns, and even a family of fireflies sitting on a low branch. You are lighting the way, said Aslan. You ARE shining — even while you are trembling. That is what courage really means. Not the absence of fear — but shining anyway. Lumi went quiet for a long moment. Then, very slowly, Lumi's flame grew a little bigger. And a little bigger. And a little bigger still.",
+  5: "Aslan and Lumi reached old Mr. Yusuf's cottage safely. The old man opened the door and his tired face broke into a wide, grateful smile when he saw the warm glow of the lantern. You found the forest path at night! he said, amazed. The lantern helped me, said Aslan, holding Lumi up proudly. Lumi's flame burned bright and steady — not trembling at all now. On the walk back home, Lumi was quiet for a while. Then the small voice spoke again, softer and warmer than before. Aslan, I think I understand now. The darkness was never the real problem. The real problem was that I forgot I had something to give. When you reminded me that my light was helping you, helping the path, helping Mr. Yusuf — I was not afraid anymore. Aslan nodded slowly. And that, he said, is the most important lesson I have ever learned too. When we focus on giving our light to others, we stop being afraid of the dark. That night, Lumi hung by Aslan's window and lit up the room with a warm, steady, peaceful glow — the glow of a lantern that had finally, truly learned to be brave."
+};
+
+function pickVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v=>v.lang==='en-US'&&(v.name.includes('Google')||v.name.includes('Samantha')||v.name.includes('Microsoft')))
+    || voices.find(v=>v.lang.startsWith('en'))
+    || null;
+}
+
+function stopAll() {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  currentUtt = null;
+  isPlayingAll = false;
+  document.querySelectorAll('.btn-listen.playing').forEach(b=>b.classList.remove('playing'));
+}
+
+function speak(chId, btn, onEnd) {
+  if(!window.speechSynthesis) return;
+  stopAll();
+  const text = stories[chId];
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'en-US';
+  utt.rate = speechRate;
+  utt.pitch = 1.05;
+  const v = pickVoice();
+  if(v) utt.voice = v;
+  if(btn) btn.classList.add('playing');
+  utt.onend = () => {
+    if(btn) btn.classList.remove('playing');
+    currentUtt = null;
+    if(onEnd) onEnd();
+  };
+  utt.onerror = () => {
+    if(btn) btn.classList.remove('playing');
+    currentUtt = null;
+  };
+  currentUtt = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+// ===== LISTEN BUTTONS =====
+document.querySelectorAll('.btn-listen').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ch = btn.getAttribute('data-ch');
+    if(btn.classList.contains('playing')) { stopAll(); return; }
+    isPlayingAll = false;
+    speak(ch, btn, () => {
+      if(!readChapters.has(ch)) {
+        readChapters.add(ch);
+        document.getElementById('ch'+ch).classList.add('done');
+        updateProgress();
+      }
+    });
+  });
+});
+
+// ===== PLAY ALL =====
+document.getElementById('playAllBtn').addEventListener('click', () => {
+  stopAll();
+  isPlayingAll = true;
+  let keys = ['1','2','3','4','5'];
+  let idx = 0;
+  function next() {
+    if(!isPlayingAll || idx >= keys.length) { isPlayingAll=false; return; }
+    const k = keys[idx];
+    const btn = document.querySelector(`[data-ch="${k}"]`);
+    document.getElementById('ch'+k).scrollIntoView({behavior:'smooth',block:'center'});
+    speak(k, btn, () => {
+      if(!readChapters.has(k)) {
+        readChapters.add(k);
+        document.getElementById('ch'+k).classList.add('done');
+        updateProgress();
+      }
+      idx++;
+      setTimeout(next, 700);
+    });
+  }
+  next();
+});
+
+document.getElementById('stopBtn').addEventListener('click', stopAll);
+
+// ===== PROGRESS =====
+function updateProgress() {
+  const pct = (readChapters.size/5)*100;
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = readChapters.size+' of 5 chapters read'+(readChapters.size===5?' — Light achieved! 🏆':'');
+}
+
+// ===== VOCAB PILLS =====
+document.querySelectorAll('.vocab-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const word = pill.getAttribute('data-word');
+    showMeaning(word);
+    if(window.speechSynthesis) {
+      const utt = new SpeechSynthesisUtterance(word);
+      utt.lang='en-US'; utt.rate=0.8;
+      const v=pickVoice(); if(v) utt.voice=v;
+      window.speechSynthesis.speak(utt);
+    }
+  });
+});
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', () => {
+  wrapAllChapters();
+  if(window.speechSynthesis) window.speechSynthesis.getVoices();
+  if(window.speechSynthesis) {
+    window.speechSynthesis.addEventListener('voiceschanged', () => {});
+  }
+});
+window.addEventListener('beforeunload', () => {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+});
+</script>
+</body>
+</html>

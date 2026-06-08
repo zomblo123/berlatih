@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hari 8 – How's the Weather Today? · Aslan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --blue-50:#EFF6FF;--blue-100:#DBEAFE;--blue-200:#BFDBFE;--blue-300:#93C5FD;
+  --blue-400:#60A5FA;--blue-500:#3B82F6;--blue-600:#2563EB;--blue-700:#1D4ED8;
+  --blue-800:#1E40AF;--blue-900:#1E3A8A;
+  --slate-50:#F8FAFC;--slate-100:#F1F5F9;--slate-200:#E2E8F0;--slate-300:#CBD5E1;
+  --slate-400:#94A3B8;--slate-500:#64748B;--slate-600:#475569;--slate-700:#334155;
+  --slate-800:#1E293B;--slate-900:#0F172A;
+  --green-50:#F0FDF4;--green-100:#DCFCE7;--green-200:#BBF7D0;--green-500:#22C55E;
+  --green-700:#15803D;--green-800:#166534;
+  --red-50:#FFF1F2;--red-100:#FFE4E6;--red-500:#EF4444;--red-700:#B91C1C;
+  --sky-50:#F0F9FF;--sky-100:#E0F2FE;--sky-200:#BAE6FD;--sky-300:#7DD3FC;
+  --sky-400:#38BDF8;--sky-500:#0EA5E9;--sky-600:#0284C7;--sky-700:#0369A1;--sky-800:#075985;
+  --amber-50:#FFFBEB;--amber-100:#FEF3C7;--amber-200:#FDE68A;--amber-500:#F59E0B;--amber-700:#B45309;--amber-800:#92400E;
+  --orange-50:#FFF7ED;--orange-100:#FFEDD5;--orange-200:#FED7AA;--orange-500:#F97316;--orange-700:#C2410C;
+  --gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-400:#9CA3AF;--gray-600:#4B5563;--gray-700:#374151;
+  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-xl:22px;
+  --shadow-sm:0 1px 3px rgba(15,23,42,.06),0 1px 2px rgba(15,23,42,.04);
+  --shadow-md:0 4px 12px rgba(15,23,42,.08),0 2px 6px rgba(15,23,42,.04);
+  --shadow-blue:0 4px 18px rgba(59,130,246,.18);
+  --font-serif:'Lora',Georgia,serif;--font-sans:'DM Sans',system-ui,sans-serif;--font-mono:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-sans);background:var(--slate-50);color:var(--slate-800);min-height:100vh;line-height:1.6;}
+
+.brand-strip{background:linear-gradient(135deg,var(--blue-800) 0%,var(--blue-600) 100%);padding:7px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.brand-name{font-family:var(--font-serif);font-size:13px;font-style:italic;color:rgba(255,255,255,.9);}
+.brand-course{font-size:11px;color:rgba(255,255,255,.6);font-weight:500;letter-spacing:.04em;text-transform:uppercase;}
+
+.page-wrap{max-width:820px;margin:0 auto;padding:24px 16px 60px;}
+
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--blue-700);background:white;border:1px solid var(--blue-200);border-radius:var(--radius-md);padding:7px 14px;text-decoration:none;box-shadow:var(--shadow-sm);transition:all .18s ease;margin-bottom:20px;}
+.back-btn:hover{background:var(--blue-50);border-color:var(--blue-300);transform:translateX(-2px);}
+.back-btn svg{width:14px;height:14px;}
+
+.page-header{background:white;border:1px solid var(--slate-200);border-radius:var(--radius-xl);padding:22px 24px;margin-bottom:28px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.page-header::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--sky-400),var(--blue-300),var(--sky-400));}
+.ph-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.badge{font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:100px;letter-spacing:.02em;}
+.badge-day{background:var(--blue-600);color:white;}
+.badge-level{background:var(--blue-100);color:var(--blue-800);}
+.badge-theme{background:var(--slate-100);color:var(--slate-600);border:1px solid var(--slate-200);}
+.ph-title{font-family:var(--font-serif);font-size:26px;font-weight:600;color:var(--slate-900);line-height:1.2;margin-bottom:6px;}
+.ph-sub{font-size:13px;color:var(--slate-500);display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.dot{width:3px;height:3px;background:var(--slate-300);border-radius:50%;}
+.ph-owner{position:absolute;right:24px;top:22px;font-family:var(--font-serif);font-size:12px;font-style:italic;color:var(--blue-400);}
+
+.section-label{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--slate-500);margin:28px 0 14px;}
+.section-label .sl-icon{width:28px;height:28px;background:var(--blue-600);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.section-label .sl-icon svg{width:14px;height:14px;fill:white;}
+.section-label::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--slate-200),transparent);}
+
+.reading-box{background:white;border:1px solid var(--slate-200);border-radius:var(--radius-xl);padding:28px 30px;font-family:var(--font-serif);font-size:16px;line-height:1.95;color:var(--slate-700);box-shadow:var(--shadow-md);}
+.reading-box p{margin-bottom:1rem;}
+.reading-box p:last-child{margin-bottom:0;}
+.hi-word{background:var(--blue-100);color:var(--blue-800);border-radius:4px;padding:1px 5px;font-weight:600;font-style:normal;cursor:default;transition:background .15s;}
+.hi-word:hover{background:var(--blue-200);}
+
+/* WEATHER CARDS — special for day 8 */
+.weather-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px;}
+.weather-card{border-radius:var(--radius-xl);padding:18px 14px;text-align:center;box-shadow:var(--shadow-sm);transition:transform .2s,box-shadow .2s;cursor:default;position:relative;overflow:hidden;}
+.weather-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
+.wc-emoji{font-size:38px;margin-bottom:10px;display:block;}
+.wc-en{font-size:14px;font-weight:700;margin-bottom:3px;}
+.wc-id{font-size:11.5px;opacity:.8;margin-bottom:8px;}
+.wc-sentence{font-size:11px;font-style:italic;line-height:1.4;padding-top:8px;border-top:1px solid rgba(255,255,255,.4);opacity:.85;}
+
+.wc-sunny{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border:1px solid var(--amber-200);color:var(--amber-800);}
+.wc-cloudy{background:linear-gradient(135deg,#F3F4F6,#E5E7EB);border:1px solid var(--gray-200);color:var(--gray-700);}
+.wc-rainy{background:linear-gradient(135deg,var(--sky-100),var(--blue-100));border:1px solid var(--sky-200);color:var(--sky-800);}
+.wc-windy{background:linear-gradient(135deg,#EEF2FF,#E0E7FF);border:1px solid #C7D2FE;color:#3730A3;}
+.wc-foggy{background:linear-gradient(135deg,#F9FAFB,#F3F4F6);border:1px solid #D1D5DB;color:#374151;}
+.wc-stormy{background:linear-gradient(135deg,#1E293B,#334155);border:1px solid #475569;color:#E2E8F0;}
+.wc-cool{background:linear-gradient(135deg,var(--blue-50),var(--sky-100));border:1px solid var(--blue-200);color:var(--blue-800);}
+.wc-humid{background:linear-gradient(135deg,#ECFDF5,var(--green-100));border:1px solid var(--green-200);color:var(--green-800);}
+
+/* BANDUNG WEATHER WIDGET */
+.bandung-widget{background:linear-gradient(135deg,var(--sky-700) 0%,var(--blue-800) 100%);border-radius:var(--radius-xl);padding:24px 28px;box-shadow:var(--shadow-lg);color:white;display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+.bw-left{flex:1;min-width:180px;}
+.bw-city{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-bottom:4px;}
+.bw-title{font-family:var(--font-serif);font-size:20px;font-weight:600;margin-bottom:6px;}
+.bw-desc{font-size:13px;opacity:.8;line-height:1.6;}
+.bw-right{text-align:center;}
+.bw-emoji{font-size:56px;line-height:1;}
+.bw-temp{font-size:14px;opacity:.75;margin-top:6px;font-family:var(--font-mono);}
+.bw-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.bw-tag{background:rgba(255,255,255,.15);font-size:11px;padding:3px 10px;border-radius:100px;border:1px solid rgba(255,255,255,.25);}
+
+/* SEASONS vs INDONESIA */
+.compare-box{background:white;border:1px solid var(--slate-200);border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-md);}
+.cb-header{background:var(--sky-600);color:white;padding:12px 18px;font-size:13px;font-weight:600;}
+.cb-grid{display:grid;grid-template-columns:1fr 1fr;}
+.cb-col{padding:16px 18px;}
+.cb-col:first-child{border-right:1px solid var(--slate-100);}
+.cb-col-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;color:var(--slate-500);}
+.cb-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;color:var(--slate-700);}
+.cb-emoji{font-size:16px;width:22px;text-align:center;}
+
+/* VOCAB GRID */
+.vocab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;}
+.vocab-card{background:white;border:1px solid var(--slate-200);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow-sm);transition:transform .18s,box-shadow .18s,border-color .18s;}
+.vocab-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-blue);border-color:var(--blue-200);}
+.vocab-en{font-size:14.5px;font-weight:600;color:var(--slate-800);font-family:var(--font-serif);}
+.vocab-id{font-size:12px;color:var(--blue-600);font-weight:500;margin-top:3px;}
+.vocab-ex{font-size:11.5px;color:var(--slate-400);margin-top:6px;font-style:italic;line-height:1.5;padding-top:6px;border-top:1px solid var(--slate-100);}
+
+/* GRAMMAR */
+.grammar-box{background:linear-gradient(135deg,var(--sky-50) 0%,white 100%);border:1px solid var(--sky-200);border-radius:var(--radius-xl);padding:22px 26px;box-shadow:var(--shadow-sm);}
+.g-title{font-family:var(--font-serif);font-size:15px;font-weight:600;color:var(--sky-900);margin-bottom:16px;}
+.g-table{width:100%;border-collapse:collapse;}
+.g-table tr{border-bottom:1px solid var(--sky-100);}
+.g-table tr:last-child{border-bottom:none;}
+.g-table td{padding:10px 0;vertical-align:top;}
+.g-pattern{font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--sky-700);min-width:240px;padding-right:16px;}
+.g-pattern em{color:var(--sky-900);font-weight:700;font-style:normal;background:var(--sky-100);padding:0 3px;border-radius:3px;}
+.g-ex{font-size:13px;color:var(--slate-600);}
+.g-note{margin-top:14px;font-size:13px;color:var(--sky-800);background:var(--sky-50);border:1px solid var(--sky-200);border-radius:var(--radius-md);padding:10px 14px;line-height:1.7;}
+.g-note strong{color:var(--sky-900);}
+
+/* CONVERSATION */
+.talk-wrap{display:flex;flex-direction:column;gap:12px;background:white;border:1px solid var(--slate-200);border-radius:var(--radius-xl);padding:24px;box-shadow:var(--shadow-md);}
+.bubble-q{align-self:flex-start;background:var(--slate-100);border:1px solid var(--slate-200);border-radius:4px var(--radius-lg) var(--radius-lg) var(--radius-lg);padding:12px 16px;max-width:82%;}
+.bubble-a{align-self:flex-end;background:var(--blue-600);border-radius:var(--radius-lg) 4px var(--radius-lg) var(--radius-lg);padding:12px 16px;max-width:82%;}
+.b-label{font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px;}
+.bubble-q .b-label{color:var(--slate-400);}
+.bubble-a .b-label{color:rgba(255,255,255,.6);}
+.b-text{font-size:14px;line-height:1.65;}
+.bubble-q .b-text{color:var(--slate-700);}
+.bubble-a .b-text{color:white;}
+
+/* QUIZ */
+.quiz-wrap{display:flex;flex-direction:column;gap:14px;}
+.q-card{background:white;border:1px solid var(--slate-200);border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow-sm);transition:border-color .2s;}
+.q-card.answered{border-color:var(--slate-300);}
+.q-num{font-size:11px;font-weight:600;color:var(--slate-400);letter-spacing:.04em;text-transform:uppercase;margin-bottom:7px;}
+.q-text{font-family:var(--font-serif);font-size:15.5px;color:var(--slate-800);margin-bottom:14px;line-height:1.5;}
+.q-options{display:flex;flex-direction:column;gap:7px;}
+.q-opt{font-size:13.5px;padding:10px 14px;border:1.5px solid var(--slate-200);border-radius:var(--radius-md);cursor:pointer;color:var(--slate-700);background:var(--slate-50);transition:all .15s;text-align:left;font-family:var(--font-sans);font-weight:400;}
+.q-opt:hover:not(:disabled){border-color:var(--blue-300);background:var(--blue-50);color:var(--blue-800);}
+.q-opt.correct{background:var(--green-50);border-color:var(--green-500);color:var(--green-800);font-weight:500;}
+.q-opt.wrong{background:var(--red-50);border-color:var(--red-500);color:var(--red-700);}
+.q-opt:disabled{cursor:default;}
+.q-feedback{font-size:13px;margin-top:10px;padding:10px 14px;border-radius:var(--radius-md);display:none;line-height:1.6;}
+.q-feedback.show{display:block;}
+.fb-correct{background:var(--green-50);color:var(--green-800);border:1px solid var(--green-200);}
+.fb-wrong{background:var(--red-50);color:var(--red-700);border:1px solid var(--red-100);}
+
+.score-bar{background:white;border:1px solid var(--slate-200);border-radius:var(--radius-lg);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;margin-top:16px;box-shadow:var(--shadow-md);}
+.score-label{font-size:14px;color:var(--slate-500);}
+.score-right{text-align:right;}
+.score-val{font-size:28px;font-weight:600;color:var(--blue-700);font-family:var(--font-serif);}
+.score-msg{font-size:12px;color:var(--slate-400);margin-top:2px;}
+.score-progress{margin-top:14px;height:8px;background:var(--slate-100);border-radius:100px;overflow:hidden;}
+.score-fill{height:100%;background:linear-gradient(90deg,var(--blue-400),var(--blue-600));border-radius:100px;transition:width 1s ease;}
+
+.tip-box{background:linear-gradient(135deg,var(--green-50),#f0fff4);border:1px solid var(--green-200);border-radius:var(--radius-xl);padding:20px 24px;box-shadow:var(--shadow-sm);}
+.tip-icon{font-size:24px;margin-bottom:8px;}
+.t-title{font-size:13.5px;font-weight:600;color:var(--green-800);margin-bottom:7px;}
+.t-body{font-size:14px;color:var(--green-700);line-height:1.75;}
+.t-body strong{color:var(--green-800);}
+
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:var(--radius-md);font-family:var(--font-sans);font-size:13.5px;font-weight:500;cursor:pointer;border:none;transition:all .18s ease;text-decoration:none;}
+.btn-primary{background:var(--blue-600);color:white;box-shadow:var(--shadow-blue);}
+.btn-primary:hover{background:var(--blue-700);transform:translateY(-1px);}
+.btn-secondary{background:white;color:var(--slate-700);border:1px solid var(--slate-200);box-shadow:var(--shadow-sm);}
+.btn-secondary:hover{border-color:var(--blue-300);color:var(--blue-700);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--slate-600);border:1px solid var(--slate-200);}
+.btn-ghost:hover{background:var(--slate-100);}
+
+.page-footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--slate-200);text-align:center;font-size:12px;color:var(--slate-400);}
+.page-footer strong{color:var(--slate-500);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.page-header{animation:fadeUp .4s ease both;}
+.reading-box{animation:fadeUp .4s .1s ease both;}
+.bandung-widget{animation:fadeUp .4s .12s ease both;}
+.weather-grid{animation:fadeUp .4s .14s ease both;}
+.compare-box{animation:fadeUp .4s .16s ease both;}
+.vocab-grid{animation:fadeUp .4s .18s ease both;}
+.grammar-box{animation:fadeUp .4s .2s ease both;}
+.talk-wrap{animation:fadeUp .4s .25s ease both;}
+.quiz-wrap{animation:fadeUp .4s .3s ease both;}
+
+@media(max-width:640px){
+  .page-wrap{padding:16px 12px 48px;}
+  .ph-title{font-size:21px;}
+  .reading-box{padding:20px 18px;font-size:15px;}
+  .ph-owner{display:none;}
+  .g-pattern{min-width:150px;font-size:12px;}
+  .vocab-grid{grid-template-columns:repeat(2,1fr);}
+  .weather-grid{grid-template-columns:repeat(2,1fr);}
+  .cb-grid{grid-template-columns:1fr;}
+  .cb-col:first-child{border-right:none;border-bottom:1px solid var(--slate-100);}
+  .bandung-widget{gap:14px;}
+  .bw-emoji{font-size:40px;}
+}
+@media(min-width:641px) and (max-width:900px){
+  .page-wrap{padding:28px 24px 64px;}
+  .vocab-grid{grid-template-columns:repeat(3,1fr);}
+  .weather-grid{grid-template-columns:repeat(4,1fr);}
+}
+</style>
+</head>
+<body>
+
+<div class="brand-strip">
+  <span class="brand-name">Aslan</span>
+  <span class="brand-course">English Reading Flipbook · 30 Hari</span>
+</div>
+
+<div class="page-wrap">
+
+  <a href="../perpustakaan.html" class="back-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Kembali ke Perpustakaan
+  </a>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="ph-owner">milik Aslan ✦</div>
+    <div class="ph-badges">
+      <span class="badge badge-day">Hari 8 / 30</span>
+      <span class="badge badge-level">A2 Elementary</span>
+      <span class="badge badge-theme">🌤️ Cuaca</span>
+    </div>
+    <div class="ph-title">How's the Weather Today?</div>
+    <div class="ph-sub">
+      <span>📖 Kosakata cuaca &amp; perkiraan cuaca sederhana</span>
+      <span class="dot"></span>
+      <span>🔤 It is / It's + adjective</span>
+      <span class="dot"></span>
+      <span>📚 Weather Vocabulary</span>
+    </div>
+  </div>
+
+  <!-- READING -->
+  <div class="section-label">
+    <div class="sl-icon">
+      <svg viewBox="0 0 24 24"><path d="M6 2L2 6v12l4 4h12l4-4V6l-4-4H6zm11.5 15.5h-11V6.5h11v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+    </div>
+    Bacaan
+  </div>
+
+  <div class="reading-box">
+    <p>Hello! I am <span class="hi-word">Aslan</span> and I live in <span class="hi-word">Bandung</span>. Bandung is famous for its <span class="hi-word">cool</span> and <span class="hi-word">fresh</span> weather. People always say, "Bandung is the city of flowers." I think it is also the city of perfect weather!</p>
+    <p>In the <span class="hi-word">morning</span>, the weather in Bandung is usually <span class="hi-word">cool</span> and <span class="hi-word">foggy</span>. It feels very fresh when I wake up at six o'clock. Sometimes I can see a thin layer of mist near the mountains. Kakek Cecep loves the cool morning air — he always does his gardening in the morning!</p>
+    <p>During the <span class="hi-word">dry season</span>, the days are <span class="hi-word">sunny</span> and <span class="hi-word">warm</span>. It is a great time to play football at the park. Fathan and I love playing outside when it is sunny. But in Bandung, even on a sunny day, it is never too <span class="hi-word">hot</span>. It is always comfortable!</p>
+    <p>During the <span class="hi-word">rainy season</span>, it often <span class="hi-word">rains</span> in the afternoon. The rain in Bandung can be very <span class="hi-word">heavy</span> sometimes. When it rains, I come home from school and stay inside. I enjoy reading books or playing Minecraft with Fathan while it rains outside. Enin Ii always makes a warm drink for us!</p>
+    <p>My favourite weather is when it is <span class="hi-word">cloudy</span> but not raining. It is cool and comfortable — perfect for a walk. I also love the weather just after it rains. Everything smells so <span class="hi-word">fresh</span> and the sky looks beautiful.</p>
+    <p>What about you? What is your favourite weather? In Bandung, we are very lucky — the weather is almost always <span class="hi-word">pleasant</span>. That is one reason why I love my city so much!</p>
+  </div>
+
+  <!-- BANDUNG WEATHER WIDGET -->
+  <div class="section-label">
+    <div class="sl-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+    </div>
+    Cuaca Khas Bandung
+  </div>
+
+  <div class="bandung-widget">
+    <div class="bw-left">
+      <div class="bw-city">📍 Bandung, Jawa Barat</div>
+      <div class="bw-title">Kota dengan Cuaca Paling Nyaman!</div>
+      <div class="bw-desc">Bandung dikenal dengan udaranya yang sejuk dan segar. Suhu rata-rata 20–28°C sepanjang tahun. Musim hujan biasanya Oktober–April, musim kering Mei–September.</div>
+      <div class="bw-tags">
+        <span class="bw-tag">🌡️ 20–28°C</span>
+        <span class="bw-tag">☁️ Sering berawan</span>
+        <span class="bw-tag">🌧️ Hujan sore hari</span>
+        <span class="bw-tag">🌿 Udara segar</span>
+      </div>
+    </div>
+    <div class="bw-right">
+      <div class="bw-emoji">🌤️</div>
+      <div class="bw-temp">Partly cloudy · Cool</div>
+    </div>
+  </div>
+
+  <!-- WEATHER CARDS -->
+  <div class="section-label">
+    <div class="sl-icon">
+      <svg viewBox="0 0 24 24"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>
+    </div>
+    Jenis-Jenis Cuaca
+  </div>
+
+  <div class="weather-grid">
+    <div class="weather-card wc-sunny">
+      <span class="wc-emoji">☀️</span>
+      <div class="wc-en">Sunny</div>
+      <div class="wc-id">Cerah / Panas</div>
+      <div class="wc-sentence">"It's sunny today. Let's play outside!"</div>
+    </div>
+    <div class="weather-card wc-cloudy">
+      <span class="wc-emoji">☁️</span>
+      <div class="wc-en">Cloudy</div>
+      <div class="wc-id">Berawan</div>
+      <div class="wc-sentence">"It's cloudy but cool. Perfect!"</div>
+    </div>
+    <div class="weather-card wc-rainy">
+      <span class="wc-emoji">🌧️</span>
+      <div class="wc-en">Rainy</div>
+      <div class="wc-id">Hujan</div>
+      <div class="wc-sentence">"It's raining. Bring an umbrella!"</div>
+    </div>
+    <div class="weather-card wc-windy">
+      <span class="wc-emoji">💨</span>
+      <div class="wc-en">Windy</div>
+      <div class="wc-id">Berangin</div>
+      <div class="wc-sentence">"It's windy today. Hold your hat!"</div>
+    </div>
+    <div class="weather-card wc-foggy">
+      <span class="wc-emoji">🌫️</span>
+      <div class="wc-en">Foggy</div>
+      <div class="wc-id">Berkabut</div>
+      <div class="wc-sentence">"It's foggy this morning in Bandung."</div>
+    </div>
+    <div class="weather-card wc-stormy">
+      <span class="wc-emoji">⛈️</span>
+      <div class="wc-en">Stormy</div>
+      <div class="wc-id">Badai</div>
+      <div class="wc-sentence">"It's stormy! Stay inside, Aslan!"</div>
+    </div>
+    <div class="weather-card wc-cool">
+      <span class="wc-emoji">🌬️</span>
+      <div class="wc-en">Cool / Fresh</div>
+      <div class="wc-id">Sejuk / Segar</div>
+      <div class="wc-sentence">"It's cool and fresh in Bandung."</div>
+    </div>
+    <div class="weather-card wc-humid">
+      <span class="wc-emoji">💧</span>
+      <div class="wc-en">Humid</div>
+      <div class="wc-id">Lembab</div>
+      <div class="wc-sentence">"It's humid after the rain."</div>
+    </div>
+  </div>
+
+  <!-- DRY vs RAINY SEASON -->
+  <div class="section-label">
+    <div class="sl-icon">
+      <svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+    </div>
+    Musim di Indonesia
+  </div>
+
+  <div class="compare-box">
+    <div class="cb-header">🗓️ Indonesia hanya punya 2 musim — berbeda dengan negara 4 musim!</div>
+    <div class="cb-grid">
+      <div class="cb-col">
+        <div class="cb-col-title">☀️ Dry Season · Musim Kemarau</div>
+        <div class="cb-item"><span class="cb-emoji">📅</span> Mei – September</div>
+        <div class="cb-item"><span class="cb-emoji">🌡️</span> Warm &amp; sunny / hangat &amp; cerah</div>
+        <div class="cb-item"><span class="cb-emoji">⚽</span> Great for outdoor activities</div>
+        <div class="cb-item"><span class="cb-emoji">💧</span> Very little rain</div>
+        <div class="cb-item"><span class="cb-emoji">🗣️</span> "It's the dry season now."</div>
+      </div>
+      <div class="cb-col">
+        <div class="cb-col-title">🌧️ Rainy Season · Musim Hujan</div>
+        <div class="cb-item"><span class="cb-emoji">📅</span> Oktober – April</div>
+        <div class="cb-item"><span class="cb-emoji">🌡️</span> Cool &amp; wet / sejuk &amp; basah</div>
+        <div class="cb-item"><span class="cb-emoji">🌂</span> Always bring an umbrella!</div>
+        <div class="cb-item"><span class="cb-emoji">💦</span> Heavy rain in the afternoon</div>
+        <div class="cb-item"><span class="cb-emoji">🗣️</span> "It's raining again this afternoon!"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOCABULARY -->
+  <div class="section-label">
+    <div class="sl-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    </div>
+    Kosakata Penting
+  </div>
+
+  <div class="vocab-grid">
+    <div class="vocab-card">
+      <div class="vocab-en">weather</div>
+      <div class="vocab-id">cuaca</div>
+      <div class="vocab-ex">"How's the weather today?"</div>
+    </div>
+    <div class="vocab-card">
+      <div class="vocab-en">sunny</div>
+      <div class="vocab-id">cerah / bersinar</div>
+      <div class="vocab-ex">"It's sunny and warm today."</div>
+    </div>
+    <div class="vocab-card">
+      <div class="vocab-en">rainy</div>
+      <div class="vocab-id">hujan</div>
+      <div class="vocab-ex">"It's rainy this afternoon."</div>
+    </div>
+    <div class="vocab-card">
+      <div class="vocab-en">cloudy</div>
+      <div class="vocab-id">berawan</div>
+      <div class="vocab-ex">"It's cloudy but not cold."</div>
+    </div>
+    <div class="vocab-card">
+      <div class="vocab-en">cool</div>
+      <div class="vocab-id">sejuk</div>
+      <div class="vocab-ex">"Bandung is always cool."</div>
+    </div>
+    <div class="vocab-card">
+      <div class="vocab-en">foggy</div>
+      <div class="vocab-id">berkabut</div>
+      <div class="vocab-ex">"It's foggy in the morning."</div>
+    </div>
+    <div class="vocab-card">
+      <div class="vocab-en">humid</div>
+      <div class="vocab-id">lembab</div>
+      <div class="vocab-ex">"It feels humid after the rain."</div>
+    </div>
+    <div class="vocab-card">
+      <div class="vocab-en">umbrella</div>
+      <div class="vocab-id">payung</div>
+      <div class="vocab-ex">"Bring your umbrella today!"</div>
+    </div>
+    <div class="vocab-card">
+      <div class="vocab-en">dry season</div>
+      <div class="vocab-id">musim kemarau</div>
+      <div class="vocab-ex">"The dry season is May–September."</div>
+    </div>
+    <div class="vocab-card">
+      <div class="vocab-en">rainy season</div>
+      <div class="vocab-id">musim hujan</div>
+      <div class="vocab-ex">"The rainy season starts in October."</div>
+    </div>
+    <div class="vocab-card">
+      <div class="vocab-en">pleasant</div>
+      <div class="vocab-id">menyenangkan / nyaman</div>
+      <div class="vocab-ex">"The weather is very pleasant."</div>
+    </div>
+    <div class="vocab-card">
+      <div class="vocab-en">forecast</div>
+      <div class="vocab-id">prakiraan cuaca</div>
+      <div class="vocab-ex">"The forecast says it will rain."</div>
+    </div>
+  </div>
+
+  <!-- GRAMMAR -->
+  <div class="section-label">
+    <div class="sl-icon">
+      <svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+    </div>
+    Grammar Fokus
+  </div>
+
+  <div class="grammar-box">
+    <div class="g-title">✦ It is / It's + Adjective — Mendeskripsikan Cuaca</div>
+    <table class="g-table">
+      <tr>
+        <td><div class="g-pattern"><em>It is</em> sunny today.</div></td>
+        <td><div class="g-ex">→ It is / It's + adjective cuaca</div></td>
+      </tr>
+      <tr>
+        <td><div class="g-pattern"><em>It's</em> raining outside.</div></td>
+        <td><div class="g-ex">→ It's + kata kerja -ing (sedang terjadi)</div></td>
+      </tr>
+      <tr>
+        <td><div class="g-pattern"><em>It's</em> going to rain later.</div></td>
+        <td><div class="g-ex">→ It's going to + kata kerja (prediksi)</div></td>
+      </tr>
+      <tr>
+        <td><div class="g-pattern"><em>How's</em> the weather today?</div></td>
+        <td><div class="g-ex">→ How's = How is (pertanyaan cuaca)</div></td>
+      </tr>
+      <tr>
+        <td><div class="g-pattern"><em>What's</em> the weather like?</div></td>
+        <td><div class="g-ex">→ What's the weather like? (alternatif pertanyaan)</div></td>
+      </tr>
+    </table>
+    <div class="g-note">
+      💡 <strong>Selalu gunakan "It"</strong> saat mendeskripsikan cuaca — bukan "The weather is" saja (meski benar, "It's" lebih natural dan umum digunakan).<br><br>
+      ☀️ <strong>It's sunny.</strong> &nbsp;|&nbsp; 🌧️ <strong>It's raining.</strong> &nbsp;|&nbsp; ☁️ <strong>It's cloudy.</strong> &nbsp;|&nbsp; 💨 <strong>It's windy.</strong><br><br>
+      Tanya: <strong>"How's the weather?"</strong> &nbsp;→&nbsp; Jawab: <strong>"It's [adjective]."</strong>
+    </div>
+  </div>
+
+  <!-- CONVERSATION -->
+  <div class="section-label">
+    <div class="sl-icon">
+      <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+    </div>
+    Percakapan
+  </div>
+
+  <div class="talk-wrap">
+    <div class="bubble-q">
+      <div class="b-label">Fathan</div>
+      <div class="b-text">Hey Aslan! How's the weather in Bandung today?</div>
+    </div>
+    <div class="bubble-a">
+      <div class="b-label">Aslan</div>
+      <div class="b-text">It's cloudy and cool this morning — typical Bandung! There was some fog near the mountains when I woke up. It's so beautiful and fresh. Kakek Cecep is already in the garden!</div>
+    </div>
+    <div class="bubble-q">
+      <div class="b-label">Fathan</div>
+      <div class="b-text">Do you think it's going to rain this afternoon? Should I bring an umbrella?</div>
+    </div>
+    <div class="bubble-a">
+      <div class="b-label">Aslan</div>
+      <div class="b-text">Probably yes! In Bandung, it usually rains in the afternoon during the rainy season. Better bring your umbrella. But the morning looks nice — it might be sunny later!</div>
+    </div>
+    <div class="bubble-q">
+      <div class="b-label">Fathan</div>
+      <div class="b-text">What's your favourite kind of weather, Aslan?</div>
+    </div>
+    <div class="bubble-a">
+      <div class="b-label">Aslan</div>
+      <div class="b-text">I love it when it's cloudy but not raining — cool and comfortable. Perfect for a walk or playing football. But I also love after-rain weather! Everything smells so fresh. What about you?</div>
+    </div>
+    <div class="bubble-q">
+      <div class="b-label">Fathan</div>
+      <div class="b-text">I like sunny weather! Then we can play football at the park. If it rains, we just play Minecraft inside!</div>
+    </div>
+    <div class="bubble-a">
+      <div class="b-label">Aslan</div>
+      <div class="b-text">Haha! That's true. Rain or shine — we always have fun! And Enin Ii's warm drinks make rainy days even better. 😄</div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="section-label">
+    <div class="sl-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+    </div>
+    Kuis Interaktif
+  </div>
+
+  <div class="quiz-wrap" id="quiz"></div>
+
+  <div class="score-bar" id="scorebar" style="display:none;">
+    <div>
+      <div class="score-label">Nilai akhirmu, Aslan 🎉</div>
+      <div class="score-progress" style="width:180px;margin-top:8px;">
+        <div class="score-fill" id="score-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="score-right">
+      <div class="score-val" id="score-val">0 / 5</div>
+      <div class="score-msg" id="score-msg"></div>
+    </div>
+  </div>
+
+  <!-- TIPS -->
+  <div class="section-label">
+    <div class="sl-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 001 1h6a1 1 0 001-1v-2.26A7 7 0 0019 9a7 7 0 00-7-7zM9 21a1 1 0 001 1h4a1 1 0 000-2H10a1 1 0 00-1 1z"/></svg>
+    </div>
+    Tips Belajar Hari Ini
+  </div>
+
+  <div class="tip-box">
+    <div class="tip-icon">🌤️</div>
+    <div class="t-title">Jadikan Cuaca sebagai Latihan Harian!</div>
+    <div class="t-body">
+      Mulai sekarang, setiap pagi sebelum berangkat sekolah, lihat ke luar jendela dan ucapkan cuaca hari itu dalam bahasa Inggris:<br><br>
+      ☀️ <strong>"It's sunny today! I don't need an umbrella."</strong><br>
+      🌧️ <strong>"It's raining. I should bring my umbrella."</strong><br>
+      ☁️ <strong>"It's cloudy and cool — typical Bandung morning!"</strong><br><br>
+      Kamu juga bisa bilang ke Kakek Cecep atau Ibu Fety setiap pagi: <strong>"The weather today is..."</strong> Latihan kecil setiap hari = kemajuan besar! 🌱
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <strong>Aslan</strong> · English Reading Flipbook 30 Hari · Level A2 → B1<br>
+    Hari 8 dari 30 · Tema: Cuaca · It is / It's + adjective · Weather Vocabulary
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  {
+    q: "How is the weather in Bandung usually described?",
+    opts: ["Hot and dry", "Cool and fresh", "Stormy and windy", "Humid and foggy all day"],
+    ans: 1,
+    exp: "✅ Benar! Bandung dikenal dengan cuacanya yang cool and fresh — sejuk dan segar. Suhu rata-rata 20–28°C."
+  },
+  {
+    q: "Choose the correct sentence to describe weather:",
+    opts: [
+      "Weather is sunny today.",
+      "The is sunny today.",
+      "It's sunny today.",
+      "Is sunny today."
+    ],
+    ans: 2,
+    exp: "✅ Benar! Selalu gunakan 'IT'S' atau 'IT IS' untuk mendeskripsikan cuaca. 'IT'S sunny today.' — Hari ini cerah."
+  },
+  {
+    q: "When does it usually rain in Bandung?",
+    opts: ["In the morning", "In the afternoon", "At midnight", "It never rains in Bandung"],
+    ans: 1,
+    exp: "✅ Benar! 'It often rains in the afternoon.' — Di Bandung, hujan biasanya turun di sore hari."
+  },
+  {
+    q: "What does 'foggy' mean in Indonesian?",
+    opts: ["Cerah", "Berawan", "Berangin", "Berkabut"],
+    ans: 3,
+    exp: "✅ Benar! 'Foggy' artinya berkabut. 'It's foggy this morning in Bandung.' — Pagi ini berkabut di Bandung."
+  },
+  {
+    q: "Indonesia has ___ seasons.",
+    opts: ["Four — spring, summer, autumn, winter", "Three — dry, rainy, and cold", "Two — dry season and rainy season", "One — it's always summer"],
+    ans: 2,
+    exp: "✅ Benar! Indonesia hanya punya 2 musim: Dry Season (Musim Kemarau) dan Rainy Season (Musim Hujan). Berbeda dengan negara 4 musim!"
+  }
+];
+
+let answered = new Array(questions.length).fill(false);
+let score = 0;
+
+function buildQuiz() {
+  const wrap = document.getElementById('quiz');
+  wrap.innerHTML = questions.map((q, qi) => `
+    <div class="q-card" id="qcard-${qi}">
+      <div class="q-num">Soal ${qi + 1} dari ${questions.length}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-options">
+        ${q.opts.map((o, oi) => `<button class="q-opt" onclick="answer(${qi},${oi})">${o}</button>`).join('')}
+      </div>
+      <div class="q-feedback" id="fb-${qi}"></div>
+    </div>
+  `).join('');
+}
+
+function answer(qi, chosen) {
+  if (answered[qi]) return;
+  answered[qi] = true;
+  const q = questions[qi];
+  const card = document.getElementById('qcard-' + qi);
+  const opts = card.querySelectorAll('.q-opt');
+  const fb = document.getElementById('fb-' + qi);
+  opts.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.ans) btn.classList.add('correct');
+    else if (i === chosen) btn.classList.add('wrong');
+  });
+  card.classList.add('answered');
+  const isCorrect = chosen === q.ans;
+  if (isCorrect) score++;
+  fb.textContent = isCorrect ? q.exp : '❌ Kurang tepat. ' + q.exp.replace('✅ Benar! ', '');
+  fb.className = 'q-feedback show ' + (isCorrect ? 'fb-correct' : 'fb-wrong');
+  if (answered.every(Boolean)) {
+    const sb = document.getElementById('scorebar');
+    sb.style.display = 'flex';
+    document.getElementById('score-val').textContent = score + ' / ' + questions.length;
+    setTimeout(() => { document.getElementById('score-fill').style.width = (score / questions.length * 100) + '%'; }, 100);
+    const msgs = ['Semangat terus, Aslan! Ayo coba lagi! 💪', 'Lumayan! Baca lagi bagian bacaan ya! 📖', 'Bagus! Sedikit lagi sempurna! 🌟', 'Hampir sempurna! Keren sekali! 🎉', 'Sempurna! Aslan luar biasa! 🏆'];
+    document.getElementById('score-msg').textContent = msgs[Math.min(score, 4)];
+    sb.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+buildQuiz();
+
+function sendPrompt(text) {
+  if (typeof window.sendPrompt === 'function' && window.sendPrompt !== sendPrompt) {
+    window.sendPrompt(text);
+  } else {
+    navigator.clipboard && navigator.clipboard.writeText(text).then(() => {
+      alert('Prompt disalin! Tempelkan di kolom chat Claude.');
+    }).catch(() => { prompt('Salin teks ini ke Claude:', text); });
+  }
+}
+</script>
+</body>
+</html>

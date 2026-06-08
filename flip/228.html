@@ -1,0 +1,1586 @@
+<!-- BUKU DIGITAL ASLAN - Hari 28: Jamur Ajaib dan Hutan Bawah Tanah -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jamur Ajaib dan Hutan Bawah Tanah — Aslan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mush-dark:     #060412;
+    --mush-deep:     #0e0820;
+    --mush-slate:    #1a0e2e;
+    --mush-purple:   #5b1a8c;
+    --mush-purple2:  #380a5e;
+    --mush-violet:   #8b3fd4;
+    --mush-pink:     #d94fac;
+    --mush-pink2:    #f472b6;
+    --mush-orange:   #d4620a;
+    --mush-amber:    #e8930a;
+    --mush-gold:     #f0b429;
+    --mush-moss:     #3d6b22;
+    --mush-moss2:    #264710;
+    --mush-lime:     #7abf2e;
+    --mush-teal:     #0e7a5a;
+    --mush-glow:     #a8ff78;
+    --dark-bg:       #060412;
+    --mid-bg:        #0e0820;
+    --surface-bg:    #130a1e;
+    --text-light:    #f5eeff;
+    --radius:        24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #060412;
+    color: #f5eeff;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  body.light-mode {
+    background: #f5eeff;
+    color: #0e0820;
+  }
+
+  /* ─── SPORE PARTICLES ─── */
+  .spore-field {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .spore {
+    position: absolute;
+    border-radius: 50%;
+    animation: sporeFloat linear infinite;
+    opacity: 0;
+  }
+  @keyframes sporeFloat {
+    0%   { opacity: 0; transform: translateY(0) translateX(0) scale(1); }
+    15%  { opacity: 0.6; }
+    85%  { opacity: 0.2; }
+    100% { opacity: 0; transform: translateY(-110vh) translateX(20px) scale(0.5); }
+  }
+  body.light-mode .spore-field { opacity: 0.12; }
+
+  /* ─── TOP NAV ─── */
+  .top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(6,4,18,0.93);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(139,63,212,0.20);
+  }
+  body.light-mode .top-nav {
+    background: rgba(245,238,255,0.96);
+    border-color: rgba(91,26,140,0.18);
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--mush-purple2), var(--mush-slate));
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 800;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(91,26,140,0.5);
+  }
+  .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139,63,212,0.5); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .book-day-badge {
+    background: linear-gradient(135deg, var(--mush-slate), var(--mush-violet));
+    color: white;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  .mode-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,0.16); transform: rotate(20deg); }
+  body.light-mode .mode-btn { background: rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.1); color: #0e0820; }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-wrap {
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    z-index: 99;
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--mush-purple2), var(--mush-violet), var(--mush-pink2), var(--mush-glow));
+    transition: width 0.35s ease;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 10px rgba(168,255,120,0.4);
+  }
+
+  /* ─── MAIN CONTAINER ─── */
+  .book-container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 20px 40px;
+  }
+
+  /* ─── PAGES ─── */
+  .page { display: none; animation: fadeUp 0.5s ease forwards; }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── COVER PAGE ─── */
+  .cover-page {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    position: relative;
+  }
+
+  /* ── MUSHROOM FOREST ILLUSTRATION ── */
+  .cover-forest-wrap {
+    width: 320px;
+    height: 240px;
+    position: relative;
+    margin: 0 auto 32px;
+    animation: forestFloat 4s ease-in-out infinite;
+  }
+  @keyframes forestFloat {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-9px); }
+  }
+
+  /* Ground */
+  .cover-ground {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 44px;
+    background: linear-gradient(180deg, #2d1a0e, #1a0e06);
+    border-radius: 50% 50% 0 0 / 16px 16px 0 0;
+  }
+  /* Dirt texture lines */
+  .cover-ground::before {
+    content: '';
+    position: absolute;
+    top: 8px; left: 10%; right: 10%;
+    height: 2px;
+    background: rgba(139,63,212,0.2);
+    border-radius: 1px;
+  }
+
+  /* Mycelium threads */
+  .mycel-line {
+    position: absolute;
+    bottom: 14px;
+    height: 1px;
+    border-radius: 1px;
+    opacity: 0.4;
+    animation: mycelPulse 3s ease-in-out infinite alternate;
+  }
+  @keyframes mycelPulse { from { opacity: 0.2; } to { opacity: 0.7; } }
+  .mycel-line.m1 { width: 80px; left: 20px;  background: linear-gradient(90deg, transparent, #a8ff78, transparent); animation-delay: 0s; }
+  .mycel-line.m2 { width: 60px; left: 100px; background: linear-gradient(90deg, transparent, #f472b6, transparent); animation-delay: -1s; }
+  .mycel-line.m3 { width: 90px; left: 160px; background: linear-gradient(90deg, transparent, #a8ff78, transparent); animation-delay: -2s; }
+  .mycel-line.m4 { width: 50px; left: 240px; background: linear-gradient(90deg, transparent, #c4b5fd, transparent); animation-delay: -0.5s; }
+
+  /* Big mushroom center */
+  .mush-big {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .mb-stem {
+    width: 22px; height: 52px;
+    background: linear-gradient(180deg, #e8d5c0, #c4a882, #a08060);
+    border-radius: 8px 8px 4px 4px;
+    margin: 0 auto;
+    box-shadow: inset -4px 0 8px rgba(0,0,0,0.2);
+  }
+  .mb-cap {
+    width: 88px; height: 50px;
+    background: linear-gradient(180deg, #c0392b, #922b21);
+    border-radius: 50% 50% 20% 20%;
+    margin: 0 auto -2px;
+    position: relative;
+    box-shadow: 0 0 20px rgba(192,57,43,0.4), inset 0 -6px 12px rgba(0,0,0,0.2);
+    animation: capGlow 2s ease-in-out infinite alternate;
+  }
+  @keyframes capGlow { from { box-shadow: 0 0 14px rgba(192,57,43,0.4); } to { box-shadow: 0 0 28px rgba(217,79,172,0.6); } }
+  /* White dots on cap */
+  .mb-dot { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.85); }
+  .mb-dot.d1 { width: 10px; height: 10px; top: 10px; left: 16px; }
+  .mb-dot.d2 { width: 8px;  height: 8px;  top: 8px;  right: 14px; }
+  .mb-dot.d3 { width: 12px; height: 12px; top: 20px; left: 36px; }
+  .mb-dot.d4 { width: 7px;  height: 7px;  top: 22px; right: 28px; }
+  .mb-dot.d5 { width: 6px;  height: 6px;  top: 32px; left: 20px; }
+
+  /* Glow mushroom left */
+  .mush-glow {
+    position: absolute;
+    bottom: 36px;
+    left: 18px;
+    animation: glowBob 2.2s ease-in-out infinite alternate;
+  }
+  @keyframes glowBob { from { transform: translateY(0); } to { transform: translateY(-4px); } }
+  .mg-stem {
+    width: 10px; height: 32px;
+    background: linear-gradient(180deg, #c8e6c9, #a5d6a7);
+    border-radius: 5px 5px 3px 3px;
+    margin: 0 auto;
+  }
+  .mg-cap {
+    width: 36px; height: 22px;
+    background: radial-gradient(ellipse, rgba(168,255,120,0.9), rgba(100,220,60,0.7));
+    border-radius: 50% 50% 20% 20%;
+    margin: 0 auto -1px;
+    box-shadow: 0 0 14px rgba(168,255,120,0.7), 0 0 28px rgba(168,255,120,0.3);
+    animation: glowPulse 1.5s ease-in-out infinite alternate;
+  }
+  @keyframes glowPulse { from { box-shadow: 0 0 10px rgba(168,255,120,0.6); } to { box-shadow: 0 0 22px rgba(168,255,120,0.95), 0 0 40px rgba(168,255,120,0.4); } }
+
+  /* Purple mushroom right */
+  .mush-purple-sm {
+    position: absolute;
+    bottom: 36px;
+    right: 22px;
+    animation: purpleBob 2.8s ease-in-out infinite alternate;
+  }
+  @keyframes purpleBob { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+  .mp-stem {
+    width: 12px; height: 38px;
+    background: linear-gradient(180deg, #d1c4e9, #b39ddb);
+    border-radius: 6px 6px 3px 3px;
+    margin: 0 auto;
+  }
+  .mp-cap {
+    width: 48px; height: 28px;
+    background: linear-gradient(180deg, #7b1fa2, #4a148c);
+    border-radius: 50% 50% 20% 20%;
+    margin: 0 auto -1px;
+    box-shadow: 0 0 14px rgba(139,63,212,0.5);
+  }
+
+  /* Small mushrooms scattered */
+  .mush-tiny {
+    position: absolute;
+    bottom: 36px;
+  }
+  .mt-stem { height: 18px; border-radius: 3px 3px 2px 2px; margin: 0 auto; }
+  .mt-cap  { border-radius: 50% 50% 20% 20%; margin: 0 auto -1px; }
+
+  /* Floating spore emojis */
+  .floating-mush {
+    position: absolute;
+    font-size: 24px;
+    animation: mushFloat 4s ease-in-out infinite;
+  }
+  .floating-mush:nth-child(1) { top: 5%;  left: 6%;   animation-delay: 0s; }
+  .floating-mush:nth-child(2) { top: 9%;  right: 8%;  animation-delay: -1.5s; }
+  .floating-mush:nth-child(3) { bottom: 28%; left: 5%; animation-delay: -3s; }
+  .floating-mush:nth-child(4) { bottom: 22%; right: 6%; animation-delay: -2s; }
+  @keyframes mushFloat {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50%     { transform: translateY(-10px) rotate(8deg); }
+  }
+
+  .cover-badge {
+    background: linear-gradient(135deg, var(--mush-slate), var(--mush-pink));
+    color: white;
+    padding: 6px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: inline-block;
+    box-shadow: 0 0 16px rgba(217,79,172,0.35);
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(28px, 6vw, 50px);
+    line-height: 1.2;
+    background: linear-gradient(135deg, #e879f9, var(--mush-gold), var(--mush-glow), #c4b5fd, #e879f9);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease infinite;
+    margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+
+  .cover-subtitle { font-size: clamp(16px, 3vw, 22px); opacity: 0.75; margin-bottom: 24px; }
+
+  .cover-name-badge {
+    background: linear-gradient(135deg, rgba(91,26,140,0.08), rgba(61,107,34,0.08));
+    border: 2px solid rgba(168,255,120,0.22);
+    border-radius: 20px;
+    padding: 16px 32px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+  }
+  .cover-name-badge p { font-size: 14px; opacity: 0.7; margin-bottom: 4px; }
+  .cover-name-badge h2 { font-family: 'Fredoka One', cursive; font-size: clamp(22px,4vw,32px); color: var(--mush-gold); }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+  }
+  body.light-mode .card {
+    background: white;
+    border-color: rgba(91,26,140,0.12);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    color: #0e0820;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent, linear-gradient(90deg, var(--mush-purple2), var(--mush-pink)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .card-mush    { --accent: linear-gradient(90deg, #380a5e, #8b3fd4, #f472b6); }
+  .card-mycel   { --accent: linear-gradient(90deg, #264710, #7abf2e, #a8ff78); }
+  .card-glow    { --accent: linear-gradient(90deg, #0e7a5a, #a8ff78, #f0b429); }
+  .card-decomp  { --accent: linear-gradient(90deg, #3d1a00, #d4620a, #f0b429); }
+  .card-danger  { --accent: linear-gradient(90deg, #380a5e, #d94fac, #f472b6); }
+
+  .card-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    display: block;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
+  }
+
+  .card h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(22px, 4vw, 30px);
+    margin-bottom: 8px;
+    color: var(--mush-gold);
+  }
+  body.light-mode .card h2 { color: var(--mush-purple); }
+
+  .card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 20px 0 10px;
+    color: var(--mush-pink2);
+  }
+  body.light-mode .card h3 { color: var(--mush-purple); }
+
+  .card p {
+    font-size: clamp(15px, 2.5vw, 17px);
+    line-height: 1.85;
+    opacity: 0.9;
+    margin-bottom: 14px;
+  }
+
+  /* ─── ANALOGY BOX ─── */
+  .analogy-box {
+    background: linear-gradient(135deg, rgba(91,26,140,0.06), rgba(61,107,34,0.06));
+    border: 2px dashed rgba(168,255,120,0.25);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .analogy-box::before {
+    content: '💡 Analogi Keren!';
+    position: absolute;
+    top: -12px; left: 20px;
+    background: var(--dark-bg);
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--mush-glow);
+  }
+  body.light-mode .analogy-box { background: linear-gradient(135deg, rgba(91,26,140,0.05), rgba(61,107,34,0.05)); }
+  body.light-mode .analogy-box::before { background: white; color: var(--mush-moss); }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header { text-align: center; margin-bottom: 32px; padding-top: 20px; }
+  .section-header .tag {
+    display: inline-block;
+    background: rgba(168,255,120,0.10);
+    border: 1px solid rgba(168,255,120,0.28);
+    color: var(--mush-glow);
+    padding: 4px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-header h1 { font-family: 'Fredoka One', cursive; font-size: clamp(24px,5vw,40px); line-height: 1.2; }
+
+  /* ─── SCENE BOX ─── */
+  .scene-box {
+    background: linear-gradient(135deg, rgba(6,4,18,0.94), rgba(91,26,140,0.08));
+    border: 1px solid rgba(168,255,120,0.13);
+    border-radius: 20px;
+    padding: 28px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .scene-box::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 85% 30%, rgba(217,79,172,0.05), transparent 60%);
+    pointer-events: none;
+  }
+  body.light-mode .scene-box {
+    background: linear-gradient(135deg, rgba(245,238,255,0.97), rgba(91,26,140,0.04));
+    border-color: rgba(91,26,140,0.16);
+  }
+  .scene-title {
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--mush-glow);
+    margin-bottom: 12px;
+    opacity: 0.85;
+  }
+  .scene-box p { font-size: clamp(15px,2.5vw,17px); line-height: 1.9; font-style: italic; opacity: 0.9; }
+
+  /* ─── STEP LIST ─── */
+  .step-list { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+  .sl-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(168,255,120,0.10);
+    transition: transform 0.2s;
+  }
+  .sl-item:hover { transform: translateX(4px); }
+  body.light-mode .sl-item { background: rgba(91,26,140,0.03); border-color: rgba(91,26,140,0.10); }
+  .sl-num {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--mush-purple2), var(--mush-pink));
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 15px;
+    flex-shrink: 0; margin-top: 2px;
+    box-shadow: 0 0 10px rgba(217,79,172,0.35);
+  }
+  .sl-content strong { display: block; font-size: 16px; font-weight: 900; margin-bottom: 5px; }
+  .sl-content p { font-size: 14px; line-height: 1.65; opacity: 0.88; margin: 0; }
+
+  /* ─── STAT BAR ─── */
+  .stat-wrap { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+  .stat-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; margin-bottom: 5px; }
+  .stat-bar-bg { background: rgba(0,0,0,0.35); border-radius: 8px; height: 26px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); }
+  .stat-bar { height: 100%; border-radius: 7px; display: flex; align-items: center; padding-left: 12px; font-size: 12px; font-weight: 900; color: white; white-space: nowrap; }
+
+  /* ─── MUSHROOM ANATOMY DIAGRAM ─── */
+  .anatomy-wrap {
+    display: flex;
+    gap: 24px;
+    align-items: flex-end;
+    margin: 20px 0;
+    padding: 24px;
+    background: rgba(6,4,18,0.5);
+    border: 1px solid rgba(168,255,120,0.12);
+    border-radius: 20px;
+  }
+  body.light-mode .anatomy-wrap { background: rgba(91,26,140,0.04); border-color: rgba(91,26,140,0.12); }
+  .anatomy-diagram {
+    flex-shrink: 0;
+    position: relative;
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .anat-cap-top {
+    width: 100px; height: 56px;
+    background: linear-gradient(180deg, #8b3fd4, #5b1a8c);
+    border-radius: 50% 50% 20% 20%;
+    position: relative;
+    box-shadow: 0 0 18px rgba(139,63,212,0.5);
+  }
+  .anat-cap-top::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 8px; right: 8px;
+    height: 12px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 0 0 10px 10px;
+  }
+  .anat-gills {
+    width: 80px; height: 10px;
+    background: linear-gradient(180deg, #c4a8e8, #9c6dcc);
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    position: relative;
+  }
+  .anat-gills::before {
+    content: '';
+    position: absolute;
+    top: 2px; left: 4px; right: 4px;
+    height: 1px;
+    background: repeating-linear-gradient(90deg, rgba(255,255,255,0.3) 0, rgba(255,255,255,0.3) 3px, transparent 3px, transparent 7px);
+  }
+  .anat-ring {
+    width: 28px; height: 8px;
+    background: rgba(196,168,232,0.6);
+    border-radius: 50%;
+    border: 1px solid rgba(196,168,232,0.4);
+  }
+  .anat-stem {
+    width: 20px; height: 56px;
+    background: linear-gradient(180deg, #d1c4e9, #b39ddb, #9e8cc8);
+    border-radius: 6px 6px 3px 3px;
+    box-shadow: inset -3px 0 6px rgba(0,0,0,0.2);
+  }
+  .anat-base {
+    width: 30px; height: 14px;
+    background: linear-gradient(180deg, #b39ddb, #7e57c2);
+    border-radius: 50%;
+  }
+  /* Underground part */
+  .anat-underground {
+    width: 100px;
+    padding-top: 8px;
+    border-top: 2px dashed rgba(168,255,120,0.3);
+  }
+  .anat-mycel-row {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-top: 4px;
+    position: relative;
+  }
+  .anat-thread {
+    height: 20px;
+    width: 1px;
+    background: linear-gradient(180deg, rgba(168,255,120,0.7), transparent);
+    position: absolute;
+    transform-origin: top center;
+  }
+
+  .anatomy-labels { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .al-item { display: flex; align-items: center; gap: 10px; }
+  .al-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    box-shadow: 0 0 6px currentColor;
+  }
+  .al-text strong { font-size: 14px; font-weight: 900; display: block; margin-bottom: 2px; }
+  .al-text p { font-size: 12px; opacity: 0.8; margin: 0; line-height: 1.5; }
+
+  /* ─── TWO COL ─── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+
+  .mini-card { border-radius: 18px; padding: 20px 18px; display: flex; flex-direction: column; gap: 8px; }
+  .mini-card-purple { background: rgba(91,26,140,0.10);  border: 1px solid rgba(139,63,212,0.25); }
+  .mini-card-pink   { background: rgba(217,79,172,0.09); border: 1px solid rgba(244,114,182,0.25); }
+  .mini-card-glow   { background: rgba(122,191,46,0.08); border: 1px solid rgba(168,255,120,0.22); }
+  .mini-card-orange { background: rgba(212,98,10,0.09);  border: 1px solid rgba(212,98,10,0.22); }
+  .mini-card-teal   { background: rgba(14,122,90,0.09);  border: 1px solid rgba(14,122,90,0.22); }
+  .mini-card-gold   { background: rgba(240,180,41,0.07); border: 1px solid rgba(240,180,41,0.20); }
+  body.light-mode .mini-card-purple { background: rgba(91,26,140,0.05); }
+  body.light-mode .mini-card-pink   { background: rgba(217,79,172,0.05); }
+  body.light-mode .mini-card-glow   { background: rgba(122,191,46,0.05); }
+  body.light-mode .mini-card-orange { background: rgba(212,98,10,0.05); }
+  body.light-mode .mini-card-teal   { background: rgba(14,122,90,0.05); }
+  body.light-mode .mini-card-gold   { background: rgba(240,180,41,0.05); }
+  .mini-card .mini-icon { font-size: 36px; }
+  .mini-card strong { font-size: 15px; font-weight: 900; }
+  .mini-card p { font-size: 14px; line-height: 1.6; opacity: 0.85; margin: 0; }
+
+  /* ─── FACT GRID ─── */
+  .fact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 20px 0; }
+  .fact-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px; padding: 24px 20px;
+    text-align: center; transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .fact-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(168,255,120,0.12); }
+  body.light-mode .fact-card { background: #fdf0ff; border-color: rgba(91,26,140,0.12); }
+  .fact-card .fact-emoji { font-size: 40px; margin-bottom: 10px; display: block; }
+  .fact-card .fact-number { font-family: 'Fredoka One', cursive; font-size: 20px; color: var(--mush-gold); display: block; margin-bottom: 4px; }
+  body.light-mode .fact-card .fact-number { color: var(--mush-purple); }
+  .fact-card .fact-label { font-size: 13px; opacity: 0.72; font-weight: 700; }
+
+  /* ─── CHALLENGE CARD ─── */
+  .challenge-card {
+    background: linear-gradient(135deg, rgba(6,4,18,0.90), rgba(91,26,140,0.08));
+    border: 2px solid rgba(168,255,120,0.18);
+    border-radius: var(--radius); padding: 32px; margin: 20px 0;
+  }
+  body.light-mode .challenge-card {
+    background: linear-gradient(135deg, rgba(91,26,140,0.03), rgba(61,107,34,0.03));
+    border-color: rgba(91,26,140,0.18);
+  }
+  .challenge-title {
+    font-family: 'Fredoka One', cursive; font-size: 24px;
+    color: var(--mush-gold); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  body.light-mode .challenge-title { color: var(--mush-purple); }
+  .challenge-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .challenge-item:last-child { border-bottom: none; }
+  body.light-mode .challenge-item { border-color: rgba(0,0,0,0.05); }
+  .challenge-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--mush-purple2), var(--mush-pink));
+    color: white; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 14px; flex-shrink: 0; margin-top: 2px;
+    box-shadow: 0 0 10px rgba(217,79,172,0.28);
+  }
+  .challenge-item p { font-size: 15px; line-height: 1.7; opacity: 0.9; }
+
+  /* ─── NAV BUTTONS ─── */
+  .nav-btns {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; margin-top: 40px; padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  body.light-mode .nav-btns { border-color: rgba(0,0,0,0.05); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 24px; border-radius: 50px;
+    font-family: 'Nunito', sans-serif; font-size: 15px;
+    font-weight: 800; cursor: pointer; border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover  { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+  .btn-prev { background: rgba(255,255,255,0.06); color: inherit; border: 1px solid rgba(255,255,255,0.11); }
+  body.light-mode .btn-prev { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.09); color: #0e0820; }
+  .btn-next {
+    background: linear-gradient(135deg, var(--mush-purple2), var(--mush-violet));
+    color: white; box-shadow: 0 4px 16px rgba(91,26,140,0.4);
+    flex: 1; justify-content: center; max-width: 300px;
+  }
+  .btn-next:hover { box-shadow: 0 6px 24px rgba(139,63,212,0.55); }
+  .btn-done {
+    background: linear-gradient(135deg, var(--mush-purple2), var(--mush-violet));
+    color: white; box-shadow: 0 4px 16px rgba(91,26,140,0.4);
+    width: 100%; max-width: 400px; margin: 0 auto;
+    justify-content: center; font-size: 17px; padding: 18px 32px;
+  }
+  .btn-done:hover { box-shadow: 0 6px 24px rgba(139,63,212,0.6); }
+  .page-indicator { font-size: 13px; opacity: 0.5; font-weight: 700; white-space: nowrap; }
+
+  /* ─── CLOSING ─── */
+  .closing-content { text-align: center; padding: 40px 20px; }
+  .trophy-big {
+    font-size: 100px; display: block; margin: 0 auto 24px;
+    animation: bounceIn 0.8s cubic-bezier(0.36,0.07,0.19,0.97);
+    filter: drop-shadow(0 0 24px rgba(168,255,120,0.6));
+  }
+  @keyframes bounceIn { 0%{transform:scale(0);opacity:0;} 60%{transform:scale(1.2);} 100%{transform:scale(1);opacity:1;} }
+  .quote-box {
+    background: linear-gradient(135deg, rgba(91,26,140,0.07), rgba(61,107,34,0.07));
+    border-left: 4px solid var(--mush-glow);
+    border-radius: 0 16px 16px 0; padding: 20px 24px; margin: 24px 0; text-align: left;
+  }
+  .quote-box p { font-size: 18px; font-style: italic; line-height: 1.8; }
+  .quote-box cite { font-size: 13px; opacity: 0.6; margin-top: 8px; display: block; font-style: normal; font-weight: 700; }
+
+  /* ─── COMPARISON TABLE ─── */
+  .compare-table {
+    border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(168,255,120,0.14);
+    margin: 16px 0;
+  }
+  .ct-head {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    background: rgba(91,26,140,0.25);
+    padding: 12px 16px;
+    font-size: 13px; font-weight: 900;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--mush-glow);
+  }
+  body.light-mode .ct-head { background: rgba(91,26,140,0.12); color: var(--mush-moss); }
+  .ct-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    padding: 12px 16px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    font-size: 14px; line-height: 1.5;
+    transition: background 0.2s;
+  }
+  .ct-row:hover { background: rgba(168,255,120,0.04); }
+  body.light-mode .ct-row { border-color: rgba(0,0,0,0.04); }
+  .ct-row span:first-child { font-weight: 800; opacity: 0.9; }
+  .ct-row span:nth-child(2) { color: #86efac; }
+  .ct-row span:nth-child(3) { color: #f9a8d4; }
+  body.light-mode .ct-row span:nth-child(2) { color: var(--mush-moss); }
+  body.light-mode .ct-row span:nth-child(3) { color: var(--mush-pink); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .book-container { padding: 76px 16px 32px; }
+    .card { padding: 24px 20px; }
+    .nav-btns { flex-wrap: wrap; }
+    .btn-next { max-width: 100%; }
+    .fact-grid { grid-template-columns: 1fr 1fr; }
+    .cover-forest-wrap { width: 280px; height: 210px; }
+    .anatomy-wrap { flex-direction: column; align-items: center; }
+    .ct-head, .ct-row { grid-template-columns: 1fr 1fr; }
+    .ct-head span:last-child, .ct-row span:last-child { display: none; }
+  }
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .book-container { padding: 80px 32px 40px; }
+    .card p { font-size: 18px; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(139,63,212,0.3); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- SPORE FIELD -->
+<div class="spore-field" id="sporeField"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="../perpustakaan.html" class="back-btn">← Perpustakaan</a>
+  <div class="nav-right">
+    <span class="book-day-badge">🍄 Hari ke-28</span>
+    <button class="mode-btn" id="modeBtn" title="Ganti Mode">☀️</button>
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<!-- ═══════════════ BOOK CONTAINER ═══════════════ -->
+<div class="book-container">
+
+  <!-- ── PAGE 1: COVER ── -->
+  <div class="page active" id="page-1">
+    <div class="cover-page">
+      <span class="floating-mush">🍄</span>
+      <span class="floating-mush">✨</span>
+      <span class="floating-mush">🌿</span>
+      <span class="floating-mush">💫</span>
+
+      <div class="cover-forest-wrap">
+
+        <!-- Mycelium threads at ground level -->
+        <div class="mycel-line m1"></div>
+        <div class="mycel-line m2"></div>
+        <div class="mycel-line m3"></div>
+        <div class="mycel-line m4"></div>
+
+        <!-- Glowing mushroom left -->
+        <div class="mush-glow">
+          <div class="mg-cap"></div>
+          <div class="mg-stem"></div>
+        </div>
+
+        <!-- Big red mushroom center -->
+        <div class="mush-big">
+          <div class="mb-cap">
+            <div class="mb-dot d1"></div>
+            <div class="mb-dot d2"></div>
+            <div class="mb-dot d3"></div>
+            <div class="mb-dot d4"></div>
+            <div class="mb-dot d5"></div>
+          </div>
+          <div class="mb-stem"></div>
+        </div>
+
+        <!-- Purple mushroom right -->
+        <div class="mush-purple-sm">
+          <div class="mp-cap"></div>
+          <div class="mp-stem"></div>
+        </div>
+
+        <!-- Tiny mushrooms scattered -->
+        <div class="mush-tiny" style="left:68px;">
+          <div class="mt-cap"  style="width:20px;height:12px;background:linear-gradient(180deg,#e67e22,#ca6f1e);box-shadow:0 0 6px rgba(230,126,34,0.4);"></div>
+          <div class="mt-stem" style="width:7px;background:linear-gradient(180deg,#f5cba7,#e59866);"></div>
+        </div>
+        <div class="mush-tiny" style="right:68px;bottom:34px;">
+          <div class="mt-cap"  style="width:16px;height:10px;background:linear-gradient(180deg,#27ae60,#1e8449);box-shadow:0 0 5px rgba(39,174,96,0.4);"></div>
+          <div class="mt-stem" style="width:6px;background:linear-gradient(180deg,#a9dfbf,#7dcea0);"></div>
+        </div>
+        <div class="mush-tiny" style="left:136px;bottom:34px;">
+          <div class="mt-cap"  style="width:14px;height:9px;background:linear-gradient(180deg,#f39c12,#d68910);"></div>
+          <div class="mt-stem" style="width:5px;background:linear-gradient(180deg,#fdebd0,#fad7a0);"></div>
+        </div>
+
+        <!-- Ground -->
+        <div class="cover-ground"></div>
+      </div>
+
+      <div class="cover-badge">📚 Buku Sains Petualangan • Hari ke-28</div>
+      <h1 class="cover-title">Jamur Ajaib dan<br>Hutan Bawah Tanah!</h1>
+      <p class="cover-subtitle">🍄 Menjelajahi Jaringan Rahasia yang Menyambung Seluruh Hutan!</p>
+
+      <div class="cover-name-badge">
+        <p>Petualangan sains milik:</p>
+        <h2>🌟 Aslan 🌟</h2>
+        <p style="font-size:13px;margin-top:4px;">Penjelajah Hutan Bawah Tanah & Ahli Mikologi Cilik • Kelas 3 SD</p>
+      </div>
+
+      <div class="nav-btns" style="justify-content:center;border:none;padding-top:0;">
+        <button class="btn btn-next" onclick="goPage(2)" style="max-width:320px;font-size:17px;padding:16px 32px;">
+          🍄 Masuk ke Hutan Jamur!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE 2: PENGANTAR ── -->
+  <div class="page" id="page-2">
+    <div class="section-header">
+      <span class="tag">✉️ Hari Ke-28!</span>
+      <h1>Hei Aslan, Siap Masuk ke<br>Hutan Rahasia Bawah Tanah? 🍄</h1>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🍄</span>
+      <p>Hei, <strong>Aslan</strong>! Petualanganmu sudah sampai hari ke-28 — kamu sudah mengelilingi galaksi, menemukan fosil jutaan tahun, dan bertemu serangga raksasa. Sekarang Terra Explorer punya misi yang agak berbeda — kita tidak pergi jauh ke angkasa atau ke masa lalu. Kita akan pergi ke tempat yang ada di bawah kakimu sekarang, sesuatu yang tidak terlihat tapi luar biasa menakjubkan!</p>
+      <p>Di bawah setiap hutan, di bawah setiap tanah yang lembab, ada dunia yang penuh kehidupan — jaringan benang-benang tipis yang saling terhubung sepanjang berkilometer-kilometer, menyambungkan pohon satu dengan pohon lainnya, berbisik-bisik membagi nutrisi, bahkan mengirimkan "pesan" bahaya! Dunia itu adalah dunia <strong>jamur</strong> — salah satu makhluk paling misterius dan paling penting di planet kita. 🌿</p>
+      <p>Dan yang lebih mengejutkan? Jamur bukan tumbuhan. Jamur bukan hewan. Jamur adalah <strong>kerajaan sendiri</strong> yang sangat unik, sudah ada sejak sebelum dinosaurus muncul, dan tanpa mereka — hutan-hutan kita tidak bisa bertahan hidup! Hari ini kita akan menyelami dunia ajaib ini bersama Terra Explorer. Siap? 🔦</p>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Pesan Dari Terra Explorer</p>
+      <p>"Aslan! Terra Explorer telah beralih ke mode MIKRO — kita menyusut menjadi seukuran semut dan siap menyelam ke dalam tanah hutan hujan tropis! Dinding-dinding tanah di sekitar kita berkilauan dengan benang-benang tipis putih bercahaya — itu miselium, jaringan 'internet' hutan yang sesungguhnya! Sensor aku mendeteksi aktivitas kimia yang luar biasa — nutrisi mengalir ke sana ke mari, sinyal-sinyal listrik lemah bergerak seperti bisikan. Dan di atas kita, akar-akar pohon besar mengulurkan diri menyentuh benang-benang ini. Ini bukan tanah biasa, Aslan — ini adalah OTAK dan JANTUNG dari hutan yang hidup!"</p>
+    </div>
+
+    <div class="card" style="--accent:linear-gradient(90deg,var(--mush-purple2),var(--mush-pink2),var(--mush-glow));">
+      <h3>🗺️ Yang Akan Kita Pelajari Hari Ini</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(91,26,140,0.15);border-radius:14px;">
+          <span style="font-size:28px;">🍄</span>
+          <div><strong>Apa Itu Jamur? Bukan Tumbuhan, Bukan Hewan!</strong><p style="font-size:13px;margin:0;opacity:0.7;">Kerajaan Fungi yang punya cara hidup paling unik di Bumi!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(168,255,120,0.10);border-radius:14px;">
+          <span style="font-size:28px;">🌐</span>
+          <div><strong>Miselium — Internet Bawah Tanah Hutan!</strong><p style="font-size:13px;margin:0;opacity:0.7;">Jaringan benang ajaib yang menyambungkan semua pohon di hutan!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(212,98,10,0.12);border-radius:14px;">
+          <span style="font-size:28px;">♻️</span>
+          <div><strong>Jamur sebagai Sampah Bumi!</strong><p style="font-size:13px;margin:0;opacity:0.7;">Tanpa jamur, hutan akan tenggelam dalam tumpukan daun dan kayu mati!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(14,122,90,0.12);border-radius:14px;">
+          <span style="font-size:28px;">💡</span>
+          <div><strong>Jamur yang Bisa Menyala di Malam Hari!</strong><p style="font-size:13px;margin:0;opacity:0.7;">Bioluminescence — keajaiban cahaya dari makhluk hidup!</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(217,79,172,0.12);border-radius:14px;">
+          <span style="font-size:28px;">⚠️</span>
+          <div><strong>Jamur Terbesar & Paling Berbahaya di Dunia!</strong><p style="font-size:13px;margin:0;opacity:0.7;">Dari jamur sebesar lapangan bola hingga jamur yang bisa membunuh!</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(1)">← Kembali</button>
+      <span class="page-indicator">Halaman 2 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(3)">Apa Itu Jamur? 🍄 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 3: APA ITU JAMUR ── -->
+  <div class="page" id="page-3">
+    <div class="section-header">
+      <span class="tag">🍄 Bab Satu</span>
+      <h1>Apa Itu Jamur?<br><span style="color:var(--mush-gold)">Bukan Tumbuhan, Bukan Hewan!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Mengamati Jamur dari Dekat!</p>
+      <p>"Aslan! Terra Explorer mengarahkan lampu sorot ke sebuah jamur merah berbintik putih yang tumbuh di antara akar pohon oak tua. Sensor mikro aku mulai menganalisis strukturnya — dan sungguh menakjubkan! Makhluk ini sama sekali tidak punya klorofil (zat hijau pada tumbuhan), tidak punya akar sejati, tapi jaringan bawah tanahnya jauh lebih luas dari yang terlihat di atas tanah. Yang terlihat sebagai 'jamur' itu hanya bagian kecilnya saja — seperti gunung es! Bagian terbesarnya tersembunyi di bawah. Dan cara dia 'makan'... sangat berbeda dari semua yang kita pelajari sebelumnya!"</p>
+    </div>
+
+    <div class="card card-mush">
+      <span class="card-icon">🍄</span>
+      <h2>Jamur: Kerajaan yang Berdiri Sendiri!</h2>
+      <p>Selama ratusan tahun, manusia mengira jamur adalah tumbuhan yang aneh. Tapi sejak tahun 1960-an, para ilmuwan menyadari jamur begitu unik sehingga mereka dikelompokkan dalam <strong>Kerajaan Fungi</strong> tersendiri — setara dengan Kerajaan Tumbuhan dan Kerajaan Hewan, tapi berbeda dari keduanya!</p>
+
+      <h3>🔬 Tumbuhan vs Jamur vs Hewan — Perbedaan Utama</h3>
+
+      <div class="compare-table">
+        <div class="ct-head">
+          <span>Ciri</span>
+          <span>🌿 Tumbuhan</span>
+          <span>🍄 Jamur</span>
+        </div>
+        <div class="ct-row">
+          <span>Membuat makanan sendiri?</span>
+          <span>✅ Ya (fotosintesis)</span>
+          <span>❌ Tidak</span>
+        </div>
+        <div class="ct-row">
+          <span>Cara makan</span>
+          <span>Serap sinar matahari</span>
+          <span>Serap nutrisi dari luar</span>
+        </div>
+        <div class="ct-row">
+          <span>Dinding sel</span>
+          <span>Selulosa</span>
+          <span>Kitin (seperti serangga!)</span>
+        </div>
+        <div class="ct-row">
+          <span>Berkembang biak</span>
+          <span>Biji / bunga</span>
+          <span>Spora (debu super kecil)</span>
+        </div>
+        <div class="ct-row">
+          <span>Bergerak?</span>
+          <span>❌ Tidak</span>
+          <span>❌ Tidak (tapi miselium tumbuh)</span>
+        </div>
+        <div class="ct-row">
+          <span>Klorofil (zat hijau)?</span>
+          <span>✅ Ada</span>
+          <span>❌ Tidak ada</span>
+        </div>
+      </div>
+
+      <h3>🏗️ Bagian-Bagian Jamur</h3>
+
+      <div class="anatomy-wrap">
+        <div class="anatomy-diagram">
+          <!-- Above ground -->
+          <div class="anat-cap-top"></div>
+          <div class="anat-gills"></div>
+          <div class="anat-ring"></div>
+          <div class="anat-stem"></div>
+          <div class="anat-base"></div>
+          <!-- Underground line -->
+          <div class="anat-underground">
+            <div style="position:relative;height:32px;width:100%;">
+              <!-- Mycelium threads radiating -->
+              <div style="position:absolute;top:0;left:50%;width:1px;height:28px;background:linear-gradient(180deg,rgba(168,255,120,0.8),transparent);transform:translateX(-50%) rotate(-30deg);transform-origin:top;"></div>
+              <div style="position:absolute;top:0;left:50%;width:1px;height:24px;background:linear-gradient(180deg,rgba(168,255,120,0.8),transparent);transform:translateX(-50%) rotate(-10deg);transform-origin:top;"></div>
+              <div style="position:absolute;top:0;left:50%;width:1px;height:30px;background:linear-gradient(180deg,rgba(168,255,120,0.8),transparent);transform:translateX(-50%) rotate(15deg);transform-origin:top;"></div>
+              <div style="position:absolute;top:0;left:50%;width:1px;height:22px;background:linear-gradient(180deg,rgba(168,255,120,0.8),transparent);transform:translateX(-50%) rotate(35deg);transform-origin:top;"></div>
+              <div style="position:absolute;top:0;left:50%;width:1px;height:26px;background:linear-gradient(180deg,rgba(244,114,182,0.7),transparent);transform:translateX(-50%) rotate(-50deg);transform-origin:top;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="anatomy-labels">
+          <div class="al-item">
+            <div class="al-dot" style="background:#c0392b;color:#c0392b;"></div>
+            <div class="al-text">
+              <strong>Tudung / Topi (Pileus)</strong>
+              <p>Bagian atas yang sering berwarna-warni. Fungsi utamanya melindungi spora di bawahnya.</p>
+            </div>
+          </div>
+          <div class="al-item">
+            <div class="al-dot" style="background:#b39ddb;color:#b39ddb;"></div>
+            <div class="al-text">
+              <strong>Bilah (Gills / Lamela)</strong>
+              <p>Lapisan-lapisan tipis di bawah tudung tempat spora dibentuk dan dilepaskan.</p>
+            </div>
+          </div>
+          <div class="al-item">
+            <div class="al-dot" style="background:#c4b5fd;color:#c4b5fd;"></div>
+            <div class="al-text">
+              <strong>Cincin (Annulus)</strong>
+              <p>Sisa selaput pelindung spora saat jamur masih muda. Tidak semua jamur punya cincin.</p>
+            </div>
+          </div>
+          <div class="al-item">
+            <div class="al-dot" style="background:#d1c4e9;color:#d1c4e9;"></div>
+            <div class="al-text">
+              <strong>Tangkai (Stipe)</strong>
+              <p>Batang jamur yang menopang tudung dan menjadi jalur transportasi nutrisi.</p>
+            </div>
+          </div>
+          <div class="al-item">
+            <div class="al-dot" style="background:#a8ff78;color:#a8ff78;"></div>
+            <div class="al-text">
+              <strong>Miselium (Mycelium)</strong>
+              <p>Jaringan benang tak kasat mata di bawah tanah — bagian terbesar dan terpenting dari jamur!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Jamur yang kamu lihat di atas tanah itu seperti buah apel di pohon! 🍎 Apel hanyalah bagian yang terlihat dari pohon besar. Pohon yang sesungguhnya adalah batang, dahan, dan akar yang jauh lebih besar. Begitu pula jamur — "topi" yang terlihat itu hanya "buah" yang kecil. Makhluk jamur yang sesungguhnya adalah jaringan miselium di bawah tanah yang bisa seluas lapangan sepak bola! ⚽</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(2)">← Kembali</button>
+      <span class="page-indicator">Halaman 3 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(4)">Internet Hutan! 🌐 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 4: MISELIUM & SIMBIOSIS ── -->
+  <div class="page" id="page-4">
+    <div class="section-header">
+      <span class="tag">🌐 Bab Dua</span>
+      <h1>Miselium:<br><span style="color:var(--mush-gold)">Internet Rahasia Hutan!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Di Dalam Jaringan Miselium!</p>
+      <p>"Aslan! Terra Explorer melayang di antara benang-benang miselium yang seperti galaksi kecil di dalam tanah! Sensor mendeteksi aliran — ada gula, nitrogen, fosfat bergerak dari titik ke titik. Coba lihat ke kiri — akar pohon oak besar itu! Benang-benang miselium menyentuh ujung akar halus pohon tersebut dengan sangat lembut. Mereka sedang BERBAGI sesuatu! Pohon memberikan gula hasil fotosintesis ke jamur, dan jamur membalas dengan mineral dari dalam tanah yang tidak bisa dicapai akar pohon. Ini bukan parasit — ini persahabatan 400 juta tahun yang indah!"</p>
+    </div>
+
+    <div class="card card-mycel">
+      <span class="card-icon">🌐</span>
+      <h2>Wood Wide Web — Internet Bawah Tanah Pohon!</h2>
+      <p>Para ilmuwan menyebutnya <strong>"Wood Wide Web"</strong> — jaringan miselium bawah tanah yang menghubungkan pohon-pohon dalam satu hutan seperti internet menghubungkan komputer di seluruh dunia. Melalui jaringan ini, pohon-pohon bisa berbagi nutrisi, mengirim sinyal bahaya, bahkan "memberi makan" anakan pohon kecil yang kesulitan mendapat sinar matahari!</p>
+
+      <h3>🤝 Simbiosis Jamur dan Akar Pohon (Mikoriza)</h3>
+      <p>Hubungan antara jamur dan akar pohon disebut <strong>Mikoriza</strong> (dari bahasa Yunani: mykes = jamur, rhiza = akar). Ini adalah salah satu contoh simbiosis mutualisme paling kuno dan paling penting di Bumi — dua makhluk yang saling menguntungkan!</p>
+
+      <div class="step-list">
+        <div class="sl-item">
+          <div class="sl-num">🌳</div>
+          <div class="sl-content">
+            <strong>Pohon Memberikan: Gula dari Fotosintesis!</strong>
+            <p>Pohon menghasilkan gula (karbohidrat) melalui fotosintesis dari sinar matahari. Tapi jamur tidak bisa berfotosintesis! Maka pohon berbagi sebagian gulanya — sekitar 20–30% gula yang dihasilkan pohon diberikan ke jaringan mikoriza di akarnya. Ini adalah "pembayaran" pohon untuk layanan jamur.</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">🍄</div>
+          <div class="sl-content">
+            <strong>Jamur Memberikan: Mineral dan Air dari Dalam Tanah!</strong>
+            <p>Sebagai balasannya, benang miselium yang super tipis (jauh lebih tipis dari akar pohon) bisa masuk ke celah-celah tanah yang tidak bisa dijangkau akar. Mereka menyerap fosfor, nitrogen, zinc, dan mineral lain yang sangat penting untuk pertumbuhan pohon. Pohon dengan mikoriza bisa mendapat 3–5x lebih banyak nutrisi dibanding tanpa jamur!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">📡</div>
+          <div class="sl-content">
+            <strong>Mengirim Sinyal Bahaya Antar Pohon!</strong>
+            <p>Ketika pohon diserang hama atau jamur patogen, pohon mengirimkan sinyal kimia melalui jaringan mikoriza ke pohon-pohon tetangganya. Pohon yang menerima sinyal ini mulai memproduksi zat kimia pertahanan sebelum diserang! Ini seperti pohon "menelepon" temannya untuk memperingatkan bahaya. Penemuan ilmiah yang mengejutkan dunia!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">👶</div>
+          <div class="sl-content">
+            <strong>Membantu Anakan Pohon yang Kesulitan!</strong>
+            <p>Pohon-pohon tua besar dalam hutan (disebut "pohon ibu") sering "memberi makan" anakan pohon kecil melalui jaringan mikoriza — terutama ketika anakan itu kekurangan sinar matahari karena tertutup pohon dewasa. Ini benar-benar seperti pohon tua merawat pohon muda! Hutan adalah komunitas yang saling merawat. 🌱</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>📊 Seberapa Luas Miselium?</h3>
+      <div class="stat-wrap">
+        <div>
+          <div class="stat-label"><span>🌱 Miselium dalam 1 sendok teh tanah hutan</span><span style="color:#a8ff78;">Sangat padat!</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:100%;background:linear-gradient(90deg,#264710,#7abf2e);">1–8 km benang miselium dalam 1 sendok teh tanah hutan!</div></div>
+        </div>
+        <div>
+          <div class="stat-label"><span>🌳 Satu pohon oak dewasa dengan mikoriza</span><span style="color:#a8ff78;">Area serapan</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:85%;background:linear-gradient(90deg,#1b5e20,#43a047);">Miselium bisa memperluas area serapan akar hingga 700x lipat!</div></div>
+        </div>
+        <div>
+          <div class="stat-label"><span>🌿 Persentase tumbuhan darat yang ber-mikoriza</span><span style="color:#a8ff78;">Hampir semua!</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:90%;background:linear-gradient(90deg,#33691e,#8bc34a);">~90% spesies tumbuhan darat punya hubungan mikoriza dengan jamur!</div></div>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Bayangkan setiap pohon di hutan adalah sebuah rumah, dan miselium adalah kabel internet yang menghubungkan semua rumah itu! 🏘️ Melalui kabel ini, pohon-pohon "berbagi data" berupa nutrisi dan informasi. Pohon yang lebih kaya nutrisi bisa mengirimkan "paket bantuan" ke pohon yang sedang kekurangan. Persis seperti keluarga besar yang saling berbagi dan menolong — hanya saja ini terjadi senyap-senyap di bawah tanah, dan sudah berlangsung selama 400 juta tahun! 🤝</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(3)">← Kembali</button>
+      <span class="page-indicator">Halaman 4 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(5)">Jamur Pemulung Bumi! ♻️ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 5: DECOMPOSER & BIOLUMINESCENCE ── -->
+  <div class="page" id="page-5">
+    <div class="section-header">
+      <span class="tag">♻️ Bab Tiga</span>
+      <h1>Jamur Pemulung &<br><span style="color:var(--mush-gold)">Cahaya di Kegelapan!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Melihat Jamur Bekerja!</p>
+      <p>"Aslan! Terra Explorer memindai sebatang pohon tumbang yang sudah mati. Sensor mendeteksi aktivitas biokimia yang intens — jamur-jamur kecil sedang memecah sel-sel kayu yang mati! Enzim yang mereka keluarkan menghancurkan lignoselulosa — bahan paling keras di kayu — yang hampir tidak ada makhluk lain yang bisa melakukannya! Dan malam ini... Aslan, kamu harus melihat ini. Terra Explorer mematikan semua lampunya dan aktifkan mode kamera malam... lihat! Ada titik-titik cahaya hijau-biru di antara akar pohon! Jamur-jamur kecil itu sedang BERCAHAYA di kegelapan. Ini... seperti hutan peri yang sesungguhnya!"</p>
+    </div>
+
+    <div class="card card-decomp">
+      <span class="card-icon">♻️</span>
+      <h2>Jamur: Petugas Daur Ulang Alam!</h2>
+      <p>Bayangkan jika tidak ada yang membersihkan daun-daun gugur, ranting patah, bangkai hewan, dan pohon-pohon tumbang di hutan. Dalam ribuan tahun, sampah organik akan menumpuk setinggi gedung bertingkat! Tapi ini tidak terjadi berkat jamur — <strong>decomposer</strong> (pengurai) yang paling kuat di planet kita.</p>
+
+      <h3>🧪 Bagaimana Jamur Mengurai?</h3>
+      <div class="step-list">
+        <div class="sl-item">
+          <div class="sl-num">1</div>
+          <div class="sl-content">
+            <strong>Melepas Enzim ke Luar Tubuh</strong>
+            <p>Tidak seperti kita yang mencerna makanan di dalam perut, jamur mengeluarkan enzim-enzim pencernaan ke LUAR tubuh mereka, langsung ke bahan yang ingin mereka makan. Ini disebut "pencernaan eksternal." Enzim ini memecah bahan organik kompleks menjadi molekul-molekul sederhana.</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">2</div>
+          <div class="sl-content">
+            <strong>Memecah Bahan yang Keras Seperti Kayu!</strong>
+            <p>Kayu mengandung lignin dan selulosa — bahan sangat keras yang hampir tidak ada makhluk lain yang bisa mencernanya. Jamur pelapuk kayu (seperti jamur tiram dan jamur bracket) punya enzim khusus yang bisa memecah lignin. Tanpa jamur ini, hutan akan dipenuhi tumpukan kayu mati selamanya!</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">3</div>
+          <div class="sl-content">
+            <strong>Mengembalikan Nutrisi ke Tanah!</strong>
+            <p>Setelah mengurai bahan organik, jamur melepaskan karbon, nitrogen, fosfor, dan mineral-mineral lain kembali ke tanah dalam bentuk yang bisa diserap tumbuhan. Ini adalah "daur ulang" yang sempurna! Tanpa jamur, nutrisi-nutrisi ini akan terkunci selamanya di dalam kayu dan daun mati yang tidak terurai.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(212,98,10,0.08);border:1px solid rgba(212,98,10,0.22);border-radius:16px;padding:18px 20px;margin-top:8px;">
+        <p style="margin:0;font-size:14px;line-height:1.8;">♻️ <strong>Fakta Penting:</strong> Di era Karbon (300 juta tahun lalu yang kita pelajari di Hari ke-11), bakteri pengurai kayu belum ada dan jamur pengurai lignin juga belum berevolusi. Itulah mengapa pohon-pohon mati tidak membusuk dan menumpuk menjadi lapisan batubara! Jamur pengurai lignin yang akhirnya berevolusi adalah salah satu alasan mengapa kadar oksigen Bumi turun kembali ke level normal. 🌍</p>
+      </div>
+    </div>
+
+    <div class="card card-glow">
+      <span class="card-icon">💡</span>
+      <h2>Jamur Bercahaya — Keajaiban Bioluminescence!</h2>
+      <p>Bioluminescence adalah kemampuan makhluk hidup menghasilkan cahayanya sendiri — dan jamur adalah salah satu kelompok yang bisa melakukannya! Ada sekitar <strong>100 spesies jamur bioluminescent</strong> yang diketahui, sebagian besar ditemukan di hutan tropis — termasuk di Indonesia! 🇮🇩</p>
+
+      <h3>🌙 Mengapa Jamur Bercahaya?</h3>
+      <div class="two-col">
+        <div class="mini-card mini-card-glow">
+          <span class="mini-icon">🧪</span>
+          <strong>Reaksi Kimia Luciferin!</strong>
+          <p>Jamur menghasilkan cahaya melalui reaksi antara molekul luciferin dan enzim luciferase dengan oksigen. Reaksi ini menghasilkan cahaya hijau-biru dingin tanpa panas — sangat efisien! Persis seperti lampu LED yang tidak panas.</p>
+        </div>
+        <div class="mini-card mini-card-teal">
+          <span class="mini-icon">🦟</span>
+          <strong>Menarik Serangga untuk Menyebarkan Spora!</strong>
+          <p>Diduga cahaya yang dihasilkan menarik serangga di malam hari — dan serangga yang mengunjungi jamur bercahaya akan membawa spora-sporanya ke tempat lain. Ini strategi penyebaran benih yang sangat cerdas!</p>
+        </div>
+        <div class="mini-card mini-card-purple">
+          <span class="mini-icon">🍄</span>
+          <strong>Mycena chlorophos — Bercahaya Hijau!</strong>
+          <p>Salah satu jamur bercahaya paling terkenal — cahaya hijaunya sangat terang di malam gelap. Ditemukan di banyak hutan di Asia termasuk Indonesia, Jepang, dan Brasil. Sangat indah dan aman dilihat!</p>
+        </div>
+        <div class="mini-card mini-card-gold">
+          <span class="mini-icon">🌲</span>
+          <strong>Panellus stipticus — Di Kayu Lapuk!</strong>
+          <p>Jamur ini tumbuh di kayu lapuk di hutan dan bercahaya keputihan-hijau. Menariknya, miseliumnya juga bercahaya! Jadi bukan hanya jamurnya, tapi seluruh jaringan di bawah kayu lapuk itu bersinar di malam hari.</p>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <p>Jamur bercahaya itu seperti lampu-lampu hias yang digantung di lantai hutan tanpa ada yang memasangnya! 🎄 Bayangkan berjalan di hutan gelap malam hari dan tiba-tiba di antara akar-akar pohon besar, kamu melihat titik-titik cahaya hijau berkilauan pelan di tanah dan kayu lapuk. Ini bukan fantasi — ini kejadian nyata di hutan tropis Indonesia! Para ilmuwan yang pertama kali menemukan fenomena ini mengira mereka bermimpi! ✨</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(4)">← Kembali</button>
+      <span class="page-indicator">Halaman 5 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(6)">Jamur Terbesar & Berbahaya! ⚠️ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 6: JAMUR TERBESAR & BERBAHAYA ── -->
+  <div class="page" id="page-6">
+    <div class="section-header">
+      <span class="tag">⚠️ Bab Empat</span>
+      <h1>Rekor Dunia Jamur:<br><span style="color:var(--mush-gold)">Terbesar & Paling Berbahaya!</span></h1>
+    </div>
+
+    <div class="scene-box">
+      <p class="scene-title">📡 Terra Explorer — Database Jamur Ekstrem!</p>
+      <p>"Aslan! Terra Explorer mengakses database sains global tentang jamur-jamur paling luar biasa di dunia. Bersiaplah terkejut — ada jamur yang seluas 9 km persegi di dalam tanah! Dan ada jamur yang racunnya bisa membunuh orang dewasa dalam 10 hari! Alam memang tidak selalu ramah. Tapi memahami keduanya — yang menakjubkan dan yang berbahaya — itulah tugas ilmu pengetahuan. Ini juga pengingat penting: jangan pernah makan jamur yang kamu temukan di alam tanpa tahu persis jenisnya. Banyak jamur beracun yang tampak persis seperti jamur yang bisa dimakan!"</p>
+    </div>
+
+    <div class="card card-danger">
+      <span class="card-icon">🏆</span>
+      <h2>Rekor-Rekor Dunia Jamur yang Mencengangkan!</h2>
+
+      <h3>📏 Makhluk Hidup Terbesar di Bumi: Jamur!</h3>
+      <div class="step-list">
+        <div class="sl-item">
+          <div class="sl-num">🥇</div>
+          <div class="sl-content">
+            <strong>Armillaria ostoyae — Monster di Oregon, Amerika Serikat!</strong>
+            <p>Ini adalah makhluk hidup terbesar yang pernah diketahui oleh manusia — lebih besar dari paus biru, lebih besar dari pohon redwood raksasa! Satu individu jamur <em>Armillaria ostoyae</em> di Hutan Malheur, Oregon, USA, diperkirakan membentang seluas <strong>9 km persegi</strong> (hampir 900 hektar!) melalui jaringan miseliumnya di dalam tanah. Usianya diperkirakan antara 2.400–8.000 tahun! Tapi yang terlihat di atas tanah hanyalah jamur-jamur kecil coklat biasa... 😱</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">🥈</div>
+          <div class="sl-content">
+            <strong>Jamur Bracket Raksasa (Ganoderma) — Bisa Seberat 45 kg!</strong>
+            <p>Beberapa spesies jamur bracket (jamur papan) yang tumbuh di batang pohon bisa mencapai diameter 80 cm lebih dan berat hingga 45 kg — lebih berat dari rata-rata anak usia 10 tahun! Jamur-jamur ini tumbuh sangat lambat selama bertahun-tahun. Di Indonesia, <em>Ganoderma</em> sering ditemukan di kebun sawit dan dikenal sebagai hama sekaligus bahan obat tradisional.</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">⚠️</div>
+          <div class="sl-content">
+            <strong>Amanita phalloides — "Death Cap", Jamur Paling Mematikan!</strong>
+            <p><em>Amanita phalloides</em> alias "Death Cap" (topi kematian) adalah jamur paling mematikan di dunia — bertanggung jawab atas lebih dari 90% kematian akibat keracunan jamur di dunia! Masalahnya: jamur ini kelihatan cantik dan tidak berbau aneh. Racunnya adalah <strong>amatoksin</strong> yang menyerang hati dan ginjal secara perlahan — gejalanya baru muncul setelah 6–24 jam, terlambat untuk banyak korban. ☠️</p>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-num">⚠️</div>
+          <div class="sl-content">
+            <strong>Amanita muscaria — Jamur Merah Berbintik Putih yang Terkenal!</strong>
+            <p>Ini adalah jamur yang sering digambar di buku dongeng — merah cerah dengan bintik-bintik putih. Mengandung racun muscimol dan ibotenic acid yang menyebabkan halusinasi dan kejang. Meski jarang mematikan, efeknya sangat tidak menyenangkan. Menariknya, beberapa budaya purba menggunakannya dalam ritual — tapi <strong>jangan sekali-kali dicoba</strong>! 🚫</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>✅ Jamur yang Berguna dan Bisa Dimakan!</h3>
+      <div class="two-col">
+        <div class="mini-card mini-card-glow">
+          <span class="mini-icon">🍄</span>
+          <strong>Jamur Tiram & Kancing</strong>
+          <p>Jamur yang paling umum di dapur — lezat, bergizi tinggi (protein, vitamin B, serat), dan mudah dibudidayakan. Jamur tiram (Pleurotus) aslinya tumbuh di kayu lapuk di hutan tropis!</p>
+        </div>
+        <div class="mini-card mini-card-teal">
+          <span class="mini-icon">💊</span>
+          <strong>Penicillium — Penyelamat Jutaan Nyawa!</strong>
+          <p>Jamur <em>Penicillium notatum</em> adalah sumber antibiotik penisilin pertama yang ditemukan Alexander Fleming tahun 1928 — penemuan yang menyelamatkan ratusan juta nyawa manusia dari infeksi bakteri!</p>
+        </div>
+        <div class="mini-card mini-card-gold">
+          <span class="mini-icon">🏥</span>
+          <strong>Ganoderma — Jamur Obat</strong>
+          <p>Dikenal dalam pengobatan tradisional Asia sebagai "jamur abadi", mengandung senyawa yang membantu sistem imun. Sedang diteliti untuk potensi anti-kanker dan anti-inflamasi.</p>
+        </div>
+        <div class="mini-card mini-card-orange">
+          <span class="mini-icon">🧀</span>
+          <strong>Jamur dalam Makanan Kita!</strong>
+          <p>Tanpa jamur, tidak ada keju (Penicillium camemberti), tidak ada tempe (Rhizopus), tidak ada roti mengembang (ragi = jamur Saccharomyces), tidak ada bir atau yogurt! Jamur ada di mana-mana dalam makanan kita.</p>
+        </div>
+      </div>
+
+      <div style="background:rgba(217,79,172,0.07);border:2px solid rgba(217,79,172,0.25);border-radius:16px;padding:18px 20px;margin-top:12px;">
+        <p style="margin:0;font-size:14px;line-height:1.8;">🚨 <strong>Peringatan Penting:</strong> Jangan pernah memetik dan memakan jamur liar yang kamu temukan tanpa didampingi ahli! Banyak jamur beracun yang tampak persis sama dengan jamur yang bisa dimakan. Bahkan ahli pun bisa salah. Aturan aman: <strong>jamur dari pasar dan toko</strong> = aman. <strong>Jamur liar yang dipetik sendiri tanpa pengetahuan</strong> = berbahaya! ⚠️</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(5)">← Kembali</button>
+      <span class="page-indicator">Halaman 6 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(7)">Fakta Keren! 🤯 →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 7: FAKTA KEREN ── -->
+  <div class="page" id="page-7">
+    <div class="section-header">
+      <span class="tag">🤯 Bab Lima</span>
+      <h1>Fakta-Fakta Jamur<br><span style="color:var(--mush-gold)">yang Bikin Melongo!</span></h1>
+    </div>
+
+    <div class="card card-mush">
+      <span class="card-icon">🍄</span>
+      <h2>Kerajaan Fungi yang Penuh Kejutan!</h2>
+
+      <div class="two-col">
+        <div class="mini-card mini-card-purple">
+          <span class="mini-icon">🧬</span>
+          <strong>Jamur Lebih Dekat ke Hewan daripada Tumbuhan!</strong>
+          <p>Secara genetik, DNA jamur lebih mirip dengan hewan (termasuk manusia) daripada dengan tumbuhan! Dinding sel jamur terbuat dari kitin — sama seperti cangkang serangga dan krustasea. Kita lebih "bersaudara" dengan jamur dari yang kita kira! 🤯</p>
+        </div>
+        <div class="mini-card mini-card-glow">
+          <span class="mini-icon">🌍</span>
+          <strong>Jamur Bisa Membersihkan Polusi!</strong>
+          <p>"Mikoremediasi" adalah penggunaan jamur untuk membersihkan lingkungan dari racun — minyak, plastik, bahkan zat radioaktif! Beberapa jamur bisa memecah plastik dalam beberapa minggu. Ilmuwan sedang mengembangkan ini sebagai solusi polusi masa depan! ♻️</p>
+        </div>
+        <div class="mini-card mini-card-pink">
+          <span class="mini-icon">🚀</span>
+          <strong>Miselium untuk Bahan Bangunan!</strong>
+          <p>Miselium jamur bisa ditumbuhkan dalam cetakan apa pun, lalu dikeringkan menjadi bahan padat yang kuat, ringan, dan 100% dapat terurai secara alami. NASA sedang meneliti penggunaan miselium untuk membangun basis di Mars dari bahan yang ditumbuhkan di tempat! 🪐</p>
+        </div>
+        <div class="mini-card mini-card-teal">
+          <span class="mini-icon">🌱</span>
+          <strong>Jamur Ada di Semua Benua — Termasuk Antartika!</strong>
+          <p>Jamur adalah salah satu organisme yang paling adaptif di Bumi — ditemukan dari puncak Himalaya hingga kedalaman laut, dari gurun terpanas hingga es Antartika! Bahkan ada jamur yang hidup di reaktor nuklir Chernobyl yang berradiasi tinggi — memakan radiasi sebagai energi! 🔬</p>
+        </div>
+        <div class="mini-card mini-card-gold">
+          <span class="mini-icon">⏳</span>
+          <strong>Jamur Pertama Muncul 1,5 Miliar Tahun Lalu!</strong>
+          <p>Fosil jamur tertua ditemukan dari 1,5 miliar tahun lalu — jauh sebelum hewan darat pertama! Dan jamur mikoriza sudah ada 450 juta tahun lalu, membantu tumbuhan pertama naik ke darat dari laut. Tanpa jamur, mungkin tumbuhan tidak pernah bisa hidup di darat! 🌿</p>
+        </div>
+        <div class="mini-card mini-card-orange">
+          <span class="mini-icon">💨</span>
+          <strong>Satu Jamur Bisa Melepas Miliaran Spora!</strong>
+          <p>Jamur puffball raksasa (<em>Calvatia gigantea</em>) bisa mengandung hingga 7 triliun spora dalam satu tubuhnya! Spora-spora ini begitu ringan sehingga bisa melayang di udara ke seluruh dunia. Itulah mengapa jamur bisa tumbuh di hampir semua sudut Bumi! 🌬️</p>
+        </div>
+      </div>
+
+      <h3>🍄 Fakta Kilat yang Bikin Otakmu Bekerja!</h3>
+      <div class="fact-grid">
+        <div class="fact-card">
+          <span class="fact-emoji">📏</span>
+          <span class="fact-number">9 km²</span>
+          <span class="fact-label">Luas jamur terbesar di dunia (Armillaria di Oregon) — lebih luas dari ratusan lapangan bola!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🧵</span>
+          <span class="fact-number">8 km</span>
+          <span class="fact-label">Panjang miselium dalam satu sendok teh tanah hutan yang sehat!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">💡</span>
+          <span class="fact-number">~100 spesies</span>
+          <span class="fact-label">Jamur bioluminescent yang bisa menghasilkan cahaya sendiri di malam hari!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🤝</span>
+          <span class="fact-number">90%</span>
+          <span class="fact-label">Tumbuhan darat yang punya hubungan mikoriza dengan jamur — hampir semua tanaman!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">🌿</span>
+          <span class="fact-number">150.000+</span>
+          <span class="fact-label">Spesies jamur yang sudah diidentifikasi — tapi diperkirakan ada 3–10 JUTA spesies!</span>
+        </div>
+        <div class="fact-card">
+          <span class="fact-emoji">⏳</span>
+          <span class="fact-number">1,5 miliar</span>
+          <span class="fact-label">Tahun usia fosil jamur tertua yang pernah ditemukan — jauh sebelum dinosaurus!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(6)">← Kembali</button>
+      <span class="page-indicator">Halaman 7 dari 8</span>
+      <button class="btn btn-next" onclick="goPage(8)">Tantangan Aslan! ⚡ →</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE 8: TANTANGAN + PENUTUP ── -->
+  <div class="page" id="page-8">
+    <div class="section-header">
+      <span class="tag">⚡ Tantangan Aslan</span>
+      <h1>Jadilah Ahli Mikologi<br>Cilik Indonesia! 🏆</h1>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-title">🏆 Misi Hutan Bawah Tanah Aslan</div>
+      <p style="font-size:15px;opacity:0.8;margin-bottom:20px;">Terra Explorer telah membawamu ke dunia jamur yang penuh rahasia! Sekarang saatnya membuktikan ilmumu sebagai Ahli Mikologi (Ilmuwan Jamur) Cilik Indonesia yang sesungguhnya!</p>
+
+      <div class="challenge-item">
+        <div class="challenge-num">1</div>
+        <div>
+          <p><strong>Ekspedisi Jamur di Sekitarmu! 🔍</strong> Bersama orang tua, pergi ke kebun, taman, atau hutan kecil terdekat setelah hujan — ini waktu terbaik jamur muncul! Cari sebanyak mungkin jamur berbeda: di tanah, di kayu lapuk, di pangkal pohon. Untuk setiap jamur: foto dari jauh (JANGAN DISENTUH apalagi dimakan!), gambar bentuknya, dan catat warna serta tempat tumbuhnya. Buat "Album Jamur Aslan" yang kamu hias dengan indah. Semakin banyak jenisnya, semakin luar biasa! 📸</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">2</div>
+        <div>
+          <p><strong>Cetak Sidik Jari Spora Jamur! 🎨</strong> Minta orang tua beli jamur tiram atau jamur kancing dari pasar (jangan jamur liar!). Letakkan tutup jamur (bagian atas/topi) menghadap ke bawah di atas kertas putih. Tutup dengan mangkuk dan biarkan 4–6 jam. Angkat pelan-pelan dan lihat — spora-spora jamur yang jatuh membentuk pola indah seperti sidik jari radial yang unik! Setiap spesies jamur punya pola spora berbeda. Foto hasilnya dan simpan sebagai karya sains. Ini teknik sungguhan yang dipakai para ahli mikologi! 🔬</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">3</div>
+        <div>
+          <p><strong>Kuis Kilat Jamur! ⚡</strong> Jawab tanpa lihat buku: (a) Apa nama ilmu yang mempelajari jamur? (b) Apa itu miselium? (c) Sebutkan 2 hal yang diberikan pohon ke jamur dalam simbiosis mikoriza! (d) Apa yang jamur berikan ke pohon sebagai balasannya? (e) Mengapa kita tidak boleh sembarangan makan jamur liar? (f) Apa nama jamur paling mematikan di dunia? (g) Apa nama jamur terbesar di dunia dan di mana lokasinya? (h) Jamur bercahaya menggunakan prinsip apa untuk menghasilkan cahaya? Tuliskan jawabanmu! 📝</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">4</div>
+        <div>
+          <p><strong>Budidaya Jamur Tiram Sendiri! 🌱</strong> Ini adalah proyek sains yang bisa kamu lakukan selama 2–3 minggu! Minta orang tua membantu membeli baglog jamur tiram (media tanam jamur yang sudah ada sporanya) dari toko pertanian atau online. Ikuti instruksi perawatan: letakkan di tempat teduh lembab, semprot air 2 kali sehari. Dalam 1–2 minggu, jamur tiram akan tumbuh! Ini bukan hanya menyenangkan — kamu belajar biologi, pertanian, dan kesabaran sekaligus. Dan hasilnya bisa dimakan bersama keluarga! 🍳</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-num">5</div>
+        <div>
+          <p><strong>Cerita dari Sudut Pandang Miselium! ✍️</strong> Tulis cerita pendek (minimal 1 halaman) dari sudut pandang sehelai miselium di dalam tanah hutan hujan Indonesia! Kamu adalah benang tipis yang menyentuh akar pohon Trembesi tua. Ceritakan apa yang kamu "rasakan" saat berbagi nutrisi dengan pohon, saat menerima gula dari pohon, saat ada pohon yang "berteriak" bahaya melalui sinyal kimia, dan saat kamu akhirnya tumbuh menjadi jamur yang muncul ke atas tanah setelah hujan lebat. Sains + imajinasi = karya terbaik! 🌿</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENUTUP -->
+    <div class="card" style="--accent:linear-gradient(90deg,var(--mush-purple2),var(--mush-pink2),var(--mush-glow));margin-top:32px;">
+      <div class="closing-content">
+        <span class="trophy-big">🍄</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:clamp(24px,5vw,36px);margin-bottom:16px;">
+          Luar Biasa, Aslan! 🎉
+        </h2>
+        <p style="font-size:clamp(15px,2.5vw,17px);max-width:500px;margin:0 auto 24px;line-height:1.8;opacity:0.9;">
+          Kamu telah menyelesaikan Hari ke-28 dan menjelajahi dunia jamur yang menakjubkan bersama Terra Explorer! Kamu kini tahu bahwa di bawah setiap langkahmu di hutan, ada jaringan kehidupan yang luar biasa kompleks — saling berbagi, saling menjaga, sudah berjalan selama ratusan juta tahun jauh sebelum manusia ada. Kamu adalah <strong>Ahli Mikologi Cilik</strong> yang bangga akan kekayaan alam Indonesia!
+        </p>
+
+        <div class="quote-box" style="max-width:520px;margin:0 auto 28px;">
+          <p>"Di bawah setiap hutan yang kamu lihat, ada hutan lain yang tak terlihat — lebih luas, lebih tua, dan lebih bijaksana. Jamur mengajarkan kita bahwa kekuatan sejati bukan selalu yang terlihat besar dan megah, tapi yang bekerja diam-diam, menyambung semua yang terpisah, dan memastikan tak ada yang ditinggalkan sendirian. Itulah keajaiban miselium — dan mungkin juga, pelajaran terbaik tentang bagaimana manusia seharusnya hidup bersama."</p>
+          <cite>— Untuk Aslan, Ahli Mikologi Cilik & Penjelajah Hutan Bawah Tanah Indonesia 🍄🌿</cite>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px;">
+          <span style="background:rgba(91,26,140,0.15);border:1px solid rgba(139,63,212,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🍄 Ahli Mikologi</span>
+          <span style="background:rgba(168,255,120,0.10);border:1px solid rgba(168,255,120,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">🌐 Master Miselium</span>
+          <span style="background:rgba(240,180,41,0.10);border:1px solid rgba(240,180,41,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">💡 Pakar Bioluminescence</span>
+          <span style="background:rgba(14,122,90,0.12);border:1px solid rgba(14,122,90,0.3);padding:8px 16px;border-radius:50px;font-size:14px;font-weight:800;">♻️ Juara Daur Ulang Alam</span>
+        </div>
+
+        <button class="btn btn-done" onclick="selesaiMembaca()">
+          ✅ Saya Sudah Selesai Membaca!
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goPage(7)">← Kembali</button>
+      <span class="page-indicator">Halaman 8 dari 8</span>
+      <span></span>
+    </div>
+  </div>
+
+</div><!-- end book-container -->
+
+<script>
+  // ── SPORE PARTICLES ──
+  const sf = document.getElementById('sporeField');
+  const sporeColors = [
+    'rgba(168,255,120,0.7)', 'rgba(244,114,182,0.6)',
+    'rgba(196,181,253,0.6)', 'rgba(240,180,41,0.5)',
+    'rgba(139,63,212,0.6)',  'rgba(255,255,255,0.4)',
+    'rgba(14,122,90,0.6)',   'rgba(217,79,172,0.5)'
+  ];
+  for (let i = 0; i < 65; i++) {
+    const s = document.createElement('div');
+    s.className = 'spore';
+    const sz = Math.random() * 4 + 1;
+    const c  = sporeColors[Math.floor(Math.random() * sporeColors.length)];
+    s.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      left:${Math.random() * 100}%;
+      bottom:${Math.random() * 25}%;
+      background:${c};
+      box-shadow:0 0 ${sz * 3}px ${c};
+      animation-duration:${6 + Math.random() * 10}s;
+      animation-delay:${Math.random() * 12}s;
+    `;
+    sf.appendChild(s);
+  }
+
+  // ── PAGES ──
+  const TOTAL = 8;
+  let current = 1;
+
+  function goPage(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── DARK / LIGHT MODE ──
+  const modeBtn = document.getElementById('modeBtn');
+  let isLight = false;
+  modeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+    modeBtn.textContent = isLight ? '🌙' : '☀️';
+  });
+
+  // ── SELESAI MEMBACA ──
+  function selesaiMembaca() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.90);backdrop-filter:blur(8px);
+      z-index:999;display:flex;align-items:center;justify-content:center;
+      padding:20px;animation:fadeUp 0.3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="background:linear-gradient(135deg,#060412,#0e0820);border:2px solid rgba(168,255,120,0.35);border-radius:28px;padding:40px;max-width:440px;width:100%;text-align:center;color:white;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#380a5e,#8b3fd4,#f472b6,#a8ff78);box-shadow:0 0 14px rgba(168,255,120,0.5);border-radius:28px 28px 0 0;"></div>
+        <span style="font-size:80px;display:block;margin-bottom:16px;filter:drop-shadow(0 0 24px rgba(168,255,120,0.7));">🍄</span>
+        <h2 style="font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:12px;background:linear-gradient(135deg,#e879f9,#f0b429,#a8ff78);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Keren Banget, Aslan!</h2>
+        <p style="font-size:16px;line-height:1.8;opacity:0.9;margin-bottom:24px;">Hari ke-28 selesai! 🎉<br>Kamu sudah menjelajahi <strong>Hutan Bawah Tanah yang penuh Jamur Ajaib</strong> dan memahami rahasia miselium — internet tersembunyi yang menyambung seluruh pohon di hutan!<br><br>Kamu kini adalah <strong>Ahli Mikologi Cilik Indonesia</strong>! 🇮🇩🍄<br>Sampai jumpa di hari berikutnya! ✨</p>
+        <button onclick="this.closest('div').parentElement.remove()" style="background:linear-gradient(135deg,#380a5e,#8b3fd4);color:white;border:none;padding:14px 32px;border-radius:50px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(139,63,212,0.5);">Mantap! Tutup 🍄</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+  }
+
+  // ── KEYBOARD NAV ──
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goPage(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPage(current - 1);
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>

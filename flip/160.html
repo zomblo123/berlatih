@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Aslan's English Adventure — Day 30: The Greatest Magic of All</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #07070f;
+    --deep:    #0d0d1a;
+    --blue:    #1a56db;
+    --sky:     #3b82f6;
+    --amber:   #f59e0b;
+    --gold:    #fbbf24;
+    --emerald: #10b981;
+    --teal:    #0d9488;
+    --coral:   #f97316;
+    --purple:  #8b5cf6;
+    --violet:  #a78bfa;
+    --rose:    #f43f5e;
+    --pink:    #e879f9;
+    --lime:    #84cc16;
+    --white:   #ffffff;
+    --glass:   rgba(255,255,255,0.06);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star {
+    position: absolute; border-radius: 50%; background: white;
+    animation: twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:.12;transform:scale(1);}50%{opacity:.9;transform:scale(1.5);} }
+
+  /* Magic dust particles */
+  .magicdust {
+    position: fixed; border-radius: 50%;
+    animation: dustdrift var(--md,10s) ease-in-out infinite var(--mdelay,0s);
+    pointer-events: none; z-index: 0;
+  }
+  @keyframes dustdrift {
+    0%  { transform:translate(0,0) scale(1); opacity:0; }
+    15% { opacity:.9; }
+    50% { transform:translate(var(--dx,35px),var(--dy,-60px)) scale(1.4); opacity:.6; }
+    85% { opacity:.2; }
+    100%{ transform:translate(var(--dx2,-28px),var(--dy2,42px)) scale(0.6); opacity:0; }
+  }
+
+  /* Shooting star — purple-white */
+  .shoot {
+    position: fixed; top: 8%; left: -10%;
+    width: 150px; height: 2px;
+    background: linear-gradient(90deg, transparent, #c4b5fd, #fff, transparent);
+    animation: shoot 11s linear infinite 2s; z-index: 0;
+  }
+  .shoot2 {
+    position: fixed; top: 22%; left: -10%;
+    width: 100px; height: 1.5px;
+    background: linear-gradient(90deg, transparent, #f0abfc, transparent);
+    animation: shoot2 16s linear infinite 7s; z-index: 0;
+  }
+  @keyframes shoot  { 0%{left:-10%;top:8%;opacity:0;}6%{opacity:1;}42%{left:110%;top:28%;opacity:0;}100%{left:110%;top:28%;opacity:0;} }
+  @keyframes shoot2 { 0%{left:-10%;top:22%;opacity:0;}6%{opacity:.8;}42%{left:110%;top:40%;opacity:0;}100%{left:110%;top:40%;opacity:0;} }
+
+  .wrapper { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 36px 20px 60px; }
+
+  /* ===== HERO ===== */
+  .hero { text-align: center; margin-bottom: 44px; animation: fadeDown .8s ease both; }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);} }
+  .hero-badge {
+    display: inline-flex; gap: 8px; align-items: center;
+    background: rgba(167,139,250,.12); border: 1px solid rgba(167,139,250,.35);
+    color: #c4b5fd; padding: 7px 22px; border-radius: 100px;
+    font-size: .8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Baloo 2', cursive; font-size: clamp(1.9rem,6vw,3.1rem);
+    font-weight: 800; color: var(--white); line-height: 1.15; margin-bottom: 12px;
+  }
+  .hero h1 .accent {
+    background: linear-gradient(135deg,#a78bfa,#e879f9,#fbbf24);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .hero-sub { color: rgba(255,255,255,.58); font-size: 1rem; max-width: 500px; margin: 0 auto 28px; line-height: 1.65; }
+  .hero-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .tag { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.7); padding:6px 16px; border-radius:100px; font-size:.78rem; font-weight:600; backdrop-filter:blur(8px); }
+
+  /* ===== PROGRESS ===== */
+  .progress-wrap { background:rgba(255,255,255,.07); border-radius:100px; height:9px; margin-bottom:40px; overflow:hidden; border:1px solid rgba(255,255,255,.08); }
+  .progress-bar { height:100%; background:linear-gradient(90deg,#818cf8,#a78bfa,#e879f9,#fbbf24); border-radius:100px; width:0%; transition:width .6s ease; }
+  .progress-label { text-align:right; font-size:.75rem; color:rgba(255,255,255,.4); margin-top:6px; font-weight:600; }
+
+  /* ===== ILLUSTRATION CARD ===== */
+  .illustration-card {
+    background: linear-gradient(135deg,#0a0715 0%,#12093a 55%,#07070f 100%);
+    border-radius: 32px; padding: 32px 24px 24px; margin-bottom: 40px;
+    text-align: center; position: relative; overflow: hidden; animation: fadeUp .9s ease .1s both;
+    border: 1px solid rgba(167,139,250,.22);
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);} }
+  .illus-svg { max-width: 320px; width: 100%; position: relative; z-index: 1; }
+  .illus-quote { color:rgba(255,255,255,.75); font-size:.95rem; font-weight:600; margin-top:16px; font-style:italic; }
+  .illus-quote strong { color:#c4b5fd; font-style:normal; }
+
+  /* ===== SPEED CONTROLS ===== */
+  .speed-controls {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 16px; animation: fadeUp .9s ease .15s both;
+  }
+  .speed-label { color: rgba(255,255,255,.5); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .speed-btn {
+    padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06); color: rgba(255,255,255,.6);
+    font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s; backdrop-filter: blur(8px);
+  }
+  .speed-btn:hover { background: rgba(255,255,255,.12); color: white; }
+  .speed-btn.active {
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    color: white; border-color: transparent;
+    box-shadow: 0 4px 18px rgba(139,92,246,.45);
+  }
+
+  /* ===== MASTER CONTROLS ===== */
+  .master-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:40px; animation:fadeUp .9s ease .2s both; }
+  .btn-master { display:inline-flex; align-items:center; gap:10px; padding:13px 28px; border-radius:100px; border:none; cursor:pointer; font-weight:700; transition:transform .15s; font-family:'Nunito',sans-serif; font-size:.95rem; }
+  .btn-master:active { transform:scale(.97); }
+  .btn-play-all { background:linear-gradient(135deg,#7c3aed,#a78bfa); color:white; box-shadow:0 6px 24px rgba(139,92,246,.45); }
+  .btn-stop { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:rgba(255,255,255,.75); backdrop-filter:blur(8px); }
+
+  /* ===== CHAPTERS ===== */
+  .chapter {
+    background: linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.09); border-radius: 28px;
+    margin-bottom: 24px; overflow: hidden; backdrop-filter: blur(12px);
+    transition: transform .2s; animation: fadeUp .7s ease both;
+  }
+  .chapter:hover { transform: translateY(-3px); }
+  .chapter:nth-child(1){animation-delay:.1s;} .chapter:nth-child(2){animation-delay:.2s;}
+  .chapter:nth-child(3){animation-delay:.3s;} .chapter:nth-child(4){animation-delay:.4s;}
+  .chapter:nth-child(5){animation-delay:.5s;}
+
+  .chapter-accent { height: 4px; }
+  .ch1 .chapter-accent { background: linear-gradient(90deg,#818cf8,#6366f1); }
+  .ch2 .chapter-accent { background: linear-gradient(90deg,#22d3ee,#0891b2); }
+  .ch3 .chapter-accent { background: linear-gradient(90deg,#fbbf24,#f59e0b); }
+  .ch4 .chapter-accent { background: linear-gradient(90deg,#f472b6,#ec4899); }
+  .ch5 .chapter-accent { background: linear-gradient(90deg,#a78bfa,#e879f9,#fbbf24,#4ade80); }
+
+  .chapter-inner { padding: 28px 28px 24px; }
+  .chapter-head { display:flex; align-items:center; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+  .chapter-num {
+    width:52px; height:52px; border-radius:16px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2',cursive; font-size:1.3rem; font-weight:800; color:white;
+  }
+  .ch1 .chapter-num { background: linear-gradient(135deg,#818cf8,#6366f1); }
+  .ch2 .chapter-num { background: linear-gradient(135deg,#22d3ee,#0891b2); }
+  .ch3 .chapter-num { background: linear-gradient(135deg,#fbbf24,#d97706); color:#1a0e00; }
+  .ch4 .chapter-num { background: linear-gradient(135deg,#f472b6,#ec4899); }
+  .ch5 .chapter-num { background: linear-gradient(135deg,#a78bfa,#e879f9); }
+
+  .chapter-meta { flex:1; min-width:0; }
+  .chapter-tag { font-size:.7rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.35); margin-bottom:4px; }
+  .chapter-title { font-family:'Baloo 2',cursive; font-size:1.05rem; font-weight:700; color:var(--white); line-height:1.3; }
+
+  .btn-listen {
+    flex-shrink:0; display:inline-flex; align-items:center; gap:8px;
+    padding:10px 20px; border-radius:100px; border:none; cursor:pointer;
+    font-size:.82rem; font-weight:700; transition:all .2s; font-family:'Nunito',sans-serif;
+  }
+  .ch1 .btn-listen { background:rgba(129,140,248,.15); color:#c7d2fe; border:1px solid rgba(129,140,248,.3); }
+  .ch2 .btn-listen { background:rgba(34,211,238,.15); color:#a5f3fc; border:1px solid rgba(34,211,238,.3); }
+  .ch3 .btn-listen { background:rgba(251,191,36,.15); color:#fde68a; border:1px solid rgba(251,191,36,.3); }
+  .ch4 .btn-listen { background:rgba(244,114,182,.15); color:#fbcfe8; border:1px solid rgba(244,114,182,.3); }
+  .ch5 .btn-listen { background:rgba(167,139,250,.15); color:#ede9fe; border:1px solid rgba(167,139,250,.3); }
+  .btn-listen:hover { filter:brightness(1.18); transform:scale(1.05); }
+  .btn-listen.playing::before { content:'⏸'; margin-right:4px; }
+  .wave-bars { display:none; align-items:center; gap:2px; height:16px; }
+  .btn-listen.playing .wave-bars { display:flex; }
+  .wave-bar { width:3px; border-radius:2px; background:currentColor; animation:wave var(--dur,.5s) infinite alternate; }
+  @keyframes wave { from{height:3px;}to{height:14px;} }
+
+  .chapter-text {
+    font-size: 1rem; line-height: 1.95; color: rgba(255,255,255,.85);
+    padding: 20px 22px; background: rgba(0,0,0,.22);
+    border-radius: 16px; border: 1px solid rgba(255,255,255,.05);
+    position: relative; word-spacing: 2px;
+  }
+  .chapter-text .read-marker {
+    position:absolute; top:12px; right:14px;
+    font-size:.75rem; font-weight:700; color:#a78bfa;
+    opacity:0; transition:opacity .4s;
+  }
+  .chapter.done .chapter-text .read-marker { opacity:1; }
+
+  .w { display:inline; border-radius:5px; padding:1px 2px; cursor:pointer; transition:background 0.08s; white-space:normal; }
+  .w:hover { background: rgba(167,139,250,0.25); }
+  .hl { color: #c4b5fd; font-weight: 700; }
+
+  .vocab-box { margin-top:16px; padding:16px 20px; background:rgba(255,255,255,.04); border-radius:14px; border:1px solid rgba(255,255,255,.07); }
+  .vocab-title { font-size:.72rem; font-weight:700; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:10px; }
+  .vocab-pills { display:flex; flex-wrap:wrap; gap:8px; }
+  .vocab-pill {
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
+    border-radius:100px; padding:5px 14px; font-size:.8rem; font-weight:600;
+    color:rgba(255,255,255,.65); cursor:pointer; transition:all .18s;
+  }
+  .vocab-pill:hover { background:rgba(167,139,250,.22); color:var(--white); transform:scale(1.06); }
+
+  /* ===== MOTIVATION CARD — GRAND FINALE ===== */
+  .motivation-card {
+    background: linear-gradient(135deg,#0a0720 0%,#150a3a 35%,#0f1520 65%,#07070f 100%);
+    border-radius:32px; padding:44px 36px; text-align:center; margin-top:40px;
+    position:relative; overflow:hidden; animation:fadeUp .7s ease .6s both;
+    border: 1px solid rgba(167,139,250,.3);
+    box-shadow: 0 0 60px rgba(139,92,246,.15), 0 0 120px rgba(232,121,249,.08);
+  }
+  /* Animated rainbow border shimmer */
+  .motivation-card::before {
+    content:''; position:absolute; inset:0; border-radius:32px; padding:2px;
+    background: linear-gradient(135deg,#818cf8,#a78bfa,#e879f9,#fbbf24,#4ade80,#818cf8);
+    background-size: 300% 300%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: bordershine 4s linear infinite; pointer-events:none;
+  }
+  @keyframes bordershine { 0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;} }
+
+  .celebration-icons { font-size:1.8rem; margin-bottom:12px; display:flex; justify-content:center; gap:8px; flex-wrap:wrap; }
+  .motivation-card .crown-icon { font-size:3.2rem; margin-bottom:8px; display:block; animation:bounce 1.5s ease-in-out infinite; }
+  @keyframes bounce { 0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-10px) scale(1.1);} }
+  .day-badge {
+    display:inline-block; background: linear-gradient(135deg,#7c3aed,#a78bfa,#e879f9);
+    color:white; padding:6px 22px; border-radius:100px; font-size:.85rem; font-weight:800;
+    text-transform:uppercase; letter-spacing:.08em; margin-bottom:20px;
+    box-shadow:0 4px 20px rgba(139,92,246,.5);
+  }
+  .motivation-card h2 {
+    font-family:'Baloo 2',cursive; font-size:clamp(1.3rem,4vw,2rem);
+    font-weight:800; margin-bottom:16px;
+    background: linear-gradient(135deg,#c4b5fd,#e879f9,#fbbf24);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .motivation-card .main-message {
+    color:rgba(255,255,255,.78); font-size:1rem; line-height:1.8;
+    max-width:560px; margin:0 auto 24px;
+  }
+  .quote-box {
+    margin: 0 auto 24px; max-width:520px;
+    background: rgba(167,139,250,.1); border: 1px solid rgba(167,139,250,.25);
+    border-radius:18px; padding:20px 26px;
+  }
+  .quote-box p {
+    font-family:'Baloo 2',cursive; font-size:1.05rem; font-weight:700;
+    color:#e9d5ff; line-height:1.55; font-style:italic;
+  }
+  .stats-row {
+    display:flex; flex-wrap:wrap; justify-content:center; gap:14px; margin-bottom:24px;
+  }
+  .stat-pill {
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12);
+    border-radius:100px; padding:8px 20px; font-size:.82rem; font-weight:700;
+    color:rgba(255,255,255,.75);
+  }
+  .stat-pill span { color:#c4b5fd; }
+  .challenge-box {
+    margin-top:4px; background:rgba(167,139,250,.08);
+    border:1px solid rgba(167,139,250,.22); border-radius:16px; padding:20px 24px;
+  }
+  .challenge-box p { font-size:.9rem; font-weight:600; color:rgba(255,255,255,.75); line-height:1.6; }
+  .challenge-box strong { color:#c4b5fd; }
+
+  .footer {
+    text-align:center; margin-top:48px; padding-top:32px;
+    border-top:1px solid rgba(255,255,255,.07);
+    color:rgba(255,255,255,.3); font-size:.82rem; font-weight:600;
+  }
+  .footer .rainbow-text {
+    background: linear-gradient(90deg,#818cf8,#e879f9,#fbbf24,#4ade80);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    font-weight:800;
+  }
+
+  /* ===== TOAST ===== */
+  .word-toast {
+    position:fixed; bottom:28px; left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:rgba(5,5,18,.95); backdrop-filter:blur(14px);
+    color:#c4b5fd; padding:12px 28px; border-radius:100px;
+    font-size:.9rem; font-weight:600;
+    box-shadow:0 8px 32px rgba(0,0,0,.45), 0 0 30px rgba(139,92,246,.25);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    z-index:9999; white-space:nowrap;
+    border:1px solid rgba(167,139,250,.35); font-family:monospace;
+  }
+  .word-toast.show { transform:translateX(-50%) translateY(0); }
+  .word-toast small { color:#9ca3af; font-size:0.7rem; margin-left:8px; }
+
+  @media(max-width:600px){
+    .chapter-inner{padding:20px 18px 18px;}
+    .btn-listen span{display:none;}
+    .chapter-num{width:44px;height:44px;font-size:1.1rem;}
+    .word-toast{white-space:normal;max-width:90vw;text-align:center;}
+    .speed-controls{gap:6px;}
+    .speed-btn{padding:7px 14px;font-size:.75rem;}
+    .motivation-card{padding:32px 22px;}
+    .stats-row{gap:8px;}
+  }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<div class="stars" id="stars"></div>
+<div class="shoot"></div>
+<div class="shoot2"></div>
+
+<div class="wrapper">
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <div class="hero-badge">🏆 Day 30 – Late Beginner | ✨ Click ANY word for Indonesian meaning</div>
+    <h1>The Greatest Magic<br>of <span class="accent">All</span></h1>
+    <p class="hero-sub">Thirty days. Thirty adventures. And now Aslan discovers that the most powerful magic was never in the stories — it was <em>inside him</em>, all along. The final chapter begins. 📖🌟</p>
+    <div class="hero-tags">
+      <span class="tag">🏆 Day 30 — The Grand Finale</span>
+      <span class="tag">🎧 Listen &amp; Learn</span>
+      <span class="tag">📚 5 Chapters</span>
+      <span class="tag">🌟 Vocabulary</span>
+      <span class="tag">🔍 Click words for meaning</span>
+    </div>
+  </header>
+
+  <div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-label" id="progressLabel">0 of 5 chapters read</div>
+  </div>
+
+  <!-- ===== ILLUSTRATION CARD ===== -->
+  <div class="illustration-card">
+    <svg class="illus-svg" viewBox="0 0 340 215" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bookGlow" cx="42%" cy="65%" r="40%">
+          <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.5"/>
+          <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="skyGlow" cx="50%" cy="30%" r="55%">
+          <stop offset="0%" stop-color="#4c1d95" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#07070f" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fde68a" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#fde68a" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="blur2">
+          <feGaussianBlur stdDeviation="2"/>
+        </filter>
+      </defs>
+
+      <!-- Sky background -->
+      <rect width="340" height="215" fill="#07070f"/>
+      <ellipse cx="170" cy="80" rx="160" ry="100" fill="url(#skyGlow)"/>
+
+      <!-- Moon -->
+      <circle cx="285" cy="32" r="22" fill="#fde68a" opacity=".12" filter="url(#blur2)"/>
+      <circle cx="285" cy="32" r="16" fill="#fde68a" opacity=".2" filter="url(#blur2)"/>
+      <circle cx="285" cy="32" r="10" fill="#fef3c7" opacity=".7"/>
+      <circle cx="291" cy="28" r="7" fill="#0d0d1a"/><!-- crescent shadow -->
+
+      <!-- Stars in sky -->
+      <circle cx="40" cy="18" r="1.2" fill="white" opacity=".8">
+        <animate attributeName="opacity" values=".3;1;.3" dur="2.2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="90" cy="10" r="1" fill="white" opacity=".7">
+        <animate attributeName="opacity" values=".2;.9;.2" dur="1.8s" repeatCount="indefinite" begin=".5s"/>
+      </circle>
+      <circle cx="155" cy="8" r="1.4" fill="white" opacity=".9">
+        <animate attributeName="opacity" values=".4;1;.4" dur="2.6s" repeatCount="indefinite" begin=".3s"/>
+      </circle>
+      <circle cx="210" cy="14" r="1" fill="white" opacity=".6">
+        <animate attributeName="opacity" values=".2;.8;.2" dur="2s" repeatCount="indefinite" begin=".9s"/>
+      </circle>
+      <circle cx="255" cy="9" r="1.2" fill="white" opacity=".8">
+        <animate attributeName="opacity" values=".3;1;.3" dur="1.6s" repeatCount="indefinite" begin=".2s"/>
+      </circle>
+      <circle cx="60" cy="35" r=".9" fill="#c4b5fd" opacity=".7">
+        <animate attributeName="opacity" values=".2;.9;.2" dur="2.4s" repeatCount="indefinite" begin="1.1s"/>
+      </circle>
+      <circle cx="315" cy="55" r="1" fill="white" opacity=".6">
+        <animate attributeName="opacity" values=".2;.8;.2" dur="2s" repeatCount="indefinite" begin=".7s"/>
+      </circle>
+      <circle cx="18" cy="55" r="1.1" fill="#e9d5ff" opacity=".7">
+        <animate attributeName="opacity" values=".1;.8;.1" dur="3s" repeatCount="indefinite" begin="1.5s"/>
+      </circle>
+
+      <!-- Ground / hill -->
+      <ellipse cx="170" cy="210" rx="175" ry="28" fill="#0d0b1f"/>
+      <path d="M0 182 Q60 168 120 178 Q180 190 240 174 Q290 162 340 172 L340 215 L0 215Z" fill="#0a0820" opacity=".95"/>
+      <path d="M0 196 Q70 185 145 194 Q215 203 290 188 L340 195 L340 215 L0 215Z" fill="#07060e" opacity=".95"/>
+
+      <!-- Book glow on ground -->
+      <ellipse cx="138" cy="190" rx="55" ry="12" fill="url(#bookGlow)"/>
+
+      <!-- Open glowing book -->
+      <path d="M95 175 Q115 165 138 168 Q138 168 138 195 Q115 193 95 200Z" fill="#1e1b4b"/>
+      <path d="M181 175 Q161 165 138 168 Q138 168 138 195 Q161 193 181 200Z" fill="#2e1065"/>
+      <!-- Book pages glow -->
+      <path d="M97 176 Q116 167 138 170 L138 193 Q116 190 97 198Z" fill="#312e81" opacity=".7"/>
+      <path d="M179 176 Q160 167 138 170 L138 193 Q160 190 179 198Z" fill="#4c1d95" opacity=".7"/>
+      <!-- Page lines left -->
+      <line x1="104" y1="178" x2="133" y2="174" stroke="#818cf8" stroke-width=".8" opacity=".5"/>
+      <line x1="104" y1="182" x2="133" y2="178" stroke="#818cf8" stroke-width=".8" opacity=".4"/>
+      <line x1="104" y1="186" x2="133" y2="183" stroke="#818cf8" stroke-width=".8" opacity=".3"/>
+      <line x1="104" y1="190" x2="133" y2="188" stroke="#818cf8" stroke-width=".8" opacity=".25"/>
+      <!-- Page lines right -->
+      <line x1="143" y1="174" x2="172" y2="178" stroke="#a78bfa" stroke-width=".8" opacity=".5"/>
+      <line x1="143" y1="178" x2="172" y2="182" stroke="#a78bfa" stroke-width=".8" opacity=".4"/>
+      <line x1="143" y1="183" x2="172" y2="187" stroke="#a78bfa" stroke-width=".8" opacity=".3"/>
+      <line x1="143" y1="188" x2="172" y2="191" stroke="#a78bfa" stroke-width=".8" opacity=".25"/>
+      <!-- Book spine glow -->
+      <line x1="138" y1="168" x2="138" y2="195" stroke="#c4b5fd" stroke-width="1.5" opacity=".6"/>
+      <!-- Book glow aura -->
+      <ellipse cx="138" cy="182" rx="48" ry="20" fill="#7c3aed" opacity=".08" filter="url(#blur2)"/>
+
+      <!-- Aslan reading (sitting, legs extended) -->
+      <!-- Body -->
+      <rect x="118" y="155" width="14" height="24" rx="5" fill="#1e3a8a"/>
+      <!-- Head -->
+      <circle cx="125" cy="149" r="10" fill="#c8956c"/>
+      <!-- Hair -->
+      <path d="M115 144 Q125 137 135 144 Q135 138 125 137 Q115 138 115 144Z" fill="#3b1f0a"/>
+      <!-- Eyes (looking down at book) -->
+      <ellipse cx="121" cy="149" rx="1.8" ry="1.2" fill="#3b1f0a"/>
+      <ellipse cx="129" cy="149" rx="1.8" ry="1.2" fill="#3b1f0a"/>
+      <!-- Arms holding book -->
+      <line x1="117" y1="162" x2="102" y2="175" stroke="#1e3a8a" stroke-width="4.5" stroke-linecap="round"/>
+      <line x1="132" y1="162" x2="174" y2="175" stroke="#1e3a8a" stroke-width="4.5" stroke-linecap="round"/>
+      <!-- Legs -->
+      <line x1="120" y1="179" x2="108" y2="196" stroke="#1e3a8a" stroke-width="4.5" stroke-linecap="round"/>
+      <line x1="130" y1="179" x2="142" y2="196" stroke="#1e3a8a" stroke-width="4.5" stroke-linecap="round"/>
+      <!-- Hands on book -->
+      <circle cx="101" cy="175" r="3.5" fill="#c8956c"/>
+      <circle cx="175" cy="175" r="3.5" fill="#c8956c"/>
+
+      <!-- Magic rising from book pages — floating adventure icons -->
+      <!-- Dragon (from stories) -->
+      <g opacity=".85">
+        <ellipse cx="225" cy="112" rx="16" ry="10" fill="#7c3aed" opacity=".7"/>
+        <path d="M225 102 L221 94 L225 98 L229 94Z" fill="#a78bfa" opacity=".8"/><!-- wings up -->
+        <circle cx="225" cy="112" r="7" fill="#8b5cf6"/>
+        <circle cx="222" cy="110" r="1.5" fill="#fde68a"/>
+        <circle cx="228" cy="110" r="1.5" fill="#fde68a"/>
+        <path d="M237 112 Q242 108 240 115Z" fill="#a78bfa" opacity=".7"/><!-- tail -->
+        <circle cx="225" cy="121" r="2" fill="#f97316" opacity=".6"><!-- fire -->
+          <animate attributeName="opacity" values=".3;.9;.3" dur="1.2s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+
+      <!-- Golden seed (glowing) -->
+      <circle cx="64" cy="95" r="7" fill="#fbbf24" opacity=".8">
+        <animate attributeName="r" values="6;8;6" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values=".5;.9;.5" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="64" cy="95" r="4" fill="#fef3c7" opacity=".9"/>
+
+      <!-- Book icon (stories) -->
+      <rect x="40" y="130" width="18" height="24" rx="3" fill="#4f46e5" opacity=".8"/>
+      <rect x="42" y="130" width="4" height="24" rx="1" fill="#6366f1" opacity=".7"/>
+      <line x1="46" y1="136" x2="55" y2="136" stroke="#c7d2fe" stroke-width="1.2" opacity=".6"/>
+      <line x1="46" y1="140" x2="55" y2="140" stroke="#c7d2fe" stroke-width="1.2" opacity=".5"/>
+      <line x1="46" y1="144" x2="55" y2="144" stroke="#c7d2fe" stroke-width="1.2" opacity=".4"/>
+
+      <!-- Star icon -->
+      <text x="270" y="90" font-size="18" fill="#fbbf24" opacity=".8" text-anchor="middle">★
+        <animate attributeName="opacity" values=".4;1;.4" dur="2.5s" repeatCount="indefinite" begin=".4s"/>
+      </text>
+
+      <!-- Clock hands icon (day 12 story) -->
+      <circle cx="305" cy="130" r="12" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity=".6"/>
+      <circle cx="305" cy="130" r="2" fill="#22d3ee" opacity=".8"/>
+      <line x1="305" y1="130" x2="305" y2="121" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round" opacity=".8"/>
+      <line x1="305" y1="130" x2="312" y2="134" stroke="#a5f3fc" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+
+      <!-- Floating magic dots connecting book to icons -->
+      <circle cx="160" cy="155" r="2" fill="#c4b5fd" opacity=".7">
+        <animate attributeName="cy" values="155;140;155" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values=".3;.9;.3" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="170" cy="145" r="1.5" fill="#e879f9" opacity=".6">
+        <animate attributeName="cy" values="145;128;145" dur="2.3s" repeatCount="indefinite" begin=".5s"/>
+        <animate attributeName="opacity" values=".2;.8;.2" dur="2.3s" repeatCount="indefinite" begin=".5s"/>
+      </circle>
+      <circle cx="180" cy="138" r="1.8" fill="#fbbf24" opacity=".6">
+        <animate attributeName="cy" values="138;118;138" dur="1.9s" repeatCount="indefinite" begin=".3s"/>
+        <animate attributeName="opacity" values=".2;.7;.2" dur="1.9s" repeatCount="indefinite" begin=".3s"/>
+      </circle>
+      <circle cx="115" cy="148" r="2" fill="#c4b5fd" opacity=".6">
+        <animate attributeName="cy" values="148;130;148" dur="2.4s" repeatCount="indefinite" begin=".7s"/>
+        <animate attributeName="opacity" values=".2;.8;.2" dur="2.4s" repeatCount="indefinite" begin=".7s"/>
+      </circle>
+      <circle cx="100" cy="138" r="1.5" fill="#a78bfa" opacity=".6">
+        <animate attributeName="cy" values="138;118;138" dur="2.1s" repeatCount="indefinite" begin="1s"/>
+        <animate attributeName="opacity" values=".2;.7;.2" dur="2.1s" repeatCount="indefinite" begin="1s"/>
+      </circle>
+
+      <!-- Text stars / sparkle decorations -->
+      <text x="195" y="52" fill="#c4b5fd" font-size="10" opacity=".55">✦</text>
+      <text x="120" y="42" fill="#fbbf24" font-size="8" opacity=".5">✦</text>
+      <text x="250" y="35" fill="#e879f9" font-size="9" opacity=".45">✦</text>
+      <text x="30" y="25" fill="#a5f3fc" font-size="7" opacity=".45">✦</text>
+    </svg>
+    <p class="illus-quote">Under the stars, Aslan read — and the whole universe <strong>came alive</strong>. 📖🌌</p>
+  </div>
+
+  <!-- ===== SPEED CONTROLS ===== -->
+  <div class="speed-controls">
+    <span class="speed-label">🎚️ Speed:</span>
+    <button class="speed-btn" data-rate="0.65">🐢 Slow</button>
+    <button class="speed-btn active" data-rate="0.88">🚶 Normal</button>
+    <button class="speed-btn" data-rate="1.15">🚀 Fast</button>
+  </div>
+
+  <div class="master-controls">
+    <button class="btn-master btn-play-all" id="playAllBtn">🎧 <span>Play All Story</span></button>
+    <button class="btn-master btn-stop" id="stopBtn">⏹ <span>Stop Reading</span></button>
+  </div>
+
+  <div id="chapters">
+
+    <!-- CHAPTER 1 -->
+    <div class="chapter ch1" id="ch1">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">01</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter One</div>
+            <div class="chapter-title">🌌 Looking Back at All Adventures</div>
+          </div>
+          <button class="btn-listen" data-ch="1">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text1">
+          <span class="read-marker">✅ Read!</span>
+          It was the evening of Day 30. Aslan sat in his favourite spot — the wide wooden chair by the window — and looked at the tall stack of story books on his desk. Thirty books. One for every day of the past month. He ran his fingers slowly along their spines and felt a warm feeling fill his chest. He remembered everything. The whispering forest where trees could speak. The brave dragon who loved books more than gold. The clever talking cat who solved every mystery. The magical clock that stopped time. The lost star that found its way home. The mirror that showed people their truest dreams. And the last golden seed that grew into a whole forest. Each story had taken him somewhere completely different. Each adventure had left something good inside him. Aslan smiled quietly and whispered to himself: "Thirty days. Thirty whole adventures." He could hardly believe it.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="adventure">adventure</span><span class="vocab-pill" data-word="favourite">favourite</span><span class="vocab-pill" data-word="spines">spines</span><span class="vocab-pill" data-word="mystery">mystery</span><span class="vocab-pill" data-word="whispered">whispered</span><span class="vocab-pill" data-word="truest">truest</span><span class="vocab-pill" data-word="remembered">remembered</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 2 -->
+    <div class="chapter ch2" id="ch2">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">02</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Two</div>
+            <div class="chapter-title">✨ The Magic Inside</div>
+          </div>
+          <button class="btn-listen" data-ch="2">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text2">
+          <span class="read-marker">✅ Read!</span>
+          Later that evening, Aslan's grandmother came and sat beside him. She looked at the pile of books and nodded slowly, the way wise people do when they are very pleased. "Tell me," she said gently, "what was the best part of these thirty days?" Aslan thought carefully for a long time. "I think," he said at last, "it was the feeling I got when I started a new story. Like stepping through a door into a completely different world." His grandmother smiled — a slow, deep smile. "That feeling has a name," she said. "It is called imagination. And it lives inside you, Aslan, not inside the pages." Aslan looked up at her. "So even if I lose the books?" he asked. She shook her head and took his hand. "A story you have truly read becomes part of you. Nobody can ever take that away." Aslan sat quietly for a moment. He felt something shift inside his chest — something that felt very much like power.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="imagination">imagination</span><span class="vocab-pill" data-word="wise">wise</span><span class="vocab-pill" data-word="pleased">pleased</span><span class="vocab-pill" data-word="stepping">stepping</span><span class="vocab-pill" data-word="truly">truly</span><span class="vocab-pill" data-word="shift">shift</span><span class="vocab-pill" data-word="power">power</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 3 -->
+    <div class="chapter ch3" id="ch3">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">03</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Three</div>
+            <div class="chapter-title">🌍 Sharing Stories</div>
+          </div>
+          <button class="btn-listen" data-ch="3">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.05s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text3">
+          <span class="read-marker">✅ Read!</span>
+          The next day at school, Aslan could not stop talking about the stories. At lunch, he sat with his best friend Kaya and his classmate Nora under the big tree in the schoolyard. He told them about the whispering forest and the wise old trees that could speak. He described the dragon who kept every book he ever found in a great golden cave. He talked about the clock that froze time in a whole city. Kaya's eyes grew wide. Nora leaned forward and said she had to read those stories immediately. As Aslan spoke, he noticed something wonderful happening. The stories were growing. In his own mind, they had been one size. But as he told them to his friends, they seemed to expand, to become bigger and brighter and more alive. He understood then what his grandmother had meant. A story kept to yourself is a treasure. A story shared with others becomes a world.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="described">described</span><span class="vocab-pill" data-word="froze">froze</span><span class="vocab-pill" data-word="expand">expand</span><span class="vocab-pill" data-word="treasure">treasure</span><span class="vocab-pill" data-word="schoolyard">schoolyard</span><span class="vocab-pill" data-word="leaned">leaned</span><span class="vocab-pill" data-word="noticed">noticed</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 4 -->
+    <div class="chapter ch4" id="ch4">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">04</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Four</div>
+            <div class="chapter-title">🚀 A New Journey Begins</div>
+          </div>
+          <button class="btn-listen" data-ch="4">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.5s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.15s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text4">
+          <span class="read-marker">✅ Read!</span>
+          That afternoon, Aslan went to the school library after class. The librarian, a kind old man with round glasses, was stacking a fresh pile of new books on the table. "Looking for something?" he asked. Aslan walked slowly along the shelves, running his fingers across the spines of hundreds of books. Then one caught his eye. The cover was deep blue, scattered with silver stars. He pulled it out and read the first page standing right there between the shelves. After three sentences, he felt it — that warm, fizzing, can't-stop-now feeling in his chest. The feeling that said: this is going to be a great story. He looked up at the high shelves around him and realised something important. Thirty days had not been an ending. They had been a beginning. Every book on every shelf was a door. And he had just learned how to open them. He carried the new book to the desk, sat down, and turned to page one.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="librarian">librarian</span><span class="vocab-pill" data-word="shelves">shelves</span><span class="vocab-pill" data-word="scattered">scattered</span><span class="vocab-pill" data-word="fizzing">fizzing</span><span class="vocab-pill" data-word="realised">realised</span><span class="vocab-pill" data-word="ending">ending</span><span class="vocab-pill" data-word="beginning">beginning</span></div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 5 -->
+    <div class="chapter ch5" id="ch5">
+      <div class="chapter-accent"></div>
+      <div class="chapter-inner">
+        <div class="chapter-head">
+          <div class="chapter-num">05</div>
+          <div class="chapter-meta">
+            <div class="chapter-tag">Chapter Five — The Grand Finale</div>
+            <div class="chapter-title">🌟 The Greatest Magic of All</div>
+          </div>
+          <button class="btn-listen" data-ch="5">🔊 <span>Listen</span><div class="wave-bars"><div class="wave-bar" style="--dur:.4s"></div><div class="wave-bar" style="--dur:.6s;animation-delay:.1s"></div><div class="wave-bar" style="--dur:.3s;animation-delay:.2s"></div></div></button>
+        </div>
+        <div class="chapter-text" id="text5">
+          <span class="read-marker">✅ Read!</span>
+          That night, Aslan sat outside under the open sky. He looked up at the stars and thought about everything he had learned in thirty days. He had met whispering trees, courageous dragons, time-stopping clocks, and golden seeds. But now he understood something deeper. All of those wonders had one thing in common — they had come to life because he had read them. A story on a page is just ink and paper. But the moment a reader opens their heart to it, something miraculous happens. The words rise up, the characters breathe, the worlds spin and shimmer and become real. That is the magic. Not a wand. Not a spell. Not a potion. Just a book, and a person willing to believe. Aslan thought: a wand breaks, a spell fades, a potion runs out. But a story you have read never leaves you. It stays, quietly, in the place where courage and wonder and kindness grow. He looked up at the stars one more time. "Thank you," he whispered — to the stories, to the words, and to himself, for never giving up. Then he opened his new book, and the greatest adventure of all continued.
+        </div>
+        <div class="vocab-box"><div class="vocab-title">🔑 Key Words — tap to hear</div><div class="vocab-pills"><span class="vocab-pill" data-word="miraculous">miraculous</span><span class="vocab-pill" data-word="courageous">courageous</span><span class="vocab-pill" data-word="shimmer">shimmer</span><span class="vocab-pill" data-word="potion">potion</span><span class="vocab-pill" data-word="wand">wand</span><span class="vocab-pill" data-word="courage">courage</span><span class="vocab-pill" data-word="kindness">kindness</span></div></div>
+      </div>
+    </div>
+
+  </div><!-- /#chapters -->
+
+  <!-- ===== MOTIVATION CARD — GRAND FINALE ===== -->
+  <div class="motivation-card">
+    <div class="celebration-icons">🎉 🏆 🌟 📖 🦁 ✨ 🎊</div>
+    <span class="crown-icon">👑</span>
+    <div class="day-badge">🎓 Day 30 Complete — You Did It!</div>
+    <h2>Selamat, Aslan! You are a Champion of Stories! 🦁</h2>
+    <p class="main-message">
+      Thirty days ago, you opened the first page and stepped into a world of adventure. Today, you have reached the end — but as Aslan learned, this is not an ending at all. Every book you finish is a door you have walked through. And every door you walk through makes you bigger, braver, and more powerful than before.
+    </p>
+    <div class="quote-box">
+      <p>"A story you have truly read becomes part of you — and nobody can ever take that away." 🌌</p>
+    </div>
+    <div class="stats-row">
+      <div class="stat-pill">📅 <span>30</span> Days Completed</div>
+      <div class="stat-pill">📖 <span>30</span> Stories Read</div>
+      <div class="stat-pill">🌍 <span>30</span> Worlds Explored</div>
+      <div class="stat-pill">💪 <span>1</span> Amazing Reader</div>
+    </div>
+    <p class="main-message" style="margin-bottom:0;">
+      You have learned that the greatest magic in the world does not come from a wand or a spell. It lives in your imagination — in the quiet, powerful space between the words on a page and the pictures in your mind. <strong style="color:#c4b5fd">Keep reading. Keep imagining. Keep growing.</strong> The next great adventure is just one page away. 🚀
+    </p>
+    <div class="challenge-box">
+      <p>🏆 <strong>Your Final Challenge:</strong> Choose one story from the past 30 days that meant the most to you. Write three sentences about why you loved it and what it taught you. Then give a book you love to someone who hasn't read it yet — because the greatest magic of all grows stronger every time you share it. 📚💜</p>
+    </div>
+  </div>
+
+  <footer class="footer">
+    Made with ❤️ for <span class="rainbow-text">Aslan</span> •
+    Day 30 — The Grand Finale •
+    <span style="color:rgba(255,255,255,.45)">30 Days · 30 Stories · 1 Champion 🏆</span>
+  </footer>
+
+</div><!-- /.wrapper -->
+
+<div id="wordToast" class="word-toast">📖</div>
+
+<script>
+// ===== STARS + MAGIC DUST =====
+(function(){
+  const wrap = document.getElementById('stars');
+  const colors = ['white','#c4b5fd','#fde68a','#a5f3fc','#f0abfc','#86efac'];
+
+  // Stars
+  for(let i = 0; i < 90; i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.5 + 0.5;
+    s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--delay:-${(Math.random()*6).toFixed(1)}s;background:${colors[Math.floor(Math.random()*colors.length)]};`;
+    wrap.appendChild(s);
+  }
+
+  // Magic dust particles
+  const dustColors = [
+    'radial-gradient(circle,#c4b5fd 0%,#7c3aed44 70%,transparent 100%)',
+    'radial-gradient(circle,#fde68a 0%,#f59e0b44 70%,transparent 100%)',
+    'radial-gradient(circle,#f0abfc 0%,#e879f944 70%,transparent 100%)',
+    'radial-gradient(circle,#a5f3fc 0%,#22d3ee44 70%,transparent 100%)',
+  ];
+  for(let i = 0; i < 18; i++){
+    const f = document.createElement('div');
+    f.className = 'magicdust';
+    const size = Math.random() * 6 + 2.5;
+    const dx  = (Math.random() * 90 - 45).toFixed(0);
+    const dy  = (Math.random() * 80 - 40).toFixed(0);
+    const dx2 = (Math.random() * 60 - 30).toFixed(0);
+    const dy2 = (Math.random() * 60 - 30).toFixed(0);
+    const bg  = dustColors[Math.floor(Math.random() * dustColors.length)];
+    f.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*90}%;left:${Math.random()*96}%;background:${bg};--md:${(Math.random()*7+7).toFixed(1)}s;--mdelay:-${(Math.random()*10).toFixed(1)}s;--dx:${dx}px;--dy:${dy}px;--dx2:${dx2}px;--dy2:${dy2}px;`;
+    wrap.appendChild(f);
+  }
+})();
+
+// ===== DICTIONARY (240+ words) =====
+const dictionary = {
+  "aslan":"Aslan (nama tokoh utama cerita)",
+  "adventure":"petualangan",
+  "adventures":"petualangan-petualangan",
+  "evening":"malam / sore hari",
+  "favourite":"favorit / kesukaan",
+  "wide":"lebar / besar",
+  "wooden":"terbuat dari kayu",
+  "chair":"kursi",
+  "window":"jendela",
+  "looked":"melihat / memperhatikan (masa lalu look)",
+  "tall":"tinggi",
+  "stack":"tumpukan",
+  "story":"cerita",
+  "books":"buku-buku",
+  "desk":"meja belajar / meja tulis",
+  "thirty":"tiga puluh",
+  "past":"masa lalu / yang telah lalu",
+  "month":"bulan",
+  "ran":"berlari / mengalir (masa lalu run)",
+  "fingers":"jari-jari",
+  "slowly":"perlahan-lahan",
+  "spines":"punggung buku-buku",
+  "spine":"punggung buku",
+  "felt":"merasakan (masa lalu feel)",
+  "warm":"hangat",
+  "feeling":"perasaan",
+  "fill":"mengisi",
+  "chest":"dada",
+  "remembered":"mengingat (masa lalu remember)",
+  "everything":"segalanya / semua",
+  "whispering":"berbisik (sedang)",
+  "forest":"hutan",
+  "trees":"pohon-pohon",
+  "speak":"berbicara",
+  "brave":"berani",
+  "dragon":"naga",
+  "loved":"mencintai / menyukai (masa lalu love)",
+  "gold":"emas",
+  "clever":"cerdas / pintar",
+  "talking":"berbicara (sedang)",
+  "cat":"kucing",
+  "solved":"memecahkan (masa lalu solve)",
+  "mystery":"misteri",
+  "magical":"ajaib / penuh sihir",
+  "clock":"jam",
+  "stopped":"berhenti (masa lalu stop)",
+  "time":"waktu",
+  "lost":"tersesat / hilang",
+  "star":"bintang",
+  "found":"menemukan (masa lalu find)",
+  "mirror":"cermin",
+  "showed":"menunjukkan (masa lalu show)",
+  "truest":"paling sejati (superlative true)",
+  "dreams":"mimpi-mimpi",
+  "golden":"keemasan / berwarna emas",
+  "seed":"biji / benih",
+  "grew":"tumbuh (masa lalu grow)",
+  "whole":"seluruh / penuh",
+  "taken":"membawa / membawa pergi (masa lalu take)",
+  "somewhere":"di suatu tempat",
+  "completely":"sepenuhnya / sama sekali",
+  "different":"berbeda",
+  "left":"meninggalkan / kiri (masa lalu leave)",
+  "inside":"di dalam",
+  "smiled":"tersenyum (masa lalu smile)",
+  "quietly":"dengan diam / dengan tenang",
+  "whispered":"berbisik (masa lalu whisper)",
+  "himself":"dirinya sendiri",
+  "hardly":"hampir tidak / baru saja",
+  "believe":"percaya / mempercayai",
+  "grandmother":"nenek",
+  "came":"datang (masa lalu come)",
+  "sat":"duduk (masa lalu sit)",
+  "beside":"di samping / di sebelah",
+  "pile":"tumpukan",
+  "nodded":"mengangguk (masa lalu nod)",
+  "wise":"bijak / bijaksana",
+  "pleased":"senang / puas",
+  "gently":"dengan lembut",
+  "thought":"berpikir (masa lalu think) / pikiran",
+  "carefully":"dengan hati-hati",
+  "long":"panjang / lama",
+  "last":"terakhir / akhirnya",
+  "stepping":"melangkah (sedang)",
+  "door":"pintu",
+  "world":"dunia",
+  "imagination":"imajinasi / daya khayal",
+  "lives":"hidup (orang ketiga tunggal) / kehidupan",
+  "pages":"halaman-halaman",
+  "lose":"kehilangan / kalah",
+  "shook":"mengguncang (masa lalu shake)",
+  "head":"kepala",
+  "took":"mengambil (masa lalu take)",
+  "hand":"tangan",
+  "truly":"sungguh-sungguh / benar-benar",
+  "becomes":"menjadi (orang ketiga tunggal)",
+  "nobody":"tidak ada orang",
+  "ever":"pernah / seumur hidup",
+  "away":"jauh / pergi",
+  "moment":"sesaat / momen",
+  "shift":"berubah / perubahan",
+  "power":"kekuatan / kemampuan",
+  "school":"sekolah",
+  "lunch":"makan siang",
+  "best":"terbaik",
+  "friend":"teman",
+  "classmate":"teman sekelas",
+  "tree":"pohon",
+  "schoolyard":"halaman sekolah",
+  "told":"menceritakan (masa lalu tell)",
+  "described":"menggambarkan (masa lalu describe)",
+  "froze":"membekukan (masa lalu freeze)",
+  "city":"kota",
+  "eyes":"mata",
+  "forward":"ke depan",
+  "leaned":"menyandar (masa lalu lean)",
+  "immediately":"segera / dengan segera",
+  "noticed":"memperhatikan / menyadari (masa lalu notice)",
+  "wonderful":"luar biasa / menakjubkan",
+  "happening":"terjadi (sedang)",
+  "stories":"cerita-cerita",
+  "growing":"tumbuh / bertumbuh (sedang)",
+  "mind":"pikiran",
+  "size":"ukuran",
+  "expand":"berkembang / meluas",
+  "bigger":"lebih besar (komparatif big)",
+  "brighter":"lebih terang (komparatif bright)",
+  "alive":"hidup / masih hidup",
+  "understood":"memahami (masa lalu understand)",
+  "meant":"bermaksud (masa lalu mean)",
+  "kept":"menyimpan (masa lalu keep)",
+  "treasure":"harta / harta karun",
+  "shared":"berbagi / membagikan (masa lalu share)",
+  "others":"orang lain",
+  "afternoon":"sore hari",
+  "library":"perpustakaan",
+  "librarian":"pustakawan / penjaga perpustakaan",
+  "kind":"baik hati / jenis",
+  "glasses":"kacamata",
+  "stacking":"menumpuk (sedang)",
+  "fresh":"baru / segar",
+  "shelves":"rak-rak buku",
+  "shelf":"rak buku",
+  "looking":"mencari / melihat (sedang)",
+  "hundreds":"ratusan",
+  "caught":"menangkap / menarik perhatian (masa lalu catch)",
+  "cover":"sampul / cover",
+  "deep":"dalam / gelap",
+  "blue":"biru",
+  "scattered":"bertaburan / tersebar",
+  "silver":"perak / berwarna perak",
+  "stars":"bintang-bintang",
+  "pulled":"menarik (masa lalu pull)",
+  "read":"membaca",
+  "standing":"berdiri (sedang)",
+  "between":"di antara",
+  "sentences":"kalimat-kalimat",
+  "fizzing":"bergelembung / bergejolak (sedang)",
+  "realised":"menyadari (masa lalu realise)",
+  "important":"penting",
+  "ending":"akhir / pengakhiran",
+  "beginning":"awal / permulaan",
+  "every":"setiap",
+  "learned":"mempelajari (masa lalu learn)",
+  "open":"membuka / terbuka",
+  "carried":"membawa (masa lalu carry)",
+  "turned":"membalik (masa lalu turn)",
+  "night":"malam",
+  "outside":"di luar",
+  "open":"terbuka / membuka",
+  "sky":"langit",
+  "stars":"bintang-bintang",
+  "courageous":"berani / penuh keberanian",
+  "deeper":"lebih dalam (komparatif deep)",
+  "wonders":"keajaiban-keajaiban",
+  "common":"umum / biasa",
+  "come":"datang / berasal",
+  "life":"kehidupan",
+  "because":"karena",
+  "page":"halaman",
+  "ink":"tinta",
+  "paper":"kertas",
+  "reader":"pembaca",
+  "opens":"membuka (orang ketiga tunggal)",
+  "heart":"hati",
+  "miraculous":"menakjubkan / luar biasa ajaib",
+  "words":"kata-kata",
+  "rise":"bangkit / naik",
+  "characters":"tokoh-tokoh / karakter-karakter",
+  "breathe":"bernapas",
+  "worlds":"dunia-dunia",
+  "spin":"berputar",
+  "shimmer":"berkilauan / bersinar redup",
+  "real":"nyata / sungguhan",
+  "magic":"sihir / keajaiban",
+  "wand":"tongkat sihir",
+  "spell":"mantra / ejaan",
+  "potion":"ramuan sihir",
+  "willing":"bersedia / rela",
+  "breaks":"patah / rusak (orang ketiga tunggal)",
+  "fades":"memudar (orang ketiga tunggal)",
+  "runs":"berlari / habis (orang ketiga tunggal)",
+  "out":"habis / keluar",
+  "stays":"tinggal / tetap (orang ketiga tunggal)",
+  "courage":"keberanian",
+  "wonder":"keajaiban / rasa kagum",
+  "kindness":"kebaikan hati",
+  "grow":"tumbuh / berkembang",
+  "one":"satu",
+  "more":"lagi / lebih",
+  "time":"waktu / kali",
+  "thank":"berterima kasih",
+  "you":"kamu / kau",
+  "giving":"menyerah / putus asa",
+  "up":"ke atas / menyerah",
+  "continued":"melanjutkan / terus berlanjut (masa lalu continue)",
+  "continues":"terus berlanjut (orang ketiga tunggal)",
+  "greatest":"terbesar / terhebat (superlative great)",
+  "greatest":"terbesar / terhebat",
+  "completed":"menyelesaikan (masa lalu complete)",
+  "champion":"juara / pemenang",
+  "amazing":"luar biasa / menakjubkan",
+  "continue":"melanjutkan / meneruskan",
+  "stronger":"lebih kuat (komparatif strong)",
+  "people":"orang-orang",
+  "new":"baru",
+  "journey":"perjalanan",
+  "begins":"dimulai (orang ketiga tunggal)",
+  "grows":"tumbuh / berkembang (orang ketiga tunggal)",
+  "share":"berbagi",
+  "great":"hebat / besar / luar biasa"
+};
+
+function showMeaning(word) {
+  let clean = word.toLowerCase().replace(/[.,!?;:()'"«»""''—–\-]/g,'');
+  let meaning = dictionary[clean];
+  if(!meaning){
+    if(clean.endsWith('s')   && dictionary[clean.slice(0,-1)])   meaning = dictionary[clean.slice(0,-1)];
+    else if(clean.endsWith('ed')  && dictionary[clean.slice(0,-2)])   meaning = dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('ing') && dictionary[clean.slice(0,-3)])   meaning = dictionary[clean.slice(0,-3)];
+    else if(clean.endsWith('ly')  && dictionary[clean.slice(0,-2)])   meaning = dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('er')  && dictionary[clean.slice(0,-2)])   meaning = dictionary[clean.slice(0,-2)];
+    else if(clean.endsWith('est') && dictionary[clean.slice(0,-3)])   meaning = dictionary[clean.slice(0,-3)];
+    else if(clean.endsWith('ies') && dictionary[clean.slice(0,-3)+'y']) meaning = dictionary[clean.slice(0,-3)+'y'];
+    else meaning = "❓ arti belum tersedia, coba cek kamus";
+  }
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `📖 <strong>${clean}</strong> → ${meaning} <small>🇮🇩</small>`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(() => toast.classList.remove('show'), 2900);
+}
+
+// ===== WORD WRAPPING =====
+function wrapWords(div) {
+  if(div.dataset.wrapped) return;
+  div.dataset.wrapped = "1";
+
+  function processNode(node) {
+    if(node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      if(!text.trim()) return;
+      const frag = document.createDocumentFragment();
+      text.split(/(\s+)/).forEach(part => {
+        if(/^\s+$/.test(part)) {
+          frag.appendChild(document.createTextNode(part));
+        } else if(part.length > 0) {
+          const match = part.match(/^([^a-zA-Z0-9']*)([a-zA-Z0-9'][a-zA-Z0-9']*)([^a-zA-Z0-9']*)$/);
+          if(match) {
+            if(match[1]) frag.appendChild(document.createTextNode(match[1]));
+            const span = document.createElement('span');
+            span.className = 'w';
+            span.textContent = match[2];
+            span.addEventListener('click', (e) => { e.stopPropagation(); showMeaning(match[2]); });
+            frag.appendChild(span);
+            if(match[3]) frag.appendChild(document.createTextNode(match[3]));
+          } else {
+            frag.appendChild(document.createTextNode(part));
+          }
+        }
+      });
+      node.parentNode.replaceChild(frag, node);
+    } else if(node.nodeType === Node.ELEMENT_NODE) {
+      if(node.classList && (node.classList.contains('read-marker') || node.classList.contains('w'))) return;
+      if(node.tagName === 'SCRIPT' || node.tagName === 'STYLE') return;
+      Array.from(node.childNodes).forEach(child => processNode(child));
+    }
+  }
+
+  const marker = div.querySelector('.read-marker');
+  const markerEl = marker ? marker.cloneNode(true) : null;
+  if(marker) marker.remove();
+  processNode(div);
+  if(markerEl) div.insertAdjacentElement('afterbegin', markerEl);
+}
+
+function wrapAllChapters() {
+  document.querySelectorAll('.chapter-text').forEach(div => wrapWords(div));
+}
+
+// ===== SPEED CONTROL =====
+let speechRate = 0.88;
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    speechRate = parseFloat(btn.dataset.rate);
+    if(currentUtt) showSpeedChangeTip();
+  });
+});
+
+function showSpeedChangeTip() {
+  const toast = document.getElementById('wordToast');
+  toast.innerHTML = `⚡ Speed changed! Press Stop then Listen again to apply.`;
+  toast.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ===== SPEECH =====
+let currentUtt  = null;
+let isPlayingAll = false;
+let readChapters = new Set();
+
+const stories = {
+  1: "It was the evening of Day 30. Aslan sat in his favourite spot — the wide wooden chair by the window — and looked at the tall stack of story books on his desk. Thirty books. One for every day of the past month. He ran his fingers slowly along their spines and felt a warm feeling fill his chest. He remembered everything. The whispering forest where trees could speak. The brave dragon who loved books more than gold. The clever talking cat who solved every mystery. The magical clock that stopped time. The lost star that found its way home. The mirror that showed people their truest dreams. And the last golden seed that grew into a whole forest. Each story had taken him somewhere completely different. Each adventure had left something good inside him. Aslan smiled quietly and whispered to himself: Thirty days. Thirty whole adventures. He could hardly believe it.",
+  2: "Later that evening, Aslan's grandmother came and sat beside him. She looked at the pile of books and nodded slowly, the way wise people do when they are very pleased. Tell me, she said gently, what was the best part of these thirty days? Aslan thought carefully for a long time. I think, he said at last, it was the feeling I got when I started a new story. Like stepping through a door into a completely different world. His grandmother smiled — a slow, deep smile. That feeling has a name, she said. It is called imagination. And it lives inside you, Aslan, not inside the pages. Aslan looked up at her. So even if I lose the books? he asked. She shook her head and took his hand. A story you have truly read becomes part of you. Nobody can ever take that away. Aslan sat quietly for a moment. He felt something shift inside his chest — something that felt very much like power.",
+  3: "The next day at school, Aslan could not stop talking about the stories. At lunch, he sat with his best friend Kaya and his classmate Nora under the big tree in the schoolyard. He told them about the whispering forest and the wise old trees that could speak. He described the dragon who kept every book he ever found in a great golden cave. He talked about the clock that froze time in a whole city. Kaya's eyes grew wide. Nora leaned forward and said she had to read those stories immediately. As Aslan spoke, he noticed something wonderful happening. The stories were growing. In his own mind, they had been one size. But as he told them to his friends, they seemed to expand, to become bigger and brighter and more alive. He understood then what his grandmother had meant. A story kept to yourself is a treasure. A story shared with others becomes a world.",
+  4: "That afternoon, Aslan went to the school library after class. The librarian, a kind old man with round glasses, was stacking a fresh pile of new books on the table. Looking for something? he asked. Aslan walked slowly along the shelves, running his fingers across the spines of hundreds of books. Then one caught his eye. The cover was deep blue, scattered with silver stars. He pulled it out and read the first page standing right there between the shelves. After three sentences, he felt it — that warm, fizzing, can't-stop-now feeling in his chest. The feeling that said: this is going to be a great story. He looked up at the high shelves around him and realised something important. Thirty days had not been an ending. They had been a beginning. Every book on every shelf was a door. And he had just learned how to open them. He carried the new book to the desk, sat down, and turned to page one.",
+  5: "That night, Aslan sat outside under the open sky. He looked up at the stars and thought about everything he had learned in thirty days. He had met whispering trees, courageous dragons, time-stopping clocks, and golden seeds. But now he understood something deeper. All of those wonders had one thing in common — they had come to life because he had read them. A story on a page is just ink and paper. But the moment a reader opens their heart to it, something miraculous happens. The words rise up, the characters breathe, the worlds spin and shimmer and become real. That is the magic. Not a wand. Not a spell. Not a potion. Just a book, and a person willing to believe. Aslan thought: a wand breaks, a spell fades, a potion runs out. But a story you have read never leaves you. It stays, quietly, in the place where courage and wonder and kindness grow. He looked up at the stars one more time. Thank you, he whispered — to the stories, to the words, and to himself, for never giving up. Then he opened his new book, and the greatest adventure of all continued."
+};
+
+function pickVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v => v.lang==='en-US' && (v.name.includes('Google')||v.name.includes('Samantha')||v.name.includes('Microsoft')))
+      || voices.find(v => v.lang.startsWith('en'))
+      || null;
+}
+
+function stopAll() {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  currentUtt   = null;
+  isPlayingAll = false;
+  document.querySelectorAll('.btn-listen.playing').forEach(b => b.classList.remove('playing'));
+}
+
+function speak(chId, btn, onEnd) {
+  if(!window.speechSynthesis) return;
+  stopAll();
+  const utt = new SpeechSynthesisUtterance(stories[chId]);
+  utt.lang  = 'en-US';
+  utt.rate  = speechRate;
+  utt.pitch = 1.05;
+  const v = pickVoice();
+  if(v) utt.voice = v;
+  if(btn) btn.classList.add('playing');
+  utt.onend  = () => { if(btn) btn.classList.remove('playing'); currentUtt = null; if(onEnd) onEnd(); };
+  utt.onerror= () => { if(btn) btn.classList.remove('playing'); currentUtt = null; };
+  currentUtt = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+// ===== LISTEN BUTTONS =====
+document.querySelectorAll('.btn-listen').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ch = btn.getAttribute('data-ch');
+    if(btn.classList.contains('playing')) { stopAll(); return; }
+    isPlayingAll = false;
+    speak(ch, btn, () => {
+      if(!readChapters.has(ch)) {
+        readChapters.add(ch);
+        document.getElementById('ch'+ch).classList.add('done');
+        updateProgress();
+      }
+    });
+  });
+});
+
+// ===== PLAY ALL =====
+document.getElementById('playAllBtn').addEventListener('click', () => {
+  stopAll();
+  isPlayingAll = true;
+  const keys = ['1','2','3','4','5'];
+  let idx = 0;
+  function next() {
+    if(!isPlayingAll || idx >= keys.length) { isPlayingAll = false; return; }
+    const k   = keys[idx];
+    const btn = document.querySelector(`[data-ch="${k}"]`);
+    document.getElementById('ch'+k).scrollIntoView({ behavior:'smooth', block:'center' });
+    speak(k, btn, () => {
+      if(!readChapters.has(k)) {
+        readChapters.add(k);
+        document.getElementById('ch'+k).classList.add('done');
+        updateProgress();
+      }
+      idx++;
+      setTimeout(next, 700);
+    });
+  }
+  next();
+});
+
+document.getElementById('stopBtn').addEventListener('click', stopAll);
+
+// ===== PROGRESS =====
+function updateProgress() {
+  const pct = (readChapters.size / 5) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    readChapters.size + ' of 5 chapters read' +
+    (readChapters.size === 5 ? ' — 🏆 Kamu adalah sang Juara, Aslan! 🌟🎉' : '');
+}
+
+// ===== VOCAB PILLS =====
+document.querySelectorAll('.vocab-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const word = pill.getAttribute('data-word');
+    showMeaning(word);
+    if(window.speechSynthesis) {
+      const utt = new SpeechSynthesisUtterance(word);
+      utt.lang = 'en-US'; utt.rate = 0.8;
+      const v = pickVoice(); if(v) utt.voice = v;
+      window.speechSynthesis.speak(utt);
+    }
+  });
+});
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', () => {
+  wrapAllChapters();
+  if(window.speechSynthesis) window.speechSynthesis.getVoices();
+  if(window.speechSynthesis) window.speechSynthesis.addEventListener('voiceschanged', () => {});
+});
+window.addEventListener('beforeunload', () => {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+});
+</script>
+</body>
+</html>

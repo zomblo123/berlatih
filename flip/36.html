@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Aslan – Hari 6: Kipas Pendingin – Biar Komputer Tidak Panas</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cyan:   #06b6d4;
+    --sky:    #38bdf8;
+    --mint:   #34d399;
+    --blue:   #3b82f6;
+    --yellow: #fbbf24;
+    --orange: #f97316;
+    --red:    #ef4444;
+    --bg:     #ecfeff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(6,182,212,.15) 0%, transparent 45%),
+      radial-gradient(circle at 88% 70%, rgba(52,211,153,.13) 0%, transparent 40%),
+      radial-gradient(circle at 50% 95%, rgba(56,189,248,.12) 0%, transparent 40%);
+    min-height: 100vh; overflow-x: hidden;
+  }
+  h1,h2,h3 { font-family:'Fredoka One',cursive; }
+
+  /* ── Header ── */
+  .header-grad {
+    background: linear-gradient(135deg,#164e63 0%,#0e7490 35%,#06b6d4 70%,#67e8f9 100%);
+    position:relative; overflow:hidden;
+  }
+  .header-grad::after {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background: repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,.03) 20px,rgba(255,255,255,.03) 40px);
+  }
+
+  /* ── Bubble ── */
+  .bubble {
+    position:relative; background:white;
+    border-radius:22px; border:3px solid #06b6d4;
+    box-shadow:4px 4px 0 #06b6d4;
+  }
+  .bubble::before { content:''; position:absolute; bottom:-22px; left:30px; border:12px solid transparent; border-top-color:#06b6d4; }
+  .bubble::after  { content:''; position:absolute; bottom:-15px; left:33px; border:10px solid transparent; border-top-color:white; }
+
+  /* ── Aslan bounce ── */
+  @keyframes bounceAslan { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  .aslan-bounce { animation:bounceAslan 2.2s ease-in-out infinite; }
+
+  /* ── Fan spin ── */
+  @keyframes fanSpin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  .fan-blades       { transform-origin:170px 155px; }
+  .fan-blades.spin  { animation:fanSpin .6s linear infinite; }
+  .fan-blades.slow  { animation:fanSpin 3s linear infinite; }
+  .fan-blades.stop  { animation:none; }
+
+  .case-fan-blades       { transform-origin:75px 75px; }
+  .case-fan-blades.spin  { animation:fanSpin .8s linear infinite; }
+  .case-fan-blades.slow  { animation:fanSpin 4s linear infinite; }
+  .case-fan-blades.stop  { animation:none; }
+
+  /* ── Wind lines ── */
+  @keyframes windMove {
+    0%   { transform:translateX(-30px); opacity:0; }
+    20%  { opacity:.8; }
+    80%  { opacity:.6; }
+    100% { transform:translateX(80px); opacity:0; }
+  }
+  .wind-line {
+    position:absolute; height:3px; border-radius:10px;
+    background:linear-gradient(90deg,transparent,#e0f2fe,#bae6fd,transparent);
+    animation:windMove 1.2s ease-in-out infinite;
+    pointer-events:none;
+  }
+
+  /* ── Heat shimmer on components ── */
+  @keyframes heatPulse {
+    0%,100%{ filter:drop-shadow(0 0 4px rgba(239,68,68,0));  }
+    50%    { filter:drop-shadow(0 0 16px rgba(239,68,68,.9)); }
+  }
+  @keyframes heatWiggle {
+    0%,100%{ transform:translateX(0) rotate(0deg); }
+    25%    { transform:translateX(2px) rotate(.5deg); }
+    75%    { transform:translateX(-2px) rotate(-.5deg); }
+  }
+  .overheating { animation:heatPulse .5s ease-in-out infinite, heatWiggle .3s ease-in-out infinite; }
+
+  /* ── Temperature bar ── */
+  #tempBarFill { transition: width 1s ease, background 1s ease; }
+
+  /* ── Thermometer mercury ── */
+  #mercuryFill { transition: height 1s ease, fill 1s ease; }
+
+  /* ── Wind particles ── */
+  @keyframes windParticle {
+    0%   { transform:translate(0,0) scale(1); opacity:.9; }
+    100% { transform:translate(var(--dx),var(--dy)) scale(.4); opacity:0; }
+  }
+  .wind-particle {
+    position:fixed; width:8px; height:3px; border-radius:4px;
+    background:#e0f2fe; pointer-events:none; z-index:90;
+    animation: windParticle .8s ease-out forwards;
+  }
+
+  /* ── Confetti ── */
+  @keyframes confettiFly {
+    0%  {transform:translate(0,0) rotate(0deg);opacity:1;}
+    100%{transform:translate(var(--tx),var(--ty)) rotate(720deg);opacity:0;}
+  }
+  .confetti-piece {
+    position:fixed; width:10px; height:10px; border-radius:2px;
+    pointer-events:none; z-index:100;
+    animation:confettiFly 1.2s ease-out forwards;
+  }
+
+  /* ── Buttons ── */
+  .btn-on {
+    background:linear-gradient(135deg,#0891b2,#06b6d4);
+    color:white; border:none; border-radius:50px;
+    padding:.9rem 2.4rem; font-family:'Fredoka One',cursive;
+    font-size:1.25rem; cursor:pointer;
+    box-shadow:0 6px 0 #0e7490, 0 8px 20px rgba(6,182,212,.4);
+    transition:all .15s ease;
+  }
+  .btn-on:hover  { transform:translateY(-3px); box-shadow:0 9px 0 #0e7490,0 12px 26px rgba(6,182,212,.5); }
+  .btn-on:active { transform:translateY(3px); box-shadow:0 3px 0 #0e7490; }
+  .btn-off {
+    background:linear-gradient(135deg,#f97316,#ef4444);
+    color:white; border:none; border-radius:50px;
+    padding:.9rem 2.4rem; font-family:'Fredoka One',cursive;
+    font-size:1.25rem; cursor:pointer;
+    box-shadow:0 6px 0 #b91c1c, 0 8px 20px rgba(239,68,68,.4);
+    transition:all .15s ease;
+  }
+  .btn-off:hover  { transform:translateY(-3px); }
+  .btn-off:active { transform:translateY(3px); box-shadow:0 3px 0 #b91c1c; }
+  .btn-nav {
+    border-radius:50px; padding:.75rem 1.8rem;
+    font-family:'Fredoka One',cursive; font-size:1rem;
+    cursor:pointer; transition:all .15s ease; border:3px solid transparent;
+  }
+  .btn-back { background:white; color:#0891b2; border-color:#0891b2; box-shadow:3px 3px 0 #0891b2; }
+  .btn-back:hover { transform:translateY(-2px); box-shadow:5px 5px 0 #0891b2; }
+  .btn-fwd  { background:linear-gradient(135deg,#34d399,#059669); color:white; box-shadow:0 4px 0 #065f46; }
+  .btn-fwd:hover  { transform:translateY(-2px); }
+
+  /* ── Section title ── */
+  .sec-title { position:relative; display:inline-block; }
+  .sec-title::after {
+    content:''; position:absolute; bottom:-6px; left:0; right:0; height:5px;
+    border-radius:10px; background:linear-gradient(90deg,#06b6d4,#34d399);
+  }
+
+  /* ── Day dot ── */
+  .day-dot { width:12px; height:12px; border-radius:50%; display:inline-block; }
+
+  /* ── Draw area ── */
+  .draw-area {
+    background:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(6,182,212,.18) 28px,rgba(6,182,212,.18) 30px),
+               repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(6,182,212,.1) 28px,rgba(6,182,212,.1) 30px);
+    border:3px dashed #06b6d4; border-radius:20px; min-height:200px;
+  }
+
+  /* ── Comparison card ── */
+  .comp-card { transition:all .25s cubic-bezier(.34,1.56,.64,1); }
+  .comp-card:hover { transform:scale(1.03) translateY(-4px); }
+
+  /* ── Quiz btn ── */
+  .qbtn {
+    padding:.5rem .8rem; border-radius:14px; font-size:.83rem; font-weight:700;
+    border:2px solid #e2e8f0; background:white; color:#374151;
+    cursor:pointer; transition:all .2s; text-align:left;
+  }
+  .qbtn:hover:not(:disabled) { border-color:#06b6d4; background:#ecfeff; }
+  .qbtn:disabled { opacity:.7; cursor:not-allowed; }
+
+  /* ── Smoke puff ── */
+  @keyframes smokePuff {
+    0%  { transform:translate(var(--sx),0) scale(.5); opacity:.8; }
+    100%{ transform:translate(calc(var(--sx) + var(--sdx)),var(--sdy)) scale(1.6); opacity:0; }
+  }
+  .smoke-puff {
+    position:absolute; width:18px; height:18px; border-radius:50%;
+    background:radial-gradient(circle,rgba(156,163,175,.7),transparent);
+    pointer-events:none;
+    animation:smokePuff 1.4s ease-out forwards;
+  }
+
+  @media(max-width:640px){ .vs-grid{ grid-template-columns:1fr!important; } }
+  .top-back-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.96);
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+    border: 1px solid rgba(15,23,42,0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .top-back-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px rgba(15,23,42,0.22);
+  }
+</style>
+</head>
+<body>
+<a href="../perpustakaan.html" class="top-back-link">← Perpustakaan</a>
+
+<!-- ══════ HEADER ══════ -->
+<header class="header-grad text-white py-6 px-4 relative">
+  <div style="position:absolute;top:10px;left:4%;font-size:2.5rem;opacity:.2;animation:bounceAslan 9s ease-in-out infinite;">🌬️</div>
+  <div style="position:absolute;top:14px;right:6%;font-size:2rem;opacity:.2;animation:bounceAslan 12s ease-in-out infinite .5s;">❄️</div>
+  <div style="position:absolute;bottom:8px;left:32%;font-size:1.8rem;opacity:.15;animation:bounceAslan 11s ease-in-out infinite 1s;">💨</div>
+
+  <div class="max-w-3xl mx-auto relative z-10 text-center">
+    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-3 border border-white/30">
+      <span class="text-xl">🖥️</span>
+      <span style="font-family:'Fredoka One',cursive;font-size:.9rem;letter-spacing:.5px;">Petualangan Aslan di Dalam Komputer Ajaib</span>
+      <span class="text-xl">⚡</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl md:text-5xl mb-2 drop-shadow-lg" style="line-height:1.2;">
+      Hari 6: Kipas Pendingin –<br>Biar Komputer Tidak Panas! 🌀❄️
+    </h1>
+    <p class="text-cyan-100 text-base sm:text-lg font-semibold">Angin sejuk penyelamat komputer! 💨😎</p>
+    <div class="flex items-center justify-center gap-1.5 mt-4">
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white/40"></div>
+      <div class="day-dot bg-white"></div>
+      <span class="text-white/70 text-xs ml-2 font-semibold">Hari 6 dari 30</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════ MAIN ══════ -->
+<main class="max-w-3xl mx-auto px-4 py-8">
+
+  <!-- ── Intro ── -->
+  <section class="mb-10">
+    <div class="flex flex-col sm:flex-row items-end gap-6">
+      <!-- Aslan SVG -->
+      <div class="flex-shrink-0 flex justify-center" style="min-width:120px;">
+        <div class="aslan-bounce">
+          <svg width="120" height="155" viewBox="0 0 120 155" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="60" cy="150" rx="28" ry="6" fill="rgba(0,0,0,.1)"/>
+            <!-- body cyan shirt -->
+            <rect x="32" y="88" width="56" height="50" rx="14" fill="#0891b2"/>
+            <rect x="32" y="101" width="56" height="7" rx="2" fill="#22d3ee" opacity=".6"/>
+            <!-- arms – left normal, right raised as if feeling wind -->
+            <rect x="14" y="88" width="20" height="36" rx="10" fill="#0891b2" transform="rotate(6 14 88)"/>
+            <rect x="84" y="76" width="20" height="34" rx="10" fill="#0891b2" transform="rotate(-35 84 76)"/>
+            <!-- legs -->
+            <rect x="36" y="130" width="18" height="22" rx="9" fill="#164e63"/>
+            <rect x="66" y="130" width="18" height="22" rx="9" fill="#164e63"/>
+            <ellipse cx="45" cy="150" rx="12" ry="6" fill="#0e7490"/>
+            <ellipse cx="75" cy="150" rx="12" ry="6" fill="#0e7490"/>
+            <!-- neck -->
+            <rect x="50" y="78" width="20" height="14" rx="7" fill="#f9a825"/>
+            <!-- head -->
+            <ellipse cx="60" cy="60" rx="32" ry="30" fill="#f9a825"/>
+            <!-- hair – wind blown -->
+            <ellipse cx="62" cy="33" rx="30" ry="15" fill="#2d1b00" transform="rotate(-5 62 33)"/>
+            <ellipse cx="33" cy="46" rx="9" ry="12" fill="#2d1b00"/>
+            <ellipse cx="86" cy="42" rx="7" ry="10" fill="#2d1b00" transform="rotate(-10 86 42)"/>
+            <!-- eyes squinting with wind -->
+            <path d="M40 59 Q48 55 56 59" stroke="#2d1b00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M64 59 Q72 55 80 59" stroke="#2d1b00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <!-- big happy smile -->
+            <path d="M44 72 Q60 86 76 72" stroke="#2d1b00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M48 75 Q60 83 72 75" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <ellipse cx="40" cy="67" rx="6" ry="4" fill="#ffb347" opacity=".5"/>
+            <ellipse cx="80" cy="67" rx="6" ry="4" fill="#ffb347" opacity=".5"/>
+            <!-- wind lines from right -->
+            <path d="M98 48 Q108 48 116 48" stroke="#bae6fd" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+            <path d="M100 56 Q112 56 118 54" stroke="#bae6fd" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+            <path d="M95 64 Q105 64 112 62" stroke="#bae6fd" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+            <!-- sparkles -->
+            <text x="2"  y="55" font-size="12">💨</text>
+            <text x="96" y="36" font-size="11">❄️</text>
+          </svg>
+        </div>
+      </div>
+      <!-- Bubble -->
+      <div class="flex-1">
+        <div class="bubble p-5">
+          <p class="text-sm text-cyan-600 font-bold mb-1">Aslan berkata:</p>
+          <p class="text-gray-700 text-base sm:text-lg leading-relaxed font-semibold">
+            "Hari ini kita kenalan sama <strong class="text-cyan-600">Kipas Pendingin</strong>!
+            Komputer itu suka kerja keras, jadi bisa <strong class="text-red-500">panas banget</strong>. 🔥
+            Nah, kipas ini yang niup angin sejuk supaya komputer tetap
+            <strong class="text-teal-600">dingin dan sehat</strong>! Tanpa kipas, bisa bahaya! 😱"
+          </p>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#0891b2,#06b6d4);">🌀 Hari 6</span>
+            <span class="inline-block text-xs font-bold px-3 py-1 rounded-full text-white" style="background:linear-gradient(135deg,#06b6d4,#34d399);">❄️ Topik: Cooling Fan</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Fan Hero + Interactive ── -->
+  <section class="mb-10">
+    <div class="text-center mb-4">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#164e63;">🌀 Nyalakan Kipasnya!</h2>
+      <p class="text-gray-500 mt-3 text-sm">Klik tombol di bawah dan lihat kipas beraksi! 👆</p>
+    </div>
+
+    <!-- Main Fan Stage -->
+    <div class="relative bg-white rounded-3xl shadow-xl border-2 overflow-hidden mb-6"
+         id="fanStage" style="border-color:#e0f2fe; min-height:320px;">
+
+      <!-- Background gradient – changes with heat -->
+      <div id="stageBg" class="absolute inset-0 transition-all duration-1000"
+           style="background:linear-gradient(135deg,#ecfeff,#cffafe);"></div>
+
+      <!-- Wind lines (hidden until fan on) -->
+      <div id="windLines" class="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-500">
+        <div class="wind-line" style="top:25%;left:0%;width:55%;animation-delay:0s;"></div>
+        <div class="wind-line" style="top:38%;left:0%;width:45%;animation-delay:.25s;"></div>
+        <div class="wind-line" style="top:50%;left:0%;width:60%;animation-delay:.1s;"></div>
+        <div class="wind-line" style="top:62%;left:0%;width:40%;animation-delay:.35s;"></div>
+        <div class="wind-line" style="top:74%;left:0%;width:50%;animation-delay:.15s;"></div>
+        <div class="wind-line" style="top:20%;left:10%;width:35%;animation-delay:.45s; opacity:.5;"></div>
+        <div class="wind-line" style="top:82%;left:5%;width:45%;animation-delay:.3s; opacity:.5;"></div>
+      </div>
+
+      <!-- Heat shimmer overlay -->
+      <div id="heatOverlay" class="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-700 rounded-3xl"
+           style="background:radial-gradient(ellipse at 60% 50%, rgba(239,68,68,.18), transparent 70%);"></div>
+
+      <!-- CPU Fan SVG -->
+      <svg id="mainFanSvg" viewBox="0 0 340 310" fill="none" xmlns="http://www.w3.org/2000/svg"
+           class="relative z-10 w-full" style="max-height:320px;">
+
+        <!-- Heatsink fins (behind fan) -->
+        <g>
+          <rect x="115" y="55" width="12" height="145" rx="4" fill="#94a3b8"/>
+          <rect x="131" y="55" width="12" height="145" rx="4" fill="#cbd5e1"/>
+          <rect x="147" y="55" width="12" height="145" rx="4" fill="#94a3b8"/>
+          <rect x="163" y="55" width="12" height="145" rx="4" fill="#cbd5e1"/>
+          <rect x="179" y="55" width="12" height="145" rx="4" fill="#94a3b8"/>
+          <rect x="195" y="55" width="12" height="145" rx="4" fill="#cbd5e1"/>
+          <rect x="211" y="55" width="12" height="145" rx="4" fill="#94a3b8"/>
+        </g>
+        <!-- Heatsink base -->
+        <rect x="108" y="195" width="124" height="18" rx="5" fill="#64748b"/>
+
+        <!-- CPU die under heatsink -->
+        <rect x="128" y="210" width="84" height="50" rx="8" fill="#1e3a8a"/>
+        <rect x="136" y="218" width="68" height="34" rx="5" fill="#1d4ed8" opacity=".8"/>
+        <text x="170" y="240" text-anchor="middle" fill="#93c5fd" font-family="Fredoka One,sans-serif" font-size="11">CPU 🔥</text>
+        <!-- CPU heat glow – toggle class -->
+        <rect id="cpuHeat" x="128" y="210" width="84" height="50" rx="8" fill="none" stroke="#ef4444" stroke-width="0" opacity="0"/>
+
+        <!-- Fan frame outer -->
+        <rect x="100" y="40" width="140" height="140" rx="22" fill="#1e293b"/>
+        <!-- Fan frame inner ring -->
+        <circle cx="170" cy="110" r="65" fill="#0f172a"/>
+        <circle cx="170" cy="110" r="62" fill="#1e293b"/>
+
+        <!-- Fan blades group - animated -->
+        <g class="fan-blades slow" id="cpuFanBlades">
+          <!-- Blade 1 -->
+          <path d="M170 110 C165 85 140 65 155 48 C168 34 188 58 178 80 Z" fill="#38bdf8"/>
+          <!-- Blade 2 -->
+          <path d="M170 110 C195 105 220 88 228 105 C234 120 208 134 188 122 Z" fill="#0ea5e9"/>
+          <!-- Blade 3 -->
+          <path d="M170 110 C175 135 197 155 182 170 C169 183 150 160 162 138 Z" fill="#38bdf8"/>
+          <!-- Blade 4 -->
+          <path d="M170 110 C145 115 120 132 113 115 C106 100 133 86 153 98 Z" fill="#0ea5e9"/>
+          <!-- Blade 5 -->
+          <path d="M170 110 C180 87 172 58 188 54 C202 50 210 80 194 96 Z" fill="#7dd3fc"/>
+          <!-- Blade 6 -->
+          <path d="M170 110 C190 128 215 122 218 138 C220 152 193 158 180 140 Z" fill="#7dd3fc"/>
+          <!-- Blade 7 -->
+          <path d="M170 110 C155 130 150 158 134 156 C120 154 124 125 142 116 Z" fill="#38bdf8"/>
+          <!-- Blade 8 -->
+          <path d="M170 110 C150 92 127 78 130 62 C133 48 160 54 164 76 Z" fill="#0ea5e9"/>
+        </g>
+
+        <!-- Fan center hub -->
+        <circle cx="170" cy="110" r="20" fill="#0f172a"/>
+        <circle cx="170" cy="110" r="14" fill="#1e293b"/>
+        <circle cx="170" cy="110" r="7"  fill="#38bdf8"/>
+        <circle cx="170" cy="110" r="3"  fill="white"/>
+
+        <!-- Fan face – cute! -->
+        <g id="fanFace">
+          <!-- Eyes blink via CSS class swap -->
+          <ellipse id="eyeL" cx="158" cy="104" rx="5" ry="6" fill="white"/>
+          <ellipse id="eyeR" cx="182" cy="104" rx="5" ry="6" fill="white"/>
+          <circle cx="159" cy="105" r="3" fill="#0f172a"/>
+          <circle cx="183" cy="105" r="3" fill="#0f172a"/>
+          <circle cx="160" cy="104" r="1.2" fill="white"/>
+          <circle cx="184" cy="104" r="1.2" fill="white"/>
+          <!-- Smile -->
+          <path d="M162 117 Q170 124 178 117" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <!-- Blush -->
+          <ellipse cx="152" cy="114" rx="5" ry="3.5" fill="#38bdf8" opacity=".5"/>
+          <ellipse cx="188" cy="114" rx="5" ry="3.5" fill="#38bdf8" opacity=".5"/>
+        </g>
+
+        <!-- Fan frame screws -->
+        <circle cx="108" cy="48" r="5" fill="#334155"/><circle cx="108" cy="48" r="2" fill="#64748b"/>
+        <circle cx="232" cy="48" r="5" fill="#334155"/><circle cx="232" cy="48" r="2" fill="#64748b"/>
+        <circle cx="108" cy="172" r="5" fill="#334155"/><circle cx="108" cy="172" r="2" fill="#64748b"/>
+        <circle cx="232" cy="172" r="5" fill="#334155"/><circle cx="232" cy="172" r="2" fill="#64748b"/>
+
+        <!-- LEDs on fan frame -->
+        <circle cx="125" cy="42" r="4" fill="#34d399" id="led1">
+          <animate attributeName="opacity" values="1;.2;1" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="140" cy="42" r="4" fill="#38bdf8" id="led2">
+          <animate attributeName="opacity" values=".2;1;.2" dur="2s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- Speed indicator -->
+        <text id="rpmLabel" x="170" y="300" text-anchor="middle" fill="#64748b" font-family="Fredoka One,sans-serif" font-size="13">
+          Kecepatan: Standby...
+        </text>
+
+        <!-- Heat smoke (visible when overheating) -->
+        <g id="smokeGroup" opacity="0">
+          <ellipse cx="170" cy="35" rx="8" ry="12" fill="#9ca3af" opacity=".4">
+            <animateTransform attributeName="transform" type="translate" values="0,0;-5,-20;0,-35" dur="2s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".4;.2;0" dur="2s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="185" cy="30" rx="6" ry="10" fill="#9ca3af" opacity=".3">
+            <animateTransform attributeName="transform" type="translate" values="0,0;5,-18;2,-30" dur="1.7s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".3;.15;0" dur="1.7s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="155" cy="32" rx="5" ry="9" fill="#ef4444" opacity=".2">
+            <animateTransform attributeName="transform" type="translate" values="0,0;-3,-16;1,-28" dur="2.2s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".3;.1;0" dur="2.2s" repeatCount="indefinite"/>
+          </ellipse>
+        </g>
+
+        <!-- Thermal paste label -->
+        <rect x="136" y="205" width="68" height="8" rx="3" fill="#fbbf24" opacity=".7"/>
+        <text x="170" y="212" text-anchor="middle" fill="white" font-family="sans-serif" font-size="7" font-weight="bold">THERMAL PASTE</text>
+      </svg>
+
+      <!-- Temperature display -->
+      <div class="absolute top-4 right-4 z-20">
+        <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-3 shadow-lg border-2" id="tempDisplay" style="border-color:#06b6d4;">
+          <p class="text-xs font-bold text-gray-500 text-center mb-1">🌡️ Suhu CPU</p>
+          <p class="text-2xl font-bold text-center" id="tempValue" style="font-family:'Fredoka One',cursive;color:#0891b2;">45°C</p>
+          <p class="text-xs text-center" id="tempStatus">😊 Normal</p>
+          <!-- Mini thermometer -->
+          <div class="flex justify-center mt-2">
+            <svg width="20" height="60" viewBox="0 0 20 60">
+              <rect x="7" y="5" width="6" height="40" rx="3" fill="#e2e8f0"/>
+              <rect id="mercuryFill" x="8" y="30" width="4" height="15" rx="2" fill="#34d399"/>
+              <circle cx="10" cy="52" r="7" fill="#34d399" id="mercuryBulb"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div><!-- /fan stage -->
+
+    <!-- Temperature bar -->
+    <div class="bg-white rounded-3xl p-5 shadow-md border-2 border-cyan-100 mb-5">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-bold text-gray-600">❄️ Dingin</span>
+        <span class="text-sm font-bold" id="tempBarLabel" style="color:#0891b2;">Suhu: Normal (45°C)</span>
+        <span class="text-sm font-bold text-red-500">🔥 Panas</span>
+      </div>
+      <div class="bg-gray-100 rounded-full h-6 overflow-hidden border border-gray-200">
+        <div id="tempBarFill" class="h-6 rounded-full flex items-center justify-end pr-2"
+             style="width:35%;background:linear-gradient(90deg,#34d399,#06b6d4);">
+        </div>
+      </div>
+      <div class="flex justify-between text-xs text-gray-400 mt-1">
+        <span>30°C</span><span>55°C (aman)</span><span>75°C (hangat)</span><span>95°C+ 🔥</span>
+      </div>
+    </div>
+
+    <!-- Control buttons -->
+    <div class="flex flex-col sm:flex-row gap-3 justify-center mb-2">
+      <button class="btn-on" id="btnOn"  onclick="fanOn()">🌀 Nyalakan Kipas!</button>
+      <button class="btn-off" id="btnOff" onclick="fanOff()">🔥 Matikan Kipas!</button>
+    </div>
+    <p class="text-center text-gray-400 text-sm" id="fanMsg">Coba nyalakan dan matikan kipasnya! 🎮</p>
+  </section>
+
+  <!-- ── Case Fan section ── -->
+  <section class="mb-10">
+    <div class="text-center mb-4">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#164e63;">🏠 Ada Juga: Kipas di Casing!</h2>
+      <p class="text-gray-500 mt-3 text-sm">Di dalam kotak komputer ada kipas ekstra! 👀</p>
+    </div>
+
+    <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-cyan-100">
+      <div class="flex flex-col sm:flex-row items-center gap-6">
+        <!-- Case fan SVG -->
+        <div class="flex-shrink-0">
+          <svg viewBox="0 0 150 200" width="140" fill="none" xmlns="http://www.w3.org/2000/svg"
+               class="drop-shadow-lg">
+            <!-- Case outline -->
+            <rect x="10" y="10" width="130" height="180" rx="14" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+            <rect x="18" y="18" width="114" height="164" rx="10" fill="#0f172a"/>
+            <!-- Mesh pattern -->
+            <g stroke="#1e293b" stroke-width="1" opacity=".8">
+              <line x1="18" y1="38" x2="132" y2="38"/>
+              <line x1="18" y1="58" x2="132" y2="58"/>
+              <line x1="18" y1="78" x2="132" y2="78"/>
+              <line x1="18" y1="98" x2="132" y2="98"/>
+              <line x1="38" y1="18" x2="38" y2="182"/>
+              <line x1="58" y1="18" x2="58" y2="182"/>
+              <line x1="78" y1="18" x2="78" y2="182"/>
+              <line x1="98" y1="18" x2="98" y2="182"/>
+              <line x1="118" y1="18" x2="118" y2="182"/>
+            </g>
+            <!-- Case fan -->
+            <circle cx="75" cy="75" r="48" fill="#1e3a8a"/>
+            <circle cx="75" cy="75" r="44" fill="#1e293b"/>
+            <g class="case-fan-blades slow" id="caseFanBlades">
+              <path d="M75 75 C72 55 54 42 64 28 C72 18 88 38 82 58 Z" fill="#06b6d4"/>
+              <path d="M75 75 C95 72 112 58 118 72 C122 84 102 96 86 86 Z" fill="#0891b2"/>
+              <path d="M75 75 C78 95 94 110 82 122 C71 132 55 113 65 93 Z" fill="#06b6d4"/>
+              <path d="M75 75 C55 78 38 92 32 78 C26 65 48 52 64 64 Z" fill="#0891b2"/>
+              <path d="M75 75 C82 57 77 34 90 30 C101 28 106 56 92 68 Z" fill="#7dd3fc"/>
+              <path d="M75 75 C92 88 114 84 116 98 C118 110 94 116 82 98 Z" fill="#7dd3fc"/>
+            </g>
+            <circle cx="75" cy="75" r="15" fill="#0f172a"/>
+            <circle cx="75" cy="75" r="9"  fill="#06b6d4"/>
+            <circle cx="75" cy="75" r="4"  fill="white"/>
+            <!-- RGB LEDs around fan -->
+            <circle cx="37" cy="37" r="4" fill="#f97316"><animate attributeName="fill" values="#f97316;#a855f7;#06b6d4;#34d399;#f97316" dur="3s" repeatCount="indefinite"/></circle>
+            <circle cx="113" cy="37" r="4" fill="#a855f7"><animate attributeName="fill" values="#a855f7;#06b6d4;#34d399;#f97316;#a855f7" dur="3s" repeatCount="indefinite"/></circle>
+            <circle cx="37" cy="113" r="4" fill="#34d399"><animate attributeName="fill" values="#34d399;#f97316;#a855f7;#06b6d4;#34d399" dur="3s" repeatCount="indefinite"/></circle>
+            <circle cx="113" cy="113" r="4" fill="#06b6d4"><animate attributeName="fill" values="#06b6d4;#34d399;#f97316;#a855f7;#06b6d4" dur="3s" repeatCount="indefinite"/></circle>
+            <!-- Fan label -->
+            <text x="75" y="168" text-anchor="middle" fill="#38bdf8" font-family="Fredoka One,sans-serif" font-size="10">CASE FAN 🌈</text>
+            <!-- Airflow arrows -->
+            <text x="75" y="190" text-anchor="middle" fill="#64748b" font-family="sans-serif" font-size="9">→ Udara panas keluar →</text>
+          </svg>
+        </div>
+
+        <div class="flex-1">
+          <h3 class="text-xl font-bold text-cyan-800 mb-3" style="font-family:'Fredoka One',cursive;">
+            🏠 Kipas di Dalam Casing
+          </h3>
+          <div class="space-y-3">
+            <div class="flex items-start gap-3 bg-cyan-50 rounded-2xl p-3">
+              <span class="text-2xl">💨</span>
+              <div>
+                <p class="font-bold text-cyan-800 text-sm">Membuang Udara Panas</p>
+                <p class="text-xs text-gray-600">Kipas casing niup udara panas keluar dari kotak komputer. Bagaikan membuka jendela kamar yang pengap!</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 bg-blue-50 rounded-2xl p-3">
+              <span class="text-2xl">🌈</span>
+              <div>
+                <p class="font-bold text-blue-800 text-sm">RGB Rainbow Fan!</p>
+                <p class="text-xs text-gray-600">Banyak case fan modern punya lampu LED warna-warni. Jadi komputer kelihatan keren banget waktu malam! ✨</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 bg-green-50 rounded-2xl p-3">
+              <span class="text-2xl">🎛️</span>
+              <div>
+                <p class="font-bold text-green-800 text-sm">Bisa Diatur Kecepatannya</p>
+                <p class="text-xs text-gray-600">Komputer pintar bisa atur seberapa cepat kipas berputar — makin panas, makin kencang putarannya!</p>
+              </div>
+            </div>
+          </div>
+          <!-- RGB toggle -->
+          <button onclick="toggleRGB()" id="rgbBtn"
+            class="mt-4 px-5 py-2 rounded-2xl text-sm font-bold text-white border-none cursor-pointer"
+            style="background:linear-gradient(135deg,#f97316,#a855f7,#06b6d4); font-family:'Fredoka One',cursive;">
+            🌈 Nyalakan RGB!
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Comparison ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#164e63;">🥊 Dengan Kipas vs Tanpa Kipas</h2>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 vs-grid">
+      <!-- With fan -->
+      <div class="comp-card bg-gradient-to-br from-cyan-50 to-blue-50 rounded-3xl p-5 border-2 border-cyan-200 shadow-md">
+        <div class="text-center mb-3">
+          <div class="text-4xl mb-1">😎</div>
+          <h3 class="text-xl font-bold text-cyan-800" style="font-family:'Fredoka One',cursive;">Ada Kipas ✅</h3>
+        </div>
+        <!-- Mini fan vis -->
+        <div class="bg-cyan-100 rounded-2xl p-3 mb-3 flex items-center justify-center gap-3">
+          <span class="text-3xl" style="display:inline-block;animation:fanSpin 1s linear infinite;">🌀</span>
+          <div>
+            <p class="text-xs font-bold text-cyan-700">45–70°C 🌡️</p>
+            <p class="text-xs text-cyan-600">Suhu normal, aman!</p>
+          </div>
+        </div>
+        <ul class="space-y-1.5 text-sm text-gray-600">
+          <li>✅ Komputer dingin & stabil</li>
+          <li>✅ Bisa kerja berjam-jam</li>
+          <li>✅ Komponen awet lama</li>
+          <li>✅ Tidak ada throttling</li>
+          <li>✅ Game lancar tanpa lag</li>
+        </ul>
+      </div>
+      <!-- Without fan -->
+      <div class="comp-card bg-gradient-to-br from-orange-50 to-red-50 rounded-3xl p-5 border-2 border-red-200 shadow-md">
+        <div class="text-center mb-3">
+          <div class="text-4xl mb-1">😱</div>
+          <h3 class="text-xl font-bold text-red-700" style="font-family:'Fredoka One',cursive;">Tanpa Kipas ❌</h3>
+        </div>
+        <div class="bg-red-100 rounded-2xl p-3 mb-3 flex items-center justify-center gap-3">
+          <span class="text-3xl">🔥</span>
+          <div>
+            <p class="text-xs font-bold text-red-700">95–110°C+ 🌡️</p>
+            <p class="text-xs text-red-600">Suhu berbahaya!</p>
+          </div>
+        </div>
+        <ul class="space-y-1.5 text-sm text-gray-600">
+          <li>❌ Komputer jadi lambat</li>
+          <li>❌ Mati mendadak (shutdown)</li>
+          <li>❌ Komponen bisa rusak permanen</li>
+          <li>❌ Bisa terbakar! 🔥</li>
+          <li>❌ Data bisa hilang selamanya</li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-4 bg-white rounded-3xl p-4 text-center border-2 border-yellow-200 shadow-sm">
+      <p class="text-sm font-bold text-gray-700">
+        🌡️ Analogi: Kipas komputer itu seperti
+        <span class="text-cyan-600">AC di kamarmu</span> —
+        tanpanya, kamu jadi gerah dan tidak bisa tidur! 😅💤
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Fun Fact ── -->
+  <section class="mb-10">
+    <div class="rounded-3xl p-5 relative overflow-hidden text-white"
+         style="background:linear-gradient(135deg,#164e63,#0891b2,#22d3ee);">
+      <div class="absolute right-4 top-1/2 -translate-y-1/2 text-8xl opacity-15">🌡️</div>
+      <div class="relative z-10">
+        <p class="font-bold text-sm mb-2" style="font-family:'Fredoka One',cursive;">🤯 Fakta Keren Hari Ini!</p>
+        <p class="text-cyan-50 text-base font-semibold leading-relaxed">
+          CPU di dalam laptop gaming bisa mencapai suhu <strong>90°C</strong> — hampir sepanas
+          <strong>air mendidih (100°C)</strong>! Makanya laptop gaming selalu punya
+          kipas yang keras banget suaranya. <em>Wirrrr!</em> 😄🌀
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Types of Cooling ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#164e63;">🧊 Macam-macam Pendingin Komputer</h2>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="bg-white rounded-3xl p-5 shadow-md text-center border-t-4 border-cyan-400 hover:scale-105 transition-all cursor-pointer" onclick="coolPop(this)">
+        <div class="text-4xl mb-2">🌀</div>
+        <h3 class="font-bold text-cyan-700 text-base mb-2" style="font-family:'Fredoka One',cursive;">Air Cooling</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">Heatsink + kipas. Paling umum, terjangkau, cocok untuk komputer biasa. Yang kita pelajari hari ini! 😊</p>
+        <div class="mt-2 text-xs font-bold px-3 py-1 rounded-full inline-block" style="background:#ecfeff;color:#0891b2;">Paling umum ✅</div>
+      </div>
+      <div class="bg-white rounded-3xl p-5 shadow-md text-center border-t-4 border-blue-400 hover:scale-105 transition-all cursor-pointer" onclick="coolPop(this)">
+        <div class="text-4xl mb-2">💧</div>
+        <h3 class="font-bold text-blue-700 text-base mb-2" style="font-family:'Fredoka One',cursive;">Water Cooling</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">Air mengalir di dalam selang kecil untuk menyerap panas CPU. Lebih senyap dan lebih dingin! 🌊</p>
+        <div class="mt-2 text-xs font-bold px-3 py-1 rounded-full inline-block" style="background:#dbeafe;color:#1d4ed8;">Canggih 🆒</div>
+      </div>
+      <div class="bg-white rounded-3xl p-5 shadow-md text-center border-t-4 border-purple-400 hover:scale-105 transition-all cursor-pointer" onclick="coolPop(this)">
+        <div class="text-4xl mb-2">❄️</div>
+        <h3 class="font-bold text-purple-700 text-base mb-2" style="font-family:'Fredoka One',cursive;">Liquid Nitrogen</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">Pakai cairan super dingin (-196°C)! Hanya untuk para juara overclock ekstrem. Bukan buat di rumah! 😅</p>
+        <div class="mt-2 text-xs font-bold px-3 py-1 rounded-full inline-block" style="background:#f3e8ff;color:#7c3aed;">Ekstrem 🏆</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Quiz ── -->
+  <section class="mb-10">
+    <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-cyan-100">
+      <h2 class="text-xl font-bold text-center mb-2 text-cyan-800" style="font-family:'Fredoka One',cursive;">🧩 Kuis Kilat – Kipas Pendingin!</h2>
+      <p class="text-center text-gray-400 text-sm mb-5">3 pertanyaan, pilih jawabanmu! 🎯</p>
+      <div class="space-y-4" id="quizBox">
+        <!-- Q1 -->
+        <div class="bg-cyan-50 rounded-2xl p-4" id="q1">
+          <p class="font-bold text-gray-800 text-sm mb-3">1. Apa yang terjadi kalau komputer tidak punya kipas pendingin? 🔥</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="qa(1,'b',this)" class="qbtn">A. Komputer jadi lebih cepat 🚀</button>
+            <button onclick="qa(1,'a',this)" class="qbtn">B. Komputer bisa mati / rusak 💥</button>
+            <button onclick="qa(1,'b',this)" class="qbtn">C. Komputer jadi lebih hemat listrik 🔋</button>
+            <button onclick="qa(1,'b',this)" class="qbtn">D. Tidak ada pengaruhnya 🤷</button>
+          </div>
+          <div id="q1r" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+        <!-- Q2 -->
+        <div class="bg-cyan-50 rounded-2xl p-4" id="q2">
+          <p class="font-bold text-gray-800 text-sm mb-3">2. Selain kipas di CPU, ada juga kipas di mana lagi? 🤔</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="qa(2,'b',this)" class="qbtn">A. Di dalam RAM 💾</button>
+            <button onclick="qa(2,'b',this)" class="qbtn">B. Di dalam Hard Disk 🗄️</button>
+            <button onclick="qa(2,'a',this)" class="qbtn">C. Di casing / kotak komputer 🏠</button>
+            <button onclick="qa(2,'b',this)" class="qbtn">D. Di dalam monitor 🖥️</button>
+          </div>
+          <div id="q2r" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+        <!-- Q3 -->
+        <div class="bg-cyan-50 rounded-2xl p-4" id="q3">
+          <p class="font-bold text-gray-800 text-sm mb-3">3. Analogi yang paling cocok untuk kipas pendingin komputer adalah... 💡</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="qa(3,'b',this)" class="qbtn">A. Jantung yang memompa darah ❤️</button>
+            <button onclick="qa(3,'a',this)" class="qbtn">B. AC / kipas angin di kamar tidur ❄️</button>
+            <button onclick="qa(3,'b',this)" class="qbtn">C. Otak yang berpikir 🧠</button>
+            <button onclick="qa(3,'b',this)" class="qbtn">D. Lemari baju 👕</button>
+          </div>
+          <div id="q3r" class="mt-2 text-sm font-bold hidden"></div>
+        </div>
+      </div>
+      <div id="qFinal" class="hidden mt-5 text-center p-4 rounded-2xl" style="background:linear-gradient(135deg,#cffafe,#a5f3fc);">
+        <div class="text-4xl mb-2" id="qfE">🌟</div>
+        <p class="font-bold text-lg text-cyan-800" id="qfT" style="font-family:'Fredoka One',cursive;"></p>
+        <p class="text-sm text-cyan-600 mt-1" id="qfS"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Activity ── -->
+  <section class="mb-10">
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl sec-title" style="color:#164e63;">🎨 Aktivitas Hari Ini</h2>
+    </div>
+    <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-dashed border-cyan-300">
+      <div class="flex items-start gap-4 mb-5">
+        <div class="text-4xl flex-shrink-0">🌀</div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-800" style="font-family:'Fredoka One',cursive;">Desain Kipas Pendingin Impianmu!</h3>
+          <p class="text-gray-600 text-sm mt-1 leading-relaxed">
+            Gambarlah <strong>kipas pendingin paling keren</strong> yang bisa kamu bayangkan!
+            Beri <strong>warna favoritmu</strong>, tambahkan lampu LED, atau bentuk baling-baling yang unik! 🎨✨
+          </p>
+        </div>
+      </div>
+
+      <!-- Fan template outline for coloring -->
+      <div class="flex justify-center mb-5">
+        <svg viewBox="0 0 200 200" width="180" fill="none" xmlns="http://www.w3.org/2000/svg"
+             class="border-2 border-dashed border-cyan-200 rounded-full" style="background:#f8fafc;">
+          <!-- Fan template – just outlines -->
+          <circle cx="100" cy="100" r="90" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="6,4"/>
+          <circle cx="100" cy="100" r="75" stroke="#e2e8f0" stroke-width="1.5"/>
+          <!-- Blade outlines -->
+          <path d="M100 100 C97 72 74 56 87 38 C98 24 118 48 110 72 Z" stroke="#94a3b8" stroke-width="1.5" fill="#f1f5f9"/>
+          <path d="M100 100 C128 97 148 78 155 95 C160 110 136 124 116 112 Z" stroke="#94a3b8" stroke-width="1.5" fill="#f1f5f9"/>
+          <path d="M100 100 C103 128 122 148 107 162 C94 174 74 150 86 126 Z" stroke="#94a3b8" stroke-width="1.5" fill="#f1f5f9"/>
+          <path d="M100 100 C72 103 52 122 45 105 C38 90 62 76 86 88 Z" stroke="#94a3b8" stroke-width="1.5" fill="#f1f5f9"/>
+          <path d="M100 100 C110 74 103 48 118 44 C130 41 136 72 120 86 Z" stroke="#94a3b8" stroke-width="1.5" fill="#f1f5f9"/>
+          <path d="M100 100 C120 116 148 110 150 126 C152 140 124 148 110 128 Z" stroke="#94a3b8" stroke-width="1.5" fill="#f1f5f9"/>
+          <path d="M100 100 C86 120 82 150 64 148 C50 146 56 116 78 108 Z" stroke="#94a3b8" stroke-width="1.5" fill="#f1f5f9"/>
+          <path d="M100 100 C78 86 52 82 50 66 C48 52 78 48 90 70 Z" stroke="#94a3b8" stroke-width="1.5" fill="#f1f5f9"/>
+          <!-- Center hub outline -->
+          <circle cx="100" cy="100" r="22" stroke="#94a3b8" stroke-width="1.5" fill="#f1f5f9"/>
+          <circle cx="100" cy="100" r="8"  stroke="#94a3b8" stroke-width="1.5" fill="#f1f5f9"/>
+          <text x="100" y="195" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="9">← Warnai kipas ini! →</text>
+        </svg>
+      </div>
+
+      <!-- Draw area -->
+      <div class="draw-area flex flex-col items-center justify-center text-center mb-5">
+        <div class="text-5xl mb-3 opacity-30">🖊️</div>
+        <p class="text-gray-400 font-semibold text-sm">Cetak & gambar kipas pendinginmu di sini!</p>
+        <p class="text-gray-300 text-xs mt-1">Atau warnai template kipas di atas! 🎨</p>
+      </div>
+
+      <!-- Hero fan types to choose -->
+      <div class="grid grid-cols-3 gap-3 mb-4">
+        <div class="bg-cyan-50 border-2 border-cyan-200 rounded-2xl p-3 text-center cursor-pointer hover:scale-105 transition-all" onclick="pickFan('turbo')">
+          <div class="text-2xl">🚀</div>
+          <p class="text-xs font-bold text-cyan-700 mt-1">Turbo Fan</p>
+        </div>
+        <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-3 text-center cursor-pointer hover:scale-105 transition-all" onclick="pickFan('rgb')">
+          <div class="text-2xl">🌈</div>
+          <p class="text-xs font-bold text-purple-700 mt-1">RGB Fan</p>
+        </div>
+        <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-3 text-center cursor-pointer hover:scale-105 transition-all" onclick="pickFan('ice')">
+          <div class="text-2xl">❄️</div>
+          <p class="text-xs font-bold text-blue-700 mt-1">Ice Fan</p>
+        </div>
+      </div>
+      <div id="fanPickMsg" class="hidden text-center p-3 rounded-2xl mb-4">
+        <p class="font-bold text-base" id="fanPickText"></p>
+      </div>
+
+      <!-- Checklist -->
+      <p class="text-sm font-bold text-gray-700 mb-3">✅ Checklist aktivitas:</p>
+      <div class="space-y-2" id="actChecks">
+        <label class="flex items-center gap-3 cursor-pointer" id="ac1">
+          <input type="checkbox" class="w-5 h-5 accent-cyan-500" onchange="actCk(1)">
+          <span class="text-sm text-gray-700">🌀 Aku tau fungsi kipas pendingin</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer" id="ac2">
+          <input type="checkbox" class="w-5 h-5 accent-cyan-500" onchange="actCk(2)">
+          <span class="text-sm text-gray-700">🔥 Aku sudah coba nyalakan & matikan kipas</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer" id="ac3">
+          <input type="checkbox" class="w-5 h-5 accent-cyan-500" onchange="actCk(3)">
+          <span class="text-sm text-gray-700">🎨 Aku sudah gambar kipas pendingin impianku</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer" id="ac4">
+          <input type="checkbox" class="w-5 h-5 accent-cyan-500" onchange="actCk(4)">
+          <span class="text-sm text-gray-700">🧩 Aku sudah jawab kuis hari ini</span>
+        </label>
+      </div>
+      <div id="actAllDone" class="hidden mt-4 p-3 rounded-2xl text-center"
+           style="background:linear-gradient(135deg,#cffafe,#a5f3fc);">
+        <p class="font-bold text-cyan-800">🎉 Luar biasa Aslan! Semua selesai! Komputer kamu pasti selalu dingin! ❄️⭐</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Preview Day 7 ── -->
+  <section class="mb-10">
+    <div class="rounded-3xl p-6 relative overflow-hidden text-white"
+         style="background:linear-gradient(135deg,#4a1d96,#7c3aed,#a78bfa);">
+      <div class="absolute right-0 top-0 bottom-0 w-24 flex items-center justify-center text-8xl opacity-20">🖥️</div>
+      <div class="relative z-10">
+        <span class="inline-block text-xs font-bold px-3 py-1 rounded-full mb-3" style="background:rgba(255,255,255,.2);">📅 Besok – Hari 7</span>
+        <h3 class="text-xl font-bold mb-2" style="font-family:'Fredoka One',cursive;">Monitor – Jendela ke Dunia Komputer 🖥️</h3>
+        <p class="text-purple-100 text-sm leading-relaxed mb-4">
+          Besok Aslan akan belajar tentang monitor — layar ajaib yang menampilkan semua yang ada di komputer!
+          Gimana cara monitor bisa menampilkan jutaan warna? 🌈
+        </p>
+        <button class="btn-nav btn-fwd" style="background:linear-gradient(135deg,#a78bfa,#818cf8);box-shadow:0 4px 0 #4c1d95;"
+                onclick="alert('Besok kita bahas Monitor ya! 😊')">
+          Besok: Monitor 🖥️ →
+        </button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="pb-8">
+  <div class="max-w-3xl mx-auto px-4">
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-cyan-100 mb-4 text-center">
+      <p class="font-bold text-cyan-700 text-lg mb-1" style="font-family:'Fredoka One',cursive;">
+        ❄️ Keren banget, Aslan! Kamu makin pintar! ❄️
+      </p>
+      <p class="text-gray-500 text-sm">Sekarang kamu tau kenapa komputer tidak kepanasan — berkat kipas pendingin! 🌀</p>
+    </div>
+
+    <div class="bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
+      <div class="h-3 rounded-full" style="width:20%;background:linear-gradient(90deg,#06b6d4,#34d399);"></div>
+        <p class="text-center text-gray-300 text-xs mt-5">Made with ❤️ for Aslan · Seri Komputer Ajaib</p>
+  </div>
+</footer>
+
+<!-- ══════ JAVASCRIPT ══════ -->
+<script>
+/* ══ FAN STATE ══ */
+let fanState = 'standby'; // 'on' | 'off' | 'standby'
+let tempC = 45;
+let tempInterval = null;
+
+function setTemp(target, color, status, barW, barColor, mercH, mercY, mercColor, bulbColor) {
+  tempC = target;
+  document.getElementById('tempValue').textContent = target + '°C';
+  document.getElementById('tempValue').style.color = color;
+  document.getElementById('tempStatus').textContent = status;
+  document.getElementById('tempBarFill').style.width = barW;
+  document.getElementById('tempBarFill').style.background = barColor;
+  document.getElementById('tempBarLabel').textContent = 'Suhu: ' + target + '°C';
+  document.getElementById('tempBarLabel').style.color = color;
+  // thermometer
+  const fill = document.getElementById('mercuryFill');
+  fill.setAttribute('y', mercY);
+  fill.setAttribute('height', mercH);
+  fill.setAttribute('fill', mercColor);
+  document.getElementById('mercuryBulb').setAttribute('fill', bulbColor);
+}
+
+function fanOn() {
+  fanState = 'on';
+  // Blades fast
+  document.getElementById('cpuFanBlades').className  = 'fan-blades spin';
+  document.getElementById('caseFanBlades').className = 'case-fan-blades spin';
+  // Wind lines
+  document.getElementById('windLines').style.opacity = '1';
+  // Heat effects off
+  document.getElementById('heatOverlay').style.opacity = '0';
+  document.getElementById('smokeGroup').setAttribute('opacity','0');
+  document.getElementById('stageBg').style.background = 'linear-gradient(135deg,#ecfeff,#cffafe)';
+  document.getElementById('cpuHeat').setAttribute('stroke-width','0');
+  document.getElementById('cpuHeat').setAttribute('opacity','0');
+  // RPM label
+  document.getElementById('rpmLabel').textContent = '⚡ Kecepatan: 2800 RPM – Ngeeengg!!';
+  document.getElementById('rpmLabel').setAttribute('fill','#06b6d4');
+  // Temp cool down
+  clearInterval(tempInterval);
+  animateTemp(45, '#0891b2', '😊 Normal & Dingin!', '35%',
+    'linear-gradient(90deg,#34d399,#06b6d4)', 15, 30, '#34d399', '#34d399');
+  // Fan face happy
+  document.getElementById('fanMsg').textContent = '🌀 Kipas berputar kencang! Komputer tetap dingin! ❄️';
+  // Dispatch wind particles
+  spawnWindParticles();
+  document.getElementById('btnOn').style.opacity = '.6';
+  document.getElementById('btnOff').style.opacity = '1';
+}
+
+function fanOff() {
+  fanState = 'off';
+  // Blades stop
+  document.getElementById('cpuFanBlades').className  = 'fan-blades stop';
+  document.getElementById('caseFanBlades').className = 'case-fan-blades stop';
+  // Wind off
+  document.getElementById('windLines').style.opacity = '0';
+  // Heat effects on
+  document.getElementById('heatOverlay').style.opacity = '1';
+  document.getElementById('smokeGroup').setAttribute('opacity','1');
+  document.getElementById('stageBg').style.background = 'linear-gradient(135deg,#fff7ed,#fee2e2)';
+  document.getElementById('cpuHeat').setAttribute('stroke-width','3');
+  document.getElementById('cpuHeat').setAttribute('opacity','0.8');
+  // RPM
+  document.getElementById('rpmLabel').textContent = '💀 Kecepatan: 0 RPM – Kipas mati!';
+  document.getElementById('rpmLabel').setAttribute('fill','#ef4444');
+  // Temp heat up
+  clearInterval(tempInterval);
+  animateTemp(92, '#ef4444', '🔥 BAHAYA! Kepanasan!', '87%',
+    'linear-gradient(90deg,#fbbf24,#ef4444)', 40, 5, '#ef4444', '#ef4444');
+  document.getElementById('fanMsg').textContent = '🔥 Kipas mati! Komputer makin panas... Bahaya! 😱';
+  document.getElementById('btnOn').style.opacity = '1';
+  document.getElementById('btnOff').style.opacity = '.6';
+}
+
+function animateTemp(target, color, status, barW, barColor, mercH, mercY, mercColor, bulbColor) {
+  // Animate step by step
+  const startT = tempC;
+  const steps = 20;
+  let step = 0;
+  tempInterval = setInterval(()=>{
+    step++;
+    const cur = Math.round(startT + (target - startT) * (step/steps));
+    document.getElementById('tempValue').textContent = cur + '°C';
+    if (step >= steps) {
+      clearInterval(tempInterval);
+      setTemp(target, color, status, barW, barColor, mercH, mercY, mercColor, bulbColor);
+    }
+  }, 40);
+  // Final state after anim
+  setTimeout(()=>{
+    document.getElementById('tempValue').style.color = color;
+    document.getElementById('tempStatus').textContent = status;
+    document.getElementById('tempBarFill').style.width = barW;
+    document.getElementById('tempBarFill').style.background = barColor;
+    document.getElementById('tempBarLabel').textContent = 'Suhu: ' + target + '°C';
+    document.getElementById('tempBarLabel').style.color = color;
+    const fill = document.getElementById('mercuryFill');
+    fill.setAttribute('y', mercY); fill.setAttribute('height', mercH);
+    fill.setAttribute('fill', mercColor);
+    document.getElementById('mercuryBulb').setAttribute('fill', bulbColor);
+  }, steps*40 + 100);
+}
+
+function spawnWindParticles() {
+  const rect = document.getElementById('fanStage').getBoundingClientRect();
+  for (let i=0; i<12; i++) {
+    setTimeout(()=>{
+      const p = document.createElement('div');
+      p.className = 'wind-particle';
+      p.style.cssText = `
+        left:${rect.left + 160 + Math.random()*40}px;
+        top:${rect.top  + 80  + Math.random()*120 + window.scrollY}px;
+        --dx:${60+Math.random()*80}px;
+        --dy:${(Math.random()-.5)*40}px;
+        animation-delay:${Math.random()*.3}s;
+        position:fixed;
+      `;
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(), 1000);
+    }, i*80);
+  }
+}
+
+/* ══ RGB TOGGLE ══ */
+let rgbOn = false;
+function toggleRGB() {
+  rgbOn = !rgbOn;
+  const btn = document.getElementById('rgbBtn');
+  const blades = document.getElementById('caseFanBlades');
+  if (rgbOn) {
+    blades.className = 'case-fan-blades spin';
+    btn.textContent = '⏹️ Matikan RGB';
+    btn.style.background = 'linear-gradient(135deg,#64748b,#334155)';
+    // Confetti
+    const cc=['#f97316','#a855f7','#06b6d4','#34d399','#fbbf24'];
+    for(let i=0;i<14;i++){
+      const p=document.createElement('div');p.className='confetti-piece';
+      p.style.cssText=`left:${20+Math.random()*60}%;top:55%;background:${cc[i%cc.length]};--tx:${(Math.random()-.5)*250}px;--ty:${-60-Math.random()*180}px;animation-delay:${Math.random()*.4}s;position:fixed;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1400);
+    }
+  } else {
+    blades.className = 'case-fan-blades slow';
+    btn.textContent = '🌈 Nyalakan RGB!';
+    btn.style.background = 'linear-gradient(135deg,#f97316,#a855f7,#06b6d4)';
+  }
+}
+
+/* ══ COOLING POP ══ */
+function coolPop(el) {
+  const orig = el.style.background;
+  el.style.background = '#cffafe';
+  el.style.transform = 'scale(1.07)';
+  setTimeout(()=>{ el.style.background=''; el.style.transform=''; }, 500);
+  const cc=['#06b6d4','#34d399','#fbbf24','#a78bfa'];
+  const r = el.getBoundingClientRect();
+  for(let i=0;i<10;i++){
+    const p=document.createElement('div');p.className='confetti-piece';
+    p.style.cssText=`left:${r.left+r.width*.5}px;top:${r.top+r.height*.3+window.scrollY}px;background:${cc[Math.floor(Math.random()*cc.length)]};--tx:${(Math.random()-.5)*160}px;--ty:${-40-Math.random()*120}px;animation-delay:${Math.random()*.3}s;position:fixed;`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),1400);
+  }
+}
+
+/* ══ QUIZ ══ */
+let qD={1:false,2:false,3:false}, qSc=0;
+function qa(n,correct,btn){
+  if(qD[n]) return; qD[n]=true;
+  btn.closest('#q'+n).querySelectorAll('.qbtn').forEach(b=>b.disabled=true);
+  const r=document.getElementById('q'+n+'r'); r.classList.remove('hidden');
+  if(correct==='a'){
+    qSc++; btn.style.background='#dcfce7'; btn.style.borderColor='#16a34a';
+    r.textContent='✅ Betul! Kamu hebat! 🌟'; r.style.color='#16a34a';
+  } else {
+    btn.style.background='#fee2e2'; btn.style.borderColor='#dc2626';
+    r.style.color='#dc2626';
+    const ans=['B – Komputer bisa mati/rusak! 💥','C – Di casing komputer! 🏠','B – Seperti AC di kamar! ❄️'];
+    r.textContent='❌ Jawabannya '+ans[n-1];
+  }
+  if(Object.values(qD).every(v=>v)){
+    setTimeout(()=>{
+      const f=document.getElementById('qFinal'); f.classList.remove('hidden');
+      const e=document.getElementById('qfE'),t=document.getElementById('qfT'),s=document.getElementById('qfS');
+      if(qSc===3){e.textContent='🏆';t.textContent='Sempurna! 3/3 – Ahli Pendingin!';t.style.color='#0e7490';s.textContent='CPU kamu pasti selalu adem berkat kamu! 😂❄️';}
+      else if(qSc===2){e.textContent='⭐';t.textContent='Bagus! 2/3 Benar!';t.style.color='#0891b2';s.textContent='Hampir sempurna! Scroll ke atas baca lagi yuk!';}
+      else{e.textContent='💪';t.textContent=qSc+'/3 – Semangat!';t.style.color='#7c3aed';s.textContent='Coba baca materinya lagi, pasti bisa! 🌀';}
+      if(qSc===3){
+        const cc=['#06b6d4','#34d399','#fbbf24','#a78bfa','#38bdf8'];
+        for(let i=0;i<20;i++){const p=document.createElement('div');p.className='confetti-piece';p.style.cssText=`left:${20+Math.random()*60}%;top:65%;background:${cc[i%cc.length]};--tx:${(Math.random()-.5)*300}px;--ty:${-80-Math.random()*200}px;animation-delay:${Math.random()*.5}s;position:fixed;`;document.body.appendChild(p);setTimeout(()=>p.remove(),1600);}
+      }
+    },400);
+  }
+}
+
+/* ══ FAN PICK ══ */
+const fanMsgs={
+  turbo:{text:'🚀 Turbo Fan! Kipasmu super cepat — anginnya bisa bikin rambut berdiri! 😂',bg:'#ecfeff',c:'#0e7490'},
+  rgb:  {text:'🌈 RGB Fan! Kipasmu paling keren se-komputer! Warna-warni kayak pelangi! ✨',bg:'#f3e8ff',c:'#6d28d9'},
+  ice:  {text:'❄️ Ice Fan! Kipasmu bisa bikin CPU sampai dingin kayak es krim! 🍦',bg:'#dbeafe',c:'#1d4ed8'},
+};
+function pickFan(t){
+  const d=fanMsgs[t]; const el=document.getElementById('fanPickMsg');
+  el.classList.remove('hidden'); el.style.background=d.bg;
+  document.getElementById('fanPickText').textContent=d.text;
+  document.getElementById('fanPickText').style.color=d.c;
+}
+
+/* ══ ACTIVITY CHECKS ══ */
+let actC=0;
+function actCk(n){
+  const el=document.getElementById('ac'+n),cb=el.querySelector('input');
+  if(cb.checked){actC++;el.querySelector('span').style.textDecoration='line-through';el.querySelector('span').style.opacity='.5';}
+  else{actC--;el.querySelector('span').style.textDecoration='';el.querySelector('span').style.opacity='';}
+  if(actC>=4){
+    document.getElementById('actAllDone').classList.remove('hidden');
+    const cc=['#06b6d4','#34d399','#fbbf24','#a78bfa'];
+    for(let i=0;i<16;i++){const p=document.createElement('div');p.className='confetti-piece';p.style.cssText=`left:${20+Math.random()*60}%;top:75%;background:${cc[i%cc.length]};--tx:${(Math.random()-.5)*240}px;--ty:${-60-Math.random()*180}px;animation-delay:${Math.random()*.5}s;position:fixed;`;document.body.appendChild(p);setTimeout(()=>p.remove(),1600);}
+  } else {
+    document.getElementById('actAllDone').classList.add('hidden');
+  }
+}
+</script>
+</body>
+</html>
