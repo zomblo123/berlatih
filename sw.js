@@ -9,13 +9,12 @@ const PRE_CACHE = [
   './',
   './index.html',
   './manifest.json',
+  './icon.jpg',
 ];
 
 // Opsional — tidak crash kalau belum ada
 const OPTIONAL_CACHE = [
-  './icons/icon-192x192.png',
-  './icons/icon-512x512.png',
-  './icons/icon-144x144.png',
+  './icon.jpg'
 ];
 
 const NETWORK_ONLY_PATTERNS = [
@@ -101,8 +100,8 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title || 'BerLatih ✦', {
       body: data.body || 'Waktunya menyelesaikan misimu!',
-      icon: './icons/icon-192x192.png',
-      badge: './icons/icon-72x72.png',
+      icon: './icon.jpg',
+      badge: './icon.jpg',
       vibrate: [200, 100, 200],
     })
   );
