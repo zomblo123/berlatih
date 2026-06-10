@@ -6,6 +6,7 @@ const CACHE_NAME = 'berlatih-v1.3';
 
 // Wajib ada
 const PRE_CACHE = [
+  './',
   './index.html',
   './manifest.json',
 ];

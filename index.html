@@ -44,6 +44,8 @@
   --radius-sm:12px;
 }
 body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:90px;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+#installPWABtn{display:none;position:fixed;bottom:98px;left:16px;z-index:950;align-items:center;gap:8px;padding:10px 16px;border-radius:24px;border:none;background:rgba(108,99,255,0.14);color:#6c63ff;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 16px 32px rgba(108,99,255,0.15);transition:transform 0.2s,opacity 0.2s;}
+#installPWABtn:hover{transform:translateY(-1px);}
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
 
@@ -1751,11 +1753,24 @@ if ('serviceWorker' in navigator) {
 }
 
 let deferredInstallPrompt = null;
+const installButton = document.getElementById('installPWABtn');
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+if (installButton && isStandalone) {
+  installButton.style.display = 'none';
+}
+
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredInstallPrompt = e;
   const btn = document.getElementById('installPWABtn');
   if (btn) btn.style.display = 'flex';
+});
+
+window.addEventListener('appinstalled', () => {
+  console.log('[BerLatih] App installed');
+  const btn = document.getElementById('installPWABtn');
+  if (btn) btn.style.display = 'none';
+  deferredInstallPrompt = null;
 });
 
 window.installPWA = function () {
